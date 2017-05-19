@@ -15,6 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestJmesPathInterface {
     private JmesPathInterface unitUnderTest;
+    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
+
 
     static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
 
@@ -25,8 +28,8 @@ public class TestJmesPathInterface {
         String jsonOutput = null;
         JsonNode output = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File("src/test/resources/input.json"));
-            jsonOutput = FileUtils.readFileToString(new File("src/test/resources/output.json"));
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
+            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             output = objectmapper.readTree(jsonOutput);
         } catch (Exception e) {

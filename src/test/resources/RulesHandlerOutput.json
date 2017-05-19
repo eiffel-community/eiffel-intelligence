@@ -1,0 +1,16 @@
+{
+  "TemplateName":"ARTIFACT_1",
+  "Type":"EiffelSourceChangeCreatedEvent",
+  "TypeRule": "meta.type",
+  "IdRule": "meta.id",
+  "StartEvent": "NO",
+  "IdentifyRules" : "",
+  "MatchIdRules": {},
+  "ExtractionRules" : "",
+  "MergeResolverRules" : "root",
+  "ArrayMergeOptions": "",
+  "HistoryIdentifyRules": "",
+  "HistoryExtractionRules": "{internalComposition: {sourceChanges :[{ author:data.author, issues:data.issues}]}}",
+  "ProcessRules":null,
+  "ProcessFunction" : null
+}

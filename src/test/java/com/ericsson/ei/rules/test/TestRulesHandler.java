@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,13 +40,13 @@ public class TestRulesHandler {
     public void testPrintJson() {
         String jsonInput = null;
         String jsonOutput = null;
-        JsonNode result = null;
-        JsonNode output = null;
+        RulesObject result = null;
+        RulesObject output = null;
         try {
             jsonInput = FileUtils.readFileToString(new File(inputFilePath));
             jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
-            output = objectmapper.readTree(jsonOutput);
+            output = new RulesObject(objectmapper.readTree(jsonOutput));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

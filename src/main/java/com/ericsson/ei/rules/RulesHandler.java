@@ -43,7 +43,7 @@ public class RulesHandler {
         this.jsonFilePath = path;
     }
 
-    public JsonNode getRulesForEvent(String event) {
+    public RulesObject getRulesForEvent(String event) {
         String typeRule;
         JsonNode type;
         JsonNode result;
@@ -60,7 +60,7 @@ public class RulesHandler {
             type = rule.get("Type");
 
             if (result.equals(type)) {
-                return rule;
+                return new RulesObject(rule);
             }
         }
         return null;

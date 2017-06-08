@@ -1,0 +1,1 @@
+{"$and":[{"_event_object.testCaseExecutions.testCaseStartedEventId":"e90daae3-bf3f-4b0a-b899-67834fd5ebd0"},{"_event_object.TemplateName":"ARTIFACT_1"}]}

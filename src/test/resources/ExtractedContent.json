@@ -1,0 +1,17 @@
+{
+    "id": "e90daae3-bf3f-4b0a-b899-67834fd5ebd0",
+    "type": "EiffelArtifactCreatedEvent",
+    "time": 1484061386383,
+    "gav": {
+        "artifactId": "component-1",
+        "version": "1.5000.0",
+        "groupId": "com.mycompany.myproduct"
+    },
+    "fileInformation": [
+        {
+            "classifier": "",
+            "extension": "jar"
+        }
+    ],
+    "buildCommand": null
+}

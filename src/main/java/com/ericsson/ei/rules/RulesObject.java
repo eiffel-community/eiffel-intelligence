@@ -18,6 +18,10 @@ public class RulesObject {
         return rulesObject.get("MatchIdRules").toString();
     }
 
+    public String getExtractionRules() {
+        return rulesObject.get("ExtractionRules").textValue();
+    }
+
     public boolean equals(Object other){
         if (other instanceof RulesObject) {
             return rulesObject.equals(((RulesObject)other).getJsonRulesObject());

@@ -18,6 +18,10 @@ public class RulesObject {
         return rulesObject.get("MatchIdRules").toString();
     }
 
+    public String getMergeRules() {
+        return rulesObject.get("MergeResolverRules").toString();
+    }
+
     public boolean equals(Object other){
         if (other instanceof RulesObject) {
             return rulesObject.equals(((RulesObject)other).getJsonRulesObject());

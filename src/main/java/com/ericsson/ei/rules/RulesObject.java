@@ -15,11 +15,15 @@ public class RulesObject {
     }
 
     public String getMatchIdRules() {
-        return rulesObject.get("MatchIdRules").toString();
+        return rulesObject.get("MatchIdRules").textValue();
     }
 
     public String getExtractionRules() {
         return rulesObject.get("ExtractionRules").textValue();
+    }
+
+    public String getMergeRules() {
+        return rulesObject.get("MergeResolverRules").textValue();
     }
 
     public boolean equals(Object other){

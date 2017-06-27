@@ -1,0 +1,54 @@
+{
+   "links": [
+      {
+         "target": "1921bc9f-59e1-45b7-8bb1-26602ed667b1",
+         "type": "COMPOSITION"
+      },
+      {
+         "target": "1921bc9f-59e1-45b7-8bb1-26602ed667b1",
+         "type": "CAUSE"
+      },
+      {
+         "target": "55da5d47-fb10-43c8-97d2-cbd5eb9a2676",
+         "type": "PREVIOUS_VERSION"
+      }
+   ],
+   "meta": {
+      "id": "e90daae3-bf3f-4b0a-b899-67834fd5ebd0",
+      "source": {
+         "domainId": "example.domain"
+      },
+      "time": 1484061386383,
+      "type": "EiffelArtifactCreatedEvent",
+      "version": "1.0.0"
+   },
+   "data": {
+      "customData": [
+         {
+            "value": "ArtCC1",
+            "key": "name"
+         },
+         {
+            "value": 5000,
+            "key": "iteration"
+         }
+      ],
+      "fileInformation": [
+         {
+            "classifier": "",
+            "extension": "jar"
+         }
+      ],
+      "gav": {
+         "artifactId": "component-1",
+         "version": "1.5000.0",
+         "groupId": "com.mycompany.myproduct"
+      }
+   },
+   "testCaseExecutions": [
+   	   {
+    	  "testCaseStartedTime": 3.56,
+    	  "testCaseFinishedTime": 10.23
+       }
+    ]          
+}

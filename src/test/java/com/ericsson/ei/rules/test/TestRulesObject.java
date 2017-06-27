@@ -16,14 +16,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TestRulesObject {
     private RulesObject unitUnderTest;
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
+    private final String inputRulesPath = "src/test/resources/ProcessRules.json";
     private JsonNode rulesJson;
 
     static Logger log = (Logger) LoggerFactory.getLogger(TestRulesObject.class);
 
     @Test
     public void testPrintJson() {
-        String expectedOutput = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation " +
-                ": data.fileInformation, buildCommand : data.buildCommand }";
+        String expectedOutput = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation "
+                + ": data.fileInformation, buildCommand : data.buildCommand }";
 
         String result;
 
@@ -38,6 +39,23 @@ public class TestRulesObject {
 
         result = unitUnderTest.getExtractionRules();
 
+        assertEquals(result, expectedOutput);
+    }
+
+    @Test
+    public void fetchProcessRulesTest() {
+        String expectedOutput = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
+        String result;
+
+        try {
+            String ruleString = FileUtils.readFileToString(new File(inputRulesPath));
+            ObjectMapper objectMapper = new ObjectMapper();
+            rulesJson = objectMapper.readTree(ruleString);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        unitUnderTest = new RulesObject(rulesJson);
+        result = unitUnderTest.fetchProcessRules();
         assertEquals(result, expectedOutput);
     }
 

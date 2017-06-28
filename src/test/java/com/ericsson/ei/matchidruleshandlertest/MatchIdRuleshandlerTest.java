@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.matchidruleshandler.MatchIdRulesHandler;
+import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

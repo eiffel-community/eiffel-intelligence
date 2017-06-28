@@ -5,11 +5,14 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.handlers.EventHandler;
 
 
 @Component
@@ -27,8 +30,7 @@ public class RmqConsumer {
     @Value("${rabbitmq.routing.key}") private String routingKey;
     @Value("${rabbitmq.consumerName}") private String consumerName;
 
-    SimpleMessageListenerContainer container;
-    ConnectionFactory factory;
+//    SimpleMessageListenerContainer container;
 
     public Boolean getQueueDurable() {
         return queueDurable;
@@ -119,8 +121,10 @@ public class RmqConsumer {
     }
 
     @Bean
-    ConnectionFactory bindToMessageBus() {
-        factory = new CachingConnectionFactory(host,port);
+    ConnectionFactory connectionFactory() {
+        CachingConnectionFactory factory = new CachingConnectionFactory(host,port);
+//        factory.setUsername("guest");
+//        factory.setPassword("guest");
         return factory;
     }
 
@@ -130,9 +134,12 @@ public class RmqConsumer {
         String queueName = domainId + "." + componentName + "." + consumerName + "." + durableName;
         Queue queue = new Queue(queueName, queueDurable);
         TopicExchange topicExchange = new TopicExchange(exchangeName);
+        RabbitAdmin rabbitAdmin = new RabbitAdmin(factory);
+        rabbitAdmin.declareExchange(topicExchange);
+        rabbitAdmin.declareQueue(queue);
         BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
         MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
-        container = new SimpleMessageListenerContainer();
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(factory);
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);

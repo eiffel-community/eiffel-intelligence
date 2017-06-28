@@ -1,5 +1,7 @@
 package com.ericsson.ei.jsonmerge;
 
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 
@@ -27,6 +29,11 @@ public class MergeHandler {
     @Autowired
     private MergePrepare prepareMergePrepareObject;
 
+    @Autowired
+    private ObjectHandler objectHandler;
+
+    @Autowired
+    private EventToObjectMapHandler eventToObjectMap;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -59,6 +66,8 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
+
+        objectHandler.insertObject(mergedObject);
         return mergedObject;
     }
 
@@ -92,6 +101,7 @@ public class MergeHandler {
         return null;
 
     }
+
     private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject){
         Iterator <String> preparedJsonKeys = preparedJsonObject.keys();
         while(preparedJsonKeys.hasNext()) {
@@ -112,6 +122,7 @@ public class MergeHandler {
             }
         }
     }
+
     private void updateJsonObject(JSONArray aggregatedJsonObject, JSONArray preparedJsonObject){
         if (preparedJsonObject.length() > aggregatedJsonObject.length()){
             aggregatedJsonObject.put(new JSONObject());
@@ -134,14 +145,28 @@ public class MergeHandler {
             }
         }
     }
-   public String getAggregatedObject(String id){
+
+    public String getAggregatedObject(String id){
         try {
+            return objectHandler.findObjectById(id);
             //  Method fetches the aggregated object from database based on given id
-            String aggregatedObject = new String("{id:eventId,type:eventType,test_cases:[{event_id:testcaseid1,test_data:testcase1data},{event_id:`testcaseid2`,test_data:testcase2data}]}");
-            return aggregatedObject;
+//            String aggregatedObject = new String("{id:eventId,type:eventType,test_cases:[{event_id:testcaseid1,test_data:testcase1data},{event_id:`testcaseid2`,test_data:testcase2data}]}");
+//            return aggregatedObject;
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
         return null;
+    }
+
+    public void addNewObject(String event, String newObject) {
+        objectHandler.insertObject(newObject);
+    }
+
+    public void addNewObject(String event, JsonNode newObject) {
+        objectHandler.insertObject(newObject);
+    }
+
+    public void updateEventToObjectMapInMemoryDB(String event, String object) {
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(event, object);
     }
 }

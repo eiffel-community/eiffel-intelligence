@@ -1,14 +1,20 @@
-package com.ericsson.ei.matchidruleshandler;
+package com.ericsson.ei.handlers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.ericsson.ei.rules.RulesObject;
 
 @Component
 public class MatchIdRulesHandler {
 
-    public void fetchObjectById(RulesObject ruleObject, String id) {
+    @Autowired
+    private ObjectHandler objHandler;
+
+    public String fetchObjectById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
-        String replacedMatchId = MatchIdRulesHandler.replaceIdInRules(matchIdString, id);
+        String fetchQuerry = replaceIdInRules(matchIdString, id);
+        return objHandler.findObjectById(fetchQuerry);
     }
 
     public static String replaceIdInRules(String matchIdString, String id) {

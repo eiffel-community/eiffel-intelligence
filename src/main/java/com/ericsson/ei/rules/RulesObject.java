@@ -15,7 +15,7 @@ public class RulesObject {
     }
 
     public String getMatchIdRules() {
-        return rulesObject.get("MatchIdRules").textValue();
+        return rulesObject.get("MatchIdRules").toString();
     }
 
     public String getExtractionRules() {

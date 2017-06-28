@@ -1,5 +1,7 @@
 package com.ericsson.ei.handlers;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +13,10 @@ public class MatchIdRulesHandler {
     @Autowired
     private ObjectHandler objHandler;
 
-    public String fetchObjectById(RulesObject ruleObject, String id) {
+    public ArrayList<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
         String fetchQuerry = replaceIdInRules(matchIdString, id);
-        return objHandler.findObjectById(fetchQuerry);
+        return objHandler.findObjectsById(fetchQuerry);
     }
 
     public static String replaceIdInRules(String matchIdString, String id) {

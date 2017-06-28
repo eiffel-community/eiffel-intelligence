@@ -18,6 +18,10 @@ public class RulesObject {
         return rulesObject.get("MatchIdRules").toString();
     }
 
+    public String getIdRules() {
+        return rulesObject.get("IdRule").textValue();
+    }
+
     public String getExtractionRules() {
         return rulesObject.get("ExtractionRules").textValue();
     }
@@ -32,5 +36,10 @@ public class RulesObject {
         }
 
         return (this == other);
+    }
+
+    public boolean isStartEventRules() {
+        String value = rulesObject.get("StartEvent").textValue().toLowerCase();
+        return value.equals("yes");
     }
 }

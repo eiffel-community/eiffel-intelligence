@@ -43,26 +43,26 @@ public class ExtractionHandler {
 //        this.historyIdRulesHandler = historyIdRulesHandler;
 //    }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedObject) {
+    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode aggregatedJsonObject = mapper.readValue(aggregatedObject, JsonNode.class);
+            JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, JsonNode aggregatedObject) {
+    public void runExtraction(RulesObject rulesObject, String id, String event, JsonNode aggregatedDbObject) {
         JsonNode extractedContent;
         extractedContent = extractContent(rulesObject, event);
 
-        if(aggregatedObject != null) {
+        if(aggregatedDbObject != null) {
             String mergedContent = mergeHandler.mergeObject(id, rulesObject, event, extractedContent);
             //aggregationObject = processRulesHandler.runProcessRules(aggregationObject, rulesObject);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
         } else {
-            mergeHandler.addNewObject(event, extractedContent);
+            mergeHandler.addNewObject(event, extractedContent, rulesObject);
         }
     }
 

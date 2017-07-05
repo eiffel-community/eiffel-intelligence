@@ -1,12 +1,5 @@
-#!/usr/bin/env node
-/**
- * Created by EMICHAF on 2016-12-28.
- */
-module.exports = {
-
-    // /start -- event_objects
-
-    event_EiffelArtifactCreatedEvent_3 :
+{
+    "event_EiffelArtifactCreatedEvent_3" :
         {
             "links": [
                 {
@@ -57,7 +50,7 @@ module.exports = {
         },
 
 
-       event_EiffelSourceChangeCreatedEvent_3 : {
+       "event_EiffelSourceChangeCreatedEvent_3" : {
             "meta": {
                 "type": "EiffelSourceChangeCreatedEvent",
                 "version": "1.0.0",
@@ -110,7 +103,7 @@ module.exports = {
             ]
             },
 
-        event_EiffelSourceChangeSubmittedEvent_3 : {
+        "event_EiffelSourceChangeSubmittedEvent_3" : {
             "meta": {
                     "type": "EiffelSourceChangeSubmittedEvent",
                     "version": "1.0.0",
@@ -144,9 +137,9 @@ module.exports = {
                     "target": "6acc3c87-75e0-4b6d-88f5-bd4gv4e62b43"
                     }
                 ]
-                },               
+                },
 
-    event_EiffelArtifactPublishedEvent_3 :
+    "event_EiffelArtifactPublishedEvent_3" :
 
         {
             "links": [
@@ -188,7 +181,7 @@ module.exports = {
             }
         },
 
-    event_EiffelConfidenceLevelModifiedEvent_3_2 :
+    "event_EiffelConfidenceLevelModifiedEvent_3_2" :
 
         {
             "links": [
@@ -225,8 +218,8 @@ module.exports = {
                 "name": "readyForDelivery"
             }
         },
-        
-            event_EiffelConfidenceLevelModifiedEvent_3 :
+
+            "event_EiffelConfidenceLevelModifiedEvent_3" :
 
         {
             "links": [
@@ -263,94 +256,94 @@ module.exports = {
                 "name": "readyForSystemIntegration"
             }
         },
-        
-        event_EiffelActivityTriggeredEvent_3:
-        {
-        	  "meta": {
-        	    "id": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
-        	    "type": "EiffelActivityTriggeredEvent",
-        	    "version": "1.0.0",
-        	    "time": 1234567890
-        	  },
-        	  "data": {
-        	    "name": "Component X Build",
-        	    "categories": [
-        	      "Component Build"
-        	    ],
-        	    "triggers": [
-        	      {
-        	        "type": "MANUAL",
-        	        "description": "Triggered by EiffelConfidenceLevelModifiedEvent"
-        	      }
-        	    ],
-        	    "executionType": "AUTOMATED"
-        	  },
-        	  "links": [
-        	    {
-        	      "type": "CAUSE",
-        	      "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a75"
-        	    }
-        	  ]
-        	},
-        
-        	event_EiffelActivityStartedEvent_3:
-        	{
-        		"meta": {
-        			"type": "EiffelActivityStartedEvent",
-        			"version": "1.0.0",
-        			"time": 1234567890,
-        			"id": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
-        		},
-        		"data": {
-        			"executionUri": "https://my.jenkins.host/myJob/43",
-        			"liveLogs": [
-        			             {
-        			            	 "name": "My build log",
-        			            	 "uri": "file:///tmp/logs/data.log"
-        			             }
-        			             ]
-        		},
-        		"links": [
-        		          {
-        		        	  "type": "ACTIVITY_EXECUTION",
-        		        	  "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
-        		          }
-        		          ]
-        	},
-        	  
-        	event_EiffelActivityFinishedEvent_3:
-        	{
-        		  "meta": {
-        		    "type": "EiffelActivityFinishedEvent",
-        		    "version": "1.0.0",
-        		    "time": 1234567890,
-        		    "id": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
-        		  },
-        		  "data": {
-        		    "outcome": {
-        		      "conclusion": "TIMED_OUT",
-        		      "description": "Compilation timed out."
-        		    },
-        		    "persistentLogs": [
-        		      {
-        		       "name": "firstLog",
-        		       "uri": "http://myHost.com/firstLog"
-        		      },
-        		      {
-        		       "name": "otherLog",
-        		       "uri": "isbn:0-486-27557-4"
-        		      }
-        		    ]
-        		  },
-        		  "links": [
-        		    {
-        		      "type": "ACTIVITY_EXECUTION",
-        		      "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
-        		    }
-        		  ]
-        		},
 
-    event_EiffelTestCaseStartedEvent_3:
+        "event_EiffelActivityTriggeredEvent_3" :
+        {
+            "meta": {
+              "id": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
+              "type": "EiffelActivityTriggeredEvent",
+              "version": "1.0.0",
+              "time": 1234567890
+            },
+            "data": {
+              "name": "Component X Build",
+              "categories": [
+                "Component Build"
+              ],
+              "triggers": [
+                {
+                  "type": "MANUAL",
+                  "description": "Triggered by EiffelConfidenceLevelModifiedEvent"
+                }
+              ],
+              "executionType": "AUTOMATED"
+            },
+            "links": [
+              {
+                "type": "CAUSE",
+                "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a75"
+              }
+            ]
+          },
+
+          "event_EiffelActivityStartedEvent_3" :
+          {
+            "meta": {
+              "type": "EiffelActivityStartedEvent",
+              "version": "1.0.0",
+              "time": 1234567890,
+              "id": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
+            },
+            "data": {
+              "executionUri": "https://my.jenkins.host/myJob/43",
+              "liveLogs": [
+                           {
+                             "name": "My build log",
+                             "uri": "file:///tmp/logs/data.log"
+                           }
+                           ]
+            },
+            "links": [
+                      {
+                        "type": "ACTIVITY_EXECUTION",
+                        "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+                      }
+                      ]
+          },
+
+          "event_EiffelActivityFinishedEvent_3" :
+          {
+              "meta": {
+                "type": "EiffelActivityFinishedEvent",
+                "version": "1.0.0",
+                "time": 1234567890,
+                "id": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
+              },
+              "data": {
+                "outcome": {
+                  "conclusion": "TIMED_OUT",
+                  "description": "Compilation timed out."
+                },
+                "persistentLogs": [
+                  {
+                   "name": "firstLog",
+                   "uri": "http://myHost.com/firstLog"
+                  },
+                  {
+                   "name": "otherLog",
+                   "uri": "isbn:0-486-27557-4"
+                  }
+                ]
+              },
+              "links": [
+                {
+                  "type": "ACTIVITY_EXECUTION",
+                  "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+                }
+              ]
+            },
+
+    "event_EiffelTestCaseStartedEvent_3" :
 
         {
             "links": [
@@ -392,7 +385,7 @@ module.exports = {
         },
 
 
-    event_EiffelTestCaseFinishedEvent_3:
+    "event_EiffelTestCaseFinishedEvent_3" :
 
         {
             "links": [
@@ -428,7 +421,7 @@ module.exports = {
             }
         },
 
-    event_EiffelTestCaseStartedEvent_3_1:
+    "event_EiffelTestCaseStartedEvent_3_1" :
         {
             "links": [
                 {
@@ -469,7 +462,7 @@ module.exports = {
         },
 
 
-    event_EiffelTestCaseFinishedEvent_3_1:
+    "event_EiffelTestCaseFinishedEvent_3_1" :
 
         {
             "links": [
@@ -505,7 +498,7 @@ module.exports = {
             }
         },
 
-    event_EiffelTestCaseFinishedEvent_3_2:
+    "event_EiffelTestCaseFinishedEvent_3_2" :
         {
             "links": [
                 {
@@ -540,7 +533,7 @@ module.exports = {
             }
         },
 
-    event_EiffelConfidenceLevelModifiedEvent_3_1:
+    "event_EiffelConfidenceLevelModifiedEvent_3_1" :
         {
             "links": [
                 {
@@ -577,7 +570,7 @@ module.exports = {
             }
         },
 
-    event_EiffelCompositionDefinedEvent_3:
+    "event_EiffelCompositionDefinedEvent_3" :
         {
             "links": [
                 {
@@ -587,7 +580,7 @@ module.exports = {
                 {
                     "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
                     "type": "ELEMENT"
-                }                               
+                }
             ],
             "meta": {
                 "id": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
@@ -615,14 +608,14 @@ module.exports = {
         },
 
 
-    event_EiffelArtifactCreatedEvent_1 :
+    "event_EiffelArtifactCreatedEvent_1" :
         {
             "meta": {
                 "time": 1473177136433,
                 "source": {
                     "domainId": "example.domain"
                 },
-                "type": "EiffelArtifactCreatedEvent",               //<------ start event för EiffelConfidenceLevelModifiedEvent,
+                "type": "EiffelArtifactCreatedEvent",
                 "id": "ccce572c-c364-441e-abc9-b62fed080ca2",
                 "version": "1.0.0"
             },
@@ -678,7 +671,7 @@ module.exports = {
         },
 
 
-event_EiffelArtifactCreatedEvent_2 :
+"event_EiffelArtifactCreatedEvent_2" :
     {
         "meta": {
             "time": 1473177190242,
@@ -732,7 +725,7 @@ event_EiffelArtifactCreatedEvent_2 :
         }
     },
 
-event_EiffelArtifactPublishedEvent_1 :
+"event_EiffelArtifactPublishedEvent_1" :
     {
         "meta": {
             "time": 1473177166433,
@@ -778,7 +771,7 @@ event_EiffelArtifactPublishedEvent_1 :
     },
 
 
-event_EiffelArtifactPublishedEvent_2 :
+"event_EiffelArtifactPublishedEvent_2" :
     {
         "meta": {
             "time": 1473177191242,
@@ -819,7 +812,7 @@ event_EiffelArtifactPublishedEvent_2 :
         }
     },
 
-event_EiffelConfidenceLevelModifiedEvent_1 :
+"event_EiffelConfidenceLevelModifiedEvent_1" :
     {
         "meta": {
             "time": 1473177188942,
@@ -857,7 +850,7 @@ event_EiffelConfidenceLevelModifiedEvent_1 :
     },
 
 
-event_EiffelConfidenceLevelModifiedEvent_2 :
+"event_EiffelConfidenceLevelModifiedEvent_2" :
     {
         "meta": {
             "time": 1473177479314,
@@ -907,7 +900,7 @@ event_EiffelConfidenceLevelModifiedEvent_2 :
     },
 
 
-event_EiffelTestCaseStartedEvent_1 :
+"event_EiffelTestCaseStartedEvent_1" :
     {
         "meta": {
             "time": 1473177170586,
@@ -924,8 +917,8 @@ event_EiffelTestCaseStartedEvent_1 :
                 "type": "CONTEXT"
             },
             {
-                "target": "ccce572c-c364-441e-abc9-b62fed080ca2",  // <------------- ref EiffelArtifactCreatedEvent
-                "type": "IUT"                                      // <-------------- från rules i template
+                "target": "ccce572c-c364-441e-abc9-b62fed080ca2",
+                "type": "IUT"
             }
         ],
         "data": {
@@ -943,7 +936,7 @@ event_EiffelTestCaseStartedEvent_1 :
     },
 
 
-event_EiffelTestCaseStartedEvent_2 :
+"event_EiffelTestCaseStartedEvent_2" :
     {
         "meta": {
             "time": 1473177193294,
@@ -979,7 +972,7 @@ event_EiffelTestCaseStartedEvent_2 :
     },
 
 
-event_EiffelTestCaseStartedEvent_1_1 :
+"event_EiffelTestCaseStartedEvent_1_1" :
     {
         "meta": {
             "time": 1473177170588,
@@ -996,8 +989,8 @@ event_EiffelTestCaseStartedEvent_1_1 :
                 "type": "CONTEXT"
             },
             {
-                "target": "ccce572c-c364-441e-abc9-b62fed080ca2",   // <------------- ref EiffelArtifactCreatedEvent
-                "type": "IUT"                                       // <-------------- från rules i template
+                "target": "ccce572c-c364-441e-abc9-b62fed080ca2",
+                "type": "IUT"
             }
         ],
         "data": {
@@ -1015,7 +1008,7 @@ event_EiffelTestCaseStartedEvent_1_1 :
     },
 
 
-event_EiffelTestCaseStartedEvent_2_1 :
+"event_EiffelTestCaseStartedEvent_2_1" :
     {
         "meta": {
             "time": 1473177193394,
@@ -1050,7 +1043,7 @@ event_EiffelTestCaseStartedEvent_2_1 :
         }
     },
 
-event_EiffelTestCaseStartedEvent_2_2 :
+"event_EiffelTestCaseStartedEvent_2_2" :
     {
 
         "meta": {
@@ -1087,7 +1080,7 @@ event_EiffelTestCaseStartedEvent_2_2 :
     },
 
 
-event_EiffelTestCaseFinishedEvent_1 :
+"event_EiffelTestCaseFinishedEvent_1" :
     {
         "meta": {
             "time": 1473177180589,
@@ -1100,8 +1093,8 @@ event_EiffelTestCaseFinishedEvent_1 :
         },
         "links": [
             {
-                "target": "bcc98cef-707c-46be-ad89-392047f05a51", // <-------------  EiffelTestCaseStartedEvent (event_obj_4)
-                "type": "TEST_CASE_EXECUTION"                     // <-------------
+                "target": "bcc98cef-707c-46be-ad89-392047f05a51",
+                "type": "TEST_CASE_EXECUTION"
             }
         ],
         "data": {
@@ -1122,8 +1115,7 @@ event_EiffelTestCaseFinishedEvent_1 :
     },
 
 
-
-event_EiffelTestCaseFinishedEvent_1_1 :
+"event_EiffelTestCaseFinishedEvent_1_1" :
     {
         "meta": {
             "time": 1473177183589,
@@ -1136,8 +1128,8 @@ event_EiffelTestCaseFinishedEvent_1_1 :
         },
         "links": [
             {
-                "target": "9ed792da-87c9-4eea-a4d6-9d3000fbc279", // <-------------  EiffelTestCaseStartedEvent (event_obj_5)
-                "type": "TEST_CASE_EXECUTION"                     // <-------------
+                "target": "9ed792da-87c9-4eea-a4d6-9d3000fbc279",
+                "type": "TEST_CASE_EXECUTION"
             }
         ],
         "data": {
@@ -1158,7 +1150,7 @@ event_EiffelTestCaseFinishedEvent_1_1 :
     },
 
 
-event_EiffelTestCaseFinishedEvent_2 :
+"event_EiffelTestCaseFinishedEvent_2" :
     {
         "meta": {
             "time": 1473177246394,
@@ -1193,7 +1185,7 @@ event_EiffelTestCaseFinishedEvent_2 :
     },
 
 
-event_EiffelTestCaseFinishedEvent_2_1 :
+"event_EiffelTestCaseFinishedEvent_2_1" :
     {
         "meta": {
             "time": 1473177243394,
@@ -1227,7 +1219,8 @@ event_EiffelTestCaseFinishedEvent_2_1 :
         }
     },
 
-event_EiffelTestCaseFinishedEvent_2_2 :
+
+"event_EiffelTestCaseFinishedEvent_2_2" :
     {
         "meta": {
             "time": 1473177356694,
@@ -1260,7 +1253,6 @@ event_EiffelTestCaseFinishedEvent_2_2 :
             }
         }
     }
-// /stop -- event_objects
-};
+}
 
 

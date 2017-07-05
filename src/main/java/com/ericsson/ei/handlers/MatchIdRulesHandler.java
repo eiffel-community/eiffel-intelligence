@@ -16,7 +16,7 @@ public class MatchIdRulesHandler {
     public ArrayList<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
         String fetchQuerry = replaceIdInRules(matchIdString, id);
-        return objHandler.findObjectsById(fetchQuerry);
+        return objHandler.findObjectsByCondition(fetchQuerry);
     }
 
     public static String replaceIdInRules(String matchIdString, String id) {

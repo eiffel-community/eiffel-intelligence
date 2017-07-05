@@ -16,9 +16,12 @@ public class EventHandler {
     @Autowired
     RulesHandler rulesHandler;
 
+    @Autowired
+    IdRulesHandler idRulesHandler;
+
     public void eventReceived(String event) {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
-
+        idRulesHandler.runIdRules(eventRules, event);
     }
 
     public void eventReceived(byte[] message) {

@@ -6,6 +6,8 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.*;
@@ -19,7 +21,6 @@ import java.util.*;
 public class MergeHandler {
 
     static Logger log = (Logger) LoggerFactory.getLogger(MergeHandler.class);
-
 
     @Value("${mergeidmarker}") private String mergeIdMarker;
 
@@ -67,7 +68,7 @@ public class MergeHandler {
             log.info(e.getMessage(),e);
         }
 
-        objectHandler.insertObject(mergedObject);
+        objectHandler.updateObject(mergedObject, rules, event, id);
         return mergedObject;
     }
 
@@ -78,48 +79,39 @@ public class MergeHandler {
     }
 
     public String mergeContentToObject(String aggregatedObject, String preparedObject){
+        JSONObject aggregatedJsonObject = null;
         try {
-            JSONObject agregatedJsonObject = new JSONObject(aggregatedObject);
+            aggregatedJsonObject = new JSONObject(aggregatedObject);
             JSONObject preparedJsonObject = new JSONObject(preparedObject);
-            Iterator <String> preparedJsonKeys = preparedJsonObject.keys();
-            while(preparedJsonKeys.hasNext()) {
-                String preparedJsonKey = (String) preparedJsonKeys.next();
-                if (agregatedJsonObject.get(preparedJsonKey).getClass().equals(JSONObject.class )){
-                    updateJsonObject((JSONObject) agregatedJsonObject.get(preparedJsonKey),
-                            (JSONObject) preparedJsonObject.get(preparedJsonKey));
-                }else if(agregatedJsonObject.get(preparedJsonKey).getClass().equals(JSONArray.class )){
-                    updateJsonObject((JSONArray) agregatedJsonObject.get(preparedJsonKey),
-                            (JSONArray) preparedJsonObject.get(preparedJsonKey));
-                }else{
-                    agregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
-                }
-            }
-            return agregatedJsonObject.toString();
+            updateJsonObject(aggregatedJsonObject, preparedJsonObject);
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
-        return null;
-
+        return aggregatedJsonObject == null ? null : aggregatedJsonObject.toString();
     }
 
     private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject){
-        Iterator <String> preparedJsonKeys = preparedJsonObject.keys();
-        while(preparedJsonKeys.hasNext()) {
-            String preparedJsonKey = preparedJsonKeys.next();
-            try {
-                if (preparedJsonObject.get(preparedJsonKey).getClass().equals(JSONObject.class )){
-                    updateJsonObject((JSONObject) aggregatedJsonObject.get(preparedJsonKey),
-                            (JSONObject) preparedJsonObject.get(preparedJsonKey));
-                }else if(preparedJsonObject.get(preparedJsonKey).getClass().equals(JSONArray.class )){
-                    updateJsonObject((JSONArray) aggregatedJsonObject.get(preparedJsonKey),
-                            (JSONArray) preparedJsonObject.get(preparedJsonKey));
+        try {
+            Iterator <String> preparedJsonKeys = preparedJsonObject.keys();
+            while(preparedJsonKeys.hasNext()) {
+                String preparedJsonKey = (String) preparedJsonKeys.next();
+                if (aggregatedJsonObject.has(preparedJsonKey)) {
+                    Class valueClass = aggregatedJsonObject.get(preparedJsonKey).getClass();
+                    if (valueClass.equals(JSONObject.class )){
+                        updateJsonObject((JSONObject) aggregatedJsonObject.get(preparedJsonKey),
+                                (JSONObject) preparedJsonObject.get(preparedJsonKey));
+                    }else if(valueClass.equals(JSONArray.class )){
+                        updateJsonObject((JSONArray) aggregatedJsonObject.get(preparedJsonKey),
+                                (JSONArray) preparedJsonObject.get(preparedJsonKey));
+                    }else{
+                        aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
+                    }
                 }else{
                     aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                 }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+        }catch (Exception e){
+            log.info(e.getMessage(),e);
         }
     }
 
@@ -140,8 +132,7 @@ public class MergeHandler {
                     element = preparedJsonObject.get(i);
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.info(e.getMessage(),e);
             }
         }
     }
@@ -149,21 +140,18 @@ public class MergeHandler {
     public String getAggregatedObject(String id){
         try {
             return objectHandler.findObjectById(id);
-            //  Method fetches the aggregated object from database based on given id
-//            String aggregatedObject = new String("{id:eventId,type:eventType,test_cases:[{event_id:testcaseid1,test_data:testcase1data},{event_id:`testcaseid2`,test_data:testcase2data}]}");
-//            return aggregatedObject;
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
         return null;
     }
 
-    public void addNewObject(String event, String newObject) {
-        objectHandler.insertObject(newObject);
+    public void addNewObject(String event, String newObject, RulesObject rulesObject) {
+        objectHandler.insertObject(newObject, rulesObject, event, null);
     }
 
-    public void addNewObject(String event, JsonNode newObject) {
-        objectHandler.insertObject(newObject);
+    public void addNewObject(String event, JsonNode newObject, RulesObject rulesObject) {
+        objectHandler.insertObject(newObject, rulesObject, event, null);
     }
 
     public void updateEventToObjectMapInMemoryDB(String event, String object) {

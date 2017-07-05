@@ -18,8 +18,12 @@ public class RulesObject {
         return rulesObject.get("MatchIdRules").toString();
     }
 
-    public String getIdRules() {
+    public String getIdRule() {
         return rulesObject.get("IdRule").textValue();
+    }
+
+    public String getIdentifyRules() {
+        return rulesObject.get("IdentifyRules").textValue();
     }
 
     public String getExtractionRules() {

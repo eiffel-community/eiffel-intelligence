@@ -41,7 +41,7 @@ public class MongoDBHandlerTest {
 
     @Test
     public void testGetDocumentsOnCondition(){
-        ArrayList<String> documents = mongoDBHandler.getDocumentsOnCondition(dataBaseName, collectionName, condition);
+        ArrayList<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
         assertTrue(documents.size() > 0);
     }
 

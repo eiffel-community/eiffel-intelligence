@@ -130,8 +130,7 @@ public class RmqConsumer {
 
     @Bean
     SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-        String durableName = queueDurable ? "durable" : "transient";
-        String queueName = domainId + "." + componentName + "." + consumerName + "." + durableName;
+        String queueName = getQueueName();
         Queue queue = new Queue(queueName, queueDurable);
         TopicExchange topicExchange = new TopicExchange(exchangeName);
         RabbitAdmin rabbitAdmin = new RabbitAdmin(factory);
@@ -144,5 +143,11 @@ public class RmqConsumer {
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
         return container;
+    }
+
+
+    public String getQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName;
     }
 }

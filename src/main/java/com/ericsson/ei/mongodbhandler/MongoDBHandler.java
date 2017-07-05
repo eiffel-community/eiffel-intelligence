@@ -2,8 +2,11 @@ package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.DB;
@@ -19,6 +22,15 @@ public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
 
     MongoClient mongoClient;
+
+    @Value("${mongodb.host}") private String host;
+    @Value("${mongodb.port}") private int port;
+
+    //TODO establish connection automatically when Spring instantiate this
+    // based on connection data in properties file
+    @PostConstruct public void init() {
+        createConnection(host, port);
+    }
 
     //Establishing the connection to mongodb and creating a collection
     public  void createConnection(String host, int port){
@@ -70,7 +82,7 @@ public class MongoDBHandler {
     }
 
     //Retrieve data from the collection based on condition
-    public  ArrayList<String> getDocumentsOnCondition(String dataBaseName, String collectionName, String condition){
+    public  ArrayList<String> find(String dataBaseName, String collectionName, String condition){
         ArrayList<String> result = new ArrayList<>();
         try{
             DB db = mongoClient.getDB(dataBaseName);

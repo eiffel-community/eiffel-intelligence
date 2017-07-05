@@ -29,5 +29,15 @@
     "{test_time:some_time,test_name:some_name}}",
     "{test_cases:[{},{},{test_time:some_time,event_id:`testcaseid3`,test_name:some_name}]}",
     "{id:eventId,type:eventType,test_cases:[{event_id:testcaseid1,test_data:testcase1data},{event_id:testcaseid2,test_data:testcase2data},{event_id:`testcaseid3`,test_time:some_time,test_name:some_name}],artifacts:[{event_id:artifact_id_1,artifact_data:artifact1data},{event_id:artifact_id_2,artifact_data:artifact2data}]}"
+  ],
+  [
+   "",
+   "",
+   "",
+   "{}",
+   "{id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43,type:EiffelArtifactCreatedEvent,time:1481875891763,gav:{artifactId:sub-system,version:1.1.0,groupId:com.mycompany.myproduct},fileInformation:[{classifier:\"\",extension:jar}],buildCommand:null}",
+   "{publications:[{eventId:33d05e6f-9bd9-4138-83b6-e20cc74680a3,time:1481875921763,locations:[{uri:\"https://myrepository.com/mySubSystemArtifact\",type:PLAIN}]}]}",
+   "{publications:[{eventId:33d05e6f-9bd9-4138-83b6-e20cc74680a3,time:1481875921763,locations:[{uri:\"https://myrepository.com/mySubSystemArtifact\",type:PLAIN}]}]}",
+   "{id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43,type:EiffelArtifactCreatedEvent,time:1481875891763,gav:{artifactId:sub-system,version:1.1.0,groupId:com.mycompany.myproduct},fileInformation:[{classifier:\"\",extension:jar}],buildCommand:null, publications:[{eventId:33d05e6f-9bd9-4138-83b6-e20cc74680a3,time:1481875921763,locations:[{uri:\"https://myrepository.com/mySubSystemArtifact\",type:PLAIN}]}]}"
   ]
 ]

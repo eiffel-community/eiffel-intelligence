@@ -20,9 +20,6 @@ import com.ericsson.ei.handlers.EventHandler;
 @SpringBootTest
 public class RmqConsumerTest {
 
-    @Autowired
-    EventHandler eventHandler;
-
     private Boolean queueDurable = true;
     private String host = "127.0.0.1";
     private String exchangeName = "ei-poc-4";

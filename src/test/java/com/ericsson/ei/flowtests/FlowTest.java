@@ -3,16 +3,12 @@ package com.ericsson.ei.flowtests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,17 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.rmq.consumer.RmqConsumer;
+import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -59,7 +51,7 @@ public class FlowTest {
     static MongodExecutable mongodExecutable = null;
 
     @Autowired
-    RmqConsumer rmqConsumer;
+    RmqHandler rmqHandler;
 
     @Autowired
     ObjectHandler objectHandler;
@@ -164,10 +156,10 @@ public class FlowTest {
     @Test
     public void test() {
         try {
-            String queueName = rmqConsumer.getQueueName();
+            String queueName = rmqHandler.getQueueName();
+            Channel channel = conn.createChannel();
             String exchange = "ei-poc-4";
             createExchange(exchange, queueName);
-            Channel channel = conn.createChannel();
 
 
             ArrayList<String> eventNames = getEventNamesToSend();

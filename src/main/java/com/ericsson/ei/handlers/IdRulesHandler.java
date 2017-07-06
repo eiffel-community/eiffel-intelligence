@@ -52,7 +52,11 @@ public class IdRulesHandler {
                     if (rulesObject.isStartEventRules()) {
                         extractionHandler.runExtraction(rulesObject, id, event, (JsonNode)null);
                     } else {
-                        waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                        try {
+                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                        } catch (Exception e) {
+                            log.info(e.getMessage(),e);
+                        }
                     }
                 }
             }

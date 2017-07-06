@@ -1,4 +1,4 @@
-package com.ericsson.ei.rmq.consumer;
+package com.ericsson.ei.rmqhandler;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,10 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class RmqConsumerTest {
+public class RmqHandlerTest {
 
     private Boolean queueDurable = true;
     private String host = "127.0.0.1";
@@ -30,7 +31,7 @@ public class RmqConsumerTest {
     private String consumerName = "messageConsumer";
 
     @InjectMocks
-    RmqConsumer rmqConsumer;
+    RmqHandler rmqHandler;
 
     @Mock ConnectionFactory factory;
 
@@ -41,59 +42,59 @@ public class RmqConsumerTest {
 
     public void initProperties()
     {
-        rmqConsumer.setQueueDurable(queueDurable);
-        rmqConsumer.setHost(host);
-        rmqConsumer.setExchangeName(exchangeName);
-        rmqConsumer.setPort(port);
-        rmqConsumer.setDomainId(domainId);
-        rmqConsumer.setComponentName(componentName);
-        rmqConsumer.setRoutingKey(routingKey);
-        rmqConsumer.setConsumerName(consumerName);
+        rmqHandler.setQueueDurable(queueDurable);
+        rmqHandler.setHost(host);
+        rmqHandler.setExchangeName(exchangeName);
+        rmqHandler.setPort(port);
+        rmqHandler.setDomainId(domainId);
+        rmqHandler.setComponentName(componentName);
+        rmqHandler.setRoutingKey(routingKey);
+        rmqHandler.setConsumerName(consumerName);
     }
 
     @Test
     public void getQueueDurableTest() {
-        assertTrue(rmqConsumer.getQueueDurable().equals(queueDurable));
+        assertTrue(rmqHandler.getQueueDurable().equals(queueDurable));
     }
 
     @Test
     public void getHostTest() {
-        assertTrue(rmqConsumer.getHost().equals(host));
+        assertTrue(rmqHandler.getHost().equals(host));
     }
 
     @Test
     public void getExchangeNameTest() {
-        assertTrue(rmqConsumer.getExchangeName().equals(exchangeName));
+        assertTrue(rmqHandler.getExchangeName().equals(exchangeName));
     }
 
     @Test
     public void getPortTest() {
-        assertTrue(rmqConsumer.getPort().equals(port));
+        assertTrue(rmqHandler.getPort().equals(port));
     }
 
     @Test
     public void getDomainIdTest() {
-        assertTrue(rmqConsumer.getDomainId().equals(domainId));
+        assertTrue(rmqHandler.getDomainId().equals(domainId));
     }
 
     @Test
     public void getComponentNameTest() {
-        assertTrue(rmqConsumer.getComponentName().equals(componentName));
+        assertTrue(rmqHandler.getComponentName().equals(componentName));
     }
 
     @Test
     public void getRoutingKeyTest() {
-        assertTrue(rmqConsumer.getRoutingKey().equals(routingKey));
+        assertTrue(rmqHandler.getRoutingKey().equals(routingKey));
     }
 
     @Test
     public void getConsumerNameTest() {
-        assertTrue(rmqConsumer.getConsumerName().equals(consumerName));
+        assertTrue(rmqHandler.getConsumerName().equals(consumerName));
     }
 
     @Test
     public void testMessageBusConnection() {
-        factory = rmqConsumer.connectionFactory();
+        factory = rmqHandler.connectionFactory();
         assertNotNull(factory);
     }
 }

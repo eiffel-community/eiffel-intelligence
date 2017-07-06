@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -53,7 +54,7 @@ public class MongoDBHandler {
                 return result.wasAcknowledged();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.info(e.getMessage(),e);
         }
         return false;
     }
@@ -143,6 +144,13 @@ public class MongoDBHandler {
             log.info(e.getMessage(), e);
         }
         return false;
+    }
+
+    public void createTTLIndex(String dataBaseName, String collectionName,String fieldName,int ttlValue){
+        DB db = mongoClient.getDB(dataBaseName);
+        BasicDBObject ttlField=new BasicDBObject(fieldName,1);
+        BasicDBObject ttlTime=new BasicDBObject("expireAfterSeconds",ttlValue);
+        db.getCollection(collectionName).createIndex(ttlField,ttlTime);
     }
 
 }

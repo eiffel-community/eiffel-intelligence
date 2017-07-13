@@ -10,6 +10,14 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.2.RELEASE</version>
     </parent>
+    
+     <properties>
+        <java.version>1.8</java.version>
+        <plugin-version>0.8.6</plugin-version>
+        <output-relative-path>src/main/java</output-relative-path>
+        <raml-path>src/main/resources/public/raml/subscription.raml</raml-path>
+        <base-package>com.ericsson.ei.controller</base-package>
+    </properties>
 
     <repositories>
         <repository>
@@ -33,6 +41,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>
@@ -104,7 +117,31 @@
             <artifactId>mongo-java-driver</artifactId>
             <version>3.4.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.6.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.6.1</version>
+            <scope>compile</scope>
+        </dependency>
       <dependency>
           <groupId>org.apache.qpid</groupId>
           <artifactId>qpid-broker</artifactId>
@@ -120,16 +157,74 @@
    </dependency>
 
     </dependencies>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+                from raml -->
+            <plugin>
+                <groupId>com.phoenixnap.oss</groupId>
+                <artifactId>springmvc-raml-plugin</artifactId>
+                <version>${plugin-version}</version>
+                <configuration>
+                    <!-- path to raml file -->
+                    <ramlPath>${raml-path}</ramlPath>
+                    <!-- output of generated code -->
+                    <outputRelativePath>${output-relative-path}</outputRelativePath>
+                    <addTimestampFolder>false</addTimestampFolder>
+                    <!-- package for generated sources -->
+                    <basePackage>${base-package}</basePackage>
+                    <baseUri>/</baseUri>
+                    <seperateMethodsByContentType>false</seperateMethodsByContentType>
+                    <useJackson1xCompatibility>false</useJackson1xCompatibility>
+                </configuration>
+            </plugin>
+            <!-- Required to build the executable jar file -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                </configuration>
+            </plugin>
+            <!-- required for adding generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!-- where to find the generated sources -->
+                                <source>${output-relative-path}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.phoenixnap.oss</groupId>
+                <artifactId>springmvc-raml-plugin</artifactId>
+                <configuration>
+                    <rule>com.phoenixnap.oss.ramlapisync.generation.rules.Spring4ControllerInterfaceRule</rule>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-springmvc-controllers</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-springmvc-endpoints</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

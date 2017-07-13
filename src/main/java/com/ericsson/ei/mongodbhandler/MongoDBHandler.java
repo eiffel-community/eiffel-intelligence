@@ -23,6 +23,10 @@ public class MongoDBHandler {
 
     MongoClient mongoClient;
 
+    public void setMongoClient(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
+    }
+
     @Value("${mongodb.host}") private String host;
     @Value("${mongodb.port}") private int port;
 

@@ -7,7 +7,7 @@
   "IdentifyRules" : "",
   "MatchIdRules": {},
   "ExtractionRules" : "",
-  "MergeResolverRules" : "root",
+  "MergeResolverRules" : "",
   "ArrayMergeOptions": "",
   "HistoryIdentifyRules": "",
   "HistoryExtractionRules": "{internalComposition: {sourceChanges :[{ author:data.author, issues:data.issues}]}}",

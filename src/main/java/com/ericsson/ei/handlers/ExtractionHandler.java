@@ -24,6 +24,7 @@ public class ExtractionHandler {
 
     @Autowired private JmesPathInterface jmesPathInterface;
     @Autowired private MergeHandler mergeHandler;
+    @Autowired private ObjectHandler objectHandler;
     //TODO:@Autowired private ProcessRulesHandler processRulesHandler;
     //TODO:@Autowired private HistoryIdRulesHandler historyIdRulesHandler;
 
@@ -43,6 +44,10 @@ public class ExtractionHandler {
 //        this.historyIdRulesHandler = historyIdRulesHandler;
 //    }
 
+    public void setObjectHandler(ObjectHandler objectHandler) {
+        this.objectHandler = objectHandler;
+    }
+
     public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -58,7 +63,8 @@ public class ExtractionHandler {
         extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
-            String mergedContent = mergeHandler.mergeObject(id, rulesObject, event, extractedContent);
+            String object_id = objectHandler.extractObjectId(aggregatedDbObject);
+            String mergedContent = mergeHandler.mergeObject(object_id, rulesObject, event, extractedContent);
             //aggregationObject = processRulesHandler.runProcessRules(aggregationObject, rulesObject);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
         } else {

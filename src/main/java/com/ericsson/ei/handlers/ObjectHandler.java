@@ -1,6 +1,5 @@
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -21,7 +18,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class ObjectHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
+       static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
     @Value("${aggregated.collection.name}") private String collectionName;
     @Value("${database.name}") private String databaseName;
@@ -48,6 +45,13 @@ public class ObjectHandler {
         this.jmespathInterface = jmespathInterface;
     }
 
+    @Autowired
+    private EventToObjectMapHandler eventToObjectMap;
+
+    public void setEventToObjectMap(EventToObjectMapHandler eventToObjectMap) {
+        this.eventToObjectMap = eventToObjectMap;
+    }
+
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
@@ -56,7 +60,10 @@ public class ObjectHandler {
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         String documentStr = document.toString();
-        return mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
+        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
+        if (result)
+            eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+        return result;
     }
 
     public boolean insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
@@ -70,8 +77,12 @@ public class ObjectHandler {
             id = idNode.textValue();
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
+        String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
-        return mongoDbHandler.updateDocument(databaseName, collectionName, documentStr, documentStr);
+        boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        if (result)
+            eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+        return result;
     }
 
     public boolean updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
@@ -85,10 +96,18 @@ public class ObjectHandler {
     public String findObjectById(String id) {
         String condition = "{\"_id\" : \"" + id + "\"}";
         String document = findObjectsByCondition(condition).get(0);
-        JsonNode result = getAggregatedObject(document);
-        if (result != null)
-            return result.asText();
+//        JsonNode result = getAggregatedObject(document);
+//        if (result != null)
+//            return result.asText();
         return document;
+    }
+
+    public ArrayList<String> findObjectsByIds(ArrayList<String> ids) {
+        ArrayList<String> objects = new ArrayList<String>();
+        for (String id : ids) {
+            objects.add(findObjectById(id));
+        }
+        return objects;
     }
 
     private JsonNode prepareDocumentForInsertion(String id, String object) {
@@ -114,5 +133,9 @@ public class ObjectHandler {
              log.info(e.getMessage(),e);
          }
          return null;
+    }
+
+    public String extractObjectId(JsonNode aggregatedDbObject) {
+        return aggregatedDbObject.get("_id").asText();
     }
 }

@@ -1,20 +1,26 @@
 package com.ericsson.ei.handlers.test;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.rules.test.TestRulesObject;
@@ -44,10 +50,13 @@ public class ObjectHandlerTest {
     static String condition = "{\"_id\" : \"eventId\"}";
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
+
     @BeforeClass
     public static void init()
     {
         mongoDBHandler.createConnection(host,port);
+        EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
+        objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);
         objHandler.setJmespathInterface(jmesPathInterface);
         objHandler.setCollectionName(collectionName);
@@ -67,8 +76,8 @@ public class ObjectHandlerTest {
     @Test
     public void test() {
         String document = objHandler.findObjectById("eventId");
-        assertEquals(input, document);
-
+        JsonNode result = objHandler.getAggregatedObject(document);
+        assertEquals(input, result.asText());
     }
 
     @AfterClass

@@ -25,7 +25,7 @@ public class TestRulesHandler {
     private RulesHandler unitUnderTest;
     private final String inputFilePath = "src/test/resources/EiffelSourceChangeCreatedEvent.json";
     private final String outputFilePath = "src/test/resources/RulesHandlerOutput.json";
-    private final String rulesPath = "src/test/resources/ArtifactRules.json";
+    private final String rulesPath = "src/test/resources/ArtifactRules_new.json";
 
 
     static Logger log = (Logger) LoggerFactory.getLogger(TestRulesHandler.class);

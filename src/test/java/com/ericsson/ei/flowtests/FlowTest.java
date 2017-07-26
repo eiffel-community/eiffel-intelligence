@@ -130,8 +130,8 @@ public class FlowTest {
     private ArrayList<String> getEventNamesToSend() {
          ArrayList<String> eventNames = new ArrayList<>();
          eventNames.add("event_EiffelArtifactCreatedEvent_3");
-         eventNames.add("event_EiffelArtifactPublishedEvent_3");
-         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+//         eventNames.add("event_EiffelArtifactPublishedEvent_3");
+//         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
          eventNames.add("event_EiffelTestCaseStartedEvent_3");
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 

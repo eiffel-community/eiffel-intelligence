@@ -33,9 +33,6 @@ public class MergeHandler {
     @Autowired
     private ObjectHandler objectHandler;
 
-    @Autowired
-    private EventToObjectMapHandler eventToObjectMap;
-
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
     }
@@ -139,7 +136,11 @@ public class MergeHandler {
 
     public String getAggregatedObject(String id){
         try {
-            return objectHandler.findObjectById(id);
+            String document = objectHandler.findObjectById(id);
+            JsonNode result = objectHandler.getAggregatedObject(document);
+            if (result != null)
+                return result.asText();
+
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
@@ -152,9 +153,5 @@ public class MergeHandler {
 
     public void addNewObject(String event, JsonNode newObject, RulesObject rulesObject) {
         objectHandler.insertObject(newObject, rulesObject, event, null);
-    }
-
-    public void updateEventToObjectMapInMemoryDB(String event, String object) {
-        eventToObjectMap.updateEventToObjectMapInMemoryDB(event, object);
     }
 }

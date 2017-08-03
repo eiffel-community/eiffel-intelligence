@@ -34,9 +34,13 @@ public class RulesObject {
         return rulesObject.get("MergeResolverRules").textValue();
     }
 
-    public boolean equals(Object other){
+    public String fetchProcessRules() {
+        return rulesObject.get("ProcessRules").textValue();
+    }
+
+    public boolean equals(Object other) {
         if (other instanceof RulesObject) {
-            return rulesObject.equals(((RulesObject)other).getJsonRulesObject());
+            return rulesObject.equals(((RulesObject) other).getJsonRulesObject());
         }
 
         return (this == other);

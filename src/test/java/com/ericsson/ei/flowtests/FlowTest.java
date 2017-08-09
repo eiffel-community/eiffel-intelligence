@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
-import org.apache.qpid.server.exchange.TopicExchange;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +18,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -160,9 +164,11 @@ public class FlowTest {
     @Test
     public void test() {
         try {
-            Channel channel = conn.createChannel();
             String queueName = rmqConsumer.getQueueName();
             String exchange = "ei-poc-4";
+            createExchange(exchange, queueName);
+            Channel channel = conn.createChannel();
+
 
             ArrayList<String> eventNames = getEventNamesToSend();
             int eventsCount = eventNames.size();
@@ -200,5 +206,16 @@ public class FlowTest {
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 
          return eventNames;
+    }
+
+    private void createExchange(final String exchangeName, final String queueName) {
+        final CachingConnectionFactory cf = new CachingConnectionFactory(AMQPBrokerManager.PORT);
+        final RabbitAdmin admin = new RabbitAdmin(cf);
+        final Queue queue = new Queue(queueName, false);
+        admin.declareQueue(queue);
+        final TopicExchange exchange = new TopicExchange(exchangeName);
+        admin.declareExchange(exchange);
+        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
+        cf.destroy();
     }
 }

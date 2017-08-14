@@ -209,13 +209,13 @@ public class FlowTest {
     }
 
     private void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory cf = new CachingConnectionFactory(AMQPBrokerManager.PORT);
-        final RabbitAdmin admin = new RabbitAdmin(cf);
+        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
+        final RabbitAdmin admin = new RabbitAdmin(ccf);
         final Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);
         final TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
-        cf.destroy();
+        ccf.destroy();
     }
 }

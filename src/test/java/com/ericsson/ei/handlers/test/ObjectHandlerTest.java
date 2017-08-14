@@ -27,13 +27,22 @@ import com.ericsson.ei.rules.test.TestRulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
+
 public class ObjectHandlerTest {
 
     static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandlerTest.class);
 
     static ObjectHandler objHandler = new ObjectHandler();
-
-    static MongoDBHandler mongoDBHandler = new MongoDBHandler();
+    static MongodExecutable mongodExecutable = null;
+    static MongoDBHandler mongoDBHandler = null;
     static JmesPathInterface jmesPathInterface = new JmesPathInterface();
 
     static private RulesObject rulesObject;
@@ -50,10 +59,32 @@ public class ObjectHandlerTest {
     static String condition = "{\"_id\" : \"eventId\"}";
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
+    public static void setUpEmbeddedMongo() throws Exception {
+        System.setProperty("mongodb.port", ""+port);
+
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+
+        String bindIp = "localhost";
+
+        IMongodConfig mongodConfig = new MongodConfigBuilder()
+            .version(Version.Main.PRODUCTION)
+            .net(new Net(bindIp, port, Network.localhostIsIPv6()))
+            .build();
+
+
+        try {
+            mongodExecutable = starter.prepare(mongodConfig);
+            MongodProcess mongod = mongodExecutable.start();
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
 
     @BeforeClass
-    public static void init()
+    public static void init() throws Exception
     {
+        setUpEmbeddedMongo();
+        mongoDBHandler = new MongoDBHandler();
         mongoDBHandler.createConnection(host,port);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
@@ -84,5 +115,8 @@ public class ObjectHandlerTest {
     public static void dropCollection()
     {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
+
+        if (mongodExecutable != null)
+            mongodExecutable.stop();
     }
 }

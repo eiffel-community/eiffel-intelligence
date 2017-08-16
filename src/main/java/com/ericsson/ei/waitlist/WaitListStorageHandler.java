@@ -72,8 +72,7 @@ public class WaitListStorageHandler {
         document.put("Time",  date);
         document.put("Event", JSON.parse(event));
         mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time",ttlValue);
-        String input = document.toString();
-        return input;
+        return document.toString();
     }
 
     public ArrayList<String> getWaitList() {

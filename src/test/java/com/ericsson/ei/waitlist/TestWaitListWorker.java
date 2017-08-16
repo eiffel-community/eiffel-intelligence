@@ -128,6 +128,7 @@ public class TestWaitListWorker {
         Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(newList);
         try {
             waitListWorker.run();
+            assertTrue(true);
         } catch (Exception e) {
             assertFalse(true);
             e.printStackTrace();
@@ -139,6 +140,7 @@ public class TestWaitListWorker {
         Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(list);
         try {
             waitListWorker.run();
+            assertTrue(true);
         } catch (Exception e) {
             assertFalse(true);
             e.printStackTrace();
@@ -152,6 +154,7 @@ public class TestWaitListWorker {
             String condition = "{Event:" + JSON.parse(event).toString() + "}";
             assertTrue(waitListWorker.dropDocumentFromWaitList(condition));
         } catch (Exception e) {
+            assertFalse(true);
             System.out.println("error occured while deleting document from waitlist");
         }
     }
@@ -175,6 +178,7 @@ public class TestWaitListWorker {
             Thread.sleep(100);
             assertTrue(message.equals(jsonFileContent));
         } catch (Exception e) {
+            assertFalse(true);
             e.printStackTrace();
         }
     }

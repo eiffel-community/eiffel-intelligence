@@ -9,5 +9,5 @@ before_install:
   - chmod +x pom.xml
   
 script:
-  - mvn clean install -Dmaven.test.skip=true
+  - mvn clean install
 

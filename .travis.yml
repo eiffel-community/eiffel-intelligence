@@ -2,7 +2,9 @@ sudo: required
 
 language: java
 
-services: mongodb
+services: 
+  - mongodb
+  - rabbitmq
 
 jdk:
   - oraclejdk8

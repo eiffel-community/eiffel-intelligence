@@ -68,7 +68,7 @@ public class TestWaitListWorker {
     JsonNode jsonNode;
     @Mock
     RulesObject rulesObject;
-  
+
 
     @Before
     public void init() throws Exception {
@@ -165,7 +165,6 @@ public class TestWaitListWorker {
             Channel channel = conn.createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
             String exchange = "ei-poc-4";
-            channel.basicPublish(exchange, queueName, null, jsonFileContent.getBytes());
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
@@ -175,7 +174,9 @@ public class TestWaitListWorker {
                 }
             };
             channel.basicConsume(queueName, true, consumer);
-            Thread.sleep(100);
+            channel.basicPublish(exchange, queueName, null, jsonFileContent.getBytes());
+            Thread.sleep(1000);
+            assertTrue(message != null);
             assertTrue(message.equals(jsonFileContent));
         } catch (Exception e) {
             assertFalse(true);

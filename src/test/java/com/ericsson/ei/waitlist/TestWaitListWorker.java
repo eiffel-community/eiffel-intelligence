@@ -175,7 +175,7 @@ public class TestWaitListWorker {
             };
             channel.basicConsume(queueName, true, consumer);
             channel.basicPublish(exchange, queueName, null, jsonFileContent.getBytes());
-            Thread.sleep(1000);
+            Thread.sleep(1001);
             assertTrue(message != null);
             assertTrue(message.equals(jsonFileContent));
         } catch (Exception e) {

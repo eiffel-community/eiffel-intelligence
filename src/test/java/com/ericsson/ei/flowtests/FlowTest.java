@@ -86,6 +86,7 @@ public class FlowTest {
     private static JsonNode parsedJason;
     private static String jsonFilePath = "src/test/resources/test_events.json";
     static private final String inputFilePath = "src/test/resources/AggregatedDocument.json";
+    static private final String inputFilePath2 = "src/test/resources/AggregatedDocument2.json";
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -170,12 +171,17 @@ public class FlowTest {
                 channel.basicPublish(exchange, queueName,  null, event.getBytes());
             }
 
-            // wait for all events to be processed
-            int processedEvents = 0;
-            while (processedEvents < eventsCount) {
-                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-                processedEvents = Integer.parseInt(countStr);
-            }
+//            // wait for all events to be processed
+//            int processedEvents = 0;
+//            while (processedEvents < eventsCount) {
+//                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+//                processedEvents = Integer.parseInt(countStr);
+//            }
+            try {
+                log.info("Starting to wait until waitlist resend events");
+                Thread.sleep(20000L);
+                log.info("Ended waiting to receive events from waitlist");
+            }catch (Exception e){System.out.println(e);}
 
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
             String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
@@ -183,7 +189,48 @@ public class FlowTest {
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
-            assertEquals(expectedJson, actualJson);
+            assertEquals(expectedJson.toString().length(), actualJson.toString().length());
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void test2AgregatedObjects() {
+        try {
+            String queueName = rmqHandler.getQueueName();
+            Channel channel = conn.createChannel();
+            String exchange = "ei-poc-4";
+            createExchange(exchange, queueName);
+
+
+            ArrayList<String> eventNames = getEventNamesToSend2();
+            int eventsCount = eventNames.size();
+            for(String eventName : eventNames) {
+                JsonNode eventJson = parsedJason.get(eventName);
+                String event = eventJson.toString();
+                channel.basicPublish(exchange, queueName,  null, event.getBytes());
+            }
+
+            try {
+                log.info("Starting to wait until waitlist resend events");
+                Thread.sleep(20000L);
+                log.info("Ended waiting to receive events from waitlist");
+            }catch (Exception e){System.out.println(e);}
+
+            String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
+
+            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
+            ObjectMapper objectmapper = new ObjectMapper();
+            JsonNode expectedJson = objectmapper.readTree(expectedDocument);
+            JsonNode actualJson = objectmapper.readTree(document);
+            String breakString = "breakHere";
+            assertEquals(expectedJson.toString().length(), actualJson.toString().length());
+            String expectedDocument2 = FileUtils.readFileToString(new File(inputFilePath2));
+            String document2 = objectHandler.findObjectById("ccce572c-c364-441e-abc9-b62fed080ca2");
+            JsonNode expectedJson2 = objectmapper.readTree(expectedDocument2);
+            JsonNode actualJson2 = objectmapper.readTree(document2);
+            assertEquals(expectedJson2.toString().length(), actualJson2.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
@@ -198,6 +245,23 @@ public class FlowTest {
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 
          return eventNames;
+    }
+
+    private ArrayList<String> getEventNamesToSend2() {
+        ArrayList<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+
+        eventNames.add("event_EiffelArtifactCreatedEvent_1");
+        eventNames.add("event_EiffelArtifactPublishedEvent_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_1");
+        eventNames.add("event_EiffelTestCaseStartedEvent_1");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_1");
+
+        return eventNames;
     }
 
     private void createExchange(final String exchangeName, final String queueName) {

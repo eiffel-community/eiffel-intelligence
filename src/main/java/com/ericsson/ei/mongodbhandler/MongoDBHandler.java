@@ -1,9 +1,9 @@
 package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -120,6 +120,20 @@ public class MongoDBHandler {
             DBObject dbObjectUpdateInput = (DBObject)JSON.parse(updateInput);
             WriteResult result = table.update(dbObjectInput , dbObjectUpdateInput);
             return result.isUpdateOfExisting();
+        }catch (Exception e) {
+            log.info(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public  boolean findAndModify(String dataBaseName, String collectionName, String input, String updateInput){
+        try{
+            DB db = mongoClient.getDB(dataBaseName);
+            DBCollection table = db.getCollection(collectionName);
+            DBObject dbObjectInput = (DBObject)JSON.parse(input);
+            DBObject dbObjectUpdateInput = (DBObject)JSON.parse(updateInput);
+            DBObject result = table.findAndModify(dbObjectInput , dbObjectUpdateInput);
+            if (result != null){return true;}
         }catch (Exception e) {
             log.info(e.getMessage(), e);
         }

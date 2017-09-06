@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -24,9 +26,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -38,6 +42,7 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import de.flapdoodle.embed.process.runtime.Network;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,7 +53,11 @@ public class FlowTest {
 
     public static File qpidConfig = null;
     static AMQPBrokerManager amqpBrocker;
-    static MongodExecutable mongodExecutable = null;
+    private static MongodForTestsFactory testsFactory;
+    static MongoClient mongoClient = null;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -95,6 +104,11 @@ public class FlowTest {
         setUpEmbeddedMongo();
     }
 
+    @PostConstruct
+    public void initMocks() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
     public static void setUpMessageBus() throws Exception {
         System.setProperty("rabbitmq.port", "8672");
         System.setProperty("rabbitmq.user", "guest");
@@ -116,33 +130,13 @@ public class FlowTest {
     }
 
     public static void setUpEmbeddedMongo() throws Exception {
-        int port = 12349;
-        System.setProperty("mongodb.port", ""+port);
-
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-
-        String bindIp = "localhost";
-
-        IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.Main.PRODUCTION)
-            .net(new Net(bindIp, port, Network.localhostIsIPv6()))
-            .build();
-
-
-        try {
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
+         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+         mongoClient = testsFactory.newMongo();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         amqpBrocker.stopBroker();
-
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
 
         try {
             conn.close();

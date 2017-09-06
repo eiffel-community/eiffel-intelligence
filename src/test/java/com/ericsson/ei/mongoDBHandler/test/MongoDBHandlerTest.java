@@ -5,9 +5,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ericsson.ei.handlers.test.ObjectHandlerTest;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -16,6 +18,7 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import de.flapdoodle.embed.process.runtime.Network;
 
 import static org.junit.Assert.assertTrue;
@@ -29,11 +32,10 @@ public class MongoDBHandlerTest {
 
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandlerTest.class);
 
-    static MongodExecutable mongodExecutable = null;
-    static MongoDBHandler mongoDBHandler = null;
-
-    static String host = "localhost";
-    static int port = 27017;
+    @Autowired
+    static MongoDBHandler mongoDBHandler;
+    private static MongodForTestsFactory testsFactory;
+    static MongoClient mongoClient = null;
 
     static String dataBaseName = "EventStorageDBbbb";
     static String collectionName = "SampleEvents";
@@ -42,24 +44,8 @@ public class MongoDBHandlerTest {
     static String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
 
     public static void setUpEmbeddedMongo() throws Exception {
-        System.setProperty("mongodb.port", ""+port);
-
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-
-        String bindIp = "localhost";
-
-        IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.Main.PRODUCTION)
-            .net(new Net(bindIp, port, Network.localhostIsIPv6()))
-            .build();
-
-
-        try {
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        mongoClient = testsFactory.newMongo();
     }
 
     @BeforeClass
@@ -67,7 +53,7 @@ public class MongoDBHandlerTest {
     {
         setUpEmbeddedMongo();
         mongoDBHandler = new MongoDBHandler();
-        mongoDBHandler.createConnection(host,port);
+        mongoDBHandler.setMongoClient(mongoClient);
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, input));
     }
 
@@ -100,7 +86,7 @@ public class MongoDBHandlerTest {
     public static void dropCollection()
     {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
+        testsFactory.shutdown();
+        mongoClient.close();
     }
 }

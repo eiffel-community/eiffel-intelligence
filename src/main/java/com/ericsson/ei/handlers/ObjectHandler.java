@@ -138,4 +138,26 @@ public class ObjectHandler {
     public String extractObjectId(JsonNode aggregatedDbObject) {
         return aggregatedDbObject.get("_id").asText();
     }
+
+    public boolean lockDocument(String id){
+        boolean documentLocked = true;
+        String conditionId = "{\"_id\" : \"" + id + "\"}";
+        String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
+        String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
+        ObjectMapper mapper = new ObjectMapper();
+        while (documentLocked==true){
+            try {
+                JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
+                JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
+                ((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
+                    boolean result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
+                    if(result == true){
+                        log.info("DB locked by " + Thread.currentThread().getId() + " thread");
+                        documentLocked = false;
+                        return true;}
+            } catch (Exception e) {
+                log.info(e.getMessage(),e); }
+        }
+        return false;
+    }
 }

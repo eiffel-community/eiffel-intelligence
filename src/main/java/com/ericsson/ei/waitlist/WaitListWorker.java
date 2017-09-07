@@ -22,16 +22,8 @@ import com.mongodb.util.JSON;
 @Component
 public class WaitListWorker {
 
-    @Value("${waitlist.collection.name}")
-    private String collectionName;
-    @Value("${database.name}")
-    private String databaseName;
-
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
-
-    @Autowired
-    private MongoDBHandler mongoDbHandler;
 
     @Autowired
     private RmqHandler rmqHandler;
@@ -55,17 +47,18 @@ public class WaitListWorker {
             DBObject dbObject = (DBObject) JSON.parse(document);
             String event = dbObject.get("Event").toString();
             rulesObject = rulesHandler.getRulesForEvent(event);
-            String idRule = rulesObject.getIdRule();
-            JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
-            ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id.textValue());
-            if (objects.size() > 0) {
-                rmqHandler.publishObjectToMessageBus(event);
-                dropDocumentFromWaitList(document);
+            String idRule = rulesObject.getIdentifyRules();
+            JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+            if (ids.isArray()) {
+                for (final JsonNode idJsonObj : ids) {
+                    ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                    if (objects.size() > 0) {
+                        rmqHandler.publishObjectToMessageBus(event);
+                        waitListStorageHandler.dropDocumentFromWaitList(document);
+                    }
+                }
             }
         }
     }
 
-    public boolean dropDocumentFromWaitList(String document) {
-        return mongoDbHandler.dropDocument(databaseName, collectionName, document);
-    }
 }

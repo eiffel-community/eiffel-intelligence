@@ -78,7 +78,7 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found");
+                log.info("No documents found in database: " + dataBaseName + "and collection: " + collectionName);
             }
         }catch (Exception e) {
             log.info(e.getMessage(), e);
@@ -103,7 +103,8 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found with given condition");
+                log.info("No documents found with given condition: " + condition);
+                log.info("in database: " + dataBaseName + " and collection: " + collectionName);
             }
         }catch (Exception e) {
             log.info(e.getMessage(), e);

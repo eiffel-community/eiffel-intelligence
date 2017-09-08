@@ -146,7 +146,7 @@ public class FlowTest {
     }
 
     @Test
-    public void test() {
+    public void flowTest() {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = conn.createChannel();

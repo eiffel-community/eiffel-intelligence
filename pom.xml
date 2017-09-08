@@ -10,7 +10,7 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.2.RELEASE</version>
     </parent>
-    
+
      <properties>
         <java.version>1.8</java.version>
         <plugin-version>0.8.6</plugin-version>
@@ -46,7 +46,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -167,8 +167,8 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -230,6 +230,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.20</version>
+        <configuration>
+          <excludes>
+            <exclude>**/FlowTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
         </plugins>
     </build>
 </project>

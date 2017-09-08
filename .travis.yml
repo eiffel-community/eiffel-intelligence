@@ -1,0 +1,17 @@
+sudo: required
+
+language: java
+
+services: 
+  - mongodb
+  - rabbitmq
+
+jdk:
+  - oraclejdk8
+  
+before_install:
+  - chmod +x pom.xml
+  
+script:
+  - mvn clean install
+

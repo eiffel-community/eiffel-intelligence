@@ -230,16 +230,21 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
-        <configuration>
-          <excludes>
-            <exclude>**/FlowTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.20</version>
+            <configuration>
+              <excludes>
+                <exclude>${someModule.test.excludes}</exclude>
+              </excludes>
+              <includes>
+                <include>${someModule.test.includes}</include>
+              </includes>
+            </configuration>
+          </plugin>
+
         </plugins>
     </build>
 </project>

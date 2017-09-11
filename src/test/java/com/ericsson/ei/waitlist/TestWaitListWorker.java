@@ -181,8 +181,8 @@ public class TestWaitListWorker {
             assertTrue(message != null);
             assertTrue(message.equals(jsonFileContent));
         } catch (Exception e) {
-            assertFalse(true);
             e.printStackTrace();
+            assertFalse(true);
         }
     }
 

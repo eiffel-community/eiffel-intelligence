@@ -18,6 +18,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -167,6 +172,7 @@ public class TestWaitListWorker {
             Channel channel = conn.createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
             String exchange = "ei-poc-4";
+            createExchange(exchange, queueName);
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
@@ -199,4 +205,15 @@ public class TestWaitListWorker {
 
     }
 
+
+    private void createExchange(final String exchangeName, final String queueName) {
+        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
+        RabbitAdmin admin = new RabbitAdmin(ccf);
+        Queue queue = new Queue(queueName, false);
+        admin.declareQueue(queue);
+        final TopicExchange exchange = new TopicExchange(exchangeName);
+        admin.declareExchange(exchange);
+        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
+        ccf.destroy();
+    }
 }

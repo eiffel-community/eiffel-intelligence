@@ -127,6 +127,20 @@ public class MongoDBHandler {
         return false;
     }
 
+    public  DBObject findAndModify(String dataBaseName, String collectionName, String input, String updateInput){
+        try{
+            DB db = mongoClient.getDB(dataBaseName);
+            DBCollection table = db.getCollection(collectionName);
+            DBObject dbObjectInput = (DBObject)JSON.parse(input);
+            DBObject dbObjectUpdateInput = (DBObject)JSON.parse(updateInput);
+            DBObject result = table.findAndModify(dbObjectInput , dbObjectUpdateInput);
+            if (result != null){return result;}
+        }catch (Exception e) {
+            log.info(e.getMessage(), e);
+        }
+        return null;
+    }
+
     //drop the document in collection
     public  boolean dropDocument(String dataBaseName, String collectionName,String condition){
         try{

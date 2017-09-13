@@ -5,6 +5,7 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,7 +32,12 @@ public class MergeHandler {
     private MergePrepare prepareMergePrepareObject;
 
     @Autowired
+    private WaitListStorageHandler waitListStorageHandler;
+
+    @Autowired
     private ObjectHandler objectHandler;
+
+    private boolean lockedByThread = false;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -64,9 +70,20 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
-
-        objectHandler.updateObject(mergedObject, rules, event, id);
-        return mergedObject;
+        if (lockedByThread==true){
+            objectHandler.updateObject(mergedObject, rules, event, id);
+            return mergedObject;
+        }
+        else {
+            try {
+                log.info("Adding event to waitlist," +
+                        " because DB was not locked by " + Thread.currentThread().getId() + " thread");
+                waitListStorageHandler.addEventToWaitList(event, rules);
+            } catch (Exception e) {
+                log.info(e.getMessage(),e);
+            }
+            return null;
+        }
     }
 
     public String replaceIdMarkerInRules(String rule, String id){
@@ -136,11 +153,11 @@ public class MergeHandler {
 
     public String getAggregatedObject(String id){
         try {
-            String document = objectHandler.findObjectById(id);
+            String document = objectHandler.lockDocument(id);
+            lockedByThread = true;
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
                 return result.asText();
-
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }

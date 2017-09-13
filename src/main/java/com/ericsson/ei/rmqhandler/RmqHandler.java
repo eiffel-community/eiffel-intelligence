@@ -1,5 +1,7 @@
 package com.ericsson.ei.rmqhandler;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;
@@ -7,6 +9,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
@@ -18,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.rabbitmq.client.Channel;
 
 @Component
 public class RmqHandler {
@@ -181,26 +185,38 @@ public class RmqHandler {
 
     @Bean
     public RabbitTemplate rabbitMqTemplate() {
-        if (factory != null) {
-            rabbitTemplate = new RabbitTemplate(factory);
-        } else {
-            rabbitTemplate = new RabbitTemplate(connectionFactory());
-        }
-        rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(routingKey);
-        rabbitTemplate.setQueue(getQueueName());
-        rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
-            @Override
-            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                log.info("Received confirm with result : {}", ack);
+        if (rabbitTemplate == null) {
+            if (factory != null) {
+                rabbitTemplate = new RabbitTemplate(factory);
+            } else {
+                rabbitTemplate = new RabbitTemplate(connectionFactory());
             }
-        });
+
+            rabbitTemplate.setExchange(exchangeName);
+            rabbitTemplate.setRoutingKey(routingKey);
+            rabbitTemplate.setQueue(getQueueName());
+            rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
+                @Override
+                public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                    log.info("Received confirm with result : {}", ack);
+                }
+            });
+        }
         return rabbitTemplate;
     }
 
     public void publishObjectToMessageBus(String message) {
         log.info("publishing message to message bus...");
-        rabbitTemplate.convertAndSend(message);
+        rabbitMqTemplate().convertAndSend(message);
+//        Connection conn = factory.createConnection();
+//        Channel channel = conn.createChannel(true);
+//        String queueName = getQueueName();
+//        String exchange = exchangeName;
+//        try {
+//            channel.basicPublish(exchange, queueName, null, message.getBytes());
+//        } catch (Exception e) {
+//            log.info(e.getMessage(),e);
+//        }
     }
 
     public void close() {

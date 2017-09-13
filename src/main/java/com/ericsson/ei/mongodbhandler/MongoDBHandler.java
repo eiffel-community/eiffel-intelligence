@@ -78,7 +78,7 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found");
+                log.info("No documents found in database: " + dataBaseName + "and collection: " + collectionName);
             }
         }catch (Exception e) {
             log.info(e.getMessage(), e);
@@ -103,7 +103,8 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found with given condition");
+                log.info("No documents found with given condition: " + condition);
+                log.info("in database: " + dataBaseName + " and collection: " + collectionName);
             }
         }catch (Exception e) {
             log.info(e.getMessage(), e);
@@ -126,18 +127,18 @@ public class MongoDBHandler {
         return false;
     }
 
-    public  boolean findAndModify(String dataBaseName, String collectionName, String input, String updateInput){
+    public  DBObject findAndModify(String dataBaseName, String collectionName, String input, String updateInput){
         try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);
             DBObject dbObjectInput = (DBObject)JSON.parse(input);
             DBObject dbObjectUpdateInput = (DBObject)JSON.parse(updateInput);
             DBObject result = table.findAndModify(dbObjectInput , dbObjectUpdateInput);
-            if (result != null){return true;}
+            if (result != null){return result;}
         }catch (Exception e) {
             log.info(e.getMessage(), e);
         }
-        return false;
+        return null;
     }
 
     //drop the document in collection

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
@@ -24,21 +27,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -48,7 +47,13 @@ public class FlowTest {
 
     public static File qpidConfig = null;
     static AMQPBrokerManager amqpBrocker;
-    static MongodExecutable mongodExecutable = null;
+    private static MongodForTestsFactory testsFactory;
+    static MongoClient mongoClient = null;
+    static Queue queue = null;
+    static RabbitAdmin admin;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -92,8 +97,14 @@ public class FlowTest {
     public static void setup() throws Exception {
         System.setProperty("flow.test", "true");
         System.setProperty("eiffel.intelligence.processedEventsCount", "0");
+        System.setProperty("eiffel.intelligence.waitListEventsCount", "0");
         setUpMessageBus();
         setUpEmbeddedMongo();
+    }
+
+    @PostConstruct
+    public void initMocks() {
+        mongoDBHandler.setMongoClient(mongoClient);
     }
 
     public static void setUpMessageBus() throws Exception {
@@ -117,33 +128,14 @@ public class FlowTest {
     }
 
     public static void setUpEmbeddedMongo() throws Exception {
-        int port = 12349;
-        System.setProperty("mongodb.port", ""+port);
-
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-
-        String bindIp = "localhost";
-
-        IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.Main.PRODUCTION)
-            .net(new Net(bindIp, port, Network.localhostIsIPv6()))
-            .build();
-
-
-        try {
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
+         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+         mongoClient = testsFactory.newMongo();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        amqpBrocker.stopBroker();
-
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
+         if (amqpBrocker != null)
+             amqpBrocker.stopBroker();
 
         try {
             conn.close();
@@ -155,7 +147,7 @@ public class FlowTest {
     }
 
     @Test
-    public void test() {
+    public void flowTest() {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = conn.createChannel();
@@ -171,17 +163,16 @@ public class FlowTest {
                 channel.basicPublish(exchange, queueName,  null, event.getBytes());
             }
 
-//            // wait for all events to be processed
-//            int processedEvents = 0;
-//            while (processedEvents < eventsCount) {
-//                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-//                processedEvents = Integer.parseInt(countStr);
-//            }
-            try {
-                log.info("Starting to wait until waitlist resend events");
-                Thread.sleep(20000L);
-                log.info("Ended waiting to receive events from waitlist");
-            }catch (Exception e){System.out.println(e);}
+            // wait for all events to be processed
+            int processedEvents = 0;
+            while (processedEvents < eventsCount) {
+                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+                String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
+                if (waitingCountStr == null)
+                    waitingCountStr = "0";
+                Properties props = admin.getQueueProperties(queue.getName());
+                int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
+                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;}
 
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
             String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
@@ -212,11 +203,16 @@ public class FlowTest {
                 channel.basicPublish(exchange, queueName,  null, event.getBytes());
             }
 
-            try {
-                log.info("Starting to wait until waitlist resend events");
-                Thread.sleep(20000L);
-                log.info("Ended waiting to receive events from waitlist");
-            }catch (Exception e){System.out.println(e);}
+            // wait for all events to be processed
+            int processedEvents = 0;
+            while (processedEvents < eventsCount) {
+                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+                String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
+                if (waitingCountStr == null)
+                    waitingCountStr = "0";
+                Properties props = admin.getQueueProperties(queue.getName());
+                int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
+                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;}
 
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
 
@@ -238,8 +234,8 @@ public class FlowTest {
 
     private ArrayList<String> getEventNamesToSend() {
          ArrayList<String> eventNames = new ArrayList<>();
-         eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelArtifactPublishedEvent_3");
+         eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
          eventNames.add("event_EiffelTestCaseStartedEvent_3");
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
@@ -266,8 +262,8 @@ public class FlowTest {
 
     private void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
-        final RabbitAdmin admin = new RabbitAdmin(ccf);
-        final Queue queue = new Queue(queueName, false);
+        admin = new RabbitAdmin(ccf);
+        queue = new Queue(queueName, false);
         admin.declareQueue(queue);
         final TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);

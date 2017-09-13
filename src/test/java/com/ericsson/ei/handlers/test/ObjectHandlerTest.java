@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
@@ -26,6 +29,7 @@ import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.rules.test.TestRulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -34,6 +38,7 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import de.flapdoodle.embed.process.runtime.Network;
 
 public class ObjectHandlerTest {
@@ -41,16 +46,18 @@ public class ObjectHandlerTest {
     static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandlerTest.class);
 
     static ObjectHandler objHandler = new ObjectHandler();
-    static MongodExecutable mongodExecutable = null;
-    static MongoDBHandler mongoDBHandler = null;
+
+    private static MongodForTestsFactory testsFactory;
+    static MongoClient mongoClient = null;
+
+
+    static MongoDBHandler mongoDBHandler = new MongoDBHandler();
+
     static JmesPathInterface jmesPathInterface = new JmesPathInterface();
 
     static private RulesObject rulesObject;
     static private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     static private JsonNode rulesJson;
-
-    static String host = "localhost";
-    static int port = 27017;
 
     static String dataBaseName = "EventStorageDBbbb";
     static String collectionName = "SampleEvents";
@@ -60,32 +67,15 @@ public class ObjectHandlerTest {
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
     public static void setUpEmbeddedMongo() throws Exception {
-        System.setProperty("mongodb.port", ""+port);
-
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-
-        String bindIp = "localhost";
-
-        IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.Main.PRODUCTION)
-            .net(new Net(bindIp, port, Network.localhostIsIPv6()))
-            .build();
-
-
-        try {
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
+         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+         mongoClient = testsFactory.newMongo();
     }
 
     @BeforeClass
     public static void init() throws Exception
     {
         setUpEmbeddedMongo();
-        mongoDBHandler = new MongoDBHandler();
-        mongoDBHandler.createConnection(host,port);
+        mongoDBHandler.setMongoClient(mongoClient);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);
@@ -115,8 +105,5 @@ public class ObjectHandlerTest {
     public static void dropCollection()
     {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
-
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
     }
 }

@@ -2,6 +2,7 @@ package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 
+import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +140,7 @@ public class ObjectHandler {
         return aggregatedDbObject.get("_id").asText();
     }
 
-    public boolean lockDocument(String id){
+    public String lockDocument(String id){
         boolean documentLocked = true;
         String conditionId = "{\"_id\" : \"" + id + "\"}";
         String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
@@ -150,14 +151,16 @@ public class ObjectHandler {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
                 ((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
-                    boolean result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
-                    if(result == true){
-                        log.info("DB locked by " + Thread.currentThread().getId() + " thread");
-                        documentLocked = false;
-                        return true;}
+                DBObject result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
+                if(result != null){
+                    log.info("DB locked by " + Thread.currentThread().getId() + " thread");
+                    documentLocked = false;
+                    return result.toString();}
+//              To Remove
+                log.info("Waiting by " + Thread.currentThread().getId() + " thread");
             } catch (Exception e) {
                 log.info(e.getMessage(),e); }
         }
-        return false;
+        return null;
     }
 }

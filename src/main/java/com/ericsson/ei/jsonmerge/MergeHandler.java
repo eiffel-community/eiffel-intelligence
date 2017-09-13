@@ -153,9 +153,8 @@ public class MergeHandler {
 
     public String getAggregatedObject(String id){
         try {
-            objectHandler.lockDocument(id);
+            String document = objectHandler.lockDocument(id);
             lockedByThread = true;
-            String document = objectHandler.findObjectById(id);
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
                 return result.asText();

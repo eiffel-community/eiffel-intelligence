@@ -143,7 +143,6 @@ public class FlowTest2 {
         }
     }
 
-
     @Test
     public void test2AgregatedObjects() {
         try {

@@ -50,7 +50,9 @@ public class MongoDBHandler {
             DBObject dbObjectInput = (DBObject) JSON.parse(input);
             WriteResult result = table.insert(dbObjectInput);
             if (result.wasAcknowledged()) {
-                System.out.println("Inserted successfully");
+                log.info("Object : " + input);
+                log.info("inserted successfully in ");
+                log.info("collection : " + collectionName + "and db : " + dataBaseName);
                 return result.wasAcknowledged();
             }
         } catch (Exception e) {

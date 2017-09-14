@@ -144,47 +144,6 @@ public class FlowTest2 {
     }
 
     @Test
-    public void flowTest() {
-        try {
-            String queueName = rmqHandler.getQueueName();
-            Channel channel = conn.createChannel();
-            String exchange = "ei-poc-4";
-            createExchange(exchange, queueName);
-
-
-            ArrayList<String> eventNames = getEventNamesToSend();
-            int eventsCount = eventNames.size();
-            for(String eventName : eventNames) {
-                JsonNode eventJson = parsedJason.get(eventName);
-                String event = eventJson.toString();
-                channel.basicPublish(exchange, queueName,  null, event.getBytes());
-            }
-
-            // wait for all events to be processed
-            int processedEvents = 0;
-            while (processedEvents < eventsCount) {
-                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-                String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
-                if (waitingCountStr == null)
-                    waitingCountStr = "0";
-                Properties props = admin.getQueueProperties(queue.getName());
-                int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-            }
-
-            String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode expectedJson = objectmapper.readTree(expectedDocument);
-            JsonNode actualJson = objectmapper.readTree(document);
-            String breakString = "breakHere";
-            assertEquals(expectedJson, actualJson);
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
-    }
-
-    @Test
     public void test2AgregatedObjects() {
         try {
             String queueName = rmqHandler.getQueueName();
@@ -193,7 +152,7 @@ public class FlowTest2 {
             createExchange(exchange, queueName);
 
 
-            ArrayList<String> eventNames = getEventNamesToSend2();
+            ArrayList<String> eventNames = getEventNamesToSend();
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
@@ -231,17 +190,6 @@ public class FlowTest2 {
     }
 
     private ArrayList<String> getEventNamesToSend() {
-         ArrayList<String> eventNames = new ArrayList<>();
-         eventNames.add("event_EiffelArtifactPublishedEvent_3");
-         eventNames.add("event_EiffelArtifactCreatedEvent_3");
-         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-         eventNames.add("event_EiffelTestCaseStartedEvent_3");
-         eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-
-         return eventNames;
-    }
-
-    private ArrayList<String> getEventNamesToSend2() {
         ArrayList<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");

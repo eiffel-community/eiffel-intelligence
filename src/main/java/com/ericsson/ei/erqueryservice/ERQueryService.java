@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,9 +37,10 @@ public class ERQueryService {
 
     static Logger log = (Logger) LoggerFactory.getLogger(ERQueryService.class);
 
-    private RestOperations rest;
-
+    @Value("${er.url}")
     private String url;
+
+    private RestOperations rest;
 
     public ERQueryService(RestTemplateBuilder builder) {
         rest = builder.build();
@@ -53,21 +55,20 @@ public class ERQueryService {
      */
 
     public ResponseEntity getEventDataById(String eventId) {
-        url = "http://localhost:8080/search/{id}";
+        String erUrl = url + "{id}";
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", eventId);
         ResponseEntity<String> response = null;
         log.info("The ID parameter is set");
         try {
-            response = rest.getForEntity(url, String.class, params);
-            log.info("The response is : " + response.toString());
+            response = rest.getForEntity(erUrl, String.class, params);
+            log.debug("The response is : " + response.toString());
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 log.info("Got RESOURCE NOT FOUND error");
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            log.info("Got exception : " + e.getMessage());
         }
         return response;
     }
@@ -86,16 +87,15 @@ public class ERQueryService {
 
     public ResponseEntity getEventSteamDataById(String eventId, JsonNode searchParameters, int limitParam,
             int levelsParam, boolean tree) {
-        url = "http://localhost:8080/search/" + eventId;
+        String erUrl = url + eventId;
 
         // URI (URL) parameters
         Map<String, Object> uriParams = new HashMap<String, Object>();
         uriParams.put("searchParameters", searchParameters);
 
         // Query parameters
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
-                // Add query parameter
-                .queryParam("limit", limitParam).queryParam("levels", levelsParam).queryParam("tree", tree);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limitParam)
+                .queryParam("levels", levelsParam).queryParam("tree", tree);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

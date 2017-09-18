@@ -41,7 +41,7 @@ public class ERQueryServiceTest {
     @Test
     public void uriParamAndHeaderTest() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Forwarded", "proto=https; host=127.0.0.1:9090");
+        request.addHeader("Forwarded", "proto=https; host=127.0.0.1");
         request.setScheme("http");
         request.setServerName("localhost");
         request.setRequestURI("/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
@@ -52,8 +52,7 @@ public class ERQueryServiceTest {
         assertEquals("https", result.getScheme());
         assertEquals("127.0.0.1", result.getHost());
         assertEquals("/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.getPath());
-        assertEquals(9090, result.getPort());
-        assertEquals("https://127.0.0.1:9090/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.toUriString());
+        assertEquals("https://127.0.0.1/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.toUriString());
     }
 
 }

@@ -71,6 +71,15 @@ public class ObjectHandler {
         return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
+    /**
+     * This method uses previously locked in database aggregatedObject (lock was set in lockDocument method)
+     * and modifies this document with the new values and removes the lock in one query
+     * @param aggregatedObject String to insert in database
+     * @param rulesObject used for fetching id
+     * @param event String to fetch id if it was not specified
+     * @param id String
+     * @return true if operation succeed
+     */
     public boolean updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
@@ -140,6 +149,12 @@ public class ObjectHandler {
         return aggregatedDbObject.get("_id").asText();
     }
 
+    /**
+     * Locks the document in database to achieve pessimistic locking. Method findAndModify is used to optimize
+     * the quantity of requests towards database.
+     * @param id String to search
+     * @return String aggregated document
+     */
     public String lockDocument(String id){
         boolean documentLocked = true;
         String conditionId = "{\"_id\" : \"" + id + "\"}";

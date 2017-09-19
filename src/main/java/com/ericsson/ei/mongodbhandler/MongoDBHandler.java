@@ -114,7 +114,8 @@ public class MongoDBHandler {
         return result;
     }
 
-    //update the document in collection
+    //update the document in collection and remove the lock in one query. Lock is needed for multi process execution.
+    //updateInput is updated document without lock
     public  boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput ){
         try{
             DB db = mongoClient.getDB(dataBaseName);

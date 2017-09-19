@@ -50,6 +50,7 @@ public class MergeHandler {
         String mergedObject = null;
         String preparedToMergeObject;
         try{
+            // lock and get the AggregatedObject
             String aggregatedObject = (String) getAggregatedObject(id);
             String mergeRule = (String) rules.getMergeRules();
             if (mergeRule != null && !mergeRule.isEmpty()){
@@ -65,6 +66,7 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
+            // unlocking of document will be performed, when mergedObject will be inserted to database
             objectHandler.updateObject(mergedObject, rules, event, id);
             return mergedObject;
     }

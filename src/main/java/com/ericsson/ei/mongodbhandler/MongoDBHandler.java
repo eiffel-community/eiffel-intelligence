@@ -130,6 +130,8 @@ public class MongoDBHandler {
         return false;
     }
 
+    //Lock and return the document that matches the input condition in one query.
+    //Lock is needed for multi process execution. This method is executed in a loop.
     public  DBObject findAndModify(String dataBaseName, String collectionName, String input, String updateInput){
         try{
             DB db = mongoClient.getDB(dataBaseName);

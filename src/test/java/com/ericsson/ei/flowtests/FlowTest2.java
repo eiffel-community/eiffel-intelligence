@@ -1,13 +1,16 @@
 package com.ericsson.ei.flowtests;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -26,24 +29,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Properties;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class FlowTest {
+public class FlowTest2 {
 
-    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
+    private static Logger log = LoggerFactory.getLogger(FlowTest2.class);
 
     public static File qpidConfig = null;
     static AMQPBrokerManager amqpBrocker;
@@ -91,6 +88,7 @@ public class FlowTest {
     private static JsonNode parsedJason;
     private static String jsonFilePath = "src/test/resources/test_events.json";
     static private final String inputFilePath = "src/test/resources/AggregatedDocument.json";
+    static private final String inputFilePath2 = "src/test/resources/AggregatedDocument2.json";
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -146,7 +144,7 @@ public class FlowTest {
     }
 
     @Test
-    public void flowTest() {
+    public void test2AgregatedObjects() {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = conn.createChannel();
@@ -181,20 +179,31 @@ public class FlowTest {
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
             assertEquals(expectedJson.toString().length(), actualJson.toString().length());
+            String expectedDocument2 = FileUtils.readFileToString(new File(inputFilePath2));
+            String document2 = objectHandler.findObjectById("ccce572c-c364-441e-abc9-b62fed080ca2");
+            JsonNode expectedJson2 = objectmapper.readTree(expectedDocument2);
+            JsonNode actualJson2 = objectmapper.readTree(document2);
+            assertEquals(expectedJson2.toString().length(), actualJson2.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
     }
 
     private ArrayList<String> getEventNamesToSend() {
-         ArrayList<String> eventNames = new ArrayList<>();
-         eventNames.add("event_EiffelArtifactPublishedEvent_3");
-         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-         eventNames.add("event_EiffelArtifactCreatedEvent_3");
-         eventNames.add("event_EiffelTestCaseStartedEvent_3");
-         eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+        ArrayList<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 
-         return eventNames;
+        eventNames.add("event_EiffelArtifactCreatedEvent_1");
+        eventNames.add("event_EiffelArtifactPublishedEvent_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_1");
+        eventNames.add("event_EiffelTestCaseStartedEvent_1");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_1");
+
+        return eventNames;
     }
 
     private void createExchange(final String exchangeName, final String queueName) {

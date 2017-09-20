@@ -39,7 +39,7 @@ public class WaitListWorker {
 
     static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
-    @Scheduled(initialDelay = 1000, fixedRate = 10000)
+    @Scheduled(initialDelay = 10, fixedRate = 10)
     public void run() {
         RulesObject rulesObject = null;
         ArrayList<String> documents = waitListStorageHandler.getWaitList();

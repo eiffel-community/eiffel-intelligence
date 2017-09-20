@@ -2,6 +2,7 @@ package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 
+import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,15 @@ public class ObjectHandler {
         return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
+    /**
+     * This method uses previously locked in database aggregatedObject (lock was set in lockDocument method)
+     * and modifies this document with the new values and removes the lock in one query
+     * @param aggregatedObject String to insert in database
+     * @param rulesObject used for fetching id
+     * @param event String to fetch id if it was not specified
+     * @param id String
+     * @return true if operation succeed
+     */
     public boolean updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
@@ -137,5 +147,35 @@ public class ObjectHandler {
 
     public String extractObjectId(JsonNode aggregatedDbObject) {
         return aggregatedDbObject.get("_id").asText();
+    }
+
+    /**
+     * Locks the document in database to achieve pessimistic locking. Method findAndModify is used to optimize
+     * the quantity of requests towards database.
+     * @param id String to search
+     * @return String aggregated document
+     */
+    public String lockDocument(String id){
+        boolean documentLocked = true;
+        String conditionId = "{\"_id\" : \"" + id + "\"}";
+        String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
+        String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
+        ObjectMapper mapper = new ObjectMapper();
+        while (documentLocked==true){
+            try {
+                JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
+                JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
+                ((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
+                DBObject result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
+                if(result != null){
+                    log.info("DB locked by " + Thread.currentThread().getId() + " thread");
+                    documentLocked = false;
+                    return result.toString();}
+//              To Remove
+                log.info("Waiting by " + Thread.currentThread().getId() + " thread");
+            } catch (Exception e) {
+                log.info(e.getMessage(),e); }
+        }
+        return null;
     }
 }

@@ -2,14 +2,17 @@ package com.ericsson.ei.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.rabbitmq.client.Channel;
 
 @Component
-public class EventHandler {
+public class EventHandler implements ChannelAwareMessageListener {
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
 
@@ -34,5 +37,15 @@ public class EventHandler {
             count++;
             System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
         }
+    }
+
+    @Override
+    public void onMessage(Message message, Channel channel) throws Exception {
+        byte[] messageBody = message.getBody();
+        eventReceived(messageBody);
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        channel.basicAck(deliveryTag, false);
+        int breakHere = 1;
+
     }
 }

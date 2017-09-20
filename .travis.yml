@@ -16,4 +16,3 @@ script:
   - mvn -DsomeModule.test.excludes="**/FlowTest.java, **/FlowTest2.java" test
   - mvn -DsomeModule.test.includes="**/FlowTest.java" test
   - mvn -DsomeModule.test.includes="**/FlowTest2.java" test
-

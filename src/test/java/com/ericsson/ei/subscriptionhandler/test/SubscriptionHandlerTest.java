@@ -1,0 +1,157 @@
+/*
+    Copyright 2017 Ericsson AB.
+    For a full list of individual contributors, please see the commit history.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+package com.ericsson.ei.subscriptionhandler.test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.ericsson.ei.App;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = App.class)
+public class SubscriptionHandlerTest {
+
+    @Autowired
+    private RunSubscription runSubscription;
+
+    @Autowired
+    private SubscriptionHandler handler;
+
+    private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
+    private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static String aggregatedObject;
+    private static String subscriptionData;
+
+    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+    static MongodExecutable mongodExecutable = null;
+    static MongoDBHandler mongoDBHandler = null;
+    static String host = "localhost";
+    static int port = 27017;
+    private static String dataBaseName = "MissedNotification";
+    private static String collectionName = "Notification";
+
+    public static void setUpEmbeddedMongo() throws Exception {
+        System.setProperty("mongodb.port", "" + port);
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+        String bindIp = "localhost";
+        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                .net(new Net(bindIp, port, Network.localhostIsIPv6())).build();
+        try {
+            mongodExecutable = starter.prepare(mongodConfig);
+            MongodProcess mongod = mongodExecutable.start();
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath));
+        } catch (Exception e) {
+            log.info(e.getMessage(), e);
+        }
+    }
+
+    @BeforeClass
+    public static void init() throws Exception {
+        setUpEmbeddedMongo();
+        mongoDBHandler = new MongoDBHandler();
+        mongoDBHandler.createConnection(host, port);
+        System.out.println("Database connected");
+    }
+
+    @Test
+    public void checkRequirementTypeTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        JsonNode aggregatedJson = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionData);
+            aggregatedJson = mapper.readTree(aggregatedObject);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        JsonNode expectedOutput = (JsonNode) requirementNode;
+        log.info("RequirementNode : " + requirementNode.toString());
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
+        JsonNode output = runSubscription.checkRequirementType(requirementIterator, aggregatedObject);
+        assertEquals(output.toString(), expectedOutput.toString());
+    }
+
+    @Test
+    public void runSubscriptionOnObjectTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode fulfilledRequirements = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionData);
+            fulfilledRequirements = (ArrayNode) subscriptionJson.get("requirements");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, fulfilledRequirements,
+                subscriptionJson);
+        assertEquals(output, true);
+    }
+
+    @Test
+    public void MissedNotificationTest() {
+        handler.extractConditions(aggregatedObject, subscriptionData);
+        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        Iterator itr = outputDoc.iterator();
+        String data = itr.next().toString();
+        JsonNode jsonResult = null;
+        JsonNode expectedOutput = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            expectedOutput = mapper.readTree(aggregatedObject);
+            jsonResult = mapper.readTree(data);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        JsonNode output = jsonResult.get("AggregatedObject");
+        assertEquals(expectedOutput.toString(), output.toString());
+    }
+
+    @AfterClass
+    public static void close() {
+        if (mongodExecutable != null) {
+            mongodExecutable.stop();
+            System.out.println("Database closed");
+        }
+    }
+}

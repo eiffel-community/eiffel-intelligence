@@ -18,6 +18,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Iterator;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -65,7 +67,8 @@ public class SubscriptionHandlerTest {
 
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
-    static MongoDBHandler mongoDBHandler = null;
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     private static MongodForTestsFactory testsFactory;
     static MongoClient mongoClient = null;
@@ -91,7 +94,10 @@ public class SubscriptionHandlerTest {
     @BeforeClass
     public static void init() throws Exception {
         setUpEmbeddedMongo();
-        mongoDBHandler = new MongoDBHandler();
+    }
+
+    @PostConstruct
+    public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
         System.out.println("Database connected");
     }
@@ -131,25 +137,24 @@ public class SubscriptionHandlerTest {
         assertEquals(output, true);
     }
 
-//	TO DO fix this test
-//    @Test
-//    public void MissedNotificationTest() {
-//        handler.extractConditions(aggregatedObject, subscriptionData);
-//        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
-//        Iterator itr = outputDoc.iterator();
-//        String data = itr.next().toString();
-//        JsonNode jsonResult = null;
-//        JsonNode expectedOutput = null;
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            expectedOutput = mapper.readTree(aggregatedObject);
-//            jsonResult = mapper.readTree(data);
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//        }
-//        JsonNode output = jsonResult.get("AggregatedObject");
-//        assertEquals(expectedOutput.toString(), output.toString());
-//    }
+    @Test
+    public void MissedNotificationTest() {
+        handler.extractConditions(aggregatedObject, subscriptionData);
+        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        Iterator itr = outputDoc.iterator();
+        String data = itr.next().toString();
+        JsonNode jsonResult = null;
+        JsonNode expectedOutput = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            expectedOutput = mapper.readTree(aggregatedObject);
+            jsonResult = mapper.readTree(data);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        JsonNode output = jsonResult.get("AggregatedObject");
+        assertEquals(expectedOutput.toString(), output.toString());
+    }
 
     @AfterClass
     public static void close() {

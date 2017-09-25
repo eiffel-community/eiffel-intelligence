@@ -66,7 +66,6 @@ public class InformSubscription {
 
     static Logger log = (Logger) LoggerFactory.getLogger(InformSubscription.class);
 
-
     /**
      * This method extracts the mode of notification through which the
      * subscriber should be notified, from the subscription Object. And if the
@@ -97,8 +96,8 @@ public class InformSubscription {
                 if (result != HttpStatus.OK.value()) {
                     String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);
-                    mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
-                            ttlValue);
+                    mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName,
+                            "Time", ttlValue);
                     boolean output = mongoDBHandler.insertDocument(missedNotificationDataBaseName,
                             missedNotificationCollectionName, input);
                     log.info("The output of insertion of missed Notification : " + output);
@@ -155,8 +154,6 @@ public class InformSubscription {
         log.debug("missedNotificationDataBaseName : " + missedNotificationDataBaseName);
         log.debug("notification.failAttempt : " + failAttempt);
         log.debug("Missed Notification TTL value : " + ttlValue);
-        //mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
-        //        ttlValue);
     }
 
 }

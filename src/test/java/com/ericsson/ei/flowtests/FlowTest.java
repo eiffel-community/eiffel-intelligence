@@ -150,16 +150,15 @@ public class FlowTest {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = conn.createChannel();
-            String exchange = "ei-poc-4";
-            createExchange(exchange, queueName);
-
+            String exchangeName = "ei-poc-4";
+            createExchange();
 
             ArrayList<String> eventNames = getEventNamesToSend();
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
                 String event = eventJson.toString();
-                channel.basicPublish(exchange, queueName,  null, event.getBytes());
+                channel.basicPublish(exchangeName, queueName,  null, event.getBytes());
             }
 
             // wait for all events to be processed
@@ -197,11 +196,16 @@ public class FlowTest {
          return eventNames;
     }
 
-    private void createExchange(final String exchangeName, final String queueName) {
+    private void createExchange() {
+        String queueName = rmqHandler.getQueueName();
+        String waitlistQueueName = rmqHandler.getWaitlistQueueName();
+        String exchangeName = "ei-poc-4";
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
         admin = new RabbitAdmin(ccf);
-        queue = new Queue(queueName, false);
+        queue = new Queue(queueName, true);
+        Queue waitlistQueue = new Queue(waitlistQueueName, true);
         admin.declareQueue(queue);
+        admin.declareQueue(waitlistQueue);
         final TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));

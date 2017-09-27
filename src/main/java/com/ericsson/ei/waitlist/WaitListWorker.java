@@ -53,7 +53,7 @@ public class WaitListWorker {
                 for (final JsonNode idJsonObj : ids) {
                     ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
                     if (objects.size() > 0) {
-                        rmqHandler.publishObjectToMessageBus(event);
+                        rmqHandler.publishObjectToWaitlistQueue(event);
                         waitListStorageHandler.dropDocumentFromWaitList(document);
                     }
                 }

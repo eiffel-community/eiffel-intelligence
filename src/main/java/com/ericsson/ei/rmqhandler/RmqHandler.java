@@ -46,6 +46,8 @@ public class RmqHandler {
     private String domainId;
     @Value("${rabbitmq.componentName}")
     private String componentName;
+    @Value("${rabbitmq.waitlist.queue.suffix}")
+    private String waitlistSufix;
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
     @Value("${rabbitmq.consumerName}")
@@ -54,6 +56,7 @@ public class RmqHandler {
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
+    private SimpleMessageListenerContainer waitlistContainer;
     static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
     public Boolean getQueueDurable() {
@@ -169,17 +172,28 @@ public class RmqHandler {
         return BindingBuilder.bind(queue).to(exchange).with(routingKey);
     }
 
+//    @Bean
+//    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+//        String queueName = getQueueName();
+////        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
+//        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+//        container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(factory);
+//        container.setQueueNames(queueName);
+//        container.setMessageListener(listenerAdapter);
+////        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+//        return container;
+//    }
+
     @Bean
-    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-        String queueName = getQueueName();
-//        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
-        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler);
-        container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(factory);
-        container.setQueueNames(queueName);
-        container.setMessageListener(listenerAdapter);
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        return container;
+    SimpleMessageListenerContainer bindToWaitlistQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+        waitlistContainer = new SimpleMessageListenerContainer();
+        waitlistContainer.setConnectionFactory(factory);
+        waitlistContainer.setQueueNames(getWaitlistQueueName());
+        waitlistContainer.setMessageListener(listenerAdapter);
+        waitlistContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        return waitlistContainer;
     }
 
     public String getQueueName() {
@@ -187,8 +201,13 @@ public class RmqHandler {
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
     }
 
+    public String getWaitlistQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
+    }
+
     @Bean
-    public RabbitTemplate rabbitMqTemplate() {
+    public RabbitTemplate waitListRabbitMqTemplate() {
         if (rabbitTemplate == null) {
             if (factory != null) {
                 rabbitTemplate = new RabbitTemplate(factory);
@@ -209,22 +228,14 @@ public class RmqHandler {
         return rabbitTemplate;
     }
 
-    public void publishObjectToMessageBus(String message) {
+    public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
-        rabbitMqTemplate().convertAndSend(message);
-//        Connection conn = factory.createConnection();
-//        Channel channel = conn.createChannel(true);
-//        String queueName = getQueueName();
-//        String exchange = exchangeName;
-//        try {
-//            channel.basicPublish(exchange, queueName, null, message.getBytes());
-//        } catch (Exception e) {
-//            log.info(e.getMessage(),e);
-//        }
+        waitListRabbitMqTemplate().convertAndSend(message);
     }
 
     public void close() {
         try {
+            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

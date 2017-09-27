@@ -18,13 +18,10 @@ import com.rabbitmq.client.Channel;
 
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+
 @Component
-public class EventHandler implements ChannelAwareMessageListener {
-
-    @Value("${threads.corePoolSize}") private int corePoolSize;
-    @Value("${threads.queueCapacity}") private int queueCapacity;
-    @Value("${threads.maxPoolSize}") private int maxPoolSize;
-
+public class EventHandler {
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
 
@@ -39,18 +36,6 @@ public class EventHandler implements ChannelAwareMessageListener {
         idRulesHandler.runIdRules(eventRules, event);
     }
 
-    @Bean
-    public Executor asyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setQueueCapacity(queueCapacity);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setThreadNamePrefix("EventHandler-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Async
     public void eventReceived(byte[] message) {
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
@@ -64,13 +49,14 @@ public class EventHandler implements ChannelAwareMessageListener {
         }
     }
 
-    @Override
+    @Async
     public void onMessage(Message message, Channel channel) throws Exception {
         byte[] messageBody = message.getBody();
+//        String messageStr = new String(messageBody);
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
+//        String queue = message.getMessageProperties().getConsumerQueue();
         channel.basicAck(deliveryTag, false);
         int breakHere = 1;
-
     }
 }

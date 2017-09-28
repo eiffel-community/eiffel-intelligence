@@ -101,7 +101,7 @@ public class ERQueryServiceTest {
         String uri = "";
 //        example uri
 //        http://localhost:8080/search/01?limit=85&levels=2&tree=true
-        uri += erQueryService.getUrl().replaceAll(" ", "") + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree=" + isTree;
+        uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree=" + isTree;
         return uri;
     }
 

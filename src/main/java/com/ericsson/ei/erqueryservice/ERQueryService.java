@@ -13,7 +13,10 @@
 */
 package com.ericsson.ei.erqueryservice;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -32,8 +35,16 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * @author evasiba
+ *
+ */
 @Component
 public class ERQueryService {
 
@@ -41,17 +52,29 @@ public class ERQueryService {
 
     private RestOperations rest;
 
+    public final static int DOWNSTREAM = 0;
+    public final static int UPSTREAM = 1;
+    public final static int DOWNANDUPSTREAM = 2;
+
     @Value("${er.url}")
     private String url;
+
+    public String getUrl() {
+        return url;
+    }
 
     public ERQueryService(RestTemplateBuilder builder) {
         rest = builder.build();
     }
 
+    public void setRest(RestOperations rest) {
+        this.rest = rest;
+    }
+
     /**
      * This method only extracts the event information from ER2.0 based on the
      * eventID.
-     * 
+     *
      * @param eventId
      * @return ResponseEntity
      */
@@ -73,25 +96,25 @@ public class ERQueryService {
 
     /**
      * This method is used to fetch only the upstream or downstream or both
-     * event information from ER2.0 based on the eventID and searchParameters
+     * event information from ER2.0 based on the eventID and searchAction
      * conditions.
-     * 
+     *
      * @param eventId
-     * @param searchParameters
+     * @param searchAction
      * @param limitParam
      * @param levelsParam
      * @param tree
      * @return ResponseEntity
      */
 
-    public ResponseEntity getEventStreamDataById(String eventId, JsonNode searchParameters, int limitParam,
+    public ResponseEntity getEventStreamDataById(String eventId, int searchAction, int limitParam,
             int levelsParam, boolean tree) {
 
         String erUrl = url.trim() + eventId;
         log.info("The url is : " + erUrl);
 
         // Request Body parameters
-        JsonNode uriParams = searchParameters;
+        JsonNode uriParams = getSearchParameters(searchAction);
 
         // Add query parameter
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limitParam)
@@ -108,9 +131,47 @@ public class ERQueryService {
         return response;
     }
 
+    /** Generates the json object used as body for downstream/upstream
+     * query requests
+     * @param searchAction - one of DOWNSTREAM, UPSTREAM or DOWNANDUPSTREAM
+     * @return
+     */
+    public JsonNode getSearchParameters(int searchAction) {
+        JsonNode uriParams = null;
+        ObjectMapper objectmapper = new ObjectMapper();
+
+        String[] linkTypes = {"ALL"};
+
+        try {
+            uriParams = objectmapper.readTree("{}");
+            if (searchAction == DOWNSTREAM) {
+                putSearchParameter(uriParams, "dlt", linkTypes);
+            } else if (searchAction == UPSTREAM) {
+                putSearchParameter(uriParams, "ult", linkTypes);
+            } else if (searchAction == DOWNANDUPSTREAM) {
+                putSearchParameter(uriParams, "dlt", linkTypes);
+                putSearchParameter(uriParams, "ult", linkTypes);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return uriParams;
+    }
+
+    /** Create an array node with link types for upstream or downstream query
+     * @param params
+     * @param actionString
+     * @param linkTypes
+     */
+    public void putSearchParameter(JsonNode params, String actionString, String[] linkTypes) {
+        ArrayNode node =((ObjectNode) params).putArray(actionString);
+        for (String string : linkTypes) {
+            node.add(string);
+        }
+    }
+
     @PostConstruct
     public void init() {
         log.debug("The url parameter is : " + url);
     }
-
 }

@@ -159,7 +159,7 @@ public class RmqHandler {
 
     @Bean
     Queue queue() {
-        return new Queue(getWaitlistQueueName(), true);
+        return new Queue(getQueueName(), true);
     }
 
     @Bean
@@ -177,7 +177,7 @@ public class RmqHandler {
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         waitlistContainer = new SimpleMessageListenerContainer();
         waitlistContainer.setConnectionFactory(factory);
-        waitlistContainer.setQueueNames(getWaitlistQueueName());
+        waitlistContainer.setQueueNames(getQueueName());
         waitlistContainer.setMessageListener(listenerAdapter);
         waitlistContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return waitlistContainer;
@@ -204,7 +204,7 @@ public class RmqHandler {
 
             rabbitTemplate.setExchange(exchangeName);
             rabbitTemplate.setRoutingKey(routingKey);
-            rabbitTemplate.setQueue(getWaitlistQueueName());
+            rabbitTemplate.setQueue(getQueueName());
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -231,7 +231,6 @@ public class RmqHandler {
 
     public void close() {
         try {
-            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

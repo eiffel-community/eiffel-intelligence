@@ -92,7 +92,7 @@ public class WaitListStorageHandler {
     }
 
     private void updateTestEventCount(boolean increase) {
-        if (System.getProperty("flow.test") == "true") {
+        if (System.getProperty("flow.test") == "true" || System.getProperty("trafficGenerated.test") == "true") {
             String countStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
             int count = Integer.parseInt(countStr);
             if (increase) {

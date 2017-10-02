@@ -1,0 +1,67 @@
+{
+  "id" : "f8e4f172-9f11-4606-9fe7-434b1eed29da",
+  "name" : "default",
+  "createdTime" : 1506593127396,
+  "lastUpdatedTime" : 1506593127396,
+  "type" : "Memory",
+  "modelVersion" : "6.1",
+  "exchanges" : [ {
+    "id" : "72eab7fd-fe84-415d-8436-a538637a5272",
+    "name" : "amq.direct",
+    "type" : "direct",
+    "lastUpdatedTime" : 1506593127396,
+    "createdTime" : 1506593127396
+  }, {
+    "id" : "7b533522-5ac1-4dee-8a7c-0db4e63cc2e3",
+    "name" : "amq.fanout",
+    "type" : "fanout",
+    "lastUpdatedTime" : 1506593127396,
+    "createdTime" : 1506593127396
+  }, {
+    "id" : "1956d3d4-b153-4489-a72d-c5596bb63649",
+    "name" : "amq.match",
+    "type" : "headers",
+    "lastUpdatedTime" : 1506593127396,
+    "createdTime" : 1506593127396
+  }, {
+    "id" : "6be7cd17-c1b2-47b1-9032-71f5522b56e4",
+    "name" : "amq.topic",
+    "type" : "topic",
+    "lastUpdatedTime" : 1506593127396,
+    "createdTime" : 1506593127396
+  }, {
+    "id" : "cccdb4f6-e565-4980-84c4-b221660241be",
+    "name" : "ei-poc-4",
+    "type" : "topic",
+    "durable" : true,
+    "lifetimePolicy" : "PERMANENT",
+    "lastUpdatedBy" : "guest",
+    "lastUpdatedTime" : 1506593150182,
+    "createdBy" : "guest",
+    "createdTime" : 1506593150182
+  } ],
+  "queues" : [ {
+    "id" : "55ca5479-3668-4aa8-93ef-8351d037c770",
+    "name" : "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable",
+    "type" : "standard",
+    "durable" : true,
+    "lifetimePolicy" : "PERMANENT",
+    "exclusive" : "NONE",
+    "owner" : null,
+    "lastUpdatedBy" : "guest",
+    "lastUpdatedTime" : 1506593150383,
+    "createdBy" : "guest",
+    "createdTime" : 1506593150383,
+    "bindings" : [ {
+      "exchange" : "cccdb4f6-e565-4980-84c4-b221660241be",
+      "id" : "dced3184-c8dd-4a79-b39a-37b0b2c52e2a",
+      "name" : "#",
+      "type" : "Binding",
+      "durable" : true,
+      "lastUpdatedBy" : "guest",
+      "lastUpdatedTime" : 1506593150484,
+      "createdBy" : "guest",
+      "createdTime" : 1506593150484
+    } ]
+  } ]
+}

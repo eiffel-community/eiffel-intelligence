@@ -5,6 +5,7 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,6 +50,7 @@ public class MergeHandler {
         String mergedObject = null;
         String preparedToMergeObject;
         try{
+            // lock and get the AggregatedObject
             String aggregatedObject = (String) getAggregatedObject(id);
             String mergeRule = (String) rules.getMergeRules();
             if (mergeRule != null && !mergeRule.isEmpty()){
@@ -64,9 +66,9 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
-
-        objectHandler.updateObject(mergedObject, rules, event, id);
-        return mergedObject;
+            // unlocking of document will be performed, when mergedObject will be inserted to database
+            objectHandler.updateObject(mergedObject, rules, event, id);
+            return mergedObject;
     }
 
     public String replaceIdMarkerInRules(String rule, String id){
@@ -134,13 +136,17 @@ public class MergeHandler {
         }
     }
 
+    /**
+     * This method set lock property in document in database and returns the aggregated document which will be
+     * further modified.
+     * @param id String to search in database and lock this document.
+     */
     public String getAggregatedObject(String id){
         try {
-            String document = objectHandler.findObjectById(id);
+            String document = objectHandler.lockDocument(id);
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
                 return result.asText();
-
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }

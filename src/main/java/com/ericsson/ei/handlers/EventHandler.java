@@ -69,6 +69,7 @@ public class EventHandler {
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 //        String queue = message.getMessageProperties().getConsumerQueue();
+        channel.basicQos(150);
         channel.basicAck(deliveryTag, false);
         int breakHere = 1;
     }

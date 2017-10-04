@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -23,7 +24,11 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.handlers.ObjectHandler;
@@ -40,6 +45,8 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource(properties = "myConf.myProp=valueInTest")
+//@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @SpringBootTest
 public class FlowTest {
 
@@ -54,6 +61,9 @@ public class FlowTest {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @Autowired
+    private WaitListStorageHandler waitlist;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -104,6 +114,7 @@ public class FlowTest {
     @PostConstruct
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
+        waitlist.setMongoDbHandler(mongoDBHandler);
     }
 
     public static void setUpMessageBus() throws Exception {

@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import com.mongodb.DB;
+import com.mongodb.client.MongoCollection;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -174,6 +176,10 @@ public class FlowTest {
                 processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
             }
 
+            MongoCollection a = mongoClient.getDatabase("eiffel_intelligence_eiffelxxx").getCollection("event_object_map");
+            long b = a.count();
+            System.out.println(a);
+
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
             String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
@@ -191,7 +197,6 @@ public class FlowTest {
          eventNames.add("event_EiffelArtifactPublishedEvent_3");
          eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-         eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelTestCaseStartedEvent_3");
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 

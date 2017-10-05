@@ -80,7 +80,7 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found in database: " + dataBaseName + "and collection: " + collectionName);
+//                log.info("No documents found in database: " + dataBaseName + "and collection: " + collectionName);
             }
         }catch (Exception e) {
             log.info(e.getMessage(), e);

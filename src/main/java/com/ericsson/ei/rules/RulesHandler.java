@@ -2,6 +2,8 @@ package com.ericsson.ei.rules;
 
 import java.io.*;
 import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +29,9 @@ public class RulesHandler {
     @PostConstruct public void init() {
         if (parsedJason == null) {
             try {
-                InputStream in = this.getClass().getResourceAsStream("/ArtifactRules_new.json");
-                jsonFileContent = getContent(in);
+                jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+//                InputStream in = this.getClass().getResourceAsStream("/ArtifactRules_new.json");
+//                jsonFileContent = getContent(in);
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJason = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {

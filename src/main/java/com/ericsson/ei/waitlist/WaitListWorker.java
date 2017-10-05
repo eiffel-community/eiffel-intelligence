@@ -22,6 +22,9 @@ import com.mongodb.util.JSON;
 @Component
 public class WaitListWorker {
 
+    @Value("${waitlist.initialDelayResend:}")  private int initialDelayResend;
+    @Value("${waitlist.fixedRateResend:}") private int fixedRateResend;
+
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
 
@@ -39,7 +42,7 @@ public class WaitListWorker {
 
     static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
-    @Scheduled(initialDelay = 10, fixedRate = 30)
+    @Scheduled(initialDelay = 10, fixedRate = 10)
     public void run() {
         RulesObject rulesObject = null;
         ArrayList<String> documents = waitListStorageHandler.getWaitList();

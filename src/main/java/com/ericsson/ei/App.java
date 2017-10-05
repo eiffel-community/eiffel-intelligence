@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
@@ -16,7 +17,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        List<String> logLevels = {"ALL", ""}
+        List<String> logLevels = new ArrayList<>();
 
         if(true) {
 

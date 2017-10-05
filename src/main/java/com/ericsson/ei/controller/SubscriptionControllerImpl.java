@@ -44,7 +44,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Creates the subscription")
     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody Subscription subscription) {
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        if (!subscriptionService.isDuplicatedSubscription(subscription.getSubscriptionName())) {
+        if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
             subscriptionService.addSubscription(subscription);
             LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
             subscriptionResponse.setMsg("Inserted Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
@@ -80,15 +80,15 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable String subscriptionName, @RequestBody Subscription subscription) {
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        if (!subscriptionService.isDuplicatedSubscription(subscription.getSubscriptionName())) {
+        if (subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
             subscriptionService.modifySubscription(subscription, subscriptionName);
             LOG.info("Subscription :" + subscriptionName + " update completed");
             subscriptionResponse.setMsg("Updated Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
             
         } else {
-            LOG.error("Subscription :" + subscription.getSubscriptionName() + " identified as duplicate subscription");
-            subscriptionResponse.setMsg("Duplicate Subscription"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            LOG.error("Subscription :" + subscription.getSubscriptionName() + " can't be found.");
+            subscriptionResponse.setMsg("Subscription can't be found"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
         

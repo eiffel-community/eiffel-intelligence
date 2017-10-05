@@ -48,7 +48,6 @@ public class EventHandler {
         return executor;
     }
 
-    //    @Async
     public void eventReceived(byte[] message) {
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
@@ -66,7 +65,6 @@ public class EventHandler {
     public void onMessage(Message message, Channel channel) throws Exception {
         byte[] messageBody = message.getBody();
 //        String messageStr = new String(messageBody);
-        channel.basicQos(150);
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 //        String queue = message.getMessageProperties().getConsumerQueue();

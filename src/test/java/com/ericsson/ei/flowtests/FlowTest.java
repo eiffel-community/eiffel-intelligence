@@ -46,7 +46,6 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(properties = "myConf.myProp=valueInTest")
-//@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @SpringBootTest
 public class FlowTest {
 
@@ -138,8 +137,11 @@ public class FlowTest {
     }
 
     public static void setUpEmbeddedMongo() throws Exception {
-         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
          mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
     }
 
     @AfterClass
@@ -182,6 +184,8 @@ public class FlowTest {
                     waitingCountStr = "0";
                 Properties props = admin.getQueueProperties(queue.getName());
                 int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
+                log.info(" countStr="+ countStr + " waitingCountStr=" + waitingCountStr + "messageCount=" + messageCount +
+                        " " + (Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount));
                 processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
             }
 
@@ -202,7 +206,6 @@ public class FlowTest {
          eventNames.add("event_EiffelArtifactPublishedEvent_3");
          eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-         eventNames.add("event_EiffelArtifactCreatedEvent_3");
          eventNames.add("event_EiffelTestCaseStartedEvent_3");
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 

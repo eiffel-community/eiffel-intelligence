@@ -56,7 +56,7 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     @Override
-    public boolean isDuplicatedSubscription(String name) {
+    public boolean doSubscriptionExist(String name) {
         String query = String.format(SUBSCRIPTION_NAME, name);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         if (list.isEmpty()) {

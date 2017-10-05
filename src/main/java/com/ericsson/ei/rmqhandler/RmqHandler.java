@@ -52,11 +52,9 @@ public class RmqHandler {
     private String routingKey;
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
-    // SimpleMessageListenerContainer container;
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
-    private SimpleMessageListenerContainer waitlistContainer;
     static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
     public Boolean getQueueDurable() {
@@ -175,7 +173,6 @@ public class RmqHandler {
     @Bean
     SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
         String queueName = getQueueName();
-        //MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(factory);
@@ -220,20 +217,10 @@ public class RmqHandler {
     public void publishObjectToMessageBus(String message) {
         log.info("publishing message to message bus...");
         rabbitMqTemplate().convertAndSend(message);
-//        Connection conn = factory.createConnection();
-//        Channel channel = conn.createChannel(true);
-//        String queueName = getQueueName();
-//        String exchange = exchangeName;
-//        try {
-//            channel.basicPublish(exchange, queueName, null, message.getBytes());
-//        } catch (Exception e) {
-//            log.info(e.getMessage(),e);
-//        }
     }
 
     public void close() {
         try {
-            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

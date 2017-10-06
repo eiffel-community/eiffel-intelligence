@@ -30,8 +30,6 @@ public class RulesHandler {
         if (parsedJason == null) {
             try {
                 jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
-//                InputStream in = this.getClass().getResourceAsStream("/ArtifactRules_new.json");
-//                jsonFileContent = getContent(in);
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJason = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {

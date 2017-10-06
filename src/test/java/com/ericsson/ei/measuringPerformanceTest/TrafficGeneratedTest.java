@@ -1,21 +1,19 @@
 package com.ericsson.ei.measuringPerformanceTest;
 
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -31,9 +29,11 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,15 +46,22 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class TrafficGeneratedTest {
 
-    private static final int EVENT_PACKAGES = 1;
+    private static final int EVENT_PACKAGES = 1000;
     private static Logger log = LoggerFactory.getLogger(TrafficGeneratedTest.class);
 
     public static File qpidConfig = null;
+    private static MongodForTestsFactory testsFactory;
     static TrafficGeneratedTest.AMQPBrokerManager amqpBrocker;
     static Queue queue = null;
     static RabbitAdmin admin;
 
-    static MongodExecutable mongodExecutable = null;
+    static MongoClient mongoClient = null;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @Autowired
+    private WaitListStorageHandler waitlist;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -93,6 +100,9 @@ public class TrafficGeneratedTest {
     private static String jsonFilePath = "src/test/resources/test_events_MP.json";
     static private final String inputFilePath = "src/test/resources/aggregated_document_MP.json";
 
+    @Value("${database.name}") private String database;
+    @Value("${event_object_map.collection.name}") private String event_map;
+
     @BeforeClass
     public static void setup() throws Exception {
         System.setProperty("trafficGenerated.test", "true");
@@ -100,6 +110,12 @@ public class TrafficGeneratedTest {
         System.setProperty("eiffel.intelligence.waitListEventsCount", "0");
         setUpMessageBus();
         setUpEmbeddedMongo();
+    }
+
+    @PostConstruct
+    public void initMocks() {
+        mongoDBHandler.setMongoClient(mongoClient);
+        waitlist.setMongoDbHandler(mongoDBHandler);
     }
 
     public static void setUpMessageBus() throws Exception {
@@ -126,22 +142,8 @@ public class TrafficGeneratedTest {
         int port = 12349;
         System.setProperty("mongodb.port", ""+port);
 
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-
-        String bindIp = "localhost";
-
-        IMongodConfig mongodConfig = new MongodConfigBuilder()
-                .version(Version.V3_4_1)
-                .net(new Net(bindIp, port, Network.localhostIsIPv6()))
-                .build();
-
-
-        try {
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-        } catch (Exception e) {
-            log.debug(e.getMessage(),e);
-        }
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        mongoClient = testsFactory.newMongo();
     }
 
     @AfterClass
@@ -180,7 +182,10 @@ public class TrafficGeneratedTest {
             }
 
             // wait for all events to be processed
-            int processedEvents = 0;
+            long processedEvents = 0;
+            long act = 0;
+
+            MongoCollection eventMap = mongoClient.getDatabase(database).getCollection(event_map);
             while (processedEvents < eventsCount) {
                 String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
                 String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
@@ -188,8 +193,12 @@ public class TrafficGeneratedTest {
                     waitingCountStr = "0";
                 Properties props = admin.getQueueProperties(queue.getName());
                 int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
+                act = eventMap.count();
                 processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
+                processedEvents = Math.min(processedEvents, act);
             }
+
+            Thread.sleep(1000);
 
             long timeAfter = System.currentTimeMillis();
             long diffTime = timeAfter - timeBefore;
@@ -202,7 +211,9 @@ public class TrafficGeneratedTest {
                 JsonNode actualJson = objectmapper.readTree(document);
                 assertEquals(expectedJson.toString().length(), actualJson.toString().length());
             }
-            System.out.println(diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000);
+
+            String time = "" + diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000;
+            System.out.println("Time of execution: " + time);
         } catch (Exception e) {
             log.debug(e.getMessage(),e);
         }
@@ -243,8 +254,8 @@ public class TrafficGeneratedTest {
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent");
         eventNames.add("event_EiffelTestCaseStartedEvent");
         eventNames.add("event_EiffelTestCaseFinishedEvent");
-//        eventNames.add("event_EiffelSourceChangeCreatedEvent");
-//        eventNames.add("event_EiffelSourceChangeSubmittedEvent");
+        eventNames.add("event_EiffelSourceChangeCreatedEvent");
+        eventNames.add("event_EiffelSourceChangeSubmittedEvent");
 
         return eventNames;
     }

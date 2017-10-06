@@ -1,0 +1,180 @@
+Index: src/main/java/com/ericsson/ei/handlers/EventHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.ericsson.ei.handlers;\n\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.amqp.core.Message;\nimport org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.scheduling.annotation.Async;\nimport org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;\nimport org.springframework.stereotype.Component;\n\nimport com.ericsson.ei.rules.RulesHandler;\nimport com.ericsson.ei.rules.RulesObject;\n\nimport com.rabbitmq.client.Channel;\n\nimport java.util.concurrent.Executor;\n\n@Component\npublic class EventHandler {\n    @Value(\"${threads.corePoolSize}\") private int corePoolSize;\n    @Value(\"${threads.queueCapacity}\") private int queueCapacity;\n    @Value(\"${threads.maxPoolSize}\") private int maxPoolSize;\n\n    private static Logger log = LoggerFactory.getLogger(EventHandler.class);\n\n    @Autowired\n    RulesHandler rulesHandler;\n\n    @Autowired\n    IdRulesHandler idRulesHandler;\n\n    public void eventReceived(String event) {\n        RulesObject eventRules = rulesHandler.getRulesForEvent(event);\n        idRulesHandler.runIdRules(eventRules, event);\n    }\n\n    @Bean\n    public Executor asyncExecutor() {\n        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();\n        executor.setCorePoolSize(corePoolSize);\n        executor.setQueueCapacity(queueCapacity);\n        executor.setMaxPoolSize(maxPoolSize);\n        executor.setThreadNamePrefix(\"EventHandler-\");\n        executor.initialize();\n        return executor;\n    }\n\n//    @Async\n    public void eventReceived(byte[] message) {\n        log.info(\"Thread id \" + Thread.currentThread().getId() + \" spawned\");\n        String actualMessage = new String(message);\n        log.info(\"Event received <\" + actualMessage + \">\");\n        eventReceived(actualMessage);\n        if (System.getProperty(\"flow.test\") == \"true\" || System.getProperty(\"trafficGenerated.test\") == \"true\") {\n            String countStr = System.getProperty(\"eiffel.intelligence.processedEventsCount\");\n            int count = Integer.parseInt(countStr);\n            count++;\n            System.setProperty(\"eiffel.intelligence.processedEventsCount\", \"\" + count);\n        }\n    }\n\n    @Async\n    public void onMessage(Message message, Channel channel) throws Exception {\n        byte[] messageBody = message.getBody();\n//        String messageStr = new String(messageBody);\n        eventReceived(messageBody);\n        long deliveryTag = message.getMessageProperties().getDeliveryTag();\n//        String queue = message.getMessageProperties().getConsumerQueue();\n        channel.basicQos(150);\n        channel.basicAck(deliveryTag, false);\n        int breakHere = 1;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/ericsson/ei/handlers/EventHandler.java	(date 1507207046000)
++++ src/main/java/com/ericsson/ei/handlers/EventHandler.java	(revision )
+@@ -48,13 +48,12 @@
+         return executor;
+     }
+ 
+-//    @Async
+     public void eventReceived(byte[] message) {
+         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
+         String actualMessage = new String(message);
+         log.info("Event received <" + actualMessage + ">");
+         eventReceived(actualMessage);
+-        if (System.getProperty("flow.test") == "true" || System.getProperty("trafficGenerated.test") == "true") {
++        if (System.getProperty("flow.test") == "true") {
+             String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+             int count = Integer.parseInt(countStr);
+             count++;
+@@ -69,8 +68,8 @@
+         eventReceived(messageBody);
+         long deliveryTag = message.getMessageProperties().getDeliveryTag();
+ //        String queue = message.getMessageProperties().getConsumerQueue();
+-        channel.basicQos(150);
+         channel.basicAck(deliveryTag, false);
++
+         int breakHere = 1;
+     }
+ }
+Index: src/main/java/com/ericsson/ei/App.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.ericsson.ei;\n\nimport org.apache.log4j.Level;\nimport org.apache.log4j.Logger;\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\nimport org.springframework.scheduling.annotation.EnableAsync;\nimport org.springframework.scheduling.annotation.EnableScheduling;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n@SpringBootApplication\n@EnableAsync\n@EnableScheduling\npublic class App {\n\n    public static void main(String[] args) {\n\n        List<String> logLevels = new ArrayList<>();\n\n        if(true) {\n\n        } else {\n            System.setProperty(\"logging.level.root\", \"OFF\");\n            System.setProperty(\"logging.level.org.springframework.web\", \"OFF\");\n            System.setProperty(\"logging.level.com.ericsson.ei\", \"OFF\");\n        }\n\n        SpringApplication.run(App.class, args);\n    }\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/ericsson/ei/App.java	(date 1507207046000)
++++ src/main/java/com/ericsson/ei/App.java	(revision )
+@@ -1,7 +1,5 @@
+ package com.ericsson.ei;
+ 
+-import org.apache.log4j.Level;
+-import org.apache.log4j.Logger;
+ import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ import org.springframework.scheduling.annotation.EnableAsync;
+Index: src/main/java/com/ericsson/ei/waitlist/WaitListWorker.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.ericsson.ei.waitlist;\n\nimport java.util.ArrayList;\n\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.scheduling.annotation.Scheduled;\nimport org.springframework.stereotype.Component;\n\nimport com.ericsson.ei.handlers.MatchIdRulesHandler;\nimport com.ericsson.ei.jmespath.JmesPathInterface;\nimport com.ericsson.ei.mongodbhandler.MongoDBHandler;\nimport com.ericsson.ei.rmqhandler.RmqHandler;\nimport com.ericsson.ei.rules.RulesHandler;\nimport com.ericsson.ei.rules.RulesObject;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.mongodb.DBObject;\nimport com.mongodb.util.JSON;\n\n@Component\npublic class WaitListWorker {\n\n    @Autowired\n    private WaitListStorageHandler waitListStorageHandler;\n\n    @Autowired\n    private RmqHandler rmqHandler;\n\n    @Autowired\n    private RulesHandler rulesHandler;\n\n    @Autowired\n    private JmesPathInterface jmesPathInterface;\n\n    @Autowired\n    private MatchIdRulesHandler matchIdRulesHandler;\n\n//    @Value(\"${waitlist.initDelay}\") private int a1;\n    private String a1 = System.getProperty(\"rabbitmq.port\");\n    private final int A = Integer.parseInt(a1);\n\n    static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);\n\n    @Scheduled(initialDelay = 100, fixedRate = 10000)\n    public void run() {\n        RulesObject rulesObject = null;\n        ArrayList<String> documents = waitListStorageHandler.getWaitList();\n        for (String document : documents) {\n            DBObject dbObject = (DBObject) JSON.parse(document);\n            String event = dbObject.get(\"Event\").toString();\n            rulesObject = rulesHandler.getRulesForEvent(event);\n            String idRule = rulesObject.getIdentifyRules();\n            JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);\n            if (ids.isArray()) {\n                for (final JsonNode idJsonObj : ids) {\n                    ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());\n                    if (objects.size() > 0) {\n                        rmqHandler.publishObjectToMessageBus(event);\n                        waitListStorageHandler.dropDocumentFromWaitList(document);\n                    }\n                }\n            }\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/ericsson/ei/waitlist/WaitListWorker.java	(date 1507207046000)
++++ src/main/java/com/ericsson/ei/waitlist/WaitListWorker.java	(revision )
+@@ -22,6 +22,9 @@
+ @Component
+ public class WaitListWorker {
+ 
++    @Value("${waitlist.initialDelayResend:}")  private int initialDelayResend;
++    @Value("${waitlist.fixedRateResend:}") private int fixedRateResend;
++
+     @Autowired
+     private WaitListStorageHandler waitListStorageHandler;
+ 
+Index: src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>rules.path: /home/eztyhva/git/eiffel-intelligence/src/main/resources/ArtifactRules_new.json\n\nlogging.level.root: INFO\nlogging.level.org.springframework.web: DEBUG\nlogging.level.com.ericsson.ei: DEBUG\n\nrabbitmq.host: mb101-eiffel039.lmera.ericsson.se\nrabbitmq.port: 5672\nrabbitmq.user: guest\nrabbitmq.password: guest\nrabbitmq.tls:\nrabbitmq.exchange.name: ei-poc-5\nrabbitmq.domainId: er002-eiffelxxx\nrabbitmq.componentName: eiffelintelligence\nrabbitmq.consumerName: messageConsumer\nrabbitmq.queue.durable:true\nrabbitmq.routing.key:#\nrabbitmq.waitlist.queue.suffix:waitlist\n\nmergeidmarker: %IdentifyRules%\n\nmongodb.host: 150.132.34.9\nmongodb.port: 27019\n\naggregated.collection.name: aggregated_objects\nevent_object_map.collection.name: event_object_map\nwaitlist.collection.name: wait_list\nwaitlist.collection.ttlValue: 600\ndatabase.name: eiffel_intelligence_eiffelxxx\nsubscription.collection.name: subscription\n\nserver.port: 8090\n\nthreads.corePoolSize: 100\nthreads.queueCapacity: 5000\nthreads.maxPoolSize: 150\n\nmissedNotificationCollectionName: Notification\nmissedNotificationDataBaseName: MissedNotification\n\nsubscriptionCollectionName: subscription\nsubscriptionDataBaseName: subscription\n\nemail.sender: noreply@ericsson.com\nemail.subject: Email Subscription Notification\nnotification.failAttempt: 3\nnotification.ttl.value: 600\n\ner.url: http://localhost:8080/search/ 
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+--- src/main/resources/application.properties	(date 1507207046000)
++++ src/main/resources/application.properties	(revision )
+@@ -26,6 +26,8 @@
+ event_object_map.collection.name: event_object_map
+ waitlist.collection.name: wait_list
+ waitlist.collection.ttlValue: 600
++waitlist.initialDelayResend: 2000
++waitlist.fixedRateResend: 15000
+ database.name: eiffel_intelligence_eiffelxxx
+ subscription.collection.name: subscription
+ 
+Index: src/main/java/com/ericsson/ei/controller/SubscriptionControllerImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/***********************************************************************\n *                                                                     *\n * Copyright Ericsson AB 2017                                          *\n *                                                                     * \n * No part of this software may be reproduced in any form without the  *   \n * written permission of the copyright owner.                          *             \n *                                                                     *\n ***********************************************************************/\npackage com.ericsson.ei.controller;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.stereotype.Component;\nimport org.springframework.web.bind.annotation.RequestBody;\n\nimport com.ericsson.ei.controller.model.Subscription;\nimport com.ericsson.ei.controller.model.SubscriptionResponse;\nimport com.ericsson.ei.exception.SubscriptionNotFoundException;\nimport com.ericsson.ei.services.ISubscriptionService;\n\nimport io.swagger.annotations.Api;\nimport io.swagger.annotations.ApiOperation;\n\n@Component\n@Api(value = \"subscription\", description = \"The Subscription API for the store and retrieve the subscriptions from the database\")\npublic class SubscriptionControllerImpl implements SubscriptionController {\n    \n    @Autowired\n    private ISubscriptionService subscriptionService;\n    \n    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);\n    \n    @Override\n    @ApiOperation(value = \"Creates the subscription\")\n    public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody Subscription subscription) {\n        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();\n        if (!subscriptionService.isDuplicatedSubscription(subscription.getSubscriptionName())) {\n            subscriptionService.addSubscription(subscription);\n            LOG.info(\"Subscription :\" + subscription.getSubscriptionName() + \" Inserted Successfully\");\n            subscriptionResponse.setMsg(\"Inserted Successfully\"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);\n        } else {\n            LOG.error(\"Subscription :\" + subscription.getSubscriptionName() + \" identified as duplicate subscription\");\n            subscriptionResponse.setMsg(\"Duplicate Subscription\"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);\n        }\n        \n    }\n    \n    @Override\n    @ApiOperation(value = \"Returns the subscription rules for given subscription name\")\n    public ResponseEntity<Subscription> getSubscriptionById(String subscriptionName) {\n        Subscription subscription = null;\n        try {\n            LOG.info(\"Subscription :\" + subscriptionName + \" fetch started\");\n            subscription = subscriptionService.getSubscription(subscriptionName);\n            LOG.info(\"Subscription :\" + subscriptionName + \" fetched\");\n            return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);\n        } catch (SubscriptionNotFoundException e) {\n            LOG.error(\"Subscription :\" + subscriptionName + \" not found in records\");\n            return new ResponseEntity<Subscription>(subscription, HttpStatus.NOT_FOUND);\n        }\n        \n    }\n    \n    @Override\n    @ApiOperation(value = \"Update the existing subscription by the subscription name\")\n    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(String subscriptionName, @RequestBody Subscription subscription) {\n        LOG.info(\"Subscription :\" + subscriptionName + \" update started\");\n        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();\n        if (!subscriptionService.isDuplicatedSubscription(subscription.getSubscriptionName())) {\n            subscriptionService.modifySubscription(subscription, subscriptionName);\n            LOG.info(\"Subscription :\" + subscriptionName + \" update completed\");\n            subscriptionResponse.setMsg(\"Updated Successfully\"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);\n            \n        } else {\n            LOG.error(\"Subscription :\" + subscription.getSubscriptionName() + \" identified as duplicate subscription\");\n            subscriptionResponse.setMsg(\"Duplicate Subscription\"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);\n        }\n        \n    }\n    \n    @Override\n    @ApiOperation(value = \"Removes the subscription from the database\")\n    public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(String subscriptionName) {\n        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();\n        LOG.info(\"Subscription :\" + subscriptionName + \" delete started\");\n        if (subscriptionService.deleteSubscription(subscriptionName)) {\n            LOG.info(\"Subscription :\" + subscriptionName + \" deleted Successfully\");\n            subscriptionResponse.setMsg(\"Deleted Successfully\"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);\n        } else {\n            LOG.info(\"Subscription :\" + subscriptionName + \" delete completed :: Record not found for delete\");\n            subscriptionResponse.setMsg(\"Record not found for delete\"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());\n            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);\n        }\n        \n    }\n    \n    @Override\n    @ApiOperation(value = \"Retrieve all the subscriptions\")\n    public ResponseEntity<List<Subscription>> getSubscriptions() {\n        LOG.info(\"Subscription : get all records started\");\n        List<Subscription> subscriptionList = new ArrayList<Subscription>();\n        try {\n            subscriptionList = subscriptionService.getSubscription();\n            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);\n        } catch (SubscriptionNotFoundException e) {\n            LOG.error(e.getLocalizedMessage());\n            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.NOT_FOUND);\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/ericsson/ei/controller/SubscriptionControllerImpl.java	(date 1507207046000)
++++ src/main/java/com/ericsson/ei/controller/SubscriptionControllerImpl.java	(revision )
+@@ -17,6 +17,8 @@
+ import org.springframework.http.HttpStatus;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.stereotype.Component;
++import org.springframework.web.bind.annotation.CrossOrigin;
++import org.springframework.web.bind.annotation.PathVariable;
+ import org.springframework.web.bind.annotation.RequestBody;
+ 
+ import com.ericsson.ei.controller.model.Subscription;
+@@ -28,6 +30,7 @@
+ import io.swagger.annotations.ApiOperation;
+ 
+ @Component
++@CrossOrigin
+ @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
+ public class SubscriptionControllerImpl implements SubscriptionController {
+     
+@@ -37,6 +40,7 @@
+     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+     
+     @Override
++    @CrossOrigin
+     @ApiOperation(value = "Creates the subscription")
+     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody Subscription subscription) {
+         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+@@ -54,8 +58,9 @@
+     }
+     
+     @Override
++    @CrossOrigin
+     @ApiOperation(value = "Returns the subscription rules for given subscription name")
+-    public ResponseEntity<Subscription> getSubscriptionById(String subscriptionName) {
++    public ResponseEntity<Subscription> getSubscriptionById(@PathVariable String subscriptionName) {
+         Subscription subscription = null;
+         try {
+             LOG.info("Subscription :" + subscriptionName + " fetch started");
+@@ -70,8 +75,9 @@
+     }
+     
+     @Override
++    @CrossOrigin
+     @ApiOperation(value = "Update the existing subscription by the subscription name")
+-    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(String subscriptionName, @RequestBody Subscription subscription) {
++    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable String subscriptionName, @RequestBody Subscription subscription) {
+         LOG.info("Subscription :" + subscriptionName + " update started");
+         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+         if (!subscriptionService.isDuplicatedSubscription(subscription.getSubscriptionName())) {
+@@ -89,8 +95,9 @@
+     }
+     
+     @Override
++    @CrossOrigin
+     @ApiOperation(value = "Removes the subscription from the database")
+-    public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(String subscriptionName) {
++    public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(@PathVariable String subscriptionName) {
+         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+         LOG.info("Subscription :" + subscriptionName + " delete started");
+         if (subscriptionService.deleteSubscription(subscriptionName)) {
+@@ -106,6 +113,7 @@
+     }
+     
+     @Override
++    @CrossOrigin
+     @ApiOperation(value = "Retrieve all the subscriptions")
+     public ResponseEntity<List<Subscription>> getSubscriptions() {
+         LOG.info("Subscription : get all records started");
+Index: src/main/java/com/ericsson/ei/rmqhandler/EIMessageListenerAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.ericsson.ei.rmqhandler;\n\nimport org.springframework.amqp.core.Message;\nimport org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;\n\nimport com.ericsson.ei.handlers.EventHandler;\nimport com.rabbitmq.client.Channel;\n\npublic class EIMessageListenerAdapter extends MessageListenerAdapter {\n\n    public EIMessageListenerAdapter(Object delegate) {\n        super(delegate);\n    }\n\n    @Override\n    public void onMessage(Message message, Channel channel) throws Exception {\n        Object delegate = getDelegate();\n        if (delegate != this) {\n            if (delegate instanceof EventHandler) {\n                if (channel != null) {\n                    ((EventHandler) delegate).onMessage(message, channel);\n                    return;\n                }\n            }\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/ericsson/ei/rmqhandler/EIMessageListenerAdapter.java	(date 1507207046000)
++++ src/main/java/com/ericsson/ei/rmqhandler/EIMessageListenerAdapter.java	(revision )
+@@ -18,6 +18,7 @@
+         if (delegate != this) {
+             if (delegate instanceof EventHandler) {
+                 if (channel != null) {
++                    channel.basicQos(150);
+                     ((EventHandler) delegate).onMessage(message, channel);
+                     return;
+                 }

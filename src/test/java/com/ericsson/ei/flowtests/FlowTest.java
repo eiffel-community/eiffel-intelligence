@@ -8,8 +8,11 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -25,7 +28,12 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.handlers.ObjectHandler;
@@ -42,6 +50,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource(properties = "myConf.myProp=valueInTest")
 @SpringBootTest
 public class FlowTest {
 
@@ -56,6 +65,9 @@ public class FlowTest {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @Autowired
+    private WaitListStorageHandler waitlist;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -94,6 +106,10 @@ public class FlowTest {
     private static String jsonFilePath = "src/test/resources/test_events.json";
     static private final String inputFilePath = "src/test/resources/AggregatedDocument.json";
 
+    @Value("${database.name}") private String database;
+    @Value("${event_object_map.collection.name}") private String event_map;
+
+
     @BeforeClass
     public static void setup() throws Exception {
         System.setProperty("flow.test", "true");
@@ -106,6 +122,7 @@ public class FlowTest {
     @PostConstruct
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
+        waitlist.setMongoDbHandler(mongoDBHandler);
     }
 
     public static void setUpMessageBus() throws Exception {
@@ -129,8 +146,11 @@ public class FlowTest {
     }
 
     public static void setUpEmbeddedMongo() throws Exception {
-         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
          mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
     }
 
     @AfterClass
@@ -165,7 +185,8 @@ public class FlowTest {
             }
 
             // wait for all events to be processed
-            int processedEvents = 0;
+            long processedEvents = 0;
+            long act = 0;
             while (processedEvents < eventsCount) {
                 String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
                 String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
@@ -173,12 +194,12 @@ public class FlowTest {
                     waitingCountStr = "0";
                 Properties props = admin.getQueueProperties(queue.getName());
                 int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-            }
+                act = countProcessedEvents(database, event_map);
 
-            MongoCollection a = mongoClient.getDatabase("eiffel_intelligence_eiffelxxx").getCollection("event_object_map");
-            long b = a.count();
-            System.out.println(a);
+                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
+                processedEvents = Math.min(processedEvents, act);
+            }
+                Thread.sleep(10);
 
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
             String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
@@ -186,10 +207,19 @@ public class FlowTest {
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
+            System.out.println(actualJson);
             assertEquals(expectedJson.toString().length(), actualJson.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
+    }
+
+    // count documents that were processed
+    private long countProcessedEvents(String database, String collection){
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection table = db.getCollection(collection);
+        long countedDocuments = table.count();
+        return countedDocuments;
     }
 
     private ArrayList<String> getEventNamesToSend() {

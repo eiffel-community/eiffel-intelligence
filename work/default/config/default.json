@@ -1,0 +1,77 @@
+{
+  "id" : "b98469b7-3ca0-47c4-8d40-5bf1d0e1fd36",
+  "name" : "default",
+  "createdTime" : 1507010733305,
+  "lastUpdatedTime" : 1507010733305,
+  "type" : "Memory",
+  "modelVersion" : "6.1",
+  "exchanges" : [ {
+    "id" : "b6be128e-f264-4c6a-8a85-6d133a18e02b",
+    "name" : "amq.direct",
+    "type" : "direct",
+    "lastUpdatedTime" : 1507010733305,
+    "createdTime" : 1507010733305
+  }, {
+    "id" : "b79a54ac-2ef9-4e2a-b6fb-61b48043ddc2",
+    "name" : "amq.fanout",
+    "type" : "fanout",
+    "lastUpdatedTime" : 1507010733305,
+    "createdTime" : 1507010733305
+  }, {
+    "id" : "cfbe4ee0-3f05-4229-a428-e19c9b1eac74",
+    "name" : "amq.match",
+    "type" : "headers",
+    "lastUpdatedTime" : 1507010733305,
+    "createdTime" : 1507010733305
+  }, {
+    "id" : "ab7d4905-6e74-4fdb-8fa5-1709a44083a4",
+    "name" : "amq.topic",
+    "type" : "topic",
+    "lastUpdatedTime" : 1507010733305,
+    "createdTime" : 1507010733305
+  }, {
+    "id" : "7a070579-ec3a-4d5f-960d-1a0a1c9cc4a9",
+    "name" : "ei-poc-4",
+    "type" : "topic",
+    "durable" : true,
+    "lifetimePolicy" : "PERMANENT",
+    "lastUpdatedBy" : "guest",
+    "lastUpdatedTime" : 1507010740864,
+    "createdBy" : "guest",
+    "createdTime" : 1507010740864
+  }, {
+    "id" : "516a17d9-4279-47e3-8b60-fa0737a420ad",
+    "name" : "ei-poc-5",
+    "type" : "topic",
+    "durable" : true,
+    "lifetimePolicy" : "PERMANENT",
+    "lastUpdatedBy" : "guest",
+    "lastUpdatedTime" : 1507012746659,
+    "createdBy" : "guest",
+    "createdTime" : 1507012746659
+  } ],
+  "queues" : [ {
+    "id" : "4a79b016-5369-4970-b7cd-2ea19ad4d629",
+    "name" : "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable",
+    "type" : "standard",
+    "durable" : true,
+    "lifetimePolicy" : "PERMANENT",
+    "exclusive" : "NONE",
+    "owner" : null,
+    "lastUpdatedBy" : "guest",
+    "lastUpdatedTime" : 1507022407154,
+    "createdBy" : "guest",
+    "createdTime" : 1507022407154,
+    "bindings" : [ {
+      "exchange" : "7a070579-ec3a-4d5f-960d-1a0a1c9cc4a9",
+      "id" : "7b0b0f0f-83b5-4f80-9933-7c9b72675417",
+      "name" : "#",
+      "type" : "Binding",
+      "durable" : true,
+      "lastUpdatedBy" : "guest",
+      "lastUpdatedTime" : 1507022407226,
+      "createdBy" : "guest",
+      "createdTime" : 1507022407226
+    } ]
+  } ]
+}

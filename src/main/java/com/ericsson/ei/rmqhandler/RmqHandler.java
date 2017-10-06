@@ -173,14 +173,16 @@ public class RmqHandler {
     }
 
     @Bean
-    SimpleMessageListenerContainer bindToWaitlistQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+        String queueName = getQueueName();
+        //MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-        waitlistContainer = new SimpleMessageListenerContainer();
-        waitlistContainer.setConnectionFactory(factory);
-        waitlistContainer.setQueueNames(getQueueName());
-        waitlistContainer.setMessageListener(listenerAdapter);
-        waitlistContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        return waitlistContainer;
+        container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(factory);
+        container.setQueueNames(queueName);
+        container.setMessageListener(listenerAdapter);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        return container;
     }
 
     public String getQueueName() {
@@ -231,6 +233,7 @@ public class RmqHandler {
 
     public void close() {
         try {
+            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

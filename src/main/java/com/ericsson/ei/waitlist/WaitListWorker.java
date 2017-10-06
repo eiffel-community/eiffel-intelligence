@@ -37,13 +37,9 @@ public class WaitListWorker {
     @Autowired
     private MatchIdRulesHandler matchIdRulesHandler;
 
-//    @Value("${waitlist.initDelay}") private int a1;
-    private String a1 = System.getProperty("rabbitmq.port");
-    private final int A = Integer.parseInt(a1);
-
     static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
-    @Scheduled(initialDelay = 100, fixedRate = 10000)
+    @Scheduled(initialDelay = 1000, fixedRate = 10000)
     public void run() {
         RulesObject rulesObject = null;
         ArrayList<String> documents = waitListStorageHandler.getWaitList();

@@ -46,16 +46,24 @@ public class MergeHandler {
         mergeIdMarker = marker;
     }
 
-    public String mergeObject(String id, RulesObject rules, String event, JsonNode objectToMerge){
+    public String mergeObject(String id, RulesObject rules, String event, JsonNode objectToMerge, String pathInAggregatedObject){
         String mergedObject = null;
         String preparedToMergeObject;
         try{
             // lock and get the AggregatedObject
             String aggregatedObject = (String) getAggregatedObject(id);
-            String mergeRule = (String) rules.getMergeRules();
+
+            String mergeRule;
+
+            if (pathInAggregatedObject == null || pathInAggregatedObject.isEmpty()) {
+                mergeRule = pathInAggregatedObject;
+            } else {
+                mergeRule = (String) rules.getMergeRules();
+                mergeRule = (String) replaceIdMarkerInRules(mergeRule, id);
+            }
+
             if (mergeRule != null && !mergeRule.isEmpty()){
-                String updatedRule = (String) replaceIdMarkerInRules(mergeRule, id);
-                String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
+                String ruleForMerge = jmesPathInterface.runRuleOnEvent(mergeRule, event).toString();
                 String mergePath = (String) prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge);
                 preparedToMergeObject = (String) prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);
@@ -66,9 +74,10 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
-            // unlocking of document will be performed, when mergedObject will be inserted to database
-            objectHandler.updateObject(mergedObject, rules, event, id);
-            return mergedObject;
+
+        // unlocking of document will be performed, when mergedObject will be inserted to database
+        objectHandler.updateObject(mergedObject, rules, event, id);
+        return mergedObject;
     }
 
     public String replaceIdMarkerInRules(String rule, String id){
@@ -147,6 +156,7 @@ public class MergeHandler {
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
                 return result.asText();
+
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }

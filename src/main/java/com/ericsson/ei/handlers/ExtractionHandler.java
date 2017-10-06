@@ -1,9 +1,5 @@
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +8,6 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,7 +20,7 @@ public class ExtractionHandler {
     @Autowired private MergeHandler mergeHandler;
     @Autowired private ObjectHandler objectHandler;
     @Autowired private ProcessRulesHandler processRulesHandler;
-    //TODO:@Autowired private HistoryIdRulesHandler historyIdRulesHandler;
+    @Autowired private UpStreamEventsHandler uppstreamEventsHandler;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -39,9 +33,10 @@ public class ExtractionHandler {
 //    public void setProcessRulesHandler(ProcessRulesHandler processRulesHandler) {
 //        this.processRulesHandler = processRulesHandler;
 //    }
-//
-//    public void setHistoryIdRulesHandler(HistoryIdRulesHandler historyIdRulesHandler) {
-//        this.historyIdRulesHandler = historyIdRulesHandler;
+
+
+//    public void setUppstreamEventsHandler(UpStreamEventsHandler uppstreamEventsHandler) {
+//        this.uppstreamEventsHandler = uppstreamEventsHandler;
 //    }
 
     public void setObjectHandler(ObjectHandler objectHandler) {
@@ -58,17 +53,17 @@ public class ExtractionHandler {
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, JsonNode aggregatedDbObject) {
+    public void runExtraction(RulesObject rulesObject, String aggregatedObjectId, String event, JsonNode aggregatedDbObject) {
         JsonNode extractedContent;
         extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
-            String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-            String mergedContent = mergeHandler.mergeObject(objectId, rulesObject, event, extractedContent);
-            mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId);
-            //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
+            aggregatedObjectId = objectHandler.extractObjectId(aggregatedDbObject);
+            String mergedContent = mergeHandler.mergeObject(aggregatedObjectId, rulesObject, event, extractedContent, null);
+            mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, aggregatedObjectId);
         } else {
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
+            uppstreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(aggregatedObjectId, rulesObject);
         }
     }
 

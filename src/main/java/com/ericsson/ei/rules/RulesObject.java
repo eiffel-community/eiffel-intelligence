@@ -34,6 +34,10 @@ public class RulesObject {
         return rulesObject.get("MergeResolverRules").textValue();
     }
 
+    public String getHistoryExtractionRules() {
+        return rulesObject.get("HistoryExtractionRules").textValue();
+    }
+
     public String fetchProcessRules() {
         return rulesObject.get("ProcessRules").textValue();
     }
@@ -48,6 +52,11 @@ public class RulesObject {
 
     public boolean isStartEventRules() {
         String value = rulesObject.get("StartEvent").textValue().toLowerCase();
+        return value.equals("yes");
+    }
+
+    public boolean isNeedHistoryRule() {
+        String value = rulesObject.get("NeedHistoryRule").textValue().toLowerCase();
         return value.equals("yes");
     }
 }

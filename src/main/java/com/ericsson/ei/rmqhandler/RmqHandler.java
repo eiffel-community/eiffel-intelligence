@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -11,6 +12,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -44,11 +46,12 @@ public class RmqHandler {
     private String domainId;
     @Value("${rabbitmq.componentName}")
     private String componentName;
+    @Value("${rabbitmq.waitlist.queue.suffix}")
+    private String waitlistSufix;
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
-    // SimpleMessageListenerContainer container;
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
@@ -170,17 +173,23 @@ public class RmqHandler {
     @Bean
     SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
         String queueName = getQueueName();
-        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
+        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(factory);
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;
     }
 
     public String getQueueName() {
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
+    }
+
+    public String getWaitlistQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
     }
 
     @Bean
@@ -208,15 +217,6 @@ public class RmqHandler {
     public void publishObjectToMessageBus(String message) {
         log.info("publishing message to message bus...");
         rabbitMqTemplate().convertAndSend(message);
-//        Connection conn = factory.createConnection();
-//        Channel channel = conn.createChannel(true);
-//        String queueName = getQueueName();
-//        String exchange = exchangeName;
-//        try {
-//            channel.basicPublish(exchange, queueName, null, message.getBytes());
-//        } catch (Exception e) {
-//            log.info(e.getMessage(),e);
-//        }
     }
 
     public void close() {

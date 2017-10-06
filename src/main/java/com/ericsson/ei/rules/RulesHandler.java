@@ -1,10 +1,7 @@
 package com.ericsson.ei.rules;
 
-import java.io.File;
+import java.io.*;
 import java.util.Iterator;
-
-import org.apache.commons.io.FileUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +27,8 @@ public class RulesHandler {
     @PostConstruct public void init() {
         if (parsedJason == null) {
             try {
-                jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+                InputStream in = this.getClass().getResourceAsStream(jsonFilePath);
+                jsonFileContent = getContent(in);
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJason = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
@@ -48,7 +46,6 @@ public class RulesHandler {
         JsonNode type;
         JsonNode result;
         Iterator<JsonNode> iter = parsedJason.iterator();
-
         while(iter.hasNext()) {
             JsonNode rule = iter.next();
             typeRule = rule.get("TypeRule").toString();
@@ -62,6 +59,23 @@ public class RulesHandler {
             if (result.equals(type)) {
                 return new RulesObject(rule);
             }
+        }
+        return null;
+    }
+
+    private String getContent(InputStream inputStream){
+        try {
+
+
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            return result.toString("UTF-8");}
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return null;
     }

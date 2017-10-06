@@ -1,18 +1,18 @@
 package com.ericsson.ei.flowtests;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -29,25 +29,16 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(properties = "myConf.myProp=valueInTest")
@@ -65,9 +56,6 @@ public class FlowTest {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
-
-    @Autowired
-    private WaitListStorageHandler waitlist;
 
     @Autowired
     RmqHandler rmqHandler;
@@ -122,7 +110,6 @@ public class FlowTest {
     @PostConstruct
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
-        waitlist.setMongoDbHandler(mongoDBHandler);
     }
 
     public static void setUpMessageBus() throws Exception {
@@ -186,20 +173,10 @@ public class FlowTest {
 
             // wait for all events to be processed
             long processedEvents = 0;
-            long act = 0;
             while (processedEvents < eventsCount) {
-                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-                String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
-                if (waitingCountStr == null)
-                    waitingCountStr = "0";
-                Properties props = admin.getQueueProperties(queue.getName());
-                int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-                act = countProcessedEvents(database, event_map);
-
-                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-                processedEvents = Math.min(processedEvents, act);
+                processedEvents = countProcessedEvents(database, event_map);
             }
-                Thread.sleep(10);
+            TimeUnit.MILLISECONDS.sleep(100);
 
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
             String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));

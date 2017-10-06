@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +45,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class TrafficGeneratedTest {
 
-    private static final int EVENT_PACKAGES = 1000;
+    private static final int EVENT_PACKAGES = 100;
     private static Logger log = LoggerFactory.getLogger(TrafficGeneratedTest.class);
 
     public static File qpidConfig = null;
@@ -183,19 +182,9 @@ public class TrafficGeneratedTest {
 
             // wait for all events to be processed
             long processedEvents = 0;
-            long act = 0;
-
             MongoCollection eventMap = mongoClient.getDatabase(database).getCollection(event_map);
             while (processedEvents < eventsCount) {
-                String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-                String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
-                if (waitingCountStr == null)
-                    waitingCountStr = "0";
-                Properties props = admin.getQueueProperties(queue.getName());
-                int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-                act = eventMap.count();
-                processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-                processedEvents = Math.min(processedEvents, act);
+                processedEvents = eventMap.count();
             }
 
             Thread.sleep(1000);

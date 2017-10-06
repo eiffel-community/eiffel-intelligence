@@ -52,12 +52,6 @@ public class EventHandler {
         String actualMessage = new String(message);
         log.info("Event received <" + actualMessage + ">");
         eventReceived(actualMessage);
-        if (System.getProperty("flow.test") == "true" || System.getProperty("trafficGenerated.test") == "true") {
-            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-            int count = Integer.parseInt(countStr);
-            count++;
-            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
-        }
     }
 
     @Async
@@ -66,7 +60,6 @@ public class EventHandler {
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
-
         int breakHere = 1;
     }
 }

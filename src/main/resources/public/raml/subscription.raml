@@ -41,7 +41,18 @@
       description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique. 
       body:
         application/json:
-          schema: subscription               
+          schema: subscription  
+
+    put:      
+      description: Modify an existing Subscription. 
+      body:
+        application/json:
+          schema: subscription
+      responses:
+        200:        
+          body:
+            application/json:
+              schema: subscriptionResponse            
                 
     /{subscriptionName}:    
       uriParameters:
@@ -59,17 +70,6 @@
             body:
               application/json:
                 schema: subscription  
-  
-      put:      
-        description: Modify an existing Subscription. 
-        body:
-          application/json:
-            schema: subscription
-        responses:
-          200:        
-            body:
-              application/json:
-                schema: subscriptionResponse
         
               
       delete:

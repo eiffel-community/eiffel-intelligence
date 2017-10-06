@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class TrafficGeneratedTest {
 
-    private static final int EVENT_PACKAGES = 100;
+    private static final int EVENT_PACKAGES = 10;
     private static Logger log = LoggerFactory.getLogger(TrafficGeneratedTest.class);
 
     public static File qpidConfig = null;
@@ -244,8 +244,6 @@ public class TrafficGeneratedTest {
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent");
         eventNames.add("event_EiffelTestCaseStartedEvent");
         eventNames.add("event_EiffelTestCaseFinishedEvent");
-        eventNames.add("event_EiffelSourceChangeCreatedEvent");
-        eventNames.add("event_EiffelSourceChangeSubmittedEvent");
 
         return eventNames;
     }

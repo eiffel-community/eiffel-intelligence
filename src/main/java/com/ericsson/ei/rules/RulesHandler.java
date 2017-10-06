@@ -2,6 +2,8 @@ package com.ericsson.ei.rules;
 
 import java.io.*;
 import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,11 @@ public class RulesHandler {
         if (parsedJason == null) {
             try {
                 InputStream in = this.getClass().getResourceAsStream(jsonFilePath);
-                jsonFileContent = getContent(in);
+                if(in == null) {
+                    jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+                } else {
+                    jsonFileContent = getContent(in);
+                }
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJason = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {

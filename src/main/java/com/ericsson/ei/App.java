@@ -29,7 +29,6 @@ public class App {
             System.setProperty("logging.level.com.ericsson.ei", "OFF");
         }
 
-
         SpringApplication.run(App.class, args);
     }
 

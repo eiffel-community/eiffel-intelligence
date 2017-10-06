@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ebab41a7-da32-4f1f-8206-20c2cbf70815" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/handlers/EventHandler.java" afterPath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/handlers/EventHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/rmqhandler/RmqHandler.java" afterPath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/rmqhandler/RmqHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/flowtests/FlowTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/flowtests/FlowTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/flowtests/FlowTest2.java" afterPath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/flowtests/FlowTest2.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java" afterPath="$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/.idea/shelf/" />
@@ -31,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="App.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="App.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="510">
-              <caret line="30" column="0" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+              <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -43,7 +39,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TrafficGeneratedTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TrafficGeneratedTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="47">
@@ -104,10 +100,10 @@
         <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/src/main/java/com/ericsson/ei/rules/RulesHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/ericsson/ei/waitlist/WaitListWorker.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/ericsson/ei/flowtests/FlowTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/ericsson/ei/handlers/EventHandler.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java" />
       </list>
     </option>
   </component>
@@ -809,7 +805,14 @@
       <option name="project" value="LOCAL" />
       <updated>1507208903046</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Set number of packages of events in TrafficGeneratedTest in variable EVENT_PACKAGES.&#10;ALL, DEBUG, ERROR, FATAL, INFO, TRACE, WARN parametres added to a jar file at the time of execution for start EI with logs. No parameters start EI without logs.">
+      <created>1507278333371</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1507278333371</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -846,7 +849,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-5" y="24" width="1916" height="941" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -948,7 +950,8 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Set number of packages of events in TrafficGeneratedTest in variable EVENT_PACKAGES.&#10;ALL, DEBUG, ERROR, FATAL, INFO, TRACE, WARN parametres added to a jar file at the time of execution for start EI with logs. No parameters start EI without logs." />
+    <option name="LAST_COMMIT_MESSAGE" value="Set number of packages of events in TrafficGeneratedTest in variable EVENT_PACKAGES.&#10;ALL, DEBUG, ERROR, FATAL, INFO, TRACE, WARN parametres added to a jar file at the time of execution for start EI with logs. No parameters start EI without logs." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1267,20 +1270,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java">
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="0" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+        <state relative-caret-position="47">
+          <caret line="91" column="9" lean-forward="true" selection-start-line="91" selection-start-column="9" selection-end-line="91" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/ericsson/ei/measuringPerformanceTest/TrafficGeneratedTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/ericsson/ei/App.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="47">
-          <caret line="91" column="9" lean-forward="true" selection-start-line="91" selection-start-column="9" selection-end-line="91" selection-end-column="9" />
+        <state relative-caret-position="510">
+          <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

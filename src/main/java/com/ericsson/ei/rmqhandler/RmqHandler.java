@@ -171,28 +171,16 @@ public class RmqHandler {
         return BindingBuilder.bind(queue).to(exchange).with(routingKey);
     }
 
-//    @Bean
-//    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-//        String queueName = getQueueName();
-////        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
-//        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-//        container = new SimpleMessageListenerContainer();
-//        container.setConnectionFactory(factory);
-//        container.setQueueNames(queueName);
-//        container.setMessageListener(listenerAdapter);
-////        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-//        return container;
-//    }
-
     @Bean
-    SimpleMessageListenerContainer bindToWaitlistQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+        String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-        waitlistContainer = new SimpleMessageListenerContainer();
-        waitlistContainer.setConnectionFactory(factory);
-        waitlistContainer.setQueueNames(getWaitlistQueueName());
-        waitlistContainer.setMessageListener(listenerAdapter);
-        waitlistContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        return waitlistContainer;
+        container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(factory);
+        container.setQueueNames(queueName);
+        container.setMessageListener(listenerAdapter);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        return container;
     }
 
     public String getQueueName() {
@@ -206,7 +194,7 @@ public class RmqHandler {
     }
 
     @Bean
-    public RabbitTemplate waitListRabbitMqTemplate() {
+    public RabbitTemplate rabbitMqTemplate() {
         if (rabbitTemplate == null) {
             if (factory != null) {
                 rabbitTemplate = new RabbitTemplate(factory);
@@ -229,8 +217,7 @@ public class RmqHandler {
 
     public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
-        //rabbitMqTemplate().convertAndSend(message);
-        waitListRabbitMqTemplate().convertAndSend(message);
+        rabbitMqTemplate().convertAndSend(message);
     }
 
     public void close() {

@@ -17,3 +17,4 @@ script:
   - mvn -DsomeModule.test.includes="**/FlowTest.java" test
   - mvn -DsomeModule.test.includes="**/FlowTest2.java" test
   - mvn -DsomeModule.test.includes="**/TrafficGeneratedTest.java" test
+  - mvn -DsomeModule.test.includes="**/FlowTestExternalComposition.java" test

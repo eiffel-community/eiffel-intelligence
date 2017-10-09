@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -23,6 +23,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -30,6 +31,8 @@ import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -49,6 +52,9 @@ public class FlowTestBase {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @Value("${database.name}") private String database;
+    @Value("${event_object_map.collection.name}") private String event_map;
 
     public static File qpidConfig = null;
     static AMQPBrokerManager amqpBrocker;
@@ -106,7 +112,8 @@ public class FlowTestBase {
         System.setProperty("rabbitmq.port", "8672");
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-
+        System.setProperty("waitlist.initialDelayResend", "10");
+        System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
@@ -182,17 +189,25 @@ public class FlowTestBase {
         return eventNames;
     }
 
+ // count documents that were processed
+    private long countProcessedEvents(String database, String collection){
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection table = db.getCollection(collection);
+        long countedDocuments = table.count();
+        return countedDocuments;
+    }
+
     protected void waitForEventsToBeProcessed(int eventsCount) {
-         int processedEvents = 0;
-         while (processedEvents < eventsCount) {
-             String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-             String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
-             if (waitingCountStr == null)
-                 waitingCountStr = "0";
-             Properties props = admin.getQueueProperties(queue.getName());
-             int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-             processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-         }
+        // wait for all events to be processed
+        long processedEvents = 0;
+        while (processedEvents < eventsCount) {
+            processedEvents = countProcessedEvents(database, event_map);
+        }
+        try {
+            TimeUnit.MILLISECONDS.sleep(100);
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
     }
 
     protected void checkResult() {

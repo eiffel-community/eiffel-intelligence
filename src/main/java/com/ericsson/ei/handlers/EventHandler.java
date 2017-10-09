@@ -36,7 +36,6 @@ public class EventHandler {
         idRulesHandler.runIdRules(eventRules, event);
     }
 
-
     public void eventReceived(byte[] message) {
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);

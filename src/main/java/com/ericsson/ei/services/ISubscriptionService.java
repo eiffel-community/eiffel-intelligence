@@ -47,11 +47,11 @@ public interface ISubscriptionService {
     boolean deleteSubscription(String name);
 
     /**
-     * isDuplicatedSubscription method checks the is there any Subscription By Subscription Name
+     * doSubscriptionExist method checks the is there any Subscription By Subscription Name
      * @param name
      * @return true when Subscription available with same name. Otherwise returns false.
      */
-    boolean isDuplicatedSubscription(String name);
+    boolean doSubscriptionExist(String name);
 
 
 }

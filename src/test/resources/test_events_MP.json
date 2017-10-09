@@ -1,0 +1,335 @@
+{
+
+  "event_EiffelArtifactCreatedEvent" :
+  {
+    "links": [
+      {
+        "target": "fb6ef12d-25fb-4d77-b9fd-87688e",
+        "type": "COMPOSITION"
+      },
+      {
+        "target": "c4f9565d-2382-488f-b911-e3326b",
+        "type": "ENVIRONMENT"
+      },
+      {
+        "target": "c04fa59a-3c36-4601-8eac-7a26b8",
+        "type": "CONTEXT"
+      }
+    ],
+    "meta": {
+      "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875891763,
+      "type": "EiffelArtifactCreatedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "customData": [
+        {
+          "value": "ArtC2",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ],
+      "fileInformation": [
+        {
+          "classifier": "",
+          "extension": "jar"
+        }
+      ],
+      "gav": {
+        "artifactId": "sub-system",
+        "version": "1.1.0",
+        "groupId": "com.mycompany.myproduct"
+      }
+    }
+  },
+
+  "event_EiffelArtifactPublishedEvent" :
+  {
+    "links": [
+      {
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4",
+        "type": "ARTIFACT"
+      },
+      {
+        "target": "c04fa59a-3c36-4601-8eac-7a26b8",
+        "type": "CONTEXT"
+      }
+    ],
+    "meta": {
+      "id": "33d05e6f-9bd9-4138-83b6-e20cc7",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875921763,
+      "type": "EiffelArtifactPublishedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "customData": [
+        {
+          "value": "ArtP2",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ],
+      "locations": [
+        {
+          "uri": "https://myrepository.com/mySubSystemArtifact",
+          "type": "PLAIN"
+        }
+      ]
+    }
+  },
+
+  "event_EiffelConfidenceLevelModifiedEvent" :
+  {
+    "links": [
+      {
+        "target": "40df7fc4-0c40-40a3-a349-9f6da0",
+        "type": "CAUSE"
+      },
+      {
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4",
+        "type": "SUBJECT"
+      }
+    ],
+    "meta": {
+      "id": "f37d59a3-069e-4f4c-8cc5-a52e73",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875944272,
+      "type": "EiffelConfidenceLevelModifiedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "value": "SUCCESS",
+      "customData": [
+        {
+          "value": "CLM2",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ],
+      "name": "readyForSystemIntegration"
+    }
+  },
+
+  "event_EiffelTestCaseStartedEvent" :
+  {
+    "links": [
+      {
+        "target": "5ac05ae1-d7a2-4ef0-be0b-670ee4",
+        "type": "CONTEXT"
+      },
+      {
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4",
+        "type": "IUT"
+      }
+    ],
+    "meta": {
+      "id": "cb9d64b0-a6e9-4419-8b5d-a650c2",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875925916,
+      "type": "EiffelTestCaseStartedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "testCase": {
+        "id": "TC5",
+        "uri": "https://other-tm.company.com/testCase/TC5",
+        "tracker": "My Other Test Management System"
+      },
+      "customData": [
+        {
+          "value": "TCS5",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ]
+    }
+  },
+
+  "event_EiffelTestCaseFinishedEvent" :
+  {
+    "links": [
+      {
+        "target": "cb9d64b0-a6e9-4419-8b5d-a650c2",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "meta": {
+      "id": "11109351-41e0-474a-bc1c-f6e81e",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875935919,
+      "type": "EiffelTestCaseFinishedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "outcome": {
+        "verdict": "PASSED",
+        "conclusion": "SUCCESSFUL"
+      },
+      "customData": [
+        {
+          "value": "TCF5",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ]
+    }
+  },
+
+  "event_EiffelCompositionDefinedEvent" :
+  {
+    "links": [
+      {
+        "target": "f37d59a3-069e-4f4c-8cc5-a52e73",
+        "type": "CAUSE"
+      },
+      {
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2422",
+        "type": "ELEMENT"
+      }
+    ],
+    "meta": {
+      "id": "fb6ef12d-25fb-4d77-b9fd-87688e",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875944572,
+      "type": "EiffelCompositionDefinedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "customData": [
+        {
+          "value": "CDef1",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ],
+      "version": "1",
+      "name": "Composition 1"
+    }
+  },
+
+  "event_EiffelSourceChangeCreatedEvent" :
+  {
+    "links": [
+      {
+        "type": "BASE",
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5dc"
+      }
+    ],
+    "meta": {
+      "type": "EiffelSourceChangeCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6ef12d-25fb-4d77-b9fd-5f0328",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "gitIdentifier": {
+        "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "branch": "myBranch",
+        "repoName": "myPrivateRepo",
+        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+      },
+      "author": {
+        "name": "John Doe",
+        "email": "john.doe@company.com",
+        "id": "johndoe",
+        "group": "Team Gophers"
+      },
+      "change": {
+        "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "insertions": 173,
+        "deletions": 79,
+        "tracker": "GitHub",
+        "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "id": "42"
+      },
+      "issues": [
+        {
+          "type": "BUG",
+          "tracker": "JIRA",
+          "id": "JIRA-1234",
+          "uri": "http://jira.company.com/browse/JIRA-1234",
+          "transition": "RESOLVED"
+        }
+      ]
+    }
+
+  },
+
+  "event_EiffelSourceChangeSubmittedEvent" :
+  {
+    "meta": {
+      "type": "EiffelSourceChangeSubmittedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6efi4n-25fb-4d77-b9fd-5f2422",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "svnIdentifier": {
+        "revision": 42,
+        "directory": "trunk",
+        "repoName": "Mainline",
+        "repoUri": "svn://repohost/mainline"
+      },
+      "submitter": {
+        "name": "Jane Doe",
+        "email": "jane.doe@company.com",
+        "id": "j_doe",
+        "group": "Team Wombats"
+      }
+    },
+    "links": [
+      {
+        "type": "CHANGE",
+        "target": "fb6ef12d-25fb-4d77-b9fd-5f0328"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4"
+      }
+    ]
+  }
+
+}

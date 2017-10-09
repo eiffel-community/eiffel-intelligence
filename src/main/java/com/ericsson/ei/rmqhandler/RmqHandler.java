@@ -52,7 +52,6 @@ public class RmqHandler {
     private String routingKey;
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
-    // SimpleMessageListenerContainer container;
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
@@ -230,6 +229,7 @@ public class RmqHandler {
 
     public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
+        //rabbitMqTemplate().convertAndSend(message);
         waitListRabbitMqTemplate().convertAndSend(message);
     }
 

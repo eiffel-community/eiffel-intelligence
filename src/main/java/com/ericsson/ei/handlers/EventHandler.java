@@ -36,17 +36,37 @@ public class EventHandler {
         idRulesHandler.runIdRules(eventRules, event);
     }
 
+    @Bean
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(corePoolSize);
+        executor.setQueueCapacity(queueCapacity);
+        executor.setMaxPoolSize(maxPoolSize);
+        executor.setThreadNamePrefix("EventHandler-");
+        executor.initialize();
+        return executor;
+    }
+
     public void eventReceived(byte[] message) {
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
         log.info("Event received <" + actualMessage + ">");
         eventReceived(actualMessage);
-        if (System.getProperty("flow.test") == "true") {
-            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-            int count = Integer.parseInt(countStr);
-            count++;
-            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
-        }
+//        if (System.getProperty("flow.test") == "true") {
+//            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+//            int count = Integer.parseInt(countStr);
+//            count++;
+//            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
+//        }
+    }
+
+    @Async
+    public void onMessage(Message message, Channel channel) throws Exception {
+        byte[] messageBody = message.getBody();
+        eventReceived(messageBody);
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        channel.basicAck(deliveryTag, false);
+        int breakHere = 1;
     }
 
     @Async

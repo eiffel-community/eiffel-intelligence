@@ -158,16 +158,16 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testIsDuplicatedSubscription() {
-        boolean isDuplicatedSubscription;
+    public void testdoSubscriptionExist() {
+        boolean doSubscriptionExist;
         try {
             // Insert Subscription
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             subscriptionService.addSubscription(subscription2);
 
             subscriptionName = subscription2.getSubscriptionName();
-            isDuplicatedSubscription = subscriptionService.isDuplicatedSubscription(subscriptionName);
-            assertEquals(isDuplicatedSubscription, true);
+            doSubscriptionExist = subscriptionService.doSubscriptionExist(subscriptionName);
+            assertEquals(doSubscriptionExist, true);
             // deleting the test data
             deleteSubscriptionsByName(subscriptionName);
         } catch (IOException | JSONException e) {

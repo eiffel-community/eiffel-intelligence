@@ -22,9 +22,6 @@ import com.mongodb.util.JSON;
 @Component
 public class WaitListWorker {
 
-    @Value("${waitlist.initialDelayResend:}")  private int initialDelayResend;
-    @Value("${waitlist.fixedRateResend:}") private int fixedRateResend;
-
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
 

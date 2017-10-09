@@ -1,42 +1,17 @@
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
-import org.apache.qpid.server.Broker;
-import org.apache.qpid.server.BrokerOptions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,20 +37,6 @@ public class FlowTest2 extends FlowTestBase {
         eventNames.add("event_EiffelTestCaseFinishedEvent_1");
 
         return eventNames;
-    }
-
-    protected void waitForEventsToBeProcessed(int eventsCount) {
-        // wait for all events to be processed
-        int processedEvents = 0;
-        while (processedEvents < eventsCount) {
-            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-            String waitingCountStr = System.getProperty("eiffel.intelligence.waitListEventsCount");
-            if (waitingCountStr == null)
-                waitingCountStr = "0";
-            Properties props = admin.getQueueProperties(queue.getName());
-            int messageCount = Integer.parseInt(props.get("QUEUE_MESSAGE_COUNT").toString());
-            processedEvents = Integer.parseInt(countStr) - Integer.parseInt(waitingCountStr) - messageCount;
-        }
     }
 
     protected void checkResult() {

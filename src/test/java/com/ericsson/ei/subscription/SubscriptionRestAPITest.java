@@ -70,7 +70,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
                 .thenReturn(false);
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions/Subscription_Test")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
                 .accept(MediaType.APPLICATION_JSON).content(jsonArray.getJSONObject(0).toString())
                 .contentType(MediaType.APPLICATION_JSON);
         
@@ -86,7 +86,7 @@ public class SubscriptionRestAPITest {
     public void updateSubscriptionFailWhenSubscriptionDoNotExist() throws Exception {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions/Subscription_Test")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
                 .accept(MediaType.APPLICATION_JSON).content(jsonArray.getJSONObject(0).toString())
                 .contentType(MediaType.APPLICATION_JSON);
         

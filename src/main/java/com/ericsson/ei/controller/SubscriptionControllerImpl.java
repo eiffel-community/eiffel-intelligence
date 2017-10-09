@@ -75,12 +75,13 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     }
     
     @Override
-    @CrossOrigin
+    //@CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable String subscriptionName, @RequestBody Subscription subscription) {
+    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody Subscription subscription) {
+    	String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        if (subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
+        if (subscriptionService.doSubscriptionExist(subscriptionName)) {
             subscriptionService.modifySubscription(subscription, subscriptionName);
             LOG.info("Subscription :" + subscriptionName + " update completed");
             subscriptionResponse.setMsg("Updated Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());

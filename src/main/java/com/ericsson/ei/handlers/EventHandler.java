@@ -18,11 +18,10 @@ import com.rabbitmq.client.Channel;
 
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class EventHandler {
-    @Value("${threads.corePoolSize}") private int corePoolSize;
-    @Value("${threads.queueCapacity}") private int queueCapacity;
-    @Value("${threads.maxPoolSize}") private int maxPoolSize;
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
 
@@ -66,6 +65,17 @@ public class EventHandler {
         byte[] messageBody = message.getBody();
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        channel.basicAck(deliveryTag, false);
+        int breakHere = 1;
+    }
+
+    @Async
+    public void onMessage(Message message, Channel channel) throws Exception {
+        byte[] messageBody = message.getBody();
+//        String messageStr = new String(messageBody);
+        eventReceived(messageBody);
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+//        String queue = message.getMessageProperties().getConsumerQueue();
         channel.basicAck(deliveryTag, false);
         int breakHere = 1;
     }

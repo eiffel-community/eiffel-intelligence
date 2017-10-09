@@ -55,6 +55,7 @@ public class RmqHandler {
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
+    private SimpleMessageListenerContainer waitlistContainer;
     static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
     public Boolean getQueueDurable() {
@@ -170,16 +171,28 @@ public class RmqHandler {
         return BindingBuilder.bind(queue).to(exchange).with(routingKey);
     }
 
+//    @Bean
+//    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+//        String queueName = getQueueName();
+////        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
+//        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+//        container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(factory);
+//        container.setQueueNames(queueName);
+//        container.setMessageListener(listenerAdapter);
+////        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+//        return container;
+//    }
+
     @Bean
-    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-        String queueName = getQueueName();
+    SimpleMessageListenerContainer bindToWaitlistQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-        container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(factory);
-        container.setQueueNames(queueName);
-        container.setMessageListener(listenerAdapter);
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        return container;
+        waitlistContainer = new SimpleMessageListenerContainer();
+        waitlistContainer.setConnectionFactory(factory);
+        waitlistContainer.setQueueNames(getWaitlistQueueName());
+        waitlistContainer.setMessageListener(listenerAdapter);
+        waitlistContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        return waitlistContainer;
     }
 
     public String getQueueName() {
@@ -193,7 +206,7 @@ public class RmqHandler {
     }
 
     @Bean
-    public RabbitTemplate rabbitMqTemplate() {
+    public RabbitTemplate waitListRabbitMqTemplate() {
         if (rabbitTemplate == null) {
             if (factory != null) {
                 rabbitTemplate = new RabbitTemplate(factory);
@@ -214,13 +227,15 @@ public class RmqHandler {
         return rabbitTemplate;
     }
 
-    public void publishObjectToMessageBus(String message) {
+    public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
-        rabbitMqTemplate().convertAndSend(message);
+        //rabbitMqTemplate().convertAndSend(message);
+        waitListRabbitMqTemplate().convertAndSend(message);
     }
 
     public void close() {
         try {
+            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

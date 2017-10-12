@@ -19,7 +19,7 @@ public class App {
         List<String> logLevels = new ArrayList<>();
         Collections.addAll(logLevels, "ALL", "DEBUG", "ERROR", "FATAL", "INFO", "TRACE", "WARN");
 
-        if(logLevels.contains(args[0])) {
+        if(args != null && args.length > 0 && logLevels.contains(args[0])) {
             System.setProperty("logging.level.root", args[0]);
             System.setProperty("logging.level.org.springframework.web", args[0]);
             System.setProperty("logging.level.com.ericsson.ei", args[0]);

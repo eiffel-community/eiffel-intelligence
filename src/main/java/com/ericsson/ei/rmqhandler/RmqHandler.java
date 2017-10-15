@@ -151,8 +151,10 @@ public class RmqHandler {
         factory = new CachingConnectionFactory(host, port);
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
-        // factory.setUsername("guest");
-        // factory.setPassword("guest");
+        if(user != null && user.length() !=0 && password != null && password.length() !=0) {
+            factory.setUsername(user);
+            factory.setPassword(password);
+        }
         return factory;
     }
 

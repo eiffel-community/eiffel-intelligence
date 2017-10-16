@@ -38,24 +38,26 @@ public class IdRulesHandler {
     }
 
     public void runIdRules(RulesObject rulesObject, String event) {
-        JsonNode idsJsonObj = getIds(rulesObject, event);
-        ArrayList<String> objects = null;
-        String id;
-        if (idsJsonObj.isArray()) {
-            for (final JsonNode idJsonObj : idsJsonObj) {
-                id = idJsonObj.textValue();
-                objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                for (String object:objects) {
-                    extractionHandler.runExtraction(rulesObject, id, event, object);
-                }
-                if (objects.size() == 0){
-                    if (rulesObject.isStartEventRules()) {
-                        extractionHandler.runExtraction(rulesObject, id, event, (JsonNode)null);
-                    } else {
-                        try {
-                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
-                        } catch (Exception e) {
-                            log.info(e.getMessage(),e);
+        if (rulesObject != null && event != null) {
+            JsonNode idsJsonObj = getIds(rulesObject, event);
+            ArrayList<String> objects = null;
+            String id;
+            if (idsJsonObj != null && idsJsonObj.isArray()) {
+                for (final JsonNode idJsonObj : idsJsonObj) {
+                    id = idJsonObj.textValue();
+                    objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
+                    for (String object : objects) {
+                        extractionHandler.runExtraction(rulesObject, id, event, object);
+                    }
+                    if (objects.size() == 0) {
+                        if (rulesObject.isStartEventRules()) {
+                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
+                        } else {
+                            try {
+                                waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                            } catch (Exception e) {
+                                log.info(e.getMessage(), e);
+                            }
                         }
                     }
                 }

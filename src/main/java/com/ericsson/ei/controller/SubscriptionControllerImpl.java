@@ -69,7 +69,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<Subscription>(subscription, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
         }
         
     }
@@ -124,7 +124,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getLocalizedMessage());
-            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         }
     }
 }

@@ -124,7 +124,7 @@ public class SubscriptionRestAPITest {
         
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         
-        assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("", result.getResponse().getContentAsString());
     }
     

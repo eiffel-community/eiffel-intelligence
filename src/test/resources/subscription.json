@@ -28,8 +28,7 @@
             "type" : "ARTIFACT_1"
         }
     ],
-    "subscriptionName" : "Subscription_Test",
-    "timeout" : 12354
+    "subscriptionName" : "Subscription_Test"
 },
 {
     "created" : "2017-07-27",
@@ -61,6 +60,5 @@
             "type" : "ARTIFACT_1"
         }
     ],
-    "subscriptionName" : "Subscription_Test_Modify",
-    "timeout" : 12354
+    "subscriptionName" : "Subscription_Test_Modify"
 }]

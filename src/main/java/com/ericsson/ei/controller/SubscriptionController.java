@@ -51,7 +51,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
-    public ResponseEntity<com.ericsson.ei.controller.model.Subscription> getSubscriptionById(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptionById(
         @PathVariable
         String subscriptionName);
 

@@ -39,6 +39,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
     
+    
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
@@ -60,16 +61,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
-    public ResponseEntity<Subscription> getSubscriptionById(@PathVariable String subscriptionName) {
-        Subscription subscription = null;
+    public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+    	List<Subscription> subscriptionList = new ArrayList<Subscription>();
         try {
             LOG.info("Subscription :" + subscriptionName + " fetch started");
-            subscription = subscriptionService.getSubscription(subscriptionName);
+            subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
             LOG.info("Subscription :" + subscriptionName + " fetched");
-            return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
+            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
+            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
+            
         }
         
     }

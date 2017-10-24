@@ -14,6 +14,13 @@ public class RulesObject {
         return rulesObject;
     }
 
+    public String getTemplateName() {
+        JsonNode jsonNode = rulesObject.get("TemplateName");
+        if (jsonNode != null)
+            return jsonNode.textValue();
+        return "";
+    }
+
     public String getMatchIdRules() {
         JsonNode jsonNode = rulesObject.get("MatchIdRules");
         if (jsonNode != null)

@@ -100,7 +100,7 @@ public class RunSubscription {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        String aggregatedType = aggregatedJson.get("type").toString();
+        String aggregatedType = aggregatedJson.get("TemplateName").toString();
         log.info("AggregatedType : " + aggregatedType.toString());
         while (requirementIterator.hasNext()) {
             requirement = requirementIterator.next();

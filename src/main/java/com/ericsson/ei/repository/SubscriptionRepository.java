@@ -11,10 +11,10 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 @Component
 public class SubscriptionRepository implements ISubscriptionRepository {
     
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptionCollectionName}")
     private String collectionName;
     
-    @Value("${database.name}")
+    @Value("${subscriptionDataBaseName}")
     private String dataBaseName;
     
     @Autowired

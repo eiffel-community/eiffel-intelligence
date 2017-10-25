@@ -40,9 +40,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Component
 public class SubscriptionHandler {
 
-    @Value("${subscriptionCollectionName}")
+    @Value("${subscription.collection.name}")
     private String subscriptionCollectionName;
-    @Value("${subscriptionDataBaseName}")
+    @Value("${database.name}")
     private String subscriptionDataBaseName;
 
     @Autowired

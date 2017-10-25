@@ -40,9 +40,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Component
 public class SubscriptionHandler {
 
-    @Value("${subscriptionCollectionName}")
+    @Value("${subscription.collection.name}")
     private String subscriptionCollectionName;
-    @Value("${subscriptionDataBaseName}")
+    @Value("${database.name}")
     private String subscriptionDataBaseName;
 
     @Autowired
@@ -103,6 +103,11 @@ public class SubscriptionHandler {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
+
+
+
+
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         log.info("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
@@ -115,6 +120,7 @@ public class SubscriptionHandler {
             }
         } else
             log.info("The subscription conditions did not match for the aggregatedObject");
+
     }
 
     /**

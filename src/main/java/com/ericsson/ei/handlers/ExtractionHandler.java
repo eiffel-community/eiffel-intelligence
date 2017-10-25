@@ -2,6 +2,7 @@ package com.ericsson.ei.handlers;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ public class ExtractionHandler {
             mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
         } else {
+            ObjectNode objectNode = (ObjectNode) extractedContent;
+            objectNode.put("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
         }
     }

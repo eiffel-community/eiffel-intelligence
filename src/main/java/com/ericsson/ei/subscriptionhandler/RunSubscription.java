@@ -82,12 +82,13 @@ public class RunSubscription {
 
     /**
      * This method check if the subscription requirement type and the
-     * aggregatedObject type are same.
+     * aggregatedObject TemplateName are same.
      * 
      * @param requirementIterator
      * @param aggregatedObject
      * @return JsonNode
      */
+
     public ArrayNode checkRequirementType(Iterator<JsonNode> requirementIterator, String aggregatedObject) {
         ArrayNode fulfilledRequirements = new ObjectMapper().createArrayNode();
         ;
@@ -100,25 +101,19 @@ public class RunSubscription {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        String aggregatedType = aggregatedJson.get("type").toString();
-        log.info("AggregatedType : " + aggregatedType.toString());
+
+
+
         while (requirementIterator.hasNext()) {
             requirement = requirementIterator.next();
             log.info("Requirements : " + requirement.toString());
-            String requirementType = requirement.get("type").toString();
-            log.info("Type of Subscription : " + requirementType);
-            if (aggregatedType.equals(requirementType)) {
-                log.info("Both the requirement types are equal");
-                condition = true;
-                log.info("The fulfilled requirement is : " + requirement.toString());
-                fulfilledRequirements.add(requirement);
-            } else
-                log.info("Both requirement types are not equal");
+            fulfilledRequirements.add(requirement);
         }
-        if (condition == true)
-            return fulfilledRequirements;
-        else
-            return null;
+
+        return fulfilledRequirements;
+
+
+
     }
 
 }

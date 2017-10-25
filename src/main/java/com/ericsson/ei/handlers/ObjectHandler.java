@@ -2,6 +2,7 @@ package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,18 @@ public class ObjectHandler {
     @Autowired
     private EventToObjectMapHandler eventToObjectMap;
 
+
     public void setEventToObjectMap(EventToObjectMapHandler eventToObjectMap) {
         this.eventToObjectMap = eventToObjectMap;
     }
+
+    @Autowired
+    private SubscriptionHandler subscriptionHandler;
+
+    public void setSubscriptionHandler(SubscriptionHandler subscriptionHandler) {
+        this.subscriptionHandler = subscriptionHandler;
+    }
+
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
@@ -64,6 +74,7 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+            subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
         return result;
     }
 
@@ -92,6 +103,7 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+            subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
         return result;
     }
 

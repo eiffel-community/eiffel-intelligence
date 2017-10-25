@@ -50,12 +50,18 @@ public class ObjectHandler {
     @Autowired
     private EventToObjectMapHandler eventToObjectMap;
 
+
     public void setEventToObjectMap(EventToObjectMapHandler eventToObjectMap) {
         this.eventToObjectMap = eventToObjectMap;
     }
 
     @Autowired
     private SubscriptionHandler subscriptionHandler;
+
+    public void setSubscriptionHandler(SubscriptionHandler subscriptionHandler) {
+        this.subscriptionHandler = subscriptionHandler;
+    }
+
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {

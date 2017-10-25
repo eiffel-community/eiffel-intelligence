@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,13 @@ import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class SubscriptionService implements ISubscriptionService {
-    
+
+    @Value("${spring.application.name}") private String SpringApplicationName;
+
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     @Autowired
     ISubscriptionRepository subscriptionRepository;
@@ -46,8 +50,16 @@ public class SubscriptionService implements ISubscriptionService {
             throw new SubscriptionNotFoundException("No record found for the Subscription Name:" + name);
         }
         for (String input : list) {
+            Subscription subscription;
             try {
-                return mapper.readValue(input, Subscription.class);
+
+                subscription = mapper.readValue(input, Subscription.class);
+                // Inject aggregationtype
+                subscription.setAggregationtype(SpringApplicationName);
+                return subscription;
+                //return mapper.readValue(input, Subscription.class);
+
+
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
@@ -95,7 +107,11 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
+
                 subscription = mapper.readValue(input, Subscription.class);
+                // Inject aggregationtype
+                subscription.setAggregationtype(SpringApplicationName);
+
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOG.error("malformed json string");

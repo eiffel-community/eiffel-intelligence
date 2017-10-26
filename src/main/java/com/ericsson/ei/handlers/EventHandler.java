@@ -53,7 +53,7 @@ public class EventHandler {
     public void eventReceived(String event) {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
-        downstreamIdRulesHandler.runIdRules(eventRules, event);
+//        downstreamIdRulesHandler.runIdRules(eventRules, event);
     }
 
     public void eventReceived(byte[] message) {

@@ -29,14 +29,14 @@ public class ProcessRulesHandler {
         this.mergeHandler = mergeHandler;
     }
 
-    public String runProcessRules(String event, RulesObject rulesObject, String aggregationObject, String objectId) {
+    public String runProcessRules(String event, RulesObject rulesObject, String aggregationObject, String objectId, String mergeId) {
         String processRules = rulesObject.fetchProcessRules();
         if (processRules != null) {
             log.info("processRules: " + processRules);
             log.info("aggregationObject: " + aggregationObject);
             log.info("event: " + event);
             JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
-            String aggregatedObject = mergeHandler.mergeObject(objectId, rulesObject, event, ruleResult);
+            String aggregatedObject = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
             return aggregatedObject;
         }
 

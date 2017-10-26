@@ -6,6 +6,7 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.*;
 
 @Component
@@ -46,15 +48,15 @@ public class MergeHandler {
         mergeIdMarker = marker;
     }
 
-    public String mergeObject(String id, RulesObject rules, String event, JsonNode objectToMerge){
+    public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge){
         String mergedObject = null;
         String preparedToMergeObject;
         try{
             // lock and get the AggregatedObject
             String aggregatedObject = (String) getAggregatedObject(id);
-            String mergeRule = (String) rules.getMergeRules();
+            String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()){
-                String updatedRule = (String) replaceIdMarkerInRules(mergeRule, id);
+                String updatedRule = (String) replaceIdMarkerInRules(mergeRule, mergeId);
                 String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
                 String mergePath = (String) prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge);
                 preparedToMergeObject = (String) prepareMergePrepareObject.addMissingLevels(aggregatedObject,
@@ -71,10 +73,18 @@ public class MergeHandler {
             return mergedObject;
     }
 
+    protected String getMergeRules(RulesObject rules) {
+        return rules.getMergeRules();
+    }
+
     public String replaceIdMarkerInRules(String rule, String id){
-        String literal = "`\"" + id + "\"`";
-        String updatedRule = rule.replaceAll(mergeIdMarker, literal);
-        return updatedRule;
+        String literal = "\"" + id + "\"";
+        if (rule.contains(mergeIdMarker)) {
+            String updatedRule = rule.replaceAll(mergeIdMarker, literal);
+            updatedRule = "`" + updatedRule + "`";
+            return updatedRule;
+        }
+        return rule;
     }
 
     public String mergeContentToObject(String aggregatedObject, String preparedObject){

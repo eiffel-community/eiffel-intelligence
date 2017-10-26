@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.rmqhandler;
 
 import java.io.IOException;
@@ -46,14 +62,16 @@ public class RmqHandler {
     private String domainId;
     @Value("${rabbitmq.componentName}")
     private String componentName;
+    @Value("${rabbitmq.waitlist.queue.suffix}")
+    private String waitlistSufix;
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
-    // SimpleMessageListenerContainer container;
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
+    private SimpleMessageListenerContainer waitlistContainer;
     static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
     public Boolean getQueueDurable() {
@@ -149,8 +167,10 @@ public class RmqHandler {
         factory = new CachingConnectionFactory(host, port);
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
-        // factory.setUsername("guest");
-        // factory.setPassword("guest");
+        if(user != null && user.length() !=0 && password != null && password.length() !=0) {
+            factory.setUsername(user);
+            factory.setPassword(password);
+        }
         return factory;
     }
 
@@ -172,8 +192,7 @@ public class RmqHandler {
     @Bean
     SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
         String queueName = getQueueName();
-//        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler, "eventReceived");
-        MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(eventHandler);
+        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(factory);
         container.setQueueNames(queueName);
@@ -185,6 +204,11 @@ public class RmqHandler {
     public String getQueueName() {
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
+    }
+
+    public String getWaitlistQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
     }
 
     @Bean
@@ -209,22 +233,14 @@ public class RmqHandler {
         return rabbitTemplate;
     }
 
-    public void publishObjectToMessageBus(String message) {
+    public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
         rabbitMqTemplate().convertAndSend(message);
-//        Connection conn = factory.createConnection();
-//        Channel channel = conn.createChannel(true);
-//        String queueName = getQueueName();
-//        String exchange = exchangeName;
-//        try {
-//            channel.basicPublish(exchange, queueName, null, message.getBytes());
-//        } catch (Exception e) {
-//            log.info(e.getMessage(),e);
-//        }
     }
 
     public void close() {
         try {
+            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

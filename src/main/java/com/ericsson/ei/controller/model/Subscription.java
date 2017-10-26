@@ -17,17 +17,19 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+    "aggregationtype",
     "created",
     "notificationMessage",
     "notificationMeta",
     "notificationType",
     "repeat",
     "requirements",
-    "subscriptionName",
-    "timeout"
+    "subscriptionName"
 })
 public class Subscription {
 
+    @JsonProperty("aggregationtype")
+    private String aggregationtype;
     @JsonProperty("created")
     private String created;
     @JsonProperty("notificationMessage")
@@ -42,10 +44,28 @@ public class Subscription {
     private List<Requirement> requirements = new ArrayList<Requirement>();
     @JsonProperty("subscriptionName")
     private String subscriptionName;
-    @JsonProperty("timeout")
-    private Integer timeout;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    /**
+     * 
+     * @return
+     *     The aggregationtype
+     */
+    @JsonProperty("aggregationtype")
+    public String getAggregationtype() {
+        return aggregationtype;
+    }
+
+    /**
+     * 
+     * @param aggregationtype
+     *     The aggregationtype
+     */
+    @JsonProperty("aggregationtype")
+    public void setAggregationtype(String aggregationtype) {
+        this.aggregationtype = aggregationtype;
+    }
 
     /**
      * 
@@ -187,26 +207,6 @@ public class Subscription {
         this.subscriptionName = subscriptionName;
     }
 
-    /**
-     * 
-     * @return
-     *     The timeout
-     */
-    @JsonProperty("timeout")
-    public Integer getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * 
-     * @param timeout
-     *     The timeout
-     */
-    @JsonProperty("timeout")
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -224,7 +224,7 @@ public class Subscription {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(created).append(notificationMessage).append(notificationMeta).append(notificationType).append(repeat).append(requirements).append(subscriptionName).append(timeout).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMessage).append(notificationMeta).append(notificationType).append(repeat).append(requirements).append(subscriptionName).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -236,7 +236,7 @@ public class Subscription {
             return false;
         }
         Subscription rhs = ((Subscription) other);
-        return new EqualsBuilder().append(created, rhs.created).append(notificationMessage, rhs.notificationMessage).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(timeout, rhs.timeout).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMessage, rhs.notificationMessage).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

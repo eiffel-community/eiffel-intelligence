@@ -37,25 +37,23 @@ public interface SubscriptionController {
         com.ericsson.ei.controller.model.Subscription subscription);
 
     /**
+     * Modify an existing Subscription.
+     * 
+     */
+    @RequestMapping(value = "", method = RequestMethod.PUT)
+    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> updateSubscriptions(
+        @javax.validation.Valid
+        @org.springframework.web.bind.annotation.RequestBody
+        com.ericsson.ei.controller.model.Subscription subscription);
+
+    /**
      * Returns the subscription rules for given subscription name.
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
-    public ResponseEntity<com.ericsson.ei.controller.model.Subscription> getSubscriptionById(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptionById(
         @PathVariable
         String subscriptionName);
-
-    /**
-     * Modify an existing Subscription.
-     * 
-     */
-    @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.PUT)
-    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> updateSubscriptionById(
-        @PathVariable
-        String subscriptionName,
-        @javax.validation.Valid
-        @org.springframework.web.bind.annotation.RequestBody
-        com.ericsson.ei.controller.model.Subscription subscription);
 
     /**
      * Removes the subscription from the database.

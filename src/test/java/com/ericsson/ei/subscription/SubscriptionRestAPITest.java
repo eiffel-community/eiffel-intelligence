@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +66,7 @@ public class SubscriptionRestAPITest {
     
     @Test
     public void addSubscription() throws Exception {
-        Mockito.when(subscriptionService.isDuplicatedSubscription(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscriptions").accept(MediaType.APPLICATION_JSON)
@@ -66,11 +82,11 @@ public class SubscriptionRestAPITest {
     
     @Test
     public void updateSubscription() throws Exception {
-        Mockito.when(subscriptionService.isDuplicatedSubscription(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
                 .thenReturn(false);
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions/Subscription_Test")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
                 .accept(MediaType.APPLICATION_JSON).content(jsonArray.getJSONObject(0).toString())
                 .contentType(MediaType.APPLICATION_JSON);
         
@@ -83,10 +99,10 @@ public class SubscriptionRestAPITest {
     }
     
     @Test
-    public void updateSubscriptionDulicate() throws Exception {
-        Mockito.when(subscriptionService.isDuplicatedSubscription(Mockito.anyString())).thenReturn(true);
+    public void updateSubscriptionFailWhenSubscriptionDoNotExist() throws Exception {
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions/Subscription_Test")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
                 .accept(MediaType.APPLICATION_JSON).content(jsonArray.getJSONObject(0).toString())
                 .contentType(MediaType.APPLICATION_JSON);
         
@@ -95,7 +111,7 @@ public class SubscriptionRestAPITest {
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Duplicate Subscription", subscriptionResponse.getMsg());
+        assertEquals("Subscription can't be found", subscriptionResponse.getMsg());
     }
     
     @Test
@@ -108,10 +124,10 @@ public class SubscriptionRestAPITest {
         
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         
-        Subscription subscription = mapper.readValue(result.getResponse().getContentAsString().toString(),
-                Subscription.class);
+        Subscription[] subscription = mapper.readValue(result.getResponse().getContentAsString().toString(),
+                Subscription[].class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        assertEquals("Subscription_Test", subscription.getSubscriptionName());
+        assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
     }
     
     @Test
@@ -124,8 +140,8 @@ public class SubscriptionRestAPITest {
         
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         
-        assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
-        assertEquals("", result.getResponse().getContentAsString());
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        assertEquals("[]", result.getResponse().getContentAsString());
     }
     
     @Test

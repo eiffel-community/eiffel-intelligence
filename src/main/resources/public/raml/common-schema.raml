@@ -5,6 +5,9 @@ subscription: |
        "definitions":{
        },
        "properties":{
+          "aggregationtype":{
+             "type":"string"
+          },
           "created":{
              "type":"string"
           },
@@ -33,9 +36,6 @@ subscription: |
                          "type":"object"
                       },
                       "type":"array"
-                   },
-                   "type":{
-                      "type":"string"
                    }
                 },
                 "type":"object"
@@ -44,9 +44,6 @@ subscription: |
           },
           "subscriptionName":{
              "type":"string"
-          },
-          "timeout":{
-             "type":"integer"
           }
        },
        "type":"object"
@@ -60,6 +57,9 @@ subscriptionList: |
        "definitions":{
        },
        "properties":{
+          "aggregationtype":{
+             "type":"string"
+          },
           "created":{
              "type":"string"
           },
@@ -88,9 +88,6 @@ subscriptionList: |
                          "type":"object"
                       },
                       "type":"array"
-                   },
-                   "type":{
-                      "type":"string"
                    }
                 },
                 "type":"object"
@@ -99,9 +96,6 @@ subscriptionList: |
           },
           "subscriptionName":{
              "type":"string"
-          },
-          "timeout":{
-             "type":"integer"
           }
        },
        "type":"object"
@@ -126,4 +120,3 @@ subscriptionResponse: |
        },
        "type":"object"
     }
-    

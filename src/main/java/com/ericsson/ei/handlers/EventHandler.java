@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.handlers;
 
 import org.slf4j.Logger;
@@ -18,13 +34,10 @@ import com.rabbitmq.client.Channel;
 
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+
 @Component
-public class EventHandler implements ChannelAwareMessageListener {
-
-    @Value("${threads.corePoolSize}") private int corePoolSize;
-    @Value("${threads.queueCapacity}") private int queueCapacity;
-    @Value("${threads.maxPoolSize}") private int maxPoolSize;
-
+public class EventHandler {
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
 
@@ -34,43 +47,34 @@ public class EventHandler implements ChannelAwareMessageListener {
     @Autowired
     IdRulesHandler idRulesHandler;
 
+    @Autowired
+    DownstreamIdRulesHandler downstreamIdRulesHandler;
+
     public void eventReceived(String event) {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
+        downstreamIdRulesHandler.runIdRules(eventRules, event);
     }
 
-    @Bean
-    public Executor asyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setQueueCapacity(queueCapacity);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setThreadNamePrefix("EventHandler-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Async
     public void eventReceived(byte[] message) {
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
         log.info("Event received <" + actualMessage + ">");
         eventReceived(actualMessage);
-        if (System.getProperty("flow.test") == "true") {
-            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-            int count = Integer.parseInt(countStr);
-            count++;
-            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
-        }
+//        if (System.getProperty("flow.test") == "true") {
+//            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
+//            int count = Integer.parseInt(countStr);
+//            count++;
+//            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
+//        }
     }
 
-    @Override
+    @Async
     public void onMessage(Message message, Channel channel) throws Exception {
         byte[] messageBody = message.getBody();
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
         int breakHere = 1;
-
     }
 }

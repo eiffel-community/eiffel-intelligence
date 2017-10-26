@@ -40,9 +40,9 @@ public class FlowTestExternalComposition extends FlowTestBase {
         protected ArrayList<String> getEventNamesToSend() {
              ArrayList<String> eventNames = new ArrayList<>();
              eventNames.add("event_EiffelArtifactCreatedEvent_3");
-             eventNames.add("event_EiffelCompositionDefinedEvent_4");
+             //eventNames.add("event_EiffelCompositionDefinedEvent_4");
              eventNames.add("event_EiffelArtifactCreatedEvent_4");
-             eventNames.add("event_EiffelCompositionDefinedEvent_5");
+             //eventNames.add("event_EiffelCompositionDefinedEvent_5");
              eventNames.add("event_EiffelArtifactCreatedEvent_5");
              return eventNames;
         }

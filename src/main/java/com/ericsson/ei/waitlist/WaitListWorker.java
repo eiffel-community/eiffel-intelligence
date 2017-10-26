@@ -64,6 +64,7 @@ public class WaitListWorker {
             String event = dbObject.get("Event").toString();
             rulesObject = rulesHandler.getRulesForEvent(event);
             String idRule = rulesObject.getIdentifyRules();
+           if (idRule != null && !idRule.isEmpty()) {
             JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
             if (ids.isArray()) {
                 for (final JsonNode idJsonObj : ids) {
@@ -74,6 +75,7 @@ public class WaitListWorker {
                     }
                 }
             }
+           }
         }
     }
 }

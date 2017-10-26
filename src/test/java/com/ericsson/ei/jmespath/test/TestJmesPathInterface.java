@@ -3,6 +3,7 @@ package com.ericsson.ei.jmespath.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -10,8 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.burt.jmespath.Expression;
 
 public class TestJmesPathInterface {
     private JmesPathInterface unitUnderTest;
@@ -57,4 +62,23 @@ public class TestJmesPathInterface {
         assertEquals(result, expectedResult);
     }
 
+    @Test
+    public void testLiteral() {
+        unitUnderTest = new JmesPathInterface();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode literalJson;
+        try {
+            literalJson = mapper.readTree("{}");
+            JsonNode input =  mapper.readTree("{\"id\":\"test\"}");
+            ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
+            String ruleString = literalJson.toString();
+            ruleString = "`" + ruleString + "`";
+            unitUnderTest.runRuleOnEvent(ruleString, input.toString());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+//        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
+    }
 }

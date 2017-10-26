@@ -15,67 +15,54 @@ public class RulesObject {
     }
 
     public String getMatchIdRules() {
-        JsonNode jsonNode = rulesObject.get("MatchIdRules");
-        if (jsonNode != null)
-            return jsonNode.toString();
-        return "";
+        return getString("MatchIdRules");
     }
 
     public String getIdRule() {
-        JsonNode jsonNode = rulesObject.get("IdRule");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("IdRule");
     }
 
     public String getIdentifyRules() {
-        JsonNode jsonNode = rulesObject.get("IdentifyRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("IdentifyRules");
     }
 
     public String getExtractionRules() {
-        JsonNode jsonNode = rulesObject.get("ExtractionRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("ExtractionRules");
     }
 
     public String getMergeRules() {
-        JsonNode jsonNode = rulesObject.get("MergeResolverRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("MergeResolverRules");
     }
 
     public String getDownstreamIdentifyRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamIdentifyRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamIdentifyRules");
     }
 
     public String getDownstreamExtractionRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamExtractionRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamExtractionRules");
     }
 
     public String getDownstreamMergeRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamMergeRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamMergeRules");
     }
 
     public String fetchProcessRules() {
-        JsonNode jsonNode = rulesObject.get("ProcessRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("ProcessRules");
     }
+
+    public String getTextValue(String fieldName) {
+         JsonNode jsonNode = rulesObject.get(fieldName);
+         if (jsonNode != null)
+             return jsonNode.textValue();
+         return null;
+    }
+
+    public String getString(String fieldName) {
+        JsonNode jsonNode = rulesObject.get(fieldName);
+        if (jsonNode != null)
+            return jsonNode.toString();
+        return null;
+   }
 
     public boolean equals(Object other) {
         if (other instanceof RulesObject) {

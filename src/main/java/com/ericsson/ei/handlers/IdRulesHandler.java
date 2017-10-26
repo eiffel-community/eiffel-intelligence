@@ -30,9 +30,6 @@ public class IdRulesHandler {
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
 
-    @Autowired
-    private ObjectHandler objectHandler;
-
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
     }
@@ -41,7 +38,7 @@ public class IdRulesHandler {
         JsonNode idsJsonObj = getIds(rulesObject, event);
         ArrayList<String> objects = null;
         String id;
-        if (idsJsonObj.isArray()) {
+        if (idsJsonObj != null && idsJsonObj.isArray()) {
             for (final JsonNode idJsonObj : idsJsonObj) {
                 id = idJsonObj.textValue();
                 objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
@@ -66,10 +63,12 @@ public class IdRulesHandler {
     public JsonNode getIds(RulesObject rulesObject, String event) {
         String idRule = rulesObject.getIdentifyRules();
         JsonNode ids = null;
-        try {
-            ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-        } catch (Exception e) {
-            int stop = 0;
+        if (idRule != null && !idRule.isEmpty()) {
+            try {
+                ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+            } catch (Exception e) {
+                log.info(e.getMessage(),e);
+            }
         }
 
         return ids;

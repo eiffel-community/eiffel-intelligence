@@ -73,7 +73,6 @@ public class TestMergePrepare {
         assertEquals(mergedObject, result.replace("\"",""));
     }
 
-
     @Parameters
     public static Collection<Object[]> inputTestData() {
         String testData = null;

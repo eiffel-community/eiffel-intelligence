@@ -31,9 +31,13 @@ public class EventHandler {
     @Autowired
     IdRulesHandler idRulesHandler;
 
+    @Autowired
+    DownstreamIdRulesHandler downstreamIdRulesHandler;
+
     public void eventReceived(String event) {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
+        downstreamIdRulesHandler.runIdRules(eventRules, event);
     }
 
     public void eventReceived(byte[] message) {
@@ -57,5 +61,4 @@ public class EventHandler {
         channel.basicAck(deliveryTag, false);
         int breakHere = 1;
     }
-
 }

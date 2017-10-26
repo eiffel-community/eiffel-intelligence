@@ -85,6 +85,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     }
     
     @Override
+
     //@CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
     public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody Subscription subscription) {

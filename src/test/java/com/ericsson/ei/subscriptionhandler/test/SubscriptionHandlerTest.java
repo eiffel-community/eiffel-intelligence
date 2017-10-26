@@ -97,7 +97,6 @@ public class SubscriptionHandlerTest {
         System.out.println("Database connected");
     }
 
-
     @Test
     public void checkRequirementTypeTest() {
         ObjectMapper mapper = new ObjectMapper();
@@ -117,7 +116,6 @@ public class SubscriptionHandlerTest {
         assertEquals(output.toString(), expectedOutput.toString());
     }
 
-
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
@@ -133,7 +131,6 @@ public class SubscriptionHandlerTest {
                 subscriptionJson);
         assertEquals(output, true);
     }
-
 
     @Test
     public void MissedNotificationTest() {

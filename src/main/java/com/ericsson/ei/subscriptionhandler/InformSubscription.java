@@ -96,6 +96,7 @@ public class InformSubscription {
                     if (result == HttpStatus.OK.value())
                         break;
                 }
+
                 if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
                     String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);

@@ -106,11 +106,6 @@ public class SubscriptionHandler {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-
-
-
-
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         log.info("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
@@ -123,7 +118,6 @@ public class SubscriptionHandler {
             }
         } else
             log.info("The subscription conditions did not match for the aggregatedObject");
-
     }
 
     /**

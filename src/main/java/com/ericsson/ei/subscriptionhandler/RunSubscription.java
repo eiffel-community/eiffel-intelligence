@@ -91,7 +91,6 @@ public class RunSubscription {
      * @param aggregatedObject
      * @return JsonNode
      */
-
     public ArrayNode checkRequirementType(Iterator<JsonNode> requirementIterator, String aggregatedObject) {
         ArrayNode fulfilledRequirements = new ObjectMapper().createArrayNode();
         ;
@@ -104,9 +103,6 @@ public class RunSubscription {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-
-
         while (requirementIterator.hasNext()) {
             requirement = requirementIterator.next();
             log.info("Requirements : " + requirement.toString());
@@ -114,9 +110,6 @@ public class RunSubscription {
         }
 
         return fulfilledRequirements;
-
-
-
     }
 
 }

@@ -64,13 +64,15 @@ public class WaitListWorker {
             String event = dbObject.get("Event").toString();
             rulesObject = rulesHandler.getRulesForEvent(event);
             String idRule = rulesObject.getIdentifyRules();
-            JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-            if (ids.isArray()) {
-                for (final JsonNode idJsonObj : ids) {
-                    ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
-                    if (objects.size() > 0) {
-                        rmqHandler.publishObjectToWaitlistQueue(event);
-                        waitListStorageHandler.dropDocumentFromWaitList(document);
+            if (idRule != null && !idRule.isEmpty()) {
+                JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+                if (ids.isArray()) {
+                    for (final JsonNode idJsonObj : ids) {
+                        ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                        if (objects.size() > 0) {
+                            rmqHandler.publishObjectToWaitlistQueue(event);
+                            waitListStorageHandler.dropDocumentFromWaitList(document);
+                        }
                     }
                 }
             }

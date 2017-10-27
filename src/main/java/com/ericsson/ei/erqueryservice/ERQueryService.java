@@ -13,14 +13,12 @@
 */
 package com.ericsson.ei.erqueryservice;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +33,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -56,12 +53,9 @@ public class ERQueryService {
     public final static int UPSTREAM = 1;
     public final static int DOWNANDUPSTREAM = 2;
 
+    @Getter
     @Value("${er.url}")
     private String url;
-
-    public String getUrl() {
-        return url;
-    }
 
     public ERQueryService(RestTemplateBuilder builder) {
         rest = builder.build();

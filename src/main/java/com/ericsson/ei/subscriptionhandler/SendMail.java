@@ -14,6 +14,8 @@
 package com.ericsson.ei.subscriptionhandler;
 
 import javax.annotation.PostConstruct;
+
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +36,11 @@ public class SendMail {
 
     static Logger log = (Logger) LoggerFactory.getLogger(SendMail.class);
 
+    @Getter
     @Value("${email.sender}")
     private String sender;
 
+    @Getter
     @Value("${email.subject}")
     private String subject;
 

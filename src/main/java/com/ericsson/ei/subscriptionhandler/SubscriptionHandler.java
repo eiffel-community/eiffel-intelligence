@@ -16,6 +16,8 @@ package com.ericsson.ei.subscriptionhandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.annotation.PostConstruct;
+
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +42,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Component
 public class SubscriptionHandler {
 
+    @Getter
     @Value("${subscriptionCollectionName}")
     private String subscriptionCollectionName;
+
+    
+    @Getter
     @Value("${subscriptionDataBaseName}")
     private String subscriptionDataBaseName;
 

@@ -14,22 +14,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.exception;
+package com.ericsson.ei.jsonmerge;
 
-public class SubscriptionNotFoundException extends Exception {
-    
-    private static final long serialVersionUID = 1L;
-    
-    public SubscriptionNotFoundException() {
-        super();
+import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.rules.RulesObject;
+
+@Component
+public class DownstreamMergeHandler extends MergeHandler {
+
+    protected String getMergeRules(RulesObject rules) {
+        return rules.getDownstreamMergeRules();
     }
-    
-    public SubscriptionNotFoundException(String message) {
-        super(message);
-    }
-    
-    public SubscriptionNotFoundException(String message, Throwable e) {
-        super(message, e);
-    }
-    
 }

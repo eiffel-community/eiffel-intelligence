@@ -30,5 +30,6 @@
 		"groupId":"com.mycompany.myproduct",
 		"artifactId":"sub-system",
 		"version":"1.1.0"
-	}
+	},
+	"TemplateName":"ARTIFACT_1"
 }

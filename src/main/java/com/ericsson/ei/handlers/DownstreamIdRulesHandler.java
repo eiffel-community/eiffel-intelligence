@@ -28,11 +28,10 @@ import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 
-
 @Component
-public class IdRulesHandler {
+public class DownstreamIdRulesHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(IdRulesHandler.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -41,7 +40,7 @@ public class IdRulesHandler {
     private MatchIdRulesHandler matchIdRulesHandler;
 
     @Autowired
-    private ExtractionHandler extractionHandler;
+    private DownstreamExtractionHandler downstreamExtractionHandler;
 
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
@@ -60,17 +59,13 @@ public class IdRulesHandler {
                     id = idJsonObj.textValue();
                     objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
                     for (String object : objects) {
-                        extractionHandler.runExtraction(rulesObject, id, event, object);
+                        downstreamExtractionHandler.runExtraction(rulesObject, id, event, object);
                     }
                     if (objects.size() == 0) {
-                        if (rulesObject.isStartEventRules()) {
-                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
-                        } else {
-                            try {
-                                waitListStorageHandler.addEventToWaitList(event, rulesObject);
-                            } catch (Exception e) {
-                                log.info(e.getMessage(), e);
-                            }
+                        try {
+                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                        } catch (Exception e) {
+                            log.info(e.getMessage(), e);
                         }
                     }
                 }
@@ -79,7 +74,7 @@ public class IdRulesHandler {
     }
 
     public JsonNode getIds(RulesObject rulesObject, String event) {
-        String idRule = rulesObject.getIdentifyRules();
+        String idRule = rulesObject.getDownstreamIdentifyRules();
         JsonNode ids = null;
         if (idRule != null && !idRule.isEmpty()) {
             try {

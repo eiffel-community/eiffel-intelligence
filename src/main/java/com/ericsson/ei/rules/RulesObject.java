@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.rules;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,68 +30,62 @@ public class RulesObject {
         return rulesObject;
     }
 
-    public String getMatchIdRules() {
-        JsonNode jsonNode = rulesObject.get("MatchIdRules");
+    public String getTemplateName() {
+        JsonNode jsonNode = rulesObject.get("TemplateName");
         if (jsonNode != null)
-            return jsonNode.toString();
+            return jsonNode.textValue();
         return "";
+    }
+
+    public String getMatchIdRules() {
+        return getString("MatchIdRules");
     }
 
     public String getIdRule() {
-        JsonNode jsonNode = rulesObject.get("IdRule");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("IdRule");
     }
 
     public String getIdentifyRules() {
-        JsonNode jsonNode = rulesObject.get("IdentifyRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("IdentifyRules");
     }
 
     public String getExtractionRules() {
-        JsonNode jsonNode = rulesObject.get("ExtractionRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("ExtractionRules");
     }
 
     public String getMergeRules() {
-        JsonNode jsonNode = rulesObject.get("MergeResolverRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("MergeResolverRules");
     }
 
     public String getDownstreamIdentifyRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamIdentifyRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamIdentifyRules");
     }
 
     public String getDownstreamExtractionRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamExtractionRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamExtractionRules");
     }
 
     public String getDownstreamMergeRules() {
-        JsonNode jsonNode = rulesObject.get("DownstreamMergeRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("DownstreamMergeRules");
     }
 
     public String fetchProcessRules() {
-        JsonNode jsonNode = rulesObject.get("ProcessRules");
-        if (jsonNode != null)
-            return jsonNode.textValue();
-        return "";
+        return getTextValue("ProcessRules");
     }
+
+    public String getTextValue(String fieldName) {
+         JsonNode jsonNode = rulesObject.get(fieldName);
+         if (jsonNode != null)
+             return jsonNode.textValue();
+         return null;
+    }
+
+    public String getString(String fieldName) {
+        JsonNode jsonNode = rulesObject.get(fieldName);
+        if (jsonNode != null)
+            return jsonNode.toString();
+        return null;
+   }
 
     public boolean equals(Object other) {
         if (other instanceof RulesObject) {

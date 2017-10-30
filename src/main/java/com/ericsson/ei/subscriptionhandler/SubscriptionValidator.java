@@ -1,7 +1,25 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.subscriptionhandler;
 
 //import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.print.attribute.standard.MediaSize.Other;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +34,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of parameters values in subscriptions objects.
+	 * Throws SubscriptionValidationException if validation of a parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param Subscription 
 	 */
 	public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
 		
@@ -25,7 +47,6 @@ public class SubscriptionValidator {
 		this.validateNotificationMessage(subscription.getNotificationMessage());
 		this.validateNotificationMeta(subscription.getNotificationMeta());
 		this.validateNotificationType(subscription.getNotificationType());
-		this.validateRepeat(subscription.getRepeat());
 //		List<Requirement> reqList = subscription.getRequirements();
 //		for (int i=0; i < reqList.size(); i++) {
 //			this.validateJmespath(reqList.get(i).getConditions().get(0).getJmespath());
@@ -35,6 +56,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of subscriptionName parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param subscriptionName
 	 */
 	public void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
 		
@@ -47,6 +72,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationMessage parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationMessage
 	 */
 	public void validateNotificationMessage(String notificationMessage) throws SubscriptionValidationException {
 		
@@ -59,6 +88,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationMeta parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationMeta
 	 */
 	public void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
 		String regex = ".*[\\s].*";
@@ -70,6 +103,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationType parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationType
 	 */
 	public void validateNotificationType(String notificationType) throws SubscriptionValidationException {
 		String regexMail = "[\\s]*MAIL[\\\\s]*";
@@ -78,16 +115,6 @@ public class SubscriptionValidator {
 		if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
 			throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
 		}
-	}
-	
-	/*
-	 * Validation of repeat parameter
-	 */
-	public void validateRepeat(Boolean repeat) throws SubscriptionValidationException {
-		if (!(repeat instanceof Boolean)) {
-			throw new SubscriptionValidationException("Wrong format of Repeat: " + repeat.toString());
-		}
-		
 	}
 	
 //	public void validateJmespath(String jmespath) {

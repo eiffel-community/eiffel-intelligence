@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.subscriptionhandler;
 
 //import java.util.List;
@@ -16,6 +32,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of parameters values in subscriptions objects.
+	 * Throws SubscriptionValidationException if validation of a parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param Subscription 
 	 */
 	public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
 		
@@ -35,6 +55,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of subscriptionName parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param subscriptionName
 	 */
 	public void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
 		
@@ -47,6 +71,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationMessage parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationMessage
 	 */
 	public void validateNotificationMessage(String notificationMessage) throws SubscriptionValidationException {
 		
@@ -59,6 +87,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationMeta parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationMeta
 	 */
 	public void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
 		String regex = ".*[\\s].*";
@@ -70,6 +102,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of notificationType parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param notificationType
 	 */
 	public void validateNotificationType(String notificationType) throws SubscriptionValidationException {
 		String regexMail = "[\\s]*MAIL[\\\\s]*";
@@ -82,6 +118,10 @@ public class SubscriptionValidator {
 	
 	/*
 	 * Validation of repeat parameter
+	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
+	 * format of parameter.
+	 * 
+	 * @param repeat
 	 */
 	public void validateRepeat(Boolean repeat) throws SubscriptionValidationException {
 		if (!(repeat instanceof Boolean)) {

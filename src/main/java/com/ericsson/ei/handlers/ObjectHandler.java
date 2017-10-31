@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.mongodb.DBObject;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,47 +40,30 @@ public class ObjectHandler {
 
        static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
-    @Value("${aggregated.collection.name}") private String collectionName;
-    @Value("${database.name}") private String databaseName;
+    @Getter @Setter
+    @Value("${aggregated.collection.name}")
+    private String collectionName;
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
-    }
+    @Getter @Setter
+    @Value("${database.name}")
+    private String databaseName;
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-    }
-
+    @Setter
     @Autowired
     private MongoDBHandler mongoDbHandler;
 
-    public void setMongoDbHandler(MongoDBHandler mongoDbHandler) {
-        this.mongoDbHandler = mongoDbHandler;
-    }
-
+    @Setter
     @Autowired
     private JmesPathInterface jmespathInterface;
 
-    public void setJmespathInterface(JmesPathInterface jmespathInterface) {
-        this.jmespathInterface = jmespathInterface;
-    }
-
+    @Setter
     @Autowired
     private EventToObjectMapHandler eventToObjectMap;
 
-
-    public void setEventToObjectMap(EventToObjectMapHandler eventToObjectMap) {
-        this.eventToObjectMap = eventToObjectMap;
-    }
-
+    @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
-
-    public void setSubscriptionHandler(SubscriptionHandler subscriptionHandler) {
-        this.subscriptionHandler = subscriptionHandler;
-    }
-
-
+  
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();

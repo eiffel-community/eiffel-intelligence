@@ -18,9 +18,6 @@ package com.ericsson.ei.subscriptionhandler;
 
 //import java.util.List;
 import java.util.regex.Pattern;
-
-import javax.print.attribute.standard.MediaSize.Other;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +113,7 @@ public class SubscriptionValidator {
 			throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
 		}
 	}
-	
+
 //	public void validateJmespath(String jmespath) {
 ////		TODO: Validator for Jmepath syntax need to be implemented here.
 //		throw new SubscriptionValidationException("Wrong format/syntax of Jmepath: " + jmespath);

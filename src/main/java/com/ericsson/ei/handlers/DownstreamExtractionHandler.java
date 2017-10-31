@@ -39,6 +39,7 @@ public class DownstreamExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            log.debug("Start extraction of Aggregate Json Object String as input:\n" + aggregatedDbObject);
             JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
             runExtraction(rulesObject, mergeId, event, aggregatedJsonObject);
         } catch (Exception e) {
@@ -49,6 +50,10 @@ public class DownstreamExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
         JsonNode extractedContent;
         extractedContent = extractContent(rulesObject, event);
+        log.debug("Start extraction of Aggregate Json Object:\n" + aggregatedDbObject.toString() + 
+        		"\nwith RulesObject:\n" + rulesObject.toString() +
+        		"\nwith Event:\n" + event);
+
 
         if(aggregatedDbObject != null) {
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);

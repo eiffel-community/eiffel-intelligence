@@ -85,6 +85,9 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
+        log.debug("ObjectHandler: inserObject, AggregatedObject:\n" + aggregatedObject +
+        		"\nRuleObject:\n" + rulesObject.toString() +
+        		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         String documentStr = document.toString();
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
@@ -113,9 +116,13 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
+        log.debug("ObjectHandler: updateObject, AggregatedObject:\n" + aggregatedObject +
+        		"\nRuleObject:\n" + rulesObject.toString() +
+        		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
+        log.debug("Merged Aggregated Object document to be inserted to Database:\n" + documentStr);
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);

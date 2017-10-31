@@ -72,12 +72,15 @@ public class ExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
         JsonNode extractedContent;
         extractedContent = extractContent(rulesObject, event);
-
+        log.debug("ExtractionHandler: Extracting AggrObj:\n" + aggregatedDbObject.toString() +
+        		"\nwith RulesObject\n: " + rulesObject.toString() +
+        		"\nextractedContent:\n" + extractedContent.toString());
         if(aggregatedDbObject != null) {
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
             mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
+            log.debug("ExtractionHandler: Merged Content:\n" + mergedContent);
         } else {
             ObjectNode objectNode = (ObjectNode) extractedContent;
             objectNode.put("TemplateName", rulesObject.getTemplateName());

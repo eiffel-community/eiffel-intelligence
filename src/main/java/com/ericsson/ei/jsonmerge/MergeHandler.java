@@ -84,6 +84,7 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
+        log.debug("Merged Aggregated Object:\n" + mergedObject);
             // unlocking of document will be performed, when mergedObject will be inserted to database
             objectHandler.updateObject(mergedObject, rules, event, id);
             return mergedObject;

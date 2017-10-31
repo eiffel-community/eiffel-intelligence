@@ -1,16 +1,17 @@
 package com.ericsson.ei.handlers;
 
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Component
@@ -22,42 +23,84 @@ public class UpStreamEventsHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventsHandler.class);
 
     public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId, RulesObject rulesObject) {
-        ResponseEntity upStreamEventsString;
+        String upStreamEventsString;
 
         if (rulesObject.isNeedHistoryRule() && rulesObject.isStartEventRules()) {
-            // Use aggregatedObjectId as eventId since they are the same (for start events only)
-            upStreamEventsString = eventRepositoryQueryService.getEventStreamDataById(aggregatedObjectId, eventRepositoryQueryService.UPSTREAM, -1, -1, true);
+
+            // Use aggregatedObjectId as eventId since they are the same for start events.
+            upStreamEventsString = eventRepositoryQueryService.getEventStreamDataById(aggregatedObjectId, eventRepositoryQueryService.UPSTREAM, -1, -1, true).toString();
+
+            TreeNode<JsonNode> upStreamEventsTree = parseUpStreamEventsString(upStreamEventsString);
+            String pathInAggregatedObject = "";
+
+            traverseTree(upStreamEventsTree, aggregatedObjectId, rulesObject, pathInAggregatedObject);
+
+            return;
+
         } else {
             return;
         }
-
-        upStreamEventsString.toString();
-
-        traversHistoryTree();
-
-        String pathInAggregatedObject = null;
-
-        //TODO: loop each upStreamEvent {
-            String upStreamEvent = "Placeholder event";
-            historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, upStreamEvent, pathInAggregatedObject);
-        //}
-
-        return;
     }
 
 
-    private void traversHistoryTree() {
+    public void traverseTree(TreeNode<JsonNode> node, String aggregatedObjectId, RulesObject rulesObject, String pathInAggregatedObject){
+        JsonNode historicEvent = node.getData();
+        String newPathInAggregatedObject = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, historicEvent.toString(), pathInAggregatedObject);
+
+        for(TreeNode<JsonNode> each : node.getChildren()){
+            String updatedPathInAggregatedObject = UpdatedPathInAggregatedObject(pathInAggregatedObject, newPathInAggregatedObject);
+            traverseTree(each, aggregatedObjectId, rulesObject, updatedPathInAggregatedObject);
+        }
         return;
     }
 
+    private String UpdatedPathInAggregatedObject(String oldPathInAggregatedObject, String newPathInAggregatedObject) {
+        return oldPathInAggregatedObject + " " + newPathInAggregatedObject;
+    }
 
-    private void parseUpStreamEventsString(String upStreamEventsString) {
-        // Return a tree-structure containing events events
-        return;
+    private TreeNode<JsonNode> parseUpStreamEventsString(String upStreamEventsString) {
+        JsonNode upStreamEventsJson = stringToJsonNode(upStreamEventsString);
+
+        // Get the correct value
+        Iterator upStreamIterator = upStreamEventsJson.elements();
+        JsonNode objectTree = (JsonNode) upStreamIterator.next();
+
+        TreeNode<JsonNode> tree = null;
+
+        tree = new TreeNode<JsonNode>(objectTree.get(0));
+        JsonNode theRest = objectTree.get(1);
+        tree = appendToTree(tree, theRest);
+
+        // Return a tree-structure containing events
+        return tree;
+
+    }
+
+    private TreeNode<JsonNode> appendToTree( TreeNode<JsonNode> parent, JsonNode theRest) {
+        TreeNode<JsonNode> last = parent;
+        for( JsonNode each : theRest) {
+            if (each.isArray()) {
+                appendToTree(last, each);
+            } else {
+                last = new TreeNode<JsonNode>(each);
+                parent.addChild(last);
+            }
+        }
+        return parent;
+    }
+
+    private JsonNode stringToJsonNode(String jsonString) {
+        JsonNode json = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            json = mapper.readValue(jsonString, JsonNode.class);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return json;
     }
 
 
-//    public void EventStreamParser(String eventStream) {
-//
-//    }
+
 }

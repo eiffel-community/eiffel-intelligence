@@ -22,6 +22,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +47,19 @@ import com.mongodb.util.JSON;
 @Component
 public class InformSubscription {
 
+    @Getter
     @Value("${notification.failAttempt}")
     private int failAttempt;
 
+    @Getter
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;
 
+    @Getter
     @Value("${missedNotificationDataBaseName}")
     private String missedNotificationDataBaseName;
 
+    @Getter
     @Value("${notification.ttl.value}")
     private int ttlValue;
 

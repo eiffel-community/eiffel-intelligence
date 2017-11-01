@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.rmqhandler;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -62,10 +63,12 @@ public class RmqHandler {
     @Value("${rabbitmq.tls}")
     private String tlsVer;
 
+    @JsonIgnore
     @Getter @Setter
     @Value("${rabbitmq.user}")
     private String user;
 
+    @JsonIgnore
     @Getter @Setter
     @Value("${rabbitmq.password}")
     private String password;

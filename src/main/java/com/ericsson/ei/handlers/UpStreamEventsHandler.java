@@ -1,3 +1,17 @@
+/*
+    Copyright 2017 Ericsson AB.
+    For a full list of individual contributors, please see the commit history.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
 package com.ericsson.ei.handlers;
 
 import java.util.Iterator;
@@ -14,6 +28,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class UpStreamEventsHandler.
+ */
 @Component
 public class UpStreamEventsHandler {
 
@@ -22,6 +40,12 @@ public class UpStreamEventsHandler {
 
     static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventsHandler.class);
 
+    /**
+     * Run history extraction rules on all upstream events.
+     *
+     * @param aggregatedObjectId the aggregated object id
+     * @param rulesObject the rules object
+     */
     public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId, RulesObject rulesObject) {
         String upStreamEventsString;
 
@@ -43,21 +67,31 @@ public class UpStreamEventsHandler {
     }
 
 
-    public void traverseTree(TreeNode<JsonNode> node, String aggregatedObjectId, RulesObject rulesObject, String pathInAggregatedObject){
+    /**
+     * Traverse tree.
+     *
+     * @param node the node
+     * @param aggregatedObjectId the aggregated object id
+     * @param rulesObject the rules object
+     * @param pathInAggregatedObject the path in aggregated object
+     */
+    private void traverseTree(TreeNode<JsonNode> node, String aggregatedObjectId, RulesObject rulesObject, String pathInAggregatedObject){
         JsonNode historicEvent = node.getData();
         String newPathInAggregatedObject = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, historicEvent.toString(), pathInAggregatedObject);
 
         for(TreeNode<JsonNode> each : node.getChildren()){
-            String updatedPathInAggregatedObject = UpdatedPathInAggregatedObject(pathInAggregatedObject, newPathInAggregatedObject);
-            traverseTree(each, aggregatedObjectId, rulesObject, updatedPathInAggregatedObject);
+            traverseTree(each, aggregatedObjectId, rulesObject, newPathInAggregatedObject);
         }
+
         return;
     }
 
-    private String UpdatedPathInAggregatedObject(String oldPathInAggregatedObject, String newPathInAggregatedObject) {
-        return oldPathInAggregatedObject + " " + newPathInAggregatedObject;
-    }
-
+    /**
+     * Parses the up stream events string.
+     *
+     * @param upStreamEventsString the up stream events string
+     * @return the tree node
+     */
     private TreeNode<JsonNode> parseUpStreamEventsString(String upStreamEventsString) {
         JsonNode upStreamEventsJson = stringToJsonNode(upStreamEventsString);
 
@@ -73,9 +107,16 @@ public class UpStreamEventsHandler {
 
         // Return a tree-structure containing events
         return tree;
-
     }
 
+
+    /**
+     * Append to tree.
+     *
+     * @param parent the parent
+     * @param theRest the the rest
+     * @return the tree node
+     */
     private TreeNode<JsonNode> appendToTree( TreeNode<JsonNode> parent, JsonNode theRest) {
         TreeNode<JsonNode> last = parent;
         for( JsonNode each : theRest) {
@@ -89,6 +130,13 @@ public class UpStreamEventsHandler {
         return parent;
     }
 
+
+    /**
+     * String to json node.
+     *
+     * @param jsonString the json string
+     * @return the json node
+     */
     private JsonNode stringToJsonNode(String jsonString) {
         JsonNode json = null;
         ObjectMapper mapper = new ObjectMapper();

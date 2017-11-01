@@ -1,4 +1,6 @@
 {
+    "subscriptionName" : "Subscription_1",
+    "AggregatedObject" : {
     "fileInformation":[
     {
         "extension":"jar",
@@ -31,4 +33,5 @@
         "artifactId":"sub-system",
         "version":"1.1.0"
     }
+}
 }

@@ -16,8 +16,8 @@
         <java.version>1.8</java.version>
         <plugin-version>0.10.11</plugin-version>
         <output-relative-path>src/main/java</output-relative-path>
-        <raml-path>src/main/resources/public/raml/subscription.raml</raml-path>
         <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
+        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
         <base-package>com.ericsson.ei.controller</base-package>
     </properties>
 

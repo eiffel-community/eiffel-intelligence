@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class InstanceInfo {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InstanceInfo.class);
+public class InstanceInfoController {
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InstanceInfoController.class);
 
     @Autowired
     private ParseInstanceInfoEI istanceInfo;

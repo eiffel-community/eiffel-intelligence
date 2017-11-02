@@ -173,7 +173,7 @@ public class MergeHandler {
             String document = objectHandler.lockDocument(id);
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
-                return result.asText();
+                return result.toString();
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }

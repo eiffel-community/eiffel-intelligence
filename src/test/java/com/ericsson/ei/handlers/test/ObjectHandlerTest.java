@@ -80,7 +80,7 @@ public class ObjectHandlerTest {
 
     static String dataBaseName = "EventStorageDBbbb";
     static String collectionName = "SampleEvents";
-    static String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
+    static String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
     String updateInput = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     static String condition = "{\"_id\" : \"eventId\"}";
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
@@ -102,6 +102,7 @@ public class ObjectHandlerTest {
         objHandler.setCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
         objHandler.setSubscriptionHandler(subscriptionHandler);
+        
 
         try {
             String rulesString = FileUtils.readFileToString(new File(inputFilePath));
@@ -118,7 +119,8 @@ public class ObjectHandlerTest {
     public void test() {
         String document = objHandler.findObjectById("eventId");
         JsonNode result = objHandler.getAggregatedObject(document);
-        assertEquals(input, result.asText());
+
+        assertEquals(input, result.toString());
     }
 
     @AfterClass

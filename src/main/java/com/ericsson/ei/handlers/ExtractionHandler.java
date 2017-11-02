@@ -82,8 +82,9 @@ public class ExtractionHandler {
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
             log.debug("ExtractionHandler: Merged Content:\n" + mergedContent);
         } else {
+        	ObjectMapper mapper = new ObjectMapper();
             ObjectNode objectNode = (ObjectNode) extractedContent;
-            objectNode.put("TemplateName", rulesObject.getTemplateName());
+            objectNode.set("TemplateName", rulesObject.getJsonRulesObject());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
         }
     }

@@ -90,7 +90,7 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        String condition = "{\"_id\" : " + eventId + "}";
         ArrayList<String> list =  getEventToObjectList(eventId);
         boolean firstTime = list.isEmpty();
         list = updateList(list, eventId, objectId);

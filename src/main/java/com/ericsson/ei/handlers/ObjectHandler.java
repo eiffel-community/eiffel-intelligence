@@ -89,6 +89,7 @@ public class ObjectHandler {
         		"\nRuleObject:\n" + rulesObject.toString() +
         		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
+        log.debug("ObjectHandler: DocumentJson to be inserted: " + document.toString());
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
@@ -119,7 +120,7 @@ public class ObjectHandler {
         		"\nRuleObject:\n" + rulesObject.toString() +
         		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
-        String condition = "{\"_id\" : \"" + id + "\"}";
+        String condition = "{\"_id\" : " + id + "}";
         String documentStr = document.toString();
         log.debug("Merged Aggregated Object document to be inserted to Database:\n" + documentStr);
         System.out.println("Merged Aggregated Object document to be inserted to Database:\n" + documentStr);
@@ -139,7 +140,7 @@ public class ObjectHandler {
     }
 
     public String findObjectById(String id) {
-        String condition = "{\"_id\" : \"" + id + "\"}";
+        String condition = "{\"_id\" : " + id + "}";
         String document = findObjectsByCondition(condition).get(0);
 //        JsonNode result = getAggregatedObject(document);
 //        if (result != null)
@@ -155,10 +156,10 @@ public class ObjectHandler {
         return objects;
     }
 
-        private JsonNode prepareDocumentForInsertion(String id, String object) {
+        public JsonNode prepareDocumentForInsertion(String id, String object) {
 	        ObjectMapper mapper = new ObjectMapper();
 	        try {
-	            String docStr = "{\"_id\":\"" + id +"\"}";
+	            String docStr = "{\"_id\": \"" + id + "\"}";
 	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
 	            
 	            JsonNode jsonNode = mapper.readTree(jsonNodeNew.toString()); 
@@ -196,7 +197,7 @@ public class ObjectHandler {
      */
     public String lockDocument(String id){
         boolean documentLocked = true;
-        String conditionId = "{\"_id\" : \"" + id + "\"}";
+        String conditionId = "{\"_id\" : " + id + "}";
         String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();

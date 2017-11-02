@@ -38,44 +38,44 @@ import com.mongodb.util.JSON;
 @Component
 public class WaitListWorker {
 
-//    @Autowired
-//    private WaitListStorageHandler waitListStorageHandler;
-//
-//    @Autowired
-//    private RmqHandler rmqHandler;
-//
-//    @Autowired
-//    private RulesHandler rulesHandler;
-//
-//    @Autowired
-//    private JmesPathInterface jmesPathInterface;
-//
-//    @Autowired
-//    private MatchIdRulesHandler matchIdRulesHandler;
+    @Autowired
+    private WaitListStorageHandler waitListStorageHandler;
+
+    @Autowired
+    private RmqHandler rmqHandler;
+
+    @Autowired
+    private RulesHandler rulesHandler;
+
+    @Autowired
+    private JmesPathInterface jmesPathInterface;
+
+    @Autowired
+    private MatchIdRulesHandler matchIdRulesHandler;
 
     static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
-//    @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
-//    public void run() {
-//        RulesObject rulesObject = null;
-//        ArrayList<String> documents = waitListStorageHandler.getWaitList();
-//        for (String document : documents) {
-//            DBObject dbObject = (DBObject) JSON.parse(document);
-//            String event = dbObject.get("Event").toString();
-//            rulesObject = rulesHandler.getRulesForEvent(event);
-//            String idRule = rulesObject.getIdentifyRules();
-//           if (idRule != null && !idRule.isEmpty()) {
-//            JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-//            if (ids.isArray()) {
-//                for (final JsonNode idJsonObj : ids) {
-//                    ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
-//                    if (objects.size() > 0) {
-//                        rmqHandler.publishObjectToWaitlistQueue(event);
-//                        waitListStorageHandler.dropDocumentFromWaitList(document);
-//                    }
-//                }
-//            }
-//           }
-//        }
-//    }
+    @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
+    public void run() {
+        RulesObject rulesObject = null;
+        ArrayList<String> documents = waitListStorageHandler.getWaitList();
+        for (String document : documents) {
+            DBObject dbObject = (DBObject) JSON.parse(document);
+            String event = dbObject.get("Event").toString();
+            rulesObject = rulesHandler.getRulesForEvent(event);
+            String idRule = rulesObject.getIdentifyRules();
+           if (idRule != null && !idRule.isEmpty()) {
+            JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+            if (ids.isArray()) {
+                for (final JsonNode idJsonObj : ids) {
+                    ArrayList<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                    if (objects.size() > 0) {
+                        rmqHandler.publishObjectToWaitlistQueue(event);
+                        waitListStorageHandler.dropDocumentFromWaitList(document);
+                    }
+                }
+            }
+           }
+        }
+    }
 }

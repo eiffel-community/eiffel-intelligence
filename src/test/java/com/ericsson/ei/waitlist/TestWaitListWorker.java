@@ -145,29 +145,29 @@ public class TestWaitListWorker {
 
     }
 
-//    @Test
-//    public void testRunWithoutMatchObjects() {
-//        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(newList);
-//        try {
-//            waitListWorker.run();
-//            assertTrue(true);
-//        } catch (Exception e) {
-//            assertFalse(true);
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void testRunWithMatchbjects() {
-//        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(list);
-//        try {
-//            waitListWorker.run();
-//            assertTrue(true);
-//        } catch (Exception e) {
-//            assertFalse(true);
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void testRunWithoutMatchObjects() {
+        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(newList);
+        try {
+            waitListWorker.run();
+            assertTrue(true);
+        } catch (Exception e) {
+            assertFalse(true);
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRunWithMatchbjects() {
+        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(list);
+        try {
+            waitListWorker.run();
+            assertTrue(true);
+        } catch (Exception e) {
+            assertFalse(true);
+            e.printStackTrace();
+        }
+    }
 
 //    TO DO fix this test
 //    @Test
@@ -182,31 +182,31 @@ public class TestWaitListWorker {
 //        }
 //    }
 
-//    @Test
-//    public void testPublishandReceiveEvent() {
-//        try {
-//            Channel channel = conn.createChannel();
-//            String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
-//            String exchange = "ei-poc-4";
-//            createExchange(exchange, queueName);
-//            Consumer consumer = new DefaultConsumer(channel) {
-//                @Override
-//                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
-//                        byte[] body) throws IOException {
-//                    message = new String(body, "UTF-8");
-//                    System.out.println(" [x] Received '" + message + "'");
-//                }
-//            };
-//            channel.basicConsume(queueName, true, consumer);
-//            channel.basicPublish(exchange, queueName, null, jsonFileContent.getBytes());
-//            Thread.sleep(1001);
-//            assertTrue(message != null);
-//            assertTrue(message.equals(jsonFileContent));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            assertFalse(true);
-//        }
-//    }
+    @Test
+    public void testPublishandReceiveEvent() {
+        try {
+            Channel channel = conn.createChannel();
+            String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
+            String exchange = "ei-poc-4";
+            createExchange(exchange, queueName);
+            Consumer consumer = new DefaultConsumer(channel) {
+                @Override
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+                        byte[] body) throws IOException {
+                    message = new String(body, "UTF-8");
+                    System.out.println(" [x] Received '" + message + "'");
+                }
+            };
+            channel.basicConsume(queueName, true, consumer);
+            channel.basicPublish(exchange, queueName, null, jsonFileContent.getBytes());
+            Thread.sleep(1001);
+            assertTrue(message != null);
+            assertTrue(message.equals(jsonFileContent));
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertFalse(true);
+        }
+    }
 
     @AfterClass
     public static void tearDown() throws Exception {

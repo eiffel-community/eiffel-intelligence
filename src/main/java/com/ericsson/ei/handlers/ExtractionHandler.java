@@ -62,7 +62,7 @@ public class ExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
+            JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
             log.info(e.getMessage(),e);

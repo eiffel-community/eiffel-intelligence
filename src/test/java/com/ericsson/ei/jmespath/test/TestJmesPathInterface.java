@@ -86,7 +86,7 @@ public class TestJmesPathInterface {
         try {
             literalJson = mapper.readTree("{}");
             JsonNode input =  mapper.readTree("{\"id\":\"test\"}");
-            ((ObjectNode) literalJson).set("eventId", mapper.readValue("b6ef1hd-25fh-4dh7-b9vd-87688e65de47", JsonNode.class));
+            ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
             String ruleString = literalJson.toString();
             ruleString = "`" + ruleString + "`";
             unitUnderTest.runRuleOnEvent(ruleString, input.toString());

@@ -134,7 +134,7 @@ public class ObjectHandler {
     }
 
     public String findObjectById(String id) {
-        String condition = "{\"_id\" : " + id + "}";
+        String condition = "{\"_id\" : \"" + id + "\"}";
         String document = findObjectsByCondition(condition).get(0);
 //        JsonNode result = getAggregatedObject(document);
 //        if (result != null)

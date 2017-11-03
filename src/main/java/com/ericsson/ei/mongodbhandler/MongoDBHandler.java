@@ -108,7 +108,7 @@ public class MongoDBHandler {
     public  ArrayList<String> find(String dataBaseName, String collectionName, String condition){
         ArrayList<String> result = new ArrayList<>();
         log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName +
-        		"\nwith Condition: \n" + condition);
+        		"\nwith Condition: " + condition);
         try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);

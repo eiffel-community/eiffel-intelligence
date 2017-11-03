@@ -74,14 +74,13 @@ public class ExtractionHandler {
         extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
-            log.debug("ExtractionHandler: Extracting AggrObj:\n" + aggregatedDbObject.toString() +
-            		"\nwith RulesObject\n: " + rulesObject.toString() +
-            		"\nextractedContent:\n" + extractedContent.toString());
+            log.debug("ExtractionHandler: Merging Aggregated Object:\n" + aggregatedDbObject.toString() +
+            		"\nwith extracted content:\n" + extractedContent.toString() +
+            		"\nfrom event:\n" + event);
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
             mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
-            log.debug("ExtractionHandler: Merged Content:\n" + mergedContent);
         } else {
         	ObjectMapper mapper = new ObjectMapper();
             ObjectNode objectNode = (ObjectNode) extractedContent;

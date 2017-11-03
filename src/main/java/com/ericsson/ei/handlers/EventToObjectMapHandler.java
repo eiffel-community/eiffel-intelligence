@@ -102,7 +102,8 @@ public class EventToObjectMapHandler {
             ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
             ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
             String mapStr = entry.toString();
-            log.debug("MongoDbHandler Insert/Update JSON object as text: " + mapStr);
+            log.debug("MongoDbHandler Insert/Update Event: " + mapStr +
+            		"\nto database: " + databaseName + " and to Collection: " + collectionName);
             if (firstTime) {
                 mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
             } else {

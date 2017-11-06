@@ -58,6 +58,7 @@ public class IdRulesHandler {
             if (idsJsonObj != null && idsJsonObj.isArray()) {
                 for (final JsonNode idJsonObj : idsJsonObj) {
                     id = idJsonObj.textValue();
+                    System.out.println("IDDDD: " + id);
                     objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
                     for (String object : objects) {
                         extractionHandler.runExtraction(rulesObject, id, event, object);

@@ -128,6 +128,7 @@ public class EventToObjectMapHandler {
     public ArrayList<String> getEventToObjectList(String eventId) {
         ArrayList<String> list = new ArrayList<String>();
         String condition = "{\"_id\" : \"" + eventId + "\"}";
+        System.out.println("EVENTID COND: " + condition);
         ArrayList<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         if (!documents.isEmpty()) {
             String mapStr = documents.get(0);

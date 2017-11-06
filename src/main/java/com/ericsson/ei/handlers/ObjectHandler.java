@@ -83,7 +83,7 @@ public class ObjectHandler {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
-            id = idNode.toString();
+            id = idNode.textValue();
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
@@ -116,7 +116,7 @@ public class ObjectHandler {
         log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject +
         		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
-        String condition = "{\"_id\" : " + id + "}";
+        String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         if (result)
@@ -153,7 +153,7 @@ public class ObjectHandler {
         public JsonNode prepareDocumentForInsertion(String id, String object) {
 	        ObjectMapper mapper = new ObjectMapper();
 	        try {
-	            String docStr = "{\"_id\": " + id + "}";
+	            String docStr = "{\"_id\": \"" + id + "\"}";
 	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
 	            
 	            JsonNode jsonNode = mapper.readTree(jsonNodeNew.toString()); 
@@ -180,7 +180,7 @@ public class ObjectHandler {
     }
 
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get("_id").toString();
+        return aggregatedDbObject.get("_id").textValue();
     }
 
     /**
@@ -191,7 +191,7 @@ public class ObjectHandler {
      */
     public String lockDocument(String id){
         boolean documentLocked = true;
-        String conditionId = "{\"_id\" : " + id + "}";
+        String conditionId = "{\"_id\" : \"" + id + "\"}";
         String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();

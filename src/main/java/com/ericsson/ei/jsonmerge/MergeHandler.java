@@ -97,7 +97,7 @@ public class MergeHandler {
     public String replaceIdMarkerInRules(String rule, String id){
 
         if (rule.contains(mergeIdMarker)) {
-            String updatedRule = rule.replaceAll(mergeIdMarker, id);
+            String updatedRule = rule.replaceAll(mergeIdMarker, "\"" + id + "\"");
             updatedRule = "`" + updatedRule + "`";
             return updatedRule;
         }

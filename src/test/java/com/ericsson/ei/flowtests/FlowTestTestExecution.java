@@ -16,12 +16,14 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -35,12 +37,18 @@ public class FlowTestTestExecution extends FlowTestBase {
      private static Logger log = LoggerFactory.getLogger(FlowTest.class);
      static protected String inputFilePath = "src/test/resources/aggregatedExternalComposition.json";
      static protected String jsonFilePath = "src/test/resources/TestExecutionTestEvents.json";
+     static protected String rulePath = "src/test/resources/TestActivityObjectRules.json";
 
+     @Autowired
+     RulesHandler rulesHandler;
 
-
-        protected ArrayList<String> getEventNamesToSend() {
+        protected void setSpecificTestCaseParameters(){
 //            System.setProperty("rules.path", "src/test/resources/TestActivityObjectRules.json");
             setJsonFilePath(jsonFilePath);
+            rulesHandler.setRulePath(rulePath);
+        }
+
+        protected ArrayList<String> getEventNamesToSend() {
             ArrayList<String> eventNames = new ArrayList<>();
             eventNames.add("event_EiffelActivityTriggeredEvent");
             eventNames.add("event_EiffelActivityStartedEvent");
@@ -53,10 +61,6 @@ public class FlowTestTestExecution extends FlowTestBase {
             eventNames.add("event_EiffelTestCaseFinishedEvent");
             eventNames.add("event_EiffelTestCaseFinishedEvent_2");
             eventNames.add("event_EiffelActivityFinishedEvent");
-             //eventNames.add("event_EiffelCompositionDefinedEvent_4");
-//             eventNames.add("event_EiffelArtifactCreatedEvent_4");
-             //eventNames.add("event_EiffelCompositionDefinedEvent_5");
-//             eventNames.add("event_EiffelArtifactCreatedEvent_5");
             return eventNames;
         }
 

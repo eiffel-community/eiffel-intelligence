@@ -177,9 +177,7 @@ public class FlowTestBase {
             createExchange(exchangeName, queueName);
 
             ArrayList<String> eventNames = getEventNamesToSend();
-            jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            parsedJason = objectmapper.readTree(jsonFileContent);
+            testParametersChange();
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
@@ -193,6 +191,16 @@ public class FlowTestBase {
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
+    }
+
+    protected void testParametersChange() throws IOException {
+        setSpecificTestCaseParameters();
+        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+        ObjectMapper objectmapper = new ObjectMapper();
+        parsedJason = objectmapper.readTree(jsonFileContent);
+    }
+
+    protected void setSpecificTestCaseParameters(){
     }
 
     protected void createExchange(final String exchangeName, final String queueName) {

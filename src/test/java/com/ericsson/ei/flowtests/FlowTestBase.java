@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -110,6 +111,10 @@ public class FlowTestBase {
     protected static String jsonFilePath = "src/test/resources/test_events.json";
     static protected String inputFilePath = "src/test/resources/AggregatedDocument.json";
 
+    public static void setJsonFilePath(String jsonFilePath) {
+        FlowTestBase.jsonFilePath = jsonFilePath;
+    }
+
     @BeforeClass
     public static void setup() throws Exception {
         System.setProperty("flow.test", "true");
@@ -132,9 +137,7 @@ public class FlowTestBase {
         System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
         ObjectMapper objectmapper = new ObjectMapper();
-        parsedJason = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
         amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath());
         amqpBrocker.startBroker();
@@ -174,6 +177,9 @@ public class FlowTestBase {
             createExchange(exchangeName, queueName);
 
             ArrayList<String> eventNames = getEventNamesToSend();
+            jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+            ObjectMapper objectmapper = new ObjectMapper();
+            parsedJason = objectmapper.readTree(jsonFileContent);
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);

@@ -84,7 +84,7 @@ public class ExtractionHandler {
         } else {
         	ObjectMapper mapper = new ObjectMapper();
             ObjectNode objectNode = (ObjectNode) extractedContent;
-            objectNode.set("TemplateName", rulesObject.getJsonRulesObject());
+            objectNode.set("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
         }
     }

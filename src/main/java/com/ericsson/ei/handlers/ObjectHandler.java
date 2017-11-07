@@ -156,7 +156,7 @@ public class ObjectHandler {
 	            String docStr = "{\"_id\": \"" + id + "\"}";
 	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
 	            
-	            JsonNode jsonNode = mapper.readTree(jsonNodeNew.toString()); 
+	            JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class); 
 	            ObjectNode objNode = (ObjectNode) jsonNode;  
 	            objNode.set("aggregatedObject", mapper.readTree(object));
 

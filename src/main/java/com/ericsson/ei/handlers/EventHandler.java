@@ -69,7 +69,7 @@ public class EventHandler {
 //        }
     }
 
-//    @Async
+    @Async
     public void onMessage(Message message, Channel channel) throws Exception {
         byte[] messageBody = message.getBody();
         eventReceived(messageBody);

@@ -26,7 +26,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
-@EnableAsync
+//@EnableAsync
 public class SpringAsyncConfig implements AsyncConfigurer{
 
     @Value("${threads.corePoolSize}") private int corePoolSize;

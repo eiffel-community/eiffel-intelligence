@@ -49,12 +49,12 @@ public class FlowTestTestExecution extends FlowTestBase {
 
         protected ArrayList<String> getEventNamesToSend() {
             ArrayList<String> eventNames = new ArrayList<>();
-            eventNames.add("event_EiffelActivityTriggeredEvent");
+//            eventNames.add("event_EiffelActivityTriggeredEvent");
             eventNames.add("event_EiffelActivityStartedEvent");
-            eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
-            eventNames.add("event_EiffelTestSuiteStartedEvent");
-            eventNames.add("event_EiffelTestCaseTriggeredEvent");
-            eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
+//            eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
+//            eventNames.add("event_EiffelTestSuiteStartedEvent");
+//            eventNames.add("event_EiffelTestCaseTriggeredEvent");
+//            eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
 //            eventNames.add("event_EiffelTestCaseStartedEvent");
 //            eventNames.add("event_EiffelTestCaseStartedEvent_2");
 //            eventNames.add("event_EiffelTestCaseFinishedEvent");

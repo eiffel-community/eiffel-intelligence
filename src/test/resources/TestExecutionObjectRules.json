@@ -38,10 +38,8 @@
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
     "StartEvent": "NO",
-    "IdentifyRules": "event[?meta.type=='EiffelActivityFinishedEvent'] | [0].[links] | [] | [?type=='ACTIVITY_EXECUTION'].target",
-    "MatchIdRules": {
-      "objid": "%IdentifyRules_objid%"
-    },
+    "IdentifyRules": "links | [?type=='ACTIVITY_EXECUTION'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{ ongoing : `\"false\"`, outcome : data.outcome}",
     "MergeResolverRules": null,
     "ArrayMergeOptions": "",
@@ -104,10 +102,8 @@
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
     "StartEvent": "NO",
-    "IdentifyRules": "event[?meta.type=='EiffelTestCaseStartedEvent'] | [0].[links] | [] | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": {
-      "objid": "%IdentifyRules_objid%"
-    },
+    "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"true\"`}]}",
     "MergeResolverRules": "{trigger_event_id:%IdentifyRules%}",
     "ArrayMergeOptions": "",
@@ -122,10 +118,8 @@
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
     "StartEvent": "NO",
-    "IdentifyRules": "event[?meta.type=='EiffelTestCaseFinishedEvent'] | [0].[links] | [] | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": {
-      "objid": "%IdentifyRules_objid%"
-    },
+    "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"false\"`, verdict : data.outcome.verdict, conclusion : data.outcome.conclusion}]}",
     "MergeResolverRules": "{trigger_event_id:%IdentifyRules%}",
     "ArrayMergeOptions": "",

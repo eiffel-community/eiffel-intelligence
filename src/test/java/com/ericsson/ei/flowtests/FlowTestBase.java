@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;

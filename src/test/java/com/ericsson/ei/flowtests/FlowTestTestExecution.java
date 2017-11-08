@@ -37,7 +37,7 @@ public class FlowTestTestExecution extends FlowTestBase {
      private static Logger log = LoggerFactory.getLogger(FlowTest.class);
      static protected String inputFilePath = "src/test/resources/aggregatedExternalComposition.json";
      static protected String jsonFilePath = "src/test/resources/TestExecutionTestEvents.json";
-     static protected String rulePath = "src/test/resources/TestActivityObjectRules.json";
+     static protected String rulePath = "src/test/resources/TestExecutionObjectRules.json";
 
      @Autowired
      RulesHandler rulesHandler;
@@ -50,8 +50,8 @@ public class FlowTestTestExecution extends FlowTestBase {
         protected ArrayList<String> getEventNamesToSend() {
             ArrayList<String> eventNames = new ArrayList<>();
             eventNames.add("event_EiffelActivityTriggeredEvent");
-//            eventNames.add("event_EiffelActivityStartedEvent");
-//            eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
+            eventNames.add("event_EiffelActivityStartedEvent");
+            eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
 //            eventNames.add("event_EiffelTestSuiteStartedEvent");
 //            eventNames.add("event_EiffelTestCaseTriggeredEvent");
 //            eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
@@ -66,11 +66,14 @@ public class FlowTestTestExecution extends FlowTestBase {
         protected void checkResult() {
             try {
                 String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
+
+//                Thread.sleep(10000000);
                 ObjectMapper objectmapper = new ObjectMapper();
                 JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
                 JsonNode expectedJson1 = expectedJsons.get(0);
                 JsonNode expectedJson2 = expectedJsons.get(1);
                 JsonNode expectedJson3 = expectedJsons.get(2);
+                String document4 = objectHandler.findObjectById("b46ef12d-25gb-4d7y-b9fd-8763re66de47");
                 String document1 = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
                 String document2 = objectHandler.findObjectById("cfce572b-c3j4-441e-abc9-b62f48080ca2");
                 String document3 = objectHandler.findObjectById("cfre572b-c3j4-4d1e-ajc9-b62f45080ca2");

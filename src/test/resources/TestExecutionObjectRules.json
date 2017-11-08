@@ -23,12 +23,9 @@
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
     "StartEvent": "NO",
-    "IdentifyRules": "event[?meta.type=='EiffelActivityStartedEvent'] | [0].[links] | [] | [?type=='ACTIVITY_EXECUTION'].target",
-    "MatchIdRules": {
-      "objid": "%IdentifyRules_objid%"
-    },
+    "IdentifyRules" : "links | [?type=='ACTIVITY_EXECUTION'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{ ongoing : `\"true\"`}",
-    "MergeResolverRules": null,
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
@@ -59,10 +56,8 @@
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
     "StartEvent": "NO",
-    "IdentifyRules": "event[?meta.type=='EiffelTestExecutionRecipeCollectionCreatedEvent'] | [0].[links] | [] | [?type=='CONTEXT'].target",
-    "MatchIdRules": {
-      "objid": "%IdentifyRules_objid%"
-    },
+    "IdentifyRules":"links | [?type=='CONTEXT'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{ test_batches : data.batches }",
     "MergeResolverRules": null,
     "ArrayMergeOptions": "",

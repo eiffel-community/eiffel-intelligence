@@ -14,15 +14,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.ericsson.ei.flowtests.FlowTestBase.setJsonFilePath;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowSourceChangeObject extends FlowTest {
-    static protected String inputFilePath = "src/test/resources/aggregatedExternalComposition.json";
+    static protected String inputFilePath = "src/test/resources/aggregatedSourceChangeObject.json";
     static protected String jsonFilePath = "src/test/resources/TestSourceChangeObject.json";
     static protected String rulePath = "src/test/resources/TestSourceChangeObjectRules.json";
     private static Logger log = LoggerFactory.getLogger(FlowTest.class);
+
     @Autowired
     RulesHandler rulesHandler;
 
@@ -48,19 +49,12 @@ public class FlowSourceChangeObject extends FlowTest {
             String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-//            JsonNode expectedJson1 = expectedJsons.get(0);
-//            JsonNode expectedJson2 = expectedJsons.get(1);
-//            JsonNode expectedJson3 = expectedJsons.get(2);
-            String document1 = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
-//            String document2 = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
-//            String document3 = objectHandler.findObjectById("cfre572b-c3j4-4d1e-ajc9-b62f45080ca2");
-           JsonNode actualJson1 = objectmapper.readTree(document1);
-//            JsonNode actualJson2 = objectmapper.readTree(document2);
-//            JsonNode actualJson3 = objectmapper.readTree(document3);
-            int i = 0;
+            JsonNode expectedJson1 = expectedJsons.get(0);
+            String document = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
+            JsonNode actualJson = objectmapper.readTree(document);
+            assertEquals(expectedJson1.toString().length(), actualJson.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
-
     }
 }

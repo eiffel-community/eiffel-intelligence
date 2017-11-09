@@ -12,7 +12,7 @@
     "ExtractionRules" : "{ id : meta.id, type : meta.type, time : meta.time, version : meta.version, ongoing : `\"false\"` }",
     "MergeResolverRules" : null,
     "ArrayMergeOptions": "",
-    "HistoryIdentifyRules": "links | [?type=='BASE'].target",
+    "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
     "ProcessRules":null,
     "ProcessFunction" : null
@@ -46,7 +46,7 @@
       "_id": "%IdentifyRules_objid%"
     },
     "ExtractionRules" : "{ id : meta.id, type : meta.type, time : meta.time, version : meta.version}",
-    "ArrayMergeOptions": "",
+    "ArrayMergeOptions": "{\"confidenceLevel_id\":%IdentifyRules%}",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
     "ProcessRules":null,

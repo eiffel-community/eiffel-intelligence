@@ -62,10 +62,9 @@ public class FlowSourceChangeObject extends FlowTest {
             String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-            JsonNode expectedJson1 = expectedJsons.get(0);
             String document = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
             JsonNode actualJson = objectmapper.readTree(document);
-            assertEquals(expectedJson1.toString().length(), actualJson.toString().length());
+            assertEquals(expectedJsons.toString().length(), actualJson.toString().length(),2);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

@@ -1,3 +1,16 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.flowtests;
 
 import com.ericsson.ei.rules.RulesHandler;
@@ -13,6 +26,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -47,8 +62,10 @@ public class FlowSourceChangeObject extends FlowTest {
             String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
+            JsonNode expectedJson1 = expectedJsons.get(0);
             String document = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
             JsonNode actualJson = objectmapper.readTree(document);
+            assertEquals(expectedJson1.toString().length(), actualJson.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

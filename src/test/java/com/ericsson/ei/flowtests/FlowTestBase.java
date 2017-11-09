@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
@@ -133,8 +132,8 @@ public class FlowTestBase {
         System.setProperty("rabbitmq.port", "8672");
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "100");
-        System.setProperty("waitlist.fixedRateResend", "1000");
+        System.setProperty("waitlist.initialDelayResend", "10");
+        System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         ObjectMapper objectmapper = new ObjectMapper();

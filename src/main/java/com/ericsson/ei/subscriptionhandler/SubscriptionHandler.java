@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * This class is responsible to take a aggregatedObject and match it with all
- * the Subscription Object, to check if any of them is eligible for
- * notification.
+ * the Subscription Object, to check ALL Conditions/requirement for
+ * notification.  (AND between conditions in requirements, "OR" between requirements with conditions)
  * 
  * @author xjibbal
  *
@@ -111,15 +111,12 @@ public class SubscriptionHandler {
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         log.info("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        ArrayNode fulfilledRequirements = runSubscription.checkRequirementType(requirementIterator, aggregatedObject);
-        if (fulfilledRequirements != null) {
-            log.info("The fulfilled requirements are : " + fulfilledRequirements.toString());
-            if (runSubscription.runSubscriptionOnObject(aggregatedObject, fulfilledRequirements, subscriptionJson)) {
+
+            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
                 log.info("The subscription conditions match for the aggregatedObject");
                 informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
             }
-        } else
-            log.info("The subscription conditions did not match for the aggregatedObject");
+
     }
 
     /**

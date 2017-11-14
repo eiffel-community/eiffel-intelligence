@@ -104,7 +104,10 @@ public class MongoDBHandler {
     //Retrieve data from the collection based on condition
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
-        try {
+
+        log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName +
+        		"\nwith Condition: " + condition);
+        try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);
             DBObject dbObjectCondition = (DBObject) JSON.parse(condition);

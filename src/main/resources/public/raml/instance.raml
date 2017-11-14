@@ -1,0 +1,23 @@
+#%RAML 0.8
+  schemas:
+    - !include info_instance-schema.raml
+    resourceTypes:
+    - standard:
+        get?:
+          responses:
+            404:
+              description: |
+                The requested resource was not found
+  title: Instance information
+  version: ${project.version}
+  mediaType: application/json
+  baseUri: /
+  /information:
+    description: Provides interaction with InstanceInfo resource
+    get:
+      description: List of all instance information
+      responses:
+        200:
+          body:
+            application/json:
+              schema: information

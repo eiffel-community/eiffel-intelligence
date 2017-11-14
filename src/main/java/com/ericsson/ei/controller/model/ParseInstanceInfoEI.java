@@ -34,10 +34,12 @@ import java.util.List;
 @Component
 public class ParseInstanceInfoEI {
     @Getter
-    @Value("${spring.application.name}") private String applicationName;
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Getter
-    @Value("${build.version}") private String version;
+    @Value("${build.version}")
+    private String version;
 
     @Getter
     @Autowired

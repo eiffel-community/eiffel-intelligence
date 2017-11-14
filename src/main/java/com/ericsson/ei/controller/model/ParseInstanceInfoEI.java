@@ -31,6 +31,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
+ * Needed for generate Json file with information about backend instance.
+ */
 @Component
 public class ParseInstanceInfoEI {
     @Getter

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+
 /**
  * This class represents the mechanism to fetch the rule conditions from the
  * Subscription Object and match it with the aggregatedObject to check if it is
@@ -49,23 +50,32 @@ public class RunSubscription {
      * This method matches every condition specified in the subscription Object
      * and if all conditions are matched then only the aggregatedObject is
      * eligible for notification via e-mail or REST POST.
+     *
+     * (AND between conditions in requirements, "OR" between requirements with conditions)
      * 
      * @param aggregatedObject
      * @param requirement
      * @param subscriptionJson
      * @return boolean
      */
-    public boolean runSubscriptionOnObject(String aggregatedObject, ArrayNode fulfilledRequirements,
-            JsonNode subscriptionJson) {
-        Iterator<JsonNode> requirementIterator = fulfilledRequirements.elements();
+
+        public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator,
+                JsonNode subscriptionJson) {
         boolean conditionFulfilled = false;
+        int count_condition_fulfillment = 0;
+        int count_conditions = 0;
+
+
         while (requirementIterator.hasNext()) {
             JsonNode requirement = requirementIterator.next();
             log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
+
+            count_condition_fulfillment = 0;
+            count_conditions = conditions.size();
+
             log.info("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
-            // boolean conditionFulfilled = false;
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
                 String new_Rule = rule.replace("'", "\"");
@@ -73,43 +83,22 @@ public class RunSubscription {
                 log.info("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
                 log.info("Result : " + result.toString());
-                if (result.toString() != null) {
-                    conditionFulfilled = true;
+                int test = result.toString().length();
+                if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")){
+                    count_condition_fulfillment++;
                 }
             }
+
+            if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
+
+                conditionFulfilled = true;
+            }
         }
+
         log.info("The final value of conditionFulfilled is : " + conditionFulfilled);
+
         return conditionFulfilled;
 
-    }
-
-    /**
-     * This method check if the subscription requirement type and the
-     * aggregatedObject TemplateName are same.
-     * 
-     * @param requirementIterator
-     * @param aggregatedObject
-     * @return JsonNode
-     */
-    public ArrayNode checkRequirementType(Iterator<JsonNode> requirementIterator, String aggregatedObject) {
-        ArrayNode fulfilledRequirements = new ObjectMapper().createArrayNode();
-        ;
-        JsonNode requirement = null;
-        JsonNode aggregatedJson = null;
-        boolean condition = false;
-        try {
-            aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
-            log.info("AggregatedJson : " + aggregatedJson.toString());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        while (requirementIterator.hasNext()) {
-            requirement = requirementIterator.next();
-            log.info("Requirements : " + requirement.toString());
-            fulfilledRequirements.add(requirement);
-        }
-
-        return fulfilledRequirements;
     }
 
 }

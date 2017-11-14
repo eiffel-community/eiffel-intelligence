@@ -17,7 +17,6 @@
         <plugin-version>0.8.6</plugin-version>
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/subscription.raml</raml-path>
-        <raml-path>src/main/resources/public/raml/information.raml</raml-path>
         <base-package>com.ericsson.ei.controller</base-package>
     </properties>
 

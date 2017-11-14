@@ -2,6 +2,7 @@
 #%RAML 0.8
   schemas:
     - !include common-schema.raml
+    - !include info_instance-schema.raml
   resourceTypes:
   - standard:
       get?:
@@ -80,4 +81,17 @@
             body:
               application/json:
                 schema: subscriptionResponse
-        
+
+title: Instance information
+  version: ${project.version}
+  mediaType: application/json
+  baseUri: /
+  /information:
+    description: Provides interaction with InstanceInfo resource
+    get:
+      description: List of all instance information
+      responses:
+        200:
+          body:
+            application/json:
+              schema: information

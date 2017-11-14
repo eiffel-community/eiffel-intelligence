@@ -36,6 +36,9 @@ public class TestInstanceInfoControllerImpl {
     @MockBean
     private ParseInstanceInfoEI istanceInfo;
 
+    @MockBean
+    private InstanceInfoController infoController;
+
     @Test
     public void testResponseStatus() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/information")

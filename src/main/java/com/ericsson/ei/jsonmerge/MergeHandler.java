@@ -84,6 +84,7 @@ public class MergeHandler {
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }
+        log.debug("Merged Aggregated Object:\n" + mergedObject);
             // unlocking of document will be performed, when mergedObject will be inserted to database
             objectHandler.updateObject(mergedObject, rules, event, id);
             return mergedObject;
@@ -94,9 +95,9 @@ public class MergeHandler {
     }
 
     public String replaceIdMarkerInRules(String rule, String id){
-        String literal = "\"" + id + "\"";
+
         if (rule.contains(mergeIdMarker)) {
-            String updatedRule = rule.replaceAll(mergeIdMarker, literal);
+            String updatedRule = rule.replaceAll(mergeIdMarker, "\"" + id + "\"");
             updatedRule = "`" + updatedRule + "`";
             return updatedRule;
         }
@@ -172,7 +173,7 @@ public class MergeHandler {
             String document = objectHandler.lockDocument(id);
             JsonNode result = objectHandler.getAggregatedObject(document);
             if (result != null)
-                return result.asText();
+                return result.toString();
         }catch (Exception e){
             log.info(e.getMessage(),e);
         }

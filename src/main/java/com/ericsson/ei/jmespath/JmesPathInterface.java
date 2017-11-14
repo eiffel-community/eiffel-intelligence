@@ -54,6 +54,7 @@ public class JmesPathInterface {
             log.info(e.getMessage(), e);
         }
         JsonNode result = expression.search(event);
+
         return result;
     }
 }

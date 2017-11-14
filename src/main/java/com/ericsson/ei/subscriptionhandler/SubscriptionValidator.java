@@ -39,7 +39,6 @@ public class SubscriptionValidator {
 	public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
 		
 		LOG.info("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
-		
 		this.validateSubscriptionName(subscription.getSubscriptionName());
 		this.validateNotificationMessage(subscription.getNotificationMessage());
 		this.validateNotificationMeta(subscription.getNotificationMeta());

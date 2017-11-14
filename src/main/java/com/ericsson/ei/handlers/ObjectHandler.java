@@ -71,8 +71,8 @@ public class ObjectHandler {
             id = idNode.textValue();
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
-        String documentStr = document.toString();
-        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
+        log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
             subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
@@ -98,6 +98,8 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
+        log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject +
+        		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
@@ -133,18 +135,22 @@ public class ObjectHandler {
         return objects;
     }
 
-    private JsonNode prepareDocumentForInsertion(String id, String object) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String docStr = "{\"_id\":\"" + id +"\"}";
-            JsonNode document = mapper.readValue(docStr, JsonNode.class);
-            ((ObjectNode) document).put("aggregatedObject", object);
-            return document;
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
-        return null;
-    }
+        public JsonNode prepareDocumentForInsertion(String id, String object) {
+	        ObjectMapper mapper = new ObjectMapper();
+	        try {
+	            String docStr = "{\"_id\": \"" + id + "\"}";
+	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
+	            
+	            JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class); 
+	            ObjectNode objNode = (ObjectNode) jsonNode;  
+	            objNode.set("aggregatedObject", mapper.readTree(object));
+
+	            return jsonNode;
+	        } catch (Exception e) {
+	            log.info(e.getMessage(),e);
+	        }
+	        return null;
+	    }
 
     public JsonNode getAggregatedObject(String dbDocument) {
          ObjectMapper mapper = new ObjectMapper();
@@ -159,7 +165,7 @@ public class ObjectHandler {
     }
 
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get("_id").asText();
+        return aggregatedDbObject.get("_id").textValue();
     }
 
     /**

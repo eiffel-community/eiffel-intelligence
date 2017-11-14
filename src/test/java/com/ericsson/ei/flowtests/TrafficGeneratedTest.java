@@ -233,17 +233,18 @@ public class TrafficGeneratedTest {
      * @return list of ready to send events.
      */
     private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {
+    	ObjectMapper mapper = new ObjectMapper();
         List<String> events = new ArrayList<>();
         String newID;
         for (int i = 0; i < EVENT_PACKAGES; i++) {
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
                 newID = eventJson.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));;
-                ((ObjectNode) eventJson.path("meta")).put("id", newID);
+                ((ObjectNode) eventJson.path("meta")).set("id", mapper.readValue(newID, JsonNode.class));
                 for (JsonNode link : eventJson.path("links")) {
                     if (link.has("target")) {
                         newID = link.path("target").textValue().substring(0, 30).concat(String.format("%06d", i));
-                        ((ObjectNode) link).put("target", newID);
+                        ((ObjectNode) link).set("target", mapper.readValue(newID, JsonNode.class));
                     }
                 }
                 events.add(eventJson.toString());

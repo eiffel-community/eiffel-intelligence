@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,8 +45,13 @@ public class MongoDBHandler {
         this.mongoClient = mongoClient;
     }
 
-    @Value("${mongodb.host}") private String host;
-    @Value("${mongodb.port}") private int port;
+    @Getter
+    @Value("${mongodb.host}")
+    private String host;
+
+    @Getter
+    @Value("${mongodb.port}")
+    private int port;
 
     //TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
@@ -108,7 +114,7 @@ public class MongoDBHandler {
     public  ArrayList<String> find(String dataBaseName, String collectionName, String condition){
         ArrayList<String> result = new ArrayList<>();
         log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName +
-        		"\nwith Condition: " + condition);
+                "\nwith Condition: " + condition);
         try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);

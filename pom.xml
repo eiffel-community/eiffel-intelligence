@@ -17,6 +17,7 @@
         <plugin-version>0.8.6</plugin-version>
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/subscription.raml</raml-path>
+        <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
         <base-package>com.ericsson.ei.controller</base-package>
     </properties>
 
@@ -168,7 +169,12 @@
             <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

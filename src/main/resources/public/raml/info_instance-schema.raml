@@ -1,0 +1,132 @@
+information: |
+  {
+    "$schema":"http://json-schema.org/draft-04/schema#",
+    "javaType":"com.ericsson.ei.controller.model.ParseInstanceInfo",
+    "applicationName" : {
+        "type":"string"
+      },
+    "version" :{
+        "type":"string"
+      },
+      "rabbitmq" :{
+          "queueDurable" :{
+              "type":"boolean"
+          },
+          "host" : {
+              "type":"string"
+          },
+          "exchangeName" :{
+              "type":"string"
+          },
+          "port" : {
+              "type":"integer"
+          },
+          "tlsVer" : {
+              "type":"string"
+          },
+          "domainId" : {
+              "type":"string"
+          },
+          "componentName" : {
+              "type":"string"
+          },
+          "waitlistSufix" : {
+              "type":"string"
+          },
+          "routingKey" : {
+              "type":"string"
+          },
+          "consumerName" : {
+              "type":"string"
+          },
+          "queueName" : {
+              "type":"string"
+          },
+          "waitlistQueueName" : {
+              "type":"string"
+          },
+        "type":"array"
+      },
+      "mongodb" :{
+          "host" : {
+              "type":"string"
+          },
+          "port" : {
+              "type":"integer"
+          },
+       "type":"array"
+      },
+      "threads" :{
+          "corePoolSize" :{
+              "type":"integer"
+          },
+          "queueCapacity" : {
+              "type":"integer"
+          },
+          "maxPoolSize" : {
+              "type":"integer"
+          },
+        "type":"array"
+      },
+      "email" :{
+          "sender" :{
+              "type":"string"
+          },
+          "subject" : {
+              "type":"string"
+          },
+        "type":"array"
+      },
+      "waitList" :{
+          "collectionName" : {
+              "type":"string"
+          },
+          "databaseName" : {
+              "type":"string"
+          },
+        "ttlValue" : {
+            "type":"integer"
+        },
+        "waitList" : {
+            "type":"array"
+        },
+        "type":"array"
+      },
+      "objectHandler" : {
+          "collectionName" : {
+              "type":"string"
+          },
+          "databaseName" : {
+              "type":"string"
+          },
+        "type":"object"
+      },
+      "subscriptionHandler" : {
+          "subscriptionCollectionName" : {
+              "type":"string"
+          },
+          "subscriptionDataBaseName" : {
+              "type":"string"
+          },
+        "type":"object"
+      },
+      "informSubscription" : {
+          "failAttempt" : {
+              "type":"integer"
+          },
+          "missedNotificationCollectionName" : {
+              "type":"string"
+          },
+          "missedNotificationDataBaseName" : {
+              "type":"string"
+          },
+          "ttlValue" : {
+              "type":"integer"
+          },
+        "type":"array"
+      },
+      "erUrl" : {
+          "type":"string"
+      },
+    "type":"object"
+  }

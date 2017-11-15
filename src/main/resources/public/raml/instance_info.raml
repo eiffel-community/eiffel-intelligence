@@ -1,0 +1,21 @@
+#%RAML 0.8
+baseUri: /
+title: Instance information
+version: ${project.version}
+schemas:
+   - !include info_instance-schema.raml
+mediaType: application/json
+/information:
+    description: |
+      Provides interaction with InstanceInfo resource
+    get:
+        description: |
+          List of all instance information
+        responses:
+           200:
+             body:
+               application/json:
+                 schema: information
+           503:
+              description: |
+                  The service is currently unavailable

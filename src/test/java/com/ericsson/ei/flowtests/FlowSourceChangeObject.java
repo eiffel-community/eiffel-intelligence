@@ -38,7 +38,7 @@ public class FlowSourceChangeObject extends FlowTest {
     private static Logger log = LoggerFactory.getLogger(FlowTest.class);
 
     @Autowired
-    RulesHandler rulesHandler;
+    private RulesHandler rulesHandler;
 
     protected void setSpecificTestCaseParameters() {
         setJsonFilePath(jsonFilePath);
@@ -47,8 +47,8 @@ public class FlowSourceChangeObject extends FlowTest {
 
     protected ArrayList<String> getEventNamesToSend() {
         ArrayList<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
         eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
+        eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelActivityTriggeredEvent_3");
@@ -62,9 +62,9 @@ public class FlowSourceChangeObject extends FlowTest {
             String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-            String document = objectHandler.findObjectById("fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47");
+            String document = objectHandler.findObjectById("fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47");
             JsonNode actualJson = objectmapper.readTree(document);
-            assertEquals(expectedJsons.toString().length(), actualJson.toString().length(),2);
+            assertEquals(expectedJsons.toString().length(), actualJson.toString().length(),9);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

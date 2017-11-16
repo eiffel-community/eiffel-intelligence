@@ -52,10 +52,10 @@ public class TestIdRulesHandler {
         JmesPathInterface jmespath = new JmesPathInterface();
         idRulesHandler.setJmesPathInterface(jmespath);
         try{
-            String jsonRules = FileUtils.readFileToString(new File(rulesPath));
+            String jsonRules = FileUtils.readFileToString(new File(rulesPath), "UTF-8");
             ObjectMapper rulesObjectMapper = new ObjectMapper();
 
-            eventFile = FileUtils.readFileToString(new File(eventPath));
+            eventFile = FileUtils.readFileToString(new File(eventPath), "UTF-8");
 
             rulesObject = new RulesObject(rulesObjectMapper.readTree(jsonRules.replace("[", "").replace("]", "")));
             System.out.println("RulesObject: " + rulesObject.getJsonRulesObject());

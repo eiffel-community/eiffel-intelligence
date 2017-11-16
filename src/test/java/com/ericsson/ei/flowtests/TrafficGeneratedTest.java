@@ -141,7 +141,7 @@ public class TrafficGeneratedTest {
 
 
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJason = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
@@ -209,7 +209,7 @@ public class TrafficGeneratedTest {
             long timeAfter = System.currentTimeMillis();
             long diffTime = timeAfter - timeBefore;
 
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
+            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             for (int i = 0; i < EVENT_PACKAGES; i++) {

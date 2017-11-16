@@ -94,7 +94,7 @@ public class TestMergePrepare {
         String testData = null;
         Collection<Object[]> baseList = new ArrayList<Object[]>();
         try {
-            testData = FileUtils.readFileToString(new File(testDataPath));
+            testData = FileUtils.readFileToString(new File(testDataPath), "UTF-8");
             JSONArray testDataJson = new JSONArray(testData);
             for (int i=0; i<testDataJson.length(); i++) {
                 ArrayList<String> childList = new ArrayList<String>();

@@ -53,7 +53,7 @@ public class TestWaitListStorageHandler {
     @Before
     public void init() throws IOException{
         MockitoAnnotations.initMocks(this);
-        output.add(FileUtils.readFileToString(new File(inputJson1)));
+        output.add(FileUtils.readFileToString(new File(inputJson1), "UTF-8"));
         Mockito.when(mongoDBHandler.getAllDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(output);
         Mockito.when(mongoDBHandler.insertDocument(Mockito.anyString(), Mockito.anyString(),Mockito.anyString())).thenReturn(true);
         waitListStorageHandler.setMongoDbHandler(mongoDBHandler);
@@ -66,9 +66,9 @@ public class TestWaitListStorageHandler {
         String eventFile = null;
         RulesObject rulesObject = null;
         try{
-            jsonRule = FileUtils.readFileToString(new File(rulesPath));
+            jsonRule = FileUtils.readFileToString(new File(rulesPath), "UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
-            eventFile = FileUtils.readFileToString(new File(eventPath));
+            eventFile = FileUtils.readFileToString(new File(eventPath), "UTF-8");
             rulesObject = new RulesObject(objectMapper.readTree(jsonRule));
             waitListStorageHandler.addEventToWaitList(eventFile, rulesObject);
             assertTrue(true);

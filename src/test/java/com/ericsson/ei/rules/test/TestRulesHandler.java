@@ -59,8 +59,8 @@ public class TestRulesHandler {
         RulesObject result = null;
         RulesObject output = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+            jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             output = new RulesObject(objectmapper.readTree(jsonOutput));
         } catch (Exception e) {

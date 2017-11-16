@@ -41,6 +41,7 @@ public class MongoDBHandler {
 
     MongoClient mongoClient;
 
+
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
@@ -60,14 +61,12 @@ public class MongoDBHandler {
     }
 
     //Establishing the connection to mongodb and creating a collection
-    public  void createConnection(String host, int port){
-        mongoClient = new MongoClient(host , port);
-    }
-
+    public  void createConnection(String host, int port){ mongoClient = new MongoClient(host , port);}
     //Insert data into collection
     public  boolean insertDocument(String dataBaseName, String collectionName, String input){
         try {
             DB db = mongoClient.getDB(dataBaseName);
+
             DBCollection table = db.getCollection(collectionName);
             DBObject dbObjectInput = (DBObject) JSON.parse(input);
             WriteResult result = table.insert(dbObjectInput);

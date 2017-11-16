@@ -132,7 +132,7 @@ public class FlowTestBase {
         System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJason = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
@@ -230,7 +230,7 @@ public class FlowTestBase {
          String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
          String expectedDocument;
         try {
-            expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
+            expectedDocument = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);

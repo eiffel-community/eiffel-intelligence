@@ -49,7 +49,7 @@ public class FlowTestExternalComposition extends FlowTestBase {
 
         protected void checkResult() {
             try {
-                String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
+                String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
                 ObjectMapper objectmapper = new ObjectMapper();
                 JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
                 JsonNode expectedJson1 = expectedJsons.get(0);

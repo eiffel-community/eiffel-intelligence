@@ -109,7 +109,7 @@ public class ObjectHandlerTest {
         
 
         try {
-            String rulesString = FileUtils.readFileToString(new File(inputFilePath));
+            String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             rulesJson = objectmapper.readTree(rulesString);
         } catch (Exception e) {

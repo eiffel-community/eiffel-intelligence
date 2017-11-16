@@ -58,13 +58,13 @@ public class FlowTest2 extends FlowTestBase {
     protected void checkResult() {
         try {
             String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
+            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
             assertEquals(expectedJson.toString().length(), actualJson.toString().length());
-            String expectedDocument2 = FileUtils.readFileToString(new File(inputFilePath2));
+            String expectedDocument2 = FileUtils.readFileToString(new File(inputFilePath2), "UTF-8");
             String document2 = objectHandler.findObjectById("ccce572c-c364-441e-abc9-b62fed080ca2");
             JsonNode expectedJson2 = objectmapper.readTree(expectedDocument2);
             JsonNode actualJson2 = objectmapper.readTree(document2);

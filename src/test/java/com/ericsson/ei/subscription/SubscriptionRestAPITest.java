@@ -60,7 +60,7 @@ public class SubscriptionRestAPITest {
     
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
-        String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath));
+        String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
     }
     

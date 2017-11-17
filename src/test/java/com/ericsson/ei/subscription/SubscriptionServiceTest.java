@@ -71,7 +71,7 @@ public class SubscriptionServiceTest {
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath));
+        String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
         mongoClient = testsFactory.newMongo();
 

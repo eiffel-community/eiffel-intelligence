@@ -49,8 +49,8 @@ public class TestJmesPathInterface {
         String jsonOutput = null;
         JsonNode output = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+            jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             output = objectmapper.readTree(jsonOutput);
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class TestJmesPathInterface {
         String jsonInput = null;
         JsonNode expectedResult = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+            jsonInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
             expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         } catch (Exception e) {

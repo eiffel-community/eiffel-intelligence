@@ -79,8 +79,8 @@ public class SubscriptionHandlerTest {
         mongoClient = testsFactory.newMongo();
 
         try {
-            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath));
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

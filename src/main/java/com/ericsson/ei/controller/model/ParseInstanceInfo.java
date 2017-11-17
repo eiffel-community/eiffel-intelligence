@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -15,34 +14,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "jmespath"
-})
-public class Condition {
 
-    @JsonProperty("jmespath")
-    private String jmespath;
+})
+public class ParseInstanceInfo {
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * 
-     * @return
-     *     The jmespath
-     */
-    @JsonProperty("jmespath")
-    public String getJmespath() {
-        return jmespath;
-    }
-
-    /**
-     * 
-     * @param jmespath
-     *     The jmespath
-     */
-    @JsonProperty("jmespath")
-    public void setJmespath(String jmespath) {
-        this.jmespath = jmespath;
-    }
 
     @Override
     public String toString() {
@@ -61,7 +38,7 @@ public class Condition {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(jmespath).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -69,11 +46,11 @@ public class Condition {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Condition) == false) {
+        if ((other instanceof ParseInstanceInfo) == false) {
             return false;
         }
-        Condition rhs = ((Condition) other);
-        return new EqualsBuilder().append(jmespath, rhs.jmespath).append(additionalProperties, rhs.additionalProperties).isEquals();
+        ParseInstanceInfo rhs = ((ParseInstanceInfo) other);
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

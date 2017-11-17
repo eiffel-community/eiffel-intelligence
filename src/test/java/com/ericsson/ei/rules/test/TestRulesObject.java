@@ -45,7 +45,7 @@ public class TestRulesObject {
         String result;
 
         try {
-            String rulesString = FileUtils.readFileToString(new File(inputFilePath));
+            String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             rulesJson = objectmapper.readTree(rulesString);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class TestRulesObject {
         String result;
 
         try {
-            String ruleString = FileUtils.readFileToString(new File(inputRulesPath));
+            String ruleString = FileUtils.readFileToString(new File(inputRulesPath), "UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             rulesJson = objectMapper.readTree(ruleString);
         } catch (Exception e) {

@@ -18,6 +18,7 @@ package com.ericsson.ei.jsonmerge;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.json.*;
 import org.springframework.stereotype.Component;
 
@@ -194,9 +195,28 @@ public class MergePrepare {
         try {
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
-            JSONObject ruleJSONObject = new JSONObject(mergeRule);
+            Object ruleJSONObject = new JSONObject(mergeRule);
+            //hack to remove quotes
             stringRule = ruleJSONObject.toString();
         } catch (JSONException e) {
+              try {
+                  JSONArray ruleJSONArray = new JSONArray(mergeRule);
+                  String firstRule = ruleJSONArray.getString(0);
+                  String firstPath = getMergePath(originObject, firstRule);
+                  String[] firstPathSubstrings = firstPath.split("\\.");
+                  ArrayList<String> fp= new ArrayList(Arrays.asList(firstPathSubstrings));
+                  fp.remove(fp.size()-1);
+                  String firstPathTrimmed = StringUtils.join(fp,":{");
+                  String secondRule = "{" + firstPathTrimmed + ":" + ruleJSONArray.getString(1) + "}";
+                  for (int i = 1;i<fp.size();i++) {
+                      secondRule += "}";
+                  }
+                  String secondPath = getMergePath(originObject, secondRule);
+                  return secondPath;
+              } catch (Exception ne) {
+                  log.info(ne.getMessage(), ne);
+              }
+        } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);

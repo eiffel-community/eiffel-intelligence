@@ -137,7 +137,7 @@
       "source": {
         "domainId": "example.domain"
       },
-      "time": 1481875944272,
+      "time": 1481875944278,
       "type": "EiffelConfidenceLevelModifiedEvent",
       "version": "1.0.0"
     },

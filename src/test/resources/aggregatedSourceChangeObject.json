@@ -30,7 +30,13 @@
         "name": "readyForSystemIntegration",
         "time": 1481875944272,
         "value": "SUCCESS"
-      }
+      },
+      {
+        "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+        "name": "readyForDelivery",
+        "time": 1481875944278,
+        "value": "SUCCESS"
+        }
     ],
     "TemplateName": "SC_1",
     "submission": {

@@ -69,6 +69,10 @@ public class RulesObject {
         return getTextValue("DownstreamMergeRules");
     }
 
+    public String getHistoryExtractionRules() {
+        return rulesObject.get("HistoryExtractionRules").textValue();
+    }
+
     public String fetchProcessRules() {
         return getTextValue("ProcessRules");
     }
@@ -97,6 +101,11 @@ public class RulesObject {
 
     public boolean isStartEventRules() {
         String value = rulesObject.get("StartEvent").textValue().toLowerCase();
+        return value.equals("yes");
+    }
+
+    public boolean isNeedHistoryRule() {
+        String value = rulesObject.get("NeedHistoryRule").textValue().toLowerCase();
         return value.equals("yes");
     }
 }

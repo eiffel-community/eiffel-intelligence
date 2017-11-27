@@ -21,6 +21,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class ExtractionHandler {
     @Autowired private MergeHandler mergeHandler;
     @Autowired private ObjectHandler objectHandler;
     @Autowired private ProcessRulesHandler processRulesHandler;
-    //TODO:@Autowired private HistoryIdRulesHandler historyIdRulesHandler;
+    @Autowired private UpStreamEventsHandler uppstreamEventsHandler;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -54,6 +55,10 @@ public class ExtractionHandler {
     public void setProcessRulesHandler(ProcessRulesHandler processRulesHandler) {
         this.processRulesHandler = processRulesHandler;
     }
+
+//    public void setUppstreamEventsHandler(UpStreamEventsHandler uppstreamEventsHandler) {
+//        this.uppstreamEventsHandler = uppstreamEventsHandler;
+//    }
 
     public void setObjectHandler(ObjectHandler objectHandler) {
         this.objectHandler = objectHandler;
@@ -86,6 +91,7 @@ public class ExtractionHandler {
             ObjectNode objectNode = (ObjectNode) extractedContent;
             objectNode.put("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
+            uppstreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId, rulesObject);
         }
     }
 

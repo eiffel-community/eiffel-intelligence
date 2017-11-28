@@ -110,6 +110,10 @@ public class FlowTestBase {
     protected static String jsonFilePath = "src/test/resources/test_events.json";
     static protected String inputFilePath = "src/test/resources/AggregatedDocument.json";
 
+    public static void setJsonFilePath(String jsonFilePath) {
+        FlowTestBase.jsonFilePath = jsonFilePath;
+    }
+
     @BeforeClass
     public static void setup() throws Exception {
         System.setProperty("flow.test", "true");
@@ -132,9 +136,7 @@ public class FlowTestBase {
         System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
         ObjectMapper objectmapper = new ObjectMapper();
-        parsedJason = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
         amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath());
         amqpBrocker.startBroker();
@@ -174,6 +176,7 @@ public class FlowTestBase {
             createExchange(exchangeName, queueName);
 
             ArrayList<String> eventNames = getEventNamesToSend();
+            testParametersChange();
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
@@ -187,6 +190,16 @@ public class FlowTestBase {
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
+    }
+
+    protected void testParametersChange() throws IOException {
+        setSpecificTestCaseParameters();
+        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+        ObjectMapper objectmapper = new ObjectMapper();
+        parsedJason = objectmapper.readTree(jsonFileContent);
+    }
+
+    protected void setSpecificTestCaseParameters(){
     }
 
     protected void createExchange(final String exchangeName, final String queueName) {

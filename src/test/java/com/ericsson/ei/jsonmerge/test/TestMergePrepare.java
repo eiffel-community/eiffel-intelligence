@@ -16,8 +16,10 @@
 */
 package com.ericsson.ei.jsonmerge.test;
 
+import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergePrepare;
 import org.json.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -42,7 +44,6 @@ public class TestMergePrepare {
     public String mergeObject;
     public String mergeRule;
     public String mergePath;
-    public String ruleKey;
     public String ruleValue;
     public String mergedObject;
 
@@ -50,41 +51,37 @@ public class TestMergePrepare {
 
     public TestMergePrepare(String originObject, String mergeObject,
                             String mergeRule, String mergePath,
-                            String ruleKey, String ruleValue,
-                            String mergedObject){
+                            String ruleValue, String mergedObject){
         this.originObject = originObject;
         this.mergeObject = mergeObject;
         this.mergeRule = mergeRule;
         this.mergePath = mergePath;
-        this.ruleKey = ruleKey;
         this.ruleValue = ruleValue;
         this.mergedObject = mergedObject;
     }
 
-    @Test
-    public void getKeyFromRule() {
-        MergePrepare mergePrepareObject = new MergePrepare();
-        String result = mergePrepareObject.getKeyFromRule(mergeRule);
-        assertEquals(ruleKey, result);
+    static MergePrepare mergePrepareObject;
+
+    @BeforeClass
+    public static void setup() throws Exception {
+        mergePrepareObject = new MergePrepare();
+        mergePrepareObject.setJmesPathInterface(new JmesPathInterface());
     }
 
     @Test
     public void getValueFromRule() {
-        MergePrepare mergePrepareObject = new MergePrepare();
         String result = mergePrepareObject.getValueFromRule(mergeRule);
         assertEquals(ruleValue, result);
     }
 
     @Test
     public void getMergePath() {
-        MergePrepare mergePrepareObject = new MergePrepare();
         String result = mergePrepareObject.getMergePath(originObject, mergeRule);
         assertEquals(mergePath, result);
     }
 
     @Test
     public void addMissingLevels() {
-        MergePrepare mergePrepareObject = new MergePrepare();
         String result = mergePrepareObject.addMissingLevels(originObject, mergeObject, mergeRule, mergePath);
         assertEquals(mergedObject, result.replace("\"",""));
     }

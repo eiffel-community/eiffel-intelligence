@@ -1,0 +1,143 @@
+[
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelActivityTriggeredEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules": "[meta.id]",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, version : meta.version, ongoing : `\"false\"` }",
+    "MergeResolverRules": null,
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelActivityStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='ACTIVITY_EXECUTION'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ ongoing : `\"true\"`}",
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelActivityFinishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='ACTIVITY_EXECUTION'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules": "{ ongoing : `\"false\"`, outcome : data.outcome}",
+    "MergeResolverRules": null,
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelTestExecutionRecipeCollectionCreatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='CONTEXT'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ test_batches : data.batches }",
+    "MergeResolverRules": null,
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelTestSuiteStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='CONTEXT'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ test_suite_name : data.name }",
+    "MergeResolverRules": null,
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelTestCaseTriggeredEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='CONTEXT'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ test_cases : [{trigger_event_id : meta.id, test_data : data.testcase, ongoing : `\"false\"`}]}",
+    "MergeResolverRules": "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelTestCaseStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"true\"`}]}",
+    "MergeResolverRules":  "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  },
+  {
+    "TemplateName": "TEST_EXECUTION_1",
+    "Type": "EiffelTestCaseFinishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
+    "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"false\"`, verdict : data.outcome.verdict, conclusion : data.outcome.conclusion}]}",
+    "MergeResolverRules": "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ArrayMergeOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules": null,
+    "ProcessFunction": null
+  }
+]

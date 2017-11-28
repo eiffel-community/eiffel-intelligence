@@ -24,16 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
-import com.jayway.jsonpath.JsonPath;
 
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.*;
 
 @Component

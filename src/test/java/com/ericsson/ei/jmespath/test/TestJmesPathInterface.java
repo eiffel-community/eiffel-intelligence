@@ -56,8 +56,8 @@ public class TestJmesPathInterface {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        String ExtractionRules_test = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }";
-        JsonNode result = unitUnderTest.runRuleOnEvent(ExtractionRules_test, jsonInput);
+        String extractionRulesTest = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }";
+        JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(result, output);
     }
 

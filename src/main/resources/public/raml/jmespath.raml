@@ -1,0 +1,49 @@
+#%RAML 0.8
+
+title: jmespath API
+baseUri: http://
+version: 1.
+
+  /jmespath:        
+       get:
+	      description: Takes the JMESPath expression and JSON object as two strings in URL, namely rule and input. JMESPath method, runRuleOnEvent(), takes these two arguments and return a value as a String. 
+	     
+	      queryParameters:
+         	 rule:
+	         	description: "JMESPath expression"
+		        required: true
+          		type: string
+          		example: a.b
+          	 input:
+	         	description: "json object"
+		        required: true
+          		type: string
+          		example: 	          		
+          		
+		   responses:
+		   	200:  
+		      body:
+		        application/string:
+		        	example: |
+               		  "value" 
+		post:
+	      description: Takes the JMESPath expression as string and JSON object, namely rule and input. JMESPath method, runRuleOnEvent(), takes these two arguments and return a value as a String. 
+	     
+	      queryParameters:
+         	 rule:
+	         	description: "JMESPath expression"
+		        required: true
+          		type: string
+          		example: a.b
+          	 input:
+	         	description: "json object"
+		        required: true
+          		type: json
+          		example: {"a": "foo", "b": "bar", "c": "baz"} 	          		
+          		
+		   responses:
+		   	200:  
+		      body:
+		        application/string:
+		        	example: |
+               		  "value"           

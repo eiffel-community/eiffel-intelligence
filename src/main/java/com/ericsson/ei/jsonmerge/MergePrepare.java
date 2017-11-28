@@ -337,9 +337,6 @@ public class MergePrepare {
 
     public String addMissingLevels (String originObject, String objectToMerge,
             String mergeRule, String mergePath) {
-//        if (mergePath.isEmpty()) {
-//            return objectToMerge;
-//        }
 
         JSONObject newObject = new JSONObject();
         try {
@@ -351,8 +348,8 @@ public class MergePrepare {
                 mergeObject.put(ruleKey, ruleValue);
             }
 
-//            if (mergePathArray.length() == 1)
-//                return mergeObject.toString();
+            if (mergePathArray.length() == 1)
+                return mergeObject.toString();
 
             for (int i = 1; i < mergePathArray.length(); i++) {
                 int mergePathIndex = mergePathArray.length() - (1 + i);

@@ -132,8 +132,8 @@ public class FlowTestBase {
         System.setProperty("rabbitmq.port", "8672");
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "100000");
-        System.setProperty("waitlist.fixedRateResend", "100000");
+        System.setProperty("waitlist.initialDelayResend", "10");
+        System.setProperty("waitlist.fixedRateResend", "10");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         ObjectMapper objectmapper = new ObjectMapper();

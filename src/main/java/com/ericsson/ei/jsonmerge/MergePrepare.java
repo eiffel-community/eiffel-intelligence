@@ -140,24 +140,28 @@ public class MergePrepare {
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 
             if (propertyExist(stringObject, firstPathTrimmed, secondRule)) {
-                String firstPathNoIndexes = StringUtils.removePattern(firstPath, "(\\.0|\\.[1-9][0-9]*)");
-                String[] firstPathSubstrings = firstPathNoIndexes.split("\\.");
-                ArrayList<String> fp= new ArrayList(Arrays.asList(firstPathSubstrings));
-                fp.remove(fp.size()-1);
-                firstPathTrimmed = StringUtils.join(fp,":{");
-                String secondRuleComplete = "{" + firstPathTrimmed + ":" + secondRule + "}";
-                for (int i = 1;i<fp.size();i++) {
-                    secondRuleComplete += "}";
-                }
+                if (!firstPath.isEmpty()) {
+                    String firstPathNoIndexes = StringUtils.removePattern(firstPath, "(\\.0|\\.[1-9][0-9]*)");
+                    String[] firstPathSubstrings = firstPathNoIndexes.split("\\.");
+                    ArrayList<String> fp= new ArrayList(Arrays.asList(firstPathSubstrings));
+                    fp.remove(fp.size()-1);
+                    firstPathTrimmed = StringUtils.join(fp,":{");
+                    String secondRuleComplete = "{" + firstPathTrimmed + ":" + secondRule + "}";
+                    for (int i = 1;i<fp.size();i++) {
+                        secondRuleComplete += "}";
+                    }
 
-                String secondPath = getMergePath(originObject, secondRuleComplete);
-                return secondPath;
+                    return getMergePath(originObject, secondRuleComplete);
+                } else {
+                    return getMergePath(originObject, secondRule);
+                }
             } else {
-//                String firstPathTrimmed = trimLastInPath(firstPath, ".");
                 String flattenRule = JsonFlattener.flatten(secondRule);
                 String[] rulePair = flattenRule.split(":");
                 String ruleKey = destringify(rulePair[0]);
-//                String finalPath = firstPathTrimmed + "." + ruleKey;
+                if (firstPathTrimmed.isEmpty()) {
+                    return ruleKey;
+                }
                 String finalPath = firstPathTrimmed + "." + ruleKey;
                 return finalPath;
             }
@@ -306,24 +310,33 @@ public class MergePrepare {
      * @return
      */
     public boolean propertyExist(String originObject, String path, String targetObject) {
-         String fixedPath = path.replaceAll("(\\.0|\\.[1-9][0-9]*)", "[$1]");
-         fixedPath = fixedPath.replaceAll("\\[\\.", "[");
+        String fixedPath = path;
+        if (path != null) {
+            fixedPath = path.replaceAll("(\\.0|\\.[1-9][0-9]*)", "[$1]");
+            fixedPath = fixedPath.replaceAll("\\[\\.", "[");
+        }
 
-         try {
-             String firstKey = destringify(targetObject.split(":")[0]);
-             JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(fixedPath, originObject);
-             JsonNode value = jsonResult.get(firstKey);
-             if (value == null)
-                 return false;
-         } catch (Exception e) {
-             log.info(e.getMessage(),e);
-         }
+        try {
+            String firstKey = destringify(targetObject.split(":")[0]);
+            JsonNode jsonResult = null;
+            ObjectMapper objectMapper = new ObjectMapper();
+            if (path.isEmpty()) {
+                jsonResult = objectMapper.readTree(originObject);
+            } else {
+                jsonResult = jmesPathInterface.runRuleOnEvent(fixedPath, originObject);
+            }
+            JsonNode value = jsonResult.get(firstKey);
+            if (value == null)
+                return false;
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
 
         return true;
     }
 
     public String addMissingLevels (String originObject, String objectToMerge,
-                                    String mergeRule, String mergePath) {
+            String mergeRule, String mergePath) {
 //        if (mergePath.isEmpty()) {
 //            return objectToMerge;
 //        }
@@ -338,8 +351,8 @@ public class MergePrepare {
                 mergeObject.put(ruleKey, ruleValue);
             }
 
-            if (mergePathArray.length() == 1)
-                return mergeObject.toString();
+//            if (mergePathArray.length() == 1)
+//                return mergeObject.toString();
 
             for (int i = 1; i < mergePathArray.length(); i++) {
                 int mergePathIndex = mergePathArray.length() - (1 + i);

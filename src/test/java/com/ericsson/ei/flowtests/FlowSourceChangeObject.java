@@ -49,6 +49,7 @@ public class FlowSourceChangeObject extends FlowTest {
         ArrayList<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
         eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
+        eventNames.add("event_EiffelSourceChangeCreatedEvent_3_2");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelActivityTriggeredEvent_3");

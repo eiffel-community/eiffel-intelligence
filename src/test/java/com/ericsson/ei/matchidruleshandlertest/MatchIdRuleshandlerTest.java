@@ -42,8 +42,8 @@ public class MatchIdRuleshandlerTest {
         String jsonOutput = null;
         RulesObject ruleObject = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+            jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             ruleObject = new RulesObject(objectmapper.readTree(jsonInput));
         } catch (Exception e) {

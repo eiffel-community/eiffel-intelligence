@@ -61,6 +61,13 @@ public class RulesHandler {
 
     public void setRulePath(String path) {
         this.jsonFilePath = path;
+        try {
+            this.jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+            ObjectMapper objectmapper = new ObjectMapper();
+            parsedJason = objectmapper.readTree(jsonFileContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public RulesObject getRulesForEvent(String event) {

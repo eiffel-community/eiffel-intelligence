@@ -1,30 +1,30 @@
 
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.ParseInstanceInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides interaction with InstanceInfo resource
- * 
+ * No description
  * (Generated with springmvc-raml-parser v.0.10.11)
  * 
  */
 @RestController
-@RequestMapping(value = "/information", produces = "application/json")
-public interface InformationController {
+@RequestMapping(value = "/query/missedNotifications", produces = "application/json")
+public interface MissedNotificationController {
 
 
     /**
-     * List of all instance information
-     * 
+     * List the missed notification based on the subscriptionName in the query parameter.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<ParseInstanceInfo> getInformation();
+    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+        @RequestParam
+        String subscriptionName);
 
 }

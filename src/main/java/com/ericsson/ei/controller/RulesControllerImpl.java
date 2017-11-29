@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package com.ericsson.ei.controller;
 
 import org.slf4j.Logger;
@@ -32,44 +32,44 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * Provides interaction with JMESPath resource 
+ *  
+ */
 @Component
 @CrossOrigin
 @Api(value = "jmespath")
 public class RulesControllerImpl implements RulesController {
-    
-    
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
-    
- 
-    @Autowired 
-    JmesPathInterface jmesPathInterface;
-    
-   
-    @Override
-    @CrossOrigin
-    @ApiOperation(value = "run rule on event")
-    @RequestMapping(value = "", method = RequestMethod.POST)
+
+
+	private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+
+
+	@Autowired 
+	JmesPathInterface jmesPathInterface;
+
+
+	@Override
+	@CrossOrigin
+	@ApiOperation(value = "run rule on event")
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<String> runRule(@RequestParam("arg1") String arg1, @RequestBody String arg2) {
 		// TODO Auto-generated method stub
 
-    	String res = new String("");
-    	
-    	 try {
-    		 res = jmesPathInterface.runRuleOnEvent(arg1, arg2).toString();
-    		 LOG.info("Query :" + arg1 + " executed Successfully");
-     		 System.out.println(arg1 + "-->"+ arg2 + ":::::::::>" + res);    		
-             return new ResponseEntity<String>(res, HttpStatus.OK);
-             
-         } catch (Exception e) {
-             LOG.info(e.getMessage(), e);
-             System.out.println(e.getMessage());
-             return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
-             }    	
+		String res = new String("[]");
 
-//        A typical CURL command
-    	 //curl -H "Content-type: text/json" -X POST -d {\"b\":\"bar\"} http://localhost:8090/jmespath?arg1=b
+		try {
+			res = jmesPathInterface.runRuleOnEvent(arg1, arg2).toString();
+			LOG.info("Query :" + arg1 + " executed Successfully");
+			return new ResponseEntity<String>(res, HttpStatus.OK);
+
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
+		}    	
+
 
 	}    
-      
-        
+
+
 }

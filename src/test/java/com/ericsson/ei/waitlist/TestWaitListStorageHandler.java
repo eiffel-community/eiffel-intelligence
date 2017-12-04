@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.waitlist;
 
 import static org.junit.Assert.*;
@@ -37,7 +53,7 @@ public class TestWaitListStorageHandler {
     @Before
     public void init() throws IOException{
         MockitoAnnotations.initMocks(this);
-        output.add(FileUtils.readFileToString(new File(inputJson1)));
+        output.add(FileUtils.readFileToString(new File(inputJson1), "UTF-8"));
         Mockito.when(mongoDBHandler.getAllDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(output);
         Mockito.when(mongoDBHandler.insertDocument(Mockito.anyString(), Mockito.anyString(),Mockito.anyString())).thenReturn(true);
         waitListStorageHandler.setMongoDbHandler(mongoDBHandler);
@@ -50,9 +66,9 @@ public class TestWaitListStorageHandler {
         String eventFile = null;
         RulesObject rulesObject = null;
         try{
-            jsonRule = FileUtils.readFileToString(new File(rulesPath));
+            jsonRule = FileUtils.readFileToString(new File(rulesPath), "UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
-            eventFile = FileUtils.readFileToString(new File(eventPath));
+            eventFile = FileUtils.readFileToString(new File(eventPath), "UTF-8");
             rulesObject = new RulesObject(objectMapper.readTree(jsonRule));
             waitListStorageHandler.addEventToWaitList(eventFile, rulesObject);
             assertTrue(true);

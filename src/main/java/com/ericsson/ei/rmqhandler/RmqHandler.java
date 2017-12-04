@@ -1,7 +1,24 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.rmqhandler;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -10,9 +27,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -23,135 +38,75 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventHandler;
-import com.rabbitmq.client.Channel;
 
 @Component
 public class RmqHandler {
+    static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
+    @Getter @Setter
     @Value("${rabbitmq.queue.durable}")
     private Boolean queueDurable;
+
+    @Getter @Setter
     @Value("${rabbitmq.host}")
     private String host;
+
+    @Getter @Setter
     @Value("${rabbitmq.exchange.name}")
     private String exchangeName;
+
+    @Getter @Setter
     @Value("${rabbitmq.port}")
     private Integer port;
+
+    @Getter @Setter
     @Value("${rabbitmq.tls}")
     private String tlsVer;
+
+    @JsonIgnore
+    @Getter @Setter
     @Value("${rabbitmq.user}")
     private String user;
+
+    @JsonIgnore
+    @Getter @Setter
     @Value("${rabbitmq.password}")
     private String password;
+
+    @Getter @Setter
     @Value("${rabbitmq.domainId}")
     private String domainId;
+
+    @Getter @Setter
     @Value("${rabbitmq.componentName}")
     private String componentName;
+
+    @Getter @Setter
     @Value("${rabbitmq.waitlist.queue.suffix}")
     private String waitlistSufix;
+
+    @Getter @Setter
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+
+    @Getter @Setter
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
+
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
-    static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
-
-    public Boolean getQueueDurable() {
-        return queueDurable;
-    }
-
-    public void setQueueDurable(Boolean queueDurable) {
-        this.queueDurable = queueDurable;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getExchangeName() {
-        return exchangeName;
-    }
-
-    public void setExchangeName(String exchangeName) {
-        this.exchangeName = exchangeName;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getTlsVer() {
-        return tlsVer;
-    }
-
-    public void setTlsVer(String tlsVer) {
-        this.tlsVer = tlsVer;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getDomainId() {
-        return domainId;
-    }
-
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
-    }
-
-    public String getComponentName() {
-        return componentName;
-    }
-
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
-    }
-
-    public String getRoutingKey() {
-        return routingKey;
-    }
-
-    public void setRoutingKey(String routingKey) {
-        this.routingKey = routingKey;
-    }
-
-    public String getConsumerName() {
-        return consumerName;
-    }
-
-    public void setConsumerName(String consumerName) {
-        this.consumerName = consumerName;
-    }
+    private SimpleMessageListenerContainer waitlistContainer;
 
     @Bean
     ConnectionFactory connectionFactory() {
         factory = new CachingConnectionFactory(host, port);
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
-        // factory.setUsername("guest");
-        // factory.setPassword("guest");
+        if(user != null && user.length() !=0 && password != null && password.length() !=0) {
+            factory.setUsername(user);
+            factory.setPassword(password);
+        }
         return factory;
     }
 
@@ -214,13 +169,14 @@ public class RmqHandler {
         return rabbitTemplate;
     }
 
-    public void publishObjectToMessageBus(String message) {
+    public void publishObjectToWaitlistQueue(String message) {
         log.info("publishing message to message bus...");
         rabbitMqTemplate().convertAndSend(message);
     }
 
     public void close() {
         try {
+            waitlistContainer.destroy();
             container.destroy();
             factory.destroy();
         } catch (Exception e) {

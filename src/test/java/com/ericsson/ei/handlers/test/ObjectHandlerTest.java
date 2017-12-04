@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.handlers.test;
 
 import static org.junit.Assert.assertTrue;
@@ -5,9 +21,11 @@ import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -27,8 +45,11 @@ import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.rules.test.TestRulesObject;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -55,14 +76,16 @@ public class ObjectHandlerTest {
 
     static JmesPathInterface jmesPathInterface = new JmesPathInterface();
 
+    static SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
+
     static private RulesObject rulesObject;
     static private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     static private JsonNode rulesJson;
 
     static String dataBaseName = "EventStorageDBbbb";
     static String collectionName = "SampleEvents";
-    static String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
-    String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
+    static String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
+    String updateInput = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     static String condition = "{\"_id\" : \"eventId\"}";
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
@@ -82,9 +105,11 @@ public class ObjectHandlerTest {
         objHandler.setJmespathInterface(jmesPathInterface);
         objHandler.setCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
+        objHandler.setSubscriptionHandler(subscriptionHandler);
+        
 
         try {
-            String rulesString = FileUtils.readFileToString(new File(inputFilePath));
+            String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             rulesJson = objectmapper.readTree(rulesString);
         } catch (Exception e) {
@@ -98,7 +123,8 @@ public class ObjectHandlerTest {
     public void test() {
         String document = objHandler.findObjectById("eventId");
         JsonNode result = objHandler.getAggregatedObject(document);
-        assertEquals(input, result.asText());
+
+        assertEquals(input, result.toString());
     }
 
     @AfterClass

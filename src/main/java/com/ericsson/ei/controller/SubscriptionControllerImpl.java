@@ -1,11 +1,19 @@
-/***********************************************************************
- *                                                                     *
- * Copyright Ericsson AB 2017                                          *
- *                                                                     * 
- * No part of this software may be reproduced in any form without the  *   
- * written permission of the copyright owner.                          *             
- *                                                                     *
- ***********************************************************************/
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.controller;
 
 import java.util.ArrayList;
@@ -24,7 +32,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.services.ISubscriptionService;
+import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,21 +47,36 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Autowired
     private ISubscriptionService subscriptionService;
     
+    private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
+    
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+    
     
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody Subscription subscription) {
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+
+        try {
+            subscriptionValidator.validateSubscription(subscription);
+        }
+        catch (SubscriptionValidationException e) {
+            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName() +
+            		" failed! Error: " + e.getMessage();
+        	LOG.error(msg);
+        	subscriptionResponse.setMsg(msg); subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
+        	return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
+        }
+        
         if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
             subscriptionService.addSubscription(subscription);
             LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
             subscriptionResponse.setMsg("Inserted Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
         } else {
-            LOG.error("Subscription :" + subscription.getSubscriptionName() + " identified as duplicate subscription");
-            subscriptionResponse.setMsg("Duplicate Subscription"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            LOG.error("Subscription :" + subscription.getSubscriptionName() + " already exists");
+            subscriptionResponse.setMsg("Subscription already exists"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
         
@@ -60,27 +85,42 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
-    public ResponseEntity<Subscription> getSubscriptionById(@PathVariable String subscriptionName) {
-        Subscription subscription = null;
+    public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+    	List<Subscription> subscriptionList = new ArrayList<Subscription>();
         try {
             LOG.info("Subscription :" + subscriptionName + " fetch started");
-            subscription = subscriptionService.getSubscription(subscriptionName);
+            subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
             LOG.info("Subscription :" + subscriptionName + " fetched");
-            return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
+            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<Subscription>(subscription, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
+            
         }
         
     }
     
     @Override
-    @CrossOrigin
+
+    //@CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable String subscriptionName, @RequestBody Subscription subscription) {
+    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody Subscription subscription) {
+    	String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        if (subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
+
+        try {
+            subscriptionValidator.validateSubscription(subscription);
+        }
+        catch (SubscriptionValidationException e) {
+            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName() +
+            		" failed! Error: " + e.getMessage();
+        	LOG.error(msg);
+        	subscriptionResponse.setMsg(msg); subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
+        	return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
+        }
+        
+        if (subscriptionService.doSubscriptionExist(subscriptionName)) {
             subscriptionService.modifySubscription(subscription, subscriptionName);
             LOG.info("Subscription :" + subscriptionName + " update completed");
             subscriptionResponse.setMsg("Updated Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
@@ -123,7 +163,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getLocalizedMessage());
-            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         }
     }
 }

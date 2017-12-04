@@ -2,7 +2,6 @@
         "subscriptionName": "Subscription_1",
         "repeat": false,
         "created": "data-time",
-        "timeout": 12354,
         "notificationType": "REST_POST",
         "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
         "notificationMessage": "@",

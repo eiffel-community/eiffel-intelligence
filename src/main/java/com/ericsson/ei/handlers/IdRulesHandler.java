@@ -1,3 +1,19 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
@@ -30,32 +46,31 @@ public class IdRulesHandler {
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
 
-    @Autowired
-    private ObjectHandler objectHandler;
-
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
     }
 
     public void runIdRules(RulesObject rulesObject, String event) {
-        JsonNode idsJsonObj = getIds(rulesObject, event);
-        ArrayList<String> objects = null;
-        String id;
-        if (idsJsonObj.isArray()) {
-            for (final JsonNode idJsonObj : idsJsonObj) {
-                id = idJsonObj.textValue();
-                objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                for (String object:objects) {
-                    extractionHandler.runExtraction(rulesObject, id, event, object);
-                }
-                if (objects.size() == 0){
-                    if (rulesObject.isStartEventRules()) {
-                        extractionHandler.runExtraction(rulesObject, id, event, (JsonNode)null);
-                    } else {
-                        try {
-                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
-                        } catch (Exception e) {
-                            log.info(e.getMessage(),e);
+        if (rulesObject != null && event != null) {
+            JsonNode idsJsonObj = getIds(rulesObject, event);
+            ArrayList<String> objects = null;
+            String id;
+            if (idsJsonObj != null && idsJsonObj.isArray()) {
+                for (final JsonNode idJsonObj : idsJsonObj) {
+                    id = idJsonObj.textValue();
+                    objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
+                    for (String object : objects) {
+                        extractionHandler.runExtraction(rulesObject, id, event, object);
+                    }
+                    if (objects.size() == 0) {
+                        if (rulesObject.isStartEventRules()) {
+                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
+                        } else {
+                            try {
+                                waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                            } catch (Exception e) {
+                                log.info(e.getMessage(), e);
+                            }
                         }
                     }
                 }
@@ -66,10 +81,12 @@ public class IdRulesHandler {
     public JsonNode getIds(RulesObject rulesObject, String event) {
         String idRule = rulesObject.getIdentifyRules();
         JsonNode ids = null;
-        try {
-            ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-        } catch (Exception e) {
-            int stop = 0;
+        if (idRule != null && !idRule.isEmpty()) {
+            try {
+                ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+            } catch (Exception e) {
+                log.info(e.getMessage(),e);
+            }
         }
 
         return ids;

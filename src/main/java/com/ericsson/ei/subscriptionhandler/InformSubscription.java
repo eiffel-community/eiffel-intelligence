@@ -1,15 +1,18 @@
 /*
-    Copyright 2017 Ericsson AB.
-    For a full list of individual contributors, please see the commit history.
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 */
 package com.ericsson.ei.subscriptionhandler;
 
@@ -19,6 +22,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +47,19 @@ import com.mongodb.util.JSON;
 @Component
 public class InformSubscription {
 
+    @Getter
     @Value("${notification.failAttempt}")
     private int failAttempt;
 
+    @Getter
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;
 
+    @Getter
     @Value("${missedNotificationDataBaseName}")
     private String missedNotificationDataBaseName;
 
+    @Getter
     @Value("${notification.ttl.value}")
     private int ttlValue;
 
@@ -84,7 +92,7 @@ public class InformSubscription {
         if (notificationType.trim().equals("REST_POST")) {
             log.info("Notification through REST_POST");
             int result = restTemplate.postData(aggregatedObject, notificationMeta);
-            if (result == HttpStatus.OK.value()) {
+            if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value() || result == HttpStatus.NO_CONTENT.value()) {
                 log.info("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
@@ -93,7 +101,8 @@ public class InformSubscription {
                     if (result == HttpStatus.OK.value())
                         break;
                 }
-                if (result != HttpStatus.OK.value()) {
+
+                if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
                     String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);
                     mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName,

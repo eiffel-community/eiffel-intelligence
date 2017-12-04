@@ -1,9 +1,26 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +41,18 @@ public class MongoDBHandler {
 
     MongoClient mongoClient;
 
+
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
 
-    @Value("${mongodb.host}") private String host;
-    @Value("${mongodb.port}") private int port;
+    @Getter
+    @Value("${mongodb.host}")
+    private String host;
+
+    @Getter
+    @Value("${mongodb.port}")
+    private int port;
 
     //TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
@@ -38,14 +61,12 @@ public class MongoDBHandler {
     }
 
     //Establishing the connection to mongodb and creating a collection
-    public  void createConnection(String host, int port){
-        mongoClient = new MongoClient(host , port);
-    }
-
+    public  void createConnection(String host, int port){ mongoClient = new MongoClient(host , port);}
     //Insert data into collection
     public  boolean insertDocument(String dataBaseName, String collectionName, String input){
         try {
             DB db = mongoClient.getDB(dataBaseName);
+
             DBCollection table = db.getCollection(collectionName);
             DBObject dbObjectInput = (DBObject) JSON.parse(input);
             WriteResult result = table.insert(dbObjectInput);
@@ -91,6 +112,8 @@ public class MongoDBHandler {
     //Retrieve data from the collection based on condition
     public  ArrayList<String> find(String dataBaseName, String collectionName, String condition){
         ArrayList<String> result = new ArrayList<>();
+        log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName +
+                "\nwith Condition: " + condition);
         try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);

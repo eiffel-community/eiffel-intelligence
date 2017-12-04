@@ -1,0 +1,99 @@
+[
+  {
+    "fileInformation": [
+      {
+        "extension": "jar",
+        "classifier": ""
+      }
+    ],
+    "buildCommand": null,
+    "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+    "time": 1481875891763,
+    "type": "EiffelArtifactCreatedEvent",
+    "gav": {
+      "groupId": "com.mycompany.myproduct",
+      "artifactId": "sub-system",
+      "version": "1.1.0"
+    },
+    "externalComposition": {
+      "eventId": "fb6ef1hd-25fh-4dh7-b9vd-87688e65de47",
+      "name": "Composition 1",
+      "time": 1481875944572,
+      "artifacts": [
+        {
+          "id": "cfce572b-c3j4-441e-abc9-b62f48080ca2",
+          "externalComposition": {
+            "eventId": "sb6e51h0-25ch-4dh7-b9sd-876g8e6kde47",
+            "name": "Composition 1",
+            "time": 1481875944572,
+            "artifacts": [
+              {
+                "id": "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "fileInformation": [
+      {
+        "extension": "jar",
+        "classifier": "debug"
+      },
+      {
+        "extension": "",
+        "classifier": "test"
+      },
+      {
+        "extension": "exe",
+        "classifier": ""
+      }
+    ],
+    "buildCommand": null,
+    "id": "cfce572b-c3j4-441e-abc9-b62f48080ca2",
+    "time": 1473177136433,
+    "type": "EiffelArtifactCreatedEvent",
+    "gav": {
+      "groupId": "com.mycompany.myproduct",
+      "artifactId": "sub-system",
+      "version": "1.58.0"
+    },
+    "externalComposition": {
+      "eventId": "sb6e51h0-25ch-4dh7-b9sd-876g8e6kde47",
+      "name": "Composition 1",
+      "time": 1481875944572,
+      "artifacts": [
+        {
+          "id": "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2",
+    "type": "EiffelArtifactCreatedEvent",
+    "time": 1473177136433,
+    "gav": {
+      "version": "1.58.0",
+      "artifactId": "sub-system",
+      "groupId": "com.mycompany.myproduct"
+    },
+    "fileInformation": [
+      {
+        "extension": "jar",
+        "classifier": "debug"
+      },
+      {
+        "extension": "",
+        "classifier": "test"
+      },
+      {
+        "extension": "exe",
+        "classifier": ""
+      }
+    ],
+    "buildCommand": null
+  }
+]

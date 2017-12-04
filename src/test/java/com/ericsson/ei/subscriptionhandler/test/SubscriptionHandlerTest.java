@@ -1,15 +1,18 @@
 /*
-    Copyright 2017 Ericsson AB.
-    For a full list of individual contributors, please see the commit history.
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
@@ -76,8 +79,8 @@ public class SubscriptionHandlerTest {
         mongoClient = testsFactory.newMongo();
 
         try {
-            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath));
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
@@ -94,37 +97,21 @@ public class SubscriptionHandlerTest {
         System.out.println("Database connected");
     }
 
-    @Test
-    public void checkRequirementTypeTest() {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        JsonNode aggregatedJson = null;
-        try {
-            subscriptionJson = mapper.readTree(subscriptionData);
-            aggregatedJson = mapper.readTree(aggregatedObject);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        JsonNode expectedOutput = (JsonNode) requirementNode;
-        log.info("RequirementNode : " + requirementNode.toString());
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        JsonNode output = runSubscription.checkRequirementType(requirementIterator, aggregatedObject);
-        assertEquals(output.toString(), expectedOutput.toString());
-    }
 
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode fulfilledRequirements = null;
+        ArrayNode requirementNode = null;
+        Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(subscriptionData);
-            fulfilledRequirements = (ArrayNode) subscriptionJson.get("requirements");
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, fulfilledRequirements,
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson);
         assertEquals(output, true);
     }

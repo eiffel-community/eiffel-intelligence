@@ -11,21 +11,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "conditions",
-    "type"
+    "conditions"
 })
 public class Requirement {
 
     @JsonProperty("conditions")
     private List<Condition> conditions = new ArrayList<Condition>();
-    @JsonProperty("type")
-    private String type;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -49,26 +46,6 @@ public class Requirement {
         this.conditions = conditions;
     }
 
-    /**
-     * 
-     * @return
-     *     The type
-     */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * 
-     * @param type
-     *     The type
-     */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -86,7 +63,7 @@ public class Requirement {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(conditions).append(type).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(conditions).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -98,7 +75,7 @@ public class Requirement {
             return false;
         }
         Requirement rhs = ((Requirement) other);
-        return new EqualsBuilder().append(conditions, rhs.conditions).append(type, rhs.type).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(conditions, rhs.conditions).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

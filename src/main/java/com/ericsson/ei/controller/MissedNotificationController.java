@@ -1,6 +1,7 @@
 
 package com.ericsson.ei.controller;
 
+import com.ericsson.ei.controller.model.QueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

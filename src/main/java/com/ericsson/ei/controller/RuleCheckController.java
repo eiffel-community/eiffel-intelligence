@@ -14,17 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/aggregatedObject", produces = "application/json")
-public interface AggregatedObjectController {
+@RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
+public interface RuleCheckController {
 
 
     /**
      * No description
      * 
      */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> updateJmespathruleRuleCheck(
         @RequestParam
-        String id);
+        String arg1,
+        @RequestParam(name = "farg")
+        String formArg);
 
 }

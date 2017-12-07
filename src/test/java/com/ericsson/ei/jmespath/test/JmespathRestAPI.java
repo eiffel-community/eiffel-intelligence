@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,7 +52,7 @@ public class JmespathRestAPI {
 
 	private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
 
-	private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";	
+	private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
 	@Test
 	public void testJmespathRestApi() throws Exception {
@@ -67,8 +66,7 @@ public class JmespathRestAPI {
 			log.error(e.getMessage(), e);
 		}
 
-
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/jmespath").accept(MediaType.ALL)
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/jmespathrule/ruleCheck").accept(MediaType.ALL)
 				.param("arg1", extractionRules_test).content(jsonInput).contentType(MediaType.ALL);
 
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -77,10 +75,9 @@ public class JmespathRestAPI {
 
 		JSONObject obj = new JSONObject(resultStr);
 
-
 		assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-		assertEquals("e90daae3-bf3f-4b0a-b899-67834fd5ebd0",obj.getString("id"));
-		assertEquals("1484061386383",obj.getString("time"));
+		assertEquals("e90daae3-bf3f-4b0a-b899-67834fd5ebd0", obj.getString("id"));
+		assertEquals("1484061386383", obj.getString("time"));
 
 	}
 

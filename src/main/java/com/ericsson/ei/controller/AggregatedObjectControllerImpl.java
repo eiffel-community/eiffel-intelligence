@@ -32,7 +32,7 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
  * on the basis of the ID from the aggregatedObject.
  * 
  */
-// @Component
+@Component
 @CrossOrigin
 public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 

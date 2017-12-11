@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ericsson.ei</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -185,7 +185,7 @@
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
                 <version>${plugin-version}</version>
-                <configuration>                	
+                <configuration>
                     <!-- path to raml file -->
                     <ramlPath>${raml-path}</ramlPath>
                     <!-- output of generated code -->
@@ -200,10 +200,6 @@
                     <generationConfig>
                         <useCommonsLang3>true</useCommonsLang3>
                     </generationConfig>
-                    <logWarnings>true</logWarnings>
-                    <logErrors>true</logErrors>
-                     
-                    
                 </configuration>
                 <executions>
                     <execution>
@@ -215,7 +211,27 @@
                     </execution>
                 </executions>
             </plugin>
-        
+
+            <!-- required for adding generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!-- where to find the generated sources -->
+                                <source>${output-relative-path}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

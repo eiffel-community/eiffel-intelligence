@@ -39,7 +39,7 @@ import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-//@Component
+@Component
 @CrossOrigin
 @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
 public class SubscriptionControllerImpl implements SubscriptionController {

@@ -67,7 +67,8 @@ public class JmespathRestAPI {
 		}
 
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/jmespathrule/ruleCheck").accept(MediaType.ALL)
-				.param("arg1", extractionRules_test).content(jsonInput).contentType(MediaType.ALL);
+				.param("arg1", extractionRules_test).param("formArg", jsonInput);
+		// content(jsonInput).contentType(MediaType.ALL);
 
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 

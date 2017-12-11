@@ -32,7 +32,7 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
  * on the basis of the SubscriptionName from the Missed Notification Object.
  * 
  */
-// @Component
+@Component
 @CrossOrigin
 public class MissedNotificationControllerImpl implements MissedNotificationController {
 

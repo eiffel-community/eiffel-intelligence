@@ -36,22 +36,22 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 @CrossOrigin
 public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 
-	static Logger log = (Logger) LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);
 
-	@Autowired
-	private ProcessAggregatedObject processAggregatedObject;
+    @Autowired
+    private ProcessAggregatedObject processAggregatedObject;
 
-	/**
-	 * This method is responsible for the REST Get mechanism to extract the
-	 * aggregated data on the basis of the ID from the aggregatedObject.
-	 * 
-	 * @param id
-	 * @return ResponseEntity
-	 */
-	public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
-		ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(id);
-		log.info("The response is : " + response.toString());
-		return new ResponseEntity(response.toString(), HttpStatus.OK);
-	}
+    /**
+     * This method is responsible for the REST Get mechanism to extract the
+     * aggregated data on the basis of the ID from the aggregatedObject.
+     * 
+     * @param id
+     * @return ResponseEntity
+     */
+    public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+        ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(id);
+        log.info("The response is : " + response.toString());
+        return new ResponseEntity(response.toString(), HttpStatus.OK);
+    }
 
 }

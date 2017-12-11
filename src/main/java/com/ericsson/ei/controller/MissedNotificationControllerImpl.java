@@ -36,23 +36,23 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
 @CrossOrigin
 public class MissedNotificationControllerImpl implements MissedNotificationController {
 
-	static Logger log = (Logger) LoggerFactory.getLogger(MissedNotificationControllerImpl.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(MissedNotificationControllerImpl.class);
 
-	@Autowired
-	private ProcessMissedNotification processMissedNotification;
+    @Autowired
+    private ProcessMissedNotification processMissedNotification;
 
-	/**
-	 * This method is responsible for the REST GET mechanism to extract the data on
-	 * the basis of the SubscriptionName from the Missed Notification Object.
-	 * 
-	 * @param subscriptionName
-	 * @return ResponseEntity
-	 */
-	public ResponseEntity<QueryResponse> getQueryMissedNotifications(
-			@RequestParam("SubscriptionName") final String subscriptionName) {
-		ArrayList response = processMissedNotification.processQueryMissedNotification(subscriptionName);
-		log.info("The response is : " + response.toString());
-		return new ResponseEntity(response.toString(), HttpStatus.OK);
-	}
+    /**
+     * This method is responsible for the REST GET mechanism to extract the data on
+     * the basis of the SubscriptionName from the Missed Notification Object.
+     * 
+     * @param subscriptionName
+     * @return ResponseEntity
+     */
+    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+            @RequestParam("SubscriptionName") final String subscriptionName) {
+        ArrayList response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+        log.info("The response is : " + response.toString());
+        return new ResponseEntity(response.toString(), HttpStatus.OK);
+    }
 
 }

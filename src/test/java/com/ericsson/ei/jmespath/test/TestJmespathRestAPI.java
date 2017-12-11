@@ -41,45 +41,45 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class JmespathRestAPI {
+public class TestJmespathRestAPI {
 
-	static Logger log = (Logger) LoggerFactory.getLogger(JmespathRestAPI.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(TestJmespathRestAPI.class);
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
-	private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
 
-	private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
+    private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-	@Test
-	public void testJmespathRestApi() throws Exception {
+    @Test
+    public void testJmespathRestApi() throws Exception {
 
-		String jsonInput = null;
-		String extractionRules_test = null;
-		try {
-			jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-			extractionRules_test = FileUtils.readFileToString(new File(extractionRuleFilePath));
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+        String jsonInput = null;
+        String extractionRules_test = null;
+        try {
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
+            extractionRules_test = FileUtils.readFileToString(new File(extractionRuleFilePath));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
 
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/jmespathrule/ruleCheck").accept(MediaType.ALL)
-				.param("arg1", extractionRules_test).param("formArg", jsonInput);
-		// content(jsonInput).contentType(MediaType.ALL);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/jmespathrule/ruleCheck").accept(MediaType.ALL)
+                .param("arg1", extractionRules_test).param("formArg", jsonInput);
+        // content(jsonInput).contentType(MediaType.ALL);
 
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-		String resultStr = result.getResponse().getContentAsString().toString();
+        String resultStr = result.getResponse().getContentAsString().toString();
 
-		JSONObject obj = new JSONObject(resultStr);
+        JSONObject obj = new JSONObject(resultStr);
 
-		assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-		assertEquals("e90daae3-bf3f-4b0a-b899-67834fd5ebd0", obj.getString("id"));
-		assertEquals("1484061386383", obj.getString("time"));
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        assertEquals("e90daae3-bf3f-4b0a-b899-67834fd5ebd0", obj.getString("id"));
+        assertEquals("1484061386383", obj.getString("time"));
 
-	}
+    }
 
 }

@@ -28,41 +28,41 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
 public class RuleCheckControllerImpl implements RuleCheckController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
-	@Autowired
-	JmesPathInterface jmesPathInterface;
+    @Autowired
+    JmesPathInterface jmesPathInterface;
 
-	/**
-	 * This method interact with JmesPathInterface class method to evaluate a rule
-	 * on JSON expression.
-	 * 
-	 * @param arg1-
-	 *            takes in rule as a String that need to be evaluated
-	 * @param formArg-
-	 *            takes JSON as a String
-	 * @return return a String object
-	 * 
-	 */
-	@Override
-	@CrossOrigin
-	@ApiOperation(value = "run rule on event")
-	@RequestMapping(value = "", method = RequestMethod.POST)
-	public ResponseEntity<?> updateJmespathruleRuleCheck(String arg1, String formArg) {
-		// TODO Auto-generated method stub
-		String res = new String("[]");
+    /**
+     * This method interact with JmesPathInterface class method to evaluate a rule
+     * on JSON expression.
+     * 
+     * @param arg1-
+     *            takes in rule as a String that need to be evaluated
+     * @param formArg-
+     *            takes JSON as a String
+     * @return return a String object
+     * 
+     */
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "run rule on event")
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> updateJmespathruleRuleCheck(String arg1, String formArg) {
+        // TODO Auto-generated method stub
+        String res = new String("[]");
 
-		try {
-			JSONObject jsonObj = new JSONObject(formArg);
-			String jsonString = jsonObj.toString();
-			res = jmesPathInterface.runRuleOnEvent(arg1, jsonString).toString();
-			LOG.info("Query :" + arg1 + " executed Successfully");
-			return new ResponseEntity<String>(res, HttpStatus.OK);
+        try {
+            JSONObject jsonObj = new JSONObject(formArg);
+            String jsonString = jsonObj.toString();
+            res = jmesPathInterface.runRuleOnEvent(arg1, jsonString).toString();
+            LOG.info("Query :" + arg1 + " executed Successfully");
+            return new ResponseEntity<String>(res, HttpStatus.OK);
 
-		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
-			return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
-		}
-	}
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

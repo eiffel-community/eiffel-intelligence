@@ -68,15 +68,12 @@ public class FlowTestTestExecution extends FlowTestBase {
 
     protected void checkResult() {
         try {
-            String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
+            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-            JsonNode expectedJson1 = expectedJsons.get(0);
+            JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             String document1 = objectHandler.findObjectById("b46ef12d-25gb-4d7y-b9fd-8763re66de47");
             JsonNode actualJson1 = objectmapper.readTree(document1);
-            // assertNotNull(actualJson1);
-            // assertNotNull(expectedJson1);
-            assertEquals(expectedJson1.toString().length(), actualJson1.toString().length(), 2);
+            assertEquals(expectedJson.toString().length(), actualJson1.toString().length(), 2);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

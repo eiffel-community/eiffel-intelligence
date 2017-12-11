@@ -29,7 +29,7 @@ import io.burt.jmespath.function.FunctionRegistry;
 import io.burt.jmespath.jackson.JacksonRuntime;
 
 /**
- * List the names of all subscriptions
+ * Expose JMESPath functionality
  * 
  */
 @Component

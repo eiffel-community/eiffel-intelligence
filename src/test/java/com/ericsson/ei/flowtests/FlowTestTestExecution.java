@@ -31,52 +31,55 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowTestTestExecution extends FlowTestBase {
 
-     private static Logger log = LoggerFactory.getLogger(FlowTest.class);
-     static protected String inputFilePath = "src/test/resources/aggregatedTestActivityObject.json";
-     static protected String jsonFilePath = "src/test/resources/TestExecutionTestEvents.json";
-     static protected String rulePath = "src/test/resources/TestExecutionObjectRules.json";
+    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
+    static protected String inputFilePath = "src/test/resources/aggregatedTestActivityObject.json";
+    static protected String jsonFilePath = "src/test/resources/TestExecutionTestEvents.json";
+    static protected String rulePath = "src/test/resources/TestExecutionObjectRules.json";
 
-     @Autowired
-     RulesHandler rulesHandler;
+    @Autowired
+    RulesHandler rulesHandler;
 
-        protected void setSpecificTestCaseParameters(){
-            setJsonFilePath(jsonFilePath);
-            rulesHandler.setRulePath(rulePath);
+    protected void setSpecificTestCaseParameters() {
+        setJsonFilePath(jsonFilePath);
+        rulesHandler.setRulePath(rulePath);
+    }
+
+    protected ArrayList<String> getEventNamesToSend() {
+        ArrayList<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelActivityTriggeredEvent");
+        eventNames.add("event_EiffelActivityStartedEvent");
+        eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
+        eventNames.add("event_EiffelTestSuiteStartedEvent");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
+        eventNames.add("event_EiffelTestCaseStartedEvent");
+        eventNames.add("event_EiffelTestCaseStartedEvent_2");
+        eventNames.add("event_EiffelTestCaseFinishedEvent");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_2");
+        eventNames.add("event_EiffelActivityFinishedEvent");
+        return eventNames;
+    }
+
+    protected void checkResult() {
+        try {
+            String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
+            ObjectMapper objectmapper = new ObjectMapper();
+            JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
+            JsonNode expectedJson1 = expectedJsons.get(0);
+            String document1 = objectHandler.findObjectById("b46ef12d-25gb-4d7y-b9fd-8763re66de47");
+            JsonNode actualJson1 = objectmapper.readTree(document1);
+            // assertNotNull(actualJson1);
+            // assertNotNull(expectedJson1);
+            assertEquals(expectedJson1.toString().length(), actualJson1.toString().length(), 2);
+        } catch (Exception e) {
+            log.info(e.getMessage(), e);
         }
 
-        protected ArrayList<String> getEventNamesToSend() {
-            ArrayList<String> eventNames = new ArrayList<>();
-            eventNames.add("event_EiffelActivityTriggeredEvent");
-            eventNames.add("event_EiffelActivityStartedEvent");
-            eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
-            eventNames.add("event_EiffelTestSuiteStartedEvent");
-            eventNames.add("event_EiffelTestCaseTriggeredEvent");
-            eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
-            eventNames.add("event_EiffelTestCaseStartedEvent");
-            eventNames.add("event_EiffelTestCaseStartedEvent_2");
-            eventNames.add("event_EiffelTestCaseFinishedEvent");
-            eventNames.add("event_EiffelTestCaseFinishedEvent_2");
-            eventNames.add("event_EiffelActivityFinishedEvent");
-            return eventNames;
-        }
-
-        protected void checkResult() {
-            try {
-                String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
-                ObjectMapper objectmapper = new ObjectMapper();
-                JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-                JsonNode expectedJson1 = expectedJsons.get(0);
-                String document1 = objectHandler.findObjectById("b46ef12d-25gb-4d7y-b9fd-8763re66de47");
-                JsonNode actualJson1 = objectmapper.readTree(document1);
-                assertEquals(expectedJson1.toString().length(), actualJson1.toString().length(),2);
-            } catch (Exception e) {
-                log.info(e.getMessage(),e);
-            }
-
-        }
+    }
 }

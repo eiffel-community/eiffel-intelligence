@@ -25,8 +25,8 @@ public interface RuleCheckController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> updateJmespathruleRuleCheck(
         @RequestParam
-        String arg1,
-        @RequestParam(name = "farg")
-        String formArg);
+        String rule,
+        @RequestParam
+        String jsonContent);
 
 }

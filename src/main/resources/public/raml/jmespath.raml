@@ -4,17 +4,17 @@
         body:
          multipart/form-data:
             formParameters: 
-              farg:
-                displayName: formArg
+              jsonContent:
+                displayName: jsonContent
                 type: string
-                description: form parameter
+                description: json content as form parameter
                 required: true            
                          
         queryParameters:
-          arg1: 
-            displayName: arg1
+          rule: 
+            displayName: rule
             type: string
-            description: expression
+            description: jmespath rule expression
             example: a.b
             required: true
         

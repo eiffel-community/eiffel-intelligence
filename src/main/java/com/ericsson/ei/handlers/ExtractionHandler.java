@@ -16,33 +16,27 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ExtractionHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
+    private static Logger log = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
 
     @Autowired private JmesPathInterface jmesPathInterface;
     @Autowired private MergeHandler mergeHandler;
     @Autowired private ObjectHandler objectHandler;
     @Autowired private ProcessRulesHandler processRulesHandler;
-    @Autowired private UpStreamEventsHandler uppstreamEventsHandler;
+    @Autowired private UpStreamEventsHandler upStreamEventsHandler;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -56,9 +50,9 @@ public class ExtractionHandler {
         this.processRulesHandler = processRulesHandler;
     }
 
-//    public void setUppstreamEventsHandler(UpStreamEventsHandler uppstreamEventsHandler) {
-//        this.uppstreamEventsHandler = uppstreamEventsHandler;
-//    }
+    public void setUpStreamEventsHandler(UpStreamEventsHandler upStreamEventsHandler) {
+        this.upStreamEventsHandler = upStreamEventsHandler;
+    }
 
     public void setObjectHandler(ObjectHandler objectHandler) {
         this.objectHandler = objectHandler;
@@ -75,8 +69,7 @@ public class ExtractionHandler {
     }
 
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
-        JsonNode extractedContent;
-        extractedContent = extractContent(rulesObject, event);
+        JsonNode extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
             log.debug("ExtractionHandler: Merging Aggregated Object:\n" + aggregatedDbObject.toString() +
@@ -84,14 +77,12 @@ public class ExtractionHandler {
             		"\nfrom event:\n" + event);
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-            mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
-            //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
+            processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
         } else {
-        	ObjectMapper mapper = new ObjectMapper();
             ObjectNode objectNode = (ObjectNode) extractedContent;
             objectNode.put("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
-            uppstreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId, rulesObject);
+            upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId, rulesObject);
         }
     }
 

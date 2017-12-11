@@ -16,25 +16,20 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
-
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
 
 @Component
 public class MergeHandler {
@@ -64,37 +59,42 @@ public class MergeHandler {
         mergeIdMarker = marker;
     }
 
-    public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge){
+    public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge) {
         String mergedObject = null;
         String preparedToMergeObject;
-        try{
+        try {
             // lock and get the AggregatedObject
-            String aggregatedObject = (String) getAggregatedObject(id);
+            String aggregatedObject = getAggregatedObject(id);
             String mergeRule = getMergeRules(rules);
-            if (mergeRule != null && !mergeRule.isEmpty()){
-                String updatedRule = (String) replaceIdMarkerInRules(mergeRule, mergeId);
+            if (mergeRule != null && !mergeRule.isEmpty()) {
+                String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
                 String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
-                String mergePath = (String) prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge);
-                preparedToMergeObject = (String) prepareMergePrepareObject.addMissingLevels(aggregatedObject,
-                        objectToMerge.toString(), ruleForMerge, mergePath);
-            }else{
+                String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge);
+                preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
+                                                                                   objectToMerge.toString(),
+                                                                                   ruleForMerge, mergePath);
+            } else {
                 preparedToMergeObject = objectToMerge.toString();
             }
-            mergedObject = (String) mergeContentToObject(aggregatedObject, preparedToMergeObject);
-        }catch (Exception e){
-            log.info(e.getMessage(),e);
-        }
-        log.debug("Merged Aggregated Object:\n" + mergedObject);
+
+            mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
+            log.debug("Merged Aggregated Object:\n" + mergedObject);
+        } catch (Exception e) {
+            // TODO: don't catch naked Exception class
+            log.info(e.getMessage(), e);
+        } finally {
             // unlocking of document will be performed, when mergedObject will be inserted to database
             objectHandler.updateObject(mergedObject, rules, event, id);
-            return mergedObject;
+        }
+
+        return mergedObject;
     }
 
     protected String getMergeRules(RulesObject rules) {
         return rules.getMergeRules();
     }
 
-    public String replaceIdMarkerInRules(String rule, String id){
+    public String replaceIdMarkerInRules(String rule, String id) {
 
         if (rule.contains(mergeIdMarker)) {
             String updatedRule = rule.replaceAll(mergeIdMarker, "\"" + id + "\"");

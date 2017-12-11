@@ -150,6 +150,7 @@ public class TrafficGeneratedTest {
         cf = new ConnectionFactory();
         cf.setUsername("guest");
         cf.setPassword("guest");
+        cf.setHandshakeTimeout(20000);
         cf.setPort(8672);
         conn = cf.newConnection();
     }

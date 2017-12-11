@@ -23,11 +23,13 @@ import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.jsonmerge.MergePrepare;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.stereotype.Component;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class HistoryExtractionHandler.
  */
+@Component
 public class HistoryExtractionHandler {
 
     static Logger log = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
@@ -42,18 +44,18 @@ public class HistoryExtractionHandler {
      * Run history extraction.
      *
      * @param aggregatedObjectId the aggregated object id
-     * @param rulesObject the rules object
+     * @param rules the rules object
      * @param event the event
      * @param pathInAggregatedObject the path in aggregated object
      * @return the string
      */
-    public String runHistoryExtraction(String aggregatedObjectId, RulesObject rulesObject, String event, String pathInAggregatedObject) {
-        JsonNode extractedContent;
-        extractedContent = extractContent(rulesObject, event);
-        mergeHandler.mergeObject(aggregatedObjectId, rulesObject, event, extractedContent, pathInAggregatedObject);
+    public String runHistoryExtraction(String aggregatedObjectId, RulesObject rules, String event, String pathInAggregatedObject) {
+        JsonNode objectToMerge = extractContent(rules, event);
 
-        String updatedPathInAggregatedObject = pathInAggregatedObject + getPathFromExtractedContent(extractedContent);
-        return updatedPathInAggregatedObject;
+        //TODO: use aggregatedObjectId as mergeId??? What is a mergeId?
+        mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge);
+
+        return pathInAggregatedObject + getPathFromExtractedContent(objectToMerge);
     }
 
     /**

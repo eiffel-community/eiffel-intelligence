@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.eclipsesource.json.Json;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,6 +25,8 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UpStreamEventHandlerTest {
@@ -34,7 +39,7 @@ public class UpStreamEventHandlerTest {
     @Autowired private HistoryExtractionHandler historyExtractionHandler;
 
     @Test
-    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() {
+    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {
 
         String upStreamString =
                 "{\"upstreamLinkObjects\":[\n"
@@ -46,13 +51,14 @@ public class UpStreamEventHandlerTest {
                             + "\t\t\t\t{\"_id\":\"event6_level_3\"}],\n"
                         + "\t\t\t{\"_id\":\"event7_level_2\"},\n"
                         + "\t\t\t{\"_id\":\"event8_level_2\"}]]}\n";
+        final JsonNode response = new ObjectMapper().readTree(upStreamString);
 
-        ResponseEntity<String> upStreamResponse = new ResponseEntity<String>(upStreamString, HttpStatus.CREATED);
+        ResponseEntity<JsonNode> upStreamResponse = new ResponseEntity<>(response, HttpStatus.CREATED);
 
         RulesObject rulesObject = null;
         ERQueryService mockedERQueryService = mock(ERQueryService.class);
         String aggregatedObjectId = "0123456789abcdef";
-        when(mockedERQueryService.getEventStreamDataById(aggregatedObjectId, mockedERQueryService.UPSTREAM, -1, -1, true)).thenReturn(upStreamResponse);
+        when(mockedERQueryService.getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true)).thenReturn(upStreamResponse);
 
         classUnderTest.runHistoryExtractionRulesOnAllUpstreamEvents("0123456789abcdef", rulesObject);
 

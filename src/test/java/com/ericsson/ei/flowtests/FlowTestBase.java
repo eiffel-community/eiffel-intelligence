@@ -142,6 +142,8 @@ public class FlowTestBase {
         cf.setUsername("guest");
         cf.setPassword("guest");
         cf.setPort(8672);
+        cf.setHandshakeTimeout(60000);
+        cf.setConnectionTimeout(60000);
         conn = cf.newConnection();
     }
 

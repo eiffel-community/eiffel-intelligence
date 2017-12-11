@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
@@ -91,13 +92,13 @@ public class TestMergePrepare {
 
     @Parameters
     public static Collection<Object[]> inputTestData() {
-        String testData = null;
-        Collection<Object[]> baseList = new ArrayList<Object[]>();
+        String testData;
+        Collection<Object[]> baseList = new ArrayList<>();
         try {
             testData = FileUtils.readFileToString(new File(testDataPath), "UTF-8");
             JSONArray testDataJson = new JSONArray(testData);
             for (int i=0; i<testDataJson.length(); i++) {
-                ArrayList<String> childList = new ArrayList<String>();
+                final List<String> childList = new ArrayList<>();
                 for (int k=0; k<((JSONArray)testDataJson.get(i)).length(); k++) {
                     childList.add(((String)((JSONArray) testDataJson.get(i)).get(k)));
                 }

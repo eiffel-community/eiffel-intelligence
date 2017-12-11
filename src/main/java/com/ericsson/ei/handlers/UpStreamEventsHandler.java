@@ -14,141 +14,114 @@
 
 package com.ericsson.ei.handlers;
 
-import java.util.Iterator;
-
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.erqueryservice.ERQueryService;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class UpStreamEventsHandler.
  */
 @Component
 public class UpStreamEventsHandler {
 
-    @Autowired private ERQueryService eventRepositoryQueryService;
-    @Autowired private HistoryExtractionHandler historyExtractionHandler;
+    private static Logger log = LoggerFactory.getLogger(UpStreamEventsHandler.class);
 
-    static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventsHandler.class);
+    @Autowired
+    private ERQueryService eventRepositoryQueryService;
+    @Autowired
+    private HistoryExtractionHandler historyExtractionHandler;
 
     /**
      * Run history extraction rules on all upstream events.
      *
      * @param aggregatedObjectId the aggregated object id
-     * @param rulesObject the rules object
+     * @param rulesObject        the rules object
      */
     public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId, RulesObject rulesObject) {
-        String upStreamEventsString;
 
-        if (rulesObject.isNeedHistoryRule() && rulesObject.isStartEventRules()) {
-
-            // Use aggregatedObjectId as eventId since they are the same for start events.
-            upStreamEventsString = eventRepositoryQueryService.getEventStreamDataById(aggregatedObjectId, eventRepositoryQueryService.UPSTREAM, -1, -1, true).toString();
-
-            TreeNode<JsonNode> upStreamEventsTree = parseUpStreamEventsString(upStreamEventsString);
-            String pathInAggregatedObject = "";
-
-            traverseTree(upStreamEventsTree, aggregatedObjectId, rulesObject, pathInAggregatedObject);
-
-            return;
-
-        } else {
+        if (!rulesObject.isNeedHistoryRule() || !rulesObject.isStartEventRules()) {
+            // don't need to apply history extraction rules for this aggregated object
             return;
         }
-    }
 
-
-    /**
-     * Traverse tree.
-     *
-     * @param node the node
-     * @param aggregatedObjectId the aggregated object id
-     * @param rulesObject the rules object
-     * @param pathInAggregatedObject the path in aggregated object
-     */
-    private void traverseTree(TreeNode<JsonNode> node, String aggregatedObjectId, RulesObject rulesObject, String pathInAggregatedObject){
-        JsonNode historicEvent = node.getData();
-        String newPathInAggregatedObject = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, historicEvent.toString(), pathInAggregatedObject);
-
-        for(TreeNode<JsonNode> each : node.getChildren()){
-            traverseTree(each, aggregatedObjectId, rulesObject, newPathInAggregatedObject);
+        // Use aggregatedObjectId as eventId since they are the same for start events.
+        final ResponseEntity<JsonNode> responseEntity =
+            eventRepositoryQueryService.getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM,
+                                                               -1, -1, true);
+        if (responseEntity == null) {
+            log.warn("Asked for upstream from " + aggregatedObjectId + " but got null response entity back!");
+            return;
         }
 
-        return;
+        final JsonNode searchResult = responseEntity.getBody();
+        if (searchResult == null) {
+            log.warn("Asked for upstream from " + aggregatedObjectId + " but got null result back!");
+            return;
+        }
+
+        final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
+        if (!upstreamLinkObjects.isArray()) {
+            log.warn("Expected upstreamLinkObjects to be an array but is: " + upstreamLinkObjects.getNodeType());
+        }
+
+        // apply history extract rules on each node in the tree
+        traverseTree(upstreamLinkObjects, aggregatedObjectId, rulesObject, "");
     }
 
     /**
-     * Parses the up stream events string.
+     * Traverses the tree from ER. The tree is defined as an array of either an event or a list of events. E.g:
+     * <pre>
+     *      [A, [B, C, [D, E]], [F, [N, [G, H]]], [I, [J, [K, L, [M]]]]]
+     * </pre>
+     * Where the corresponding tree looks like this:
+     * <pre>
+     *       A
+     *         -> B
+     *         -> C
+     *           -> D
+     *           -> E
+     *         -> F
+     *           -> N
+     *             -> G
+     *             -> H
+     *         -> I
+     *           -> J
+     *             -> K
+     *             -> L
+     *               -> M
+     * </pre>
      *
-     * @param upStreamEventsString the up stream events string
-     * @return the tree node
+     * @param jsonArray              the array to traverse
+     * @param aggregatedObjectId     the id of the aggregated object
+     * @param rulesObject            the rules to apply to the event
+     * @param pathInAggregatedObject the current path in the aggregated object
      */
-    private TreeNode<JsonNode> parseUpStreamEventsString(String upStreamEventsString) {
-        JsonNode upStreamEventsJson = stringToJsonNode(upStreamEventsString);
-
-        // Get the correct value
-        Iterator upStreamIterator = upStreamEventsJson.elements();
-        JsonNode objectTree = (JsonNode) upStreamIterator.next();
-
-        TreeNode<JsonNode> tree = null;
-
-        tree = new TreeNode<JsonNode>(objectTree.get(0));
-        JsonNode theRest = objectTree.get(1);
-        tree = appendToTree(tree, theRest);
-
-        // Return a tree-structure containing events
-        return tree;
-    }
-
-
-    /**
-     * Append to tree.
-     *
-     * @param parent the parent
-     * @param theRest the the rest
-     * @return the tree node
-     */
-    private TreeNode<JsonNode> appendToTree( TreeNode<JsonNode> parent, JsonNode theRest) {
-        TreeNode<JsonNode> last = parent;
-        for( JsonNode each : theRest) {
-            if (each.isArray()) {
-                appendToTree(last, each);
+    private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId, final RulesObject rulesObject,
+                              final String pathInAggregatedObject) {
+        final JsonNode parent = jsonArray.get(0);
+        final String np =
+            historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, parent.toString(),
+                                                          pathInAggregatedObject);
+        String prevNp = null;
+        for (int i = 1; i < jsonArray.size(); i++) {
+            if (jsonArray.get(i).isObject()) {
+                prevNp =
+                    historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, parent.toString(),
+                                                                  pathInAggregatedObject);
             } else {
-                last = new TreeNode<JsonNode>(each);
-                parent.addChild(last);
+                // if we have prevNp then we should use that because it is the "parent" of the list we are now going to
+                // traverse. But if we don't have it, use the new path from the parent node.
+                traverseTree(jsonArray.get(i), aggregatedObjectId, rulesObject, prevNp != null ? prevNp : np);
             }
         }
-        return parent;
     }
-
-
-    /**
-     * String to json node.
-     *
-     * @param jsonString the json string
-     * @return the json node
-     */
-    private JsonNode stringToJsonNode(String jsonString) {
-        JsonNode json = null;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            json = mapper.readValue(jsonString, JsonNode.class);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return json;
-    }
-
-
 
 }

@@ -16,16 +16,6 @@
 */
 package com.ericsson.ei.mongodbhandler;
 
-import java.util.ArrayList;
-
-import javax.annotation.PostConstruct;
-
-import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -34,6 +24,14 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 
 @Component
 public class MongoDBHandler {
@@ -83,27 +81,26 @@ public class MongoDBHandler {
     }
 
     //Retrieve entire data from  collection
-    public ArrayList<String> getAllDocuments(String dataBaseName, String collectionName){
+    public ArrayList<String> getAllDocuments(String dataBaseName, String collectionName) {
         ArrayList<String> result = new ArrayList<>();
-        try{
+        try {
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);
             DBCursor cursor = table.find();
-            if (cursor.count()!=0){
+            if (cursor.count() != 0) {
                 int i = 1;
                 while (cursor.hasNext()) {
                     DBObject document = cursor.next();
                     String documentStr = document.toString();
-                    log.info("Got Document: "+i);
+                    log.info("Got Document: " + i);
                     log.info(documentStr);
                     result.add(documentStr);
                     i++;
                 }
-            }
-            else{
+            } else {
                 log.info("No documents found in database: " + dataBaseName + "and collection: " + collectionName);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
         return result;

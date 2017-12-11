@@ -16,26 +16,19 @@
 */
 package com.ericsson.ei.erqueryservice.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.eiffel.erri.rest.resource.SearchParameters;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.BDDMockito.*;
-import org.mockito.invocation.Invocation;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
@@ -50,26 +43,28 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class ERQueryServiceTest {
 
     @Autowired
-    ERQueryService erQueryService;
+    private ERQueryService erQueryService;
 
     @Mock
-    RestOperations rest;
+    private RestOperations rest;
 
-    String eventId = "01";
-    int searchAction = 0;
-    int limitParam = 85;
-    int levels = 2;
-    boolean isTree = true;
+    private String eventId = "01";
+    private SearchOption searchOption = SearchOption.UP_STREAM;
+    private int limitParam = 85;
+    private int levels = 2;
+    private boolean isTree = true;
 
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -78,25 +73,28 @@ public class ERQueryServiceTest {
     @Test
     public void testErQueryUpstream() {
         erQueryService.setRest(rest);
-        searchAction = ERQueryService.UPSTREAM;
-        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class), Mockito.any(Class.class))).willAnswer(returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
-        ResponseEntity result = erQueryService.getEventStreamDataById(eventId, searchAction, limitParam, levels, isTree);
+        searchOption = SearchOption.UP_STREAM;
+        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
+                            Mockito.any(Class.class)))
+            .willAnswer(
+                returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
+                                   Mockito.any(Class.class)));
+        ResponseEntity<JsonNode> result =
+            erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
+        System.out.println(result);
     }
 
     Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class responseType) {
-        return new Answer<ResponseEntity>() {
-            @Override
-            public ResponseEntity answer(InvocationOnMock invocation) throws Throwable {
-                URI arg0 = invocation.getArgumentAt(0, URI.class);
-                String expectedUri = buildUri();
-                assertEquals(expectedUri, arg0.toString());
-                HttpEntity arg2 = invocation.getArgumentAt(2, HttpEntity.class);
-                ObjectNode body = (ObjectNode) arg2.getBody();
-                assertBody(body);
-                boolean firstStop = true;
-                return new ResponseEntity(HttpStatus.OK);
-            }
+        return invocation -> {
+            URI arg0 = invocation.getArgumentAt(0, URI.class);
+            String expectedUri = buildUri();
+            assertEquals(expectedUri, arg0.toString());
+            HttpEntity arg2 = invocation.getArgumentAt(2, HttpEntity.class);
+            SearchParameters body = (SearchParameters) arg2.getBody();
+            assertBody(body);
+            boolean firstStop = true;
+            return new ResponseEntity(HttpStatus.OK);
         };
     }
 
@@ -108,18 +106,18 @@ public class ERQueryServiceTest {
         return uri;
     }
 
-    public void assertBody(ObjectNode body) {
+    public void assertBody(SearchParameters body) {
 //    	example body
 //      {"ult":["ALL"]}
-        boolean bodyNotNull = body != null;
-        assertEquals(bodyNotNull, true);
+        assertNotNull(body);
         boolean searchActionIsRight = false;
-        if (searchAction == ERQueryService.DOWNSTREAM) {
-            searchActionIsRight = body.has("dlt");
-        } else if (searchAction == ERQueryService.UPSTREAM) {
-            searchActionIsRight = body.has("ult");
-        } else if (searchAction == ERQueryService.DOWNANDUPSTREAM) {
-            searchActionIsRight = body.has("dlt") && body.has("ult");
+        if (searchOption == SearchOption.DOWN_STREAM) {
+            searchActionIsRight = body.getDlt() != null && !body.getDlt().isEmpty();
+        } else if (searchOption == SearchOption.UP_STREAM) {
+            searchActionIsRight = body.getUlt() != null && !body.getUlt().isEmpty();
+        } else if (searchOption == SearchOption.UP_AND_DOWN_STREAM) {
+            searchActionIsRight = body.getDlt() != null && !body.getDlt().isEmpty() &&
+                body.getUlt() != null && !body.getUlt().isEmpty();
         }
         assertEquals(searchActionIsRight, true);
     }

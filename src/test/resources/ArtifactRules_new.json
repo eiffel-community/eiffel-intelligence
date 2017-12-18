@@ -107,6 +107,7 @@
     "DownstreamIdentifyRules":"links | [?type=='ELEMENT'].target",
     "DownstreamExtractionRules": "{externalComposition: {eventId: meta.id, time:meta.time, name:data.name}}",
     "DownstreamMergeRules": "{\"eventId\":%IdentifyRules%}",
+    "HistoryExtractionRules": "{internalComposition:{compositions: [{eventId: meta.id, time: meta.id,  name: data.name}]}}",
     "ProcessRules":null,
     "ProcessFunction" : null
   },

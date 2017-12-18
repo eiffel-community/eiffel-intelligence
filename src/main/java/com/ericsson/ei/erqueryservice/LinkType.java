@@ -17,8 +17,35 @@
 */
 package com.ericsson.ei.erqueryservice;
 
-public enum SearchOption {
-    DOWN_STREAM,
-    UP_STREAM,
-    UP_AND_DOWN_STREAM
+import java.util.Arrays;
+import java.util.List;
+
+public enum LinkType {
+    // Link types
+    CAUSE,
+    CONTEXT,
+    FLOW_CONTEXT,
+    ACTIVITY_EXECUTION,
+    PREVIOUS_ACTIVITY_EXECUTION,
+    PREVIOUS_VERSION,
+    COMPOSITION,
+    ENVIRONMENT,
+    ARTIFACT,
+    SUBJECT,
+    ELEMENT,
+    BASE,
+    CHANGE,
+    TEST_SUITE_EXECUTION,
+    TEST_CASE_EXECUTION,
+    IUT,
+    TERC,
+    MODIFIED_ANNOUNCEMENT,
+    SUB_CONFIDENCE_LEVEL,
+    REUSED_ARTIFACT,
+    VERIFICATION_BASIS,
+    ALL;
+
+    public static List<LinkType> asList() {
+        return Arrays.asList(values());
+    }
 }

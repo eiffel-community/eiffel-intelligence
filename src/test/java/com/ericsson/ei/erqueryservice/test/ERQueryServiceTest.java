@@ -18,7 +18,7 @@ package com.ericsson.ei.erqueryservice.test;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.eiffel.erri.rest.resource.SearchParameters;
+import com.ericsson.ei.erqueryservice.SearchParameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Before;
 import org.junit.Test;

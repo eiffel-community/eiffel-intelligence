@@ -17,8 +17,6 @@
 */
 package com.ericsson.ei.erqueryservice;
 
-import com.ericsson.eiffel.er.query.LinkType;
-import com.ericsson.eiffel.erri.rest.resource.SearchParameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import org.slf4j.Logger;

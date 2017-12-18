@@ -172,12 +172,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.ericsson.eiffel</groupId>
-            <artifactId>eiffel-erri</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
     <build>
         <plugins>

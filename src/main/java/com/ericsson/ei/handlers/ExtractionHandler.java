@@ -82,7 +82,7 @@ public class ExtractionHandler {
             ObjectNode objectNode = (ObjectNode) extractedContent;
             objectNode.put("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);
-            upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId, rulesObject);
+            upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
         }
     }
 

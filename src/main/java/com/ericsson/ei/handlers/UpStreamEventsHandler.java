@@ -16,6 +16,7 @@ package com.ericsson.ei.handlers;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,8 @@ public class UpStreamEventsHandler {
     private ERQueryService eventRepositoryQueryService;
     @Autowired
     private HistoryExtractionHandler historyExtractionHandler;
+    @Autowired
+    private RulesHandler rulesHandler;
 
 
     // setters used for injecting mocks
@@ -54,9 +57,8 @@ public class UpStreamEventsHandler {
      * Run history extraction rules on all upstream events.
      *
      * @param aggregatedObjectId the aggregated object id
-     * @param rulesObject        the rules object
      */
-    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId, RulesObject rulesObject) {
+    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) {
 
         // Use aggregatedObjectId as eventId since they are the same for start events.
         final ResponseEntity<JsonNode> responseEntity =
@@ -79,7 +81,7 @@ public class UpStreamEventsHandler {
         }
 
         // apply history extract rules on each node in the tree
-        traverseTree(upstreamLinkObjects, aggregatedObjectId, rulesObject, "");
+        traverseTree(upstreamLinkObjects, aggregatedObjectId, "");
     }
 
     /**
@@ -107,25 +109,28 @@ public class UpStreamEventsHandler {
      *
      * @param jsonArray              the array to traverse
      * @param aggregatedObjectId     the id of the aggregated object
-     * @param rulesObject            the rules to apply to the event
      * @param pathInAggregatedObject the current path in the aggregated object
      */
-    private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId, final RulesObject rulesObject,
+    private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId,
                               final String pathInAggregatedObject) {
+
         final JsonNode parent = jsonArray.get(0);
+        RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
+
         final String np =
-            historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, parent.toString(),
+            historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
                                                           pathInAggregatedObject);
         String prevNp = null;
         for (int i = 1; i < jsonArray.size(); i++) {
             if (jsonArray.get(i).isObject()) {
+                rules = rulesHandler.getRulesForEvent(jsonArray.get(i).toString());
                 prevNp =
-                    historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rulesObject, parent.toString(),
+                    historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
                                                                   pathInAggregatedObject);
             } else {
                 // if we have prevNp then we should use that because it is the "parent" of the list we are now going to
                 // traverse. But if we don't have it, use the new path from the parent node.
-                traverseTree(jsonArray.get(i), aggregatedObjectId, rulesObject, prevNp != null ? prevNp : np);
+                traverseTree(jsonArray.get(i), aggregatedObjectId, prevNp != null ? prevNp : np);
             }
         }
     }

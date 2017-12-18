@@ -55,12 +55,11 @@ public class UpStreamEventHandlerTest {
 
         ResponseEntity<JsonNode> upStreamResponse = new ResponseEntity<>(response, HttpStatus.CREATED);
 
-        RulesObject rulesObject = null;
         ERQueryService mockedERQueryService = mock(ERQueryService.class);
         String aggregatedObjectId = "0123456789abcdef";
         when(mockedERQueryService.getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true)).thenReturn(upStreamResponse);
 
-        classUnderTest.runHistoryExtractionRulesOnAllUpstreamEvents("0123456789abcdef", rulesObject);
+        classUnderTest.runHistoryExtractionRulesOnAllUpstreamEvents("0123456789abcdef");
 
         assertEquals("0", "1");
     }

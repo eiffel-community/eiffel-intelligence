@@ -39,6 +39,17 @@ public class UpStreamEventsHandler {
     @Autowired
     private HistoryExtractionHandler historyExtractionHandler;
 
+
+    // setters used for injecting mocks
+
+    public void setEventRepositoryQueryService(final ERQueryService eventRepositoryQueryService) {
+        this.eventRepositoryQueryService = eventRepositoryQueryService;
+    }
+
+    public void setHistoryExtractionHandler(final HistoryExtractionHandler historyExtractionHandler) {
+        this.historyExtractionHandler = historyExtractionHandler;
+    }
+
     /**
      * Run history extraction rules on all upstream events.
      *
@@ -46,11 +57,6 @@ public class UpStreamEventsHandler {
      * @param rulesObject        the rules object
      */
     public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId, RulesObject rulesObject) {
-
-        if (!rulesObject.isNeedHistoryRule() || !rulesObject.isStartEventRules()) {
-            // don't need to apply history extraction rules for this aggregated object
-            return;
-        }
 
         // Use aggregatedObjectId as eventId since they are the same for start events.
         final ResponseEntity<JsonNode> responseEntity =

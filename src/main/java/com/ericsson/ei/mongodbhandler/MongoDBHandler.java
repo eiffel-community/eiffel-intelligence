@@ -85,6 +85,7 @@ public class MongoDBHandler {
         ArrayList<String> result = new ArrayList<>();
         try {
             DB db = mongoClient.getDB(dataBaseName);
+            mongoClient.getDatabase(dataBaseName);
             DBCollection table = db.getCollection(collectionName);
             DBCursor cursor = table.find();
             if (cursor.count() != 0) {

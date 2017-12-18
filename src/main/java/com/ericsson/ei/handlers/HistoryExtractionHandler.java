@@ -51,12 +51,19 @@ public class HistoryExtractionHandler {
      */
     public String runHistoryExtraction(String aggregatedObjectId, RulesObject rules, String event, String pathInAggregatedObject) {
         JsonNode objectToMerge = extractContent(rules, event);
+        if (objectToMerge == null) {
+            return pathInAggregatedObject;
+        }
 
         //TODO: use aggregatedObjectId as mergeId??? What is a mergeId?
         mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge);
 
-        return pathInAggregatedObject + getPathFromExtractedContent(objectToMerge);
+        String path =  pathInAggregatedObject + getPathFromExtractedContent(objectToMerge, "");
+
+        return path;
     }
+
+
 
     /**
      * Gets the path from extracted content.
@@ -64,9 +71,8 @@ public class HistoryExtractionHandler {
      * @param extractedContent the extracted content
      * @return the path from extracted content
      */
-    private String getPathFromExtractedContent(JsonNode extractedContent) {
-        String mergePath = mergePrepare.getMergePath(extractedContent.toString(), null);
-        return mergePath;
+    private String getPathFromExtractedContent(JsonNode extractedContent, String mergeRules) {
+        return mergePrepare.getMergePath(extractedContent.toString(), mergeRules);
     }
 
     /**
@@ -77,9 +83,9 @@ public class HistoryExtractionHandler {
      * @return the json node
      */
     private JsonNode extractContent(RulesObject rulesObject, String event) {
-        String extractonRules;
-        extractonRules = rulesObject.getHistoryExtractionRules();
-        return jmesPathInterface.runRuleOnEvent(extractonRules, event);
+        String extractionRules;
+        extractionRules = rulesObject.getHistoryExtractionRules();
+        return jmesPathInterface.runRuleOnEvent(extractionRules, event);
     }
 
 

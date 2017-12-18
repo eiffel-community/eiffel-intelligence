@@ -116,28 +116,28 @@ public class MergeHandler {
         return aggregatedJsonObject == null ? null : aggregatedJsonObject.toString();
     }
 
-    private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject){
+    private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject) {
         try {
-            Iterator <String> preparedJsonKeys = preparedJsonObject.keys();
-            while(preparedJsonKeys.hasNext()) {
+            Iterator<String> preparedJsonKeys = preparedJsonObject.keys();
+            while (preparedJsonKeys.hasNext()) {
                 String preparedJsonKey = (String) preparedJsonKeys.next();
                 if (aggregatedJsonObject.has(preparedJsonKey)) {
                     Class valueClass = aggregatedJsonObject.get(preparedJsonKey).getClass();
-                    if (valueClass.equals(JSONObject.class )){
+                    if (valueClass.equals(JSONObject.class)) {
                         updateJsonObject((JSONObject) aggregatedJsonObject.get(preparedJsonKey),
-                                (JSONObject) preparedJsonObject.get(preparedJsonKey));
-                    }else if(valueClass.equals(JSONArray.class )){
+                                         (JSONObject) preparedJsonObject.get(preparedJsonKey));
+                    } else if (valueClass.equals(JSONArray.class)) {
                         updateJsonObject((JSONArray) aggregatedJsonObject.get(preparedJsonKey),
-                                (JSONArray) preparedJsonObject.get(preparedJsonKey));
-                    }else{
+                                         (JSONArray) preparedJsonObject.get(preparedJsonKey));
+                    } else {
                         aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                     }
-                }else{
+                } else {
                     aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                 }
             }
-        }catch (Exception e){
-            log.info(e.getMessage(),e);
+        } catch (Exception e) {
+            log.info(e.getMessage(), e);
         }
     }
 

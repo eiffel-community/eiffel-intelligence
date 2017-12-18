@@ -1,0 +1,166 @@
+[
+    {
+        "meta": {
+            "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875891763,
+            "type": "EiffelArtifactCreatedEvent",
+            "version": "1.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtC2",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ],
+            "fileInformation": [
+                {
+                    "classifier": "",
+                    "extension": "jar"
+                }
+            ],
+            "gav": {
+                "artifactId": "sub-system",
+                "version": "1.1.0",
+                "groupId": "com.mycompany.myproduct"
+            }
+        },
+        "links": [
+            {
+                "target": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+                "type": "COMPOSITION"
+            },
+            {
+                "target": "c4f9565d-2382-488f-b911-e3326bce21a3",
+                "type": "ENVIRONMENT"
+            },
+            {
+                "target": "c04fa59a-3c36-4601-8eac-7a26b8910f08",
+                "type": "CONTEXT"
+            }
+        ]
+    },
+    [
+        {
+            "meta": {
+                "type": "EiffelCompositionDefinedEvent",
+                "version": "1.0.0",
+                "time": 2000,
+                "id": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+                "source": {
+                    "domainId": "example.domain"
+                }
+            },
+            "data": {
+                "name": "My composition"
+            },
+            "links": [
+                {
+                    "type": "ELEMENT",
+                    "target": "3ce9df6e-cd45-4320-ae66-945f038caa1b"
+                }
+            ]
+        },
+        [
+            {
+                "meta": {
+                    "type": "EiffelSourceChangeSubmittedEvent",
+                    "version": "1.0.0",
+                    "time": 202000,
+                    "id": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                    "source": {
+                        "domainId": "example.domain"
+                    }
+                },
+                "data": {
+                    "hgIdentifier": {
+                        "commitId": "f7744f53cf95",
+                        "repoUri": "https://myrepo.com/hg"
+                    },
+                    "submitter": {
+                        "name": "Jane Doe",
+                        "email": "jane.doe@company.com"
+                    }
+                },
+                "links": [
+                    {
+                        "type": "CHANGE",
+                        "target": "ac085e24-ac4c-41be-912d-08c7afd32285"
+                    }
+                ]
+            },
+            [
+                {
+                    "meta": {
+                        "type": "EiffelSourceChangeCreatedEvent",
+                        "version": "1.0.0",
+                        "time": 102000,
+                        "id": "ac085e24-ac4c-41be-912d-08c7afd32285",
+                        "source": {
+                            "domainId": "example.domain"
+                        }
+                    },
+                    "data": {
+                        "gitIdentifier": {
+                            "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                            "branch": "myBranch",
+                            "repoName": "myPrivateRepo",
+                            "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+                        },
+                        "author": {
+                            "name": "John Doe",
+                            "email": "john.doe@company.com",
+                            "id": "johndoe",
+                            "group": "Team Gophers"
+                        },
+                        "issues": [
+                        ]
+                    },
+                    "links": [
+                        {
+                            "type": "PREVIOUS_VERSION",
+                            "target": "552ad6a4-c522-47e2-9195-0481930979e4"
+                        }
+                    ]
+                },
+                {
+                    "meta": {
+                        "type": "EiffelSourceChangeCreatedEvent",
+                        "version": "1.0.0",
+                        "time": 101000,
+                        "id": "552ad6a4-c522-47e2-9195-0481930979e4",
+                        "source": {
+                            "domainId": "example.domain"
+                        }
+                    },
+                    "data": {
+                        "gitIdentifier": {
+                            "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                            "branch": "myBranch",
+                            "repoName": "myPrivateRepo",
+                            "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+                        },
+                        "issues": [
+                            {
+                                "type": "BUG",
+                                "tracker": "JIRA",
+                                "id": "JIRA-1234",
+                                "uri": "http://jira.company.com/browse/JIRA-1234",
+                                "transition": "RESOLVED"
+                            }
+                        ]
+                    },
+                    "links": [
+                    ]
+                }
+            ]
+        ]
+    ]
+]

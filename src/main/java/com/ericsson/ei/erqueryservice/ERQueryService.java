@@ -38,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +49,6 @@ import java.util.Map;
 @Component
 public class ERQueryService {
 
-    public final static int DOWNSTREAM = 0;
-    public final static int UPSTREAM = 1;
-    public final static int DOWNANDUPSTREAM = 2;
     static Logger log = (Logger) LoggerFactory.getLogger(ERQueryService.class);
     private RestOperations rest;
     @Getter
@@ -143,10 +141,12 @@ public class ERQueryService {
         final List<LinkType> allLinkTypes = Collections.singletonList(LinkType.ALL);
         switch (searchOption) {
             case DOWN_STREAM:
+                searchParameters.setUlt(new ArrayList<>());
                 searchParameters.setDlt(allLinkTypes);
                 break;
             case UP_STREAM:
                 searchParameters.setUlt(allLinkTypes);
+                searchParameters.setDlt(new ArrayList<>());
                 break;
             case UP_AND_DOWN_STREAM:
                 searchParameters.setUlt(allLinkTypes);

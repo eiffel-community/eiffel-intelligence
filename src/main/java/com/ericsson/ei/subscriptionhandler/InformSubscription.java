@@ -115,12 +115,13 @@ public class InformSubscription {
                     } else
                         log.info("Notification saved in the database");
                 }
-                if (notificationType.equals("EMAIL")) {
-                    log.info("Notification through EMAIL");
-                    sendMail.sendMail(notificationMeta, aggregatedObject);
 
-                }
             }
+        }
+        if (notificationType.trim().equals("MAIL")) {
+            log.info("Notification through EMAIL");
+            sendMail.sendMail(notificationMeta, aggregatedObject);
+
         }
     }
 

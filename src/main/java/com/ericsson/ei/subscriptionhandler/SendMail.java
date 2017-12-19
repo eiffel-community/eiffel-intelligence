@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -46,7 +47,8 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-
+    
+    @Autowired
     private MailSender mailSender;
 
     public void setMailSender(MailSender mailSender) {

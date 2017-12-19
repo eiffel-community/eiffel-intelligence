@@ -118,7 +118,7 @@ public class InformSubscription {
 
             }
         }
-        if (notificationType.trim().equals("MAIL")) {
+        else if (notificationType.trim().equals("MAIL")) {
             log.info("Notification through EMAIL");
             sendMail.sendMail(notificationMeta, aggregatedObject);
 

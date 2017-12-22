@@ -95,8 +95,8 @@ public class TestWaitListWorker {
     @Before
     public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
-        list.add(FileUtils.readFileToString(new File(input1)));
-        list.add(FileUtils.readFileToString(new File(input2)));
+        list.add(FileUtils.readFileToString(new File(input1), "UTF-8"));
+        list.add(FileUtils.readFileToString(new File(input2), "UTF-8"));
 //        Mockito.when(mongoDBHandler.dropDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 //                .thenReturn(true);
         Mockito.when(waitListStorageHandler.getWaitList()).thenReturn(list);
@@ -133,7 +133,7 @@ public class TestWaitListWorker {
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(eventPath));
+        jsonFileContent = FileUtils.readFileToString(new File(eventPath), "UTF-8");
         qpidConfig = new File(config);
         amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath());
         amqpBrocker.startBroker();
@@ -173,7 +173,7 @@ public class TestWaitListWorker {
 //    @Test
 //    public void testDropDocumentFromWaitList() {
 //        try {
-//            String event = FileUtils.readFileToString(new File(eventPath));
+//            String event = FileUtils.readFileToString(new File(eventPath), "UTF-8");
 //            String condition = "{Event:" + JSON.parse(event).toString() + "}";
 //            assertTrue(waitListStorageHandler.dropDocumentFromWaitList(condition));
 //        } catch (Exception e) {

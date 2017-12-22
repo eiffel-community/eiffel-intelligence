@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,25 +39,27 @@ import com.mongodb.util.JSON;
 
 @Component
 public class WaitListStorageHandler {
-
-    @Value("${waitlist.collection.name}") private String collectionName;
-    @Value("${database.name}") private String databaseName;
-    @Value("${waitlist.collection.ttlValue}") private int ttlValue;
     static Logger log = (Logger) LoggerFactory.getLogger(WaitListStorageHandler.class);
 
+    @Getter
+    @Value("${waitlist.collection.name}")
+    private String collectionName;
+
+    @Getter
+    @Value("${database.name}")
+    private String databaseName;
+
+    @Getter
+    @Value("${waitlist.collection.ttlValue}")
+    private int ttlValue;
+
+    @Setter
     @Autowired
     private MongoDBHandler mongoDbHandler;
 
-    public void setMongoDbHandler(MongoDBHandler mongoDbHandler) {
-        this.mongoDbHandler = mongoDbHandler;
-    }
-
+    @Setter
     @Autowired
     private JmesPathInterface jmesPathInterface;
-
-    public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
-        this.jmesPathInterface = jmesPathInterface;
-    }
 
     public void addEventToWaitList(String event, RulesObject rulesObject) throws Exception {
         String input = addProprtiesToEvent(event, rulesObject);

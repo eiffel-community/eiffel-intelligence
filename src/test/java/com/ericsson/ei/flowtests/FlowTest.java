@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ public class FlowTest extends FlowTestBase {
          eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
          eventNames.add("event_EiffelArtifactPublishedEvent_3");
          eventNames.add("event_EiffelArtifactCreatedEvent_3");
+         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
          eventNames.add("event_EiffelTestCaseStartedEvent_3");
          eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 

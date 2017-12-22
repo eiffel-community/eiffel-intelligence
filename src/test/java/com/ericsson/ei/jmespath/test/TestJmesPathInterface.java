@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package com.ericsson.ei.jmespath.test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,66 +35,70 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.burt.jmespath.Expression;
 
 public class TestJmesPathInterface {
-    private JmesPathInterface unitUnderTest;
-    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-    private final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
-    private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
+	private JmesPathInterface unitUnderTest;
+	private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
+	private final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
+	private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
+	private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
+	static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
 
-    @Test
-    public void testRunRuleOnEvent() {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        String jsonOutput = null;
-        JsonNode output = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            output = objectmapper.readTree(jsonOutput);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        String ExtractionRules_test = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }";
-        JsonNode result = unitUnderTest.runRuleOnEvent(ExtractionRules_test, jsonInput);
-        assertEquals(result, output);
-    }
+	@Test
+	public void testRunRuleOnEvent() {
+		unitUnderTest = new JmesPathInterface();
+		String jsonInput = null;
+		String jsonOutput = null;
+		String extractionRulesTest = null;
+		JsonNode output = null;
 
-    @Test
-    public void testDiffFunction() {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        JsonNode expectedResult = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result, expectedResult);
-    }
+		try {
+			jsonInput = FileUtils.readFileToString(new File(inputFilePath));
+			jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+			extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
+			ObjectMapper objectmapper = new ObjectMapper();
+			output = objectmapper.readTree(jsonOutput);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		
+		JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
+		assertEquals(result, output);
+	}
 
-    @Test
-    public void testLiteral() {
-        unitUnderTest = new JmesPathInterface();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode literalJson;
-        try {
-            literalJson = mapper.readTree("{}");
-            JsonNode input =  mapper.readTree("{\"id\":\"test\"}");
-            ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
-            String ruleString = literalJson.toString();
-            ruleString = "`" + ruleString + "`";
-            unitUnderTest.runRuleOnEvent(ruleString, input.toString());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+	@Test
+	public void testDiffFunction() {
+		unitUnderTest = new JmesPathInterface();
+		String jsonInput = null;
+		JsonNode expectedResult = null;
+		try {
+			jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+			ObjectMapper mapper = new ObjectMapper();
+			expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
+		JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
+		assertEquals(result, expectedResult);
+	}
 
-//        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
-    }
+	@Test
+	public void testLiteral() {
+		unitUnderTest = new JmesPathInterface();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode literalJson;
+		try {
+			literalJson = mapper.readTree("{}");
+			JsonNode input =  mapper.readTree("{\"id\":\"test\"}");
+			((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
+			String ruleString = literalJson.toString();
+			ruleString = "`" + ruleString + "`";
+			unitUnderTest.runRuleOnEvent(ruleString, input.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
+	}
 }

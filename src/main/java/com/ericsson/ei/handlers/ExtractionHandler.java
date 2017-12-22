@@ -62,7 +62,7 @@ public class ExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
+            JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
             log.info(e.getMessage(),e);
@@ -74,11 +74,15 @@ public class ExtractionHandler {
         extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
+            log.debug("ExtractionHandler: Merging Aggregated Object:\n" + aggregatedDbObject.toString() +
+            		"\nwith extracted content:\n" + extractedContent.toString() +
+            		"\nfrom event:\n" + event);
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
             mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
             //historyIdRulesHandler.runHistoryIdRules(aggregationObject, rulesObject, event);
         } else {
+        	ObjectMapper mapper = new ObjectMapper();
             ObjectNode objectNode = (ObjectNode) extractedContent;
             objectNode.put("TemplateName", rulesObject.getTemplateName());
             mergeHandler.addNewObject(event, extractedContent, rulesObject);

@@ -141,7 +141,7 @@ public class TrafficGeneratedTest {
 
 
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+        jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJason = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
@@ -209,7 +209,7 @@ public class TrafficGeneratedTest {
             long timeAfter = System.currentTimeMillis();
             long diffTime = timeAfter - timeBefore;
 
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath));
+            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             for (int i = 0; i < EVENT_PACKAGES; i++) {
@@ -233,17 +233,18 @@ public class TrafficGeneratedTest {
      * @return list of ready to send events.
      */
     private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {
+    	ObjectMapper mapper = new ObjectMapper();
         List<String> events = new ArrayList<>();
         String newID;
         for (int i = 0; i < EVENT_PACKAGES; i++) {
             for(String eventName : eventNames) {
                 JsonNode eventJson = parsedJason.get(eventName);
                 newID = eventJson.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));;
-                ((ObjectNode) eventJson.path("meta")).put("id", newID);
+                ((ObjectNode) eventJson.path("meta")).set("id", mapper.readValue(newID, JsonNode.class));
                 for (JsonNode link : eventJson.path("links")) {
                     if (link.has("target")) {
                         newID = link.path("target").textValue().substring(0, 30).concat(String.format("%06d", i));
-                        ((ObjectNode) link).put("target", newID);
+                        ((ObjectNode) link).set("target", mapper.readValue(newID, JsonNode.class));
                     }
                 }
                 events.add(eventJson.toString());

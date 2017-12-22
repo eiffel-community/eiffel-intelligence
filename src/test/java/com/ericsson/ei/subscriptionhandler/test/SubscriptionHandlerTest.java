@@ -79,8 +79,8 @@ public class SubscriptionHandlerTest {
         mongoClient = testsFactory.newMongo();
 
         try {
-            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath));
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
@@ -97,37 +97,21 @@ public class SubscriptionHandlerTest {
         System.out.println("Database connected");
     }
 
-    @Test
-    public void checkRequirementTypeTest() {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        JsonNode aggregatedJson = null;
-        try {
-            subscriptionJson = mapper.readTree(subscriptionData);
-            aggregatedJson = mapper.readTree(aggregatedObject);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        JsonNode expectedOutput = (JsonNode) requirementNode;
-        log.info("RequirementNode : " + requirementNode.toString());
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        JsonNode output = runSubscription.checkRequirementType(requirementIterator, aggregatedObject);
-        assertEquals(output.toString(), expectedOutput.toString());
-    }
 
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode fulfilledRequirements = null;
+        ArrayNode requirementNode = null;
+        Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(subscriptionData);
-            fulfilledRequirements = (ArrayNode) subscriptionJson.get("requirements");
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, fulfilledRequirements,
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson);
         assertEquals(output, true);
     }

@@ -57,9 +57,9 @@ public class TestExtractionHandler {
     @Test
     public void testExtractContent() {
         try {
-            String outputFileContents = FileUtils.readFileToString(new File(outputFilePath));
-            String rulesFileContents = FileUtils.readFileToString(new File(rulesFilePath));
-            event = FileUtils.readFileToString(new File(eventFilePath));
+            String outputFileContents = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
+            String rulesFileContents = FileUtils.readFileToString(new File(rulesFilePath), "UTF-8");
+            event = FileUtils.readFileToString(new File(eventFilePath), "UTF-8");
 
             ObjectMapper objectmapper = new ObjectMapper();
             expectedOutput = objectmapper.readTree(outputFileContents);

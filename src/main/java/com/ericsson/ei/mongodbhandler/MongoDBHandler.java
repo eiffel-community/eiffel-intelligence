@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,12 +41,18 @@ public class MongoDBHandler {
 
     MongoClient mongoClient;
 
+
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
 
-    @Value("${mongodb.host}") private String host;
-    @Value("${mongodb.port}") private int port;
+    @Getter
+    @Value("${mongodb.host}")
+    private String host;
+
+    @Getter
+    @Value("${mongodb.port}")
+    private int port;
 
     //TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
@@ -54,14 +61,12 @@ public class MongoDBHandler {
     }
 
     //Establishing the connection to mongodb and creating a collection
-    public  void createConnection(String host, int port){
-        mongoClient = new MongoClient(host , port);
-    }
-
+    public  void createConnection(String host, int port){ mongoClient = new MongoClient(host , port);}
     //Insert data into collection
     public  boolean insertDocument(String dataBaseName, String collectionName, String input){
         try {
             DB db = mongoClient.getDB(dataBaseName);
+
             DBCollection table = db.getCollection(collectionName);
             DBObject dbObjectInput = (DBObject) JSON.parse(input);
             WriteResult result = table.insert(dbObjectInput);
@@ -107,6 +112,8 @@ public class MongoDBHandler {
     //Retrieve data from the collection based on condition
     public  ArrayList<String> find(String dataBaseName, String collectionName, String condition){
         ArrayList<String> result = new ArrayList<>();
+        log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName +
+                "\nwith Condition: " + condition);
         try{
             DB db = mongoClient.getDB(dataBaseName);
             DBCollection table = db.getCollection(collectionName);

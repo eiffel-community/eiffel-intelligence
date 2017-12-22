@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.mongodb.DBObject;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,46 +40,29 @@ public class ObjectHandler {
 
        static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
-    @Value("${aggregated.collection.name}") private String collectionName;
-    @Value("${database.name}") private String databaseName;
+    @Getter @Setter
+    @Value("${aggregated.collection.name}")
+    private String collectionName;
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
-    }
+    @Getter @Setter
+    @Value("${database.name}")
+    private String databaseName;
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-    }
-
+    @Setter
     @Autowired
     private MongoDBHandler mongoDbHandler;
 
-    public void setMongoDbHandler(MongoDBHandler mongoDbHandler) {
-        this.mongoDbHandler = mongoDbHandler;
-    }
-
+    @Setter
     @Autowired
     private JmesPathInterface jmespathInterface;
 
-    public void setJmespathInterface(JmesPathInterface jmespathInterface) {
-        this.jmespathInterface = jmespathInterface;
-    }
-
+    @Setter
     @Autowired
     private EventToObjectMapHandler eventToObjectMap;
 
-
-    public void setEventToObjectMap(EventToObjectMapHandler eventToObjectMap) {
-        this.eventToObjectMap = eventToObjectMap;
-    }
-
+    @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
-
-    public void setSubscriptionHandler(SubscriptionHandler subscriptionHandler) {
-        this.subscriptionHandler = subscriptionHandler;
-    }
-
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
@@ -86,8 +71,8 @@ public class ObjectHandler {
             id = idNode.textValue();
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
-        String documentStr = document.toString();
-        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, documentStr);
+        log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
             subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
@@ -113,6 +98,8 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
+        log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject +
+        		"\nEvent:\n" + event);
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
@@ -148,18 +135,22 @@ public class ObjectHandler {
         return objects;
     }
 
-    private JsonNode prepareDocumentForInsertion(String id, String object) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String docStr = "{\"_id\":\"" + id +"\"}";
-            JsonNode document = mapper.readValue(docStr, JsonNode.class);
-            ((ObjectNode) document).put("aggregatedObject", object);
-            return document;
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
-        return null;
-    }
+        public JsonNode prepareDocumentForInsertion(String id, String object) {
+	        ObjectMapper mapper = new ObjectMapper();
+	        try {
+	            String docStr = "{\"_id\": \"" + id + "\"}";
+	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
+	            
+	            JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class); 
+	            ObjectNode objNode = (ObjectNode) jsonNode;  
+	            objNode.set("aggregatedObject", mapper.readTree(object));
+
+	            return jsonNode;
+	        } catch (Exception e) {
+	            log.info(e.getMessage(),e);
+	        }
+	        return null;
+	    }
 
     public JsonNode getAggregatedObject(String dbDocument) {
          ObjectMapper mapper = new ObjectMapper();
@@ -174,7 +165,7 @@ public class ObjectHandler {
     }
 
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get("_id").asText();
+        return aggregatedDbObject.get("_id").textValue();
     }
 
     /**

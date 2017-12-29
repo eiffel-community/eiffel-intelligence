@@ -16,37 +16,40 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.json.*;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class MergePrepare {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MergePrepare.class);
+    private static Logger log = (Logger) LoggerFactory.getLogger(MergePrepare.class);
 
     public String getKeyFromRule(String mergeRule){
         String ruleKey = "";
         try {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
-            if (ruleJSONObject.keys().hasNext()){
-                ruleKey = (String) ruleJSONObject.keys().next();
-                if (ruleJSONObject.get(ruleKey).getClass() == JSONObject.class)
-                    ruleKey = new StringBuilder().append(ruleKey).
-                            append('.').append(getKeyFromRule(ruleJSONObject.
-                            get(ruleKey).toString())).toString();
+            if (ruleJSONObject.keys().hasNext()) {
+                ruleKey = ruleJSONObject.keys().next();
+                if (ruleJSONObject.get(ruleKey).getClass() == JSONObject.class) {
+                    ruleKey = ruleKey + '.' + getKeyFromRule(ruleJSONObject.get(ruleKey).toString());
+                }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
         return ruleKey;
@@ -57,13 +60,14 @@ public class MergePrepare {
         try {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             if (ruleJSONObject.keys().hasNext()){
-                String ruleKey = (String) ruleJSONObject.keys().next();
-                if (ruleJSONObject.get(ruleKey).getClass() == JSONObject.class)
+                String ruleKey = ruleJSONObject.keys().next();
+                if (ruleJSONObject.get(ruleKey).getClass() == JSONObject.class) {
                     return getValueFromRule(ruleJSONObject.get(ruleKey).toString());
+                }
                 return ruleJSONObject.getString(ruleKey);
             }
-        }catch (Exception e){
-            log.info(e.getMessage(),e);
+        } catch (Exception e){
+            log.info(e.getMessage(), e);
         }
         return ruleValue;
     }
@@ -72,20 +76,18 @@ public class MergePrepare {
         String mergePath = "";
         try {
             String ruleKey = "";
-            try{
+            try {
                 JSONObject originJSONObject = new JSONObject(originObject);
                 JSONObject ruleJSONObject = new JSONObject(mergeRule);
                 if (ruleJSONObject.keys().hasNext()){
-                    ruleKey = (String) ruleJSONObject.keys().next();
+                    ruleKey = ruleJSONObject.keys().next();
                 }
                 Iterator <String> originObjectKeys = originJSONObject.keys();
-                while(originObjectKeys.hasNext()) {
+                while (originObjectKeys.hasNext()) {
                     String originObjectKey = originObjectKeys.next();
-                    if (originObjectKey.equals(ruleKey)){
-                        if (ruleJSONObject.get(ruleKey).getClass().
-                                equals(String.class)){
-                            if (ruleJSONObject.get(ruleKey).
-                                    equals(originJSONObject.get(originObjectKey))){
+                    if (originObjectKey.equals(ruleKey)) {
+                        if (ruleJSONObject.get(ruleKey).getClass().equals(String.class)) {
+                            if (ruleJSONObject.get(ruleKey).equals(originJSONObject.get(originObjectKey))) {
                                 return originObjectKey;
                             }
                         } else {
@@ -94,12 +96,12 @@ public class MergePrepare {
                                                     get(originObjectKey).toString(),
                                             ruleJSONObject.get(ruleKey).toString());
                         }
-                    } else{
+                    } else {
                         Object keyObject = originJSONObject.get(originObjectKey);
 //                        if (keyObject instanceof JSONObject) {
-                            mergePath = getMergePathOld(keyObject.toString(), mergeRule);
-                            if (!mergePath.isEmpty() && pathContainsMergeRule(mergePath, mergeRule)) {
-                                return originObjectKey + '.' + mergePath;
+                        mergePath = getMergePathOld(keyObject.toString(), mergeRule);
+                        if (!mergePath.isEmpty() && pathContainsMergeRule(mergePath, mergeRule)) {
+                            return originObjectKey + '.' + mergePath;
 //                            }
                         }
                     }
@@ -109,17 +111,16 @@ public class MergePrepare {
                     JSONArray originJSONArray = new JSONArray(originObject);
                     int i;
                     for (i = 0; i < originJSONArray.length(); i++) {
-                        mergePath = getMergePathOld(originJSONArray.get(i).
-                                toString(), mergeRule);
+                        mergePath = getMergePathOld(originJSONArray.get(i).toString(), mergeRule);
                         if (!mergePath.isEmpty()) {
                             return Integer.toString(i) + '.' + mergePath;
                         }
                     }
-                    ruleKey = (String) getKeyFromRule(mergeRule.toString());
+                    ruleKey = getKeyFromRule(mergeRule);
                     if (!ruleKey.isEmpty()) {
                         return Integer.toString(i) + '.' + ruleKey;
                     }
-                }catch (JSONException JSONArrayException) {
+                } catch (JSONException JSONArrayException) {
                     return mergePath;
                 }
             }
@@ -141,14 +142,17 @@ public class MergePrepare {
         flattenRule = destringify(flattenRule);
         String[] rulePair = flattenRule.split(":");
         String[] ruleKeyFactors = rulePair[0].split(".");
-        if (ruleKeyFactors.length == 0 && !rulePair[0].isEmpty())
-            ruleKeyFactors = new String[] {rulePair[0]};
+        if (ruleKeyFactors.length == 0 && !rulePair[0].isEmpty()) {
+            ruleKeyFactors = new String[]{rulePair[0]};
+        }
         for (String factor : ruleKeyFactors) {
             int count = 0;
-            if (path.contains(factor))
+            if (path.contains(factor)) {
                 count++;
-            if (count == ruleKeyFactors.length)
+            }
+            if (count == ruleKeyFactors.length) {
                 return true;
+            }
         }
         return false;
     }
@@ -156,32 +160,29 @@ public class MergePrepare {
     public static String destringify(String str) {
         str = str.replaceAll("\"", "");
         str = str.replaceAll("\\{", "");
-        str = str.replaceAll("\\}", "");
-        str = str.replaceAll("\\]", "");
+        str = str.replaceAll("}", "");
+        str = str.replaceAll("]", "");
         str = str.replaceAll("\\[", ".");
         return str;
     }
 
-    public static String longestCommonSubstring(String s1, String s2)
-    {
+    public static String longestCommonSubstring(String s1, String s2) {
         int start = 0;
         int max = 0;
-        for (int i = 0; i < s1.length(); i++)
-        {
-            for (int j = 0; j < s2.length(); j++)
-            {
+        for (int i = 0; i < s1.length(); i++) {
+            for (int j = 0; j < s2.length(); j++) {
                 int x = 0;
-                while (s1.charAt(i + x) == s2.charAt(j + x))
-                {
+                while (s1.charAt(i + x) == s2.charAt(j + x)) {
                     x++;
-                    if (((i + x) >= s1.length()) || ((j + x) >= s2.length())) break;
+                    if (i + x >= s1.length() || j + x >= s2.length()) {
+                        break;
+                    }
                 }
-                if (x > max)
-                {
+                if (x > max) {
                     max = x;
                     start = i;
                 }
-             }
+            }
         }
         return s1.substring(start, (start + max));
     }
@@ -213,11 +214,12 @@ public class MergePrepare {
             ruleKeyFactors = Arrays.copyOf(ruleKeyFactors, ruleKeyFactors.length-1);
         }
         String lastRuleFactor = null;
-        if (ruleKeyFactors.length > 0)
-            lastRuleFactor = ruleKeyFactors[ruleKeyFactors.length-1];
-        ArrayList<String> pathsWithValue = new ArrayList<String>();
-        Map<String,String[]> commonRuleStrings = new HashMap<String,String[]>();
-        ArrayList<String> pathsContainingRule = new ArrayList<String>();
+        if (ruleKeyFactors.length > 0) {
+            lastRuleFactor = ruleKeyFactors[ruleKeyFactors.length - 1];
+        }
+        List<String> pathsWithValue = new ArrayList<>();
+        Map<String,String[]> commonRuleStrings = new HashMap<>();
+        List<String> pathsContainingRule = new ArrayList<>();
 
         for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
             String entryKey = entry.getKey();
@@ -230,12 +232,12 @@ public class MergePrepare {
             for (String factor : ruleKeyFactors) {
 //                if (entryKey.endsWith(lastRuleFactor)) {
 
-                    if (entryKey.contains(factor)) {
-                        factorCount++;
-                    }
-                    if (factorCount == ruleKeyFactors.length) {
-                        pathsContainingRule.add(destringify(entryKey));
-                    }
+                if (entryKey.contains(factor)) {
+                    factorCount++;
+                }
+                if (factorCount == ruleKeyFactors.length) {
+                    pathsContainingRule.add(destringify(entryKey));
+                }
 //                }
             }
         }
@@ -248,8 +250,9 @@ public class MergePrepare {
             // one of the alternatives.
             String winingPath = "";
             for (String path : pathsWithValue) {
-                if (path.length() > winingPath.length())
+                if (path.length() > winingPath.length()) {
                     winingPath = path;
+                }
             }
             return winingPath;
         } else {
@@ -287,7 +290,7 @@ public class MergePrepare {
                     Object value = parsedJson.at(mergePath);
                     if (value instanceof ArrayNode) {
                         int arraySize = ((ArrayNode)value).size();
-                        mergePath += "." + arraySize++ + "." + ruleKeyLast;
+                        mergePath += "." + (arraySize + 1) + "." + ruleKeyLast;
                     } else {
                         mergePath += "." + ruleKeyLast;
                     }
@@ -302,7 +305,7 @@ public class MergePrepare {
         return mergePath;
     }
 
-    public String addMissingLevels (String originObject, String objectToMerge,
+    public String addMissingLevels(String originObject, String objectToMerge,
                                     String mergeRule, String mergePath) {
         if (mergePath.isEmpty()) {
             return objectToMerge;
@@ -316,8 +319,9 @@ public class MergePrepare {
             String ruleValue = getValueFromRule(mergeRule);
             mergeObject.put(ruleKey, ruleValue);
 
-            if (mergePathArray.length() == 1)
+            if (mergePathArray.length() == 1) {
                 return mergeObject.toString();
+            }
 
             for (int i = 1; i < mergePathArray.length(); i++) {
                 int mergePathIndex = mergePathArray.length() - (1 + i);
@@ -326,9 +330,9 @@ public class MergePrepare {
                     int arraySize = getOriginObjectArraySize(originObject, mergePathArray, mergePathIndex, pathElement);
                     JSONArray mergeArray = new JSONArray();
                     for (int k = 0; k < arraySize; k++) {
-                        if (k == Integer.parseInt(pathElement)){
+                        if (k == Integer.parseInt(pathElement)) {
                             mergeArray.put(mergeObject);
-                        }else{
+                        } else {
                             mergeArray.put(new JSONObject());
                         }
                     }
@@ -337,7 +341,7 @@ public class MergePrepare {
                     newObject = new JSONObject();
                     newObject.put(pathElement, mergeArray);
                     mergeObject = newObject;
-                }else{
+                } else {
                     newObject = new JSONObject();
                     newObject.put(pathElement, mergeObject);
                     mergeObject = newObject;

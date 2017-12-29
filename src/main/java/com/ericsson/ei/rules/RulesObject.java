@@ -74,6 +74,10 @@ public class RulesObject {
         return rulesObject.get("HistoryExtractionRules").textValue();
     }
 
+    public String getHistoryPathRules() {
+        return getTextValue("HistoryPathRules");
+    }
+
     public String fetchProcessRules() {
         return getTextValue("ProcessRules");
     }

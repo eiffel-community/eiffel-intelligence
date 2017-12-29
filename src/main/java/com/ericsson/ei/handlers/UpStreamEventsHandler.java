@@ -124,8 +124,8 @@ public class UpStreamEventsHandler {
         for (int i = 1; i < jsonArray.size(); i++) {
             if (jsonArray.get(i).isObject()) {
                 rules = rulesHandler.getRulesForEvent(jsonArray.get(i).toString());
-                prevNp =
-                    historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
+//                prevNp =
+                    historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, jsonArray.get(i).toString(),
                                                                   pathInAggregatedObject);
             } else {
                 // if we have prevNp then we should use that because it is the "parent" of the list we are now going to

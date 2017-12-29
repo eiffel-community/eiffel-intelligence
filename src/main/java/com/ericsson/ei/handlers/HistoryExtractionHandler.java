@@ -39,7 +39,6 @@ public class HistoryExtractionHandler {
     @Autowired private MergePrepare mergePrepare;
 
 
-
     /**
      * Run history extraction.
      *
@@ -54,11 +53,22 @@ public class HistoryExtractionHandler {
         if (objectToMerge == null) {
             return pathInAggregatedObject;
         }
+        System.out.println("ON: " + event);
+//        mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge);
 
-        //TODO: use aggregatedObjectId as mergeId??? What is a mergeId?
-        mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge);
+        if (pathInAggregatedObject.length() > 0 && pathInAggregatedObject.lastIndexOf(".") != -1)
+            pathInAggregatedObject = pathInAggregatedObject.substring(0, pathInAggregatedObject.lastIndexOf("."));
 
-        String path =  pathInAggregatedObject + getPathFromExtractedContent(objectToMerge, "");
+        mergeHandler.mergeObject(aggregatedObjectId,aggregatedObjectId, rules, event, objectToMerge, pathInAggregatedObject);
+
+
+
+        String newPath = getPathFromExtractedContent(objectToMerge, rules.getHistoryPathRules());
+        String path = pathInAggregatedObject;
+        path += newPath;
+        System.out.println("orig path: " + pathInAggregatedObject);
+        System.out.println("new path part: "+newPath);
+        System.out.println("\t\tPATH: " + path);
 
         return path;
     }

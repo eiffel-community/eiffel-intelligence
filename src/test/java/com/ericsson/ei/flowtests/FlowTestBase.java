@@ -144,8 +144,8 @@ public class FlowTestBase {
         cf.setUsername("guest");
         cf.setPassword("guest");
         cf.setPort(8672);
-        cf.setHandshakeTimeout(60000);
-        cf.setConnectionTimeout(60000);
+        cf.setHandshakeTimeout(600000);
+        cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
     }
 
@@ -209,7 +209,7 @@ public class FlowTestBase {
         return eventNames;
     }
 
- // count documents that were processed
+    // count documents that were processed
     private long countProcessedEvents(String database, String collection){
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection table = db.getCollection(collection);
@@ -240,6 +240,7 @@ public class FlowTestBase {
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
+            System.out.println(actualJson);
             JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), true);
         } catch (IOException e) {
             log.info(e.getMessage(),e);

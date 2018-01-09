@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.SubscriptionHashMapException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -111,11 +112,11 @@ public class SubscriptionHandler {
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         log.info("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-
-            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
-                log.info("The subscription conditions match for the aggregatedObject");
-                informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
-            }
+        
+        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
+            log.info("The subscription conditions match for the aggregatedObject");
+            informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
+        }
 
     }
 

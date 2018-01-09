@@ -42,8 +42,8 @@ public class MissedNotificationControllerImpl implements MissedNotificationContr
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST GET mechanism to extract the data
-     * on the basis of the SubscriptionName from the Missed Notification Object.
+     * This method is responsible for the REST GET mechanism to extract the data on
+     * the basis of the SubscriptionName from the Missed Notification Object.
      * 
      * @param subscriptionName
      * @return ResponseEntity

@@ -30,61 +30,31 @@ public class SubscriptionResponse {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The msg
-     */
     @JsonProperty("msg")
     public String getMsg() {
         return msg;
     }
 
-    /**
-     * 
-     * @param msg
-     *     The msg
-     */
     @JsonProperty("msg")
     public void setMsg(String msg) {
         this.msg = msg;
     }
 
-    /**
-     * 
-     * @return
-     *     The statusCode
-     */
     @JsonProperty("statusCode")
     public Integer getStatusCode() {
         return statusCode;
     }
 
-    /**
-     * 
-     * @param statusCode
-     *     The statusCode
-     */
     @JsonProperty("statusCode")
     public void setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
     }
 
-    /**
-     * 
-     * @return
-     *     The responseEntity
-     */
     @JsonProperty("responseEntity")
     public String getResponseEntity() {
         return responseEntity;
     }
 
-    /**
-     * 
-     * @param responseEntity
-     *     The responseEntity
-     */
     @JsonProperty("responseEntity")
     public void setResponseEntity(String responseEntity) {
         this.responseEntity = responseEntity;

@@ -45,6 +45,15 @@
    "{test_cases:[{},{test_time:some_time,event_id:testcaseid2,test_name:some_name}]}"
  ],
  [
+   "{id: eventId, fakeArray:[{event_id:fakeId, fake_data:also_fake}], type: eventType, test_cases: [{event_id: testcaseid1, test_data: testcase1data}], artifacts: [{event_id: artifact_id_1, artifact_data: artifact1data}, {event_id: artifact_id_2, artifact_data: artifact2data}]}",
+   "{test_time: some_time, test_name: some_name}",
+   "{test_cases:{event_id: testcaseid2}}",
+   "test_cases.1.event_id",
+   "test_cases.event_id",
+   "testcaseid2",
+   "{test_cases:[{},{test_time:some_time,event_id:testcaseid2,test_name:some_name}]}"
+ ],
+ [
   "{id: eventId, fakeArray:[{event_id:fakeId, fake_data:also_fake}], level1:{property1:p1value,level2:{property2:p2value}},type: eventType, test_cases: [{event_id: testcaseid1, test_data: testcase1data}, {event_id: testcaseid2, test_data: testcase2data}], artifacts: [{event_id: artifact_id_1, artifact_data: artifact1data}, {event_id: artifact_id_2, artifact_data: artifact2data}]}",
   "{test_time: some_time, test_name: some_name}",
   "{level2:{event_id: someLevelId}}",

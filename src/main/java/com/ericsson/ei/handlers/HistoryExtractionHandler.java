@@ -68,8 +68,13 @@ public class HistoryExtractionHandler {
 		JsonNode ruleJson = getHistoryPathRule(rules, event);
 		String ruleString = ruleJson.toString();
 
+		// if we need to add append to an array then array_path will not be
+		// empty so we use it instead passed pathInAggregatedObject
 		String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
-		String pre_path = getPathFromExtractedContent(aggregatedObject, ruleString);
+		String array_path = getPathFromExtractedContent(aggregatedObject, ruleString);
+		if (!array_path.isEmpty()) {
+			pathInAggregatedObject = array_path;
+		}
 
 		mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge,
 				pathInAggregatedObject);

@@ -274,9 +274,13 @@ public class MergePrepare {
 				}
 				if (longestCommonString.endsWith(".")) {
 					longestCommonString = longestCommonString.substring(0, longestCommonString.length() - 1);
-				} else if (longestCommonString.startsWith(".")) {
+				}
+				if (longestCommonString.startsWith(".")) {
 					longestCommonString = "";
 				}
+				// remove index at the end
+				String pattern = "\\.\\d*$";
+				longestCommonString = longestCommonString.replaceAll(pattern, "");
 				mergePath = longestCommonString;
 			}
 
@@ -289,7 +293,7 @@ public class MergePrepare {
 					Object value = parsedJson.at(mergePath);
 					if (value instanceof ArrayNode) {
 						int arraySize = ((ArrayNode) value).size();
-						mergePath += "." + (arraySize + 1) + "." + ruleKeyLast;
+						mergePath += "." + arraySize + "." + ruleKeyLast;
 					} else {
 						mergePath += "." + ruleKeyLast;
 					}

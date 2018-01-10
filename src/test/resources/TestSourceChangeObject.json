@@ -1,0 +1,291 @@
+{
+  "event_EiffelSourceChangeCreatedEvent_3": {
+    "meta": {
+      "type": "EiffelSourceChangeCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "gitIdentifier": {
+        "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "branch": "myBranch",
+        "repoName": "myPrivateRepo",
+        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+      },
+      "author": {
+        "name": "John Doe",
+        "email": "john.doe@company.com",
+        "id": "johndoe",
+        "group": "Team Gophers"
+      },
+      "change": {
+        "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "insertions": 173,
+        "deletions": 79,
+        "tracker": "GitHub",
+        "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "id": "42"
+      },
+      "issues": [
+        {
+          "type": "BUG",
+          "tracker": "JIRA",
+          "id": "JIRA-1234",
+          "uri": "http://jira.company.com/browse/JIRA-1234",
+          "transition": "RESOLVED"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "BASE",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5dcd62b43"
+      }
+    ]
+  },
+  "event_EiffelSourceChangeCreatedEvent_3_2": {
+      "meta": {
+        "type": "EiffelSourceChangeCreatedEvent",
+        "version": "1.0.0",
+        "time": 1234567890,
+        "id": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
+        "source": {
+          "domainId": "example.domain"
+        }
+      },
+      "data": {
+        "gitIdentifier": {
+          "commitId": "fd090b60a4aedc5161dn9c035a47b14a319829b4",
+          "branch": "myBranch",
+          "repoName": "myPrivateRepo",
+          "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+        },
+        "author": {
+          "name": "John Doe",
+          "email": "john.doe@company.com",
+          "id": "johndoe",
+          "group": "Team Gophers"
+        },
+        "change": {
+          "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+          "insertions": 135,
+          "deletions": 23,
+          "tracker": "GitHub",
+          "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+          "id": "43"
+        },
+        "issues": [
+          {
+            "type": "BUG",
+            "tracker": "JIRA",
+            "id": "JIRA-1234",
+            "uri": "http://jira.company.com/browse/JIRA-1234",
+            "transition": "RESOLVED"
+          }
+        ]
+      },
+      "links": [
+        {
+          "type": "BASE",
+          "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
+        },
+        {
+          "type": "PREVIOUS_VERSION",
+          "target": "6acc3c87-75e0-4b6d-88f5-b1a5dcd62b43"
+        }
+      ]
+    },
+  "event_EiffelSourceChangeSubmittedEvent_3": {
+    "meta": {
+      "type": "EiffelSourceChangeSubmittedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "svnIdentifier": {
+        "revision": 42,
+        "directory": "trunk",
+        "repoName": "Mainline",
+        "repoUri": "svn://repohost/mainline"
+      },
+      "submitter": {
+        "name": "Jane Doe",
+        "email": "jane.doe@company.com",
+        "id": "j_doe",
+        "group": "Team Wombats"
+      }
+    },
+    "links": [
+      {
+        "type": "CHANGE",
+        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "6acc3c87-75e0-4b6d-88f5-bd4gv4e62b43"
+      }
+    ]
+  },
+  "event_EiffelConfidenceLevelModifiedEvent_3": {
+    "links": [
+      {
+        "target": "40df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+        "type": "CAUSE"
+      },
+      {
+        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+        "type": "SUBJECT"
+      }
+    ],
+    "meta": {
+      "id": "f37d59a3-069e-4f4c-8cc5-a52e73501a76",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875944272,
+      "type": "EiffelConfidenceLevelModifiedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "value": "SUCCESS",
+      "customData": [
+        {
+          "value": "CLM2",
+          "key": "name"
+        },
+        {
+          "value": 1,
+          "key": "iteration"
+        }
+      ],
+      "name": "readyForSystemIntegration"
+    }
+  },
+  "event_EiffelConfidenceLevelModifiedEvent_3_2": {
+    "links": [
+      {
+        "target": "40df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+        "type": "CAUSE"
+      },
+      {
+        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+        "type": "SUBJECT"
+      }
+    ],
+    "meta": {
+      "id": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+      "source": {
+        "domainId": "example.domain"
+      },
+      "time": 1481875944278,
+      "type": "EiffelConfidenceLevelModifiedEvent",
+      "version": "1.0.0"
+    },
+    "data": {
+      "value": "SUCCESS",
+      "customData": [
+        {
+          "value": "CLM3",
+          "key": "name"
+        },
+        {
+          "value": 2,
+          "key": "iteration"
+        }
+      ],
+      "name": "readyForDelivery"
+    }
+  },
+  "event_EiffelActivityTriggeredEvent_3": {
+    "meta": {
+      "id": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
+      "type": "EiffelActivityTriggeredEvent",
+      "version": "1.0.0",
+      "time": 1234567890
+    },
+    "data": {
+      "name": "Component X Build",
+      "categories": [
+        "Component Build"
+      ],
+      "triggers": [
+        {
+          "type": "MANUAL",
+          "description": "Triggered by EiffelConfidenceLevelModifiedEvent"
+        }
+      ],
+      "executionType": "AUTOMATED"
+    },
+    "links": [
+      {
+        "type": "CAUSE",
+        "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a75"
+      }
+    ]
+  },
+  "event_EiffelActivityStartedEvent_3": {
+    "meta": {
+      "type": "EiffelActivityStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
+    },
+    "data": {
+      "executionUri": "https://my.jenkins.host/myJob/43",
+      "liveLogs": [
+        {
+          "name": "My build log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+      }
+    ]
+  },
+  "event_EiffelActivityFinishedEvent_3": {
+    "meta": {
+      "type": "EiffelActivityFinishedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
+    },
+    "data": {
+      "outcome": {
+        "conclusion": "TIMED_OUT",
+        "description": "Compilation timed out."
+      },
+      "persistentLogs": [
+        {
+          "name": "firstLog",
+          "uri": "http://myHost.com/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+      }
+    ]
+  }
+}

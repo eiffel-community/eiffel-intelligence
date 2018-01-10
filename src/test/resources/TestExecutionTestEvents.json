@@ -1,0 +1,434 @@
+{
+  "event_EiffelActivityTriggeredEvent": {
+    "meta": {
+      "id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+      "type": "EiffelActivityTriggeredEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "source": {
+        "domainId": "test-domainId"
+      }
+    },
+    "data": {
+      "name": "Component X Build",
+      "categories": [
+        "Component Build"
+      ],
+      "triggers": [
+        {
+          "type": "MANUAL",
+          "description": "Triggered by EiffelArtifactPublishedEvent"
+        }
+      ],
+      "executionType": "AUTOMATED",
+      "customData": [
+        {
+          "key": "key1",
+          "value": "value1"
+        },
+        {
+          "key": "key2",
+          "value": [
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CAUSE",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1"
+      }
+    ]
+  },
+  "event_EiffelActivityStartedEvent": {
+    "meta": {
+      "type": "EiffelActivityStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "b46e01ud-25gb-4d7y-b9f6-836fre6yde47"
+    },
+    "data": {
+      "executionUri": "https://my.jenkins.host/myJob/43",
+      "liveLogs": [
+        {
+          "name": "My build log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "b46ef12d-25gb-4d7y-b9fd-8763re66de47"
+      },
+      {
+        "type": "PREVIOUS_ACTIVITY_EXECUTION",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee2"
+      }
+    ]
+  },
+  "event_EiffelActivityFinishedEvent": {
+    "meta": {
+      "type": "EiffelActivityFinishedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "b46t01uh-29gs-4d7y-b9v6-83kfqe6y4e47"
+    },
+    "data": {
+      "outcome": {
+        "conclusion": "TIMED_OUT",
+        "description": "Compilation timed out."
+      },
+      "persistentLogs": [
+        {
+          "name": "firstLog",
+          "uri": "http://myHost.com/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "b46ef12d-25gb-4d7y-b9fd-8763re66de47"
+      }
+    ]
+  },
+  "event_EiffelTestExecutionRecipeCollectionCreatedEvent": {
+    "meta": {
+      "type": "EiffelTestExecutionRecipeCollectionCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee0"
+    },
+    "data": {
+      "selectionStrategy": {
+        "tracker": "My Test Selector",
+        "id": "TCSS-1234/5",
+        "uri": "http://tm.company.com/browse/TCSS-1234?version=5"
+      },
+      "batches": [
+        {
+          "name": "First batch",
+          "priority": 1,
+          "recipes": [
+            {
+              "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+              "testCase": {
+                "tracker": "My Test Management System",
+                "id": "TC-1234",
+                "uri": "http://tm.company.com/browse/TC-1234"
+              },
+              "constraints": {
+                "load": 10000,
+                "environment": {
+                  "os": "ubuntu-15.04",
+                  "MY_PATH": "/home/lt-worf"
+                }
+              }
+            },
+            {
+              "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
+              "testCase": {
+                "tracker": "My Test Management System",
+                "id": "TC-1234",
+                "uri": "http://tm.company.com/browse/TC-1234"
+              },
+              "constraints": {
+                "load": 500,
+                "environment": {
+                  "os": "ubuntu-16.04.1",
+                  "MY_PATH": "/home/cpt-picard"
+                }
+              }
+            }
+          ],
+          "dependencies": [
+            {
+              "dependent": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+              "dependency": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1"
+            }
+          ]
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CONTEXT",
+        "target": "b46ef12d-25gb-4d7y-b9fd-8763re66de47"
+      }
+    ]
+  },
+  "event_EiffelTestSuiteStartedEvent": {
+    "meta": {
+      "type": "EiffelTestSuiteStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
+    },
+    "data": {
+      "name": "Pre-release installation and security verification",
+      "categories": [
+        "Pre-release tests"
+      ],
+      "types": [
+        "INSTALLABILITY",
+        "SECURITY"
+      ],
+      "liveLogs": [
+        {
+          "name": "My test log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CONTEXT",
+        "target": "b46ef12d-25gb-4d7y-b9fd-8763re66de47"
+      }
+    ]
+  },
+  "event_EiffelTestCaseTriggeredEvent": {
+    "meta": {
+      "type": "EiffelTestCaseTriggeredEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47",
+      "security": {
+        "sdm": {
+          "authorIdentity": "My Test Management System",
+          "encryptedDigest": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }
+      }
+    },
+    "data": {
+      "testCase": {
+        "tracker": "My Test Management System",
+        "id": "TC-1234",
+        "version": "42",
+        "uri": "http://tm.company.com/browse/TC-1234/42"
+      },
+      "recipeId": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+      "parameters": [
+        {
+          "name": "login",
+          "value": "admin"
+        }
+      ],
+      "executionType": "AUTOMATED",
+      "triggers": [
+        {
+          "type": "TIMER",
+          "description": "Nightly test timer."
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CONTEXT",
+        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
+      },
+      {
+        "type": "IUT",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee2"
+      }
+    ]
+  },
+  "event_EiffelTestCaseStartedEvent": {
+    "meta": {
+      "type": "EiffelTestCaseStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20ab-4d2y-h9fe-87haha6kde47"
+    },
+    "data": {
+      "executor": "My Test Framework",
+      "liveLogs": [
+        {
+          "name": "My test log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ENVIRONMENT",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1"
+      },
+      {
+        "type": "TEST_CASE_EXECUTION",
+        "target": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47"
+      }
+    ]
+  },
+  "event_EiffelTestCaseFinishedEvent": {
+    "meta": {
+      "type": "EiffelTestCaseFinishedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20gb-4c2a-h9fa-8763heheae47"
+    },
+    "data": {
+      "outcome": {
+        "verdict": "PASSED",
+        "conclusion": "SUCCESSFUL",
+        "description": "Accidentally started a fire in the lab during execution.",
+        "metrics": [
+          {
+            "name": "myMetric",
+            "value": 5
+          },
+          {
+            "name": "throughput",
+            "value": 8.325
+          },
+          {
+            "name": "somethingElse",
+            "value": "hello"
+          }
+        ]
+      },
+      "persistentLogs": [
+        {
+          "name": "firstLog",
+          "uri": "http://myHost.com/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "TEST_CASE_EXECUTION",
+        "target": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47"
+      }
+    ]
+  },
+  "event_EiffelTestCaseTriggeredEvent_2": {
+    "meta": {
+      "type": "EiffelTestCaseTriggeredEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47",
+      "security": {
+        "sdm": {
+          "authorIdentity": "My Test Management System",
+          "encryptedDigest": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }
+      }
+    },
+    "data": {
+      "testCase": {
+        "tracker": "My Test Management System",
+        "id": "TC-1234",
+        "version": "42",
+        "uri": "http://tm.company.com/browse/TC-1234/42"
+      },
+      "recipeId": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+      "parameters": [
+        {
+          "name": "login",
+          "value": "admin"
+        }
+      ],
+      "executionType": "AUTOMATED",
+      "triggers": [
+        {
+          "type": "TIMER",
+          "description": "Nightly test timer."
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CONTEXT",
+        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
+      },
+      {
+        "type": "IUT",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee2"
+      }
+    ]
+  },
+  "event_EiffelTestCaseStartedEvent_2": {
+    "meta": {
+      "type": "EiffelTestCaseStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20ab-4e2y-e9se-8762ae6kde47"
+    },
+    "data": {
+      "executor": "My Test Framework",
+      "liveLogs": [
+        {
+          "name": "My test log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ENVIRONMENT",
+        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1"
+      },
+      {
+        "type": "TEST_CASE_EXECUTION",
+        "target": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+      }
+    ]
+  },
+  "event_EiffelTestCaseFinishedEvent_2": {
+    "meta": {
+      "type": "EiffelTestCaseFinishedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "v46ef19d-20fb-4e2k-h9fa-8763ae6ese47"
+    },
+    "data": {
+      "outcome": {
+        "verdict": "PASSED",
+        "conclusion": "SUCCESSFUL",
+        "description": "Accidentally started a fire in the lab during execution.",
+        "metrics": [
+          {
+            "name": "myMetric",
+            "value": 5
+          },
+          {
+            "name": "throughput",
+            "value": 8.325
+          },
+          {
+            "name": "somethingElse",
+            "value": "hello"
+          }
+        ]
+      },
+      "persistentLogs": [
+        {
+          "name": "firstLog",
+          "uri": "http://myHost.com/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "TEST_CASE_EXECUTION",
+        "target": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+      }
+    ]
+  }
+}

@@ -24,21 +24,11 @@ public class Condition {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The jmespath
-     */
     @JsonProperty("jmespath")
     public String getJmespath() {
         return jmespath;
     }
 
-    /**
-     * 
-     * @param jmespath
-     *     The jmespath
-     */
     @JsonProperty("jmespath")
     public void setJmespath(String jmespath) {
         this.jmespath = jmespath;

@@ -1,33 +1,5 @@
 
-#%RAML 0.8
-  schemas:
-    - !include common-schema.raml
-  resourceTypes:
-  - standard:
-      get?:
-        responses:          
-          400:
-            description: |
-              The request sent to the server contains data which is not as expected e.g. incorrect Subscription Name
-          404:
-            description: |
-              The requested resource was not found                     
-      put?:
-        responses:          
-          404:
-            descrption: |
-              The requested resource on which the modification is being attempted was not found              
-      delete?:
-        responses:          
-          404:
-            descrption: | 
-              The requested resource to delete was not found 
- 
-  title: Subscriptions Services
-  version: ${project.version}
-  mediaType: application/json
-  baseUri: /
-  /subscriptions:
+
     description: Provides interaction with Subscription resource
     get:
       description: List the names of all subscriptions      

@@ -15,40 +15,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "msg",
-    "statusCode",
     "responseEntity"
 })
-public class SubscriptionResponse {
+public class QueryResponse {
 
-    @JsonProperty("msg")
-    private String msg;
-    @JsonProperty("statusCode")
-    private Integer statusCode;
     @JsonProperty("responseEntity")
     private String responseEntity;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("msg")
-    public String getMsg() {
-        return msg;
-    }
-
-    @JsonProperty("msg")
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    @JsonProperty("statusCode")
-    public Integer getStatusCode() {
-        return statusCode;
-    }
-
-    @JsonProperty("statusCode")
-    public void setStatusCode(Integer statusCode) {
-        this.statusCode = statusCode;
-    }
 
     @JsonProperty("responseEntity")
     public String getResponseEntity() {
@@ -77,7 +51,7 @@ public class SubscriptionResponse {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(msg).append(statusCode).append(responseEntity).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(responseEntity).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -85,11 +59,11 @@ public class SubscriptionResponse {
         if (other == this) {
             return true;
         }
-        if ((other instanceof SubscriptionResponse) == false) {
+        if ((other instanceof QueryResponse) == false) {
             return false;
         }
-        SubscriptionResponse rhs = ((SubscriptionResponse) other);
-        return new EqualsBuilder().append(msg, rhs.msg).append(statusCode, rhs.statusCode).append(responseEntity, rhs.responseEntity).append(additionalProperties, rhs.additionalProperties).isEquals();
+        QueryResponse rhs = ((QueryResponse) other);
+        return new EqualsBuilder().append(responseEntity, rhs.responseEntity).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

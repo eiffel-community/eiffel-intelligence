@@ -26,21 +26,11 @@ public class Requirement {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The conditions
-     */
     @JsonProperty("conditions")
     public List<Condition> getConditions() {
         return conditions;
     }
 
-    /**
-     * 
-     * @param conditions
-     *     The conditions
-     */
     @JsonProperty("conditions")
     public void setConditions(List<Condition> conditions) {
         this.conditions = conditions;

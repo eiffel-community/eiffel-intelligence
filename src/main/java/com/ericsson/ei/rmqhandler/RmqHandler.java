@@ -17,8 +17,19 @@
 package com.ericsson.ei.rmqhandler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -41,147 +52,193 @@ import com.ericsson.ei.handlers.EventHandler;
 
 @Component
 public class RmqHandler {
-    static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
+	static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
-    @Getter @Setter
-    @Value("${rabbitmq.queue.durable}")
-    private Boolean queueDurable;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.queue.durable}")
+	private Boolean queueDurable;
 
-    @Getter @Setter
-    @Value("${rabbitmq.host}")
-    private String host;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.host}")
+	private String host;
 
-    @Getter @Setter
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.exchange.name}")
+	private String exchangeName;
 
-    @Getter @Setter
-    @Value("${rabbitmq.port}")
-    private Integer port;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.port}")
+	private Integer port;
 
-    @Getter @Setter
-    @Value("${rabbitmq.tls}")
-    private String tlsVer;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.tls}")
+	private String tlsVer;
 
-    @JsonIgnore
-    @Getter @Setter
-    @Value("${rabbitmq.user}")
-    private String user;
+	@JsonIgnore
+	@Getter
+	@Setter
+	@Value("${rabbitmq.user}")
+	private String user;
 
-    @JsonIgnore
-    @Getter @Setter
-    @Value("${rabbitmq.password}")
-    private String password;
+	@JsonIgnore
+	@Getter
+	@Setter
+	@Value("${rabbitmq.password}")
+	private String password;
 
-    @Getter @Setter
-    @Value("${rabbitmq.domainId}")
-    private String domainId;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.domainId}")
+	private String domainId;
 
-    @Getter @Setter
-    @Value("${rabbitmq.componentName}")
-    private String componentName;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.componentName}")
+	private String componentName;
 
-    @Getter @Setter
-    @Value("${rabbitmq.waitlist.queue.suffix}")
-    private String waitlistSufix;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.waitlist.queue.suffix}")
+	private String waitlistSufix;
 
-    @Getter @Setter
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.routing.key}")
+	private String routingKey;
 
-    @Getter @Setter
-    @Value("${rabbitmq.consumerName}")
-    private String consumerName;
+	@Getter
+	@Setter
+	@Value("${rabbitmq.consumerName}")
+	private String consumerName;
 
-    private RabbitTemplate rabbitTemplate;
-    private CachingConnectionFactory factory;
-    private SimpleMessageListenerContainer container;
-    private SimpleMessageListenerContainer waitlistContainer;
+	private RabbitTemplate rabbitTemplate;
+	private CachingConnectionFactory factory;
+	private SimpleMessageListenerContainer container;
+	private SimpleMessageListenerContainer waitlistContainer;
 
-    @Bean
-    ConnectionFactory connectionFactory() {
-        factory = new CachingConnectionFactory(host, port);
-        factory.setPublisherConfirms(true);
-        factory.setPublisherReturns(true);
-        if(user != null && user.length() !=0 && password != null && password.length() !=0) {
-            factory.setUsername(user);
-            factory.setPassword(password);
-        }
-        return factory;
-    }
+	private static final int CHANNEL_COUNT = 100;
+	private List<Channel> rabbitChannels;
 
-    @Bean
-    Queue queue() {
-        return new Queue(getQueueName(), true);
-    }
+	@Bean
+	ConnectionFactory connectionFactory() {
+		com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
+		connectionFactory.setHost(host);
+		connectionFactory.setPort(port);
+		if (user != null && user.length() != 0 && password != null && password.length() != 0) {
+			connectionFactory.setUsername(user);
+			connectionFactory.setPassword(password);
+		}
 
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange(exchangeName);
-    }
+		if (tlsVer != null && !tlsVer.isEmpty()) {
+			try {
+				log.info("Using SSL/TLS version " + tlsVer + " connection to RabbitMQ.");
+				connectionFactory.useSslProtocol(tlsVer);
+			} catch (KeyManagementException e) {
+				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
 
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-    }
+		Connection rabbitConnection = null;
 
-    @Bean
-    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-        String queueName = getQueueName();
-        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-        container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(factory);
-        container.setQueueNames(queueName);
-        container.setMessageListener(listenerAdapter);
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        return container;
-    }
+		try {
+			rabbitConnection = connectionFactory.newConnection();
+			log.info("Connected to RabbitMQ server: " + host + ":" + port);
+			rabbitChannels = new ArrayList<>();
+			for (int i = 0; i < CHANNEL_COUNT; i++) {
+				rabbitChannels.add(rabbitConnection.createChannel());
+			}
+		} catch (IOException | TimeoutException e) {
+			log.error(e.getMessage(), e);
+		}
 
-    public String getQueueName() {
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName;
-    }
+		factory = new CachingConnectionFactory(connectionFactory);
+		factory.setPublisherConfirms(true);
+		factory.setPublisherReturns(true);
 
-    public String getWaitlistQueueName() {
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
-    }
+		return factory;
+	}
 
-    @Bean
-    public RabbitTemplate rabbitMqTemplate() {
-        if (rabbitTemplate == null) {
-            if (factory != null) {
-                rabbitTemplate = new RabbitTemplate(factory);
-            } else {
-                rabbitTemplate = new RabbitTemplate(connectionFactory());
-            }
+	@Bean
+	Queue queue() {
+		return new Queue(getQueueName(), true);
+	}
 
-            rabbitTemplate.setExchange(exchangeName);
-            rabbitTemplate.setRoutingKey(routingKey);
-            rabbitTemplate.setQueue(getQueueName());
-            rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
-                @Override
-                public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                    log.info("Received confirm with result : {}", ack);
-                }
-            });
-        }
-        return rabbitTemplate;
-    }
+	@Bean
+	TopicExchange exchange() {
+		return new TopicExchange(exchangeName);
+	}
 
-    public void publishObjectToWaitlistQueue(String message) {
-        log.info("publishing message to message bus...");
-        rabbitMqTemplate().convertAndSend(message);
-    }
+	@Bean
+	Binding binding(Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+	}
 
-    public void close() {
-        try {
-            waitlistContainer.destroy();
-            container.destroy();
-            factory.destroy();
-        } catch (Exception e) {
-            log.info("exception occured while closing connections");
-            log.info(e.getMessage(),e);
-        }
-    }
+	@Bean
+	SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+		String queueName = getQueueName();
+		MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+		container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(factory);
+		container.setQueueNames(queueName);
+		container.setMessageListener(listenerAdapter);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		return container;
+	}
+
+	public String getQueueName() {
+		String durableName = queueDurable ? "durable" : "transient";
+		return domainId + "." + componentName + "." + consumerName + "." + durableName;
+	}
+
+	public String getWaitlistQueueName() {
+		String durableName = queueDurable ? "durable" : "transient";
+		return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
+	}
+
+	@Bean
+	public RabbitTemplate rabbitMqTemplate() {
+		if (rabbitTemplate == null) {
+			if (factory != null) {
+				rabbitTemplate = new RabbitTemplate(factory);
+			} else {
+				rabbitTemplate = new RabbitTemplate(connectionFactory());
+			}
+
+			rabbitTemplate.setExchange(exchangeName);
+			rabbitTemplate.setRoutingKey(routingKey);
+			rabbitTemplate.setQueue(getQueueName());
+			rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
+				@Override
+				public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+					log.info("Received confirm with result : {}", ack);
+				}
+			});
+		}
+		return rabbitTemplate;
+	}
+
+	public void publishObjectToWaitlistQueue(String message) {
+		log.info("publishing message to message bus...");
+		rabbitMqTemplate().convertAndSend(message);
+	}
+
+	public void close() {
+		try {
+			waitlistContainer.destroy();
+			container.destroy();
+			factory.destroy();
+		} catch (Exception e) {
+			log.info("exception occured while closing connections");
+			log.info(e.getMessage(), e);
+		}
+	}
 }

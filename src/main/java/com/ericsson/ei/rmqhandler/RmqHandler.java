@@ -121,9 +121,6 @@ public class RmqHandler {
 	private SimpleMessageListenerContainer container;
 	private SimpleMessageListenerContainer waitlistContainer;
 
-	private static final int CHANNEL_COUNT = 100;
-	private List<Channel> rabbitChannels;
-
 	@Bean
 	ConnectionFactory connectionFactory() {
 		com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
@@ -145,19 +142,6 @@ public class RmqHandler {
 				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
 				e.printStackTrace();
 			}
-		}
-
-		Connection rabbitConnection = null;
-
-		try {
-			rabbitConnection = connectionFactory.newConnection();
-			log.info("Connected to RabbitMQ server: " + host + ":" + port);
-			rabbitChannels = new ArrayList<>();
-			for (int i = 0; i < CHANNEL_COUNT; i++) {
-				rabbitChannels.add(rabbitConnection.createChannel());
-			}
-		} catch (IOException | TimeoutException e) {
-			log.error(e.getMessage(), e);
 		}
 
 		factory = new CachingConnectionFactory(connectionFactory);

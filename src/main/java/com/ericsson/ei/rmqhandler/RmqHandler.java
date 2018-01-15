@@ -76,8 +76,8 @@ public class RmqHandler {
 
 	@Getter
 	@Setter
-	@Value("${rabbitmq.tls}")
-	private String tlsVer;
+	@Value("${rabbitmq.tlsVersion}")
+	private String tlsVersion;
 
 	@JsonIgnore
 	@Getter
@@ -131,10 +131,10 @@ public class RmqHandler {
 			connectionFactory.setPassword(password);
 		}
 
-		if (tlsVer != null && !tlsVer.isEmpty()) {
+		if (tlsVersion != null && !tlsVersion.isEmpty()) {
 			try {
-				log.info("Using SSL/TLS version " + tlsVer + " connection to RabbitMQ.");
-				connectionFactory.useSslProtocol(tlsVer);
+				log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
+				connectionFactory.useSslProtocol(tlsVersion);
 			} catch (KeyManagementException e) {
 				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
 				e.printStackTrace();

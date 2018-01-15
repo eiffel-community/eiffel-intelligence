@@ -136,11 +136,11 @@ public class RmqHandler {
 				log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
 				connectionFactory.useSslProtocol(tlsVersion);
 			} catch (KeyManagementException e) {
-				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
-				e.printStackTrace();
+				log.error("Failed to set SSL/TLS version.");
+				log.error(e.getMessage(), e);
 			} catch (NoSuchAlgorithmException e) {
-				log.error("Failed to set SSL/TLS version. Error message: " + e.getMessage());
-				e.printStackTrace();
+				log.error("Failed to set SSL/TLS version.");
+				log.error(e.getMessage(), e);
 			}
 		}
 

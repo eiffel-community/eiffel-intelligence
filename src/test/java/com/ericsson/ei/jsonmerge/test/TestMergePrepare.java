@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-
 @RunWith(Parameterized.class)
 public class TestMergePrepare {
     public static final String testDataPath = "src/test/resources/MergePrepareData.json";
@@ -50,9 +49,8 @@ public class TestMergePrepare {
 
     static Logger log = (Logger) LoggerFactory.getLogger(TestMergePrepare.class);
 
-    public TestMergePrepare(String originObject, String mergeObject,
-                            String mergeRule, String mergePath,
-                            String ruleValue, String mergedObject){
+    public TestMergePrepare(String originObject, String mergeObject, String mergeRule, String mergePath,
+            String ruleValue, String mergedObject) {
         this.originObject = originObject;
         this.mergeObject = mergeObject;
         this.mergeRule = mergeRule;
@@ -84,7 +82,7 @@ public class TestMergePrepare {
     @Test
     public void addMissingLevels() {
         String result = mergePrepareObject.addMissingLevels(originObject, mergeObject, mergeRule, mergePath);
-        assertEquals(mergedObject, result.replace("\"",""));
+        assertEquals(mergedObject, result.replace("\"", ""));
     }
 
     @Parameters
@@ -94,10 +92,10 @@ public class TestMergePrepare {
         try {
             testData = FileUtils.readFileToString(new File(testDataPath), "UTF-8");
             JSONArray testDataJson = new JSONArray(testData);
-            for (int i=0; i<testDataJson.length(); i++) {
+            for (int i = 0; i < testDataJson.length(); i++) {
                 final List<String> childList = new ArrayList<>();
-                for (int k=0; k<((JSONArray)testDataJson.get(i)).length(); k++) {
-                    childList.add(((String)((JSONArray) testDataJson.get(i)).get(k)));
+                for (int k = 0; k < ((JSONArray) testDataJson.get(i)).length(); k++) {
+                    childList.add(((String) ((JSONArray) testDataJson.get(i)).get(k)));
                 }
                 baseList.add(childList.toArray());
             }

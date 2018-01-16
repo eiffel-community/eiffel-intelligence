@@ -44,7 +44,6 @@
    "{test_time: some_time, test_name: some_name}",
    "{test_cases:{event_id: testcaseid2}}",
    "test_cases.1.event_id",
-   "test_cases.event_id",
    "testcaseid2",
    "{test_cases:[{},{test_time:some_time,event_id:testcaseid2,test_name:some_name}]}"
  ],

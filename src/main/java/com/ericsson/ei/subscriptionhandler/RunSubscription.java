@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.SubscriptionHashMapException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,13 +60,35 @@ public class RunSubscription {
      * @return boolean
      */
 
-        public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator,
+     public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator,
                 JsonNode subscriptionJson) {
         boolean conditionFulfilled = false;
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
+        
+        
+        String subscriptionName = subscriptionJson.get("subscriptionName").toString();
+        log.debug("SubscriptionName Value: " + subscriptionName);
+        String repeatFlagValue = subscriptionJson.get("repeat").toString();
+        log.debug("RepeatFlag Value: " + repeatFlagValue);
 
-
+        
+        try {
+        	if (!SubscriptionRepeatController.subscriptionExistsInHashMap(subscriptionName)) {
+        		SubscriptionRepeatController.addSubscriptionToHashMap(subscriptionName, "false");
+        	}
+		} catch (SubscriptionHashMapException e) {
+			log.error("Failed to check or add Subscription to hashmap, error message: " + e.getMessage());
+		}
+        
+        log.debug("SubscriptionRepeatValue: " + repeatFlagValue
+        		+ "  HashMapRepeatValue: " + SubscriptionRepeatController.getSubscriptionRepeatBooleanValue(subscriptionName));
+        if(SubscriptionRepeatController.getSubscriptionRepeatBooleanValue(subscriptionName) && repeatFlagValue.equals("false")) {
+        	log.info("Subscription has already matched one time and RepeatFlag in Subscription: " + subscriptionName
+        			+ " is set to: " + repeatFlagValue + ". Will not process this subscription.");
+        	return false;
+        }
+ 
         while (requirementIterator.hasNext()) {
             JsonNode requirement = requirementIterator.next();
             log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
@@ -73,7 +96,7 @@ public class RunSubscription {
 
             count_condition_fulfillment = 0;
             count_conditions = conditions.size();
-
+            
             log.info("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
@@ -88,6 +111,9 @@ public class RunSubscription {
                     count_condition_fulfillment++;
                 }
             }
+            
+            log.debug("CountCondition: " + count_conditions
+            		  + "\ncount_condition_fulfillment: " + count_condition_fulfillment);
 
             if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
 
@@ -96,7 +122,12 @@ public class RunSubscription {
         }
 
         log.info("The final value of conditionFulfilled is : " + conditionFulfilled);
-
+    	log.info("Condition Match. Seting hashmap to true for subscription: " + subscriptionName);
+    	try {
+			SubscriptionRepeatController.addSubscriptionToHashMap(subscriptionName, String.valueOf(conditionFulfilled));
+		} catch (SubscriptionHashMapException e) {
+			log.error("Failed to add Subscription, " + subscriptionName + ", to hashmap, error message: " + e.getMessage());
+		}
         return conditionFulfilled;
 
     }

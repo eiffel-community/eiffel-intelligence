@@ -33,7 +33,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -76,10 +75,10 @@ public class ERQueryService {
      * @param eventId
      * @return ResponseEntity
      */
-    public ResponseEntity getEventDataById(String eventId) {
+    public ResponseEntity<String> getEventDataById(String eventId) {
         String erUrl = url.trim() + "{id}";
         log.info("The url is : " + erUrl);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("id", eventId);
         ResponseEntity<String> response = null;
         log.info("The ID parameter is set");
@@ -105,7 +104,7 @@ public class ERQueryService {
      * @return ResponseEntity
      */
 
-    public ResponseEntity getEventStreamDataById(String eventId, int searchAction, int limitParam,
+    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, int searchAction, int limitParam,
             int levelsParam, boolean tree) {
 
         String erUrl = url.trim() + eventId;
@@ -121,10 +120,10 @@ public class ERQueryService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity(uriParams, headers);
+        HttpEntity<JsonNode> requestEntity = new HttpEntity<>(uriParams, headers);
         log.info("The request is : " + builder.buildAndExpand(uriParams).toUri().toString());
 
-        ResponseEntity response = rest.exchange(builder.buildAndExpand(uriParams).toUri(), HttpMethod.POST,
+        ResponseEntity<JsonNode> response = rest.exchange(builder.buildAndExpand(uriParams).toUri(), HttpMethod.POST,
                 requestEntity, JsonNode.class);
         return response;
     }

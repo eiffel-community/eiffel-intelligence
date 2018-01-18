@@ -108,8 +108,8 @@
     "DownstreamIdentifyRules":"links | [?type=='ELEMENT'].target",
     "DownstreamExtractionRules": "{externalComposition: {eventId: meta.id, time:meta.time, name:data.name}}",
     "DownstreamMergeRules": "{\"eventId\":%IdentifyRules%}",
-    "HistoryExtractionRules": "{internalComposition:{compositions: [{eventId: meta.id, time: meta.time,  name: data.name}]}}",
-    "HistoryPathRules": "{compositions: {eventId: meta.id}}",
+    "HistoryExtractionRules": "{eventId: meta.id, time: meta.time,  name: data.name}",
+    "HistoryPathRules": "{internalComposition:{compositions: [{eventId: meta.id}]}}",
     "ProcessRules":null,
     "ProcessFunction" : null
   },
@@ -140,8 +140,8 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
-    "HistoryExtractionRules": "{sourceChanges :[{SCSEventId: meta.id,svnIdentifier:data.svnIdentifier, submitter:data.submitter}]}",
-    "HistoryPathRules": "{sourceChanges: {SCSEventId: meta.id}}",
+    "HistoryExtractionRules": "{SCSEventId: meta.id,svnIdentifier:data.svnIdentifier, submitter:data.submitter}",
+    "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
     "ProcessRules":null,
     "ProcessFunction" : null
   }

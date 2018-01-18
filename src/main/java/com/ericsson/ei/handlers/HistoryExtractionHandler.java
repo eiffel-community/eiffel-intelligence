@@ -14,8 +14,6 @@
 
 package com.ericsson.ei.handlers;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,8 @@ import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.jsonmerge.MergePrepare;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.wnameless.json.flattener.JsonFlattener;
+
 import org.springframework.stereotype.Component;
 
 // TODO: Auto-generated Javadoc
@@ -34,105 +34,110 @@ import org.springframework.stereotype.Component;
 @Component
 public class HistoryExtractionHandler {
 
-	static Logger log = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
 
-	@Autowired
-	private JmesPathInterface jmesPathInterface;
-	@Autowired
-	private MergeHandler mergeHandler;
-	@Autowired
-	private MergePrepare mergePrepare;
+    @Autowired
+    private JmesPathInterface jmesPathInterface;
+    @Autowired
+    private MergeHandler mergeHandler;
+    @Autowired
+    private MergePrepare mergePrepare;
 
-	/**
-	 * Run history extraction.
-	 *
-	 * @param aggregatedObjectId
-	 *            the aggregated object id
-	 * @param rules
-	 *            the rules object
-	 * @param event
-	 *            the event
-	 * @param pathInAggregatedObject
-	 *            the path in aggregated object
-	 * @return the string
-	 */
-	public String runHistoryExtraction(String aggregatedObjectId, RulesObject rules, String event,
-			String pathInAggregatedObject) {
-		JsonNode objectToMerge = extractContent(rules, event);
-		if (objectToMerge == null) {
-			return pathInAggregatedObject;
-		}
-		System.out.println("ON: " + event);
-		// mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId,
-		// rules, event, objectToMerge);
-		JsonNode ruleJson = getHistoryPathRule(rules, event);
-		String ruleString = ruleJson.toString();
+    /**
+     * Run history extraction.
+     *
+     * @param aggregatedObjectId
+     *            the aggregated object id
+     * @param rules
+     *            the rules object
+     * @param event
+     *            the event
+     * @param pathInAggregatedObject
+     *            the path in aggregated object
+     * @return the string
+     */
+    public String runHistoryExtraction(String aggregatedObjectId, RulesObject rules, String event,
+            String pathInAggregatedObject) {
+        JsonNode objectToMerge = extractContent(rules, event);
+        if (objectToMerge == null) {
+            return pathInAggregatedObject;
+        }
 
-		// if we need to add append to an array then array_path will not be
-		// empty so we use it instead passed pathInAggregatedObject
-		String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
-		String array_path = getPathFromExtractedContent(aggregatedObject, ruleString);
-		if (!array_path.isEmpty()) {
-			pathInAggregatedObject = array_path;
-		}
+        JsonNode ruleJson = getHistoryPathRule(rules, event);
+        String ruleString = ruleJson.toString();
 
-		mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge,
-				pathInAggregatedObject);
+        // if we need to add append to an array then array_path will not be
+        // empty so we use it instead passed pathInAggregatedObject
+        String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
+        String array_path = getPathFromExtractedContent(aggregatedObject, ruleString);
+        if (!array_path.isEmpty()) {
+            pathInAggregatedObject = array_path;
+        } else {
+            String ruleKey = getRulePath(ruleString);
+            if (pathInAggregatedObject.isEmpty()) {
+                pathInAggregatedObject = ruleKey;
+            } else {
+                if (pathInAggregatedObject.length() > 0 && pathInAggregatedObject.lastIndexOf(".") != -1)
+                    pathInAggregatedObject = pathInAggregatedObject.substring(0,
+                            pathInAggregatedObject.lastIndexOf("."));
+                pathInAggregatedObject += "." + ruleKey;
+            }
+        }
 
-		if (pathInAggregatedObject.length() > 0 && pathInAggregatedObject.lastIndexOf(".") != -1)
-			pathInAggregatedObject = pathInAggregatedObject.substring(0, pathInAggregatedObject.lastIndexOf("."));
+        mergeHandler.mergeObject(aggregatedObjectId, aggregatedObjectId, rules, event, objectToMerge,
+                pathInAggregatedObject);
 
-		aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
-		String path = getPathFromExtractedContent(aggregatedObject, ruleString);
-		// String path = pathInAggregatedObject;
-		//
-		// if (path == null || path.isEmpty()) {
-		// path = newPath;
-		// } else {
-		// path += "." + newPath;
-		// }
+        return pathInAggregatedObject;
+    }
 
-		System.out.println("orig path: " + pathInAggregatedObject);
-		// System.out.println("new path part: " + newPath);
-		System.out.println("\t\tPATH: " + path);
+    /**
+     * Get the rule path as dot notation
+     * 
+     * @param stringRule
+     *            - rule as string
+     * @return
+     */
+    private String getRulePath(String stringRule) {
+        String flattenRule = JsonFlattener.flatten(stringRule);
+        String[] rulePair = flattenRule.split(":");
+        String ruleKey = mergePrepare.destringify(rulePair[0]);
+        return ruleKey;
+    }
 
-		return path;
-	}
+    /**
+     * Gets the path from given content.
+     *
+     * @param content
+     *            the content
+     * @return the path from given content
+     */
+    private String getPathFromExtractedContent(String content, String mergeRules) {
+        return mergePrepare.getMergePath(content, mergeRules);
+    }
 
-	/**
-	 * Gets the path from given content.
-	 *
-	 * @param content
-	 *            the content
-	 * @return the path from given content
-	 */
-	private String getPathFromExtractedContent(String content, String mergeRules) {
-		return mergePrepare.getMergePath(content, mergeRules);
-	}
+    /**
+     * Extract content.
+     *
+     * @param rulesObject
+     *            the rules object
+     * @param event
+     *            the event
+     * @return the json node
+     */
+    private JsonNode extractContent(RulesObject rulesObject, String event) {
+        String extractionRules;
+        extractionRules = rulesObject.getHistoryExtractionRules();
+        return jmesPathInterface.runRuleOnEvent(extractionRules, event);
+    }
 
-	/**
-	 * Extract content.
-	 *
-	 * @param rulesObject
-	 *            the rules object
-	 * @param event
-	 *            the event
-	 * @return the json node
-	 */
-	private JsonNode extractContent(RulesObject rulesObject, String event) {
-		String extractionRules;
-		extractionRules = rulesObject.getHistoryExtractionRules();
-		return jmesPathInterface.runRuleOnEvent(extractionRules, event);
-	}
-
-	/**
-	 * @param rulesObject
-	 * @param event
-	 * @return
-	 */
-	private JsonNode getHistoryPathRule(RulesObject rulesObject, String event) {
-		String rule = rulesObject.getHistoryPathRules();
-		return jmesPathInterface.runRuleOnEvent(rule, event);
-	}
+    /**
+     * @param rulesObject
+     * @param event
+     * @return
+     */
+    private JsonNode getHistoryPathRule(RulesObject rulesObject, String event) {
+        String rule = rulesObject.getHistoryPathRules();
+        return jmesPathInterface.runRuleOnEvent(rule, event);
+    }
 
 }

@@ -17,6 +17,52 @@
                 "value": "SUCCESS"
             }
         ],
+        "internalComposition":{
+         "compositions":[
+            {
+               "eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+               "sourceChanges":[
+                  {
+                     "submitter":{
+                        "name":"Jane Doe",
+                        "email":"jane.doe@company.com"
+                     },
+                     "SCSEventId":"3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                     "svnIdentifier":null,
+                     "sourceCreations":[
+                        {
+                           "SCCEventId":"ac085e24-ac4c-41be-912d-08c7afd32285",
+                           "author":{
+                              "name":"John Doe",
+                              "id":"johndoe",
+                              "email":"john.doe@company.com",
+                              "group":"Team Gophers"
+                           },
+                           "issues":[
+
+                           ]
+                        },
+                        {
+                           "SCCEventId":"552ad6a4-c522-47e2-9195-0481930979e4",
+                           "author":null,
+                           "issues":[
+                              {
+                                 "tracker":"JIRA",
+                                 "id":"JIRA-1234",
+                                 "type":"BUG",
+                                 "uri":"http://jira.company.com/browse/JIRA-1234",
+                                 "transition":"RESOLVED"
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               ],
+               "name":"My composition",
+               "time":2000
+            }
+         ]
+      },
         "testCaseExecutions": [
             {
                 "testCaseTrigeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",

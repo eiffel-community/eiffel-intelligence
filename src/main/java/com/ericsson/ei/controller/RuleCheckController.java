@@ -1,7 +1,6 @@
 
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,17 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/missedNotifications", produces = "application/json")
-public interface MissedNotificationController {
+@RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
+public interface RuleCheckController {
 
 
     /**
-     * List the missed notification based on the subscriptionName in the query parameter.
+     * No description
      * 
      */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> updateJmespathruleRuleCheck(
         @RequestParam
-        String subscriptionName);
+        String rule,
+        @RequestParam
+        String jsonContent);
 
 }

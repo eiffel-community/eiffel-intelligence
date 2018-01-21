@@ -1,0 +1,26 @@
+
+ /ruleCheck:
+      post:
+        body:
+         multipart/form-data:
+            formParameters: 
+              jsonContent:
+                displayName: jsonContent
+                type: string
+                description: json content as form parameter
+                required: true            
+                         
+        queryParameters:
+          rule: 
+            displayName: rule
+            type: string
+            description: jmespath rule expression
+            example: a.b
+            required: true
+        
+   
+        responses:
+          200:        
+            body:
+              application/string:
+                  

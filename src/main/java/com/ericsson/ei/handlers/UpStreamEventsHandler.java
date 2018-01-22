@@ -19,7 +19,6 @@ import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,5 +126,4 @@ public class UpStreamEventsHandler {
             }
         }
     }
-
 }

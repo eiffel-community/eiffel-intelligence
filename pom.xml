@@ -224,7 +224,27 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>          
+            </plugin>      
+            
+            <!-- required for adding generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!-- where to find the generated sources -->
+                                <source>${output-relative-path}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>    
            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

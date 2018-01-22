@@ -29,6 +29,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -64,17 +65,16 @@ public class ERQueryService {
      * This method only extracts the event information from ER2.0 based on the
      * eventID.
      *
-     * @param eventId the id of the event.
+     * @param eventId
+     *            the id of the event.
      * @return ResponseEntity
      */
     public ResponseEntity<String> getEventDataById(String eventId) {
-        String erUrl = url.trim() + "{id}";
-        log.info("The url is : " + erUrl);
-        Map<String, String> params = new HashMap<>();
-        params.put("id", eventId);
-        ResponseEntity<String> response = null;
-        log.info("The ID parameter is set");
+        final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
+        log.debug("The URL to ER is: " + erUrl);
 
+        final Map<String, String> params = Collections.singletonMap("id", eventId);
+        log.trace("The ID parameter is set");
         try {
             final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
             log.trace("The response is : " + response.toString());
@@ -90,50 +90,39 @@ public class ERQueryService {
      * event information from ER2.0 based on the eventID and searchOption
      * conditions.
      *
-     * @param eventId      the id of the event.
-     * @param searchOption the SearchOption to indicate whether to search up, down or both ways from the eventId.
-     * @param limit        sets the limit of how many events up and/or down stream from the eventId to include in the
-     *                     result.
-     * @param levels       sets the limit of how many levels up and/or down stream from the eventId to include in the
-     *                     result.
-     * @param tree         whether or not to retain the tree structure in the result.
+     * @param eventId
+     *            the id of the event.
+     * @param searchOption
+     *            the SearchOption to indicate whether to search up, down or
+     *            both ways from the eventId.
+     * @param limit
+     *            sets the limit of how many events up and/or down stream from
+     *            the eventId to include in the result.
+     * @param levels
+     *            sets the limit of how many levels up and/or down stream from
+     *            the eventId to include in the result.
+     * @param tree
+     *            whether or not to retain the tree structure in the result.
      * @return ResponseEntity
-     */    
-    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, int searchAction, int limitParam,
-            int levelsParam, boolean tree) {
+     */
+    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree) {
 
-        String erUrl = url.trim() + eventId;
-        log.info("The url is : " + erUrl);
+        final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
+        log.debug("The URL to ER is: " + erUrl);
 
         // Request Body parameters
         final SearchParameters searchParameters = getSearchParameters(searchOption);
 
         // Build query parameters
-        final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl)
-                                                                 .queryParam("limit", limit)
-                                                                 .queryParam("levels", levels)
-                                                                 .queryParam("tree", tree);
+        final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limit)
+                .queryParam("levels", levels).queryParam("tree", tree);
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<JsonNode> requestEntity = new HttpEntity<>(uriParams, headers);
-        log.info("The request is : " + builder.buildAndExpand(uriParams).toUri().toString());
-
-        ResponseEntity<JsonNode> response = rest.exchange(builder.buildAndExpand(uriParams).toUri(), HttpMethod.POST,
-                requestEntity, JsonNode.class);
-        return response;
-    }
-
-    /** Generates the json object used as body for downstream/upstream
-     * query requests
-     * @param searchAction - one of DOWNSTREAM, UPSTREAM or DOWNANDUPSTREAM
-     * @return
-     */
-    public JsonNode getSearchParameters(int searchAction) {
-        JsonNode uriParams = null;
-        ObjectMapper objectmapper = new ObjectMapper();
-
-        String[] linkTypes = {"ALL"};
+        final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
+        final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
+        log.debug("The request is : " + uriComponents.toUri().toString());
 
         try {
             return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
@@ -147,25 +136,26 @@ public class ERQueryService {
     /**
      * Build the search parameters to be used to query ER.
      *
-     * @param searchOption one of UP_STREAM, DOWN_STREAM or UP_AND_DOWN_STREAM
+     * @param searchOption
+     *            one of UP_STREAM, DOWN_STREAM or UP_AND_DOWN_STREAM
      * @return the search parameters to be used
      */
     private SearchParameters getSearchParameters(SearchOption searchOption) {
         final SearchParameters searchParameters = new SearchParameters();
         final List<LinkType> allLinkTypes = Collections.singletonList(LinkType.ALL);
         switch (searchOption) {
-            case DOWN_STREAM:
-                searchParameters.setUlt(new ArrayList<>());
-                searchParameters.setDlt(allLinkTypes);
-                break;
-            case UP_STREAM:
-                searchParameters.setUlt(allLinkTypes);
-                searchParameters.setDlt(new ArrayList<>());
-                break;
-            case UP_AND_DOWN_STREAM:
-                searchParameters.setUlt(allLinkTypes);
-                searchParameters.setDlt(allLinkTypes);
-                break;
+        case DOWN_STREAM:
+            searchParameters.setUlt(new ArrayList<>());
+            searchParameters.setDlt(allLinkTypes);
+            break;
+        case UP_STREAM:
+            searchParameters.setUlt(allLinkTypes);
+            searchParameters.setDlt(new ArrayList<>());
+            break;
+        case UP_AND_DOWN_STREAM:
+            searchParameters.setUlt(allLinkTypes);
+            searchParameters.setDlt(allLinkTypes);
+            break;
         }
 
         return searchParameters;

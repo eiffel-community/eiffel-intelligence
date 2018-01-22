@@ -29,7 +29,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -69,11 +68,13 @@ public class ERQueryService {
      * @return ResponseEntity
      */
     public ResponseEntity<String> getEventDataById(String eventId) {
-        final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
-        log.debug("The URL to ER is: " + erUrl);
+        String erUrl = url.trim() + "{id}";
+        log.info("The url is : " + erUrl);
+        Map<String, String> params = new HashMap<>();
+        params.put("id", eventId);
+        ResponseEntity<String> response = null;
+        log.info("The ID parameter is set");
 
-        final Map<String, String> params = Collections.singletonMap("id", eventId);
-        log.trace("The ID parameter is set");
         try {
             final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
             log.trace("The response is : " + response.toString());
@@ -97,12 +98,12 @@ public class ERQueryService {
      *                     result.
      * @param tree         whether or not to retain the tree structure in the result.
      * @return ResponseEntity
-     */
-    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
-                                                 int levels, boolean tree) {
+     */    
+    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, int searchAction, int limitParam,
+            int levelsParam, boolean tree) {
 
-        final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
-        log.debug("The URL to ER is: " + erUrl);
+        String erUrl = url.trim() + eventId;
+        log.info("The url is : " + erUrl);
 
         // Request Body parameters
         final SearchParameters searchParameters = getSearchParameters(searchOption);
@@ -115,9 +116,24 @@ public class ERQueryService {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
-        final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
-        log.debug("The request is : " + uriComponents.toUri().toString());
+        HttpEntity<JsonNode> requestEntity = new HttpEntity<>(uriParams, headers);
+        log.info("The request is : " + builder.buildAndExpand(uriParams).toUri().toString());
+
+        ResponseEntity<JsonNode> response = rest.exchange(builder.buildAndExpand(uriParams).toUri(), HttpMethod.POST,
+                requestEntity, JsonNode.class);
+        return response;
+    }
+
+    /** Generates the json object used as body for downstream/upstream
+     * query requests
+     * @param searchAction - one of DOWNSTREAM, UPSTREAM or DOWNANDUPSTREAM
+     * @return
+     */
+    public JsonNode getSearchParameters(int searchAction) {
+        JsonNode uriParams = null;
+        ObjectMapper objectmapper = new ObjectMapper();
+
+        String[] linkTypes = {"ALL"};
 
         try {
             return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);

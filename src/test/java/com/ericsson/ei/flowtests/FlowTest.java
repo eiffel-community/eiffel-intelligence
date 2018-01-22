@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowTest extends FlowTestBase {
@@ -55,6 +54,7 @@ public class FlowTest extends FlowTestBase {
     @Before
     public void before() throws IOException {
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+        inputFilePath = "src/test/resources/AggregatedDocumentInternalComposition.json";
 
         final URL upStreamResult = this.getClass().getClassLoader().getResource(upStreamResultFile);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -62,13 +62,8 @@ public class FlowTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-
-        when(erQueryService.getEventStreamDataById(anyString(),
-                                                   any(SearchOption.class),
-                                                   anyInt(),
-                                                   anyInt(),
-                                                   anyBoolean()))
-            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
     protected ArrayList<String> getEventNamesToSend() {

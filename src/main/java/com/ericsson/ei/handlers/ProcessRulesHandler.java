@@ -52,8 +52,7 @@ public class ProcessRulesHandler {
             log.info("aggregationObject: " + aggregationObject);
             log.info("event: " + event);
             JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
-            String aggregatedObject = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
-            return aggregatedObject;
+            return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
         }
 
         return aggregationObject;

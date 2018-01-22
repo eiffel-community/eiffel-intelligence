@@ -17,6 +17,7 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class DownstreamIdRulesHandler {
     public void runIdRules(RulesObject rulesObject, String event) {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
-            ArrayList<String> objects = null;
+            List<String> objects;
             String id;
             if (idsJsonObj != null && idsJsonObj.isArray()) {
                 for (final JsonNode idJsonObj : idsJsonObj) {

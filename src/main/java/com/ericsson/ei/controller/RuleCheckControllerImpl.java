@@ -46,11 +46,12 @@ public class RuleCheckControllerImpl implements RuleCheckController {
     JmesPathInterface jmesPathInterface;
 
     /**
-     * This method interacts with JmesPathInterface class method runRuleOnEvent to
-     * evaluate a rule on JSON object.
+     * This method interacts with JmesPathInterface class method runRuleOnEvent
+     * to evaluate a rule on JSON object.
      * 
      * @param rule-
-     *            takes a String as a rule that need to be evaluated on JSON content
+     *            takes a String as a rule that need to be evaluated on JSON
+     *            content
      * @param jsonContent-
      *            takes JSON object as a String
      * @return return a String object

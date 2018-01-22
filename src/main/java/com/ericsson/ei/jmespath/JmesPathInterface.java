@@ -47,8 +47,9 @@ public class JmesPathInterface {
 
     public JsonNode runRuleOnEvent(String rule, String input) {
         JsonNode event = null;
-        if (input == null)
+        if (input == null) {
             input = "";
+        }
         Expression<JsonNode> expression = jmespath.compile(rule);
         ObjectMapper objectMapper = new ObjectMapper();
         try {

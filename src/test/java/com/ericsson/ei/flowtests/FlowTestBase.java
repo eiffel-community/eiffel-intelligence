@@ -16,32 +16,9 @@
 */
 package com.ericsson.ei.flowtests;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.qpid.server.Broker;
-import org.apache.qpid.server.BrokerOptions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
+import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,9 +29,34 @@ import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.qpid.server.Broker;
+import org.apache.qpid.server.BrokerOptions;
+import org.json.JSONException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class FlowTestBase {
 
@@ -132,8 +134,8 @@ public class FlowTestBase {
         System.setProperty("rabbitmq.port", "8672");
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "10");
-        System.setProperty("waitlist.fixedRateResend", "10");
+        System.setProperty("waitlist.initialDelayResend", "5000");
+        System.setProperty("waitlist.fixedRateResend", "1000");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         ObjectMapper objectmapper = new ObjectMapper();
@@ -144,6 +146,8 @@ public class FlowTestBase {
         cf.setUsername("guest");
         cf.setPassword("guest");
         cf.setPort(8672);
+        cf.setHandshakeTimeout(600000);
+        cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
     }
 
@@ -218,7 +222,7 @@ public class FlowTestBase {
         return eventNames;
     }
 
- // count documents that were processed
+    // count documents that were processed
     private long countProcessedEvents(String database, String collection){
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection table = db.getCollection(collection);
@@ -231,15 +235,16 @@ public class FlowTestBase {
         long processedEvents = 0;
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, event_map);
-        }
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            log.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000);
+            } catch (Exception e) {
+                log.info(e.getMessage(),e);
+            }
         }
     }
 
-    protected void checkResult() {
+    protected void checkResult() throws JSONException {
          String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
          String expectedDocument;
         try {
@@ -248,7 +253,8 @@ public class FlowTestBase {
             JsonNode expectedJson = objectmapper.readTree(expectedDocument);
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
-            assertEquals("\nExpectedJson:\n" + expectedJson.toString() + "\nActual:\n" + actualJson.toString() + "\n", expectedJson.toString().length(), actualJson.toString().length());
+            System.out.println(actualJson);
+            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), true);
         } catch (IOException e) {
             log.info(e.getMessage(),e);
         }

@@ -17,6 +17,7 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.mongodb.DBObject;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class ObjectHandler {
 
-       static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
     @Getter @Setter
     @Value("${aggregated.collection.name}")
@@ -114,7 +115,7 @@ public class ObjectHandler {
         return updateObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
-    public ArrayList<String> findObjectsByCondition(String condition) {
+    public List<String> findObjectsByCondition(String condition) {
         return mongoDbHandler.find(databaseName, collectionName, condition);
     }
 
@@ -127,30 +128,30 @@ public class ObjectHandler {
         return document;
     }
 
-    public ArrayList<String> findObjectsByIds(ArrayList<String> ids) {
-        ArrayList<String> objects = new ArrayList<String>();
+    public List<String> findObjectsByIds(List<String> ids) {
+        List<String> objects = new ArrayList<>();
         for (String id : ids) {
             objects.add(findObjectById(id));
         }
         return objects;
     }
 
-        public JsonNode prepareDocumentForInsertion(String id, String object) {
-	        ObjectMapper mapper = new ObjectMapper();
-	        try {
-	            String docStr = "{\"_id\": \"" + id + "\"}";
-	            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
-	            
-	            JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class); 
-	            ObjectNode objNode = (ObjectNode) jsonNode;  
-	            objNode.set("aggregatedObject", mapper.readTree(object));
+    public JsonNode prepareDocumentForInsertion(String id, String object) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String docStr = "{\"_id\": \"" + id + "\"}";
+            JsonNode jsonNodeNew = mapper.readValue(docStr, JsonNode.class);
 
-	            return jsonNode;
-	        } catch (Exception e) {
-	            log.info(e.getMessage(),e);
-	        }
-	        return null;
-	    }
+            JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class);
+            ObjectNode objNode = (ObjectNode) jsonNode;
+            objNode.set("aggregatedObject", mapper.readTree(object));
+
+            return jsonNode;
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+        return null;
+    }
 
     public JsonNode getAggregatedObject(String dbDocument) {
          ObjectMapper mapper = new ObjectMapper();

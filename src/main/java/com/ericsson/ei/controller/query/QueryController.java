@@ -26,11 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This class represents the REST end-points for the query service. It can take
- * both query parameters and form parameters as criterias.
+ * No description
+ * (Generated with springmvc-raml-parser v.0.10.11)
+ *
  */
 @RestController
-@RequestMapping("/ei/query")
+@RequestMapping("/freestylequery")
 public interface QueryController {
 
     /**

@@ -32,6 +32,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * This class represents the REST end-points for the query service. It can take
+ * both query parameters and form parameters as criterias.
+ */
 @Component
 @CrossOrigin
 @Api(value = "query", description = "REST end-points for the freestyle query service")

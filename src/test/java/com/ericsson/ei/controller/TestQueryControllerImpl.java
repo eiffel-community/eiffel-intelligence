@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -43,12 +42,6 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class TestQueryControllerImpl {
-
-    @Value("${aggregated.collection.name}")
-    private static String aggregationCollectionName;
-
-    @Value("${database.name}")
-    private static String dataBaseName;
 
     @Value("${missedNotificationCollectionName}")
     private static String missedNotificationCollectionName;
@@ -119,7 +112,7 @@ public class TestQueryControllerImpl {
     public void filterQueryParamTest() throws IOException, JSONException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("localhost:" + serverPort);
-        request.setRequestURI("/ei/query");
+        request.setRequestURI("/freestylequery");
         request.setQueryString("testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         String url = request.getRequestURL() + "?" + request.getQueryString();
 
@@ -139,7 +132,7 @@ public class TestQueryControllerImpl {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        assertThat(url, is("http://localhost:" + serverPort + "/ei/query?testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
+        assertThat(url, is("http://localhost:" + serverPort + "/freestylequery?testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
         assertEquals(output.toString(), json.toString());
     }
 }

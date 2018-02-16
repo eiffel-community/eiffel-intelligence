@@ -42,15 +42,15 @@ public class App extends SpringBootServletInitializer {
 		List<String> logLevels = new ArrayList<>();
 		Collections.addAll(logLevels, "ALL", "DEBUG", "ERROR", "FATAL", "INFO", "TRACE", "WARN");
 
-//		if (args != null && args.length > 0 && logLevels.contains(args[0])) {
-//			System.setProperty("logging.level.root", args[0]);
-//			System.setProperty("logging.level.org.springframework.web", args[0]);
-//			System.setProperty("logging.level.com.ericsson.ei", args[0]);
-//		} else {
-//			System.setProperty("logging.level.root", "OFF");
-//			System.setProperty("logging.level.org.springframework.web", "OFF");
-//			System.setProperty("logging.level.com.ericsson.ei", "OFF");
-//		}
+		if (args != null && args.length > 0 && logLevels.contains(args[0])) {
+			System.setProperty("logging.level.root", args[0]);
+			System.setProperty("logging.level.org.springframework.web", args[0]);
+			System.setProperty("logging.level.com.ericsson.ei", args[0]);
+		} else {
+			System.setProperty("logging.level.root", "OFF");
+			System.setProperty("logging.level.org.springframework.web", "OFF");
+			System.setProperty("logging.level.com.ericsson.ei", "OFF");
+		}
 
 		SpringApplication.run(App.class, args);
 	}

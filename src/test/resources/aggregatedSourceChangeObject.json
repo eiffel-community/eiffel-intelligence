@@ -31,12 +31,15 @@
                   "email":"jane.doe@company.com",
                   "group":"Team Wombats"
                },
+               "gitIdentifier" : null,
                "svnIdentifier":{
                   "repoName":"Mainline",
                   "repoUri":"svn://repohost/mainline",
                   "directory":"trunk",
                   "revision":42
                },
+               "ccCompositeIdentifier" : null,
+               "hgIdentifier" : null,
                "time":1234567890
             }
          ]

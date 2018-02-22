@@ -58,8 +58,10 @@ public class SubscriptionHandlerTest {
 
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
     private static String aggregatedObject;
     private static String subscriptionData;
+    private static String subscriptionRepeatFlagTrueData;
 
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
@@ -81,6 +83,7 @@ public class SubscriptionHandlerTest {
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+            subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
@@ -114,6 +117,52 @@ public class SubscriptionHandlerTest {
         boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson);
         assertEquals(output, true);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagFalseTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        Iterator<JsonNode> requirementIterator = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, false);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagTrueTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        ArrayNode requirementNode2 = null;
+        Iterator<JsonNode> requirementIterator = null;
+        Iterator<JsonNode> requirementIterator2 = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementNode2 = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+            requirementIterator2 = requirementNode2.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, true);
     }
 
     @Test

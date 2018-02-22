@@ -16,7 +16,9 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,6 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
@@ -45,6 +46,11 @@ public class RunSubscription {
     private JmesPathInterface jmespath;
 
     static Logger log = (Logger) LoggerFactory.getLogger(RunSubscription.class);
+    
+	public static volatile ConcurrentHashMap<String, HashMap<String, String>> aggrObjectMatchedHashMap = new ConcurrentHashMap<String, HashMap<String, String>>();
+//    private HashMap<String, String> aggrObjectMatchedHashMap = new HashMap<>();
+    private final String AGGR_OBJ_ID_KEY = "AggregatedObjectId";
+    private final String ID_VALUE_KEY_IN_AGGR_OBJ = "id";
 
     /**
      * This method matches every condition specified in the subscription Object
@@ -67,6 +73,30 @@ public class RunSubscription {
 
 
         while (requirementIterator.hasNext()) {
+        	
+            JsonNode aggrObjJsonNode = null;
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+            	aggrObjJsonNode = objectMapper.readValue(aggregatedObject, JsonNode.class);
+            } catch (Exception e) {
+                log.info(e.getMessage(), e);
+            }
+            
+            String aggrObjId = aggrObjJsonNode.get(ID_VALUE_KEY_IN_AGGR_OBJ).toString();
+            String subscriptionName = subscriptionJson.get("subscriptionName").toString();
+            String subscriptionRepeatFlag = subscriptionJson.get("repeat").toString();
+            
+            System.out.println("REPEAT: " + subscriptionRepeatFlag);
+            
+            if (subscriptionRepeatFlag == "false" &&
+            		aggrObjectMatchedHashMap.get(subscriptionName) != null &&
+            		aggrObjectMatchedHashMap.get(subscriptionName).get(AGGR_OBJ_ID_KEY) == aggrObjId) {
+            	log.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
+            			"\nSubscriptionName: " + subscriptionName +
+            			"\nand has Subsctrion Repeat flag set to: " + subscriptionRepeatFlag);
+            	break;
+            }
+        	
             JsonNode requirement = requirementIterator.next();
             log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
@@ -90,8 +120,14 @@ public class RunSubscription {
             }
 
             if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
-
                 conditionFulfilled = true;
+                if (subscriptionJson.get("repeat").toString() == "false") {
+                	System.out.println("Adding matched AggrObj id to hashmap.");
+                	if (aggrObjectMatchedHashMap.get(subscriptionName) == null) {
+                		aggrObjectMatchedHashMap.put(subscriptionName, new HashMap<String, String>());
+                	}
+            		aggrObjectMatchedHashMap.get(subscriptionName).put(AGGR_OBJ_ID_KEY, aggrObjId);
+                }
             }
         }
 

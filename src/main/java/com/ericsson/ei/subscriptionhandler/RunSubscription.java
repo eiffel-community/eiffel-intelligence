@@ -18,6 +18,7 @@ package com.ericsson.ei.subscriptionhandler;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -47,9 +48,15 @@ public class RunSubscription {
 
     static Logger log = (Logger) LoggerFactory.getLogger(RunSubscription.class);
     
-	public static volatile ConcurrentHashMap<String, HashMap<String, String>> aggrObjectMatchedHashMap = new ConcurrentHashMap<String, HashMap<String, String>>();
-//    private HashMap<String, String> aggrObjectMatchedHashMap = new HashMap<>();
-    private final String AGGR_OBJ_ID_KEY = "AggregatedObjectId";
+    /*
+     *   { <SubscriptionName> : {
+     *   						 <AggrObjId>: <SubscriptionReqListIndexId>,
+     *                        }                   
+     *   }
+     */
+	public static volatile ConcurrentHashMap<String, HashMap<String, Integer>> aggrObjectMatchedHashMap = new ConcurrentHashMap<String, HashMap<String, Integer>>();
+
+	private final String AGGR_OBJ_ID_KEY = "AggregatedObjectId";
     private final String ID_VALUE_KEY_IN_AGGR_OBJ = "id";
 
     /**
@@ -71,7 +78,7 @@ public class RunSubscription {
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
 
-
+        Integer requirementIndex = 0;
         while (requirementIterator.hasNext()) {
         	
             JsonNode aggrObjJsonNode = null;
@@ -82,6 +89,7 @@ public class RunSubscription {
                 log.info(e.getMessage(), e);
             }
             
+            
             String aggrObjId = aggrObjJsonNode.get(ID_VALUE_KEY_IN_AGGR_OBJ).toString();
             String subscriptionName = subscriptionJson.get("subscriptionName").toString();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").toString();
@@ -90,13 +98,14 @@ public class RunSubscription {
             
             if (subscriptionRepeatFlag == "false" &&
             		aggrObjectMatchedHashMap.get(subscriptionName) != null &&
-            		aggrObjectMatchedHashMap.get(subscriptionName).get(AGGR_OBJ_ID_KEY) == aggrObjId) {
+            		aggrObjectMatchedHashMap.get(subscriptionName).get(aggrObjId) != null &&
+            		aggrObjectMatchedHashMap.get(subscriptionName).get(aggrObjId) != requirementIndex ){
             	log.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
             			"\nSubscriptionName: " + subscriptionName +
             			"\nand has Subsctrion Repeat flag set to: " + subscriptionRepeatFlag);
             	break;
             }
-        	
+            
             JsonNode requirement = requirementIterator.next();
             log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
@@ -124,11 +133,13 @@ public class RunSubscription {
                 if (subscriptionJson.get("repeat").toString() == "false") {
                 	System.out.println("Adding matched AggrObj id to hashmap.");
                 	if (aggrObjectMatchedHashMap.get(subscriptionName) == null) {
-                		aggrObjectMatchedHashMap.put(subscriptionName, new HashMap<String, String>());
+                		aggrObjectMatchedHashMap.put(subscriptionName, new HashMap<String, Integer>());
                 	}
-            		aggrObjectMatchedHashMap.get(subscriptionName).put(AGGR_OBJ_ID_KEY, aggrObjId);
+            		aggrObjectMatchedHashMap.get(subscriptionName).put(aggrObjId, requirementIndex);
                 }
             }
+            
+            requirementIndex++;
         }
 
         log.info("The final value of conditionFulfilled is : " + conditionFulfilled);

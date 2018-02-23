@@ -14,10 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.controller.query;
+package com.ericsson.ei.controller;
 
+import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONArray;
@@ -29,8 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * This class represents the REST end-points for the query service. It can take
@@ -39,40 +39,37 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 @CrossOrigin
 @Api(value = "query", description = "REST end-points for the freestyle query service")
-public class QueryControllerImpl implements QueryController {
+public class FreeStyleQueryImpl implements FreeStyleQueryController {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(FreeStyleQueryImpl.class);
 
     @Autowired
     private ProcessQueryParams processQueryParams;
 
+    private JSONArray result = null;
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity extractQuery(@RequestBody JsonNode requestBody) {
-        JSONArray result = null;
-        LOGGER.info("requestBody : " + requestBody.toString());
+    public ResponseEntity<QueryResponse> updateFreeStyleQuery(@RequestParam(value = "query") String query) {
         try {
-            result = processQueryParams.filterFormParam(requestBody);
+            result = processQueryParams.filterFormParam(new ObjectMapper().readTree(query));
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage());
         }
-        LOGGER.info("Final Output : " + result.toString());
-        return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+        return new ResponseEntity(result.toString(), HttpStatus.OK);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity extractQueryParams(HttpServletRequest request) {
-        String url = request.getRequestURI();
-        LOGGER.info("The url is : " + url);
-        JSONArray result = null;
+    public ResponseEntity<QueryResponse> getFreeStyleQuery(@RequestParam(value = "request") final String request) {
         try {
             result = processQueryParams.filterQueryParam(request);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage());
         }
-        return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+        LOGGER.info("Final Output : " + result.toString());
+        return new ResponseEntity(result.toString(), HttpStatus.OK);
     }
 }

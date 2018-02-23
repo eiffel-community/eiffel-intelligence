@@ -13,7 +13,7 @@
 */
 package com.ericsson.ei.queryservice;
 
-import com.ericsson.ei.controller.query.QueryControllerImpl;
+import com.ericsson.ei.controller.FreeStyleQueryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -37,7 +36,7 @@ import java.io.IOException;
 @Component
 public class ProcessQueryParams {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(FreeStyleQueryImpl.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
@@ -76,17 +75,12 @@ public class ProcessQueryParams {
         JSONArray resultMissedNotification;
 
         if (options.toString().equals("{}") || options.isNull()) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria,
-                    dataBaseName, aggregationCollectionName);
-            resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria,
-                    missedNotificationDataBaseName, missedNotificationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
+            resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(
-                    new ObjectMapper().readTree(result), dataBaseName, aggregationCollectionName);
-            resultMissedNotification = processMissedNotification.processQueryMissedNotification(
-                    new ObjectMapper().readTree(result), missedNotificationDataBaseName,
-                    missedNotificationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(new ObjectMapper().readTree(result), dataBaseName, aggregationCollectionName);
+            resultMissedNotification = processMissedNotification.processQueryMissedNotification(new ObjectMapper().readTree(result), missedNotificationDataBaseName, missedNotificationCollectionName);
         }
         LOGGER.info("resultAggregatedObject : " + resultAggregatedObject.toString());
         LOGGER.info("resultMissedNotification : " + resultMissedNotification.toString());
@@ -129,20 +123,15 @@ public class ProcessQueryParams {
      * @param request
      * @return JSONArray
      */
-    public JSONArray filterQueryParam(HttpServletRequest request) {
-        String url = request.getRequestURI();
-        LOGGER.info("The URI is :" + url);
-
-        String queryString = request.getQueryString();
-        LOGGER.info("The query string is : " + queryString);
+    public JSONArray filterQueryParam(String request) {
+        LOGGER.info("The query string is : " + request);
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode criteria = mapper.createObjectNode();
-        String[] criterias = queryString.split(",");
+        String[] criterias = request.split(",");
         LOGGER.info("The query parameters are :");
 
         for (String s : criterias) {
-            LOGGER.info(s);
             String[] node = s.split(":");
             String key = node[0];
             String value = node[1];
@@ -152,10 +141,8 @@ public class ProcessQueryParams {
         }
         LOGGER.info(criteria.toString());
 
-        JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria,
-                dataBaseName, aggregationCollectionName);
-        JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(
-                criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
+        JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
+        JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
 
         LOGGER.info("resultAggregatedObject : " + resultAggregatedObject.toString());
         LOGGER.info("resultMissedNotification : " + resultMissedNotification.toString());
@@ -164,7 +151,7 @@ public class ProcessQueryParams {
         try {
             result = ProcessQueryParams.concatArray(resultAggregatedObject, resultMissedNotification);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage());
         }
         LOGGER.info("Final Result is : " + result.toString());
         return result;

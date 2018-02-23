@@ -6,7 +6,7 @@
  * written permission of the copyright owner.                          *
  *                                                                     *
  ***********************************************************************/
-package com.ericsson.ei.controller;
+package com.ericsson.ei.flowtests;
 
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;

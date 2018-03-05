@@ -29,6 +29,7 @@ import org.apache.qpid.server.BrokerOptions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -141,6 +142,8 @@ public class TestWaitListWorker {
         cf.setUsername("guest");
         cf.setPassword("guest");
         cf.setPort(8672);
+        cf.setHandshakeTimeout(60000);
+        cf.setConnectionTimeout(60000);
         conn = cf.newConnection();
 
     }

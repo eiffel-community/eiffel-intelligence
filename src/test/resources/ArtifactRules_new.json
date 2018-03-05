@@ -13,7 +13,8 @@
     "DownstreamExtractionRules" : "{artifacts: [{id : meta.id}]}",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='COMPOSITION'].target",
-    "HistoryExtractionRules":"{artifacts: [{id : meta.id}]}",
+    "HistoryExtractionRules":"{internalComposition:{artifacts: [{id : meta.id}]}}",
+    "HistoryPathRules": "{artifacts: {id: meta.id}}",
     "ProcessRules" : null,
     "ProcessFunction" : null
   },
@@ -48,20 +49,20 @@
     "ProcessFunction" : null
   },
   {
-      "TemplateName":"ARTIFACT_1",
-      "Type":"EiffelTestCaseTriggeredEvent",
-      "TypeRule": "meta.type",
-      "IdRule": "meta.id",
-      "StartEvent": "NO",
-      "IdentifyRules" : "links | [?type=='IUT'].target",
-      "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-      "ExtractionRules" : "{testCaseExecutions :[{ testCaseTrigeredEventId:meta.id, testCaseTrigeredTime:meta.time, testCase:data.testCase}]}",
-      "ArrayOptions": "",
-      "HistoryIdentifyRules": "",
-      "HistoryExtractionRules": "",
-      "ProcessRules":null,
-      "ProcessFunction" : null
-    },
+    "TemplateName":"ARTIFACT_1",
+    "Type":"EiffelTestCaseTriggeredEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules" : "links | [?type=='IUT'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "{testCaseExecutions :[{ testCaseTrigeredEventId:meta.id, testCaseTrigeredTime:meta.time, testCase:data.testCase}]}",
+    "ArrayOptions": "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "",
+    "ProcessRules":null,
+    "ProcessFunction" : null
+  },
   {
     "TemplateName":"ARTIFACT_1",
     "Type":"EiffelTestCaseStartedEvent",
@@ -107,6 +108,8 @@
     "DownstreamIdentifyRules":"links | [?type=='ELEMENT'].target",
     "DownstreamExtractionRules": "{externalComposition: {eventId: meta.id, time:meta.time, name:data.name}}",
     "DownstreamMergeRules": "{\"eventId\":%IdentifyRules%}",
+    "HistoryExtractionRules": "{eventId: meta.id, time: meta.time,  name: data.name}",
+    "HistoryPathRules": "{internalComposition:{compositions: [{eventId: meta.id}]}}",
     "ProcessRules":null,
     "ProcessFunction" : null
   },
@@ -121,7 +124,8 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "{internalComposition: {sourceChanges :[{ author:data.author, issues:data.issues}]}}",
+    "HistoryExtractionRules": "{SCCEventId: meta.id, author:data.author, issues:data.issues}",
+    "HistoryPathRules": "{sourceCreations: [{SCCEventId: meta.id}]}",
     "ProcessRules":null,
     "ProcessFunction" : null
   },
@@ -136,7 +140,8 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
-    "HistoryExtractionRules": "{internalComposition: {sourceChanges :[{svnIdentifier:data.svnIdentifier, submitter:data.submitter}]}}",
+    "HistoryExtractionRules": "{SCSEventId: meta.id,svnIdentifier:data.svnIdentifier, submitter:data.submitter}",
+    "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
     "ProcessRules":null,
     "ProcessFunction" : null
   }

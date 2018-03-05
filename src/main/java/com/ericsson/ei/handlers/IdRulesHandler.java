@@ -16,17 +16,16 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.util.ArrayList;
-
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 
 
 @Component
@@ -53,16 +52,13 @@ public class IdRulesHandler {
     public void runIdRules(RulesObject rulesObject, String event) {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
-            ArrayList<String> objects = null;
-            String id;
             if (idsJsonObj != null && idsJsonObj.isArray()) {
                 for (final JsonNode idJsonObj : idsJsonObj) {
-                    id = idJsonObj.textValue();
-                    objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                    for (String object : objects) {
-                        extractionHandler.runExtraction(rulesObject, id, event, object);
-                    }
-                    if (objects.size() == 0) {
+                    final String id = idJsonObj.textValue();
+                    final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
+                    aggregatedObjects.forEach(
+                        aggregatedObject -> extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject));
+                    if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
                             extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
                         } else {

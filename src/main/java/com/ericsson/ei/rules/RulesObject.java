@@ -17,6 +17,7 @@
 package com.ericsson.ei.rules;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 public class RulesObject {
     private JsonNode rulesObject;
@@ -69,6 +70,14 @@ public class RulesObject {
         return getTextValue("DownstreamMergeRules");
     }
 
+    public String getHistoryExtractionRules() {
+        return rulesObject.get("HistoryExtractionRules").textValue();
+    }
+
+    public String getHistoryPathRules() {
+        return getTextValue("HistoryPathRules");
+    }
+
     public String fetchProcessRules() {
         return getTextValue("ProcessRules");
     }
@@ -84,7 +93,7 @@ public class RulesObject {
         JsonNode jsonNode = rulesObject.get(fieldName);
         if (jsonNode != null)
             return jsonNode.toString();
-        return null;
+        return "";
    }
 
     public boolean equals(Object other) {
@@ -96,7 +105,15 @@ public class RulesObject {
     }
 
     public boolean isStartEventRules() {
-        String value = rulesObject.get("StartEvent").textValue().toLowerCase();
-        return value.equals("yes");
+        return hasStringProperty("StartEvent", "yes");
+    }
+
+    public boolean isNeedHistoryRule() {
+        return hasStringProperty("NeedHistoryRule", "yes");
+    }
+
+    private boolean hasStringProperty(final String key, final String value) {
+        final JsonNode node = rulesObject.get(key);
+        return node != null && !(node instanceof NullNode) && node.asText().equalsIgnoreCase(value);
     }
 }

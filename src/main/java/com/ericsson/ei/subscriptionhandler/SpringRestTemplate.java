@@ -19,9 +19,10 @@ package com.ericsson.ei.subscriptionhandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,6 +60,36 @@ public class SpringRestTemplate {
         try {
             aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
             response = rest.postForEntity(notificationMeta, aggregatedJson, JsonNode.class);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return HttpStatus.NOT_FOUND.value();
+        }
+        HttpStatus status = response.getStatusCode();
+        log.info("The response code after POST is : " + status);
+        if (status == HttpStatus.OK) {
+            JsonNode restCall = response.getBody();
+            log.info("The response Body is : " + restCall);
+        }
+        return response.getStatusCode().value();
+
+    }
+
+    /**
+     * This method is responsible to notify the subscriber through REST POST With multivalues.
+     * MediaType.APPLICATION_FORM_URLENCODED
+     *
+     * @param notificationMeta
+     * @param map
+     * @return integer
+     */
+    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> map) {
+        JsonNode aggregatedJson = null;
+        ResponseEntity<JsonNode> response = null;
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+            response = rest.postForEntity( notificationMeta, request , JsonNode.class );
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return HttpStatus.NOT_FOUND.value();

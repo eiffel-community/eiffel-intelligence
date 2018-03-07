@@ -60,8 +60,8 @@ public class ProcessAggregatedObject {
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
-        String condition = "{\"id\" : \"" + id + "\"}";
-        LOGGER.info("The condition is : " + condition);
+        String condition = "{\"_id\" : \"" + id + "\"}";
+        log.info("The condition is : " + condition);
         JsonNode jsonCondition = null;
         try {
             jsonCondition = mapper.readTree(condition);

@@ -7,7 +7,7 @@
     "IdRule": "meta.id",
     "IdentifyRules": "links | [?type=='CHANGE'].target",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules": "{id : meta.id, submission: {sourceChanges :[{eventId : meta.id, time : meta.time, svnIdentifier:data.svnIdentifier, submitter:data.submitter}]}}",
+    "ExtractionRules": "{id : meta.id, submission: {sourceChanges :[{eventId : meta.id, time : meta.time, gitIdentifier:data.gitIdentifier, svnIdentifier: data.svnIdentifier, ccCompositeIdentifier:data.ccCompositeIdentifier, hgIdentifier: data.hgIdentifier, submitter:data.submitter}]}}",
     "MergeResolverRules": null,
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",

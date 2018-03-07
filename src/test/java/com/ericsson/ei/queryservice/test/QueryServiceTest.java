@@ -22,7 +22,10 @@ import java.util.Iterator;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.bson.BsonDocument;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.conversions.Bson;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +37,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
@@ -63,6 +67,9 @@ public class QueryServiceTest {
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
+    
+    @Autowired
+    ObjectHandler objectHandler;
 
     @Autowired
     private ProcessMissedNotification processMissedNotification;
@@ -103,11 +110,16 @@ public class QueryServiceTest {
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
         System.out.println("Database connected");
+        //deleting all documents before inserting
+        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName).deleteMany(new BsonDocument());
         Document missedDocument = Document.parse(missedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
         mongoClient.getDatabase(missedNotificationDataBaseName).getCollection(missedNotificationCollectionName)
                 .insertOne(missedDocument);
         System.out.println("Document Inserted in missed Notification Database");
+        
+        JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"), aggregatedObject);
+        aggDocument = Document.parse(preparedAggDocument.toString());
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
                 .insertOne(aggDocument);
         System.out.println("Document Inserted in Aggregated Object Database");
@@ -158,7 +170,7 @@ public class QueryServiceTest {
             log.error(e.getMessage(), e);
         }
         log.info("The result is : " + record.toString());
-        assertEquals(record.toString(), actual.toString());
+        assertEquals(record.get("aggregatedObject").toString(), actual.toString());
     }
 
 }

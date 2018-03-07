@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 
@@ -83,7 +82,6 @@ public class RunSubscription {
                 log.info("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
                 log.info("Result : " + result.toString());
-                int test = result.toString().length();
                 if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")){
                     count_condition_fulfillment++;
                 }

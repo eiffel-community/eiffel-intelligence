@@ -14,6 +14,7 @@
 package com.ericsson.ei.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class MissedNotificationControllerImpl implements MissedNotificationContr
      */
     public ResponseEntity<QueryResponse> getQueryMissedNotifications(
             @RequestParam("SubscriptionName") final String subscriptionName) {
-        ArrayList response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+        List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
         log.info("The response is : " + response.toString());
         return new ResponseEntity(response.toString(), HttpStatus.OK);
     }

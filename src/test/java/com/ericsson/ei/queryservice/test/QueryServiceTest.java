@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -132,7 +133,7 @@ public class QueryServiceTest {
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         log.info("The inserted doc is : " + response);
-        ArrayList<String> result = processMissedNotification.processQueryMissedNotification("Subscription_1");
+        List<String> result = processMissedNotification.processQueryMissedNotification("Subscription_1");
         log.info("The retrieved data is : " + result.toString());
         ObjectNode record = null;
         JsonNode actual = null;

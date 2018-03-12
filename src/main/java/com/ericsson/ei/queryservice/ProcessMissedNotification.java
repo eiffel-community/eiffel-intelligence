@@ -32,7 +32,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -59,7 +60,7 @@ public class ProcessMissedNotification {
      * @param subscriptionName
      * @return ArrayList
      */
-    public ArrayList processQueryMissedNotification(String subscriptionName) {
+    public List<String> processQueryMissedNotification(String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
         LOGGER.info("The condition is : " + condition);
@@ -72,20 +73,15 @@ public class ProcessMissedNotification {
         LOGGER.info("The Json condition is : " + jsonCondition);
         ArrayList<String> output = handler.find(missedNotificationDataBaseName, missedNotificationCollectionName,
                 jsonCondition.toString());
-        ArrayList<String> response = new ArrayList<String>();
-        Iterator itr = output.iterator();
-        while (itr.hasNext()) {
-            String sElement = (String) itr.next();
+        return output.stream().map(a -> {
             try {
-                JsonNode jElement = mapper.readTree(sElement);
-                LOGGER.info("The individual element is : " + jElement.toString());
-                JsonNode element = jElement.path("AggregatedObject");
-                response.add(element.toString());
+                return mapper.readTree(a).path("AggregatedObject").toString();
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
-        }
-        return response;
+            return null;
+        }).collect(Collectors.toList());
+
     }
 
     /**
@@ -123,4 +119,5 @@ public class ProcessMissedNotification {
         LOGGER.debug("The Aggregated Database is : " + missedNotificationDataBaseName);
         LOGGER.debug("The Aggregated Collection is : " + missedNotificationCollectionName);
     }
+
 }

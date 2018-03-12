@@ -19,8 +19,9 @@ package com.ericsson.ei.controller;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.*;
-import com.mongodb.util.JSON;
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import org.apache.qpid.util.FileUtils;
 import org.bson.Document;
 import org.jongo.Jongo;
@@ -67,11 +68,11 @@ public class TestFreeStyleQueryImpl {
     public void setUp() {
         input = FileUtils.readFileAsString(new File(inputPath));
         try (MongoClient mongoClient = new MongoClient()) {
-            DB db = mongoClient.getDB(DB_NAME);
-            DBCollection table = db.getCollection(DB_COLLECTION);
-            DBObject dbObjectInput = (DBObject) JSON.parse(input);
-            WriteResult result = table.insert(dbObjectInput);
-            if (result.wasAcknowledged()) {
+            MongoDatabase db = mongoClient.getDatabase(DB_NAME);
+            com.mongodb.client.MongoCollection<Document> collection = db.getCollection(DB_COLLECTION);
+            final Document dbObjectInput = Document.parse(input);
+            collection.insertOne(dbObjectInput);
+            if (collection.count() != 0) {
                 System.out.println("Data Inserted successfully in both the Collections");
             }
         } catch (Exception e) {

@@ -31,7 +31,7 @@ public class Subscription {
     @JsonProperty("aggregationtype")
     private String aggregationtype;
     @JsonProperty("created")
-    private String created;
+    private Object created;
     @JsonProperty("notificationMessage")
     private String notificationMessage;
     @JsonProperty("notificationMeta")
@@ -58,12 +58,12 @@ public class Subscription {
     }
 
     @JsonProperty("created")
-    public String getCreated() {
+    public Object getCreated() {
         return created;
     }
 
     @JsonProperty("created")
-    public void setCreated(String created) {
+    public void setCreated(Object created) {
         this.created = created;
     }
 

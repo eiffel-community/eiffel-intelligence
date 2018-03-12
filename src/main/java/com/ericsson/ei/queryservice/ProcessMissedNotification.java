@@ -14,7 +14,8 @@
 package com.ericsson.ei.queryservice;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -54,7 +55,7 @@ public class ProcessMissedNotification {
      * @param subscriptionName
      * @return ArrayList
      */
-    public ArrayList processQueryMissedNotification(String subscriptionName) {
+    public List<String> processQueryMissedNotification(String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
         log.info("The condition is : " + condition);
@@ -67,20 +68,15 @@ public class ProcessMissedNotification {
         log.info("The Json condition is : " + jsonCondition);
         ArrayList<String> output = handler.find(missedNotificationDataBaseName, missedNotificationCollectionName,
                 jsonCondition.toString());
-        ArrayList<String> response = new ArrayList<String>();
-        Iterator itr = output.iterator();
-        while (itr.hasNext()) {
-            String sElement = (String) itr.next();
+        return output.stream().map(a -> {
             try {
-                JsonNode jElement = mapper.readTree(sElement);
-                log.info("The individual element is : " + jElement.toString());
-                JsonNode element = jElement.path("AggregatedObject");
-                response.add(element.toString());
+                return mapper.readTree(a).path("AggregatedObject").toString();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
-        }
-        return response;
+            return null;
+        }).collect(Collectors.toList());
+
     }
 
     @PostConstruct

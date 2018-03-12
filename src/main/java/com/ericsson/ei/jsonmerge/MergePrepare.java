@@ -137,7 +137,7 @@ public class MergePrepare {
                 if (!firstPath.isEmpty()) {
                     String firstPathNoIndexes = StringUtils.removePattern(firstPath, "(\\.0|\\.[1-9][0-9]*)");
                     String[] firstPathSubstrings = firstPathNoIndexes.split("\\.");
-                    ArrayList<String> fp = new ArrayList(Arrays.asList(firstPathSubstrings));
+                    ArrayList<String> fp = new ArrayList<String>(Arrays.asList(firstPathSubstrings));
                     fp.remove(fp.size() - 1);
                     firstPathTrimmed = StringUtils.join(fp, ":{");
                     String secondRuleComplete = "{" + firstPathTrimmed + ":" + secondRule + "}";
@@ -167,7 +167,7 @@ public class MergePrepare {
 
     public String trimLastInPath(String path, String delimiter) {
         String[] firstPathSubstrings = path.split("\\.");
-        ArrayList<String> fp = new ArrayList(Arrays.asList(firstPathSubstrings));
+        ArrayList<String> fp = new ArrayList<String>(Arrays.asList(firstPathSubstrings));
         fp.remove(fp.size() - 1);
         return StringUtils.join(fp, delimiter);
     }

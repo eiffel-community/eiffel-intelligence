@@ -100,7 +100,7 @@ public class HistoryExtractionHandler {
     private String getRulePath(String stringRule) {
         String flattenRule = JsonFlattener.flatten(stringRule);
         String[] rulePair = flattenRule.split(":");
-        String ruleKey = mergePrepare.destringify(rulePair[0]);
+        String ruleKey = MergePrepare.destringify(rulePair[0]);
         return ruleKey;
     }
 

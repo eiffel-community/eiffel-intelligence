@@ -17,6 +17,7 @@
 package com.ericsson.ei.rules;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
@@ -47,7 +48,7 @@ public class RulesHandler {
             try {
                 InputStream in = this.getClass().getResourceAsStream(jsonFilePath);
                 if(in == null) {
-                    jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+                    jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), Charset.defaultCharset());
                 } else {
                     jsonFileContent = getContent(in);
                 }
@@ -62,7 +63,7 @@ public class RulesHandler {
     public void setRulePath(String path) {
         this.jsonFilePath = path;
         try {
-            this.jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
+            RulesHandler.jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), Charset.defaultCharset());
             ObjectMapper objectmapper = new ObjectMapper();
             parsedJason = objectmapper.readTree(jsonFileContent);
         } catch (IOException e) {

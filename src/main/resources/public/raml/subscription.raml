@@ -13,13 +13,13 @@
       description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique. 
       body:
         application/json:
-          schema: subscription  
+          schema: subscriptionList
 
     put:      
       description: Modify an existing Subscription. 
       body:
         application/json:
-          schema: subscription
+          schema: subscriptionList
       responses:
         200:        
           body:

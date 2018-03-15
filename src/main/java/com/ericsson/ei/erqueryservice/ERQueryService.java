@@ -17,11 +17,7 @@
 */
 package com.ericsson.ei.erqueryservice;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,30 +29,26 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.annotation.PostConstruct;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author evasiba
- *
  */
 @Component
 public class ERQueryService {
 
     static Logger log = (Logger) LoggerFactory.getLogger(ERQueryService.class);
-
     private RestOperations rest;
-
-    public final static int DOWNSTREAM = 0;
-    public final static int UPSTREAM = 1;
-    public final static int DOWNANDUPSTREAM = 2;
-
     @Getter
     @Value("${er.url}")
     private String url;
@@ -74,102 +66,104 @@ public class ERQueryService {
      * eventID.
      *
      * @param eventId
+     *            the id of the event.
      * @return ResponseEntity
      */
-    public ResponseEntity getEventDataById(String eventId) {
-        String erUrl = url.trim() + "{id}";
-        log.info("The url is : " + erUrl);
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", eventId);
-        ResponseEntity<String> response = null;
-        log.info("The ID parameter is set");
+    public ResponseEntity<String> getEventDataById(String eventId) {
+        final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
+        log.debug("The URL to ER is: " + erUrl);
+
+        final Map<String, String> params = Collections.singletonMap("id", eventId);
+        log.trace("The ID parameter is set");
         try {
-            response = rest.getForEntity(erUrl, String.class, params);
-            log.info("The response is : " + response.toString());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
+            log.trace("The response is : " + response.toString());
+        } catch (RestClientException e) {
+            log.error("Error occurred while executing REST GET to: " + erUrl + " for " + eventId, e);
         }
-        return response;
+
+        return null;
     }
 
     /**
      * This method is used to fetch only the upstream or downstream or both
-     * event information from ER2.0 based on the eventID and searchAction
+     * event information from ER2.0 based on the eventID and searchOption
      * conditions.
      *
      * @param eventId
-     * @param searchAction
-     * @param limitParam
-     * @param levelsParam
+     *            the id of the event.
+     * @param searchOption
+     *            the SearchOption to indicate whether to search up, down or
+     *            both ways from the eventId.
+     * @param limit
+     *            sets the limit of how many events up and/or down stream from
+     *            the eventId to include in the result.
+     * @param levels
+     *            sets the limit of how many levels up and/or down stream from
+     *            the eventId to include in the result.
      * @param tree
+     *            whether or not to retain the tree structure in the result.
      * @return ResponseEntity
      */
+    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree) {
 
-    public ResponseEntity getEventStreamDataById(String eventId, int searchAction, int limitParam,
-            int levelsParam, boolean tree) {
-
-        String erUrl = url.trim() + eventId;
-        log.info("The url is : " + erUrl);
+        final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
+        log.debug("The URL to ER is: " + erUrl);
 
         // Request Body parameters
-        JsonNode uriParams = getSearchParameters(searchAction);
+        final SearchParameters searchParameters = getSearchParameters(searchOption);
 
-        // Add query parameter
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limitParam)
-                .queryParam("levels", levelsParam).queryParam("tree", tree);
-
-        HttpHeaders headers = new HttpHeaders();
+        // Build query parameters
+        final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limit)
+                .queryParam("levels", levels).queryParam("tree", tree);
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity(uriParams, headers);
-        log.info("The request is : " + builder.buildAndExpand(uriParams).toUri().toString());
-
-        ResponseEntity response = rest.exchange(builder.buildAndExpand(uriParams).toUri(), HttpMethod.POST,
-                requestEntity, JsonNode.class);
-        return response;
-    }
-
-    /** Generates the json object used as body for downstream/upstream
-     * query requests
-     * @param searchAction - one of DOWNSTREAM, UPSTREAM or DOWNANDUPSTREAM
-     * @return
-     */
-    public JsonNode getSearchParameters(int searchAction) {
-        JsonNode uriParams = null;
-        ObjectMapper objectmapper = new ObjectMapper();
-
-        String[] linkTypes = {"ALL"};
+        final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
+        final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
+        log.debug("The request is : " + uriComponents.toUri().toString());
 
         try {
-            uriParams = objectmapper.readTree("{}");
-            if (searchAction == DOWNSTREAM) {
-                putSearchParameter(uriParams, "dlt", linkTypes);
-            } else if (searchAction == UPSTREAM) {
-                putSearchParameter(uriParams, "ult", linkTypes);
-            } else if (searchAction == DOWNANDUPSTREAM) {
-                putSearchParameter(uriParams, "dlt", linkTypes);
-                putSearchParameter(uriParams, "ult", linkTypes);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
+        } catch (RestClientException e) {
+            log.error("Error occurred while executing REST POST to: " + erUrl + " for\n" + requestEntity, e);
         }
-        return uriParams;
+
+        return null;
     }
 
-    /** Create an array node with link types for upstream or downstream query
-     * @param params
-     * @param actionString
-     * @param linkTypes
+    /**
+     * Build the search parameters to be used to query ER.
+     *
+     * @param searchOption
+     *            one of UP_STREAM, DOWN_STREAM or UP_AND_DOWN_STREAM
+     * @return the search parameters to be used
      */
-    public void putSearchParameter(JsonNode params, String actionString, String[] linkTypes) {
-        ArrayNode node =((ObjectNode) params).putArray(actionString);
-        for (String string : linkTypes) {
-            node.add(string);
+    private SearchParameters getSearchParameters(SearchOption searchOption) {
+        final SearchParameters searchParameters = new SearchParameters();
+        final List<LinkType> allLinkTypes = Collections.singletonList(LinkType.ALL);
+        switch (searchOption) {
+        case DOWN_STREAM:
+            searchParameters.setUlt(new ArrayList<>());
+            searchParameters.setDlt(allLinkTypes);
+            break;
+        case UP_STREAM:
+            searchParameters.setUlt(allLinkTypes);
+            searchParameters.setDlt(new ArrayList<>());
+            break;
+        case UP_AND_DOWN_STREAM:
+            searchParameters.setUlt(allLinkTypes);
+            searchParameters.setDlt(allLinkTypes);
+            break;
         }
+
+        return searchParameters;
     }
 
     @PostConstruct
     public void init() {
+        // TODO: is this needed?
         log.debug("The url parameter is : " + url);
     }
 }

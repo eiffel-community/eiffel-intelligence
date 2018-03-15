@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,97 +44,107 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin
 @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
 public class SubscriptionControllerImpl implements SubscriptionController {
-    
+
     @Autowired
     private ISubscriptionService subscriptionService;
-    
+
     private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
-    
-    
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
-    public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody Subscription subscription) {
+    public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody List<Subscription> subscriptions) {
+        ResponseEntity<SubscriptionResponse> subResponse = null;
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+        for (Subscription subscription :  subscriptions){
+            subResponse = null;
+            try {
+                subscription.setCreated(Instant.now().toEpochMilli());
+                subscriptionValidator.validateSubscription(subscription);
+            } catch (SubscriptionValidationException e) {
+                String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName()
+                        + " failed! Error: " + e.getMessage();
+                LOG.error(msg);
+                subscriptionResponse.setMsg(msg);
+                subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
+                subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
+            }
 
-        try {
-            subscriptionValidator.validateSubscription(subscription);
+            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
+                subscriptionService.addSubscription(subscription);
+                LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
+                subscriptionResponse.setMsg("Inserted Successfully");
+                subscriptionResponse.setStatusCode(HttpStatus.OK.value());
+                subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
+
+            } else {
+                LOG.error("Subscription :" + subscription.getSubscriptionName() + " already exists");
+                subscriptionResponse.setMsg("Subscription already exists");
+                subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+                subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
+            }
         }
-        catch (SubscriptionValidationException e) {
-            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName() +
-            		" failed! Error: " + e.getMessage();
-        	LOG.error(msg);
-        	subscriptionResponse.setMsg(msg); subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-        	return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
-        }
-        
-        if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
-            subscriptionService.addSubscription(subscription);
-            LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
-            subscriptionResponse.setMsg("Inserted Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
-            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
-        } else {
-            LOG.error("Subscription :" + subscription.getSubscriptionName() + " already exists");
-            subscriptionResponse.setMsg("Subscription already exists"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
-        }
-        
+        return subResponse;
     }
-    
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
     public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
-    	List<Subscription> subscriptionList = new ArrayList<Subscription>();
+        List<Subscription> subscriptionList = new ArrayList<Subscription>();
         try {
             LOG.info("Subscription :" + subscriptionName + " fetch started");
             subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
             LOG.info("Subscription :" + subscriptionName + " fetched");
-            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
+            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<List<Subscription>> (subscriptionList, HttpStatus.OK);
-            
+            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
+
         }
-        
+
     }
-    
+
     @Override
 
-    //@CrossOrigin
+    // @CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody Subscription subscription) {
-    	String subscriptionName = subscription.getSubscriptionName();
+    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+        Subscription subscription = subscriptions.get(0);
+        String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
 
         try {
+            subscription.setCreated(Instant.now().toEpochMilli());
             subscriptionValidator.validateSubscription(subscription);
+        } catch (SubscriptionValidationException e) {
+            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName()
+                    + " failed! Error: " + e.getMessage();
+            LOG.error(msg);
+            subscriptionResponse.setMsg(msg);
+            subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
+            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
         }
-        catch (SubscriptionValidationException e) {
-            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName() +
-            		" failed! Error: " + e.getMessage();
-        	LOG.error(msg);
-        	subscriptionResponse.setMsg(msg); subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-        	return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
-        }
-        
+
         if (subscriptionService.doSubscriptionExist(subscriptionName)) {
             subscriptionService.modifySubscription(subscription, subscriptionName);
             LOG.info("Subscription :" + subscriptionName + " update completed");
-            subscriptionResponse.setMsg("Updated Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
+            subscriptionResponse.setMsg("Updated Successfully");
+            subscriptionResponse.setStatusCode(HttpStatus.OK.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
-            
+
         } else {
             LOG.error("Subscription :" + subscription.getSubscriptionName() + " can't be found.");
-            subscriptionResponse.setMsg("Subscription can't be found"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            subscriptionResponse.setMsg("Subscription can't be found");
+            subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
-        
+
     }
-    
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")
@@ -142,16 +153,18 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         LOG.info("Subscription :" + subscriptionName + " delete started");
         if (subscriptionService.deleteSubscription(subscriptionName)) {
             LOG.info("Subscription :" + subscriptionName + " deleted Successfully");
-            subscriptionResponse.setMsg("Deleted Successfully"); subscriptionResponse.setStatusCode(HttpStatus.OK.value());
+            subscriptionResponse.setMsg("Deleted Successfully");
+            subscriptionResponse.setStatusCode(HttpStatus.OK.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
         } else {
             LOG.info("Subscription :" + subscriptionName + " delete completed :: Record not found for delete");
-            subscriptionResponse.setMsg("Record not found for delete"); subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            subscriptionResponse.setMsg("Record not found for delete");
+            subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
-        
+
     }
-    
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieve all the subscriptions")

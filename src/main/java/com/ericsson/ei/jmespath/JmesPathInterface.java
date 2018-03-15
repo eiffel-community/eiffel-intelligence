@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package com.ericsson.ei.jmespath;
 
 import org.slf4j.Logger;
@@ -28,6 +28,10 @@ import io.burt.jmespath.JmesPath;
 import io.burt.jmespath.function.FunctionRegistry;
 import io.burt.jmespath.jackson.JacksonRuntime;
 
+/**
+ * Expose JMESPath functionality
+ * 
+ */
 @Component
 public class JmesPathInterface {
 
@@ -41,11 +45,11 @@ public class JmesPathInterface {
         jmespath = new JacksonRuntime(customFunctions);
     }
 
-
     public JsonNode runRuleOnEvent(String rule, String input) {
         JsonNode event = null;
-        if (input == null)
+        if (input == null) {
             input = "";
+        }
         Expression<JsonNode> expression = jmespath.compile(rule);
         ObjectMapper objectMapper = new ObjectMapper();
         try {

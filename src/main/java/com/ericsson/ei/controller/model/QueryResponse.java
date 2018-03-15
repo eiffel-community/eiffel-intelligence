@@ -3,20 +3,20 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "responseEntity" })
+@JsonPropertyOrder({
+    "responseEntity"
+})
 public class QueryResponse {
 
     @JsonProperty("responseEntity")
@@ -24,20 +24,11 @@ public class QueryResponse {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return The responseEntity
-     */
     @JsonProperty("responseEntity")
     public String getResponseEntity() {
         return responseEntity;
     }
 
-    /**
-     * 
-     * @param responseEntity
-     *            The responseEntity
-     */
     @JsonProperty("responseEntity")
     public void setResponseEntity(String responseEntity) {
         this.responseEntity = responseEntity;
@@ -72,8 +63,7 @@ public class QueryResponse {
             return false;
         }
         QueryResponse rhs = ((QueryResponse) other);
-        return new EqualsBuilder().append(responseEntity, rhs.responseEntity)
-                .append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(responseEntity, rhs.responseEntity).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

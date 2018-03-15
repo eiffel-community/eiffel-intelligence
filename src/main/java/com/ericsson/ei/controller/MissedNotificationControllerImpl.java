@@ -14,6 +14,7 @@
 package com.ericsson.ei.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +43,15 @@ public class MissedNotificationControllerImpl implements MissedNotificationContr
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST GET mechanism to extract the data
-     * on the basis of the SubscriptionName from the Missed Notification Object.
+     * This method is responsible for the REST GET mechanism to extract the data on
+     * the basis of the SubscriptionName from the Missed Notification Object.
      * 
      * @param subscriptionName
      * @return ResponseEntity
      */
     public ResponseEntity<QueryResponse> getQueryMissedNotifications(
             @RequestParam("SubscriptionName") final String subscriptionName) {
-        ArrayList response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+        List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
         log.info("The response is : " + response.toString());
         return new ResponseEntity(response.toString(), HttpStatus.OK);
     }

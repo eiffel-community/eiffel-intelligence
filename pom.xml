@@ -1,9 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ericsson.ei</groupId>
+    <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.4</version>
+    
+    <packaging>war</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -47,6 +49,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+    		<exclusion>
+        		<groupId>org.springframework.boot</groupId>
+        		<artifactId>spring-boot-starter-tomcat</artifactId>
+    		</exclusion>
+    		</exclusions>
         </dependency>
 
         <dependency>
@@ -68,6 +76,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        
+         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -178,7 +192,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+            
             <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
@@ -210,8 +224,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
+            </plugin>      
+            
             <!-- required for adding generated sources -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -230,13 +244,15 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
+            </plugin>    
+           
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
                 <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>${someModule.test.excludes}</exclude>
                     </excludes>
@@ -245,6 +261,14 @@
                     </includes>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-war-plugin</artifactId>
+                  <configuration>
+                      <failOnMissingWebXml>false</failOnMissingWebXml>
+                  </configuration>
+             </plugin>
 
         </plugins>
     </build>

@@ -1,0 +1,105 @@
+{
+    "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+    "aggregatedObject": {
+        "TemplateName": "ARTIFACT_1",
+        "fileInformation": [
+            {
+                "extension": "jar",
+                "classifier": ""
+            }
+        ],
+        "buildCommand": null,
+        "confidenceLevels": [
+            {
+                "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+                "name": "readyForDelivery",
+                "time": 1481875944272,
+                "value": "SUCCESS"
+            }
+        ],
+        "internalComposition":{
+         "compositions":[
+            {
+               "eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+               "sourceChanges":[
+                  {
+                     "submitter":{
+                        "name":"Jane Doe",
+                        "email":"jane.doe@company.com"
+                     },
+                     "SCSEventId":"3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                     "svnIdentifier":null,
+                     "sourceCreations":[
+                        {
+                           "SCCEventId":"ac085e24-ac4c-41be-912d-08c7afd32285",
+                           "author":{
+                              "name":"John Doe",
+                              "id":"johndoe",
+                              "email":"john.doe@company.com",
+                              "group":"Team Gophers"
+                           },
+                           "issues":[
+
+                           ]
+                        },
+                        {
+                           "SCCEventId":"552ad6a4-c522-47e2-9195-0481930979e4",
+                           "author":null,
+                           "issues":[
+                              {
+                                 "tracker":"JIRA",
+                                 "id":"JIRA-1234",
+                                 "type":"BUG",
+                                 "uri":"http://jira.company.com/browse/JIRA-1234",
+                                 "transition":"RESOLVED"
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               ],
+               "name":"My composition",
+               "time":2000
+            }
+         ]
+      },
+        "testCaseExecutions": [
+            {
+                "testCaseTrigeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
+                "testCaseTrigeredTime": 1490777327230,
+                "testCaseFinishEventId": "11109351-41e0-474a-bc1c-f6e81e58a1c9",
+                "testCaseStartedTime": 1481875925916,
+                "testCaseStartedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
+                "testCaseFinishedTime": 1481875935919,
+                "testCaseDuration": 10003,
+                "testCase": {
+                    "conclusion": "SUCCESSFUL",
+                    "verdict": "PASSED",
+                    "tracker": "My Other Test Management System",
+                    "id": "TC5",
+                    "uri": "https://other-tm.company.com/testCase/TC5"
+                }
+            }
+        ],
+        "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+        "time": 1481875891763,
+        "type": "EiffelArtifactCreatedEvent",
+        "gav": {
+            "groupId": "com.mycompany.myproduct",
+            "artifactId": "sub-system",
+            "version": "1.1.0"
+        },
+        "publications": [
+            {
+                "eventId": "33d05e6f-9bd9-4138-83b6-e20cc74680a3",
+                "locations": [
+                    {
+                        "type": "PLAIN",
+                        "uri": "https://myrepository.com/mySubSystemArtifact"
+                    }
+                ],
+                "time": 1481875921763
+            }
+        ]
+    }
+}

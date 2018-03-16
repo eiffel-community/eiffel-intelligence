@@ -13,14 +13,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = SubscriptionTemplateController.class, secure = false)
+@WebMvcTest(value = SubscriptiontemplateController.class, secure = false)
 public class TestSubscriptionTemplateControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private SubscriptionTemplateController infoController;
+    private SubscriptiontemplateController subscriptiontemplateController;
 
     @Test
     public void testResponseStatus() throws Exception {

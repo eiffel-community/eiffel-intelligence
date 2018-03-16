@@ -57,8 +57,7 @@ public class ProcessQueryParams {
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method takes the parameters from the REST POST request body and
-     * process it to create a JsonNode request to query the Aggregated Objects.
+     * This method takes the parameters from the REST POST request body.
      * If the Aggregated Object matches the condition, then it is returned.
      *
      * @param request
@@ -68,31 +67,14 @@ public class ProcessQueryParams {
     public JSONArray filterFormParam(JsonNode request) throws IOException {
         JsonNode criteria = request.get("criteria");
         JsonNode options = request.get("options");
-        LOGGER.info("The criteria is : " + criteria.toString());
-        LOGGER.info("The options is : " + options.toString());
-
-        JSONArray resultAggregatedObject;
-        JSONArray resultMissedNotification;
-
+        LOGGER.debug("The criteria is : " + criteria.toString());
+        LOGGER.debug("The options is : " + options.toString());
         if (options.toString().equals("{}") || options.isNull()) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
-            resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
+            return getProcessQuery(criteria);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(new ObjectMapper().readTree(result), dataBaseName, aggregationCollectionName);
-            resultMissedNotification = processMissedNotification.processQueryMissedNotification(new ObjectMapper().readTree(result), missedNotificationDataBaseName, missedNotificationCollectionName);
+            return getProcessQuery(new ObjectMapper().readTree(result));
         }
-        LOGGER.info("resultAggregatedObject : " + resultAggregatedObject.toString());
-        LOGGER.info("resultMissedNotification : " + resultMissedNotification.toString());
-
-        JSONArray result = null;
-        try {
-            result = ProcessQueryParams.concatArray(resultAggregatedObject, resultMissedNotification);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        LOGGER.info("Final Result is : " + result.toString());
-        return result;
     }
 
     /**
@@ -115,45 +97,50 @@ public class ProcessQueryParams {
     }
 
     /**
-     * This method takes the parameters from the REST GET request query
-     * parameters and process it to create a JsonNode request to query the
-     * Aggregated Objects. If the Aggregated Object matches the condition, then
+     * This method takes the parameters from the REST GET request query.
+     * If the Aggregated Object matches the condition, then
      * it is returned.
      *
      * @param request
      * @return JSONArray
      */
     public JSONArray filterQueryParam(String request) {
-        LOGGER.info("The query string is : " + request);
-
+        LOGGER.debug("The query string is : " + request);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode criteria = mapper.createObjectNode();
         String[] criterias = request.split(",");
-        LOGGER.info("The query parameters are :");
-
+        LOGGER.debug("The query parameters are :");
         for (String s : criterias) {
             String[] node = s.split(":");
             String key = node[0];
             String value = node[1];
-            LOGGER.info("The key is : " + key);
-            LOGGER.info("The value is : " + value);
+            LOGGER.debug("The key is : " + key);
+            LOGGER.debug("The value is : " + value);
             criteria.put(key, value);
         }
-        LOGGER.info(criteria.toString());
+        LOGGER.debug(criteria.toString());
+        return getProcessQuery(criteria);
+    }
 
+    /**
+     * Process parameters to create a JsonNode request to query the
+     * Aggregated Objects.
+     *
+     * @param criteria
+     * @return
+     */
+    private JSONArray getProcessQuery(JsonNode criteria) {
         JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
         JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
-
-        LOGGER.info("resultAggregatedObject : " + resultAggregatedObject.toString());
-        LOGGER.info("resultMissedNotification : " + resultMissedNotification.toString());
-
+        LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+        LOGGER.debug("resultMissedNotification : " + resultMissedNotification.toString());
         JSONArray result = null;
         try {
             result = ProcessQueryParams.concatArray(resultAggregatedObject, resultMissedNotification);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
-        LOGGER.info("Final Result is : " + result.toString());
+        LOGGER.debug("Final Result is : " + result.toString());
         return result;
     }
 

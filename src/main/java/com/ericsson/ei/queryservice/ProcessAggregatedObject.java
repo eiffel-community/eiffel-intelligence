@@ -87,9 +87,9 @@ public class ProcessAggregatedObject {
         DB db = new MongoClient().getDB(AggregationDataBaseName);
         Jongo jongo = new Jongo(db);
         MongoCollection aggObjects = jongo.getCollection(AggregationCollectionName);
-        LOGGER.info("Successfully connected to AggregatedObject database");
+        LOGGER.debug("Successfully connected to AggregatedObject database");
         MongoCursor<Document> allDocuments = aggObjects.find(request.toString()).as(Document.class);
-        LOGGER.info("Number of document returned from AggregatedObject collection is : " + allDocuments.count());
+        LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.count());
         JSONArray jsonArray = new JSONArray();
         JSONObject doc = null;
         while (allDocuments.hasNext()) {

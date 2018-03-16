@@ -107,7 +107,7 @@ public class TestFreeStyleQueryImpl {
     public void filterQueryParamTest() throws JSONException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("localhost:" + serverPort);
-        request.setRequestURI("/freeStyleQuery?request=");
+        request.setRequestURI("/query/free?request=");
         request.setQueryString("testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         String url = request.getRequestURL() + request.getQueryString();
         DB db = new MongoClient().getDB(DB_NAME);
@@ -124,7 +124,7 @@ public class TestFreeStyleQueryImpl {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        assertThat(url, is("http://localhost:" + serverPort + "/freeStyleQuery?request=testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
+        assertThat(url, is("http://localhost:" + serverPort + "/query/free?request=testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
         assertNotNull(output);
     }
 }

@@ -97,9 +97,9 @@ public class ProcessMissedNotification {
         DB db = new MongoClient().getDB(MissedNotificationDataBaseName);
         Jongo jongo = new Jongo(db);
         MongoCollection aggObjects = jongo.getCollection(MissedNotificationCollectionName);
-        LOGGER.info("Successfully connected to MissedNotification database");
+        LOGGER.debug("Successfully connected to MissedNotification database");
         MongoCursor<Document> allDocuments = aggObjects.find(request.toString()).as(Document.class);
-        LOGGER.info("Number of document returned from Notification collection is : " + allDocuments.count());
+        LOGGER.debug("Number of document returned from Notification collection is : " + allDocuments.count());
         JSONArray jsonArray = new JSONArray();
         JSONObject doc = null;
         while (allDocuments.hasNext()) {

@@ -19,9 +19,9 @@ package com.ericsson.ei.controller;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
+import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
 import org.apache.qpid.util.FileUtils;
 import org.bson.Document;
 import org.jongo.Jongo;
@@ -68,12 +68,12 @@ public class TestFreeStyleQueryImpl {
     public void setUp() {
         input = FileUtils.readFileAsString(new File(inputPath));
         try (MongoClient mongoClient = new MongoClient()) {
-            MongoDatabase db = mongoClient.getDatabase(DB_NAME);
-            com.mongodb.client.MongoCollection<Document> collection = db.getCollection(DB_COLLECTION);
-            final Document dbObjectInput = Document.parse(input);
-            collection.insertOne(dbObjectInput);
-            if (collection.count() != 0) {
-                System.out.println("Data Inserted successfully in both the Collections");
+            DB db = mongoClient.getDB(DB_NAME);
+            DBCollection collection = db.getCollection(DB_COLLECTION);
+            DBObject dbObjectInput = (DBObject) JSON.parse(input);
+            WriteResult result = collection.insert(dbObjectInput);
+            if (result.wasAcknowledged()) {
+                LOGGER.debug("Data Inserted successfully in both the Collections");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
@@ -83,20 +83,13 @@ public class TestFreeStyleQueryImpl {
     @Test
     public void filterFormParamTest() throws Exception {
         JSONObject inputJArr = new JSONObject(input);
-        LOGGER.info("The input string is : " + inputJArr.toString());
-        DB db = new MongoClient().getDB(DB_NAME);
-        Jongo jongo = new Jongo(db);
-        MongoCollection aggObjects = jongo.getCollection(DB_COLLECTION);
-        Document one = aggObjects.findOne().as(Document.class);
-        JSONObject json = new JSONObject(one.toJson());
-        LOGGER.info("Expect Output for FilterFormParamTest : " + json.toString());
-        System.out.println(json.toString());
+        LOGGER.debug("The input string is : " + inputJArr.toString());
         JSONObject output = null;
         try {
             JsonNode inputCriteria = new ObjectMapper().readTree(QUERY);
             JSONArray result = unitUnderTest.filterFormParam(inputCriteria);
             output = result.getJSONObject(0);
-            LOGGER.info("Output for FilterFormParamTest is : " + output.toString());
+            LOGGER.debug("Output for FilterFormParamTest is : " + output.toString());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -104,23 +97,17 @@ public class TestFreeStyleQueryImpl {
     }
 
     @Test
-    public void filterQueryParamTest() throws JSONException {
+    public void filterQueryParamTest() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("localhost:" + serverPort);
         request.setRequestURI("/query/free?request=");
         request.setQueryString("testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         String url = request.getRequestURL() + request.getQueryString();
-        DB db = new MongoClient().getDB(DB_NAME);
-        Jongo jongo = new Jongo(db);
-        MongoCollection aggObjects = jongo.getCollection(DB_COLLECTION);
-        Document one = aggObjects.findOne().as(Document.class);
-        JSONObject json = new JSONObject(one.toJson());
-        LOGGER.info("Expect Output for FilterQueryParamTest : " + json.toString());
         JSONObject output = null;
         try {
             JSONArray result = unitUnderTest.filterQueryParam(REQUEST);
             output = result.getJSONObject(0);
-            LOGGER.info("Returned output from ProcessQueryParams : " + output.toString());
+            LOGGER.debug("Returned output from ProcessQueryParams : " + output.toString());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

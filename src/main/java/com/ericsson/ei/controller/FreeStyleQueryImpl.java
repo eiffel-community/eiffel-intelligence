@@ -68,7 +68,7 @@ public class FreeStyleQueryImpl implements FreeController {
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
-        LOGGER.info("Final Output : " + result.toString());
+        LOGGER.debug("Final Output : " + result.toString());
         return new ResponseEntity(result.toString(), HttpStatus.OK);
     }
 }

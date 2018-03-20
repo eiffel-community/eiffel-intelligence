@@ -75,10 +75,10 @@ public class SubscriptionValidator {
 	 */
 	public void validateNotificationMessage(String notificationMessage) throws SubscriptionValidationException {
 		
-		String regex = "^[A-Za-z0-9@.]+$";
+		String regex = "^[A-Za-z0-9@\\s,:_\\[\\](){}'\".]+$";
 		
 		if (!Pattern.matches(regex, notificationMessage)) {
-			throw new SubscriptionValidationException("Wrong format of NotificationMessage: " + notificationMessage);
+	       throw new SubscriptionValidationException("Wrong format of NotificationMessage: " + notificationMessage);
 		}	
 	}
 	
@@ -107,8 +107,9 @@ public class SubscriptionValidator {
 	public void validateNotificationType(String notificationType) throws SubscriptionValidationException {
 		String regexMail = "[\\s]*MAIL[\\\\s]*";
 		String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
+		String regexRestPostJenkins = "[\\s]*REST_POST_JENKINS[\\\\s]*";
 		
-		if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
+		if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType)  || Pattern.matches(regexRestPostJenkins, notificationType))) {
 			throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
 		}
 	}

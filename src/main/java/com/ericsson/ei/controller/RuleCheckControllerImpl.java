@@ -1,5 +1,10 @@
 package com.ericsson.ei.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,14 +42,22 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "jmespath")
-@RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
+@Api(value = "Check Rules", description ="This rest call for the execute the rule or rules(Rule object) on the Json, for checking output of rule")
 public class RuleCheckControllerImpl implements RuleCheckController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
     @Autowired
     JmesPathInterface jmesPathInterface;
+    
+    @Autowired
+    EventHandler eventHandler;
+    
+    @Autowired
+    private ProcessAggregatedObject processAggregatedObject;
+    
+    @Autowired
+    EventToObjectMapHandler eventToObjectMapHandler;
 
     /**
      * This method interacts with JmesPathInterface class method runRuleOnEvent
@@ -60,12 +74,12 @@ public class RuleCheckControllerImpl implements RuleCheckController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "run rule on event")
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> updateJmespathruleRuleCheck(String rule, String jsonContent) {
+    public ResponseEntity<?> updateRulesRuleCheck(String rule, String jsonContent) {
         String res = new String("[]");
 
         try {
             JSONObject jsonObj = new JSONObject(jsonContent);
+            
             String jsonString = jsonObj.toString();
             res = jmesPathInterface.runRuleOnEvent(rule, jsonString).toString();
             LOG.info("Query :" + rule + " executed Successfully");
@@ -76,5 +90,55 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Run the list of rules on list of events and prepare the aggregation object. This endpoint for executing the rules on list of objects and return the aggregated objects.")
+    public ResponseEntity<?> updateAggregation(String listRulesJson, String listEventsJson) {
+
+        try {
+            JSONArray jsonObj = new JSONArray(listRulesJson);
+            JSONArray jsonObj2 = new JSONArray(listEventsJson);
+            eventHandler.getRulesHandler().setParsedJason(jsonObj.toString());
+            String aggregatedObjectId = null;
+            // Looping all events and add suffix template name to id and links, For identifying the test aggregated events.
+            for (int i = 0; i < jsonObj2.length(); i++) {
+                String templateName = jmesPathInterface
+                        .runRuleOnEvent("TemplateName", jsonObj.getJSONObject(0).toString()).asText("TEST");
+                String addTemplateNameToIds = addTemplateNameToIds(jsonObj2.getJSONObject(i), templateName);
+                LOG.info("event to prepare aggregated object :: " + jsonObj2.getJSONObject(i).toString());
+                if (aggregatedObjectId == null) {
+                    aggregatedObjectId = addTemplateNameToIds;
+                }
+                eventHandler.eventReceived(jsonObj2.getJSONObject(i).toString());
+            }
+
+            if (aggregatedObjectId != null) {
+                ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(aggregatedObjectId);
+                // Delete the aggregated object
+                processAggregatedObject.deleteAggregatedObject(aggregatedObjectId);
+                // Delete the event object mapper
+                eventToObjectMapHandler.deleteEventObjectMap(aggregatedObjectId);
+                return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("invalid json content", HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (JSONException | IOException e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<String>("invalid json content", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private String addTemplateNameToIds(JSONObject jsonObject, String templateName) throws JSONException {
+        String idTemplateSuffix = jmesPathInterface.runRuleOnEvent("meta.id", jsonObject.toString()).asText() + "_" + templateName;
+        jsonObject.getJSONObject("meta").put("id", idTemplateSuffix);
+        for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
+            JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
+            link.put("target",link.getString("target") + "_" + templateName);
+        }
+        return idTemplateSuffix;
+    }
+
 
 }

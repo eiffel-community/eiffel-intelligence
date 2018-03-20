@@ -69,6 +69,30 @@ public class ProcessAggregatedObject {
                 jsonCondition.toString());
         return response;
     }
+    
+    /**
+     * The method is responsible for the delete the aggregated object
+     * the ID from the aggregatedObject.
+     * 
+     * @param id
+     * @return boolean
+     */
+    public boolean deleteAggregatedObject(String id) {
+        ObjectMapper mapper = new ObjectMapper();
+        String condition = "{\"_id\" : \"" + id + "\"}";
+        //String condition = "{objects: { \"$in\" : [\"raja\"]} }";
+        log.info("The condition is : " + condition);
+        JsonNode jsonCondition = null;
+        try {
+            jsonCondition = mapper.readTree(condition);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        log.info("The Json condition for delete aggregated object is : " + jsonCondition);
+        boolean response = handler.dropDocument(aggregationDataBaseName, aggregationCollectionName,
+                jsonCondition.toString());
+        return response;
+    }
 
     @PostConstruct
     public void init() {

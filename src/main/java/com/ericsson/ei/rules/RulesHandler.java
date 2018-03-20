@@ -16,24 +16,30 @@
 */
 package com.ericsson.ei.rules;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.annotation.PostConstruct;
-
 @Component
+@Scope(value="thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RulesHandler {
     private static Logger log = LoggerFactory.getLogger(RulesHandler.class);
 
@@ -42,6 +48,15 @@ public class RulesHandler {
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
     private static String jsonFileContent;
     private static JsonNode parsedJason;
+    
+    public RulesHandler() {
+        super();
+    }
+    
+    public void setParsedJason(String jsonContent) throws JsonProcessingException, IOException {
+        ObjectMapper objectmapper = new ObjectMapper();
+        parsedJason = objectmapper.readTree(jsonContent);
+    }
 
     @PostConstruct public void init() {
         if (parsedJason == null) {

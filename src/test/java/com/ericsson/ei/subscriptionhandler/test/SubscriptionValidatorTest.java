@@ -23,13 +23,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.controller.model.Condition;
 import com.ericsson.ei.controller.model.Requirement;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SubscriptionValidatorTest {
@@ -40,11 +45,21 @@ public class SubscriptionValidatorTest {
 	
 	public SubscriptionValidatorTest() {
 		subscriptionValidator = new SubscriptionValidator();
+
+
+		// subscriptionValidator -------------------------
 		subscritptionValid = new Subscription();
-		subscritptionInvalid = new Subscription();
-		
+
 		subscritptionValid.setSubscriptionName("Kalle1");
-		subscritptionValid.setNotificationMessage("@");
+
+		// new stuff
+		subscritptionValid.setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());
+
+		NotificationMessageKeyValue notificationMessageKeyValuevalid = new NotificationMessageKeyValue();
+		notificationMessageKeyValuevalid.setFormkey("jsontest");
+		notificationMessageKeyValuevalid.setFormvalue("@");
+		subscritptionValid.getNotificationMessageKeyValues().add(notificationMessageKeyValuevalid);
+
 		subscritptionValid.setNotificationMeta("kalle1.kalle2@domain.com");
 		subscritptionValid.setNotificationType("MAIL");
 		subscritptionValid.setRepeat(true);
@@ -53,9 +68,20 @@ public class SubscriptionValidatorTest {
 		condition.setJmespath("gav.groupId=='com.mycompany.myproduct'");
 		requirement.getConditions().add(condition);
 		subscritptionValid.getRequirements().add(requirement);
-		
+
+		// subscritptionInvalid -------------------------
+		subscritptionInvalid = new Subscription();
+
 		subscritptionInvalid.setSubscriptionName("Kalle1");
-		subscritptionInvalid.setNotificationMessage("@");
+
+		// new stuff
+		subscritptionInvalid.setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());
+
+		NotificationMessageKeyValue notificationMessageKeyValueinvalid = new NotificationMessageKeyValue();
+		notificationMessageKeyValueinvalid.setFormkey("");
+		notificationMessageKeyValueinvalid.setFormvalue("@");
+		subscritptionInvalid.getNotificationMessageKeyValues().add(notificationMessageKeyValueinvalid);
+
 		subscritptionInvalid.setNotificationMeta("kalle1.kal  le2@domain.com");
 		subscritptionInvalid.setNotificationType("MAIL");
 		subscritptionInvalid.setRepeat(true);
@@ -124,17 +150,18 @@ public class SubscriptionValidatorTest {
 		assertTrue(false);
 	}
 	
-	/*
-	 * Validator unit tests for NotificationMeta parameter in Subscription.
-	 * Valid "NotificationMeta" value:
-	 * - "@"  , Which means filter everything from AggregatedObject and add that data to Mail/Rest-Post body data.
-	 *
-	 */
+
 	@Test
 	public void validateNotificationMessageValidMessageTest() {
-		String notificationMessage = "kalle.kalle@domain.com";
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("");
+		notificationMessageKeyValue.setFormvalue("@");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
 		try {
-			subscriptionValidator.validateNotificationMessage(notificationMessage);
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), "");
 		}
 		catch (SubscriptionValidationException e) {
 			assertTrue(e.getMessage(), false);
@@ -142,12 +169,19 @@ public class SubscriptionValidatorTest {
 		}
 		assertTrue(true);
 	}
-	
+
+
 	@Test
-	public void validateNotificationMessageValid2MessageTest() {
-		String notificationMessage = "@";
+	public void validateNotificationMessageValidMessage2Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
 		try {
-			subscriptionValidator.validateNotificationMessage(notificationMessage);
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
 		}
 		catch (SubscriptionValidationException e) {
 			assertTrue(e.getMessage(), false);
@@ -155,25 +189,81 @@ public class SubscriptionValidatorTest {
 		}
 		assertTrue(true);
 	}
-	
+
+
 	@Test
-	public void validateNotificationMessageInvalidMessageTest() {
-		String notificationMessage = "kalle-kalle@domain-com";
+	public void validateNotificationMessageValidMessage3Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("json");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
 		try {
-			subscriptionValidator.validateNotificationMessage(notificationMessage);
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
 		}
 		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), false);
+			return;
+		}
+		assertTrue(true);
+	}
+
+	@Test
+	public void validateNotificationMessageValidMessage4Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("json");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+		NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
+		notificationMessageKeyValue2.setFormkey("json2");
+		notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
+
+		try {
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), false);
+			return;
+		}
+		assertTrue(true);
+	}
+
+
+	@Test
+	public void validateNotificationMessageInvalidMessage1Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("mykey");
+		notificationMessageKeyValue.setFormvalue("kalle.kalle@domain.com");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
+		try {
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), "");
+		} catch (SubscriptionValidationException e) {
 			assertTrue(e.getMessage(), true);
 			return;
 		}
 		assertTrue(false);
 	}
-	
+
+
 	@Test
 	public void validateNotificationMessageInvalidMessage2Test() {
-		String notificationMessage = "kalle-kallef[]£$domain-com";
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("mykey");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
 		try {
-			subscriptionValidator.validateNotificationMessage(notificationMessage);
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
 		}
 		catch (SubscriptionValidationException e) {
 			assertTrue(e.getMessage(), true);
@@ -181,7 +271,126 @@ public class SubscriptionValidatorTest {
 		}
 		assertTrue(false);
 	}
-	
+
+
+	@Test
+	public void validateNotificationMessageInvalidMessage3Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+
+		try {
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), true);
+			return;
+		}
+		assertTrue(false);
+	}
+
+
+	@Test
+	public void validateNotificationMessageInvalidMessage4Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("json");
+		notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+		NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
+		notificationMessageKeyValue2.setFormkey("");
+		notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
+
+		try {
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), true);
+			return;
+		}
+		assertTrue(false);
+	}
+
+	@Test
+	public void validateNotificationMessageInvalidMessage5Test() {
+
+		Subscription subscription = new Subscription();
+		NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
+		notificationMessageKeyValue.setFormkey("json");
+		notificationMessageKeyValue.setFormvalue("");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
+		NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
+		notificationMessageKeyValue2.setFormkey("json");
+		notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+		subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
+
+		try {
+			subscriptionValidator.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), true);
+			return;
+		}
+		assertTrue(false);
+	}
+
+	@Test
+	public void validateRestPostMediaTypeValidMessageTest() {
+
+		try {
+			subscriptionValidator.RestPostMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), false);
+			return;
+		}
+		assertTrue(true);
+	}
+
+	@Test
+	public void validateRestPostMediaTypeValidMessage2Test() {
+
+		try {
+			subscriptionValidator.RestPostMediaType(MediaType.APPLICATION_JSON.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), false);
+			return;
+		}
+		assertTrue(true);
+	}
+
+	@Test
+	public void validateRestPostMediaTypeInvalidMessageTest() {
+
+		try {
+			subscriptionValidator.RestPostMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), true);
+			return;
+		}
+		assertTrue(false);
+	}
+
+	@Test
+	public void validateRestPostMediaTypeInvalidMessage2Test() {
+
+		try {
+			subscriptionValidator.RestPostMediaType("");
+		}
+		catch (SubscriptionValidationException e) {
+			assertTrue(e.getMessage(), true);
+			return;
+		}
+		assertTrue(false);
+	}
+
 	/*
 	 * Validator unit tests for NotificationMeta parameter in Subscription.
 	 * Valid "NotificationMeta" value:

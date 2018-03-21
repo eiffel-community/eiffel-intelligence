@@ -75,7 +75,7 @@ public class SubscriptionValidatorTest {
 		subscritptionInvalid.setSubscriptionName("Kalle1");
 
 		// new stuff
-		subscritptionInvalid.setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());
+		subscritptionInvalid.setRestPostBodyMediaType(null);
 
 		NotificationMessageKeyValue notificationMessageKeyValueinvalid = new NotificationMessageKeyValue();
 		notificationMessageKeyValueinvalid.setFormkey("");

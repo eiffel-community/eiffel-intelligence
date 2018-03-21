@@ -4,7 +4,13 @@
         "created": "data-time",
         "notificationType": "REST_POST",
         "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
-        "notificationMessage": "@",
+        "restPostBodyMediaType": "application/json",
+        "notificationMessageKeyValues" : [
+          {
+            "formkey" : "",
+            "formvalue" : "@"
+          }
+        ],
         "requirements": [
             {
                 "type": "ARTIFACT_1",

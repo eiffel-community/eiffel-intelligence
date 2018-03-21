@@ -16,14 +16,17 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-//import java.util.List;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
-//import com.ericsson.ei.controller.model.Requirement;
+import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
+import org.springframework.http.MediaType;
 
 public class SubscriptionValidator {
 	
@@ -40,9 +43,10 @@ public class SubscriptionValidator {
 		
 		LOG.info("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
 		this.validateSubscriptionName(subscription.getSubscriptionName());
-		this.validateNotificationMessage(subscription.getNotificationMessage());
+		this.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), subscription.getRestPostBodyMediaType() );
 		this.validateNotificationMeta(subscription.getNotificationMeta());
 		this.validateNotificationType(subscription.getNotificationType());
+		this.RestPostMediaType(subscription.getRestPostBodyMediaType());
 //		List<Requirement> reqList = subscription.getRequirements();
 //		for (int i=0; i < reqList.size(); i++) {
 //			this.validateJmespath(reqList.get(i).getConditions().get(0).getJmespath());
@@ -65,23 +69,47 @@ public class SubscriptionValidator {
 			throw new SubscriptionValidationException("Wrong format of SubscriptionName: " + subscriptionName);
 		}	
 	}
-	
+
+
 	/*
-	 * Validation of notificationMessage parameter
+	 * Validation of NotificationMessageKeyValues parameters (key/values)
 	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
 	 * format of parameter.
-	 * 
+	 *
 	 * @param notificationMessage
+	 * @param restPostBodyMediaType
 	 */
-	public void validateNotificationMessage(String notificationMessage) throws SubscriptionValidationException {
-		
-		String regex = "^[A-Za-z0-9@\\s,:_\\[\\](){}'\".]+$";
-		
-		if (!Pattern.matches(regex, notificationMessage)) {
-	       throw new SubscriptionValidationException("Wrong format of NotificationMessage: " + notificationMessage);
-		}	
+
+	public void validateNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessage, String restPostBodyMediaType) throws SubscriptionValidationException {
+
+		for (NotificationMessageKeyValue item : notificationMessage) {
+
+				String test_key = item.getFormkey();
+				String test_value = item.getFormvalue();
+
+			if (restPostBodyMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { // FORM/POST PARAMETERS
+               if((test_key == null || test_key.isEmpty() || StringUtils.isBlank(test_key)) || (test_value == null || test_value.isEmpty() || StringUtils.isBlank(test_value))){
+				   throw new SubscriptionValidationException("Value & Key  in notificationMessage must have a values: " + notificationMessage);
+			   }
+
+			} else {
+				if(notificationMessage.size() != 1 ){
+					throw new SubscriptionValidationException("Only one array is allowed for notificationMessage when NOT using key/value pairs: " + notificationMessage);
+				}
+				else if(test_key !=null && !test_key.isEmpty()){
+					throw new SubscriptionValidationException("Key in notificationMessage must be empty when NOT using key/value pairs: " + notificationMessage);
+				}
+				else if(StringUtils.isBlank(test_value)){
+					throw new SubscriptionValidationException("Value in notificationMessage must have a value when NOT using key/value pairs: " + notificationMessage);
+				}
+
+
+			}
+		}
+
 	}
-	
+
+
 	/*
 	 * Validation of notificationMeta parameter
 	 * Throws SubscriptionValidationException if validation of the parameter fails due to wrong
@@ -107,12 +135,24 @@ public class SubscriptionValidator {
 	public void validateNotificationType(String notificationType) throws SubscriptionValidationException {
 		String regexMail = "[\\s]*MAIL[\\\\s]*";
 		String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
-		String regexRestPostJenkins = "[\\s]*REST_POST_JENKINS[\\\\s]*";
-		
-		if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType)  || Pattern.matches(regexRestPostJenkins, notificationType))) {
+
+		if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
 			throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
 		}
 	}
+
+
+	public void RestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
+		String regexApplication_JSON = "[\\s]*application/json[\\\\s]*";
+		String regexApplicationFormUrlEncoded = "[\\s]*application/x-www-form-urlencoded[\\\\s]*";
+
+		if (!(Pattern.matches(regexApplication_JSON, restPostMediaType) || Pattern.matches(regexApplicationFormUrlEncoded, restPostMediaType))) {
+			throw new SubscriptionValidationException("Wrong format of RestPostMediaType: " + restPostMediaType);
+		}
+	}
+
+
+
 
 //	public void validateJmespath(String jmespath) {
 ////		TODO: Validator for Jmepath syntax need to be implemented here.

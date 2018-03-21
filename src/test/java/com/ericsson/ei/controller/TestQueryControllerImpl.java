@@ -20,14 +20,9 @@ import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.*;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 import org.apache.qpid.util.FileUtils;
-import org.bson.Document;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,9 +43,9 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class TestFreeStyleQueryImpl {
+public class TestQueryControllerImpl {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestFreeStyleQueryImpl.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestQueryControllerImpl.class);
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
     private static final String REQUEST = "testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
     private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
@@ -100,7 +95,7 @@ public class TestFreeStyleQueryImpl {
     public void filterQueryParamTest() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("localhost:" + serverPort);
-        request.setRequestURI("/query/free?request=");
+        request.setRequestURI("/query?request=");
         request.setQueryString("testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         String url = request.getRequestURL() + request.getQueryString();
         JSONObject output = null;
@@ -111,7 +106,7 @@ public class TestFreeStyleQueryImpl {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        assertThat(url, is("http://localhost:" + serverPort + "/query/free?request=testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
+        assertThat(url, is("http://localhost:" + serverPort + "/query?request=testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
         assertNotNull(output);
     }
 }

@@ -61,14 +61,14 @@ public class ProcessAggregatedObject {
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"_id\" : \"" + id + "\"}";
-        LOGGER.info("The condition is : " + condition);
+        LOGGER.debug("The condition is : " + condition);
         JsonNode jsonCondition = null;
         try {
             jsonCondition = mapper.readTree(condition);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.info("The Json condition is : " + jsonCondition);
+        LOGGER.debug("The Json condition is : " + jsonCondition);
         ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
                 jsonCondition.toString());
         return response;

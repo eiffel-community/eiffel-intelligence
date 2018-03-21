@@ -13,12 +13,11 @@
 */
 package com.ericsson.ei.queryservice.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.QueryAggregatedObjectController;
+import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
+import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,15 +40,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.AggregatedObjectController;
-import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.MissedNotificationControllerImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
-@ContextConfiguration(classes = { App.class })
+import static org.junit.Assert.assertEquals;
+
+@ContextConfiguration(classes = {App.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = AggregatedObjectController.class, secure = false)
+@WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
 
     @Autowired
@@ -69,10 +68,10 @@ public class QueryServiceRESTAPITest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    private AggregatedObjectControllerImpl aggregatedObjectController;
+    private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private MissedNotificationControllerImpl missedNotificationController;
+    private QueryMissedNotificationControllerImpl missedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {

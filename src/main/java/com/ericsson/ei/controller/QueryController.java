@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/free", produces = "application/json")
-public interface FreeController {
+@RequestMapping(value = "/query", produces = "application/json")
+public interface QueryController {
 
 
     /**
@@ -23,7 +23,7 @@ public interface FreeController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> getQueryFree(
+    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> getQuery(
         @RequestParam
         String request);
 
@@ -32,8 +32,8 @@ public interface FreeController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> updateQueryFree(
+    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> updateQuery(
         @RequestParam
-        String query);
+        String request);
 
 }

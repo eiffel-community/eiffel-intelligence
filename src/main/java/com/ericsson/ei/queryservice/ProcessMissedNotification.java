@@ -63,14 +63,14 @@ public class ProcessMissedNotification {
     public List<String> processQueryMissedNotification(String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
-        LOGGER.info("The condition is : " + condition);
+        LOGGER.debug("The condition is : " + condition);
         JsonNode jsonCondition = null;
         try {
             jsonCondition = mapper.readTree(condition);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.info("The Json condition is : " + jsonCondition);
+        LOGGER.debug("The Json condition is : " + jsonCondition);
         ArrayList<String> output = handler.find(missedNotificationDataBaseName, missedNotificationCollectionName,
                 jsonCondition.toString());
         return output.stream().map(a -> {

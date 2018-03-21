@@ -13,7 +13,7 @@
 */
 package com.ericsson.ei.queryservice;
 
-import com.ericsson.ei.controller.FreeStyleQueryImpl;
+import com.ericsson.ei.controller.QueryControllerImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,7 +36,7 @@ import java.io.IOException;
 @Component
 public class ProcessQueryParams {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(FreeStyleQueryImpl.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;

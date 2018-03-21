@@ -38,9 +38,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Component
 @CrossOrigin
 @Api(value = "query", description = "REST end-points for the freestyle query service")
-public class FreeStyleQueryImpl implements FreeController {
+public class QueryControllerImpl implements QueryController {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(FreeStyleQueryImpl.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
 
     @Autowired
     private ProcessQueryParams processQueryParams;
@@ -50,9 +50,9 @@ public class FreeStyleQueryImpl implements FreeController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<QueryResponse> updateQueryFree(@RequestParam(value = "query") String query) {
+    public ResponseEntity<QueryResponse> updateQuery(@RequestParam(value = "request") String request) {
         try {
-            result = processQueryParams.filterFormParam(new ObjectMapper().readTree(query));
+            result = processQueryParams.filterFormParam(new ObjectMapper().readTree(request));
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
@@ -62,7 +62,7 @@ public class FreeStyleQueryImpl implements FreeController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<QueryResponse> getQueryFree(@RequestParam(value = "request") final String request) {
+    public ResponseEntity<QueryResponse> getQuery(@RequestParam(value = "request") final String request) {
         try {
             result = processQueryParams.filterQueryParam(request);
         } catch (Exception e) {

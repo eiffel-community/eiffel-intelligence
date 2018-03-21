@@ -73,7 +73,6 @@ public class SubscriptionValidatorTest {
 		subscritptionInvalid = new Subscription();
 
 		subscritptionInvalid.setSubscriptionName("Kalle1");
-//		subscritptionInvalid.setNotificationMessage("@");
 
 		// new stuff
 		subscritptionInvalid.setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());

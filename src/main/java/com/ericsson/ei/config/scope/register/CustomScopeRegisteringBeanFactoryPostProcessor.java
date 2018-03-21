@@ -6,11 +6,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.SimpleThreadScope;
 
 /**
- * This class for the extend the request bean scope to thread level
- * This scope is implemented to EventHandler and RuleHandler
- * These two classes are not share to each request and rabbitmq consumer.
- * The present request bean scope will work only request level, threads are not access the request bean scope beans
- * Using the SimpleThreadScope custom scope extend the request scope to threads.
+ * This class for the extend the "request" bean scope to thread level
+ * This "thread" scope is implemented to EventHandler and RuleHandler
+ * The spring provided "request" bean scope will work only request level, threads are not access the request bean scope without request
+ * Using the SimpleThreadScope custom scope(scope name "thread") extend the request scope to threads.
  *
  */
 public class CustomScopeRegisteringBeanFactoryPostProcessor implements BeanFactoryPostProcessor {

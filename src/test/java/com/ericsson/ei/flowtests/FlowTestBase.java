@@ -108,7 +108,7 @@ public class FlowTestBase {
     static ConnectionFactory cf;
     static Connection conn;
     protected static String jsonFileContent;
-    protected static JsonNode parsedJason;
+    protected static JsonNode parsedJson;
     protected static String jsonFilePath = "src/test/resources/test_events.json";
     static protected String inputFilePath = "src/test/resources/AggregatedDocument.json";
 
@@ -183,7 +183,7 @@ public class FlowTestBase {
             testParametersChange();
             int eventsCount = eventNames.size();
             for(String eventName : eventNames) {
-                JsonNode eventJson = parsedJason.get(eventName);
+                JsonNode eventJson = parsedJson.get(eventName);
                 String event = eventJson.toString();
                 channel.basicPublish(exchangeName, queueName,  null, event.getBytes());
             }
@@ -200,7 +200,7 @@ public class FlowTestBase {
         setSpecificTestCaseParameters();
         jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath));
         ObjectMapper objectmapper = new ObjectMapper();
-        parsedJason = objectmapper.readTree(jsonFileContent);
+        parsedJson = objectmapper.readTree(jsonFileContent);
     }
 
     protected void setSpecificTestCaseParameters(){

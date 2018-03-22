@@ -137,24 +137,15 @@ public class EventToObjectMapHandler {
     }
     
     /**
-     * The method is responsible for the delete the EventObjectMap
-     * the ID from the aggregatedObject.
+     * The method is responsible for the delete the EventObjectMap by using the suffix template Name
      * 
-     * @param id
+     * @param templateName
      * @return boolean
      */
-    public boolean deleteEventObjectMap(String id) {
-        ObjectMapper mapper = new ObjectMapper();
-        String condition = "{\"objects\": { \"$in\" : [\"" + id + "\"]} }";
-        log.info("The condition is : " + condition);
-        JsonNode jsonCondition = null;
-        try {
-            jsonCondition = mapper.readTree(condition);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        log.info("The Json condition for delete aggregated object is : " + jsonCondition);
-        boolean response = mongodbhandler.dropDocument(databaseName, collectionName, jsonCondition.toString());
+    public boolean deleteEventObjectMap(String templateName) {
+        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        log.info("The Json condition for delete aggregated object is : " + condition);
+        boolean response = mongodbhandler.dropDocument(databaseName, collectionName, condition);
         return response;
     }
 

@@ -42,7 +42,7 @@ public class ProcessAggregatedObject {
     @Value("${database.name}")
     private String aggregationDataBaseName;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);
+    static Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);
 
     @Autowired
     MongoDBHandler handler;
@@ -57,47 +57,50 @@ public class ProcessAggregatedObject {
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"_id\" : \"" + id + "\"}";
-        log.info("The condition is : " + condition);
+        LOGGER.debug("The condition is : " + condition);
         JsonNode jsonCondition = null;
         try {
             jsonCondition = mapper.readTree(condition);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        log.info("The Json condition is : " + jsonCondition);
+        LOGGER.debug("The Json condition is : " + jsonCondition);
         ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
                 jsonCondition.toString());
         return response;
     }
     
     /**
-     * The method is responsible for the delete the aggregated object
+     * The method is responsible to extract the aggregated data on the basis of
      * the ID from the aggregatedObject.
      * 
      * @param id
+     * @return ArrayList
+     */
+    public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
+        String condition = "{\"_id\": /.*" + templateName + "/}";
+        LOGGER.debug("The Json condition is : " + condition);
+        ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
+        return response;
+    }
+    
+    /**
+     * The method is responsible for the delete the aggregated object using template name suffix
+     * 
+     * @param templateName
      * @return boolean
      */
-    public boolean deleteAggregatedObject(String id) {
-        ObjectMapper mapper = new ObjectMapper();
-        String condition = "{\"_id\" : \"" + id + "\"}";
-        //String condition = "{objects: { \"$in\" : [\"raja\"]} }";
-        log.info("The condition is : " + condition);
-        JsonNode jsonCondition = null;
-        try {
-            jsonCondition = mapper.readTree(condition);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        log.info("The Json condition for delete aggregated object is : " + jsonCondition);
-        boolean response = handler.dropDocument(aggregationDataBaseName, aggregationCollectionName,
-                jsonCondition.toString());
+    public boolean deleteAggregatedObject(String templateName) {
+        String condition = "{\"_id\": /.*" + templateName + "/}";
+        LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
+        boolean response = handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
         return response;
     }
 
     @PostConstruct
     public void init() {
-        log.debug("The Aggregated Database is : " + aggregationDataBaseName);
-        log.debug("The Aggregated Collection is : " + aggregationCollectionName);
+        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName);
+        LOGGER.debug("The Aggregated Collection is : " + aggregationCollectionName);
     }
 
 }

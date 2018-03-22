@@ -41,25 +41,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 @Scope(value="thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RulesHandler {
-    private static Logger log = LoggerFactory.getLogger(RulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RulesHandler.class);
 
     @Value("${rules.path}") private String jsonFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
     private static String jsonFileContent;
-    private static JsonNode parsedJason;
+    private static JsonNode parsedJson;
     
     public RulesHandler() {
         super();
     }
     
-    public void setParsedJason(String jsonContent) throws JsonProcessingException, IOException {
+    public void setParsedJson(String jsonContent) throws JsonProcessingException, IOException {
         ObjectMapper objectmapper = new ObjectMapper();
-        parsedJason = objectmapper.readTree(jsonContent);
+        parsedJson = objectmapper.readTree(jsonContent);
     }
 
     @PostConstruct public void init() {
-        if (parsedJason == null) {
+        if (parsedJson == null) {
             try {
                 InputStream in = this.getClass().getResourceAsStream(jsonFilePath);
                 if(in == null) {
@@ -68,9 +68,9 @@ public class RulesHandler {
                     jsonFileContent = getContent(in);
                 }
                 ObjectMapper objectmapper = new ObjectMapper();
-                parsedJason = objectmapper.readTree(jsonFileContent);
+                parsedJson = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -80,9 +80,9 @@ public class RulesHandler {
         try {
             RulesHandler.jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), Charset.defaultCharset());
             ObjectMapper objectmapper = new ObjectMapper();
-            parsedJason = objectmapper.readTree(jsonFileContent);
+            parsedJson = objectmapper.readTree(jsonFileContent);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -90,7 +90,7 @@ public class RulesHandler {
         String typeRule;
         JsonNode type;
         JsonNode result;
-        Iterator<JsonNode> iter = parsedJason.iterator();
+        Iterator<JsonNode> iter = parsedJson.iterator();
         while(iter.hasNext()) {
             JsonNode rule = iter.next();
             typeRule = rule.get("TypeRule").toString();
@@ -120,7 +120,7 @@ public class RulesHandler {
             }
             return result.toString("UTF-8");}
         catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }

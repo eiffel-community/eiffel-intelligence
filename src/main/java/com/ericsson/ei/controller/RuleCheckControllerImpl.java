@@ -76,7 +76,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
             String jsonString = jsonObj.toString();
             res = jmesPathInterface.runRuleOnEvent(rule, jsonString).toString();
-            LOG.info("Query :" + rule + " executed Successfully");
+            LOG.debug("Query :" + rule + " executed Successfully");
             return new ResponseEntity<String>(res, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 return new ResponseEntity<String>("invalid json content", HttpStatus.BAD_REQUEST);
             }
         } else {
-            LOG.info("testaggregated.controller.enabled is not enabled in application.properties file, Unable to test the rules on list of events");
+            LOG.debug("testaggregated.controller.enabled is not enabled in application.properties file, Unable to test the rules on list of events");
             return new ResponseEntity<String>("Please use the test environment for this execution", HttpStatus.BAD_REQUEST);
         }
     }

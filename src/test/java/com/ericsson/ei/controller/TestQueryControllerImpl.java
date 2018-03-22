@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.apache.qpid.util.FileUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,18 +30,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
+@AutoConfigureMockMvc
 public class TestQueryControllerImpl {
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestQueryControllerImpl.class);
@@ -58,6 +60,9 @@ public class TestQueryControllerImpl {
 
     @Autowired
     private ProcessQueryParams unitUnderTest;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Before
     public void setUp() {
@@ -77,36 +82,27 @@ public class TestQueryControllerImpl {
 
     @Test
     public void filterFormParamTest() throws Exception {
-        JSONObject inputJArr = new JSONObject(input);
-        LOGGER.debug("The input string is : " + inputJArr.toString());
-        JSONObject output = null;
-        try {
-            JsonNode inputCriteria = new ObjectMapper().readTree(QUERY);
-            JSONArray result = unitUnderTest.filterFormParam(inputCriteria);
-            output = result.getJSONObject(0);
-            LOGGER.debug("Output for FilterFormParamTest is : " + output.toString());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+        JsonNode inputCriteria = new ObjectMapper().readTree(QUERY);
+        JSONObject output = unitUnderTest.filterFormParam(inputCriteria).getJSONObject(0);
         assertNotNull(output);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/query")
+                .param("request", QUERY))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
     }
 
     @Test
-    public void filterQueryParamTest() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("localhost:" + serverPort);
-        request.setRequestURI("/query?request=");
-        request.setQueryString("testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-        String url = request.getRequestURL() + request.getQueryString();
-        JSONObject output = null;
-        try {
-            JSONArray result = unitUnderTest.filterQueryParam(REQUEST);
-            output = result.getJSONObject(0);
-            LOGGER.debug("Returned output from ProcessQueryParams : " + output.toString());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        assertThat(url, is("http://localhost:" + serverPort + "/query?request=testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"));
+    public void filterQueryParamTest() throws Exception {
+        JSONObject output = unitUnderTest.filterQueryParam(REQUEST).getJSONObject(0);
+        assertNotNull(output);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/query")
+                .param("request", REQUEST))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
         assertNotNull(output);
     }
 }

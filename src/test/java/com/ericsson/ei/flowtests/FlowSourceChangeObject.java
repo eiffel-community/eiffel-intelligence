@@ -14,9 +14,9 @@
 package com.ericsson.ei.flowtests;
 
 import com.ericsson.ei.rules.RulesHandler;
+import org.apache.qpid.util.FileUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,19 +53,24 @@ public class FlowSourceChangeObject extends FlowTest {
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelActivityTriggeredEvent_3");
+        eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
         eventNames.add("event_EiffelActivityStartedEvent_3");
+        eventNames.add("event_EiffelActivityStartedEvent_3_2");
         eventNames.add("event_EiffelActivityFinishedEvent_3");
+        eventNames.add("event_EiffelActivityFinishedEvent_3_2");
+        eventNames.add("event_EiffelActivityCanceledEvent_3");
+        eventNames.add("event_EiffelActivityCanceledEvent_3_2");
         return eventNames;
     }
 
     protected void checkResult() {
         try {
-            String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
+            String expectedDocuments = FileUtils.readFileAsString(new File(inputFilePath));
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
             String document = objectHandler.findObjectById("fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47");
             JsonNode actualJson = objectmapper.readTree(document);
-            assertEquals(expectedJsons.toString().length(), actualJson.toString().length(),9);
+            assertEquals(expectedJsons.toString().length(), actualJson.toString().length());
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

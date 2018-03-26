@@ -47,9 +47,10 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      * @return ResponseEntity
      */
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+        QueryResponse queryResponse= new QueryResponse();
         ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(id);
+        queryResponse.setResponseEntity(response.toString());
         LOGGER.debug("The response is : " + response.toString());
-        return new ResponseEntity(response.toString(), HttpStatus.OK);
+        return new ResponseEntity(queryResponse, HttpStatus.OK);
     }
-
 }

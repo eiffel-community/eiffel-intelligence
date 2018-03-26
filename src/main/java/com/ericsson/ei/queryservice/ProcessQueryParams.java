@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 /**
  * This class is responsible to fetch the criterias from both the query
@@ -87,12 +88,8 @@ public class ProcessQueryParams {
      */
     private static JSONArray concatArray(JSONArray firstArray, JSONArray secondArray) throws JSONException {
         JSONArray result = new JSONArray();
-        for (int i = 0; i < firstArray.length(); i++) {
-            result.put(firstArray.get(i));
-        }
-        for (int i = 0; i < secondArray.length(); i++) {
-            result.put(secondArray.get(i));
-        }
+        IntStream.range(0, firstArray.length()).mapToObj(firstArray::get).forEach(result::put);
+        IntStream.range(0, secondArray.length()).mapToObj(secondArray::get).forEach(result::put);
         return result;
     }
 

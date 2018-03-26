@@ -50,7 +50,7 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<QueryResponse> updateQuery(@RequestParam(value = "request") String request) {
+    public ResponseEntity<?> updateQuery(@RequestParam(value = "request") String request) {
         try {
             result = processQueryParams.filterFormParam(new ObjectMapper().readTree(request));
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<QueryResponse> getQuery(@RequestParam(value = "request") final String request) {
+    public ResponseEntity<?> getQuery(@RequestParam(value = "request") final String request) {
         try {
             result = processQueryParams.filterQueryParam(request);
         } catch (Exception e) {

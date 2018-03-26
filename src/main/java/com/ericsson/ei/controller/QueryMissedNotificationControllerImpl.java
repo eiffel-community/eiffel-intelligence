@@ -46,11 +46,12 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      * @param subscriptionName
      * @return ResponseEntity
      */
-    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
-            @RequestParam("SubscriptionName") final String subscriptionName) {
+    public ResponseEntity<QueryResponse> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
+        QueryResponse queryResponse = new QueryResponse();
         List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+        queryResponse.setResponseEntity(response.toString());
         LOGGER.debug("The response is : " + response.toString());
-        return new ResponseEntity(response.toString(), HttpStatus.OK);
+        return new ResponseEntity(queryResponse, HttpStatus.OK);
     }
 
 }

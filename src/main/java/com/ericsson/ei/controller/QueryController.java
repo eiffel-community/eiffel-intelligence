@@ -23,7 +23,7 @@ public interface QueryController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> getQuery(
+    public ResponseEntity<?> getQuery(
         @RequestParam
         String request);
 
@@ -32,7 +32,7 @@ public interface QueryController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<com.ericsson.ei.controller.model.QueryResponse> updateQuery(
+    public ResponseEntity<?> updateQuery(
         @RequestParam
         String request);
 

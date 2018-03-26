@@ -1,11 +1,9 @@
 
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -15,17 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/aggregatedObject", produces = "application/json")
-public interface AggregatedObjectController {
+@RequestMapping(value = "/download/subscriptiontemplate", produces = "application/json")
+public interface SubscriptiontemplateController {
 
 
     /**
-     * No description
+     * Subscription template
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(
-        @RequestParam
-        String id);
+    public ResponseEntity<?> getDownloadSubscriptiontemplate();
 
 }

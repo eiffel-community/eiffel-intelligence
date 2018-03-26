@@ -19,10 +19,7 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
-import com.mongodb.DBObject;
-import lombok.Getter;
-import lombok.Setter;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +29,14 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.util.JSON;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
 public class ObjectHandler {
@@ -192,12 +194,13 @@ public class ObjectHandler {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
                 ((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
-                DBObject result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
-                if(result != null){
+                Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(), documentJson.toString());
+                if (result != null) {
                     log.info("DB locked by " + Thread.currentThread().getId() + " thread");
                     documentLocked = false;
-                    return result.toString();}
-//              To Remove
+                    return JSON.serialize(result);
+                }
+                // To Remove
                 log.info("Waiting by " + Thread.currentThread().getId() + " thread");
             } catch (Exception e) {
                 log.info(e.getMessage(),e); }

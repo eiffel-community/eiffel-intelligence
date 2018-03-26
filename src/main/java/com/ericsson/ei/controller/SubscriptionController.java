@@ -24,7 +24,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptions();
+    public ResponseEntity<List<String>> getSubscriptions();
 
     /**
      * Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique.
@@ -34,34 +34,34 @@ public interface SubscriptionController {
     public ResponseEntity<?> createSubscription(
         @javax.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
-        com.ericsson.ei.controller.model.Subscription subscription);
+        Subscription subscription);
 
     /**
      * Modify an existing Subscription.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> updateSubscriptions(
+    public ResponseEntity<SubscriptionResponse> updateSubscriptions(
         @javax.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
-        com.ericsson.ei.controller.model.Subscription subscription);
+        Subscription subscription);
 
     /**
      * Returns the subscription rules for given subscription name.
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptionById(
+    public ResponseEntity<List<String>> getSubscriptionById(
         @PathVariable(required = false)
-        String subscriptionName);
+        java.lang.String subscriptionName);
 
     /**
      * Removes the subscription from the database.
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.DELETE)
-    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> deleteSubscriptionById(
+    public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(
         @PathVariable(required = false)
-        String subscriptionName);
+        java.lang.String subscriptionName);
 
 }

@@ -1,0 +1,33 @@
+{
+        "subscriptionName": "Subscription_1",
+        "repeat": false,
+        "created": "data-time",
+        "notificationType": "MAIL",
+        "notificationMeta": "mohammad.saifullah@ericsson.com, ASAAh@DSDS.DSSD, asfdfdsafg; mohaklkmad.saifullah@ericsson.com",
+        "notificationMessage": "@",
+        "requirements": [
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+                ]
+
+            },
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+                ]
+
+            }
+        ],
+        "postParameters" : [
+        {"param1": "gav.groupId"},
+        {"param2" : "id"}
+        ],
+        "body" : "json={\"parameter\": [{\"name\":\"param1\", \"value\":%?gav.groupId%},{\"name\":\"param2\", \"value\":%?eventTriggerId%}]}",        
+        "asQueryString" : "false",
+        "asBody" : "true"
+   }

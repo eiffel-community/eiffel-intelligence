@@ -16,6 +16,11 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.PostConstruct;
 
 import lombok.Getter;
@@ -47,17 +52,19 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-    
+
     @Autowired
     private MailSender mailSender;
+
+    Set<String> emailAddresses = new HashSet<>();
 
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject
-     * and send mail to the receiver with aggregatedObject as the body.
+     * This method takes two arguments i.e receiver mail-id and aggregatedObject and
+     * send mail to the receiver with aggregatedObject as the body.
      * 
      * @param receiver
      * @param aggregatedObject
@@ -67,10 +74,22 @@ public class SendMail {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom(sender);
-        message.setTo(receiver);
+        // message.setTo(receiver);
         message.setSubject(subject);
         message.setText(aggregatedObject);
-        mailSender.send(message);
+        // mailSender.send(message);
+
+        extractEmails(receiver);
+
+        for (String email : emailAddresses) {
+            System.out.println(email);
+
+            if (validateEmail(email)) {
+                System.out.println("VALIDATED EMAIL ADD:" + email);
+                message.setTo(receiver);
+                // mailSender.send(message);
+            }
+        }
     }
 
     @PostConstruct
@@ -78,4 +97,23 @@ public class SendMail {
         log.info("Email Sender : " + sender);
         log.info("Email Subject : " + subject);
     }
+
+    public void extractEmails(String contents) {
+        String pattern = "\\b[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z0-9.-]+\\b";
+        Pattern pat = Pattern.compile(pattern);
+        Matcher match = pat.matcher(contents);
+
+        while (match.find()) {
+            emailAddresses.add(match.group());
+            System.out.println(match.group());
+        }
+    }
+
+    public boolean validateEmail(String email) {
+        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+
+        return matcher.matches();
+    }
+
 }

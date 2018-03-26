@@ -1,76 +1,110 @@
 {
-  "_id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
-  "aggregatedObject": {
-    "ongoing": "false",
-    "test_batches": [
+  "_id":"b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+  "aggregatedObject":{
+    "ongoing":"false",
+    "test_suite":[
       {
-        "recipes": [
+        "test_case":[
           {
-            "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
-            "constraints": {
-              "environment": {
-                "os": "ubuntu-15.04",
-                "MY_PATH": "/home/lt-worf"
+            "conclusion":"SUCCESSFUL",
+            "ongoing":"false",
+            "test_data":null,
+            "verdict":"PASSED",
+            "trigger_event_id":"v46ef19d-20gb-4d2y-h9fa-87dada6kde47",
+            "description":"Accidentally started a fire in the lab during execution.",
+            "metrics":[
+              {
+                "name":"myMetric",
+                "value":5
               },
-              "load": 10000
-            },
-            "testCase": {
-              "tracker": "My Test Management System",
-              "id": "TC-1234",
-              "uri": "http://tm.company.com/browse/TC-1234"
-            }
+              {
+                "name":"throughput",
+                "value":8.325
+              },
+              {
+                "name":"somethingElse",
+                "value":"hello"
+              }
+            ]
           },
           {
-            "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
-            "constraints": {
-              "environment": {
-                "os": "ubuntu-16.04.1",
-                "MY_PATH": "/home/cpt-picard"
+            "conclusion":"SUCCESSFUL",
+            "ongoing":"true",
+            "test_data":null,
+            "verdict":"PASSED",
+            "trigger_event_id":"v46ef19a-20ga-4d2y-h9fa-8763ae6kde47",
+            "description":"Accidentally started a fire in the lab during execution.",
+            "metrics":[
+              {
+                "name":"myMetric",
+                "value":5
               },
-              "load": 500
-            },
-            "testCase": {
-              "tracker": "My Test Management System",
-              "id": "TC-1234",
-              "uri": "http://tm.company.com/browse/TC-1234"
-            }
-          }
-        ],
-        "name": "First batch",
-        "priority": 1,
-        "dependencies": [
-          {
-            "dependency": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
-            "dependent": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0"
+              {
+                "name":"throughput",
+                "value":8.325
+              },
+              {
+                "name":"somethingElse",
+                "value":"hello"
+              }
+            ]
           }
         ]
       }
     ],
-    "test_cases": [
+    "test_batches":[
       {
-        "ongoing": "false",
-        "test_data": null,
-        "test_cases": [
+        "recipes":[
           {
-            "conclusion": "SUCCESSFUL",
-            "ongoing": "true",
-            "test_data": null,
-            "verdict": "PASSED",
-            "trigger_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+            "id":"aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+            "constraints":{
+              "environment":{
+                "os":"ubuntu-15.04",
+                "MY_PATH":"/home/lt-worf"
+              },
+              "load":10000
+            },
+            "testCase":{
+              "tracker":"My Test Management System",
+              "id":"TC-1234",
+              "uri":"http://tm.company.com/browse/TC-1234"
+            }
+          },
+          {
+            "id":"aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
+            "constraints":{
+              "environment":{
+                "os":"ubuntu-16.04.1",
+                "MY_PATH":"/home/cpt-picard"
+              },
+              "load":500
+            },
+            "testCase":{
+              "tracker":"My Test Management System",
+              "id":"TC-1234",
+              "uri":"http://tm.company.com/browse/TC-1234"
+            }
           }
         ],
-        "trigger_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+        "name":"First batch",
+        "priority":1,
+        "dependencies":[
+          {
+            "dependency":"aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
+            "dependent":"aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0"
+          }
+        ]
       }
     ],
-    "TemplateName": "TEST_EXECUTION_1",
-    "id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
-    "time": 1234567890,
-    "type": "EiffelActivityTriggeredEvent",
-    "version": "1.0.0",
-    "outcome": {
-      "conclusion": "TIMED_OUT",
-      "description": "Compilation timed out."
+    "TemplateName":"TEST_EXECUTION_1",
+    "id":"b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+    "time":1234567890,
+    "type":"EiffelActivityTriggeredEvent",
+    "version":"1.0.0",
+    "outcome":{
+      "conclusion":"TIMED_OUT",
+      "description":"Compilation timed out."
     },
-    "test_suite_name": "Pre-release installation and security verification"
+    "test_suite_name":"Pre-release installation and security verification"
   }
 }

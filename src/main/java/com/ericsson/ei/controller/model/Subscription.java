@@ -70,6 +70,19 @@ public class Subscription {
         this.created = created;
     }
 
+<<<<<<< HEAD
+=======
+    @JsonProperty("notificationMessage")
+    public String getNotificationMessage() {
+        return notificationMessage;
+    }
+
+    @JsonProperty("notificationMessage")
+    public void setNotificationMessage(String notificationMessage) {
+        this.notificationMessage = notificationMessage;
+    }
+
+>>>>>>> a516e969eb13fedb1741cf8c4f2d76d776655f23
     @JsonProperty("notificationMeta")
     public String getNotificationMeta() {
         return notificationMeta;
@@ -109,6 +122,7 @@ public class Subscription {
     public void setNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessageKeyValues) {
         this.notificationMessageKeyValues = notificationMessageKeyValues;
     }
+
 
     @JsonProperty("repeat")
     public Boolean getRepeat() {

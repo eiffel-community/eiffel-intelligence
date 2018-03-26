@@ -72,7 +72,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
             }
 
-<<<<<<< HEAD
+
             if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
                 subscriptionService.addSubscription(subscription);
                 LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
@@ -88,32 +88,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             }
         }
         return subResponse;
-=======
-        try {
-            subscriptionValidator.validateSubscription(subscription);
-        } catch (SubscriptionValidationException e) {
-            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName()
-                    + " failed! Error: " + e.getMessage();
-            LOG.error(msg);
-            subscriptionResponse.setMsg(msg);
-            subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
-        }
 
-        if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
-            subscriptionService.addSubscription(subscription);
-            LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
-            subscriptionResponse.setMsg("Inserted Successfully");
-            subscriptionResponse.setStatusCode(HttpStatus.OK.value());
-            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.OK);
-        } else {
-            LOG.error("Subscription :" + subscription.getSubscriptionName() + " already exists");
-            subscriptionResponse.setMsg("Subscription already exists");
-            subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-            return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
-        }
-
->>>>>>> a516e969eb13fedb1741cf8c4f2d76d776655f23
     }
 
     @Override
@@ -138,12 +113,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     // @CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
-<<<<<<< HEAD
     public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         Subscription subscription = subscriptions.get(0);
-=======
-    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody Subscription subscription) {
->>>>>>> a516e969eb13fedb1741cf8c4f2d76d776655f23
         String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
@@ -175,7 +146,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
 
     }
-
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")

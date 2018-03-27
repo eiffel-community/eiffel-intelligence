@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/missedNotifications", produces = "application/json")
-public interface MissedNotificationController {
+@RequestMapping(value = "/queryMissedNotifications", produces = "application/json")
+public interface QueryMissedNotificationController {
 
 
     /**

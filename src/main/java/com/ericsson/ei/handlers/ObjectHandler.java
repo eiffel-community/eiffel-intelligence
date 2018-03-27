@@ -66,6 +66,10 @@ public class ObjectHandler {
     @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
+    
+    @Getter
+    @Value("${aggregated.collection.ttlValue}")
+    private int ttlValue;
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
@@ -75,6 +79,8 @@ public class ObjectHandler {
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+ 
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);

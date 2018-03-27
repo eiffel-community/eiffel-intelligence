@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class FlowTest3 extends ObjectForAllEventsFlowTest {
+public class SingleEventAggregationTest extends FlowTestBase {
 
     private static Logger log = LoggerFactory.getLogger(FlowTest.class);
 
@@ -65,6 +65,7 @@ public class FlowTest3 extends ObjectForAllEventsFlowTest {
         eventNames.add("EiffelConfidenceLevelModifiedEvent");
         eventNames.add("EiffelEnvironmentDefinedEvent");
         eventNames.add("EiffelFlowContextDefinedEvent");
+        eventNames.add("EiffelIssueVerifiedEvent");
         eventNames.add("EiffelSourceChangeCreatedEvent");
         eventNames.add("EiffelSourceChangeSubmittedEvent");
         eventNames.add("EiffelTestCaseCanceledEvent");
@@ -74,6 +75,16 @@ public class FlowTest3 extends ObjectForAllEventsFlowTest {
         eventNames.add("EiffelTestExecutionRecipeCollectionCreatedEvent");
         eventNames.add("EiffelTestSuiteFinishedEvent");
         eventNames.add("EiffelTestSuiteStartedEvent");
+        eventNames.add("EiffelArtifactDeployedEvent");
+        eventNames.add("EiffelServiceAllocatedEvent");
+        eventNames.add("EiffelServiceDeployedEvent");
+        eventNames.add("EiffelServiceDiscontinuedEvent");
+        eventNames.add("EiffelServiceReturnedEvent");
+        eventNames.add("EiffelServiceStartedEvent");
+        eventNames.add("EiffelServiceStoppedEvent");
+        eventNames.add("EiffelAlertAcknowledgedEvent");
+        eventNames.add("EiffelAlertCeasedEvent");
+        eventNames.add("EiffelAlertRaisedEvent");
 
         return eventNames;
     }
@@ -91,9 +102,9 @@ public class FlowTest3 extends ObjectForAllEventsFlowTest {
                 String document = objectHandler.findObjectById(actualEventID);
                 JsonNode actualJson = objectmapper.readTree(document);
                 JsonNode actualEvent = actualJson.at("/aggregatedObject");
-                ObjectNode object = (ObjectNode) actualEvent;
-                object.without("TemplateName");
-                assertEquals(object.toString(), expectedEvent);
+                ObjectNode objectActualEvent = (ObjectNode) actualEvent;
+                objectActualEvent.without("TemplateName");
+                assertEquals(objectActualEvent.toString(), expectedEvent);
             }
 
         } catch (Exception e) {

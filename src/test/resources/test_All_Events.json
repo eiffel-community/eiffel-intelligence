@@ -385,7 +385,7 @@
     "type": "EiffelIssueVerifiedEvent",
     "version": "1.1.0",
     "time": 1234567890,
-    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee32"
   },
   "data": {
     "issues": [
@@ -727,6 +727,308 @@
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
   ] 
+  },
+  "EiffelArtifactDeployedEvent": {
+    "meta": {
+    "type": "EiffelArtifactDeployedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee22",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "uri": "http://sample.com"
+  },
+  "links": [
+  	{
+      "type": "ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+    
+  ]   
+    
+
+  },
+  "EiffelServiceAllocatedEvent": {
+   "meta": {
+    "type": "EiffelServiceAllocatedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee23",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+    "serviceinstance": "Sever1.domain.com",
+    "owner": "booking.system"
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+     {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+  ]    
+
+  },
+  "EiffelServiceDeployedEvent": {
+   "meta": {
+    "type": "EiffelServiceDeployedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee24",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+    "servicename": "linux.server",
+    "instancename": "server1.domain.com",
+    "owner": "johndoe",
+    "deploymentType": "Canary",
+    "uri": "http://sample.com/instance/server1"
+  },
+  "links": [
+    {
+      "type": "ARTIFACT_DEPLOYED",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceDiscontinuedEvent": {
+   "meta": {
+    "type": "EiffelServiceDiscontinuedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee25",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceReturnedEvent": {
+   "meta": {
+    "type": "EiffelServiceReturnedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee26",
+    "source": {
+            "domainId":"domain"
+     }
+  }, 
+  "data": {   
+  },
+  "links": [
+     {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceStartedEvent": {
+   "meta": {
+    "type": "EiffelServiceStartedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee27",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {    
+    "pid": "10401"    
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceStoppedEvent": {
+   "meta": {
+    "type": "EiffelServiceStoppedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee28",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {    
+  },
+  "links": [
+     {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelAlertAcknowledgedEvent": {
+   "meta": {
+    "type": "EiffelAlertAcknowledgedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee29",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "acknowledgement":"acknowledgement message",
+    "entity":"server1"
+  },
+  "links": [
+    {
+      "type": "ALERT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+  	{
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
+  },
+  "EiffelAlertCeasedEvent": {
+   "meta": {
+    "type": "EiffelAlertCeasedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee30",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "entity":"machine1"
+  },
+  "links": [
+    {
+      "type": "ALERT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
+  },
+  "EiffelAlertRaisedEvent": {
+   "meta": {
+    "type": "EiffelAlertRaisedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee31",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "heading":"Disk space in Jenkins low",
+    "body":"Disk space is too low. Only 0.511GB left on /tmp.",
+    "entity":"machine1",
+    "uri": "http://sample.com/provider",
+    "severity":"CRITICAL"
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
   }
   
 }

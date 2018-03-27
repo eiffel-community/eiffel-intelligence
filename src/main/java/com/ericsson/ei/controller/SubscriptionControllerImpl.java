@@ -72,7 +72,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
             }
 
-
             if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
                 subscriptionService.addSubscription(subscription);
                 LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
@@ -88,7 +87,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             }
         }
         return subResponse;
-
     }
 
     @Override

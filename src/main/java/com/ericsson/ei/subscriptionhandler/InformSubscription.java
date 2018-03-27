@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -84,9 +83,9 @@ public class InformSubscription {
     static Logger log = (Logger) LoggerFactory.getLogger(InformSubscription.class);
 
     /**
-     * This method extracts the mode of notification through which the
-     * subscriber should be notified, from the subscription Object. And if the
-     * notification fails, then it saved in the database.
+     * This method extracts the mode of notification through which the subscriber
+     * should be notified, from the subscription Object. And if the notification
+     * fails, then it saved in the database.
      * 
      * @param aggregatedObject
      * @param subscriptionJson
@@ -98,29 +97,35 @@ public class InformSubscription {
         log.info("NotificationType : " + notificationType);
         String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
         log.info("NotificationMeta : " + notificationMeta);
-        MultiValueMap<String, String> mapNotificationMessage= new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<String, String>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject).toString().toString().replaceAll("^\"|\"$", ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject)
+                        .toString().toString().replaceAll("^\"|\"$", ""));
             }
         }
-        if(notificationType.trim().equals("REST_POST")){
+        if (notificationType.trim().equals("REST_POST")) {
             log.info("Notification through REST_POST");
             int result = -1;
-            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString().replaceAll("^\"|\"$", "");
+            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
+                    .replaceAll("^\"|\"$", "");
             log.info("headerContentMediaType : " + headerContentMediaType);
             result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
-            if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value() || result == HttpStatus.NO_CONTENT.value()) {
+            if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
+                    || result == HttpStatus.NO_CONTENT.value()) {
                 log.info("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
-                    result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
-                      log.info("After trying for " + (i + 1) + " times, the result is : " + result);
+                    result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
+                            headerContentMediaType);
+                    log.info("After trying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
-                if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
+                if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value()
+                        && result != HttpStatus.NO_CONTENT.value()) {
                     String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);
                     mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName,
@@ -134,16 +139,15 @@ public class InformSubscription {
                         log.info("Notification saved in the database");
                 }
             }
-        }
-        else if (notificationType.trim().equals("MAIL")) {
+        } else if (notificationType.trim().equals("MAIL")) {
             log.info("Notification through EMAIL");
             sendMail.sendMail(notificationMeta, String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
         }
     }
 
     /**
-     * This method saves the missed Notification into a single document along
-     * with Subscription name, notification meta and time period.
+     * This method saves the missed Notification into a single document along with
+     * Subscription name, notification meta and time period.
      * 
      * @param aggregatedObject
      * @param subscriptionName
@@ -171,8 +175,8 @@ public class InformSubscription {
     }
 
     /**
-     * This method is responsible to display the configurable application
-     * properties and to create TTL index on the missed Notification collection.
+     * This method is responsible to display the configurable application properties
+     * and to create TTL index on the missed Notification collection.
      */
     @PostConstruct
     public void init() {

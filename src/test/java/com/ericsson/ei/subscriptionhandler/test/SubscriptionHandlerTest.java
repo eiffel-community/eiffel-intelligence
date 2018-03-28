@@ -16,13 +16,16 @@
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.Iterator;
-
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,21 +37,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest
 public class SubscriptionHandlerTest {
+
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+    private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
+    private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static final String DB_NAME = "MissedNotification";
+    private static final String COLLECTION_NAME = "Notification";
+    private static String aggregatedObject;
+    private static String subscriptionData;
+    private static MongodForTestsFactory testsFactory;
+    private static MongoClient mongoClient = null;
 
     @Autowired
     private RunSubscription runSubscription;
@@ -56,33 +64,20 @@ public class SubscriptionHandlerTest {
     @Autowired
     private SubscriptionHandler handler;
 
-    private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
-    private static String aggregatedObject;
-    private static String subscriptionData;
-
-    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
-
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private static MongodForTestsFactory testsFactory;
-    static MongoClient mongoClient = null;
-
-    static String host = "localhost";
-    static int port = 27017;
-    private static String dataBaseName = "MissedNotification";
-    private static String collectionName = "Notification";
+    @Autowired
+    private InformSubscription informSubscription;
 
     public static void setUpEmbeddedMongo() throws Exception {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
-
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -94,32 +89,31 @@ public class SubscriptionHandlerTest {
     @PostConstruct
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
-        System.out.println("Database connected");
+        mongoDBHandler.insertDocument("eiffel_intelligence","subscription",subscriptionData);
+        LOGGER.debug("Database connected");
     }
-
 
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        ArrayNode requirementNode = null;
+        JsonNode subscriptionJson;
+        ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(subscriptionData);
             requirementNode = (ArrayNode) subscriptionJson.get("requirements");
             requirementIterator = requirementNode.elements();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson);
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator);
         assertEquals(output, true);
     }
 
     @Test
-    public void MissedNotificationTest() {
-        handler.extractConditions(aggregatedObject, subscriptionData);
-        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+    public void missedNotificationTest() {
+        handler.checkSubscriptionForObject(aggregatedObject);
+        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments("eiffel_intelligence","subscription");
         Iterator itr = outputDoc.iterator();
         String data = itr.next().toString();
         JsonNode jsonResult = null;
@@ -129,10 +123,15 @@ public class SubscriptionHandlerTest {
             expectedOutput = mapper.readTree(aggregatedObject);
             jsonResult = mapper.readTree(data);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         JsonNode output = jsonResult.get("AggregatedObject");
-        assertEquals(expectedOutput.toString(), output.toString());
+        assertEquals(expectedOutput, output);
+    }
+
+    @Test
+    public void testInformSubscription() throws IOException {
+        informSubscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
     }
 
     @AfterClass

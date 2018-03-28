@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SendMail {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(SendMail.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SendMail.class);
 
     @Getter
     @Value("${email.sender}")
@@ -63,9 +63,7 @@ public class SendMail {
      * @param aggregatedObject
      */
     public void sendMail(String receiver, String aggregatedObject) {
-
         SimpleMailMessage message = new SimpleMailMessage();
-
         message.setFrom(sender);
         message.setTo(receiver);
         message.setSubject(subject);
@@ -75,7 +73,7 @@ public class SendMail {
 
     @PostConstruct
     public void display() {
-        log.info("Email Sender : " + sender);
-        log.info("Email Subject : " + subject);
+        LOGGER.debug("Email Sender : " + sender);
+        LOGGER.debug("Email Subject : " + subject);
     }
 }

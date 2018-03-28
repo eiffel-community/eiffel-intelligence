@@ -77,16 +77,7 @@
             ],
             "artifacts": [
                 {
-                    "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-                    "internalComposition": {
-                        "compositions": [
-                            {
-                                "eventId": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
-                                "name": "Other composition",
-                                "time": 5005
-                            }
-                        ]
-                    }
+                    "id": "1100572b-c3j4-441e-abc9-b62f48080011"
                 }
             ]
         },

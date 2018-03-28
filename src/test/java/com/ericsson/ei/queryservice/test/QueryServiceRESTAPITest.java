@@ -13,11 +13,12 @@
 */
 package com.ericsson.ei.queryservice.test;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.QueryAggregatedObjectController;
-import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,15 +41,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.AggregatedObjectController;
+import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
+import com.ericsson.ei.controller.MissedNotificationControllerImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
-
-@ContextConfiguration(classes = {App.class})
+@ContextConfiguration(classes = { App.class })
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
+@WebMvcTest(value = AggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
 
     @Autowired
@@ -68,10 +69,10 @@ public class QueryServiceRESTAPITest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    private QueryAggregatedObjectControllerImpl aggregatedObjectController;
+    private AggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private QueryMissedNotificationControllerImpl missedNotificationController;
+    private MissedNotificationControllerImpl missedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -89,7 +90,7 @@ public class QueryServiceRESTAPITest {
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/aggregatedObject")
                 .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
@@ -112,7 +113,7 @@ public class QueryServiceRESTAPITest {
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/missedNotifications?")
                 .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 

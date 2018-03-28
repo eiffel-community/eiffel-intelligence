@@ -13,8 +13,9 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,33 +25,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.queryservice.ProcessMissedNotification;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
- * on the basis of the ID from the aggregatedObject.
+ * on the basis of the SubscriptionName from the Missed Notification Object.
+ * 
  */
 @Component
 @CrossOrigin
-public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
+public class MissedNotificationControllerImpl implements MissedNotificationController {
 
-    private static Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(MissedNotificationControllerImpl.class);
 
     @Autowired
-    private ProcessAggregatedObject processAggregatedObject;
+    private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST Get mechanism to extract the
-     * aggregated data on the basis of the ID from the aggregatedObject.
-     *
-     * @param id
+     * This method is responsible for the REST GET mechanism to extract the data on
+     * the basis of the SubscriptionName from the Missed Notification Object.
+     * 
+     * @param subscriptionName
      * @return ResponseEntity
      */
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
-        QueryResponse queryResponse= new QueryResponse();
-        ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(id);
-        queryResponse.setResponseEntity(response.toString());
-        LOGGER.debug("The response is : " + response.toString());
-        return new ResponseEntity(queryResponse, HttpStatus.OK);
+    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+            @RequestParam("SubscriptionName") final String subscriptionName) {
+        List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+        log.info("The response is : " + response.toString());
+        return new ResponseEntity(response.toString(), HttpStatus.OK);
     }
+
 }

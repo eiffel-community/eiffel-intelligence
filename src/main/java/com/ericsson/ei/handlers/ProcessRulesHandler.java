@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
+import com.ericsson.ei.rules.RulesHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +30,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class ProcessRulesHandler {
 
-     static Logger log = (Logger) LoggerFactory.getLogger(ProcessRulesHandler.class);
+    private static Logger log = (Logger) LoggerFactory.getLogger(ProcessRulesHandler.class);
 
     @Autowired
-    JmesPathInterface jmespath;
+    private JmesPathInterface jmespath;
 
     @Autowired
-    MergeHandler mergeHandler;
+    private MergeHandler mergeHandler;
+
+    @Autowired
+    private RulesHandler rulesHandler;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmespath = jmesPathInterface;
@@ -48,9 +52,16 @@ public class ProcessRulesHandler {
     public String runProcessRules(String event, RulesObject rulesObject, String aggregationObject, String objectId, String mergeId) {
         String processRules = rulesObject.fetchProcessRules();
         if (processRules != null) {
+            String identifyRule = rulesHandler.getRulesForEvent(event).getIdentifyRules();
+            String id = jmespath.runRuleOnEvent(identifyRule, event).get(0).textValue();
+
+            if(processRules.contains("%IdentifyRules%")) {
+                processRules = processRules.replace("%IdentifyRules%", id);
+            }
             log.info("processRules: " + processRules);
             log.info("aggregationObject: " + aggregationObject);
             log.info("event: " + event);
+
             JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
             return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
         }

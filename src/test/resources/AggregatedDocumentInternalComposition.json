@@ -89,6 +89,7 @@
                 "testCaseStartedTime": 1481875925916,
                 "testCaseStartedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
                 "testCaseFinishedTime": 1481875935919,
+                "testCaseDuration": 10003,
                 "outcome": {
                     "conclusion": "SUCCESSFUL",
                     "verdict": "PASSED",
@@ -104,6 +105,7 @@
                 "testCaseStartedTime": 1481875925918,
                 "testCaseFinishEventId": "17b20d3a-23a6-41c6-8da0-a87a240b4c2f",
                 "testCaseFinishedTime": 1481875938919,
+                "testCaseDuration": 13001,
                 "outcome": {
                     "conclusion": "SUCCESSFUL",
                     "verdict": "PASSED",

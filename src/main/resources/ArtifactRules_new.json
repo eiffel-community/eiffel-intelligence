@@ -95,7 +95,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
+    "ProcessRules": "{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}",
     "ProcessFunction": null
   },
   {

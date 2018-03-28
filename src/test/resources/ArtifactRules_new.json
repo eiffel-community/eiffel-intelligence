@@ -91,12 +91,12 @@
     "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
     "MatchIdRules": { "$and": [{"aggregatedObject.testCaseExecutions.testCaseStartedEventId": "%IdentifyRules%"}]},
     "ExtractionRules": "{ testCaseFinishEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}",
-    "MergeResolverRules": "{\"testCaseStartedEventId\":%IdentifyRules%}",
+    "MergeResolverRules": "{\"testCaseTriggeredEventId\":%IdentifyRules%}",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": "{testCaseDuration : diff(testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}",
+    "ProcessFunction": "difference"
   },
   {
     "TemplateName": "ARTIFACT_1",

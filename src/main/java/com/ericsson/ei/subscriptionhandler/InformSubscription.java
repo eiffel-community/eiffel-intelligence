@@ -19,10 +19,13 @@ package com.ericsson.ei.subscriptionhandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,34 +98,30 @@ public class InformSubscription {
         log.info("NotificationType : " + notificationType);
         String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
         log.info("NotificationMeta : " + notificationMeta);
-        String notificationMessage = subscriptionJson.get("notificationMessage").toString().replaceAll("^\"|\"$", "");
-        String filteredAggregatedObject = jmespath.runRuleOnEvent(notificationMessage, aggregatedObject).toString();
-        if (notificationType.trim().equals("REST_POST") || notificationType.trim().equals("REST_POST_JENKINS")) {
+        MultiValueMap<String, String> mapNotificationMessage= new LinkedMultiValueMap<String, String>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject).toString().toString().replaceAll("^\"|\"$", ""));
+            }
+        }
+        if(notificationType.trim().equals("REST_POST")){
             log.info("Notification through REST_POST");
             int result = -1;
-            if(notificationType.trim().equals("REST_POST")){result = restTemplate.postData(filteredAggregatedObject, notificationMeta);}
-            if(notificationType.trim().equals("REST_POST_JENKINS")){
-                MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                map.add("json", filteredAggregatedObject);
-                result = restTemplate.postDataMultiValue(notificationMeta, map);
-            }
+            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString().replaceAll("^\"|\"$", "");
+            log.info("headerContentMediaType : " + headerContentMediaType);
+            result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value() || result == HttpStatus.NO_CONTENT.value()) {
                 log.info("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
-                    if(notificationType.trim().equals("REST_POST")){result = restTemplate.postData(filteredAggregatedObject, notificationMeta);}
-                    if(notificationType.trim().equals("REST_POST_JENKINS")){
-                        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                        map.add("json", filteredAggregatedObject);
-                        result = restTemplate.postDataMultiValue(notificationMeta, map);
-                    }
-                        log.info("After trying for " + (i + 1) + " times, the result is : " + result);
+                    result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
+                      log.info("After trying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
-
                 if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
-                    String input = prepareMissedNotification(filteredAggregatedObject, subscriptionName, notificationMeta);
+                    String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);
                     mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName,
                             "Time", ttlValue);
@@ -134,13 +133,11 @@ public class InformSubscription {
                     } else
                         log.info("Notification saved in the database");
                 }
-
             }
         }
         else if (notificationType.trim().equals("MAIL")) {
             log.info("Notification through EMAIL");
-            sendMail.sendMail(notificationMeta, filteredAggregatedObject);
-
+            sendMail.sendMail(notificationMeta, String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
         }
     }
 
@@ -150,7 +147,7 @@ public class InformSubscription {
      * 
      * @param aggregatedObject
      * @param subscriptionName
-     * @param notificationType
+     * @param notificationMeta
      * 
      * @return String
      */

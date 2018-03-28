@@ -17,6 +17,7 @@
 package com.ericsson.ei.subscriptionhandler;
 
 import javax.annotation.PostConstruct;
+
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,7 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-
+    
     @Autowired
     private MailSender mailSender;
 
@@ -55,8 +56,8 @@ public class SendMail {
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject and
-     * send mail to the receiver with aggregatedObject as the body.
+     * This method takes two arguments i.e receiver mail-id and aggregatedObject
+     * and send mail to the receiver with aggregatedObject as the body.
      * 
      * @param receiver
      * @param aggregatedObject

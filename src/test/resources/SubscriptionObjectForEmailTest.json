@@ -3,8 +3,14 @@
         "repeat": false,
         "created": "data-time",
         "notificationType": "MAIL",
-        "notificationMeta": "mohammad.saifullah@ericsson.com, ASAAh@DSDS.DSSD, asfdfdsafg; mohaklkmad.saifullah@ericsson.com",
-        "notificationMessage": "@",
+        "notificationMeta": "mohammad.saifullah@ericsson.com, msdjah, saif.phy@yahoo.com",
+        "restPostBodyMediaType": "application/json",
+        "notificationMessageKeyValues" : [
+          {
+            "formkey" : "",
+            "formvalue" : "@"
+          }
+        ],
         "requirements": [
             {
                 "type": "ARTIFACT_1",
@@ -22,12 +28,5 @@
                 ]
 
             }
-        ],
-        "postParameters" : [
-        {"param1": "gav.groupId"},
-        {"param2" : "id"}
-        ],
-        "body" : "json={\"parameter\": [{\"name\":\"param1\", \"value\":%?gav.groupId%},{\"name\":\"param2\", \"value\":%?eventTriggerId%}]}",        
-        "asQueryString" : "false",
-        "asBody" : "true"
-   }
+        ]
+    }

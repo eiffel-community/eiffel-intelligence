@@ -41,7 +41,9 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules": "links | [?type=='ACTIVITY_EXECUTION'].target",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {
+      "_id": "%IdentifyRules_objid%"
+    },
     "ExtractionRules": "{ ongoing : `\"false\"`, outcome : data.outcome}",
     "MergeResolverRules": null,
     "ArrayMergeOptions": "",
@@ -96,8 +98,8 @@
     "MatchIdRules": {
       "_id": "%IdentifyRules_objid%"
     },
-    "ExtractionRules": "{ test_cases : [{trigger_event_id : meta.id, test_data : data.testcase, ongoing : `\"false\"`}]}",
-    "MergeResolverRules": "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ExtractionRules": "{trigger_event_id : meta.id, test_data : data.testcase, ongoing : `\"false\"`}",
+    "MergeResolverRules": "[{NONEPATH:NONE},  {test_suite: [{ test_case : [{ trigger_event_id:meta.id}]} ]}]",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
@@ -114,8 +116,8 @@
     "MatchIdRules": {
       "_id": "%IdentifyRules_objid%"
     },
-    "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"true\"`}]}",
-    "MergeResolverRules":  "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ExtractionRules": "{ ongoing : `\"true\"`}",
+    "MergeResolverRules": "[{NONEPATH:NONE}, {test_suite: [{ test_case : [{ trigger_event_id: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]} ]}]",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
@@ -132,8 +134,8 @@
     "MatchIdRules": {
       "_id": "%IdentifyRules_objid%"
     },
-    "ExtractionRules": "{ test_cases : [{trigger_event_id : links | [] | [?type=='TEST_CASE_EXECUTION'].target | [0], ongoing : `\"false\"`, verdict : data.outcome.verdict, conclusion : data.outcome.conclusion}]}",
-    "MergeResolverRules": "{\"trigger_event_id:\":%IdentifyRules%}",
+    "ExtractionRules": "{ongoing : `\"false\"`, verdict : data.outcome.verdict, conclusion : data.outcome.conclusion, metrics : data.outcome.metrics, description : data.outcome.description}",
+    "MergeResolverRules": "[{NONEPATH:NONE}, {test_suite: [{ test_case : [{ trigger_event_id: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]} ]}]",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",

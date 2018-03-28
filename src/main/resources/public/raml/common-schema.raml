@@ -11,14 +11,28 @@ subscription: |
           "created":{
              "type":"long"
           },
-          "notificationMessage":{
-             "type":"string"
-          },
           "notificationMeta":{
              "type":"string"
           },
           "notificationType":{
              "type":"string"
+          },
+          "restPostBodyMediaType":{
+                       "type":"string"
+                    },
+          "notificationMessageKeyValues":{
+                       "items":{
+                              "properties":{
+                                 "formkey":{
+                                    "type":"string"
+                                 },
+                                 "formvalue":{
+                                     "type":"string"
+                                            }
+                              },
+                              "type":"object"
+                           },
+                           "type":"array"
           },
           "repeat":{
              "type":"boolean"
@@ -63,15 +77,29 @@ subscriptionList: |
           "created":{
              "type":"long"
           },
-          "notificationMessage":{
-             "type":"string"
-          },
           "notificationMeta":{
              "type":"string"
           },
           "notificationType":{
              "type":"string"
           },
+          "restPostBodyMediaType":{
+                       "type":"string"
+                    },
+          "notificationMessageKeyValues":{
+                       "items":{
+                              "properties":{
+                                 "formkey":{
+                                    "type":"string"
+                                 },
+                                 "formvalue":{
+                                     "type":"string"
+                                            }
+                              },
+                              "type":"object"
+                           },
+                           "type":"array"
+                    },
           "repeat":{
              "type":"boolean"
           },

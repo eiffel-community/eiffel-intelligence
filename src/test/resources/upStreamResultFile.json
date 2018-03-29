@@ -112,5 +112,45 @@
                 ]
             }
         ]
-    ]
+    ],
+    {
+        "meta": {
+            "time": 1473177136433,
+            "source": {
+                "domainId": "example.domain"
+            },
+            "type": "EiffelArtifactCreatedEvent",
+            "id": "1100572b-c3j4-441e-abc9-b62f48080011",
+            "version": "1.0.0"
+        },
+        "links": [
+            {
+                "target": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                "type": "COMPOSITION"
+            }
+        ],
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtC2",
+                    "key": "name"
+                },
+                {
+                    "value": 58,
+                    "key": "iteration"
+                }
+            ],
+            "fileInformation": [
+                {
+                    "extension": "jar",
+                    "classifier": "debug"
+                }
+            ],
+            "gav": {
+                "version": "1.33.0",
+                "artifactId": "other-system",
+                "groupId": "com.othercompany.otherproduct"
+            }
+        }
+    }
 ]

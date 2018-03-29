@@ -254,7 +254,7 @@ public class FlowTestBase {
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
             System.out.println(actualJson);
-            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), true);
+            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
         } catch (IOException e) {
             log.info(e.getMessage(),e);
         }

@@ -16,9 +16,7 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,9 +36,6 @@ import org.json.JSONException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,7 +249,7 @@ public class FlowTestBase {
             JsonNode actualJson = objectmapper.readTree(document);
             String breakString = "breakHere";
             System.out.println(actualJson);
-            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), true);
+            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
         } catch (IOException e) {
             log.info(e.getMessage(),e);
         }

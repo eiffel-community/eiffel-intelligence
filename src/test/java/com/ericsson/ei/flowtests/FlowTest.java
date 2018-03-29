@@ -74,6 +74,11 @@ public class FlowTest extends FlowTestBase {
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
         eventNames.add("event_EiffelTestCaseStartedEvent_3");
         eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
 
         return eventNames;
     }

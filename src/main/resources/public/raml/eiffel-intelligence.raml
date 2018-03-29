@@ -27,6 +27,8 @@
   mediaType: application/json
   baseUri: /
   /subscriptions: !include subscription.raml
-  /query: !include queryservice.raml  
+  /query: !include query.raml
+  /queryAggregatedObject: !include query-aggregated_object.raml
+  /queryMissedNotifications: !include query-missed_notifications.raml
   /jmespathrule: !include jmespath.raml
   /download: !include template.raml

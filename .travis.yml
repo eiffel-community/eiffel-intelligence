@@ -13,10 +13,4 @@ before_install:
   - chmod +x pom.xml
   
 script:
-  - mvn -DsomeModule.test.excludes="**/FlowTest.java, **/FlowTest2.java, **/TrafficGeneratedTest.java, **/FlowTestExternalComposition.java, **/FlowTestTestExecution.java, **/FlowSourceChangeObject.java" test
-  - mvn -DsomeModule.test.includes="**/FlowTest.java" test
-  - mvn -DsomeModule.test.includes="**/FlowTest2.java" test
-  - mvn -DsomeModule.test.includes="**/TrafficGeneratedTest.java" test
-  - mvn -DsomeModule.test.includes="**/FlowTestExternalComposition.java" test
-  - mvn -DsomeModule.test.includes="**/FlowSourceChangeObject.java" test
-  - mvn -DsomeModule.test.includes="**/FlowTestTestExecution.java" test
+  - mvn clean install

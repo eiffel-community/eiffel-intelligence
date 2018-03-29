@@ -4,8 +4,16 @@
         "TemplateName": "ARTIFACT_1",
         "fileInformation": [
             {
-                "extension": "jar",
-                "classifier": ""
+                "classifier": "debug",
+                "extension": "jar"
+            },
+            {
+                "classifier": "test",
+                "extension": "txt"
+            },
+            {
+                "classifier": "application",
+                "extension": "exe"
             }
         ],
         "buildCommand": null,
@@ -14,6 +22,12 @@
                 "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
                 "name": "readyForDelivery",
                 "time": 1481875944272,
+                "value": "SUCCESS"
+            },
+            {
+                "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a76",
+                "name": "performance",
+                "time": 1481875988767,
                 "value": "SUCCESS"
             }
         ],
@@ -61,23 +75,44 @@
                "name":"My composition",
                "time":2000
             }
+         ],
+         "artifacts": [
+            {
+               "id": "1100572b-c3j4-441e-abc9-b62f48080011"
+            }
          ]
       },
         "testCaseExecutions": [
             {
-                "testCaseTrigeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
-                "testCaseTrigeredTime": 1490777327230,
-                "testCaseFinishEventId": "11109351-41e0-474a-bc1c-f6e81e58a1c9",
+                "testCaseTriggeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
+                "testCaseTriggeredTime": 1490777327230,
+                "testCaseFinishedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c27c1111",
                 "testCaseStartedTime": 1481875925916,
                 "testCaseStartedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
                 "testCaseFinishedTime": 1481875935919,
                 "testCaseDuration": 10003,
-                "testCase": {
+                "outcome": {
                     "conclusion": "SUCCESSFUL",
                     "verdict": "PASSED",
                     "tracker": "My Other Test Management System",
                     "id": "TC5",
                     "uri": "https://other-tm.company.com/testCase/TC5"
+                }
+            },
+            {
+                "testCaseTriggeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f5",
+                "testCaseTriggeredTime": 1490777357289,
+                "testCaseStartedEventId": "e06defd8-fcf0-4e08-bf32-43bbc06cf655",
+                "testCaseStartedTime": 1481875925918,
+                "testCaseFinishedEventId": "17b20d3a-23a6-41c6-8da0-a87a240b4c2f",
+                "testCaseFinishedTime": 1481875938919,
+                "testCaseDuration": 13001,
+                "outcome": {
+                    "conclusion": "SUCCESSFUL",
+                    "verdict": "PASSED",
+                    "tracker": "My Other Test Management System",
+                    "id": "TC6",
+                    "uri": "https://other-tm.company.com/testCase/TC6"
                 }
             }
         ],
@@ -99,6 +134,16 @@
                     }
                 ],
                 "time": 1481875921763
+            },
+            {
+                "eventId": "33d05e6f-9bd9-4138-83b6-e20cc74681b5",
+                "locations": [
+                    {
+                        "type": "ARTIFACTORY",
+                        "uri": "https://myrepository.com/artifactory"
+                    }
+                ],
+                "time": 1481875921843
             }
         ]
     }

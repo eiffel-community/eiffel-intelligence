@@ -237,7 +237,7 @@ public class FlowTestBase {
             processedEvents = countProcessedEvents(database, event_map);
             log.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
-                TimeUnit.MILLISECONDS.sleep(1000);
+                TimeUnit.MILLISECONDS.sleep(3000);
             } catch (Exception e) {
                 log.info(e.getMessage(),e);
             }

@@ -7,15 +7,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -25,15 +17,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -43,15 +27,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -61,15 +37,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -79,15 +47,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -97,15 +57,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -115,15 +67,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -133,15 +77,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -151,15 +87,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -169,15 +97,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -187,15 +107,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -205,15 +117,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -223,15 +127,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },  
   {
     "TemplateName":"Event_copy",
@@ -241,15 +137,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -259,15 +147,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -277,15 +157,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -295,15 +167,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },{
     "TemplateName":"Event_copy",
     "Type":"EiffelServiceAllocatedEvent",
@@ -312,15 +176,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -330,15 +186,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -348,15 +196,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -366,15 +206,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -384,15 +216,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -402,15 +226,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -420,15 +236,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -438,15 +246,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -456,15 +256,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -474,15 +266,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -492,15 +276,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -510,15 +286,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -528,15 +296,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -546,15 +306,7 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   },
   {
     "TemplateName":"Event_copy",
@@ -564,14 +316,6 @@
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "@",
-    "DownstreamIdentifyRules" : "",
-    "DownstreamMergeRules": "",
-    "DownstreamExtractionRules" : "",
-    "ArrayMergeOptions": "",
-    "HistoryIdentifyRules":"",
-    "HistoryExtractionRules":"",
-    "HistoryPathRules": "",
-    "ProcessRules" : null 
+    "ExtractionRules" : "@"
   }
 ]

@@ -91,7 +91,7 @@
     "IdentifyRules" : "links | [?type=='TEST_CASE_EXECUTION'].target",
     "MatchIdRules": { "$and": [{"aggregatedObject.testCaseExecutions.testCaseStartedEventId": "%IdentifyRules%"}]},
     "ExtractionRules" : "{ testCaseFinishedEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}",
-    "MergeResolverRules" : "[{NONEPATH:NONE}, {testCaseExecutions: [{ testCaseStartedEventId: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]}]",
+    "MergeResolverRules" : "{\"testCaseStartedEventId\":%IdentifyRules%}",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",

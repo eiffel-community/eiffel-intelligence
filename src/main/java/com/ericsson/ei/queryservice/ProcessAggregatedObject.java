@@ -97,8 +97,7 @@ public class ProcessAggregatedObject {
     public boolean deleteAggregatedObject(String templateName) {
         String condition = "{\"_id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
-        boolean response = handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
-        return response;
+        return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);;
     }
 
     /**

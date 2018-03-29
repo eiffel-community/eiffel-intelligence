@@ -145,8 +145,7 @@ public class EventToObjectMapHandler {
     public boolean deleteEventObjectMap(String templateName) {
         String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
         log.info("The Json condition for delete aggregated object is : " + condition);
-        boolean response = mongodbhandler.dropDocument(databaseName, collectionName, condition);
-        return response;
+        return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 
 

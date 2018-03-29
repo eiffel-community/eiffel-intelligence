@@ -41,7 +41,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
     private static Logger log = LoggerFactory.getLogger(FlowTest.class);
 
     static protected String jsonFilePath = "src/test/resources/test_All_Events.json";
-    static protected String rulePath = "src/test/resources/SubscriptionRules.json";
+    static protected String rulePath = "src/test/resources/all_event_rules.json";
 
     @Autowired
     RulesHandler rulesHandler;

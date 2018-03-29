@@ -84,8 +84,7 @@ public class ProcessAggregatedObject {
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
         String condition = "{\"_id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition is : " + condition);
-        ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
-        return response;
+        return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);;
     }
     
     /**
@@ -97,7 +96,7 @@ public class ProcessAggregatedObject {
     public boolean deleteAggregatedObject(String templateName) {
         String condition = "{\"_id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
-        return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);;
+        return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
     }
 
     /**

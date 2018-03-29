@@ -108,7 +108,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
             }
 
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 }

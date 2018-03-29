@@ -84,7 +84,7 @@ public class ProcessAggregatedObject {
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
         String condition = "{\"_id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition is : " + condition);
-        return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);;
+        return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
     }
     
     /**

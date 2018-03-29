@@ -196,6 +196,10 @@
                 "type": "COMPOSITION"
             },
             {
+                "target": "1100572b-c3j4-441e-abc9-b62f48080011",
+                "type": "PREVIOUS_VERSION"
+            },
+            {
                 "target": "c4f9565d-2382-488f-b911-e3326bce21a3",
                 "type": "ENVIRONMENT"
             },
@@ -226,8 +230,16 @@
             ],
             "fileInformation": [
                 {
-                    "classifier": "",
+                    "classifier": "debug",
                     "extension": "jar"
+                },
+                {
+                    "classifier": "test",
+                    "extension": "txt"
+                },
+                {
+                    "classifier": "application",
+                    "extension": "exe"
                 }
             ],
             "gav": {
@@ -363,6 +375,45 @@
             ]
         }
     },
+    "event_EiffelArtifactPublishedEvent_3_1": {
+        "links": [
+            {
+                "target": "33d05e6f-9bd9-4138-83b6-e20cc74680a3",
+                "type": "ARTIFACT"
+            },
+            {
+                "target": "c04fa59a-3c36-4601-8eac-7a26b8910f08",
+                "type": "CONTEXT"
+            }
+        ],
+        "meta": {
+            "id": "33d05e6f-9bd9-4138-83b6-e20cc74681b5",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875921843,
+            "type": "EiffelArtifactPublishedEvent",
+            "version": "1.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtP3",
+                    "key": "name"
+                },
+                {
+                    "value": 2,
+                    "key": "iteration"
+                }
+            ],
+            "locations": [
+                {
+                    "uri": "https://myrepository.com/artifactory",
+                    "type": "ARTIFACTORY"
+                }
+            ]
+        }
+    },
     "event_EiffelConfidenceLevelModifiedEvent_3_2": {
         "links": [
             {
@@ -410,11 +461,11 @@
             }
         ],
         "meta": {
-            "id": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+            "id": "f37d59a3-069e-4f4c-8cc5-a52e73501a76",
             "source": {
                 "domainId": "example.domain"
             },
-            "time": 1481875944272,
+            "time": 1481875988767,
             "type": "EiffelConfidenceLevelModifiedEvent",
             "version": "1.0.0"
         },
@@ -430,7 +481,7 @@
                     "key": "iteration"
                 }
             ],
-            "name": "readyForSystemIntegration"
+            "name": "performance"
         }
     },
     "event_EiffelActivityTriggeredEvent_3": {
@@ -558,7 +609,7 @@
                 "type": "CONTEXT"
             },
             {
-                "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "target": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
                 "type": "TEST_CASE_EXECUTION"
             }
         ],
@@ -592,7 +643,7 @@
             }
         ],
         "meta": {
-            "id": "11109351-41e0-474a-bc1c-f6e81e58a1c9",
+            "id": "cb9d64b0-a6e9-4419-8b5d-a650c27c1111",
             "source": {
                 "domainId": "example.domain"
             },
@@ -617,6 +668,39 @@
             ]
         }
     },
+    "event_EiffelTestCaseTriggeredEvent_3_1": {
+        "data": {
+            "customData": [
+                {
+                    "key": "name",
+                    "value": "TCT7"
+                },
+                {
+                    "key": "iteration",
+                    "value": 1
+                }
+            ]
+        },
+        "meta": {
+            "type": "EiffelTestCaseTriggeredEvent",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "version": "1.0.0",
+            "id": "6d3df0e0-404d-46ee-ab4f-3118457148f5",
+            "time": 1490777357289
+        },
+        "links": [
+            {
+                "type": "CONTEXT",
+                "target": "bebdb0b7-f59e-4b77-ba8e-3912593d0153"
+            },
+            {
+                "type": "IUT",
+                "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+            }
+        ]
+    },
     "event_EiffelTestCaseStartedEvent_3_1": {
         "links": [
             {
@@ -624,8 +708,8 @@
                 "type": "CONTEXT"
             },
             {
-                "target": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-                "type": "IUT"
+                "target": "6d3df0e0-404d-46ee-ab4f-3118457148f5",
+                "type": "TEST_CASE_EXECUTION"
             }
         ],
         "meta": {

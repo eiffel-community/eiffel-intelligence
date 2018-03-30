@@ -35,51 +35,76 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowTest extends FlowTestBase {
-    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
 
-    private static String upStreamResultFile = "upStreamResultFile.json";
+        private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
 
-    @Autowired
-    private UpStreamEventsHandler upStreamEventsHandler;
+        private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
 
-    @Mock
-    private ERQueryService erQueryService;
+        private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+        private static final String JSON_FILE_PATH = "src/test/resources/test_events.json";
+        private static final String INPUT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalComposition.json";
+        private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
-    @Before
-    public void before() throws IOException {
-        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-        inputFilePath = "src/test/resources/AggregatedDocumentInternalComposition.json";
+        @Autowired
+        private UpStreamEventsHandler upStreamEventsHandler;
 
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(upStreamResultFile);
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
-        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+        @Mock
+        private ERQueryService erQueryService;
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
-    }
+        @Before
+        public void before() throws IOException {
+                upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
-    protected ArrayList<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3");
-        eventNames.add("event_EiffelArtifactCreatedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
+                final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectNode objectNode = objectMapper.createObjectNode();
+                objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
+                objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        return eventNames;
-    }
+                when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
+                        .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        }
+
+        @Override
+        String setJsonFilePath() {
+                return JSON_FILE_PATH;
+        }
+
+        @Override
+        String setRulesFilePath() {
+                return RULES_FILE_PATH;
+        }
+
+        @Override
+        Map<String, String> setInputFiles() {
+                Map<String, String> inputFiles = new HashMap<>();
+                inputFiles.put(AGGREGATED_OBJECT_ID, INPUT_FILE_PATH);
+                return inputFiles;
+        }
+
+        @Override
+        List<String> setEventNamesToSend() {
+                List<String> eventNames = new ArrayList<>();
+                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+                eventNames.add("event_EiffelArtifactPublishedEvent_3");
+                eventNames.add("event_EiffelArtifactCreatedEvent_3");
+                eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
+                eventNames.add("event_EiffelTestCaseStartedEvent_3");
+                eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+                eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
+                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+                eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
+                eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
+                eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
+                return eventNames;
+        }
 }

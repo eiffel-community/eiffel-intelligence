@@ -13,66 +13,62 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.rules.RulesHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.qpid.util.FileUtils;
 import org.junit.runner.RunWith;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class FlowSourceChangeObject extends FlowTest {
-   
-    private static String inputFilePath = "src/test/resources/aggregatedSourceChangeObject.json";
-    private static String jsonFilePath = "src/test/resources/TestSourceChangeObject.json";
-    private static String rulePath = "src/test/resources/TestSourceChangeObjectRules.json";
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
+public class FlowSourceChangeObject extends FlowTestBase {
 
-    @Autowired
-    private RulesHandler rulesHandler;
+        private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
 
-    protected void setSpecificTestCaseParameters() {
-        setJsonFilePath(jsonFilePath);
-        rulesHandler.setRulePath(rulePath);
-    }
+        private static final String RULES_FILE_PATH = "src/test/resources/TestSourceChangeObjectRules.json";
+        private static final String JSON_FILE_PATH = "src/test/resources/TestSourceChangeObject.json";
+        private static final String INPUT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
+        private static final String AGGREGATED_OBJECT_ID = "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
 
-    protected ArrayList<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
-        eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
-        eventNames.add("event_EiffelSourceChangeCreatedEvent_3_2");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-        eventNames.add("event_EiffelActivityTriggeredEvent_3");
-        eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
-        eventNames.add("event_EiffelActivityStartedEvent_3");
-        eventNames.add("event_EiffelActivityStartedEvent_3_2");
-        eventNames.add("event_EiffelActivityFinishedEvent_3");
-        eventNames.add("event_EiffelActivityFinishedEvent_3_2");
-        eventNames.add("event_EiffelActivityCanceledEvent_3");
-        eventNames.add("event_EiffelActivityCanceledEvent_3_2");
-        return eventNames;
-    }
-
-    protected void checkResult() {
-        try {
-            String expectedDocuments = FileUtils.readFileAsString(new File(inputFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode expectedJson = objectmapper.readTree(expectedDocuments);
-            String document = objectHandler.findObjectById("fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47");
-            JsonNode actualJson = objectmapper.readTree(document);
-            JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+        @Override
+        String setJsonFilePath() {
+                return JSON_FILE_PATH;
         }
-    }
+
+        @Override
+        String setRulesFilePath() {
+                return RULES_FILE_PATH;
+        }
+
+        @Override
+        Map<String, String> setInputFiles() {
+                Map<String, String> inputFiles = new HashMap<>();
+                inputFiles.put(AGGREGATED_OBJECT_ID, INPUT_FILE_PATH);
+                return inputFiles;
+        }
+
+        @Override
+        List<String> setEventNamesToSend() {
+                List<String> eventNames = new ArrayList<>();
+                eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
+                eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
+                eventNames.add("event_EiffelSourceChangeCreatedEvent_3_2");
+                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+                eventNames.add("event_EiffelActivityTriggeredEvent_3");
+                eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
+                eventNames.add("event_EiffelActivityStartedEvent_3");
+                eventNames.add("event_EiffelActivityStartedEvent_3_2");
+                eventNames.add("event_EiffelActivityFinishedEvent_3");
+                eventNames.add("event_EiffelActivityFinishedEvent_3_2");
+                eventNames.add("event_EiffelActivityCanceledEvent_3");
+                eventNames.add("event_EiffelActivityCanceledEvent_3_2");
+                return eventNames;
+        }
+
 }

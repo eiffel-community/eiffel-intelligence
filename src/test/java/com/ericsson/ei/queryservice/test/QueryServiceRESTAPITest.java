@@ -95,7 +95,7 @@ public class QueryServiceRESTAPITest {
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -117,7 +117,7 @@ public class QueryServiceRESTAPITest {
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());

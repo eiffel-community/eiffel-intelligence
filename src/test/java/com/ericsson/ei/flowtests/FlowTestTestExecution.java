@@ -17,8 +17,6 @@
 package com.ericsson.ei.flowtests;
 
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,44 +29,42 @@ import java.util.Map;
 @SpringBootTest
 public class FlowTestTestExecution extends FlowTestBase {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
+    private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";
+    private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";
 
-        private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
-        private static final String JSON_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
-        private static final String INPUT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";
-        private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";
+    @Override
+    String setRulesFilePath() {
+        return RULES_FILE_PATH;
+    }
 
-        @Override
-        String setJsonFilePath() {
-                return JSON_FILE_PATH;
-        }
+    @Override
+    String setEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
 
-        @Override
-        String setRulesFilePath() {
-                return RULES_FILE_PATH;
-        }
+    @Override
+    List<String> setEventNamesToSend() {
+        ArrayList<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelActivityTriggeredEvent");
+        eventNames.add("event_EiffelActivityStartedEvent");
+        eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
+        eventNames.add("event_EiffelTestSuiteStartedEvent");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
+        eventNames.add("event_EiffelTestCaseStartedEvent");
+        eventNames.add("event_EiffelTestCaseStartedEvent_2");
+        eventNames.add("event_EiffelTestCaseFinishedEvent");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_2");
+        eventNames.add("event_EiffelActivityFinishedEvent");
+        return eventNames;
+    }
 
-        @Override
-        Map<String, String> setInputFiles() {
-                Map<String, String> inputFiles = new HashMap<>();
-                inputFiles.put(AGGREGATED_OBJECT_ID, INPUT_FILE_PATH);
-                return inputFiles;
-        }
-
-        @Override
-        List<String> setEventNamesToSend() {
-                ArrayList<String> eventNames = new ArrayList<>();
-                eventNames.add("event_EiffelActivityTriggeredEvent");
-                eventNames.add("event_EiffelActivityStartedEvent");
-                eventNames.add("event_EiffelTestExecutionRecipeCollectionCreatedEvent");
-                eventNames.add("event_EiffelTestSuiteStartedEvent");
-                eventNames.add("event_EiffelTestCaseTriggeredEvent");
-                eventNames.add("event_EiffelTestCaseTriggeredEvent_2");
-                eventNames.add("event_EiffelTestCaseStartedEvent");
-                eventNames.add("event_EiffelTestCaseStartedEvent_2");
-                eventNames.add("event_EiffelTestCaseFinishedEvent");
-                eventNames.add("event_EiffelTestCaseFinishedEvent_2");
-                eventNames.add("event_EiffelActivityFinishedEvent");
-                return eventNames;
-        }
+    @Override
+    Map<String, String> setCheckInfo() {
+        Map<String, String> inputFiles = new HashMap<>();
+        inputFiles.put(AGGREGATED_OBJECT_ID, AGGREGATED_OBJECT_FILE_PATH);
+        return inputFiles;
+    }
 }

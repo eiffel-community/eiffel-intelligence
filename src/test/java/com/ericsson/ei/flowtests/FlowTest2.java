@@ -17,8 +17,6 @@
 package com.ericsson.ei.flowtests;
 
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,50 +30,48 @@ import java.util.Map;
 @SpringBootTest
 public class FlowTest2 extends FlowTestBase {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest2.class);
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH_2 = "src/test/resources/AggregatedDocument2.json";
+    private static final String AGGREGATED_OBJECT_ID_1 = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+    private static final String AGGREGATED_OBJECT_ID_2 = "ccce572c-c364-441e-abc9-b62fed080ca2";
 
-        private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
-        private static final String JSON_FILE_PATH = "src/test/resources/test_events.json";
-        private static final String INPUT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";
-        private static final String INPUT_FILE_PATH_2 = "src/test/resources/AggregatedDocument2.json";
-        private static final String AGGREGATED_OBJECT_ID_1 = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
-        private static final String AGGREGATED_OBJECT_ID_2 = "ccce572c-c364-441e-abc9-b62fed080ca2";
+    @Override
+    String setRulesFilePath() {
+        return RULES_FILE_PATH;
+    }
 
-        @Override
-        String setJsonFilePath() {
-                return JSON_FILE_PATH;
-        }
+    @Override
+    String setEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
 
-        @Override
-        String setRulesFilePath() {
-                return RULES_FILE_PATH;
-        }
+    @Override
+    List<String> setEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
 
-        @Override
-        Map<String, String> setInputFiles() {
-                Map<String, String> inputFiles = new HashMap<>();
-                inputFiles.put(AGGREGATED_OBJECT_ID_1, INPUT_FILE_PATH_1);
-                inputFiles.put(AGGREGATED_OBJECT_ID_2, INPUT_FILE_PATH_2);
-                return inputFiles;
-        }
+        eventNames.add("event_EiffelArtifactCreatedEvent_1");
+        eventNames.add("event_EiffelArtifactPublishedEvent_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_1");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_1");
+        eventNames.add("event_EiffelTestCaseStartedEvent_1");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_1");
 
-        @Override
-        List<String> setEventNamesToSend() {
-                List<String> eventNames = new ArrayList<>();
-                eventNames.add("event_EiffelArtifactCreatedEvent_3");
-                eventNames.add("event_EiffelArtifactPublishedEvent_3");
-                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-                eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-                eventNames.add("event_EiffelTestCaseStartedEvent_3");
-                eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+        return eventNames;
+    }
 
-                eventNames.add("event_EiffelArtifactCreatedEvent_1");
-                eventNames.add("event_EiffelArtifactPublishedEvent_1");
-                eventNames.add("event_EiffelConfidenceLevelModifiedEvent_1");
-                eventNames.add("event_EiffelTestCaseTriggeredEvent_1");
-                eventNames.add("event_EiffelTestCaseStartedEvent_1");
-                eventNames.add("event_EiffelTestCaseFinishedEvent_1");
-
-                return eventNames;
-        }
+    @Override
+    Map<String, String> setCheckInfo() {
+        Map<String, String> inputFiles = new HashMap<>();
+        inputFiles.put(AGGREGATED_OBJECT_ID_1, AGGREGATED_OBJECT_FILE_PATH_1);
+        inputFiles.put(AGGREGATED_OBJECT_ID_2, AGGREGATED_OBJECT_FILE_PATH_2);
+        return inputFiles;
+    }
 }

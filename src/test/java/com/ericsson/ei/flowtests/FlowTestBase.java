@@ -52,8 +52,11 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     @Autowired
     private RulesHandler rulesHandler;
 
-    @Value("${database.name}") private String database;
-    @Value("${event_object_map.collection.name}") private String event_map;
+    @Value("${database.name}")
+    private String database;
+
+    @Value("${event_object_map.collection.name}")
+    private String event_map;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static JsonNode parsedJson;
@@ -71,35 +74,49 @@ public abstract class FlowTestBase extends FlowTestConfigs {
             List<String> eventNames = setEventNamesToSend();
             testParametersChange();
             int eventsCount = eventNames.size();
-            for(String eventName : eventNames) {
+            for (String eventName : eventNames) {
                 JsonNode eventJson = parsedJson.get(eventName);
                 String event = eventJson.toString();
-                channel.basicPublish(exchangeName, queueName,  null, event.getBytes());
+                channel.basicPublish(exchangeName, queueName, null, event.getBytes());
             }
 
             // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            checkResult(setInputFiles());
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage(), e);
+            checkResult(setCheckInfo());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
-    abstract String setJsonFilePath();
-
+    /**
+     * @return path to file with rules, that is used in flow test
+     */
     abstract String setRulesFilePath();
 
-    abstract Map<String, String> setInputFiles();
+    /**
+     * @return path to file, with events, that is used in flow test
+     */
+    abstract String setEventsFilePath();
 
+    /**
+     * @return list of event names, that will be used in flow test
+     */
     abstract List<String> setEventNamesToSend();
 
+    /**
+     * @return map, where
+     *          key - _id of expected aggregated object
+     *          value - path to file with expected aggregated object
+     */
+    abstract Map<String, String> setCheckInfo();
+
     private void testParametersChange() throws IOException {
-        String jsonFileContent = FileUtils.readFileToString(new File(setJsonFilePath()));
+        String jsonFileContent = FileUtils.readFileToString(new File(setEventsFilePath()));
         parsedJson = objectMapper.readTree(jsonFileContent);
     }
 
     // count documents that were processed
-    private long countProcessedEvents(String database, String collection){
+    private long countProcessedEvents(String database, String collection) {
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection table = db.getCollection(collection);
         return table.count();
@@ -113,8 +130,8 @@ public abstract class FlowTestBase extends FlowTestConfigs {
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
                 TimeUnit.MILLISECONDS.sleep(3000);
-            } catch (Exception e) {
-                LOGGER.info(e.getMessage(), e);
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -129,7 +146,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
                 LOGGER.info("Complete aggregated object: " + actualJson);
                 JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
             } catch (IOException | JSONException e) {
-                LOGGER.info(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         });
 

@@ -69,9 +69,9 @@ public class FlowTest2 extends FlowTestBase {
 
     @Override
     Map<String, String> setCheckInfo() {
-        Map<String, String> inputFiles = new HashMap<>();
-        inputFiles.put(AGGREGATED_OBJECT_ID_1, AGGREGATED_OBJECT_FILE_PATH_1);
-        inputFiles.put(AGGREGATED_OBJECT_ID_2, AGGREGATED_OBJECT_FILE_PATH_2);
-        return inputFiles;
+        Map<String, String> checkInfo = new HashMap<>();
+        checkInfo.put(AGGREGATED_OBJECT_ID_1, AGGREGATED_OBJECT_FILE_PATH_1);
+        checkInfo.put(AGGREGATED_OBJECT_ID_2, AGGREGATED_OBJECT_FILE_PATH_2);
+        return checkInfo;
     }
 }

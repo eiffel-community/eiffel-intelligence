@@ -111,7 +111,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     abstract Map<String, String> setCheckInfo();
 
     private void testParametersChange() throws IOException {
-        String jsonFileContent = FileUtils.readFileToString(new File(setEventsFilePath()));
+        String jsonFileContent = FileUtils.readFileToString(new File(setEventsFilePath()), "UTF-8");
         parsedJson = objectMapper.readTree(jsonFileContent);
     }
 

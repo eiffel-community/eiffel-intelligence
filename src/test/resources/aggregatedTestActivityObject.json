@@ -4,6 +4,8 @@
     "ongoing": "false",
     "test_suite": [
       {
+        "test_suite_started_event_id": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47",
+        "test_suite_name": "Pre-release installation and security verification",
         "test_case": [
           {
             "test_case_triggered_event_id": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47",
@@ -120,7 +122,6 @@
     "outcome": {
       "conclusion": "TIMED_OUT",
       "description": "Compilation timed out."
-    },
-    "test_suite_name": "Pre-release installation and security verification"
+    }
   }
 }

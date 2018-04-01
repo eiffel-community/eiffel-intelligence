@@ -149,6 +149,5 @@ public abstract class FlowTestBase extends FlowTestConfigs {
                 LOGGER.error(e.getMessage(), e);
             }
         });
-
     }
 }

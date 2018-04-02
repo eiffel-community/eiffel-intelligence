@@ -75,7 +75,7 @@ public class SubscriptionValidator {
         for (NotificationMessageKeyValue item : notificationMessage) {
             String test_key = item.getFormkey();
             String test_value = item.getFormvalue();
-            if (restPostBodyMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { // FORM/POST PARAMETERS
+            if (restPostBodyMediaType != null && restPostBodyMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { // FORM/POST PARAMETERS
                 if ((test_key == null || test_key.isEmpty() || StringUtils.isBlank(test_key)) || (test_value == null || test_value.isEmpty() || StringUtils.isBlank(test_value))) {
                     throw new SubscriptionValidationException("Value & Key  in notificationMessage must have a values: " + notificationMessage);
                 }

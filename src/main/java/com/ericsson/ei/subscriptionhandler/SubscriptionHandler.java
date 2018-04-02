@@ -87,7 +87,7 @@ public class SubscriptionHandler {
      * @param aggregatedObject
      * @param subscriptionData
      */
-    public void extractConditions(String aggregatedObject, String subscriptionData) {
+    private void extractConditions(String aggregatedObject, String subscriptionData) {
         JsonNode subscriptionJson = null;
         try {
             subscriptionJson = new ObjectMapper().readTree(subscriptionData);

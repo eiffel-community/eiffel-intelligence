@@ -147,7 +147,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("");
         notificationMessageKeyValue.setFormvalue("@");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
@@ -164,7 +163,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("");
         notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
@@ -181,7 +179,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("json");
         notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
@@ -202,7 +199,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue2.setFormkey("json2");
         notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
@@ -219,7 +215,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("mykey");
         notificationMessageKeyValue.setFormvalue("kalle.kalle@domain.com");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
@@ -236,7 +231,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("mykey");
         notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
@@ -253,7 +247,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormkey("");
         notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
@@ -274,7 +267,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue2.setFormkey("");
         notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
@@ -295,7 +287,6 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue2.setFormkey("json");
         notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
-
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {

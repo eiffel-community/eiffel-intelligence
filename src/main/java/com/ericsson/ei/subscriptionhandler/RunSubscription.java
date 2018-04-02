@@ -47,7 +47,7 @@ public class RunSubscription {
      * This method matches every condition specified in the subscription Object
      * and if all conditions are matched then only the aggregatedObject is
      * eligible for notification via e-mail or REST POST.
-     * <p>
+     *
      * (AND between conditions in requirements, "OR" between requirements with conditions)
      *
      * @param aggregatedObject

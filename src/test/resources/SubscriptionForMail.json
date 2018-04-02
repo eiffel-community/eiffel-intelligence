@@ -3,7 +3,7 @@
   "repeat": false,
   "created": "data-time",
   "notificationType": "MAIL",
-  "notificationMeta": "andriy.nedvyha@ericsson.com",
+  "notificationMeta": "example@ericsson.com",
   "restPostBodyMediaType": "application/json",
   "notificationMessageKeyValues": [
     {

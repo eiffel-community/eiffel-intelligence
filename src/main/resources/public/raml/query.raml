@@ -1,0 +1,30 @@
+post:
+  description: The REST POST method is used to query Aggregated Objects with the
+               criterias requested, which are present in the request body of the
+               request URL.
+  queryParameters:
+    request:
+      displayName: request
+      type: string
+      description: Query to MongoDB
+      example: request={"criteria":{"testCaseExecutions.testCase.verdict":"PASSED","testCaseExecutions.testCase.id":"TC5"},"options":{"id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"}}
+      required: true
+  responses:
+    200:
+      body:
+        application/json:
+get:
+  description: The REST GET method is used to query Aggregated Objects with the
+               criterias requested, which are present as query parameters in the request
+               URL.
+  queryParameters:
+    request:
+      displayName: request
+      type: string
+      description: Query to MongoDB
+      example: request=testCaseExecutions.testCase.verdict:PASSED
+      required: true
+  responses:
+    200:
+      body:
+        application/json:

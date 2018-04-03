@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 public class SubscriptionValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionValidator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionValidator.class);
 
     /**
      * Validation of parameters values in subscriptions objects.
@@ -36,7 +36,7 @@ public class SubscriptionValidator {
      * @param subscription
      */
     public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
-        LOG.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
+        LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
         this.validateSubscriptionName(subscription.getSubscriptionName());
         this.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(), subscription.getRestPostBodyMediaType());
         this.validateNotificationMeta(subscription.getNotificationMeta());
@@ -46,7 +46,7 @@ public class SubscriptionValidator {
 //		for (int i=0; i < reqList.size(); i++) {
 //			this.validateJmespath(reqList.get(i).getConditions().get(0).getJmespath());
 //		}
-        LOG.debug("Validating of subscription " + subscription.getSubscriptionName() + " finished successfully.");
+        LOGGER.debug("Validating of subscription " + subscription.getSubscriptionName() + " finished successfully.");
     }
 
     /**

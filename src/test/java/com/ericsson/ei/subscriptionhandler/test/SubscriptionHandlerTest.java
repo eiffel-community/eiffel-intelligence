@@ -19,7 +19,9 @@ package com.ericsson.ei.subscriptionhandler.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -37,6 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.ei.App;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SendMail;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,11 +58,16 @@ public class SubscriptionHandlerTest {
 
     @Autowired
     private SubscriptionHandler handler;
+    
+    @Autowired
+    private SendMail sendMail;
 
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionObjectForEmailTest.json";
     private static String aggregatedObject;
     private static String subscriptionData;
+    private static String subscriptionDataEmail;
     
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
@@ -80,7 +88,8 @@ public class SubscriptionHandlerTest {
 
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");            
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+            subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
@@ -132,6 +141,21 @@ public class SubscriptionHandlerTest {
         }
         JsonNode output = jsonResult.get("AggregatedObject");
         assertEquals(expectedOutput.toString(), output.toString());
+    }
+    
+    @Test
+    public void sendMailTest() {
+//        handler.extractConditions(aggregatedObject, subscriptionDataEmail);
+        
+        String recievers = "asdf.hklm@ericsson.se, fdfadfaffdafd.fdfdfd@ericsson.com, dfsafdads.dfsaf, afdsdfdfs.dfaffd@gmail.com, sasasa.dfdfdf@fdad.com";
+        
+        String num = String.valueOf(sendMail.extractEmails(recievers).size());
+        
+        
+        assertEquals(String.valueOf(sendMail.extractEmails(recievers).size()), "4");
+        
+        System.out.println("TEST DONEEEEEEEEEEEEEEEEEEEEEEEEE");
+        
     }
     
     @AfterClass

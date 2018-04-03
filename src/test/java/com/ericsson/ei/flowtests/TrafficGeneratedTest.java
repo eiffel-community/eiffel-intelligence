@@ -112,7 +112,7 @@ public class TrafficGeneratedTest {
     static ConnectionFactory cf;
     static Connection conn;
     private static String jsonFileContent;
-    private static JsonNode parsedJason;
+    private static JsonNode parsedJson;
     private static String jsonFilePath = "src/test/resources/test_events_MP.json";
     static private final String inputFilePath = "src/test/resources/aggregated_document_MP.json";
 
@@ -143,7 +143,7 @@ public class TrafficGeneratedTest {
         String config = "src/test/resources/configs/qpidConfig.json";
         jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
         ObjectMapper objectmapper = new ObjectMapper();
-        parsedJason = objectmapper.readTree(jsonFileContent);
+        parsedJson = objectmapper.readTree(jsonFileContent);
         qpidConfig = new File(config);
         amqpBrocker = new TrafficGeneratedTest.AMQPBrokerManager(qpidConfig.getAbsolutePath());
         amqpBrocker.startBroker();
@@ -239,7 +239,7 @@ public class TrafficGeneratedTest {
         String newID;
         for (int i = 0; i < EVENT_PACKAGES; i++) {
             for(String eventName : eventNames) {
-                JsonNode eventJson = parsedJason.get(eventName);
+                JsonNode eventJson = parsedJson.get(eventName);
                 newID = eventJson.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));;
                 ((ObjectNode) eventJson.path("meta")).set("id", mapper.readValue(newID, JsonNode.class));
                 for (JsonNode link : eventJson.path("links")) {

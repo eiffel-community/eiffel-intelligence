@@ -17,14 +17,9 @@
 package com.ericsson.ei.subscriptionhandler.test;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.File;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -35,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.ericsson.ei.App;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
@@ -45,7 +39,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.MongoClient;
-
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
@@ -58,7 +51,7 @@ public class SubscriptionHandlerTest {
 
     @Autowired
     private SubscriptionHandler handler;
-    
+
     @Autowired
     private SendMail sendMail;
 
@@ -68,7 +61,7 @@ public class SubscriptionHandlerTest {
     private static String aggregatedObject;
     private static String subscriptionData;
     private static String subscriptionDataEmail;
-    
+
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
     @Autowired
@@ -142,22 +135,25 @@ public class SubscriptionHandlerTest {
         JsonNode output = jsonResult.get("AggregatedObject");
         assertEquals(expectedOutput.toString(), output.toString());
     }
-    
+
     @Test
     public void sendMailTest() {
-//        handler.extractConditions(aggregatedObject, subscriptionDataEmail);
-        
-        String recievers = "asdf.hklm@ericsson.se, fdfadfaffdafd.fdfdfd@ericsson.com, dfsafdads.dfsaf, afdsdfdfs.dfaffd@gmail.com, sasasa.dfdfdf@fdad.com";
-        
-        String num = String.valueOf(sendMail.extractEmails(recievers).size());
-        
-        
-        assertEquals(String.valueOf(sendMail.extractEmails(recievers).size()), "4");
-        
-        System.out.println("TEST DONEEEEEEEEEEEEEEEEEEEEEEEEE");
-        
+        String recievers = "asdf.hklm@ericsson.se, fdfadfaffdafd.fdfdfd@ericsson.com, dfsafdads.dfsaf, afdsdfdfs.dfaffd@com, sasasa.dfdfdf@fdad.com";
+        String correctEmail1 = "asdf.hklm@ericsson.se";
+        String correctEmail2 = "fdfadfaffdafd.fdfdfd@ericsson.com";
+        String correctEmail3 = "sasasa.dfdfdf@fdad.com";
+        String incorrectEmail1 = "dfsafdads.dfsaf";
+        String incorrectEmail2 = "afdsdfdfs.dfaffd@com";
+
+        assertEquals(String.valueOf(sendMail.extractEmails(recievers).size()), "3");
+
+        assertEquals(sendMail.validateEmail(correctEmail1), true);
+        assertEquals(sendMail.validateEmail(correctEmail2), true);
+        assertEquals(sendMail.validateEmail(correctEmail3), true);
+        assertEquals(sendMail.validateEmail(incorrectEmail1), false);
+        assertEquals(sendMail.validateEmail(incorrectEmail2), false);
     }
-    
+
     @AfterClass
     public static void close() {
         testsFactory.shutdown();

@@ -16,14 +16,14 @@
 */
 package com.ericsson.ei.flowtests;
 
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -36,15 +36,18 @@ public class FlowTestExternalComposition extends FlowTestBase {
     private static final String AGGREGATED_OBJECT_ID_2 = "cfce572b-c3j4-441e-abc9-b62f48080ca2";
     private static final String AGGREGATED_OBJECT_ID_3 = "cfce572b-c3j4-441e-abc9-b62f48080ca2";
 
-    @Override String setRulesFilePath() {
+    @Override
+    String setRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
-    @Override String setEventsFilePath() {
+    @Override
+    String setEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
-    @Override List<String> setEventNamesToSend() {
+    @Override
+    List<String> setEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         //eventNames.add("event_EiffelCompositionDefinedEvent_4");
@@ -54,7 +57,8 @@ public class FlowTestExternalComposition extends FlowTestBase {
         return eventNames;
     }
 
-    @Override Map<String, String> setCheckInfo() {
+    @Override
+    Map<String, String> setCheckInfo() {
         Map<String, String> checkInfo = new HashMap<>();
         return checkInfo;
     }

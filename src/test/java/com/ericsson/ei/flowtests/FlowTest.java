@@ -40,7 +40,8 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest public class FlowTest extends FlowTestBase {
+@SpringBootTest
+public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";

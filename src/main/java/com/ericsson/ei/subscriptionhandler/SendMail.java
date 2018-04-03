@@ -16,8 +16,12 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 
 /**
  * This class represents the mechanism to send e-mail notification to the
@@ -47,30 +52,41 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-    
+
     @Autowired
     private MailSender mailSender;
+    
+    
 
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject
-     * and send mail to the receiver with aggregatedObject as the body.
+     * This method takes two arguments i.e receiver mail-id and aggregatedObject and
+     * send mail to the receiver with aggregatedObject as the body.
      * 
      * @param receiver
      * @param aggregatedObject
      */
-    public void sendMail(String receiver, String aggregatedObject) {
-
-        SimpleMailMessage message = new SimpleMailMessage();
-
+    public void sendMail(String receiver, String mapNotificationMessage) {
+        SimpleMailMessage message = new SimpleMailMessage();      
+        Set<String> emailAddresses = new HashSet<>();
+        
         message.setFrom(sender);
-        message.setTo(receiver);
         message.setSubject(subject);
-        message.setText(aggregatedObject);
-        mailSender.send(message);
+        message.setText(mapNotificationMessage);
+        emailAddresses = extractEmails(receiver);
+
+        for (String email : emailAddresses) {
+            System.out.println(email);
+
+            if (validateEmail(email)) {
+                System.out.println("VALIDATED EMAIL ADD:" + email);
+                message.setTo(email);
+                mailSender.send(message);
+            }
+        }
     }
 
     @PostConstruct
@@ -78,4 +94,25 @@ public class SendMail {
         log.info("Email Sender : " + sender);
         log.info("Email Subject : " + subject);
     }
+    
+    public Set<String> extractEmails(String contents) {
+        String pattern = "\\b[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z0-9.-]+\\b";
+        Pattern pat = Pattern.compile(pattern);
+        Matcher match = pat.matcher(contents);
+        Set<String> emailAdd = new HashSet<>();
+        while (match.find()) {
+            emailAdd.add(match.group());
+            System.out.println(match.group());
+        }
+        
+        return emailAdd;
+    }
+
+    public boolean validateEmail(String email) {
+        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+
+        return matcher.matches();
+    }
+    
 }

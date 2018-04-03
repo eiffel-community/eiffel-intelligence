@@ -60,7 +60,7 @@ public class SubscriptionHandlerTest {
     private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static String aggregatedObject;
     private static String subscriptionData;
-
+    
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
     @Autowired
@@ -80,7 +80,7 @@ public class SubscriptionHandlerTest {
 
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");            
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
@@ -96,7 +96,6 @@ public class SubscriptionHandlerTest {
         mongoDBHandler.setMongoClient(mongoClient);
         System.out.println("Database connected");
     }
-
 
     @Test
     public void runSubscriptionOnObjectTest() {
@@ -134,7 +133,7 @@ public class SubscriptionHandlerTest {
         JsonNode output = jsonResult.get("AggregatedObject");
         assertEquals(expectedOutput.toString(), output.toString());
     }
-
+    
     @AfterClass
     public static void close() {
         testsFactory.shutdown();

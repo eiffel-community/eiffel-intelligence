@@ -73,6 +73,31 @@ public class ProcessAggregatedObject {
                 jsonCondition.toString());
         return response;
     }
+    
+    /**
+     * The method is responsible to extract the aggregated data on the basis of
+     * the ID from the aggregatedObject.
+     * 
+     * @param id
+     * @return ArrayList
+     */
+    public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
+        String condition = "{\"_id\": /.*" + templateName + "/}";
+        LOGGER.debug("The Json condition is : " + condition);
+        return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
+    }
+    
+    /**
+     * The method is responsible for the delete the aggregated object using template name suffix
+     * 
+     * @param templateName
+     * @return boolean
+     */
+    public boolean deleteAggregatedObject(String templateName) {
+        String condition = "{\"_id\": /.*" + templateName + "/}";
+        LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
+        return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
+    }
 
     /**
      * This method is responsible for fetching all the aggregatedObjects from

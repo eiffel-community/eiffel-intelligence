@@ -99,7 +99,9 @@ public class InformSubscription {
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject).toString().replaceAll("^\"|\"$", ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""),
+                        jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""),
+                                aggregatedObject).toString().replaceAll(REGEX, ""));
             }
         }
         if (notificationType.trim().equals("REST_POST")) {

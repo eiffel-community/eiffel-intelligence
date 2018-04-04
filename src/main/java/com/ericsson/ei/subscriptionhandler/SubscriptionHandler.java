@@ -26,9 +26,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class is responsible to take a aggregatedObject and match it with all
@@ -72,7 +71,7 @@ public class SubscriptionHandler {
      */
     public void checkSubscriptionForObject(final String aggregatedObject) {
         Thread subscriptionThread = new Thread(() -> {
-            ArrayList<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName, subscriptionCollectionName);
+            List<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName, subscriptionCollectionName);
             subscriptions.forEach(subscription -> extractConditions(aggregatedObject, subscription));
         });
         subscriptionThread.setName("SubscriptionHandler");

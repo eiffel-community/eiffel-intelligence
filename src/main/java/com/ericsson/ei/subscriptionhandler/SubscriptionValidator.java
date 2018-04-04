@@ -73,18 +73,18 @@ public class SubscriptionValidator {
      */
     private void validateNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessage, String restPostBodyMediaType) throws SubscriptionValidationException {
         for (NotificationMessageKeyValue item : notificationMessage) {
-            String test_key = item.getFormkey();
-            String test_value = item.getFormvalue();
+            String testKey = item.getFormkey();
+            String testValue = item.getFormvalue();
             if (restPostBodyMediaType != null && restPostBodyMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { // FORM/POST PARAMETERS
-                if ((test_key == null || test_key.isEmpty() || StringUtils.isBlank(test_key)) || (test_value == null || test_value.isEmpty() || StringUtils.isBlank(test_value))) {
+                if (StringUtils.isBlank(testKey) || StringUtils.isBlank(testValue)) {
                     throw new SubscriptionValidationException("Value & Key  in notificationMessage must have a values: " + notificationMessage);
                 }
             } else {
                 if (notificationMessage.size() != 1) {
                     throw new SubscriptionValidationException("Only one array is allowed for notificationMessage when NOT using key/value pairs: " + notificationMessage);
-                } else if (test_key != null && !test_key.isEmpty()) {
+                } else if (testKey != null && !testKey.isEmpty()) {
                     throw new SubscriptionValidationException("Key in notificationMessage must be empty when NOT using key/value pairs: " + notificationMessage);
-                } else if (StringUtils.isBlank(test_value)) {
+                } else if (StringUtils.isBlank(testValue)) {
                     throw new SubscriptionValidationException("Value in notificationMessage must have a value when NOT using key/value pairs: " + notificationMessage);
                 }
             }

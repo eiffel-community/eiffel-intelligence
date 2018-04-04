@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/aggregatedObject", produces = "application/json")
-public interface AggregatedObjectController {
+@RequestMapping(value = "/queryAggregatedObject", produces = "application/json")
+public interface QueryAggregatedObjectController {
 
 
     /**

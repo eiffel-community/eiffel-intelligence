@@ -22,13 +22,15 @@
             description: | 
               The requested resource to delete was not found 
  
-  title: Subscriptions Services and EI Query Services
+   title: Subscriptions Services and EI Query Services
   version: ${project.version}
   mediaType: application/json
   baseUri: /
   /subscriptions: !include subscription.raml
-  /query: !include queryservice.raml  
-
+  /query: !include query.raml
+  /queryAggregatedObject: !include query-aggregated_object.raml
+  /queryMissedNotifications: !include query-missed_notifications.raml
   /jmespathrule: !include jmespath.raml
   /download: !include template.raml
+  /rules: !include rules.raml
 

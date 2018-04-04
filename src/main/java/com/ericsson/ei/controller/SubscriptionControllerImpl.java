@@ -144,6 +144,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
 
     }
+    
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")

@@ -75,10 +75,7 @@ public class SendMail {
         emailAddresses = extractEmails(receiver);
 
         for (String email : emailAddresses) {
-            System.out.println(email);
-
             if (validateEmail(email)) {
-                System.out.println("VALIDATED EMAIL ADD:" + email);
                 message.setTo(email);
                 mailSender.send(message);
             }
@@ -98,7 +95,6 @@ public class SendMail {
         Set<String> emailAdd = new HashSet<>();
         while (match.find()) {
             emailAdd.add(match.group());
-            System.out.println(match.group());
         }
         return emailAdd;
     }

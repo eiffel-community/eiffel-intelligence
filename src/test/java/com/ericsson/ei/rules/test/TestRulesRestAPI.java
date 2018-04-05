@@ -19,7 +19,13 @@ package com.ericsson.ei.rules.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,15 +55,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestRulesRestAPI.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesRestAPI.class);
 
     @Autowired
     private MockMvc mockMvc;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    IRuleCheckService ruleCheckService;
+    private IRuleCheckService ruleCheckService;
 
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
@@ -70,25 +76,21 @@ public class TestRulesRestAPI {
     private final String aggregateResultObject = "src/test/resources/AggregateResultObject.json";
 
     @Test
-    public void testJmespathRestApi() throws Exception {
-
+    public void testJmesPathRestApi() throws Exception {
         String jsonInput = null;
         String extractionRules_test = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            extractionRules_test = FileUtils.readFileToString(new File(extractionRuleFilePath));
+            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+            extractionRules_test = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check").accept(MediaType.ALL)
-                .param("rule", extractionRules_test).param("jsonContent", jsonInput);
-        // content(jsonInput).contentType(MediaType.ALL);
+                .param("rule", extractionRules_test).content(jsonInput).contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
-        String resultStr = result.getResponse().getContentAsString().toString();
-
+        String resultStr = result.getResponse().getContentAsString();
         JSONObject obj = new JSONObject(resultStr);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -99,29 +101,26 @@ public class TestRulesRestAPI {
 
     @Test
     public void testAggregationRestApi() throws Exception {
-
-        String jsonInput = null;
-        String extractionRules_test = null;
         String aggregatedResult = null;
+        JSONArray jsonInput = null;
+        JSONArray extractionRules_test = null;
         JSONArray expectedAggObject = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(events));
-            extractionRules_test = FileUtils.readFileToString(new File(rules));
-            aggregatedResult = FileUtils.readFileToString(new File(aggregateResultObject));
+            jsonInput = new JSONArray(FileUtils.readFileToString(new File(events), "UTF-8"));
+            extractionRules_test = new JSONArray(FileUtils.readFileToString(new File(rules), "UTF-8"));
+            aggregatedResult = FileUtils.readFileToString(new File(aggregateResultObject), "UTF-8");
             expectedAggObject = new JSONArray(aggregatedResult);
-
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-
-        Mockito.when(ruleCheckService.prepareAggregatedObject(Mockito.any(String.class), Mockito.any(String.class)))
+        String body = "{\"listRulesJson\":" + extractionRules_test.toString() + ",\"listEventsJson\":" + jsonInput.toString() + "}";
+        Mockito.when(ruleCheckService.prepareAggregatedObject(Mockito.any(JSONArray.class), Mockito.any(JSONArray.class)))
                 .thenReturn(aggregatedResult);
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check/aggregation")
-                .accept(MediaType.ALL).param("listRulesJson", extractionRules_test).param("listEventsJson", jsonInput);
+                .accept(MediaType.ALL).content(body).contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String resultStr = result.getResponse().getContentAsString().toString();
+        String resultStr = result.getResponse().getContentAsString();
 
         if (testEnable) {
             JSONArray actualAggObject = new JSONArray(resultStr);

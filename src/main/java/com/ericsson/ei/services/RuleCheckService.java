@@ -3,7 +3,6 @@ package com.ericsson.ei.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +16,6 @@ import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Component
 public class RuleCheckService implements IRuleCheckService {
@@ -37,12 +35,10 @@ public class RuleCheckService implements IRuleCheckService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckService.class);
 
     @Override
-    public String prepareAggregatedObject(String listRulesJson, String listEventsJson)
-            throws JSONException, JsonProcessingException, IOException {
-        JSONArray rulesList = new JSONArray(listRulesJson);
-        JSONArray eventsList = new JSONArray(listEventsJson);
+    public String prepareAggregatedObject(JSONArray rulesList, JSONArray eventsList)
+            throws JSONException, IOException {
         eventHandler.getRulesHandler().setParsedJson(rulesList.toString());
-        String response = null;
+        String response;
         // Looping all events and add suffix template name to id and links, For
         // identifying the test aggregated events.
         HashSet<String> templateNames = new HashSet<>();
@@ -56,13 +52,12 @@ public class RuleCheckService implements IRuleCheckService {
                 eventHandler.eventReceived(eventsList.getJSONObject(i).toString());
             }
         }
-
         String templateName = templateNames.iterator().next();
         if (templateNames.size() == 1) {
             ArrayList<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
             response = responseList.toString();
         } else {
-            response = "Multipul template names are not allowed, Please use single name for all rules.";
+            response = "Multiple template names are not allowed, Please use single name for all rules.";
         }
         // Delete the aggregated object
         processAggregatedObject.deleteAggregatedObject(templateName);

@@ -2,6 +2,7 @@ package com.ericsson.ei.services;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,7 +25,7 @@ public interface IRuleCheckService {
      * @throws JsonProcessingException
      * @throws IOException
      */
-    String prepareAggregatedObject(String listRulesJson, String listEventsJson)
+    String prepareAggregatedObject(JSONArray rulesList, JSONArray eventsList)
             throws JSONException, JsonProcessingException, IOException;
 
 }

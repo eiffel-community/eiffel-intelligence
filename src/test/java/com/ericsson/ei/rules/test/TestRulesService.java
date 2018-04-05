@@ -73,7 +73,7 @@ public class TestRulesService {
             extractionRules_test = FileUtils.readFileToString(new File(rules));
             aggregatedResult = FileUtils.readFileToString(new File(aggregateResultObject));
             expectedAggObject = new JSONArray(aggregatedResult);
-            String result = ruleCheckService.prepareAggregatedObject(extractionRules_test, jsonInput);
+            String result = ruleCheckService.prepareAggregatedObject(new JSONArray(extractionRules_test), new JSONArray(jsonInput));
             JSONArray actualAggObject = new JSONArray(result);
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());
         } catch (Exception e) {

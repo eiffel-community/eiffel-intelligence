@@ -56,6 +56,9 @@ public class TestRulesRestAPI {
     private static final String RULES = "src/test/resources/AggregateListRules.json";
     private static final String AGGREATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
 
+    private static final String ENVIRONMENT_DISABLED = "{\"message\": \"Test environment is not enabled. "
+        + "Please use the test environment for this execution\"}";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -115,8 +118,8 @@ public class TestRulesRestAPI {
             assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());
         } else {
-            assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-            assertEquals("Please use the test environment for this execution", resultStr);
+            assertEquals(HttpStatus.SERVICE_UNAVAILABLE.value(), result.getResponse().getStatus());
+            assertEquals(ENVIRONMENT_DISABLED, resultStr);
         }
 
     }

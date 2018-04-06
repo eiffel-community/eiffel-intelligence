@@ -25,9 +25,14 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -75,6 +81,8 @@ public class SubscriptionHandlerTest {
     static int port = 27017;
     private static String dataBaseName = "MissedNotification";
     private static String collectionName = "Notification";
+    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
     public static void setUpEmbeddedMongo() throws Exception {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
@@ -92,6 +100,11 @@ public class SubscriptionHandlerTest {
     @BeforeClass
     public static void init() throws Exception {
         setUpEmbeddedMongo();
+    }
+    
+    @Before
+    public void beforeTests() {
+    	mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
 
     @PostConstruct

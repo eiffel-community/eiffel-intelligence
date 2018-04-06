@@ -47,18 +47,10 @@ public class RunSubscription {
 
     static Logger log = (Logger) LoggerFactory.getLogger(RunSubscription.class);
     
-    /*
-     * Subscription matched Aggregated Object HashMap format
-     * 
-     *   { <SubscriptionName> : {
-     *                            <AggrObjId>: <SubscriptionReqListIndexId>,
-     *                            <AggrObjId>: <SubscriptionReqListIndexId>,
-     *                            <AggrObjId>: <SubscriptionReqListIndexId>
-     *                          }
-     *   }
-     */
-	public static volatile ConcurrentHashMap<String, HashMap<String, Integer>> aggrObjectMatchedHashMap = new ConcurrentHashMap<String, HashMap<String, Integer>>();
-    /**
+    @Autowired
+	private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler; //= new SubscriptionRepeatDbHandler(); 
+	
+	/**
      * This method matches every condition specified in the subscription Object
      * and if all conditions are matched then only the aggregatedObject is
      * eligible for notification via e-mail or REST POST.
@@ -89,14 +81,11 @@ public class RunSubscription {
             }
             
             
-            String aggrObjId = aggrObjJsonNode.get("id").toString();
-            String subscriptionName = subscriptionJson.get("subscriptionName").toString();
-            String subscriptionRepeatFlag = subscriptionJson.get("repeat").toString();
+            String aggrObjId = aggrObjJsonNode.get("id").asText();
+            String subscriptionName = subscriptionJson.get("subscriptionName").asText();
+            String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
             
-            if (subscriptionRepeatFlag == "false" &&
-            		aggrObjectMatchedHashMap.get(subscriptionName) != null &&
-            		aggrObjectMatchedHashMap.get(subscriptionName).get(aggrObjId) != null &&
-            		aggrObjectMatchedHashMap.get(subscriptionName).get(aggrObjId) != requirementIndex ){
+            if (subscriptionRepeatFlag == "false" && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, aggrObjId)){
             	log.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
             			"\nSubscriptionName: " + subscriptionName +
             			"\nand has Subsctrion Repeat flag set to: " + subscriptionRepeatFlag);
@@ -128,11 +117,12 @@ public class RunSubscription {
             if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false") {
-                	log.info("Adding matched AggrObj id to hashmap.");
-                	if (aggrObjectMatchedHashMap.get(subscriptionName) == null) {
-                		aggrObjectMatchedHashMap.put(subscriptionName, new HashMap<String, Integer>());
-                	}
-            		aggrObjectMatchedHashMap.get(subscriptionName).put(aggrObjId, requirementIndex);
+                	log.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                	try {
+						subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName, aggrObjId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
                 }
             }
             

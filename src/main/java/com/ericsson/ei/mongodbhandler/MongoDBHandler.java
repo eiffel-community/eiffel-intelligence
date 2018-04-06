@@ -126,11 +126,12 @@ public class MongoDBHandler {
                 }
             }
             else{
-                log.info("No documents found with given condition: " + condition);
-                log.info("in database: " + dataBaseName + " and collection: " + collectionName);
+                System.out.println("No documents found with given condition: " + condition);
+                System.out.println("in database: " + dataBaseName + " and collection: " + collectionName);
             }
         }catch (Exception e) {
-            log.info(e.getMessage(), e);
+        	System.out.println(e.getMessage());
+        	return null;
         }
         return result;
     }
@@ -192,6 +193,12 @@ public class MongoDBHandler {
         BasicDBObject ttlField=new BasicDBObject(fieldName,1);
         BasicDBObject ttlTime=new BasicDBObject("expireAfterSeconds",ttlValue);
         db.getCollection(collectionName).createIndex(ttlField,ttlTime);
+    }
+    
+    public void dropCollection(String dataBaseName, String collectionName) {
+    	DB db = mongoClient.getDB(dataBaseName);
+    	DBCollection myCollection = db.getCollection(collectionName);
+    	myCollection.drop();
     }
 
 }

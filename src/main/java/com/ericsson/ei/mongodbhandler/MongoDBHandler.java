@@ -277,9 +277,9 @@ public class MongoDBHandler {
     }
     
     public void dropCollection(String dataBaseName, String collectionName) {
-    	DB db = mongoClient.getDB(dataBaseName);
-    	DBCollection myCollection = db.getCollection(collectionName);
-    	myCollection.drop();
+    	MongoDatabase db = mongoClient.getDatabase(dataBaseName);
+    	MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+    	mongoCollection.drop();
     }
 
 }

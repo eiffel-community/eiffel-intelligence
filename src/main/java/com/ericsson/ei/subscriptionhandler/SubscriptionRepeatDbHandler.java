@@ -46,7 +46,7 @@ public class SubscriptionRepeatDbHandler {
     
     public void addMatchedAggrObjToSubscriptionId(String subscriptionId, String aggrObjId) throws Exception {
     	
-    	log.info("Adding/Updating matched AggrObjId: " + aggrObjId + " to SubscriptionsId: " + subscriptionId + " aggrId matched list" );
+    	log.debug("Adding/Updating matched AggrObjId: " + aggrObjId + " to SubscriptionsId: " + subscriptionId + " aggrId matched list" );
     	
     	if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, aggrObjId)) {
     		log.info("Subscription: " + subscriptionId + " and AggrObjId, " +
@@ -60,8 +60,8 @@ public class SubscriptionRepeatDbHandler {
     	if (objArray != null && !objArray.isEmpty()) {
         	BasicDBObject subsObj = (BasicDBObject)  JSON.parse(objArray.get(0));
 
-    		log.info("Subscription found: " + subscriptionId);
-    		log.info("Subscription content: " + subsObj.toString());
+    		log.debug("Subscription found: " + subscriptionId);
+    		log.debug("Subscription content: " + subsObj.toString());
     		
     		
 			JsonNode jNode = null;
@@ -82,19 +82,19 @@ public class SubscriptionRepeatDbHandler {
 			
     		aggrIdsJsonList.add(aggrObjId);
     		subsObj.put("aggrIds", aggrIdsJsonList);
-    		log.info("Updated AggrIdObject to be inserted to Db: " + subsObj.toString());
+    		log.debug("Updated AggrIdObject to be inserted to Db: " + subsObj.toString());
     		
     		mongoDbHandler.updateDocument(dataBaseName, collectionName, subscriptionQuery, subsObj.toString());
     		return;
     	}
     	
-    	log.info("New Subscription AggrId not match,, inserting new AggrId to matched list.");
+    	log.debug("New Subscription AggrId not match,, inserting new AggrId to matched list.");
     	BasicDBObject document = new BasicDBObject();
     	document.put("subscriptionId", subscriptionId);
 		ArrayList<String> list = new ArrayList<String>();
 		list.add(aggrObjId);
 		document.put("aggrIds", list);
-		log.info("New AggrIdObject to be inserted to Db: " + document);
+		log.debug("New AggrIdObject to be inserted to Db: " + document);
         boolean result=mongoDbHandler.insertDocument(dataBaseName,collectionName, document.toString());
         if (result == false) {
             throw new Exception("failed to insert the document into database");
@@ -103,13 +103,13 @@ public class SubscriptionRepeatDbHandler {
     
 	public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, String aggrObjId) {
 		
-		log.info("Checking if AggrObjId: " + aggrObjId + " exist in SubscriptionId: " + subscriptionId + " AggrId matched list.");
+		log.debug("Checking if AggrObjId: " + aggrObjId + " exist in SubscriptionId: " + subscriptionId + " AggrId matched list.");
 		getAggrObjSubscriptions("");
 		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 		ArrayList<String> objArray = mongoDbHandler.find(dataBaseName, collectionName, subscriptionQuery);
 		if (objArray != null && !objArray.isEmpty()) {
 			JsonNode jNode = null;
-			log.info("AGGR Obj: " + objArray.get(0));
+			log.debug("AGGR Obj: " + objArray.get(0));
 			try {
 				jNode = mapper.readTree(objArray.get(0));
 			} catch (JsonProcessingException e) {
@@ -118,7 +118,7 @@ public class SubscriptionRepeatDbHandler {
 				e.printStackTrace();
 			}
 			if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
-				log.info("Subscription exist,, check if AggrId has matched.");
+				log.debug("Subscription exist,, check if AggrId has matched.");
 				Iterator<JsonNode> aggrIterator = jNode.get("aggrIds").elements();
 				while (aggrIterator.hasNext()) {
 					String aggrId = aggrIterator.next().asText();

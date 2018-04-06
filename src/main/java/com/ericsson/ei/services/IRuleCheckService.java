@@ -25,7 +25,7 @@ public interface IRuleCheckService {
      * @throws JsonProcessingException
      * @throws IOException
      */
-    String prepareAggregatedObject(JSONArray rulesList, JSONArray eventsList)
+    String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
             throws JSONException, JsonProcessingException, IOException;
 
 }

@@ -15,9 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -30,20 +28,18 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class TestRulesService {
+    private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
+    private static final String RULES = "src/test/resources/AggregateListRules.json";
+    private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
 
     @Autowired
-    IRuleCheckService ruleCheckService;
+    private IRuleCheckService ruleCheckService;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
     private static MongodForTestsFactory testsFactory;
-
-    static MongoClient mongoClient = null;
-
-    private final String events = "src/test/resources/AggregateListEvents.json";
-    private final String rules = "src/test/resources/AggregateListRules.json";
-    private final String aggregateResultObject = "src/test/resources/AggregateResultObject.json";
+    private static MongoClient mongoClient = null;
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
@@ -64,14 +60,14 @@ public class TestRulesService {
 
     @Test
     public void prepareAggregatedObject() {
-        String jsonInput = null;
-        String extractionRules_test = null;
-        String aggregatedResult = null;
-        JSONArray expectedAggObject = null;
+        String jsonInput;
+        String extractionRules_test;
+        String aggregatedResult;
+        JSONArray expectedAggObject;
         try {
-            jsonInput = FileUtils.readFileToString(new File(events));
-            extractionRules_test = FileUtils.readFileToString(new File(rules));
-            aggregatedResult = FileUtils.readFileToString(new File(aggregateResultObject));
+            jsonInput = FileUtils.readFileToString(new File(EVENTS), "UTF-8");
+            extractionRules_test = FileUtils.readFileToString(new File(RULES), "UTF-8");
+            aggregatedResult = FileUtils.readFileToString(new File(AGGREGATED_RESULT_OBJECT), "UTF-8");
             expectedAggObject = new JSONArray(aggregatedResult);
             String result = ruleCheckService.prepareAggregatedObject(new JSONArray(extractionRules_test), new JSONArray(jsonInput));
             JSONArray actualAggObject = new JSONArray(result);

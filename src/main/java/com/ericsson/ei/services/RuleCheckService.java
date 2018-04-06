@@ -19,37 +19,36 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 
 @Component
 public class RuleCheckService implements IRuleCheckService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckService.class);
 
     @Autowired
-    JmesPathInterface jmesPathInterface;
+    private JmesPathInterface jmesPathInterface;
 
     @Autowired
-    EventHandler eventHandler;
+    private EventHandler eventHandler;
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
 
     @Autowired
-    EventToObjectMapHandler eventToObjectMapHandler;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckService.class);
+    private EventToObjectMapHandler eventToObjectMapHandler;
 
     @Override
-    public String prepareAggregatedObject(JSONArray rulesList, JSONArray eventsList)
+    public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
             throws JSONException, IOException {
-        eventHandler.getRulesHandler().setParsedJson(rulesList.toString());
+        eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
         String response;
         // Looping all events and add suffix template name to id and links, For
         // identifying the test aggregated events.
         HashSet<String> templateNames = new HashSet<>();
-        for (int i = 0; i < eventsList.length(); i++) {
+        for (int i = 0; i < listEventsJson.length(); i++) {
             String templateName = jmesPathInterface
-                    .runRuleOnEvent("TemplateName", rulesList.getJSONObject(i).toString()).asText("TEST");
+                    .runRuleOnEvent("TemplateName", listEventsJson.getJSONObject(i).toString()).asText("TEST");
             templateNames.add(templateName);
             if (templateNames.size() == 1) {
-                addTemplateNameToIds(eventsList.getJSONObject(i), templateName);
-                LOGGER.debug("event to prepare aggregated object :: " + eventsList.getJSONObject(i).toString());
-                eventHandler.eventReceived(eventsList.getJSONObject(i).toString());
+                addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
+                LOGGER.debug("event to prepare aggregated object :: " + listEventsJson.getJSONObject(i).toString());
+                eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
             }
         }
         String templateName = templateNames.iterator().next();

@@ -3,7 +3,7 @@
         "repeat": false,
         "created": "data-time",
         "notificationType": "MAIL",
-        "notificationMeta": "mohammad.saifullah@ericsson.com, msdjah, saif.phy@yahoo.com",
+        "notificationMeta": "moh.saif@ericsson.com, msdjah.df@sdc.com, abc.phy@yahoo.com",
         "restPostBodyMediaType": "application/json",
         "notificationMessageKeyValues" : [
           {

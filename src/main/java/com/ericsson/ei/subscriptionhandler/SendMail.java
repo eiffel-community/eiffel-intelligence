@@ -18,17 +18,19 @@ package com.ericsson.ei.subscriptionhandler;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 
 /**
  * This class represents the mechanism to send e-mail notification to the
@@ -52,10 +54,12 @@ public class SendMail {
     private String subject;
 
     @Autowired
-    private MailSender mailSender;
+    private JavaMailSender emailSender;
 
-    public void setMailSender(MailSender mailSender) {
-        this.mailSender = mailSender;
+    private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
+
+    public void setMailSender(JavaMailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     /**
@@ -65,45 +69,54 @@ public class SendMail {
      * @param receiver
      * @param aggregatedObject
      */
-    public void sendMail(String receiver, String mapNotificationMessage) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        Set<String> emailAddresses = new HashSet<>();
-
-        message.setFrom(sender);
-        message.setSubject(subject);
-        message.setText(mapNotificationMessage);
-        emailAddresses = extractEmails(receiver);
-
-        for (String email : emailAddresses) {
-            if (validateEmail(email)) {
-                message.setTo(email);
-                mailSender.send(message);
-            }
+    public void sendMail(String receiver, String mapNotificationMessage)
+            throws MessagingException, SubscriptionValidationException {
+        Set<String> extEmails = new HashSet<>();
+        try {
+            extEmails = extractEmails(receiver);
+        } catch (SubscriptionValidationException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
         }
+
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        String[] to = extEmails.toArray(new String[0]);
+
+        try {
+            helper.setFrom(sender);
+            helper.setSubject(subject);
+            helper.setText(mapNotificationMessage);
+            helper.setTo(to);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+
+        emailSender.send(message);
+    }
+
+    /**
+     * This method takes string of comma separated email addresses and return the
+     * Set of validated email addresses
+     * 
+     * @param contetns
+     */
+    public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
+        Set<String> emailAdd = new HashSet<>();
+        String[] addresses = contents.split(",");
+
+        for (String add : addresses) {
+            subscriptionValidator.validateEmail(add.trim());
+            emailAdd.add(add);
+        }
+        return emailAdd;
     }
 
     @PostConstruct
     public void display() {
         log.info("Email Sender : " + sender);
         log.info("Email Subject : " + subject);
-    }
-
-    public Set<String> extractEmails(String contents) {
-        String pattern = "\\b[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z0-9.-]+\\b";
-        Pattern pat = Pattern.compile(pattern);
-        Matcher match = pat.matcher(contents);
-        Set<String> emailAdd = new HashSet<>();
-        while (match.find()) {
-            emailAdd.add(match.group());
-        }
-        return emailAdd;
-    }
-
-    public boolean validateEmail(String email) {
-        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-                Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
-        return matcher.matches();
     }
 
 }

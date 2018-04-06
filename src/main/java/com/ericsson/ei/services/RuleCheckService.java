@@ -43,7 +43,7 @@ public class RuleCheckService implements IRuleCheckService {
         HashSet<String> templateNames = new HashSet<>();
         for (int i = 0; i < listEventsJson.length(); i++) {
             String templateName = jmesPathInterface
-                    .runRuleOnEvent("TemplateName", listEventsJson.getJSONObject(i).toString()).asText("TEST");
+                    .runRuleOnEvent("TemplateName", listRulesJson.getJSONObject(i).toString()).asText("TEST");
             templateNames.add(templateName);
             if (templateNames.size() == 1) {
                 addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);

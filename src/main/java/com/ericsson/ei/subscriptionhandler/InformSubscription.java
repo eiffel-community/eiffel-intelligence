@@ -19,9 +19,13 @@ package com.ericsson.ei.subscriptionhandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,8 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -64,6 +70,9 @@ public class InformSubscription {
     private int ttlValue;
 
     @Autowired
+    private JmesPathInterface jmespath;
+
+    @Autowired
     SpringRestTemplate restTemplate;
 
     @Autowired
@@ -89,19 +98,28 @@ public class InformSubscription {
         log.info("NotificationType : " + notificationType);
         String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
         log.info("NotificationMeta : " + notificationMeta);
-        if (notificationType.trim().equals("REST_POST")) {
+        MultiValueMap<String, String> mapNotificationMessage= new LinkedMultiValueMap<String, String>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject).toString().toString().replaceAll("^\"|\"$", ""));
+            }
+        }
+        if(notificationType.trim().equals("REST_POST")){
             log.info("Notification through REST_POST");
-            int result = restTemplate.postData(aggregatedObject, notificationMeta);
+            int result = -1;
+            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString().replaceAll("^\"|\"$", "");
+            log.info("headerContentMediaType : " + headerContentMediaType);
+            result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value() || result == HttpStatus.NO_CONTENT.value()) {
                 log.info("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
-                    result = restTemplate.postData(aggregatedObject, notificationMeta);
-                    log.info("After trying for " + (i + 1) + " times, the result is : " + result);
+                    result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
+                      log.info("After trying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
-
                 if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
                     String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
                     log.info("Input missed Notification document : " + input);
@@ -115,13 +133,11 @@ public class InformSubscription {
                     } else
                         log.info("Notification saved in the database");
                 }
-
             }
         }
         else if (notificationType.trim().equals("MAIL")) {
             log.info("Notification through EMAIL");
-            sendMail.sendMail(notificationMeta, aggregatedObject);
-
+            sendMail.sendMail(notificationMeta, String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
         }
     }
 
@@ -131,7 +147,7 @@ public class InformSubscription {
      * 
      * @param aggregatedObject
      * @param subscriptionName
-     * @param notificationType
+     * @param notificationMeta
      * 
      * @return String
      */

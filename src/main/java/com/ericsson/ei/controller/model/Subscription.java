@@ -19,9 +19,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonPropertyOrder({
     "aggregationtype",
     "created",
-    "notificationMessage",
     "notificationMeta",
     "notificationType",
+    "restPostBodyMediaType",
+    "notificationMessageKeyValues",
     "repeat",
     "requirements",
     "subscriptionName"
@@ -31,13 +32,15 @@ public class Subscription {
     @JsonProperty("aggregationtype")
     private String aggregationtype;
     @JsonProperty("created")
-    private String created;
-    @JsonProperty("notificationMessage")
-    private String notificationMessage;
+    private Object created;
     @JsonProperty("notificationMeta")
     private String notificationMeta;
     @JsonProperty("notificationType")
     private String notificationType;
+    @JsonProperty("restPostBodyMediaType")
+    private String restPostBodyMediaType;
+    @JsonProperty("notificationMessageKeyValues")
+    private List<NotificationMessageKeyValue> notificationMessageKeyValues = new ArrayList<NotificationMessageKeyValue>();
     @JsonProperty("repeat")
     private Boolean repeat;
     @JsonProperty("requirements")
@@ -58,23 +61,13 @@ public class Subscription {
     }
 
     @JsonProperty("created")
-    public String getCreated() {
+    public Object getCreated() {
         return created;
     }
 
     @JsonProperty("created")
-    public void setCreated(String created) {
+    public void setCreated(Object created) {
         this.created = created;
-    }
-
-    @JsonProperty("notificationMessage")
-    public String getNotificationMessage() {
-        return notificationMessage;
-    }
-
-    @JsonProperty("notificationMessage")
-    public void setNotificationMessage(String notificationMessage) {
-        this.notificationMessage = notificationMessage;
     }
 
     @JsonProperty("notificationMeta")
@@ -95,6 +88,26 @@ public class Subscription {
     @JsonProperty("notificationType")
     public void setNotificationType(String notificationType) {
         this.notificationType = notificationType;
+    }
+
+    @JsonProperty("restPostBodyMediaType")
+    public String getRestPostBodyMediaType() {
+        return restPostBodyMediaType;
+    }
+
+    @JsonProperty("restPostBodyMediaType")
+    public void setRestPostBodyMediaType(String restPostBodyMediaType) {
+        this.restPostBodyMediaType = restPostBodyMediaType;
+    }
+
+    @JsonProperty("notificationMessageKeyValues")
+    public List<NotificationMessageKeyValue> getNotificationMessageKeyValues() {
+        return notificationMessageKeyValues;
+    }
+
+    @JsonProperty("notificationMessageKeyValues")
+    public void setNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessageKeyValues) {
+        this.notificationMessageKeyValues = notificationMessageKeyValues;
     }
 
     @JsonProperty("repeat")
@@ -144,7 +157,7 @@ public class Subscription {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMessage).append(notificationMeta).append(notificationType).append(repeat).append(requirements).append(subscriptionName).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -156,7 +169,7 @@ public class Subscription {
             return false;
         }
         Subscription rhs = ((Subscription) other);
-        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMessage, rhs.notificationMessage).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

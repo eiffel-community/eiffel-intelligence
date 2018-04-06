@@ -16,11 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +26,8 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -141,6 +134,18 @@ public class EventToObjectMapHandler {
             }
         }
         return list;
+    }
+    
+    /**
+     * The method is responsible for the delete the EventObjectMap by using the suffix template Name
+     * 
+     * @param templateName
+     * @return boolean
+     */
+    public boolean deleteEventObjectMap(String templateName) {
+        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        log.info("The Json condition for delete aggregated object is : " + condition);
+        return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 
 

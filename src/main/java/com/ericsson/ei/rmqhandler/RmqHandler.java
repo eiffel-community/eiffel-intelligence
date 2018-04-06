@@ -16,19 +16,8 @@
 */
 package com.ericsson.ei.rmqhandler;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +38,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
 public class RmqHandler {

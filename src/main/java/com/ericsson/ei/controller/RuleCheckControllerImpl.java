@@ -1,17 +1,20 @@
 package com.ericsson.ei.controller;
 
+import java.io.IOException;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.services.IRuleCheckService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,14 +39,19 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "jmespath")
-@RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
+@Api(value = "Check Rules", description = "This rest call for the execute the rule or rules(Rule object) on the Json, for checking output of rule")
 public class RuleCheckControllerImpl implements RuleCheckController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
     @Autowired
     JmesPathInterface jmesPathInterface;
+
+    @Autowired
+    IRuleCheckService ruleCheckService;
+
+    @Value("${testaggregated.enabled:false}")
+    private Boolean testEnable;
 
     /**
      * This method interacts with JmesPathInterface class method runRuleOnEvent
@@ -60,20 +68,44 @@ public class RuleCheckControllerImpl implements RuleCheckController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "run rule on event")
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> updateJmespathruleRuleCheck(String rule, String jsonContent) {
+    public ResponseEntity<?> updateRulesRuleCheck(String rule, String jsonContent) {
         String res = new String("[]");
 
         try {
             JSONObject jsonObj = new JSONObject(jsonContent);
+
             String jsonString = jsonObj.toString();
             res = jmesPathInterface.runRuleOnEvent(rule, jsonString).toString();
-            LOG.info("Query :" + rule + " executed Successfully");
+            LOG.debug("Query :" + rule + " executed Successfully");
             return new ResponseEntity<String>(res, HttpStatus.OK);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return new ResponseEntity<String>(res, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Run the list of rules on list of events and prepare the aggregation object. This endpoint for executing the rules on list of objects and return the aggregated objects.")
+    public ResponseEntity<?> updateAggregation(String listRulesJson, String listEventsJson) {
+
+        if (testEnable) {
+            try {
+                String aggeObject = ruleCheckService.prepareAggregatedObject(listRulesJson, listEventsJson);
+                if (aggeObject != null) {
+                    return new ResponseEntity<String>(aggeObject, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<String>("invalid json content", HttpStatus.BAD_REQUEST);
+                }
+
+            } catch (JSONException | IOException e) {
+                LOG.error(e.getMessage(), e);
+                return new ResponseEntity<String>("invalid json content", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            LOG.debug("testaggregated.controller.enabled is not enabled in application.properties file, Unable to test the rules on list of events");
+            return new ResponseEntity<String>("Please use the test environment for this execution", HttpStatus.BAD_REQUEST);
         }
     }
 

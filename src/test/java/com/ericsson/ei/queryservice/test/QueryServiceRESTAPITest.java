@@ -13,12 +13,11 @@
 */
 package com.ericsson.ei.queryservice.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.QueryAggregatedObjectController;
+import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
+import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,15 +40,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.AggregatedObjectController;
-import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.MissedNotificationControllerImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
-@ContextConfiguration(classes = { App.class })
+import static org.junit.Assert.assertEquals;
+
+@ContextConfiguration(classes = {App.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = AggregatedObjectController.class, secure = false)
+@WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
 
     @Autowired
@@ -69,10 +68,10 @@ public class QueryServiceRESTAPITest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    private AggregatedObjectControllerImpl aggregatedObjectController;
+    private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private MissedNotificationControllerImpl missedNotificationController;
+    private QueryMissedNotificationControllerImpl missedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -90,13 +89,13 @@ public class QueryServiceRESTAPITest {
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/aggregatedObject")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
                 .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -113,12 +112,12 @@ public class QueryServiceRESTAPITest {
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/missedNotifications?")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
                 .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());

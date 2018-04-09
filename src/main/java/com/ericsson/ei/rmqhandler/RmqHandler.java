@@ -101,8 +101,8 @@ public class RmqHandler {
 
 	@Getter
 	@Setter
-	@Value("${rabbitmq.routing.key}")
-	private String routingKey;
+	@Value("${rabbitmq.binding.key}")
+	private String bindingKey;
 
 	@Getter
 	@Setter
@@ -156,7 +156,7 @@ public class RmqHandler {
 
 	@Bean
 	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+		return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
 	}
 
 	@Bean
@@ -191,7 +191,7 @@ public class RmqHandler {
 			}
 
 			rabbitTemplate.setExchange(exchangeName);
-			rabbitTemplate.setRoutingKey(routingKey);
+			rabbitTemplate.setRoutingKey(bindingKey);
 			rabbitTemplate.setQueue(getQueueName());
 			rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
 				@Override

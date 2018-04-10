@@ -16,10 +16,12 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,7 @@ public class FlowTestExternalComposition extends FlowTestBase {
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedExternalComposition.json";
     private static final String AGGREGATED_OBJECT_ID_1 = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
     private static final String AGGREGATED_OBJECT_ID_2 = "cfce572b-c3j4-441e-abc9-b62f48080ca2";
-    private static final String AGGREGATED_OBJECT_ID_3 = "cfce572b-c3j4-441e-abc9-b62f48080ca2";
+    private static final String AGGREGATED_OBJECT_ID_3 = "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2";
 
     @Override
     String setRulesFilePath() {
@@ -58,8 +60,12 @@ public class FlowTestExternalComposition extends FlowTestBase {
     }
 
     @Override
-    Map<String, String> setCheckInfo() {
-        Map<String, String> checkInfo = new HashMap<>();
-        return checkInfo;
+    Map<String, JsonNode> setCheckData() throws IOException {
+        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+        Map<String, JsonNode> checkData = new HashMap<>();
+//        checkData.put(AGGREGATED_OBJECT_ID_1, expectedJSON.get(0));
+//        checkData.put(AGGREGATED_OBJECT_ID_2, expectedJSON.get(1));
+//        checkData.put(AGGREGATED_OBJECT_ID_3, expectedJSON.get(2));
+        return checkData;
     }
 }

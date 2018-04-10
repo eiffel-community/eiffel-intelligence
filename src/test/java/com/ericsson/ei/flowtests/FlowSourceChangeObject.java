@@ -13,10 +13,12 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +63,10 @@ public class FlowSourceChangeObject extends FlowTestBase {
     }
 
     @Override
-    Map<String, String> setCheckInfo() {
-        Map<String, String> checkInfo = new HashMap<>();
-        checkInfo.put(AGGREGATED_OBJECT_ID, AGGREGATED_OBJECT_FILE_PATH);
-        return checkInfo;
+    Map<String, JsonNode> setCheckData() throws IOException {
+        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+        Map<String, JsonNode> checkData = new HashMap<>();
+        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+        return checkData;
     }
 }

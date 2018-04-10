@@ -16,11 +16,13 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,10 +70,10 @@ public class FlowTest2 extends FlowTestBase {
     }
 
     @Override
-    Map<String, String> setCheckInfo() {
-        Map<String, String> checkInfo = new HashMap<>();
-        checkInfo.put(AGGREGATED_OBJECT_ID_1, AGGREGATED_OBJECT_FILE_PATH_1);
-        checkInfo.put(AGGREGATED_OBJECT_ID_2, AGGREGATED_OBJECT_FILE_PATH_2);
-        return checkInfo;
+    Map<String, JsonNode> setCheckData() throws IOException {
+        Map<String, JsonNode> checkData = new HashMap<>();
+        checkData.put(AGGREGATED_OBJECT_ID_1, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_1));
+        checkData.put(AGGREGATED_OBJECT_ID_2, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_2));
+        return checkData;
     }
 }

@@ -16,7 +16,10 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,14 +29,18 @@ import com.mongodb.client.MongoCollection;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
@@ -43,6 +50,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -66,17 +75,35 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
     @Autowired
     private RulesHandler rulesHandler;
 
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
+
+    @Mock
+    private ERQueryService erQueryService;
+
     @Value("${database.name}")
     private String database;
     @Value("${event_object_map.collection.name}")
     private String event_map;
 
     @BeforeClass
-    public static void before() {
+    public static void beforeClass() {
         //turn off unneeded logs for this test to prevent Travis CI build failure
         System.setProperty("logging.level.root", "OFF");
         System.setProperty("logging.level.org.springframework.web", "OFF");
         System.setProperty("logging.level.com.ericsson.ei", "INFO");
+    }
+
+    @Before
+    public void before() throws IOException {
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
+        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
+            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
     @Test

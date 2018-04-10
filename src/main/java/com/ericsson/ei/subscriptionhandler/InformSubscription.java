@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -145,9 +144,6 @@ public class InformSubscription {
                 sendMail.sendMail(notificationMeta,
                         String.valueOf((mapNotificationMessage.get("")).get(0)));
             } catch (MessagingException e) {
-                e.printStackTrace();
-                LOGGER.error(e.getMessage());
-            } catch (SubscriptionValidationException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }

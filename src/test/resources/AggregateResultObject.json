@@ -1,0 +1,43 @@
+[
+    {
+        "_id": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22_ARTIFACT_TEST",
+        "aggregatedObject": {
+            "fileInformation": [
+                {
+                    "extension": "war",
+                    "classifier": ""
+                }
+            ],
+            "buildCommand": "trigger",
+            "confidenceLevels": [
+                {
+                    "eventId": "e3be0cf8-2ebd-4d6d-bf5c-a3b535cd084e_ARTIFACT_TEST",
+                    "name": "dummy_1_stable",
+                    "time": 1521452400324,
+                    "value": "SUCCESS"
+                }
+            ],
+            "TemplateName": "ARTIFACT_TEST",
+            "id": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22_ARTIFACT_TEST",
+            "time": 1521452368194,
+            "type": "EiffelArtifactCreatedEvent",
+            "gav": {
+                "groupId": "com.ericsson.eiffel",
+                "artifactId": "eiffel-dummy-component-1",
+                "version": "0.0.48-SNAPSHOT"
+            },
+            "publications": [
+                {
+                    "eventId": "2acd348d-05e6-4945-b441-dc7c1e55534e_ARTIFACT_TEST",
+                    "locations": [
+                        {
+                            "type": "NEXUS",
+                            "uri": "http://localhost:8081/repository/test"
+                        }
+                    ],
+                    "time": 1521452368758
+                }
+            ]
+        }
+    }
+]

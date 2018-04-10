@@ -1,7 +1,10 @@
 
 package com.ericsson.ei.controller;
 
+import javax.validation.Valid;
+import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,9 +38,8 @@ public interface RuleCheckController {
      */
     @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
     public ResponseEntity<?> updateAggregation(
-        @RequestParam
-        String listRulesJson,
-        @RequestParam
-        String listEventsJson);
+        @Valid
+        @RequestBody
+        RuleCheckBody ruleCheckBody);
 
 }

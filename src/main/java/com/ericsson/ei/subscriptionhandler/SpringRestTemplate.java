@@ -16,25 +16,18 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
-
 /**
  * This class is responsible to send notification through REST POST to the
  * recipient of the Subscription Object.
- *
  */
 
 @Component
@@ -69,12 +62,11 @@ public class SpringRestTemplate {
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             try {
-            	return Integer.parseInt(e.getMessage());
-            }
-            catch (NumberFormatException error) {
-            	return HttpStatus.NOT_FOUND.value();
+                return Integer.parseInt(e.getMessage());
+            } catch (NumberFormatException error) {
+                return HttpStatus.NOT_FOUND.value();
             }
         }
         HttpStatus status = response.getStatusCode();

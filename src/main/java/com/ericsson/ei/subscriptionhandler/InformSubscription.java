@@ -16,18 +16,13 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
-
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +30,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
  * way to save the aggregatedObject details in the database when the
  * notification fails.
- * 
+ *
  * @author xjibbal
- * 
  */
 
 @Component
@@ -90,41 +87,41 @@ public class InformSubscription {
      * This method extracts the mode of notification through which the subscriber
      * should be notified, from the subscription Object. And if the notification
      * fails, then it saved in the database.
-     * 
+     *
      * @param aggregatedObject
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
         String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll("^\"|\"$", "");
-        log.info("SubscriptionName : " + subscriptionName);
+        LOGGER.debug("SubscriptionName : " + subscriptionName);
         String notificationType = subscriptionJson.get("notificationType").toString().replaceAll("^\"|\"$", "");
-        log.info("NotificationType : " + notificationType);
+        LOGGER.debug("NotificationType : " + notificationType);
         String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
-        log.info("NotificationMeta : " + notificationMeta);
+        LOGGER.debug("NotificationMeta : " + notificationMeta);
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<String, String>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
                 mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath
                         .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject)
-                        .toString().toString().replaceAll("^\"|\"$", ""));
+                        .toString().replaceAll("^\"|\"$", ""));
             }
         }
         if (notificationType.trim().equals("REST_POST")) {
-            log.info("Notification through REST_POST");
+            LOGGER.debug("Notification through REST_POST");
             int result = -1;
             String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
                     .replaceAll("^\"|\"$", "");
-            log.info("headerContentMediaType : " + headerContentMediaType);
+            LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
             result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
                     || result == HttpStatus.NO_CONTENT.value()) {
-                log.info("The result is : " + result);
+                LOGGER.debug("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
                     result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
                             headerContentMediaType);
-                    log.info("After trying for " + (i + 1) + " times, the result is : " + result);
+                    LOGGER.debug("After trying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
@@ -144,16 +141,16 @@ public class InformSubscription {
                 }
             }
         } else if (notificationType.trim().equals("MAIL")) {
-            log.info("Notification through EMAIL");
+            LOGGER.debug("Notification through EMAIL");
             try {
                 sendMail.sendMail(notificationMeta,
                         String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
             } catch (MessagingException e) {
                 e.printStackTrace();
-                log.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             } catch (SubscriptionValidationException e) {
                 e.printStackTrace();
-                log.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
     }
@@ -161,7 +158,7 @@ public class InformSubscription {
     /**
      * This method saves the missed Notification into a single document along with
      * Subscription name, notification meta and time period.
-     * 
+     *
      * @param aggregatedObject
      * @param subscriptionName
      * @param notificationMeta
@@ -195,5 +192,4 @@ public class InformSubscription {
         LOGGER.debug("notification.failAttempt : " + failAttempt);
         LOGGER.debug("Missed Notification TTL value : " + ttlValue);
     }
-
 }

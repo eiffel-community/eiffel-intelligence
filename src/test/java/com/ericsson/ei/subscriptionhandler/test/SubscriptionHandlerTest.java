@@ -17,6 +17,7 @@
 package com.ericsson.ei.subscriptionhandler.test;
 
 import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
@@ -55,7 +56,9 @@ import org.springframework.util.MultiValueMap;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -68,7 +71,6 @@ public class SubscriptionHandlerTest {
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
-    private static final String subscriptionMailPath = "src/test/resources/SubscriptionForMail.json";
     private static final String DB_NAME = "MissedNotification";
     private static final String COLLECTION_NAME = "Notification";
     private static final String REGEX = "^\"|\"$";
@@ -76,7 +78,6 @@ public class SubscriptionHandlerTest {
     private static final int STATUS_OK = 200;
     private static String aggregatedObject;
     private static String subscriptionData;
-    private static String subscriptionMailData;
     private static String url;
     private static String headerContentMediaType;
     private static MongodForTestsFactory testsFactory;
@@ -103,7 +104,7 @@ public class SubscriptionHandlerTest {
     @MockBean
     private SpringRestTemplate springRestTemplate;
 
-    @MockBean
+    @Autowired
     private SendMail sendMail;
 
     @Mock
@@ -114,7 +115,6 @@ public class SubscriptionHandlerTest {
         mongoClient = testsFactory.newMongo();
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
-        subscriptionMailData = FileUtils.readFileToString(new File(subscriptionMailPath), "UTF-8");
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }
@@ -181,10 +181,16 @@ public class SubscriptionHandlerTest {
     }
 
     @Test
-    public void testMailTrigger() throws IOException, JSONException {
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionMailData));
-        verify(sendMail, times(1)).sendMail(new JSONObject(subscriptionMailData).getString("notificationMeta"),
-                String.valueOf((mapNotificationMessage().get("")).get(0)));
+    public void sendMailTest() {
+        Set<String> extRec = new HashSet<>();
+        String recievers = "asdf.hklm@ericsson.se, affda.fddfd@ericsson.com, sasasa.dfdfdf@fdad.com, abcd.defg@gmail.com";
+        try {
+            extRec = (sendMail.extractEmails(recievers));
+        } catch (SubscriptionValidationException e) {
+            // TODO Auto-generated catch block
+            LOGGER.error(e.getMessage(), e);
+        }
+        assertEquals(String.valueOf(extRec.toArray().length), "4");
     }
 
     @Test

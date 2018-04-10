@@ -90,9 +90,9 @@ public class SubscriptionHandler {
         JsonNode subscriptionJson = null;
         try {
             subscriptionJson = new ObjectMapper().readTree(subscriptionData);
-            LOGGER.info("SubscriptionJson : " + subscriptionJson.toString());
+            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
             JsonNode aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
-            LOGGER.info("AggregatedJson : " + aggregatedJson.toString());
+            LOGGER.debug("AggregatedJson : " + aggregatedJson.toString());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

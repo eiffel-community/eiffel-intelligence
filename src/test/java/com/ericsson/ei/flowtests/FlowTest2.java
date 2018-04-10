@@ -16,30 +16,40 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
 import java.util.ArrayList;
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowTest2 extends FlowTestBase {
 
-    private static Logger log = LoggerFactory.getLogger(FlowTest2.class);
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH_2 = "src/test/resources/AggregatedDocument2.json";
+    private static final String AGGREGATED_OBJECT_ID_1 = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+    private static final String AGGREGATED_OBJECT_ID_2 = "ccce572c-c364-441e-abc9-b62fed080ca2";
 
-    static private final String inputFilePath2 = "src/test/resources/AggregatedDocument2.json";
+    @Override
+    String setRulesFilePath() {
+        return RULES_FILE_PATH;
+    }
 
-    protected ArrayList<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
+    @Override
+    String setEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
+
+    @Override
+    List<String> setEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
@@ -57,22 +67,11 @@ public class FlowTest2 extends FlowTestBase {
         return eventNames;
     }
 
-    protected void checkResult() {
-        try {
-            String document = objectHandler.findObjectById("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
-            ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode expectedJson = objectmapper.readTree(expectedDocument);
-            JsonNode actualJson = objectmapper.readTree(document);
-            String breakString = "breakHere";
-            assertEquals(expectedJson.toString().length(), actualJson.toString().length());
-            String expectedDocument2 = FileUtils.readFileToString(new File(inputFilePath2), "UTF-8");
-            String document2 = objectHandler.findObjectById("ccce572c-c364-441e-abc9-b62fed080ca2");
-            JsonNode expectedJson2 = objectmapper.readTree(expectedDocument2);
-            JsonNode actualJson2 = objectmapper.readTree(document2);
-            assertEquals(expectedJson2.toString().length(), actualJson2.toString().length());
-        } catch (Exception e) {
-            log.info(e.getMessage(),e);
-        }
+    @Override
+    Map<String, String> setCheckInfo() {
+        Map<String, String> checkInfo = new HashMap<>();
+        checkInfo.put(AGGREGATED_OBJECT_ID_1, AGGREGATED_OBJECT_FILE_PATH_1);
+        checkInfo.put(AGGREGATED_OBJECT_ID_2, AGGREGATED_OBJECT_FILE_PATH_2);
+        return checkInfo;
     }
 }

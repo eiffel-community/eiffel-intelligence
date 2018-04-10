@@ -85,7 +85,7 @@ public class RunSubscription {
             String subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
             
-            if (subscriptionRepeatFlag == "false" && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, aggrObjId)){
+            if (subscriptionRepeatFlag == "false" && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, aggrObjId)){
             	log.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
             			"\nSubscriptionName: " + subscriptionName +
             			"\nand has Subsctrion Repeat flag set to: " + subscriptionRepeatFlag);
@@ -118,7 +118,7 @@ public class RunSubscription {
                 if (subscriptionJson.get("repeat").toString() == "false") {
                 	log.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
                 	try {
-						subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName, aggrObjId);
+						subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName, requirementIndex, aggrObjId);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

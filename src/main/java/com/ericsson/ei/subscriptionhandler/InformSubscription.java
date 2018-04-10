@@ -39,7 +39,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -92,26 +91,26 @@ public class InformSubscription {
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
-        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll("^\"|\"$", "");
+        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
         LOGGER.debug("SubscriptionName : " + subscriptionName);
-        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll("^\"|\"$", "");
+        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
         LOGGER.debug("NotificationType : " + notificationType);
-        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
+        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
         LOGGER.debug("NotificationMeta : " + notificationMeta);
-        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll("^\"|\"$", ""), jmespath
-                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll("^\"|\"$", ""), aggregatedObject)
-                        .toString().replaceAll("^\"|\"$", ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
             }
         }
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            int result = -1;
+            int result;
             String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
-                    .replaceAll("^\"|\"$", "");
+                    .replaceAll(REGEX, "");
             LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
             result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
@@ -144,7 +143,7 @@ public class InformSubscription {
             LOGGER.debug("Notification through EMAIL");
             try {
                 sendMail.sendMail(notificationMeta,
-                        String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
+                        String.valueOf((mapNotificationMessage.get("")).get(0)));
             } catch (MessagingException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());

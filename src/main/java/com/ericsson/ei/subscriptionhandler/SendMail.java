@@ -68,8 +68,7 @@ public class SendMail {
      * @param receiver
      * @param mapNotificationMessage
      */
-    public void sendMail(String receiver, String mapNotificationMessage)
-            throws MessagingException, SubscriptionValidationException {
+    public void sendMail(String receiver, String mapNotificationMessage) throws MessagingException {
         Set<String> extEmails = new HashSet<>();
         try {
             extEmails = extractEmails(receiver);
@@ -77,11 +76,9 @@ public class SendMail {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
         }
-
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         String[] to = extEmails.toArray(new String[0]);
-
         try {
             helper.setFrom(sender);
             helper.setSubject(subject);
@@ -91,7 +88,6 @@ public class SendMail {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
         }
-
         emailSender.send(message);
     }
 
@@ -104,7 +100,6 @@ public class SendMail {
     public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
         Set<String> emailAdd = new HashSet<>();
         String[] addresses = contents.split(",");
-
         for (String add : addresses) {
             subscriptionValidator.validateEmail(add.trim());
             emailAdd.add(add);

@@ -16,13 +16,6 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -32,9 +25,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -45,39 +51,44 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class SingleEventAggregationTest extends FlowTestBase {
-
-    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
-
-    static protected String jsonFilePath = "src/test/resources/test_All_Events.json";
-    static protected String rulePath = "src/test/resources/all_event_rules.json";
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
 
     @Autowired
     RulesHandler rulesHandler;
-        
+
+    @Autowired
+    public ObjectHandler objectHandler;
+
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
-//    
+
     @Mock
     private ERQueryService erQueryService;
 
-    
+    private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
+
+    @Override
+    String setRulesFilePath() {
+        return RULES_FILE_PATH;
+    }
+
+    @Override
+    String setEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
+
     @Before
-    public void before() throws IOException {
+    public void before() {
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-//        MockitoAnnotations.initMocks(this);
+        // MockitoAnnotations.initMocks(this);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-            anyBoolean())).thenReturn(null);        
+                anyBoolean())).thenReturn(null);
         super.setVarToValue(5000);
     }
-    
-    
 
-    protected void setSpecificTestCaseParameters() {
-        setJsonFilePath(jsonFilePath);
-        rulesHandler.setRulePath(rulePath);
-    }
-
-    protected ArrayList<String> getEventNamesToSend() {
+    @Override
+    List<String> setEventNamesToSend() {
         ArrayList<String> eventNames = new ArrayList<>();
         eventNames.add("EiffelActivityCanceledEvent");
         eventNames.add("EiffelActivityStartedEvent");
@@ -117,8 +128,8 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     protected void checkResult() {
         try {
-            ArrayList<String> eventNames = getEventNamesToSend();
-            String eventsDocument = FileUtils.readFileToString(new File(jsonFilePath), "UTF-8");
+            ArrayList<String> eventNames = (ArrayList<String>) setEventNamesToSend();
+            String eventsDocument = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode eventsJson = objectmapper.readTree(eventsDocument);
 
@@ -134,7 +145,13 @@ public class SingleEventAggregationTest extends FlowTestBase {
             }
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    Map<String, String> setCheckInfo() {
+        Map<String, String> checkInfo = new HashMap<>();
+        return checkInfo;
     }
 }

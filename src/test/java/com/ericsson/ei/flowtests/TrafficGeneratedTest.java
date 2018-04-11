@@ -86,14 +86,6 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
     @Value("${event_object_map.collection.name}")
     private String event_map;
 
-    @BeforeClass
-    public static void beforeClass() {
-        //turn off unneeded logs for this test to prevent Travis CI build failure
-        System.setProperty("logging.level.root", "OFF");
-        System.setProperty("logging.level.org.springframework.web", "OFF");
-        System.setProperty("logging.level.com.ericsson.ei", "INFO");
-    }
-
     @Before
     public void before() throws IOException {
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
@@ -140,7 +132,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
 
             String time = "" + diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000;
             LOGGER.debug("Number of events, that were sent: " + eventsCount);
-            LOGGER.info("Time of execution: " + time);
+            LOGGER.debug("Time of execution: " + time);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

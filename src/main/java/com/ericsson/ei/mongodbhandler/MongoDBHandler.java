@@ -87,12 +87,14 @@ public class MongoDBHandler {
     public boolean insertDocument(String dataBaseName, String collectionName, String input) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            final Document dbObjectInput = Document.parse(input);
-            collection.insertOne(dbObjectInput);
-            log.info("Object : " + input);
-            log.info("inserted successfully in ");
-            log.info("collection : " + collectionName + "and db : " + dataBaseName);
-            return true;
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(input);
+                collection.insertOne(dbObjectInput);
+                log.debug("Object : " + input);
+                log.debug("inserted successfully in ");
+                log.debug("collection : " + collectionName + "and db : " + dataBaseName);
+                return true;
+            }
         } catch (MongoWriteException e) {
             log.error(e.getMessage(), e);
         }
@@ -111,15 +113,17 @@ public class MongoDBHandler {
         ArrayList<String> result = new ArrayList<>();
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
-                result.add(JSON.serialize(document));
-            });
-            if (result.size() != 0) {
-                log.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
-                        + " fetched No of :" + result.size());
-            } else {
-                log.debug("getAllDocuments() :: database: " + dataBaseName + "and collection: " + collectionName
-                        + " documents are not found");
+            if (collection != null) {
+                collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
+                    result.add(JSON.serialize(document));
+                });
+                if (result.size() != 0) {
+                    log.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
+                            + " fetched No of :" + result.size());
+                } else {
+                    log.debug("getAllDocuments() :: database: " + dataBaseName + "and collection: " + collectionName
+                            + " documents are not found");
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -143,15 +147,17 @@ public class MongoDBHandler {
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            collection.find(BasicDBObject.parse(condition)).forEach((Block<Document>) document -> {
-                result.add(JSON.serialize(document));
-            });
-            if (result.size() != 0) {
-                log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
-                        + " fetched No of :" + result.size());
-            } else {
-                log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
-                        + " documents are not found");
+            if (collection != null) {
+                collection.find(BasicDBObject.parse(condition)).forEach((Block<Document>) document -> {
+                    result.add(JSON.serialize(document));
+                });
+                if (result.size() != 0) {
+                    log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
+                            + " fetched No of :" + result.size());
+                } else {
+                    log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
+                            + " documents are not found");
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -175,12 +181,14 @@ public class MongoDBHandler {
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            final Document dbObjectInput = Document.parse(input);
-            final Document dbObjectUpdateInput = Document.parse(updateInput);
-            UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-            log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
-                    + " is document Updated :" + updateMany.wasAcknowledged());
-            return updateMany.wasAcknowledged();
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(input);
+                final Document dbObjectUpdateInput = Document.parse(updateInput);
+                UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+                log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
+                        + " is document Updated :" + updateMany.wasAcknowledged());
+                return updateMany.wasAcknowledged();
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -204,13 +212,15 @@ public class MongoDBHandler {
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            final Document dbObjectInput = Document.parse(input);
-            final Document dbObjectUpdateInput = Document.parse(updateInput);
-            Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
-            if (result != null) {
-                log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
-                        + " updated successfully");
-                return result;
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(input);
+                final Document dbObjectUpdateInput = Document.parse(updateInput);
+                Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
+                if (result != null) {
+                    log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
+                            + " updated successfully");
+                    return result;
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -231,16 +241,18 @@ public class MongoDBHandler {
     public boolean dropDocument(String dataBaseName, String collectionName, String condition) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            final Document dbObjectCondition = Document.parse(condition);
-            DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
-            if (deleteMany.getDeletedCount() > 0) {
-                log.debug("database" + dataBaseName + " and collection: " + collectionName + " deleted No.of records "
-                        + deleteMany.getDeletedCount());
-                return true;
-            } else {
-                log.debug("database " + dataBaseName + " and collection: " + collectionName
-                        + " No documents found to delete");
-                return false;
+            if (collection != null) {
+                final Document dbObjectCondition = Document.parse(condition);
+                DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
+                if (deleteMany.getDeletedCount() > 0) {
+                    log.debug("database" + dataBaseName + " and collection: " + collectionName + " deleted No.of records "
+                            + deleteMany.getDeletedCount());
+                    return true;
+                } else {
+                    log.debug("database " + dataBaseName + " and collection: " + collectionName
+                            + " No documents found to delete");
+                    return false;
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -265,12 +277,15 @@ public class MongoDBHandler {
     }
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {
+        if (mongoClient == null)
+            return null;
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        if (!db.listCollectionNames().into(new ArrayList<String>()).contains(collectionName)) {
-            log.info("The requested database(" + dataBaseName + ") / collection(" + collectionName
+        ArrayList<String> collectionList = db.listCollectionNames().into(new ArrayList<String>()); 
+        if (!collectionList.contains(collectionName)) {
+            log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
             db.createCollection(collectionName);
-            log.info("done....");
+            log.debug("done....");
         }
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;

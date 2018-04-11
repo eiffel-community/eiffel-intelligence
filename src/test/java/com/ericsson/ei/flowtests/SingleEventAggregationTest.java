@@ -16,23 +16,31 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -45,6 +53,24 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Autowired
     RulesHandler rulesHandler;
+        
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
+//    
+    @Mock
+    private ERQueryService erQueryService;
+
+    
+    @Before
+    public void before() throws IOException {
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+//        MockitoAnnotations.initMocks(this);
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+            anyBoolean())).thenReturn(null);        
+        super.setVarToValue(5000);
+    }
+    
+    
 
     protected void setSpecificTestCaseParameters() {
         setJsonFilePath(jsonFilePath);

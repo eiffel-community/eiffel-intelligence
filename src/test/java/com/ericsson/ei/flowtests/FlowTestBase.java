@@ -116,7 +116,7 @@ public class FlowTestBase {
         FlowTestBase.jsonFilePath = jsonFilePath;
     }
     
-    private int timelapse;
+    private int timelapse = 0;
     public void setVarToValue(int value) {
         timelapse = value;
     }

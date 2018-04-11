@@ -19,13 +19,12 @@ package com.ericsson.ei.flowtests;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -35,15 +34,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlowTest extends FlowTestBase {
-    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
 
-    private static String upStreamResultFile = "upStreamResultFile.json";
+    private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalComposition.json";
+    private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
@@ -54,20 +59,30 @@ public class FlowTest extends FlowTestBase {
     @Before
     public void before() throws IOException {
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-        inputFilePath = "src/test/resources/AggregatedDocumentInternalComposition.json";
 
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(upStreamResultFile);
+        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
+            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
-    protected ArrayList<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
+    @Override
+    String getRulesFilePath() {
+        return RULES_FILE_PATH;
+    }
+
+    @Override
+    String getEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
+
+    @Override
+    List<String> getEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
@@ -79,7 +94,14 @@ public class FlowTest extends FlowTestBase {
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
         eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
         eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
-
         return eventNames;
+    }
+
+    @Override
+    Map<String, JsonNode> getCheckData() throws IOException {
+        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+        Map<String, JsonNode> checkData = new HashMap<>();
+        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+        return checkData;
     }
 }

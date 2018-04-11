@@ -16,16 +16,21 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
-
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 
 /**
  * This class represents the mechanism to send e-mail notification to the
@@ -47,30 +52,65 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-    
-    @Autowired
-    private MailSender mailSender;
 
-    public void setMailSender(MailSender mailSender) {
-        this.mailSender = mailSender;
+    @Autowired
+    private JavaMailSender emailSender;
+
+    private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
+
+    public void setMailSender(JavaMailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject
-     * and send mail to the receiver with aggregatedObject as the body.
+     * This method takes two arguments i.e receiver mail-id and aggregatedObject and
+     * send mail to the receiver with aggregatedObject as the body.
      * 
      * @param receiver
      * @param aggregatedObject
      */
-    public void sendMail(String receiver, String aggregatedObject) {
+    public void sendMail(String receiver, String mapNotificationMessage)
+            throws MessagingException, SubscriptionValidationException {
+        Set<String> extEmails = new HashSet<>();
+        try {
+            extEmails = extractEmails(receiver);
+        } catch (SubscriptionValidationException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        String[] to = extEmails.toArray(new String[0]);
 
-        message.setFrom(sender);
-        message.setTo(receiver);
-        message.setSubject(subject);
-        message.setText(aggregatedObject);
-        mailSender.send(message);
+        try {
+            helper.setFrom(sender);
+            helper.setSubject(subject);
+            helper.setText(mapNotificationMessage);
+            helper.setTo(to);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+
+        emailSender.send(message);
+    }
+
+    /**
+     * This method takes string of comma separated email addresses and return the
+     * Set of validated email addresses
+     * 
+     * @param contetns
+     */
+    public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
+        Set<String> emailAdd = new HashSet<>();
+        String[] addresses = contents.split(",");
+
+        for (String add : addresses) {
+            subscriptionValidator.validateEmail(add.trim());
+            emailAdd.add(add);
+        }
+        return emailAdd;
     }
 
     @PostConstruct
@@ -78,4 +118,5 @@ public class SendMail {
         log.info("Email Sender : " + sender);
         log.info("Email Subject : " + subject);
     }
+
 }

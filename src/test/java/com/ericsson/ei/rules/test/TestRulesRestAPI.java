@@ -19,13 +19,7 @@ package com.ericsson.ei.rules.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +50,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TestRulesRestAPI {
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesRestAPI.class);
+    private static final String INPUT_FILE_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private static final String EXTRACTION_RULE_FILE_PATH = "src/test/resources/ExtractionRule.txt";
+    private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
+    private static final String RULES = "src/test/resources/AggregateListRules.json";
+    private static final String AGGREATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
+
+    private static final String ENVIRONMENT_DISABLED = "{\"message\": \"Test environment is not enabled. "
+        + "Please use the test environment for this execution\"}";
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,27 +70,18 @@ public class TestRulesRestAPI {
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
 
-    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-    private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
-
-    private final String events = "src/test/resources/AggregateListEvents.json";
-    private final String rules = "src/test/resources/AggregateListRules.json";
-    private final String aggregateResultObject = "src/test/resources/AggregateResultObject.json";
-
     @Test
     public void testJmesPathRestApi() throws Exception {
         String jsonInput = null;
         String extractionRules_test = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
-            extractionRules_test = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
+            jsonInput = FileUtils.readFileToString(new File(INPUT_FILE_PATH), "UTF-8");
+            extractionRules_test = FileUtils.readFileToString(new File(EXTRACTION_RULE_FILE_PATH), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check").accept(MediaType.ALL)
                 .param("rule", extractionRules_test).content(jsonInput).contentType(MediaType.APPLICATION_JSON);
-
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String resultStr = result.getResponse().getContentAsString();
         JSONObject obj = new JSONObject(resultStr);
@@ -106,9 +99,9 @@ public class TestRulesRestAPI {
         JSONArray extractionRules_test = null;
         JSONArray expectedAggObject = null;
         try {
-            jsonInput = new JSONArray(FileUtils.readFileToString(new File(events), "UTF-8"));
-            extractionRules_test = new JSONArray(FileUtils.readFileToString(new File(rules), "UTF-8"));
-            aggregatedResult = FileUtils.readFileToString(new File(aggregateResultObject), "UTF-8");
+            jsonInput = new JSONArray(FileUtils.readFileToString(new File(EVENTS), "UTF-8"));
+            extractionRules_test = new JSONArray(FileUtils.readFileToString(new File(RULES), "UTF-8"));
+            aggregatedResult = FileUtils.readFileToString(new File(AGGREATED_RESULT_OBJECT), "UTF-8");
             expectedAggObject = new JSONArray(aggregatedResult);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -118,17 +111,15 @@ public class TestRulesRestAPI {
                 .thenReturn(aggregatedResult);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check/aggregation")
                 .accept(MediaType.ALL).content(body).contentType(MediaType.APPLICATION_JSON);
-
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String resultStr = result.getResponse().getContentAsString();
-
         if (testEnable) {
             JSONArray actualAggObject = new JSONArray(resultStr);
             assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());
         } else {
-            assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-            assertEquals("Please use the test environment for this execution", resultStr);
+            assertEquals(HttpStatus.SERVICE_UNAVAILABLE.value(), result.getResponse().getStatus());
+            assertEquals(ENVIRONMENT_DISABLED, resultStr);
         }
 
     }

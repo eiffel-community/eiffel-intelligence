@@ -96,7 +96,7 @@
     "links": [
       {
         "type": "ACTIVITY_EXECUTION",
-        "target": "b46ef12d-25gb-4d7y-b9fd-8763re66de47"
+        "target": "b46e01ud-25gb-4d7y-b9f6-836fre6yde47"
       }
     ]
   },
@@ -232,12 +232,8 @@
     },
     "links": [
       {
-        "type": "CONTEXT",
-        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
-      },
-      {
         "type": "IUT",
-        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee2"
+        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
       }
     ]
   },
@@ -309,7 +305,7 @@
     "links": [
       {
         "type": "TEST_CASE_EXECUTION",
-        "target": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47"
+        "target": "v46ef19d-20ab-4d2y-h9fe-87haha6kde47"
       }
     ]
   },
@@ -350,12 +346,8 @@
     },
     "links": [
       {
-        "type": "CONTEXT",
-        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
-      },
-      {
         "type": "IUT",
-        "target": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee2"
+        "target": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47"
       }
     ]
   },
@@ -427,7 +419,7 @@
     "links": [
       {
         "type": "TEST_CASE_EXECUTION",
-        "target": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+        "target": "v46ef19d-20ab-4e2y-e9se-8762ae6kde47"
       }
     ]
   }

@@ -35,11 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestIdRulesHandler {
-
-    private final String rulesPath = "src/test/resources/ArtifactRules_new.json";
-    private final String eventPath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-
-    static Logger log = (Logger) LoggerFactory.getLogger(TestRulesHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesHandler.class);
+    private static final String RULES_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String EVENT_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
 
     @Test
     public void testGetIds(){
@@ -52,18 +50,15 @@ public class TestIdRulesHandler {
         JmesPathInterface jmespath = new JmesPathInterface();
         idRulesHandler.setJmesPathInterface(jmespath);
         try{
-            String jsonRules = FileUtils.readFileToString(new File(rulesPath), "UTF-8");
+            String jsonRules = FileUtils.readFileToString(new File(RULES_PATH), "UTF-8");
             ObjectMapper rulesObjectMapper = new ObjectMapper();
-
-            eventFile = FileUtils.readFileToString(new File(eventPath), "UTF-8");
-
+            eventFile = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
             rulesObject = new RulesObject(rulesObjectMapper.readTree(jsonRules.replace("[", "").replace("]", "")));
             System.out.println("RulesObject: " + rulesObject.getJsonRulesObject());
             System.out.println("EventJson: " + eventJsonNode.toString());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-
         JsonNode ids = idRulesHandler.getIds(rulesObject, eventFile);
         System.out.println("Ids: " + ids.textValue());
 

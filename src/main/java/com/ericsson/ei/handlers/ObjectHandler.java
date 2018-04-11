@@ -79,8 +79,10 @@ public class ObjectHandler {
         }
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+
         mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
  
+
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);

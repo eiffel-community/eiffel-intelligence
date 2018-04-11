@@ -71,7 +71,12 @@ public class SpringRestTemplate {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return HttpStatus.NOT_FOUND.value();
+            try {
+            	return Integer.parseInt(e.getMessage());
+            }
+            catch (NumberFormatException error) {
+            	return HttpStatus.NOT_FOUND.value();
+            }
         }
         HttpStatus status = response.getStatusCode();
         log.info("The response code after POST is : " + status);

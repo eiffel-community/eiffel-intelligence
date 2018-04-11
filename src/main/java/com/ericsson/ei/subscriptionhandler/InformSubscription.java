@@ -22,7 +22,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
@@ -141,7 +143,16 @@ public class InformSubscription {
             }
         } else if (notificationType.trim().equals("MAIL")) {
             log.info("Notification through EMAIL");
-            sendMail.sendMail(notificationMeta, String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
+            try {
+                sendMail.sendMail(notificationMeta,
+                        String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)));
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+            } catch (SubscriptionValidationException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+            }
         }
     }
 

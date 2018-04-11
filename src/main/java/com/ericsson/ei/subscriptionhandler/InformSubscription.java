@@ -35,7 +35,6 @@ import org.springframework.util.MultiValueMap;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -165,7 +164,7 @@ public class InformSubscription {
         String time = dateFormat.format(date);
         try {
             date = dateFormat.parse(time);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         BasicDBObject document = new BasicDBObject();

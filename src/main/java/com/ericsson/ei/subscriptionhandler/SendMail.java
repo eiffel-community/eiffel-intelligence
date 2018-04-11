@@ -73,8 +73,8 @@ public class SendMail {
         try {
             extEmails = extractEmails(receiver);
         } catch (SubscriptionValidationException e) {
-            e.printStackTrace();
             LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -85,8 +85,8 @@ public class SendMail {
             helper.setText(mapNotificationMessage);
             helper.setTo(to);
         } catch (MessagingException e) {
-            e.printStackTrace();
             LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }
         emailSender.send(message);
     }

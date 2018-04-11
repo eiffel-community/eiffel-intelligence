@@ -34,17 +34,17 @@ public class FlowSourceChangeObject extends FlowTestBase {
     private static final String AGGREGATED_OBJECT_ID = "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
         eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
@@ -63,7 +63,7 @@ public class FlowSourceChangeObject extends FlowTestBase {
     }
 
     @Override
-    Map<String, JsonNode> setCheckData() throws IOException {
+    Map<String, JsonNode> getCheckData() throws IOException {
         JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         Map<String, JsonNode> checkData = new HashMap<>();
         checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);

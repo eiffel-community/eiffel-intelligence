@@ -39,17 +39,17 @@ public class FlowTestExternalComposition extends FlowTestBase {
     private static final String AGGREGATED_OBJECT_ID_3 = "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2";
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         //eventNames.add("event_EiffelCompositionDefinedEvent_4");
@@ -60,7 +60,7 @@ public class FlowTestExternalComposition extends FlowTestBase {
     }
 
     @Override
-    Map<String, JsonNode> setCheckData() throws IOException {
+    Map<String, JsonNode> getCheckData() throws IOException {
         JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         Map<String, JsonNode> checkData = new HashMap<>();
 //        checkData.put(AGGREGATED_OBJECT_ID_1, expectedJSON.get(0));

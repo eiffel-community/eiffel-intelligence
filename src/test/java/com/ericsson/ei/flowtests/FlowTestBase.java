@@ -68,10 +68,10 @@ public abstract class FlowTestBase extends FlowTestConfigs {
             String exchangeName = "ei-poc-4";
             createExchange(exchangeName, queueName);
 
-            rulesHandler.setRulePath(setRulesFilePath());
+            rulesHandler.setRulePath(getRulesFilePath());
 
-            List<String> eventNames = setEventNamesToSend();
-            JsonNode parsedJSON = getJSONFromFile(setEventsFilePath());
+            List<String> eventNames = getEventNamesToSend();
+            JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size();
             for (String eventName : eventNames) {
                 JsonNode eventJson = parsedJSON.get(eventName);
@@ -81,7 +81,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
 
             // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            checkResult(setCheckData());
+            checkResult(getCheckData());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -90,24 +90,24 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     /**
      * @return path to file with rules, that is used in flow test
      */
-    abstract String setRulesFilePath();
+    abstract String getRulesFilePath();
 
     /**
      * @return path to file, with events, that is used in flow test
      */
-    abstract String setEventsFilePath();
+    abstract String getEventsFilePath();
 
     /**
      * @return list of event names, that will be used in flow test
      */
-    abstract List<String> setEventNamesToSend();
+    abstract List<String> getEventNamesToSend();
 
     /**
      * @return map, where
      *          key - _id of expected aggregated object
      *          value - expected aggregated object
      */
-    abstract Map<String, JsonNode> setCheckData() throws IOException;
+    abstract Map<String, JsonNode> getCheckData() throws IOException;
 
     JsonNode getJSONFromFile(String filePath) throws IOException {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");

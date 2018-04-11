@@ -139,7 +139,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
             checkResult();
 
             String time = "" + diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000;
-            LOGGER.info("Number of events, that were sent: " + eventsCount);
+            LOGGER.debug("Number of events, that were sent: " + eventsCount);
             LOGGER.info("Time of execution: " + time);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -211,7 +211,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
         for (int i = 0; i < EVENT_PACKAGES; i++) {
             String document = objectHandler.findObjectById(AGGREGATED_OBJECT_ID.concat(String.format("%06d", i)));
             JsonNode actualJSON = objectmapper.readTree(document);
-            LOGGER.info("Complete aggregated object #" + i + ": " + actualJSON);
+            LOGGER.debug("Complete aggregated object #" + i + ": " + actualJSON);
             assertEquals(expectedJSON.toString().length(), actualJSON.toString().length());
         }
     }

@@ -71,17 +71,17 @@ public class FlowTest extends FlowTestBase {
     }
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
@@ -98,7 +98,7 @@ public class FlowTest extends FlowTestBase {
     }
 
     @Override
-    Map<String, JsonNode> setCheckData() throws IOException {
+    Map<String, JsonNode> getCheckData() throws IOException {
         JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         Map<String, JsonNode> checkData = new HashMap<>();
         checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);

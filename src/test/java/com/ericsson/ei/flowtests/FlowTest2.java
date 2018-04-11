@@ -40,17 +40,17 @@ public class FlowTest2 extends FlowTestBase {
     private static final String AGGREGATED_OBJECT_ID_2 = "ccce572c-c364-441e-abc9-b62fed080ca2";
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
@@ -70,10 +70,12 @@ public class FlowTest2 extends FlowTestBase {
     }
 
     @Override
-    Map<String, JsonNode> setCheckData() throws IOException {
+    Map<String, JsonNode> getCheckData() throws IOException {
+        JsonNode expectedJSON1 = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_1);
+        JsonNode expectedJSON2 = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_2);
         Map<String, JsonNode> checkData = new HashMap<>();
-        checkData.put(AGGREGATED_OBJECT_ID_1, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_1));
-        checkData.put(AGGREGATED_OBJECT_ID_2, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH_2));
+        checkData.put(AGGREGATED_OBJECT_ID_1, expectedJSON1);
+        checkData.put(AGGREGATED_OBJECT_ID_2, expectedJSON2);
         return checkData;
     }
 }

@@ -69,12 +69,12 @@ public class SingleEventAggregationTest extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
@@ -88,7 +88,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         ArrayList<String> eventNames = new ArrayList<>();
         eventNames.add("EiffelActivityCanceledEvent");
         eventNames.add("EiffelActivityStartedEvent");
@@ -128,7 +128,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     protected void checkResult() {
         try {
-            ArrayList<String> eventNames = (ArrayList<String>) setEventNamesToSend();
+            ArrayList<String> eventNames = (ArrayList<String>) getEventNamesToSend();
             String eventsDocument = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             JsonNode eventsJson = objectmapper.readTree(eventsDocument);
@@ -150,8 +150,8 @@ public class SingleEventAggregationTest extends FlowTestBase {
     }
 
     @Override
-    Map<String, String> setCheckInfo() {
-        Map<String, String> checkInfo = new HashMap<>();
+    Map<String, JsonNode> getCheckData() {
+        Map<String, JsonNode> checkInfo = new HashMap<>();
         return checkInfo;
     }
 }

@@ -17,6 +17,7 @@
 package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -102,8 +103,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the retrieve the all documents from the
-     * collection
+     * This method is used for the retrieve the all documents from the collection
      * 
      * @param dataBaseName
      * @param collectionName
@@ -167,8 +167,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the
-     * lock in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock
+     * in one query. Lock is needed for multi process execution
      * 
      * @param dataBaseName
      * @param collectionName
@@ -197,9 +197,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the
-     * input condition in one query. Lock is needed for multi process execution.
-     * This method is executed in a loop.
+     * This method is used for lock and return the document that matches the input
+     * condition in one query. Lock is needed for multi process execution. This
+     * method is executed in a loop.
      * 
      * @param dataBaseName
      * @param collectionName
@@ -245,8 +245,8 @@ public class MongoDBHandler {
                 final Document dbObjectCondition = Document.parse(condition);
                 DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
                 if (deleteMany.getDeletedCount() > 0) {
-                    log.debug("database" + dataBaseName + " and collection: " + collectionName + " deleted No.of records "
-                            + deleteMany.getDeletedCount());
+                    log.debug("database" + dataBaseName + " and collection: " + collectionName
+                            + " deleted No.of records " + deleteMany.getDeletedCount());
                     return true;
                 } else {
                     log.debug("database " + dataBaseName + " and collection: " + collectionName
@@ -280,7 +280,7 @@ public class MongoDBHandler {
         if (mongoClient == null)
             return null;
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        ArrayList<String> collectionList = db.listCollectionNames().into(new ArrayList<String>()); 
+        List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
         if (!collectionList.contains(collectionName)) {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");

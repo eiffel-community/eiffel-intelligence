@@ -30,7 +30,6 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -52,21 +51,18 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
+    
+    private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
 
     @Autowired
-    RulesHandler rulesHandler;
-
-    @Autowired
-    public ObjectHandler objectHandler;
+    private ObjectHandler objectHandler;
 
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
 
     @Mock
     private ERQueryService erQueryService;
-
-    private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
-    private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
 
     @Override
     String getRulesFilePath() {

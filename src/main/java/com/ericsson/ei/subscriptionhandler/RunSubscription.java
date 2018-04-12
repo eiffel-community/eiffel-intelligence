@@ -45,10 +45,10 @@ public class RunSubscription {
     @Autowired
     private JmesPathInterface jmespath;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(RunSubscription.class);
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
     
     @Autowired
-	private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler; //= new SubscriptionRepeatDbHandler(); 
+	private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
 	
 	/**
      * This method matches every condition specified in the subscription Object
@@ -69,7 +69,7 @@ public class RunSubscription {
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
 
-        Integer requirementIndex = 0;
+        int requirementIndex = 0;
         while (requirementIterator.hasNext()) {
         	
             JsonNode aggrObjJsonNode = null;
@@ -77,7 +77,7 @@ public class RunSubscription {
             try {
             	aggrObjJsonNode = objectMapper.readValue(aggregatedObject, JsonNode.class);
             } catch (Exception e) {
-                log.info(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
             
             
@@ -86,28 +86,28 @@ public class RunSubscription {
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
             
             if (subscriptionRepeatFlag == "false" && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, aggrObjId)){
-            	log.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
+            	LOGGER.info("Subscription has already matched with AggregatedObject Id: " + aggrObjId +
             			"\nSubscriptionName: " + subscriptionName +
             			"\nand has Subsctrion Repeat flag set to: " + subscriptionRepeatFlag);
             	break;
             }
             
             JsonNode requirement = requirementIterator.next();
-            log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
+            LOGGER.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
 
             count_condition_fulfillment = 0;
             count_conditions = conditions.size();
 
-            log.info("Conditions of the subscription : " + conditions.toString());
+            LOGGER.info("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
                 String new_Rule = rule.replace("'", "\"");
-                log.info("Rule : " + rule);
-                log.info("New Rule after replacing single quote : " + new_Rule);
+                LOGGER.info("Rule : " + rule);
+                LOGGER.info("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                log.info("Result : " + result.toString());
+                LOGGER.info("Result : " + result.toString());
                 if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")){
                     count_condition_fulfillment++;
                 }
@@ -116,7 +116,7 @@ public class RunSubscription {
             if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false") {
-                	log.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                	LOGGER.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
                 	try {
 						subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName, requirementIndex, aggrObjId);
 					} catch (Exception e) {
@@ -128,7 +128,7 @@ public class RunSubscription {
             requirementIndex++;
         }
 
-        log.info("The final value of conditionFulfilled is : " + conditionFulfilled);
+        LOGGER.info("The final value of conditionFulfilled is : " + conditionFulfilled);
 
         return conditionFulfilled;
 

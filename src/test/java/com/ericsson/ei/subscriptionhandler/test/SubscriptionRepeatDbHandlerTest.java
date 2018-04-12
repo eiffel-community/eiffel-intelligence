@@ -55,9 +55,7 @@ public class SubscriptionRepeatDbHandlerTest {
     
     private static MongoClient mongoClient;
     private static MongodForTestsFactory testsFactory;
-    
-    static String host = "localhost";
-    static int port = 27017;
+
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
     

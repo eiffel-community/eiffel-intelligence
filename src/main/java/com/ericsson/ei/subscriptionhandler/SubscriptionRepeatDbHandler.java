@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -163,11 +164,11 @@ public class SubscriptionRepeatDbHandler {
     		
     		List<List> reqList = new ArrayList<List>();
     		reqList.add(aggrIdsJsonList);
-    		
-    		subsObj.put("requirements", reqList);
-    		LOGGER.debug("Updated AggrIdObject to be inserted to Db: " + subsObj.toString());
 
-    		mongoDbHandler.updateDocument(dataBaseName, collectionName,subscriptionQuery , subsObj.toString());
+    		JsonNode updateDocJsonNode = mapper.readValue("{ \"$set\" : { \"requirements\" : \"" + reqList + "\"}}", JsonNode.class);		
+    		JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
+
+    		mongoDbHandler.findAndModify(dataBaseName, collectionName,queryJsonNode.toString() , updateDocJsonNode.toString());
     	}
     }
     

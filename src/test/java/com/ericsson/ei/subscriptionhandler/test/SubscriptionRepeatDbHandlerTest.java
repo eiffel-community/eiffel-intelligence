@@ -175,6 +175,6 @@ public class SubscriptionRepeatDbHandlerTest {
 	
     	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
     	
-		assertEquals("[ [ \"" + aggrObjId + "\" , \"" + aggrObjId2 + "\"]]", dbResult.get("requirements").toString());
+		assertEquals("[[" + aggrObjId + ", " + aggrObjId2 + "]]", dbResult.get("requirements").toString());
 	}
 }

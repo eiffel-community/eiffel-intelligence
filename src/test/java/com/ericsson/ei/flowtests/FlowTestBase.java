@@ -57,13 +57,15 @@ public abstract class FlowTestBase extends FlowTestConfigs {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static JsonNode parsedJson;
     
-    private int timelapse = 0;
+    // setFirstEventWaitTime: variable to set the wait time after publishing the
+    // first event. So any thread looking for the events don't do it before actually
+    // populating events in the database
+    private int setFirstEventWaitTime = 0;
+
     public void setVarToValue(int value) {
-        timelapse = value;
+        setFirstEventWaitTime = value;
     }
-    
 
     @Test
     public void flowTest() {
@@ -83,15 +85,15 @@ public abstract class FlowTestBase extends FlowTestConfigs {
                 JsonNode eventJson = parsedJSON.get(eventName);
                 String event = eventJson.toString();
                 channel.basicPublish(exchangeName, queueName, null, event.getBytes());
-                if(!alreadyExecuted) {
+                if (!alreadyExecuted) {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(timelapse);
+                        TimeUnit.MILLISECONDS.sleep(setFirstEventWaitTime);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        LOGGER.error(e.getMessage(), e);
                     }
                     alreadyExecuted = true;
-                }  
+                }
             }
 
             // wait for all events to be processed
@@ -118,9 +120,8 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     abstract List<String> getEventNamesToSend();
 
     /**
-     * @return map, where
-     *          key - _id of expected aggregated object
-     *          value - expected aggregated object
+     * @return map, where key - _id of expected aggregated object value - expected
+     *         aggregated object
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 

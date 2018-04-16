@@ -50,6 +50,7 @@ import java.util.Date;
 public class InformSubscription {
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformSubscription.class);
+    //Regular expression for replacement unexpected character like \"|
     private static final String REGEX = "^\"|\"$";
 
     @Getter

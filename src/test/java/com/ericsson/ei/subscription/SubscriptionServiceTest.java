@@ -88,8 +88,10 @@ public class SubscriptionServiceTest {
 
     @AfterClass
     public static void tearDownMongoDB() throws Exception {
-        testsFactory.shutdown();
-        mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+        if (mongoClient != null)
+            mongoClient.close();
     }
 
     @Test
@@ -123,8 +125,7 @@ public class SubscriptionServiceTest {
             // the subscription(subscriptionName=Subscription_Test_Modify)
             subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
             String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
-            boolean addSubscription = subscriptionService.modifySubscription(subscription,
-                    subscriptionName);
+            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
 
             // test update done successfully
             assertEquals(addSubscription, true);

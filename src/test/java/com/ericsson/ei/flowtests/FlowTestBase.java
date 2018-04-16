@@ -77,8 +77,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    // final FlowTestConfigs configs = new FlowTestConfigs();
-
     private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
 
     @Override
@@ -90,11 +88,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         getFlowTestConfigs().init();
     }
 
-    // @BeforeClass
-    // public static void setUp() throws Exception {
-    //
-    // }
-
     @PostConstruct
     public void init() throws Exception {
         mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
@@ -104,7 +97,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     protected FlowTestConfigs getFlowTestConfigs() {
         return configsMap.get(getClasName());
-        // return configs;
     }
 
     private void createFlowTestConfigs() {

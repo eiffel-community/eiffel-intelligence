@@ -13,10 +13,11 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,23 +25,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import javax.annotation.PostConstruct;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class is responsible to take a aggregatedObject and match it with all
  * the Subscription Object, to check ALL Conditions/requirement for
  * notification.  (AND between conditions in requirements, "OR" between requirements with conditions)
- * 
- * @author xjibbal
  *
+ * @author xjibbal
  */
 
 @Component
 public class SubscriptionHandler {
+
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandler.class);
 
     @Getter
     @Value("${subscription.collection.name}")
@@ -51,7 +51,7 @@ public class SubscriptionHandler {
     private String subscriptionDataBaseName;
 
     @Autowired
-    InformSubscription informSubscription;
+    private InformSubscription informSubscription;
 
     @Autowired
     private MongoDBHandler handler;
@@ -62,22 +62,17 @@ public class SubscriptionHandler {
     @Autowired
     private JmesPathInterface jmespath;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandler.class);
-
     /**
      * The method takes a aggregatedObject as argument and fetches all the
      * subscriber from the database in order to match the subscription
      * conditions in a separate thread.
-     * 
+     *
      * @param aggregatedObject
      */
     public void checkSubscriptionForObject(final String aggregatedObject) {
-        Thread subscriptionThread = new Thread(new Runnable() {
-            public void run() {
-                ArrayList<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName,
-                        subscriptionCollectionName);
-                subscriptions.stream().forEach(subscription -> extractConditions(aggregatedObject, subscription));
-            }
+        Thread subscriptionThread = new Thread(() -> {
+            List<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName, subscriptionCollectionName);
+            subscriptions.forEach(subscription -> extractConditions(aggregatedObject, subscription));
         });
         subscriptionThread.setName("SubscriptionHandler");
         subscriptionThread.start();
@@ -87,31 +82,27 @@ public class SubscriptionHandler {
      * This method takes both aggregatedObject and a Subscription object as
      * arguments and fetches the subscription conditions from the subscription
      * object and matches these conditions with the aggregatedObject.
-     * 
+     *
      * @param aggregatedObject
      * @param subscriptionData
      */
-    public void extractConditions(String aggregatedObject, String subscriptionData) {
-        ObjectMapper mapper = new ObjectMapper();
+    private void extractConditions(String aggregatedObject, String subscriptionData) {
         JsonNode subscriptionJson = null;
-        JsonNode aggregatedJson = null;
         try {
-            subscriptionJson = mapper.readTree(subscriptionData);
-            log.info("SubscriptionJson : " + subscriptionJson.toString());
-            aggregatedJson = mapper.readTree(aggregatedObject);
-            log.info("AggregatedJson : " + aggregatedJson.toString());
+            subscriptionJson = new ObjectMapper().readTree(subscriptionData);
+            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
+            JsonNode aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
+            LOGGER.debug("AggregatedJson : " + aggregatedJson.toString());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        log.info("RequirementNode : " + requirementNode.toString());
+        LOGGER.debug("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-
-            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
-                log.info("The subscription conditions match for the aggregatedObject");
-                informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
-            }
-
+        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator)) {
+            LOGGER.debug("The subscription conditions match for the aggregatedObject");
+            informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
+        }
     }
 
     /**
@@ -120,11 +111,10 @@ public class SubscriptionHandler {
      */
     @PostConstruct
     public void print() {
-        log.debug("SubscriptionDataBaseName : " + subscriptionDataBaseName);
-        log.debug("SubscriptionCollectionName : " + subscriptionCollectionName);
-        log.debug("MongoDBHandler object : " + handler);
-        log.debug("JmesPathInterface : " + jmespath);
+        LOGGER.debug("SubscriptionDataBaseName : " + subscriptionDataBaseName);
+        LOGGER.debug("SubscriptionCollectionName : " + subscriptionCollectionName);
+        LOGGER.debug("MongoDBHandler object : " + handler);
+        LOGGER.debug("JmesPathInterface : " + jmespath);
 
     }
-
 }

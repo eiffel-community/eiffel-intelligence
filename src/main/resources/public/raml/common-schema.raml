@@ -9,16 +9,30 @@ subscription: |
              "type":"string"
           },
           "created":{
-             "type":"string"
-          },
-          "notificationMessage":{
-             "type":"string"
+             "type":"long"
           },
           "notificationMeta":{
              "type":"string"
           },
           "notificationType":{
              "type":"string"
+          },
+          "restPostBodyMediaType":{
+                       "type":"string"
+                    },
+          "notificationMessageKeyValues":{
+                       "items":{
+                              "properties":{
+                                 "formkey":{
+                                    "type":"string"
+                                 },
+                                 "formvalue":{
+                                     "type":"string"
+                                            }
+                              },
+                              "type":"object"
+                           },
+                           "type":"array"
           },
           "repeat":{
              "type":"boolean"
@@ -61,10 +75,7 @@ subscriptionList: |
              "type":"string"
           },
           "created":{
-             "type":"string"
-          },
-          "notificationMessage":{
-             "type":"string"
+             "type":"long"
           },
           "notificationMeta":{
              "type":"string"
@@ -72,6 +83,23 @@ subscriptionList: |
           "notificationType":{
              "type":"string"
           },
+          "restPostBodyMediaType":{
+                       "type":"string"
+                    },
+          "notificationMessageKeyValues":{
+                       "items":{
+                              "properties":{
+                                 "formkey":{
+                                    "type":"string"
+                                 },
+                                 "formvalue":{
+                                     "type":"string"
+                                            }
+                              },
+                              "type":"object"
+                           },
+                           "type":"array"
+                    },
           "repeat":{
              "type":"boolean"
           },
@@ -130,4 +158,18 @@ stringServiceResponse: |
           }
        },
        "type":"object"
+    }
+ruleCheckBody: |
+    {
+        "$schema":"http://json-schema.org/draft-04/schema#",
+        "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
+            "properties":{
+                "listRulesJson":{
+                    "type":"array"
+                },
+                "listEventsJson":{
+                    "type":"array"
+                }
+            },
+        "type":"object"
     }

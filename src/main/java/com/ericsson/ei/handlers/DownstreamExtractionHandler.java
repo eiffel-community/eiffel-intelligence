@@ -57,7 +57,7 @@ public class DownstreamExtractionHandler {
 
         if(aggregatedDbObject != null) {
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-            String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
+            mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
         }
     }
 

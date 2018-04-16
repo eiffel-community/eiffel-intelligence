@@ -1,6 +1,7 @@
 
 package com.ericsson.ei.controller;
 
+import com.ericsson.ei.controller.model.QueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/query/missedNotifications", produces = "application/json")
-public interface MissedNotificationController {
+@RequestMapping(value = "/queryAggregatedObject", produces = "application/json")
+public interface QueryAggregatedObjectController {
 
 
     /**
-     * List the missed notification based on the subscriptionName in the query parameter.
+     * No description
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+    public ResponseEntity<QueryResponse> getQueryAggregatedObject(
         @RequestParam
-        String subscriptionName);
+        String id);
 
 }

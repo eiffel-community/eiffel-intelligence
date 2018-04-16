@@ -1,7 +1,10 @@
 
 package com.ericsson.ei.controller;
 
+import javax.validation.Valid;
+import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,19 +17,29 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/jmespathrule/ruleCheck", produces = "application/json")
+@RequestMapping(value = "/rules/rule-check", produces = "application/json")
 public interface RuleCheckController {
 
 
     /**
-     * No description
+     * This call for run the jmespath rule object or rule on the JSON object
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> updateJmespathruleRuleCheck(
+    public ResponseEntity<?> updateRulesRuleCheck(
         @RequestParam
         String rule,
         @RequestParam
         String jsonContent);
+
+    /**
+     * This call for run the jmespath rule objects on the Json array of objects, we get aggregation Object as output
+     * 
+     */
+    @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
+    public ResponseEntity<?> updateAggregation(
+        @Valid
+        @RequestBody
+        RuleCheckBody ruleCheckBody);
 
 }

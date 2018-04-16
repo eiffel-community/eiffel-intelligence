@@ -52,57 +52,57 @@
     ]
   },
   "event_EiffelSourceChangeCreatedEvent_3_2": {
-      "meta": {
-        "type": "EiffelSourceChangeCreatedEvent",
-        "version": "1.0.0",
-        "time": 1234567890,
-        "id": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
-        "source": {
-          "domainId": "example.domain"
-        }
+    "meta": {
+      "type": "EiffelSourceChangeCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "gitIdentifier": {
+        "commitId": "fd090b60a4aedc5161dn9c035a47b14a319829b4",
+        "branch": "myBranch",
+        "repoName": "myPrivateRepo",
+        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
       },
-      "data": {
-        "gitIdentifier": {
-          "commitId": "fd090b60a4aedc5161dn9c035a47b14a319829b4",
-          "branch": "myBranch",
-          "repoName": "myPrivateRepo",
-          "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
-        },
-        "author": {
-          "name": "John Doe",
-          "email": "john.doe@company.com",
-          "id": "johndoe",
-          "group": "Team Gophers"
-        },
-        "change": {
-          "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
-          "insertions": 135,
-          "deletions": 23,
-          "tracker": "GitHub",
-          "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
-          "id": "43"
-        },
-        "issues": [
-          {
-            "type": "BUG",
-            "tracker": "JIRA",
-            "id": "JIRA-1234",
-            "uri": "http://jira.company.com/browse/JIRA-1234",
-            "transition": "RESOLVED"
-          }
-        ]
+      "author": {
+        "name": "John Doe",
+        "email": "john.doe@company.com",
+        "id": "johndoe",
+        "group": "Team Gophers"
       },
-      "links": [
+      "change": {
+        "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "insertions": 135,
+        "deletions": 23,
+        "tracker": "GitHub",
+        "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "id": "43"
+      },
+      "issues": [
         {
-          "type": "BASE",
-          "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
-        },
-        {
-          "type": "PREVIOUS_VERSION",
-          "target": "6acc3c87-75e0-4b6d-88f5-b1a5dcd62b43"
+          "type": "BUG",
+          "tracker": "JIRA",
+          "id": "JIRA-1234",
+          "uri": "http://jira.company.com/browse/JIRA-1234",
+          "transition": "RESOLVED"
         }
       ]
     },
+    "links": [
+      {
+        "type": "BASE",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "6acc3c87-75e0-4b6d-88f5-b1a5dcd62b43"
+      }
+    ]
+  },
   "event_EiffelSourceChangeSubmittedEvent_3": {
     "meta": {
       "type": "EiffelSourceChangeSubmittedEvent",
@@ -141,11 +141,11 @@
   "event_EiffelConfidenceLevelModifiedEvent_3": {
     "links": [
       {
-        "target": "40df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
         "type": "CAUSE"
       },
       {
-        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
         "type": "SUBJECT"
       }
     ],
@@ -176,11 +176,11 @@
   "event_EiffelConfidenceLevelModifiedEvent_3_2": {
     "links": [
       {
-        "target": "40df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
         "type": "CAUSE"
       },
       {
-        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
         "type": "SUBJECT"
       }
     ],
@@ -285,6 +285,152 @@
       {
         "type": "ACTIVITY_EXECUTION",
         "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+      }
+    ]
+  },
+  "event_EiffelActivityTriggeredEvent_3_2": {
+    "meta": {
+      "id": "5e878b37-95f4-4d20-99b7-de9bdf351eed",
+      "type": "EiffelActivityTriggeredEvent",
+      "version": "1.1.0",
+      "time": 1521113723785,
+      "tags": [],
+      "source": {
+        "domainId": "eiffel038.seki.fem002",
+        "host": "esekilxv9305",
+        "name": "fem002-eiffel038",
+        "serializer": {
+          "groupId": "com.github.Ericsson",
+          "artifactId": "eiffel-remrem-semantics",
+          "version": "0.0.10"
+        },
+        "uri": "https://fem002-eiffel038.rnd.ki.sw.ericsson.se:8443/jenkins/job/test_xneekas/"
+      }
+    },
+    "data": {
+      "name": "test_xneekas",
+      "categories": [],
+      "triggers": [
+        {
+          "type": "MANUAL",
+          "description": "Started by user Neeraj Kasula"
+        }
+      ],
+      "customData": []
+    },
+    "links": [{
+      "type": "CAUSE",
+      "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a76"
+    }]
+  },
+  "event_EiffelActivityStartedEvent_3_2": {
+    "meta": {
+      "type": "EiffelActivityStartedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c3"
+    },
+    "data": {
+      "executionUri": "https://my.jenkins.host/myJob/43",
+      "liveLogs": [
+        {
+          "name": "My build log",
+          "uri": "file:///tmp/logs/data.log"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "5e878b37-95f4-4d20-99b7-de9bdf351eed"
+      }
+    ]
+  },
+  "event_EiffelActivityFinishedEvent_3_2": {
+    "meta": {
+      "type": "EiffelActivityFinishedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c3"
+    },
+    "data": {
+      "outcome": {
+        "conclusion": "TIMED_OUT",
+        "description": "Compilation timed out."
+      },
+      "persistentLogs": [
+        {
+          "name": "firstLog",
+          "uri": "http://myHost.com/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "5e878b37-95f4-4d20-99b7-de9bdf351eed"
+      }
+    ]
+  },
+  "event_EiffelActivityCanceledEvent_3": {
+    "meta": {
+      "id": "cc24f5e8-9225-4f7b-9c77-7bafc7d03f6e",
+      "type": "EiffelActivityCanceledEvent",
+      "version": "1.1.0",
+      "time": 1521641056231,
+      "tags": [],
+      "source": {
+        "domainId": "eiffel039.seli.fem101",
+        "host": "eselivm2v1464l",
+        "name": "fem101-eiffel039",
+        "serializer": {
+          "groupId": "com.github.Ericsson",
+          "artifactId": "eiffel-remrem-semantics",
+          "version": "0.0.10"
+        },
+        "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
+      }
+    },
+    "data": {
+      "customData": []
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2"
+      }
+    ]
+  },
+  "event_EiffelActivityCanceledEvent_3_2": {
+    "meta": {
+      "id": "cc24f5e8-9225-4f7b-9c77-7bafc7d03f7e",
+      "type": "EiffelActivityCanceledEvent",
+      "version": "1.1.0",
+      "time": 1521641056231,
+      "tags": [],
+      "source": {
+        "domainId": "eiffel039.seli.fem101",
+        "host": "eselivm2v1464l",
+        "name": "fem101-eiffel039",
+        "serializer": {
+          "groupId": "com.github.Ericsson",
+          "artifactId": "eiffel-remrem-semantics",
+          "version": "0.0.10"
+        },
+        "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
+      }
+    },
+    "data": {
+      "customData": []
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "5e878b37-95f4-4d20-99b7-de9bdf351eed"
       }
     ]
   }

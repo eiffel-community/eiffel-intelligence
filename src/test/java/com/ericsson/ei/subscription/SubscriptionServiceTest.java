@@ -63,7 +63,7 @@ public class SubscriptionServiceTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    private static final String subscriptionJsonPath = "src/test/resources/subscription.json";
+    private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
 
     static JSONArray jsonArray = null;
     static MongoClient mongoClient = null;

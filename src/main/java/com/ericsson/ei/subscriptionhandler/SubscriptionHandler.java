@@ -76,12 +76,7 @@ public class SubscriptionHandler {
             public void run() {
                 ArrayList<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName,
                         subscriptionCollectionName);
-                Iterator itr = subscriptions.iterator();
-                while (itr.hasNext()) {
-                    String subscriptionData = (String) itr.next();
-                    extractConditions(aggregatedObject, subscriptionData);
-                }
-
+                subscriptions.stream().forEach(subscription -> extractConditions(aggregatedObject, subscription));
             }
         });
         subscriptionThread.setName("SubscriptionHandler");

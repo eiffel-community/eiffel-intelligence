@@ -61,10 +61,10 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     // setFirstEventWaitTime: variable to set the wait time after publishing the
     // first event. So any thread looking for the events don't do it before actually
     // populating events in the database
-    private int setFirstEventWaitTime = 0;
+    private int firstEventWaitTime = 0;
 
-    public void setVarToValue(int value) {
-        setFirstEventWaitTime = value;
+    public void setFirstEventWaitTime(int value) {
+        firstEventWaitTime = value;
     }
 
     @Test
@@ -87,7 +87,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
                 channel.basicPublish(exchangeName, queueName, null, event.getBytes());
                 if (!alreadyExecuted) {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(setFirstEventWaitTime);
+                        TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         LOGGER.error(e.getMessage(), e);

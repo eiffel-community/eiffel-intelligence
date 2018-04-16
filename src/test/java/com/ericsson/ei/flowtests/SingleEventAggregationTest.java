@@ -80,7 +80,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
         // MockitoAnnotations.initMocks(this);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
                 anyBoolean())).thenReturn(null);
-        super.setVarToValue(5000);
+        super.setFirstEventWaitTime(5000);
     }
 
     @Override

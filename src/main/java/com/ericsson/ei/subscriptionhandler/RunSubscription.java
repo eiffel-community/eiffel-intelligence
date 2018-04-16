@@ -16,34 +16,32 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.util.Iterator;
-
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.Iterator;
 
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
  * Subscription Object and match it with the aggregatedObject to check if it is
  * true.
- * 
- * @author xjibbal
  *
+ * @author xjibbal
  */
 
 @Component
 public class RunSubscription {
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
+
     @Autowired
     private JmesPathInterface jmespath;
-
-    static Logger log = (Logger) LoggerFactory.getLogger(RunSubscription.class);
 
     /**
      * This method matches every condition specified in the subscription Object
@@ -51,52 +49,39 @@ public class RunSubscription {
      * eligible for notification via e-mail or REST POST.
      *
      * (AND between conditions in requirements, "OR" between requirements with conditions)
-     * 
+     *
      * @param aggregatedObject
-     * @param requirement
-     * @param subscriptionJson
+     * @param requirementIterator
      * @return boolean
      */
-
-        public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator,
-                JsonNode subscriptionJson) {
+    public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator) {
         boolean conditionFulfilled = false;
-        int count_condition_fulfillment = 0;
-        int count_conditions = 0;
-
-
+        int countConditionFulfillment;
+        int countConditions;
         while (requirementIterator.hasNext()) {
             JsonNode requirement = requirementIterator.next();
-            log.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
+            LOGGER.debug("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
-
-            count_condition_fulfillment = 0;
-            count_conditions = conditions.size();
-
-            log.info("Conditions of the subscription : " + conditions.toString());
+            countConditionFulfillment = 0;
+            countConditions = conditions.size();
+            LOGGER.debug("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
-                String new_Rule = rule.replace("'", "\"");
-                log.info("Rule : " + rule);
-                log.info("New Rule after replacing single quote : " + new_Rule);
+                String newRule = rule.replace("'", "\"");
+                LOGGER.debug("Rule : " + rule);
+                LOGGER.debug("New Rule after replacing single quote : " + newRule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                log.info("Result : " + result.toString());
-                if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")){
-                    count_condition_fulfillment++;
+                LOGGER.debug("Result : " + result.toString());
+                if (result.toString() != null && !result.toString().equals("false") && !result.toString().equals("[]")) {
+                    countConditionFulfillment++;
                 }
             }
-
-            if(count_conditions != 0 && count_condition_fulfillment == count_conditions){
-
+            if (countConditions != 0 && countConditionFulfillment == countConditions) {
                 conditionFulfilled = true;
             }
         }
-
-        log.info("The final value of conditionFulfilled is : " + conditionFulfilled);
-
+        LOGGER.debug("The final value of conditionFulfilled is : " + conditionFulfilled);
         return conditionFulfilled;
-
     }
-
 }

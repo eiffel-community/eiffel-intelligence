@@ -13,61 +13,63 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class })
 @SpringBootTest
-public class FlowSourceChangeObject extends FlowTest {
-    static protected String inputFilePath = "src/test/resources/aggregatedSourceChangeObject.json";
-    static protected String jsonFilePath = "src/test/resources/TestSourceChangeObject.json";
-    static protected String rulePath = "src/test/resources/TestSourceChangeObjectRules.json";
-    private static Logger log = LoggerFactory.getLogger(FlowTest.class);
+public class FlowSourceChangeObject extends FlowTestBase {
 
-    @Autowired
-    private RulesHandler rulesHandler;
+    private static final String RULES_FILE_PATH = "src/test/resources/TestSourceChangeObjectRules.json";
+    private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObject.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
+    private static final String AGGREGATED_OBJECT_ID = "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
 
-    protected void setSpecificTestCaseParameters() {
-        setJsonFilePath(jsonFilePath);
-        rulesHandler.setRulePath(rulePath);
+    @Override
+    String getRulesFilePath() {
+        return RULES_FILE_PATH;
     }
 
-    protected ArrayList<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
+    @Override
+    String getEventsFilePath() {
+        return EVENTS_FILE_PATH;
+    }
+
+    @Override
+    List<String> getEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
         eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
         eventNames.add("event_EiffelSourceChangeCreatedEvent_3_2");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelActivityTriggeredEvent_3");
+        eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
         eventNames.add("event_EiffelActivityStartedEvent_3");
+        eventNames.add("event_EiffelActivityStartedEvent_3_2");
         eventNames.add("event_EiffelActivityFinishedEvent_3");
+        eventNames.add("event_EiffelActivityFinishedEvent_3_2");
+        eventNames.add("event_EiffelActivityCanceledEvent_3");
+        eventNames.add("event_EiffelActivityCanceledEvent_3_2");
         return eventNames;
     }
 
-    protected void checkResult() {
-        try {
-            String expectedDocuments = FileUtils.readFileToString(new File(inputFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode expectedJsons = objectmapper.readTree(expectedDocuments);
-            String document = objectHandler.findObjectById("fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47");
-            JsonNode actualJson = objectmapper.readTree(document);
-            assertEquals(expectedJsons.toString().length(), actualJson.toString().length(),9);
-        } catch (Exception e) {
-            log.info(e.getMessage(), e);
-        }
+    @Override
+    Map<String, JsonNode> getCheckData() throws IOException {
+        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+        Map<String, JsonNode> checkData = new HashMap<>();
+        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+        return checkData;
     }
 }

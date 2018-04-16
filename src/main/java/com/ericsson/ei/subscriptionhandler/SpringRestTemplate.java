@@ -16,22 +16,24 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
+import com.ericsson.ei.jmespath.JmesPathInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 /**
  * This class is responsible to send notification through REST POST to the
  * recipient of the Subscription Object.
- * 
- * @author xjibbal
  *
  */
 
@@ -47,21 +49,34 @@ public class SpringRestTemplate {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST.
-     * 
-     * @param aggregatedObject
+     * This method is responsible to notify the subscriber through REST POST With raw body and form parameters.
+     *
      * @param notificationMeta
+     * @param mapNotificationMessage
+     * @param headerContentMediaType
      * @return integer
      */
-    public int postData(String aggregatedObject, String notificationMeta) {
-        JsonNode aggregatedJson = null;
+    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, String headerContentMediaType) {
         ResponseEntity<JsonNode> response = null;
         try {
-            aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
-            response = rest.postForEntity(notificationMeta, aggregatedJson, JsonNode.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf(headerContentMediaType));
+            if(headerContentMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())){ //"application/x-www-form-urlencoded"
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(mapNotificationMessage, headers);
+                response = rest.postForEntity(notificationMeta, request , JsonNode.class );
+            }
+            else{
+                HttpEntity<String> request = new HttpEntity<String>(String.valueOf(((List<String>) mapNotificationMessage.get("")).get(0)), headers);
+                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return HttpStatus.NOT_FOUND.value();
+            try {
+            	return Integer.parseInt(e.getMessage());
+            }
+            catch (NumberFormatException error) {
+            	return HttpStatus.NOT_FOUND.value();
+            }
         }
         HttpStatus status = response.getStatusCode();
         log.info("The response code after POST is : " + status);
@@ -70,7 +85,5 @@ public class SpringRestTemplate {
             log.info("The response Body is : " + restCall);
         }
         return response.getStatusCode().value();
-
     }
-
 }

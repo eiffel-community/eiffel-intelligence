@@ -16,19 +16,8 @@
 */
 package com.ericsson.ei.rmqhandler;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +38,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
 public class RmqHandler {
@@ -108,8 +101,8 @@ public class RmqHandler {
 
 	@Getter
 	@Setter
-	@Value("${rabbitmq.routing.key}")
-	private String routingKey;
+	@Value("${rabbitmq.binding.key}")
+	private String bindingKey;
 
 	@Getter
 	@Setter
@@ -163,7 +156,7 @@ public class RmqHandler {
 
 	@Bean
 	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+		return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
 	}
 
 	@Bean
@@ -198,7 +191,7 @@ public class RmqHandler {
 			}
 
 			rabbitTemplate.setExchange(exchangeName);
-			rabbitTemplate.setRoutingKey(routingKey);
+			rabbitTemplate.setRoutingKey(bindingKey);
 			rabbitTemplate.setQueue(getQueueName());
 			rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
 				@Override

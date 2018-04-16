@@ -2,6 +2,72 @@
   "_id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
   "aggregatedObject": {
     "ongoing": "false",
+    "test_suite": [
+      {
+        "test_suite_started_event_id": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47",
+        "test_suite_name": "Pre-release installation and security verification",
+        "test_case": [
+          {
+            "test_case_triggered_event_id": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47",
+            "test_case_started_event_id": "v46ef19d-20ab-4d2y-h9fe-87haha6kde47",
+            "test_case_finished_event_id": "v46ef19d-20gb-4c2a-h9fa-8763heheae47",
+            "conclusion": "SUCCESSFUL",
+            "ongoing": "false",
+            "test_data": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "version": "42",
+              "uri": "http://tm.company.com/browse/TC-1234/42"
+            },
+            "verdict": "PASSED",
+            "description": "Accidentally started a fire in the lab during execution.",
+            "metrics": [
+              {
+                "name": "myMetric",
+                "value": 5
+              },
+              {
+                "name": "throughput",
+                "value": 8.325
+              },
+              {
+                "name": "somethingElse",
+                "value": "hello"
+              }
+            ]
+          },
+          {
+            "test_case_triggered_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47",
+            "test_case_started_event_id": "v46ef19d-20ab-4e2y-e9se-8762ae6kde47",
+            "test_case_finished_event_id": "v46ef19d-20fb-4e2k-h9fa-8763ae6ese47",
+            "conclusion": "SUCCESSFUL",
+            "ongoing": "false",
+            "test_data": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "version": "42",
+              "uri": "http://tm.company.com/browse/TC-1234/42"
+            },
+            "verdict": "PASSED",
+            "description": "Accidentally started a fire in the lab during execution.",
+            "metrics": [
+              {
+                "name": "myMetric",
+                "value": 5
+              },
+              {
+                "name": "throughput",
+                "value": 8.325
+              },
+              {
+                "name": "somethingElse",
+                "value": "hello"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "test_batches": [
       {
         "recipes": [
@@ -46,31 +112,16 @@
         ]
       }
     ],
-    "test_cases": [
-      {
-        "ongoing": "false",
-        "test_data": null,
-        "test_cases": [
-          {
-            "conclusion": "SUCCESSFUL",
-            "ongoing": "true",
-            "test_data": null,
-            "verdict": "PASSED",
-            "trigger_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
-          }
-        ],
-        "trigger_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
-      }
-    ],
     "TemplateName": "TEST_EXECUTION_1",
-    "id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
     "time": 1234567890,
     "type": "EiffelActivityTriggeredEvent",
     "version": "1.0.0",
+    "activity_triggered_event_id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+    "activity_started_event_id": "b46e01ud-25gb-4d7y-b9f6-836fre6yde47",
+    "activity_finished_event_id": "b46t01uh-29gs-4d7y-b9v6-83kfqe6y4e47",
     "outcome": {
       "conclusion": "TIMED_OUT",
       "description": "Compilation timed out."
-    },
-    "test_suite_name": "Pre-release installation and security verification"
+    }
   }
 }

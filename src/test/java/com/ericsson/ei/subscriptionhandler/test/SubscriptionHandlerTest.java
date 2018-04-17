@@ -128,6 +128,7 @@ public class SubscriptionHandlerTest {
     @AfterClass
     public static void close() {
         testsFactory.shutdown();
+        mongoClient.close();
     }
 
     @PostConstruct
@@ -195,7 +196,8 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType)).thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
+                .thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
     }
@@ -212,8 +214,10 @@ public class SubscriptionHandlerTest {
         String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(REGEX, "");
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL)
-                .param("SubscriptionName", subscriptionName)).andReturn();
+        MvcResult result = mockMvc
+                .perform(
+                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -221,12 +225,13 @@ public class SubscriptionHandlerTest {
 
     private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData).get("notificationMessageKeyValues");
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
+                .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""),
-                        jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""),
-                                aggregatedObject).toString().replaceAll(REGEX, ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
             }
         }
         return mapNotificationMessage;

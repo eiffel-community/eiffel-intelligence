@@ -79,6 +79,11 @@ public class FlowTestConfigs {
             // the connection is closed we just receive the
             // exception and go on
         }
+
+        if (testsFactory != null)
+            testsFactory.shutdown();
+        if (mongoClient != null)
+            mongoClient.close();
     }
 
     void createExchange(final String exchangeName, final String queueName) {

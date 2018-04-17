@@ -27,6 +27,7 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +69,7 @@ public class QueryServiceTest {
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
-    
+
     @Autowired
     ObjectHandler objectHandler;
 
@@ -111,15 +112,17 @@ public class QueryServiceTest {
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
         System.out.println("Database connected");
-        //deleting all documents before inserting
-        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName).deleteMany(new BsonDocument());
+        // deleting all documents before inserting
+        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
+                .deleteMany(new BsonDocument());
         Document missedDocument = Document.parse(missedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
         mongoClient.getDatabase(missedNotificationDataBaseName).getCollection(missedNotificationCollectionName)
                 .insertOne(missedDocument);
         System.out.println("Document Inserted in missed Notification Database");
-        
-        JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"), aggregatedObject);
+
+        JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
+                aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
                 .insertOne(aggDocument);
@@ -172,6 +175,14 @@ public class QueryServiceTest {
         }
         log.info("The result is : " + record.toString());
         assertEquals(record.get("aggregatedObject").toString(), actual.toString());
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        if (testsFactory != null)
+            testsFactory.shutdown();
+        if (mongoClient != null)
+            mongoClient.close();
     }
 
 }

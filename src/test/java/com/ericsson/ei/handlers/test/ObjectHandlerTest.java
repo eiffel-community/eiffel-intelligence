@@ -71,7 +71,6 @@ public class ObjectHandlerTest {
     private static MongodForTestsFactory testsFactory;
     static MongoClient mongoClient = null;
 
-
     static MongoDBHandler mongoDBHandler = new MongoDBHandler();
 
     static JmesPathInterface jmesPathInterface = new JmesPathInterface();
@@ -90,13 +89,12 @@ public class ObjectHandlerTest {
     static String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
     public static void setUpEmbeddedMongo() throws Exception {
-         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-         mongoClient = testsFactory.newMongo();
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        mongoClient = testsFactory.newMongo();
     }
 
     @BeforeClass
-    public static void init() throws Exception
-    {
+    public static void init() throws Exception {
         setUpEmbeddedMongo();
         mongoDBHandler.setMongoClient(mongoClient);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
@@ -106,7 +104,6 @@ public class ObjectHandlerTest {
         objHandler.setCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
         objHandler.setSubscriptionHandler(subscriptionHandler);
-        
 
         try {
             String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
@@ -128,8 +125,11 @@ public class ObjectHandlerTest {
     }
 
     @AfterClass
-    public static void dropCollection()
-    {
+    public static void dropCollection() {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
+        if (testsFactory != null)
+            testsFactory.shutdown();
+        if (mongoClient != null)
+            mongoClient.close();
     }
 }

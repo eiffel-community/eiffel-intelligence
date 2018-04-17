@@ -225,6 +225,7 @@ public class SubscriptionHandlerTest {
 
     private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
+
         ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
                 .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {

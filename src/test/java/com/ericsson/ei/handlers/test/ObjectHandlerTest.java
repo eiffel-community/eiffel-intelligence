@@ -107,9 +107,10 @@ public class ObjectHandlerTest {
     @After
     public void dropCollection() {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
-        if (testsFactory != null)
-            testsFactory.shutdown();
         if (mongoClient != null)
             mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+
     }
 }

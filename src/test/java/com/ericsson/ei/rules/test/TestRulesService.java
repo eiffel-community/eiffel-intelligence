@@ -56,8 +56,8 @@ public class TestRulesService {
 
     @AfterClass
     public static void tearDownMongoDB() throws Exception {
-        testsFactory.shutdown();
         mongoClient.close();
+        testsFactory.shutdown();
     }
 
     @Test

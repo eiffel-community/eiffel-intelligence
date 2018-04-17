@@ -181,10 +181,10 @@ public class QueryServiceTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        if (testsFactory != null)
-            testsFactory.shutdown();
         if (mongoClient != null)
             mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
     }
 
 }

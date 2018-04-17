@@ -91,10 +91,11 @@ public class SubscriptionServiceTest {
 
     @AfterClass
     public static void tearDownMongoDB() throws Exception {
-        if (testsFactory != null)
-            testsFactory.shutdown();
         if (mongoClient != null)
             mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+
     }
 
     @Test

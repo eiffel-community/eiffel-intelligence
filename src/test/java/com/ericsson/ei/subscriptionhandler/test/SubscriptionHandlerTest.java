@@ -129,8 +129,8 @@ public class SubscriptionHandlerTest {
 
     @AfterClass
     public static void close() {
-        testsFactory.shutdown();
         mongoClient.close();
+        testsFactory.shutdown();
     }
 
     @PostConstruct

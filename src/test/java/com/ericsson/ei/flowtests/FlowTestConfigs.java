@@ -80,10 +80,11 @@ public class FlowTestConfigs {
             // exception and go on
         }
 
-        if (testsFactory != null)
-            testsFactory.shutdown();
         if (mongoClient != null)
             mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+
     }
 
     void createExchange(final String exchangeName, final String queueName) {

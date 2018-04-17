@@ -90,7 +90,8 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        testsFactory.shutdown();
         mongoClient.close();
+        testsFactory.shutdown();
+
     }
 }

@@ -45,6 +45,8 @@ public class TestRulesService {
     public static void setMongoDB() throws IOException, JSONException {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
     }
 
     @PostConstruct
@@ -69,7 +71,8 @@ public class TestRulesService {
             extractionRules_test = FileUtils.readFileToString(new File(RULES), "UTF-8");
             aggregatedResult = FileUtils.readFileToString(new File(AGGREGATED_RESULT_OBJECT), "UTF-8");
             expectedAggObject = new JSONArray(aggregatedResult);
-            String result = ruleCheckService.prepareAggregatedObject(new JSONArray(extractionRules_test), new JSONArray(jsonInput));
+            String result = ruleCheckService.prepareAggregatedObject(new JSONArray(extractionRules_test),
+                    new JSONArray(jsonInput));
             JSONArray actualAggObject = new JSONArray(result);
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());
         } catch (Exception e) {

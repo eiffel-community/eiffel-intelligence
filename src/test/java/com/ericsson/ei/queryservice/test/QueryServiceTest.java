@@ -92,6 +92,8 @@ public class QueryServiceTest {
     public static void setUpEmbeddedMongo() throws Exception {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
 
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));

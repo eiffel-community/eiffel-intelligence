@@ -113,6 +113,8 @@ public class SubscriptionHandlerTest {
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");

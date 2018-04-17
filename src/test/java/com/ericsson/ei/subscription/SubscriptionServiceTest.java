@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -48,7 +49,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = App.class)
 public class SubscriptionServiceTest {
 
     String subscriptionName;
@@ -61,7 +62,7 @@ public class SubscriptionServiceTest {
 
     private static MongodForTestsFactory testsFactory;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
 
@@ -84,7 +85,7 @@ public class SubscriptionServiceTest {
     }
 
     @PostConstruct
-    public void initMocks() {
+    public void init() {
         mongoDBHandler.setMongoClient(mongoClient);
     }
 

@@ -2,10 +2,6 @@ sudo: required
 
 language: java
 
-services: 
-  - mongodb
-  - rabbitmq
-
 jdk:
   - oraclejdk8
   
@@ -13,4 +9,5 @@ before_install:
   - chmod +x pom.xml
   
 script:
+  - rm /home/travis/.embedmongo/extracted/Linux-B64--3.4.1/extractmongod
   - mvn clean install

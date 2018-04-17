@@ -29,7 +29,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
-@PropertySource(value = "file:/home/ezcorch/Public/security.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:{security.path}/security.properties", ignoreResourceNotFound = true)
 
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {

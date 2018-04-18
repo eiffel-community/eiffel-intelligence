@@ -66,8 +66,8 @@ public class FlowTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
-            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
     @Override

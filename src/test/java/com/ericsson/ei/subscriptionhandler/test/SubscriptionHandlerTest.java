@@ -108,8 +108,13 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String port = "" + mongoClient.getAddress().getPort();
         System.setProperty("mongodb.port", port);
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");

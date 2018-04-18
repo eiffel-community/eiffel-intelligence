@@ -90,8 +90,13 @@ public class QueryServiceTest {
     private MongoDBHandler mongoDBHandler;
 
     public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String port = "" + mongoClient.getAddress().getPort();
         System.setProperty("mongodb.port", port);
 
@@ -101,7 +106,7 @@ public class QueryServiceTest {
             missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
             System.out.println("The missedNotification is : " + missedNotification);
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

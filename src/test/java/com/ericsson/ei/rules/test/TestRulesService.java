@@ -14,6 +14,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,6 +34,8 @@ public class TestRulesService {
     private static final String RULES = "src/test/resources/AggregateListRules.json";
     private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
 
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesService.class);
+
     @Autowired
     private IRuleCheckService ruleCheckService;
 
@@ -43,8 +47,13 @@ public class TestRulesService {
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String port = "" + mongoClient.getAddress().getPort();
         System.setProperty("mongodb.port", port);
     }

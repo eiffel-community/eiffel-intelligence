@@ -6,8 +6,9 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
@@ -26,6 +27,8 @@ public class FlowTestConfigs {
     private Queue queue = null;
     private RabbitAdmin admin;
     private ConnectionFactory cf;
+
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
 
     @Getter
     private Connection conn;
@@ -62,8 +65,13 @@ public class FlowTestConfigs {
     }
 
     private void setUpEmbeddedMongo() throws IOException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String port = "" + mongoClient.getAddress().getPort();
         System.setProperty("mongodb.port", port);
     }

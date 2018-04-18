@@ -48,8 +48,13 @@ public class MongoDBHandlerTest {
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
 
     public void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     @Before

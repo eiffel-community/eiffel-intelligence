@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +55,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     private RmqHandler rmqHandler;
 
     @Autowired
-    private ObjectHandler objectHandler;
+    public ObjectHandler objectHandler;
 
     @Autowired
     private RulesHandler rulesHandler;
@@ -114,6 +111,15 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     private void cleanFlowTestConfigs() {
         configsMap.remove(getClasName());
     }
+    
+    // setFirstEventWaitTime: variable to set the wait time after publishing the
+    // first event. So any thread looking for the events don't do it before actually
+    // populating events in the database
+    private int firstEventWaitTime = 0;
+
+    public void setFirstEventWaitTime(int value) {
+        firstEventWaitTime = value;
+    }
 
     @Test
     public void flowTest() {
@@ -128,10 +134,20 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size();
+            boolean alreadyExecuted = false;
             for (String eventName : eventNames) {
                 JsonNode eventJson = parsedJSON.get(eventName);
                 String event = eventJson.toString();
                 channel.basicPublish(exchangeName, queueName, null, event.getBytes());
+                if (!alreadyExecuted) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                    alreadyExecuted = true;
+                }
             }
 
             // wait for all events to be processed

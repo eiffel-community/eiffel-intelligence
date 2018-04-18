@@ -69,8 +69,14 @@ public class ObjectHandlerTest {
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
     public void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+
     }
 
     @Before

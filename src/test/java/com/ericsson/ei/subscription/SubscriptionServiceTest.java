@@ -33,6 +33,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,6 +42,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.handlers.test.ObjectHandlerTest;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +54,8 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
 public class SubscriptionServiceTest {
+
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
     String subscriptionName;
 
@@ -71,7 +76,12 @@ public class SubscriptionServiceTest {
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
         mongoClient = testsFactory.newMongo();

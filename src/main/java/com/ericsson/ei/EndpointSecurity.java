@@ -29,26 +29,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
-@PropertySource(value = "file:{security.path}/security.properties", ignoreResourceNotFound = true)
-
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
-    @Value("${ldap.enabled:false}")
+    @Value("${ldap.enabled}")
     private boolean ldapEnabled;
     
-    @Value("${ldap.url:default}")
+    @Value("${ldap.url}")
     private String ldapUrl;
     
-    @Value("${ldap.base.dn:default}")
+    @Value("${ldap.base.dn}")
     private String ldapBaseDn;
     
-    @Value("${ldap.username:default}")
+    @Value("${ldap.username}")
     private String ldapUsername;
     
-    @Value("${ldap.password:default}")
+    @Value("${ldap.password}")
     private String ldapPassword;
     
-    @Value("${ldap.user.filter:default}")
+    @Value("${ldap.user.filter}")
     private String ldapUserFilter;
     
     @Override

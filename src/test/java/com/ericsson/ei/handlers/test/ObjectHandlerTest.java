@@ -83,6 +83,7 @@ public class ObjectHandlerTest {
     public void init() throws Exception {
         setUpEmbeddedMongo();
         mongoDBHandler.setMongoClient(mongoClient);
+        subscriptionHandler.setMongoDBHandler(mongoDBHandler);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);

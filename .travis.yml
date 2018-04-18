@@ -9,4 +9,5 @@ before_install:
   - chmod +x pom.xml
   
 script:
-  -  mvn -DsomeModule.test.includes="**/UpStreamEventHandlerTest.java, **/TestExtractionHandler.java, **/ObjectHandlerTest.java, **/SubscriptionServiceTest.java" test
+  #-  mvn -DsomeModule.test.includes="**/UpStreamEventHandlerTest.java, **/TestExtractionHandler.java, **/ObjectHandlerTest.java, **/SubscriptionServiceTest.java" test
+  -  mvn -DsomeModule.test.includes="**/ObjectHandlerTest.java" test

@@ -20,11 +20,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
@@ -48,10 +51,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
+        SingleEventAggregationTest.class })
 @SpringBootTest
 public class SingleEventAggregationTest extends FlowTestBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
+
     private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
 
@@ -76,6 +81,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Before
     public void before() {
+        MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
         // MockitoAnnotations.initMocks(this);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),

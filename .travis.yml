@@ -15,4 +15,5 @@ before_install:
   
 script:
   #-  mvn -DsomeModule.test.includes="**/UpStreamEventHandlerTest.java, **/TestExtractionHandler.java, **/ObjectHandlerTest.java, **/SubscriptionServiceTest.java" test
-  -  mvn -DsomeModule.test.includes="**/SubscriptionServiceTest.java, **/ObjectHandlerTest.java" test
+  #-  mvn -DsomeModule.test.includes="**/SubscriptionServiceTest.java, **/ObjectHandlerTest.java" test
+  - mvn clean install

@@ -93,12 +93,12 @@ public class QueryServiceTest {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             e.printStackTrace();
         }
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("mongodb.port", port);
 
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));

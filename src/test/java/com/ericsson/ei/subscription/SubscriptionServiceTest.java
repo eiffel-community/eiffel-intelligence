@@ -78,15 +78,15 @@ public class SubscriptionServiceTest {
     public static void setMongoDB() throws IOException, JSONException {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
         }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("mongodb.port", port);
 
         ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < jsonArray.length(); i++) {

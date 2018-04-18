@@ -50,12 +50,12 @@ public class TestRulesService {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
         }
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("mongodb.port", port);
     }
 
     @PostConstruct

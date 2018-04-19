@@ -18,6 +18,6 @@ script:
 # will try to download the embedded mongo to this travis instance but the late ones will fail to write.
 # We will therefore run one test using mongodb first that will download the mongo instance and
 # then the rest of the test that will no longer need to download the embedded mongo since it will exist
-  -  mvn -DsomeModule.test.includes="**/ObjectHandlerTest.java" test
-  -  mvn -DsomeModule.test.excludes="**/ObjectHandlerTest.java" test
+  -  mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test
+  -  mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test
  

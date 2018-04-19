@@ -15,6 +15,16 @@ package com.ericsson.ei.queryservice.test;
 
 import static org.junit.Assert.assertEquals;
 
+import com.ericsson.ei.App;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.MongoClient;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,8 +35,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.bson.BsonDocument;
 import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.conversions.Bson;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,16 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.ericsson.ei.App;
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.queryservice.ProcessAggregatedObject;
-import com.ericsson.ei.queryservice.ProcessMissedNotification;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;

@@ -67,7 +67,6 @@ public class WaitListStorageHandler {
         if (result == false) {
             throw new Exception("failed to insert the document into database");
         }
-        updateTestEventCount(true);
     }
 
     private String addProprtiesToEvent(String event, RulesObject rulesObject) {
@@ -103,26 +102,6 @@ public class WaitListStorageHandler {
 
     public boolean dropDocumentFromWaitList(String document) {
         boolean result = mongoDbHandler.dropDocument(databaseName, collectionName, document);
-
-        if (result) {
-            updateTestEventCount(false);
-        }
-
         return result;
-    }
-
-    private void updateTestEventCount(boolean increase) {
-        // if (System.getProperty("flow.test") == "true") {
-        // String countStr =
-        // System.getProperty("eiffel.intelligence.waitListEventsCount");
-        // int count = Integer.parseInt(countStr);
-        // if (increase) {
-        // count++;
-        // } else {
-        // count--;
-        // }
-        // System.setProperty("eiffel.intelligence.waitListEventsCount", "" +
-        // count);
-        // }
     }
 }

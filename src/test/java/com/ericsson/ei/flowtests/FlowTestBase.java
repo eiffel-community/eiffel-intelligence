@@ -79,8 +79,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         System.setProperty("flow.test", "true");
-        // System.setProperty("eiffel.intelligence.processedEventsCount", "0");
-        // System.setProperty("eiffel.intelligence.waitListEventsCount", "0");
         createFlowTestConfigs();
         getFlowTestConfigs().init();
     }
@@ -103,17 +101,16 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     private String getClasName() {
-        // Class c = MethodHandles.lookup().lookupClass();
-        // return c.getName();
         return this.getClass().getName();
     }
 
     private void cleanFlowTestConfigs() {
         configsMap.remove(getClasName());
     }
-    
+
     // setFirstEventWaitTime: variable to set the wait time after publishing the
-    // first event. So any thread looking for the events don't do it before actually
+    // first event. So any thread looking for the events don't do it before
+    // actually
     // populating events in the database
     private int firstEventWaitTime = 0;
 

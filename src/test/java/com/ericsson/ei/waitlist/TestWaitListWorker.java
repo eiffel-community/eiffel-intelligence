@@ -94,9 +94,6 @@ public class TestWaitListWorker {
         setupMB();
         list.add(FileUtils.readFileToString(new File(input1), "UTF-8"));
         list.add(FileUtils.readFileToString(new File(input2), "UTF-8"));
-        // Mockito.when(mongoDBHandler.dropDocument(Mockito.anyString(),
-        // Mockito.anyString(), Mockito.anyString()))
-        // .thenReturn(true);
         Mockito.when(waitListStorageHandler.getWaitList()).thenReturn(list);
         Mockito.when(rulesHandler.getRulesForEvent(Mockito.anyString())).thenReturn(rulesObject);
         Mockito.when(jmesPathInterface.runRuleOnEvent(Mockito.anyString(), Mockito.anyString())).thenReturn(jsonNode);

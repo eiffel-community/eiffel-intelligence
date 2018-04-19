@@ -93,18 +93,14 @@ public class QueryServiceTest {
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("mongodb.port", port);
+
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
+            log.debug("The aggregatedObject is : " + aggregatedObject);
+            missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
+            log.debug("The missedNotification is : " + missedNotification);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             e.printStackTrace();
-        }
-
-        try {
-            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-            System.out.println("The aggregatedObject is : " + aggregatedObject);
-            missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
-            System.out.println("The missedNotification is : " + missedNotification);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
 
@@ -116,7 +112,7 @@ public class QueryServiceTest {
     @PostConstruct
     public void initMocks() {
         mongoDBHandler.setMongoClient(mongoClient);
-        System.out.println("Database connected");
+        log.debug("Database connected");
         // deleting all documents before inserting
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
                 .deleteMany(new BsonDocument());
@@ -124,14 +120,14 @@ public class QueryServiceTest {
         Document aggDocument = Document.parse(aggregatedObject);
         mongoClient.getDatabase(missedNotificationDataBaseName).getCollection(missedNotificationCollectionName)
                 .insertOne(missedDocument);
-        System.out.println("Document Inserted in missed Notification Database");
+        log.debug("Document Inserted in missed Notification Database");
 
         JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
                 .insertOne(aggDocument);
-        System.out.println("Document Inserted in Aggregated Object Database");
+        log.debug("Document Inserted in Aggregated Object Database");
     }
 
     @Test
@@ -140,11 +136,12 @@ public class QueryServiceTest {
                 .getCollection(missedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
-        log.info("The inserted doc is : " + response);
+        log.debug("The inserted doc is : " + response);
         List<String> result = processMissedNotification.processQueryMissedNotification("Subscription_1");
-        log.info("The retrieved data is : " + result.toString());
+        log.debug("The retrieved data is : " + result.toString());
         ObjectNode record = null;
         JsonNode actual = null;
+
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
@@ -154,7 +151,7 @@ public class QueryServiceTest {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        log.info("The result is : " + record.toString());
+        log.debug("The result is : " + record.toString());
         assertEquals(record.toString(), actual.toString());
     }
 
@@ -164,11 +161,12 @@ public class QueryServiceTest {
                 .getCollection(aggregationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
-        log.info("The inserted doc is : " + response);
+        log.debug("The inserted doc is : " + response);
         ArrayList<String> result = processAggregatedObject
                 .processQueryAggregatedObject("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         ObjectNode record = null;
         JsonNode actual = null;
+
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
@@ -178,7 +176,7 @@ public class QueryServiceTest {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        log.info("The result is : " + record.toString());
+        log.debug("The result is : " + record.toString());
         assertEquals(record.get("aggregatedObject").toString(), actual.toString());
     }
 
@@ -189,5 +187,4 @@ public class QueryServiceTest {
         if (testsFactory != null)
             testsFactory.shutdown();
     }
-
 }

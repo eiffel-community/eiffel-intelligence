@@ -64,7 +64,6 @@ public class ObjectHandlerTest {
     private String dataBaseName = "EventStorageDBbbb";
     private String collectionName = "SampleEvents";
     private String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
-    private String updateInput = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
 

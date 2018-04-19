@@ -262,7 +262,11 @@
                 <version>2.20</version>
                 <configuration>
                     <forkCount>2C</forkCount>
-                    <reuseForks>false</reuseForks>
+                    <reuseForks>true</reuseForks>
+                    <parallel>classes</parallel>
+                    <useUnlimitedThreads>true</useUnlimitedThreads>
+                    <threadCount>80</threadCount>
+                    <perCoreThreadCount>true</perCoreThreadCount>
                     <excludes>
                         <exclude>${someModule.test.excludes}</exclude>
                     </excludes>

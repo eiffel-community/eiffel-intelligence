@@ -99,7 +99,7 @@ public class SubscriptionHandler {
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         LOGGER.debug("RequirementNode : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator)) {
+        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
             LOGGER.debug("The subscription conditions match for the aggregatedObject");
             informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
         }

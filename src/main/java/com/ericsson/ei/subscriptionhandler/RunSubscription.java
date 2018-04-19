@@ -46,8 +46,6 @@ public class RunSubscription {
 
     @Autowired
     private JmesPathInterface jmespath;
-
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
     
     @Autowired
 	  private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
@@ -63,7 +61,7 @@ public class RunSubscription {
      * @param requirementIterator
      * @return boolean
      */
-    public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator) {
+    public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator, JsonNode subscriptionJson) {
         boolean conditionFulfilled = false;
         int count_condition_fulfillment = 0;
         int count_conditions = 0;

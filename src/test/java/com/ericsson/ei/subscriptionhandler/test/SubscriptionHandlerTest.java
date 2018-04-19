@@ -112,12 +112,8 @@ public class SubscriptionHandlerTest {
     @Autowired
     private JmesPathInterface jmespath;
 
-    private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
     private static String subscriptionPathForEmail = "src/test/resources/SubscriptionObjectForEmailTest.json";
-    private static String aggregatedObject;
-    private static String subscriptionData;
     private static String subscriptionRepeatFlagTrueData;
     private static String subscriptionDataEmail;
 
@@ -192,7 +188,7 @@ public class SubscriptionHandlerTest {
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson;
+        JsonNode subscriptionJson = null;
         ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
@@ -202,7 +198,7 @@ public class SubscriptionHandlerTest {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator);
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson);
         assertEquals(output, true);
     }
     

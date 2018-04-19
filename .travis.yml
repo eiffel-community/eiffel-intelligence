@@ -14,6 +14,10 @@ before_install:
   - chmod +x pom.xml
   
 script:
-  -  mvn -DsomeModule.test.includes="**/UpStreamEventHandlerTest.java, **/TestExtractionHandler.java, **/ObjectHandlerTest.java, **/SubscriptionServiceTest.java" test
-  #-  mvn -DsomeModule.test.includes="**/SubscriptionServiceTest.java, **/ObjectHandlerTest.java" test
-  #- mvn clean install
+# since we run parallel tests using embedded mongodb in fresh environment all tests run first in parallel 
+# will try to download the embedded mongo to this travis instance but the late ones will fail to write.
+# We will therefore run one test using mongodb first that will download the mongo instance and
+# then the rest of the test that will no longer need to download the embedded mongo since it will exist
+  -  mvn -DsomeModule.test.includes="**/ObjectHandlerTest.java" test
+  -  mvn -DsomeModule.test.excludes="**/ObjectHandlerTest.java" test
+ 

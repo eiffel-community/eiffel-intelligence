@@ -57,7 +57,6 @@ public class ObjectHandlerTest {
     private ObjectHandler objHandler = new ObjectHandler();
 
     private MongodForTestsFactory testsFactory;
-    private MongodExecutable mongodExecutable = null;
     private MongoClient mongoClient = null;
 
     private MongoDBHandler mongoDBHandler = new MongoDBHandler();
@@ -79,21 +78,8 @@ public class ObjectHandlerTest {
 
     public void setUpEmbeddedMongo() throws Exception {
         try {
-            // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            // mongoClient = testsFactory.newMongo();
-            int port = SocketUtils.findAvailableTcpPort();
-
-            MongodStarter starter = MongodStarter.getDefaultInstance();
-
-            String bindIp = "localhost";
-
-            IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
-                    .net(new Net(bindIp, port, Network.localhostIsIPv6())).build();
-
-            mongodExecutable = starter.prepare(mongodConfig);
-            MongodProcess mongod = mongodExecutable.start();
-            mongoClient = new MongoClient("localhost", port);
-
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             e.printStackTrace();
@@ -138,10 +124,8 @@ public class ObjectHandlerTest {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
         if (mongoClient != null)
             mongoClient.close();
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
-        // if (testsFactory != null)
-        // testsFactory.shutdown();
+        if (testsFactory != null)
+            testsFactory.shutdown();
 
     }
 }

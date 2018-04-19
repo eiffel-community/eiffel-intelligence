@@ -38,9 +38,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SocketUtils;
 
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import de.flapdoodle.embed.process.runtime.Network;
 
 public class ObjectHandlerTest {
 
@@ -49,6 +57,7 @@ public class ObjectHandlerTest {
     private ObjectHandler objHandler = new ObjectHandler();
 
     private MongodForTestsFactory testsFactory;
+    private MongodExecutable mongodExecutable = null;
     private MongoClient mongoClient = null;
 
     private MongoDBHandler mongoDBHandler = new MongoDBHandler();
@@ -70,8 +79,21 @@ public class ObjectHandlerTest {
 
     public void setUpEmbeddedMongo() throws Exception {
         try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
+            // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            // mongoClient = testsFactory.newMongo();
+            int port = SocketUtils.findAvailableTcpPort();
+
+            MongodStarter starter = MongodStarter.getDefaultInstance();
+
+            String bindIp = "localhost";
+
+            IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                    .net(new Net(bindIp, port, Network.localhostIsIPv6())).build();
+
+            mongodExecutable = starter.prepare(mongodConfig);
+            MongodProcess mongod = mongodExecutable.start();
+            mongoClient = new MongoClient("localhost", port);
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             e.printStackTrace();
@@ -116,8 +138,10 @@ public class ObjectHandlerTest {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
         if (mongoClient != null)
             mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
+        if (mongodExecutable != null)
+            mongodExecutable.stop();
+        // if (testsFactory != null)
+        // testsFactory.shutdown();
 
     }
 }

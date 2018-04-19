@@ -105,7 +105,17 @@ public class SubscriptionRepeatDbHandlerTest {
 	
     	assertEquals(subscriptionId, dbResult.get("subscriptionId").toString());
     	
-		assertEquals("[ [ \"" + aggrObjId + "\"]]", dbResult.get("requirements").toString());
+    	String actual = dbResult.get("requirements").toString();
+    	String expected = "{ \"0\" : [ " +  "\"" + aggrObjId + "\"" + "]}";
+    	
+    	
+    	boolean result = true;
+    	if (expected == actual) {
+    		result = false;
+        	log.error("\nACTUAL: |" + actual + "|\nEXPECTED: |" + expected + "|");
+
+    	}
+		assertEquals(true, result);
 	}
     
     @Test
@@ -139,9 +149,19 @@ public class SubscriptionRepeatDbHandlerTest {
 	
     	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
     	
-		assertEquals("[ [ \"" + aggrObjId2 + "\"]]", dbResult.get("requirements").toString());
-	}
-    
+    	String actual = dbResult.get("requirements").toString();
+    	String expected = "\"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]";
+    	
+    	
+    	String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
+    	boolean result = true;
+    	if (expected == actual) {
+    		result = false;
+        	log.error(msg);
+    	}
+    	
+		assertEquals(msg, result, true);
+	}    
     
     @Test
 	public void addTwoNewSameMatchedAggrIdToDatabase() {
@@ -174,7 +194,19 @@ public class SubscriptionRepeatDbHandlerTest {
     	BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
 	
     	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
+    	log.error("DB REQUIREMENTS: " + dbResult.get("requirements").toString());
+    	log.error("DB Content: " + dbResult.toString());
+
     	
-		assertEquals("[[" + aggrObjId + ", " + aggrObjId2 + "]]", dbResult.get("requirements").toString());
+    	String actual = dbResult.get("requirements").toString();
+    	String expected = "{ \"0\" : [ \"" + aggrObjId + "\" , \"" + aggrObjId2 + "\"]}";
+    	String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
+    	boolean result = true;
+    	if (!expected.equals(actual)) {
+    		result = false;
+        	log.error(msg);
+    	}
+
+		assertEquals(msg, result, true);
 	}
 }

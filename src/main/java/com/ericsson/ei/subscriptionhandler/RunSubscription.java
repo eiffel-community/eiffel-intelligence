@@ -119,6 +119,7 @@ public class RunSubscription {
                 	try {
 						subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName, requirementIndex, aggrObjId);
 					} catch (Exception e) {
+						LOGGER.error(e.getMessage());
 						e.printStackTrace();
 					}
                 }

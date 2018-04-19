@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,13 +38,13 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class FlowTestBase extends FlowTestConfigs {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlowTestBase.class);
 
     @Autowired
     private RmqHandler rmqHandler;
 
     @Autowired
-    private ObjectHandler objectHandler;
+    public ObjectHandler objectHandler;
 
     @Autowired
     private RulesHandler rulesHandler;
@@ -59,7 +56,16 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     private String event_map;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
-    private static JsonNode parsedJson;
+
+    
+    // setFirstEventWaitTime: variable to set the wait time after publishing the
+    // first event. So any thread looking for the events don't do it before actually
+    // populating events in the database
+    private int firstEventWaitTime = 0;
+
+    public void setFirstEventWaitTime(int value) {
+        firstEventWaitTime = value;
+    }
 
     @Test
     public void flowTest() {
@@ -69,20 +75,30 @@ public abstract class FlowTestBase extends FlowTestConfigs {
             String exchangeName = "ei-poc-4";
             createExchange(exchangeName, queueName);
 
-            rulesHandler.setRulePath(setRulesFilePath());
+            rulesHandler.setRulePath(getRulesFilePath());
 
-            List<String> eventNames = setEventNamesToSend();
-            testParametersChange();
+            List<String> eventNames = getEventNamesToSend();
+            JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size();
+            boolean alreadyExecuted = false;
             for (String eventName : eventNames) {
-                JsonNode eventJson = parsedJson.get(eventName);
+                JsonNode eventJson = parsedJSON.get(eventName);
                 String event = eventJson.toString();
                 channel.basicPublish(exchangeName, queueName, null, event.getBytes());
+                if (!alreadyExecuted) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                    alreadyExecuted = true;
+                }
             }
 
             // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            checkResult(setCheckInfo());
+            checkResult(getCheckData());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -91,28 +107,27 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     /**
      * @return path to file with rules, that is used in flow test
      */
-    abstract String setRulesFilePath();
+    abstract String getRulesFilePath();
 
     /**
      * @return path to file, with events, that is used in flow test
      */
-    abstract String setEventsFilePath();
+    abstract String getEventsFilePath();
 
     /**
      * @return list of event names, that will be used in flow test
      */
-    abstract List<String> setEventNamesToSend();
+    abstract List<String> getEventNamesToSend();
 
     /**
-     * @return map, where
-     *          key - _id of expected aggregated object
-     *          value - path to file with expected aggregated object
+     * @return map, where key - _id of expected aggregated object value - expected
+     *         aggregated object
      */
-    abstract Map<String, String> setCheckInfo();
+    abstract Map<String, JsonNode> getCheckData() throws IOException;
 
-    private void testParametersChange() throws IOException {
-        String jsonFileContent = FileUtils.readFileToString(new File(setEventsFilePath()), "UTF-8");
-        parsedJson = objectMapper.readTree(jsonFileContent);
+    JsonNode getJSONFromFile(String filePath) throws IOException {
+        String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
+        return objectMapper.readTree(expectedDocument);
     }
 
     // count documents that were processed
@@ -136,15 +151,13 @@ public abstract class FlowTestBase extends FlowTestConfigs {
         }
     }
 
-    private void checkResult(final Map<String, String> inputFiles) {
-        inputFiles.forEach((id, filePath) -> {
+    private void checkResult(final Map<String, JsonNode> checkData) {
+        checkData.forEach((id, expectedJSON) -> {
             try {
                 String document = objectHandler.findObjectById(id);
-                String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
-                JsonNode expectedJson = objectMapper.readTree(expectedDocument);
-                JsonNode actualJson = objectMapper.readTree(document);
-                LOGGER.info("Complete aggregated object: " + actualJson);
-                JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
+                JsonNode actualJSON = objectMapper.readTree(document);
+                LOGGER.info("Complete aggregated object: " + actualJSON);
+                JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
             } catch (IOException | JSONException e) {
                 LOGGER.error(e.getMessage(), e);
             }

@@ -30,17 +30,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+
 /**
  * This class represents the mechanism to fetch the rule conditions from the
  * Subscription Object and match it with the aggregatedObject to check if it is
  * true.
- * 
- * @author xjibbal
  *
+ * @author xjibbal
  */
 
 @Component
 public class RunSubscription {
+
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
 
     @Autowired
     private JmesPathInterface jmespath;
@@ -48,28 +50,26 @@ public class RunSubscription {
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
     
     @Autowired
-	private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
+	  private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
 	
-	/**
+	  /**
      * This method matches every condition specified in the subscription Object
      * and if all conditions are matched then only the aggregatedObject is
      * eligible for notification via e-mail or REST POST.
      *
      * (AND between conditions in requirements, "OR" between requirements with conditions)
-     * 
+     *
      * @param aggregatedObject
-     * @param requirement
-     * @param subscriptionJson
+     * @param requirementIterator
      * @return boolean
      */
-
-        public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator,
-                JsonNode subscriptionJson) {
+    public boolean runSubscriptionOnObject(String aggregatedObject, Iterator<JsonNode> requirementIterator) {
         boolean conditionFulfilled = false;
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
 
         int requirementIndex = 0;
+
         while (requirementIterator.hasNext()) {
         	
             JsonNode aggrObjJsonNode = null;
@@ -93,6 +93,7 @@ public class RunSubscription {
             }
             
             JsonNode requirement = requirementIterator.next();
+
             LOGGER.info("The fulfilled requirement which will condition checked is : " + requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
 
@@ -131,7 +132,5 @@ public class RunSubscription {
         LOGGER.info("The final value of conditionFulfilled is : " + conditionFulfilled);
 
         return conditionFulfilled;
-
     }
-
 }

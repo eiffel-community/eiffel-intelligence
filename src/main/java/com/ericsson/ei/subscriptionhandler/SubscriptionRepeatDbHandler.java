@@ -39,7 +39,7 @@ import lombok.Setter;
 @Component
 public class SubscriptionRepeatDbHandler {
 
-	static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionRepeatDbHandler.class);
+	private static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionRepeatDbHandler.class);
 
 	
     @Autowired

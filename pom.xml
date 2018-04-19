@@ -262,7 +262,7 @@
                 <version>2.20</version>
                 <configuration>
                     <forkCount>2C</forkCount>
-                    <reuseForks>true</reuseForks>
+                    <reuseForks>false</reuseForks>
                     <parallel>classes</parallel>
                     <useUnlimitedThreads>true</useUnlimitedThreads>
                     <threadCount>80</threadCount>

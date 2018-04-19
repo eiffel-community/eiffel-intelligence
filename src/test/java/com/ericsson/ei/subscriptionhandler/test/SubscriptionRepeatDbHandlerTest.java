@@ -89,7 +89,7 @@ public class SubscriptionRepeatDbHandlerTest {
 	public void addOneNewMatchedAggrIdToDatabase() {
     	
     	String subscriptionId = "12345";
-		Integer requirementId = 0;
+		int requirementId = 0;
 		String aggrObjId = "99999";
 		
 		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
@@ -122,11 +122,11 @@ public class SubscriptionRepeatDbHandlerTest {
 	public void addTwoNewMatchedAggrIdToDatabase() {
     	
     	String subscriptionId = "12345";
-		Integer requirementId = 0;
+		int requirementId = 0;
 		String aggrObjId = "99999";
 		
 	  	String subscriptionId2 = "98754";
-	  	Integer requirementId2 = 1;
+	  	int requirementId2 = 1;
 		String aggrObjId2 = "45678";
 		
 		String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
@@ -167,11 +167,11 @@ public class SubscriptionRepeatDbHandlerTest {
 	public void addTwoNewSameMatchedAggrIdToDatabase() {
     	
     	String subscriptionId = "12345";
-		Integer requirementId = 0;
+		int requirementId = 0;
 		String aggrObjId = "99999";
 		
 	  	String subscriptionId2 = "12345";
-	  	Integer requirementId2 = 0;
+	  	int requirementId2 = 0;
 		String aggrObjId2 = "99998";
 		
 		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";

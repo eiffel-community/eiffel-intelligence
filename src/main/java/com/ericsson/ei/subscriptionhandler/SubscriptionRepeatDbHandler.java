@@ -99,32 +99,28 @@ public class SubscriptionRepeatDbHandler {
     	}
     	
 
-    	if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
-    		LOGGER.warn("Couldn't update SubscriptionMathced id.");
-    	}
+		if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
+			LOGGER.error("Couldn't update SubscriptionMathced id.");
+		}
+		else {
+			LOGGER.debug("New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
+			BasicDBObject document = new BasicDBObject();
+			document.put("subscriptionId", subscriptionId);
 
+			ArrayList<String> aggrObjIdsList = new ArrayList<String>();
+			aggrObjIdsList.add(aggrObjId);
 
-    	
-    	LOGGER.debug("New Subscription AggrId not match,, inserting new SubscriptionId and AggrObjId to matched list.");
-    	BasicDBObject document = new BasicDBObject();
-    	document.put("subscriptionId", subscriptionId);
-		
-    	ArrayList<String> aggrObjIdsList = new ArrayList<String>();
-    	aggrObjIdsList.add(aggrObjId);
-		
-//		ArrayList<ArrayList<String>> reqList = new ArrayList<ArrayList<String>>();
-//		reqList.add(aggrObjIdsList);
-		
-		BasicDBObject reqDocument = new BasicDBObject();
-		reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
-		
-		document.put("requirements", reqDocument);
-		
-		LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
-        boolean result=mongoDbHandler.insertDocument(dataBaseName,collectionName, document.toString());
-        if (result == false) {
-            throw new Exception("Failed to insert the document into database");
-        }
+			BasicDBObject reqDocument = new BasicDBObject();
+			reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
+
+			document.put("requirements", reqDocument);
+
+			LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
+			boolean result = mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
+			if (result == false) {
+				throw new Exception("Failed to insert the document into database");
+			}
+		}
     }
     
 	private boolean updateExistingMatchedSubscriptionWithAggrObjId(String subscriptionId, int requirementId,
@@ -134,7 +130,7 @@ public class SubscriptionRepeatDbHandler {
 		JsonNode updateDocJsonNode = mapper
 				.readValue("{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
 
-		LOGGER.info("DOC JSON: " + updateDocJsonNode.toString());
+		LOGGER.info("SubscriptionId \"", subscriptionId, "\" document will be updated with following requirement update object: " + updateDocJsonNode.toString());
 
 		JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
 		try {
@@ -146,10 +142,9 @@ public class SubscriptionRepeatDbHandler {
 					+ requirementId);
 			return false;
 		}
-		System.out.println("EEEEE: " + mongoDbHandler.find(dataBaseName, collectionName, subscriptionQuery).toString());
 		return true;
 	}
-//    }
+
     
 	public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, int requirementId, String aggrObjId) {
 		
@@ -158,7 +153,7 @@ public class SubscriptionRepeatDbHandler {
 		List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName, subscriptionQuery);
 		if (objArray != null && !objArray.isEmpty()) {
 			JsonNode jNode = null;
-			LOGGER.debug("Making AggrObjId checks on Document: " + objArray.get(0));
+			LOGGER.debug("Making AggrObjId checks on SubscriptionId document: " + objArray.get(0));
 			try {
 				jNode = mapper.readTree(objArray.get(0));
 			} catch (Exception e) {
@@ -166,10 +161,9 @@ public class SubscriptionRepeatDbHandler {
 				e.printStackTrace();
 			}
 			if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
-				LOGGER.debug("SubscriptionId exist in document. Checking if AggrObjId has matched.");
+				LOGGER.debug("SubscriptionId \"" , subscriptionId , "\" , exist in document. Checking if AggrObjId has matched earlier.");
 				List<String> listAggrObjIds = null;
-				LOGGER.debug("JSON NODE:" + jNode.get("requirements"));
-				LOGGER.debug("JSON NODE Req ID:" + requirementId + " and Requirements content:" + jNode.get("requirements").get(new Integer(requirementId).toString()));
+				LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n" + jNode.get("requirements").get(new Integer(requirementId).toString()));
 				try {
 					ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
 					});
@@ -186,8 +180,6 @@ public class SubscriptionRepeatDbHandler {
 						LOGGER.info("Subscription has matched aggrObjId already: " + aggrObjId);
 						return true;
 					}
-					
-					
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage());
 					e.printStackTrace();

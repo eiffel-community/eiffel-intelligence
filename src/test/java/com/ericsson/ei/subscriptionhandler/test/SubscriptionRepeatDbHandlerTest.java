@@ -150,12 +150,12 @@ public class SubscriptionRepeatDbHandlerTest {
     	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
     	
     	String actual = dbResult.get("requirements").toString();
-    	String expected = "\"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]";
+    	String expected = "{ \"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]}";
     	
     	
     	String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
     	boolean result = true;
-    	if (expected == actual) {
+    	if (!expected.equals(actual)) {
     		result = false;
         	log.error(msg);
     	}

@@ -83,36 +83,14 @@ public class TrafficGeneratedTest extends FlowTestBase {
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
 
-    static ConnectionFactory cf;
-    static Connection conn;
-    private static String jsonFileContent;
-    private static JsonNode parsedJson;
-    private static String jsonFilePath = "src/test/resources/test_events_MP.json";
-    static private final String inputFilePath = "src/test/resources/aggregated_document_MP.json";
+    @Mock
+    private ERQueryService erQueryService;
 
     @Value("${spring.data.mongodb.database}")
     private String database;
     @Value("${event_object_map.collection.name}")
     private String event_map;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        System.setProperty("flow.test", "true");
-        System.setProperty("eiffel.intelligence.processedEventsCount", "0");
-        System.setProperty("eiffel.intelligence.waitListEventsCount", "0");
-        setUpMessageBus();
-        setUpEmbeddedMongo();
-    }
-
-    @PostConstruct
-    public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
-        waitlist.setMongoDbHandler(mongoDBHandler);
-    }
-
-    @Mock
-    private ERQueryService erQueryService;
-
+    
     @Before
     public void before() throws IOException {
         MockitoAnnotations.initMocks(this);

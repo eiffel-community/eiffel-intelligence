@@ -56,11 +56,11 @@ public class MongoDBHandler {
     }
 
     @Getter
-    @Value("${mongodb.host}")
+    @Value("${spring.data.mongodb.host}")
     private String host;
 
     @Getter
-    @Value("${mongodb.port}")
+    @Value("${spring.data.mongodb.port}")
     private int port;
 
     // TODO establish connection automatically when Spring instantiate this

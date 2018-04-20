@@ -48,7 +48,7 @@ public class ObjectHandler {
     private String collectionName;
 
     @Getter @Setter
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
     @Setter

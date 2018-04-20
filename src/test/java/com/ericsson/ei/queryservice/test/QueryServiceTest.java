@@ -57,7 +57,7 @@ public class QueryServiceTest {
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String aggregationDataBaseName;
 
     @Value("${missedNotificationCollectionName}")

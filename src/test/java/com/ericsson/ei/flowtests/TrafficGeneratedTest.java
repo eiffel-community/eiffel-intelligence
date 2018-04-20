@@ -116,7 +116,7 @@ public class TrafficGeneratedTest {
     private static String jsonFilePath = "src/test/resources/test_events_MP.json";
     static private final String inputFilePath = "src/test/resources/aggregated_document_MP.json";
 
-    @Value("${database.name}") private String database;
+    @Value("${spring.data.mongodb.database}") private String database;
     @Value("${event_object_map.collection.name}") private String event_map;
 
     @BeforeClass

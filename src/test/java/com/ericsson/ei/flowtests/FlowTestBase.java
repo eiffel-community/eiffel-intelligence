@@ -52,7 +52,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     @Autowired
     private RulesHandler rulesHandler;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Value("${event_object_map.collection.name}")

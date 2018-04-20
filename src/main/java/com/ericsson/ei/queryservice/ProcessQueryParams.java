@@ -58,8 +58,8 @@ public class ProcessQueryParams {
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method takes the parameters from the REST POST request body.
-     * If the Aggregated Object matches the condition, then it is returned.
+     * This method takes the parameters from the REST POST request body. If the
+     * Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray
@@ -88,15 +88,19 @@ public class ProcessQueryParams {
      */
     private static JSONArray concatArray(JSONArray firstArray, JSONArray secondArray) throws JSONException {
         JSONArray result = new JSONArray();
-        IntStream.range(0, firstArray.length()).mapToObj(firstArray::get).forEach(result::put);
-        IntStream.range(0, secondArray.length()).mapToObj(secondArray::get).forEach(result::put);
+        JSONArray[] inputs = new JSONArray[] { firstArray, secondArray };
+        for (JSONArray input : inputs) {
+            for (int i = 0; i < input.length(); i++) {
+                result.put(input.get(i));
+            }
+        }
+
         return result;
     }
 
     /**
-     * This method takes the parameters from the REST GET request query.
-     * If the Aggregated Object matches the condition, then
-     * it is returned.
+     * This method takes the parameters from the REST GET request query. If the
+     * Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray
@@ -120,15 +124,17 @@ public class ProcessQueryParams {
     }
 
     /**
-     * Process parameters to create a JsonNode request to query the
-     * Aggregated Objects.
+     * Process parameters to create a JsonNode request to query the Aggregated
+     * Objects.
      *
      * @param criteria
      * @return
      */
     private JSONArray getProcessQuery(JsonNode criteria) {
-        JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
-        JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
+        JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName,
+                aggregationCollectionName);
+        JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria,
+                missedNotificationDataBaseName, missedNotificationCollectionName);
         LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         LOGGER.debug("resultMissedNotification : " + resultMissedNotification.toString());
         JSONArray result = null;

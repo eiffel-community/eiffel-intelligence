@@ -108,8 +108,15 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
@@ -124,6 +131,7 @@ public class SubscriptionHandlerTest {
 
     @AfterClass
     public static void close() {
+        mongoClient.close();
         testsFactory.shutdown();
     }
 
@@ -192,7 +200,8 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType)).thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
+                .thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
     }
@@ -209,8 +218,10 @@ public class SubscriptionHandlerTest {
         String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(REGEX, "");
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL)
-                .param("SubscriptionName", subscriptionName)).andReturn();
+        MvcResult result = mockMvc
+                .perform(
+                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -218,12 +229,14 @@ public class SubscriptionHandlerTest {
 
     private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData).get("notificationMessageKeyValues");
+
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
+                .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""),
-                        jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""),
-                                aggregatedObject).toString().replaceAll(REGEX, ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
             }
         }
         return mapNotificationMessage;

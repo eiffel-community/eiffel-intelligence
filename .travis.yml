@@ -1,16 +1,26 @@
 sudo: required
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 
 language: java
-
-services: 
-  - mongodb
-  - rabbitmq
 
 jdk:
   - oraclejdk8
   
 before_install:
+  - uname -a
   - chmod +x pom.xml
   
 script:
-  - mvn clean install
+# since we run parallel tests using embedded mongodb in fresh environment all tests run first in parallel 
+# will try to download the embedded mongo to this travis instance but the late ones will fail to write.
+# We will therefore run one test using mongodb first that will download the mongo instance and
+# then the rest of the test that will no longer need to download the embedded mongo since it will exist.
+#
+# It is also importan that the first test to be run is a Spring Boot Test since spring boot also downloads
+# another version of embedded mongo db so all Spring Boot tests will end up in a race condition also
+  -  mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test
+  -  mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test
+ 

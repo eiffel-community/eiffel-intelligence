@@ -16,19 +16,24 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,7 +45,8 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
+@SpringBootTest(classes = App.class)
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
@@ -57,6 +63,7 @@ public class FlowTest extends FlowTestBase {
 
     @Before
     public void before() throws IOException {
+        MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
         final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
@@ -65,22 +72,22 @@ public class FlowTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
-            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
     @Override
-    String setRulesFilePath() {
+    String getRulesFilePath() {
         return RULES_FILE_PATH;
     }
 
     @Override
-    String setEventsFilePath() {
+    String getEventsFilePath() {
         return EVENTS_FILE_PATH;
     }
 
     @Override
-    List<String> setEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
@@ -97,9 +104,10 @@ public class FlowTest extends FlowTestBase {
     }
 
     @Override
-    Map<String, String> setCheckInfo() {
-        Map<String, String> checkInfo = new HashMap<>();
-        checkInfo.put(AGGREGATED_OBJECT_ID, AGGREGATED_OBJECT_FILE_PATH);
-        return checkInfo;
+    Map<String, JsonNode> getCheckData() throws IOException {
+        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+        Map<String, JsonNode> checkData = new HashMap<>();
+        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+        return checkData;
     }
 }

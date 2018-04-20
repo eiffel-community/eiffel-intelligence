@@ -39,51 +39,51 @@ import java.util.List;
 @Component
 public class WaitListWorker {
 
-	@Autowired
-	private WaitListStorageHandler waitListStorageHandler;
+    @Autowired
+    private WaitListStorageHandler waitListStorageHandler;
 
-	@Autowired
-	private RmqHandler rmqHandler;
+    @Autowired
+    private RmqHandler rmqHandler;
 
-	@Autowired
-	private RulesHandler rulesHandler;
+    @Autowired
+    private RulesHandler rulesHandler;
 
-	@Autowired
-	private JmesPathInterface jmesPathInterface;
+    @Autowired
+    private JmesPathInterface jmesPathInterface;
 
-	@Autowired
-	private MatchIdRulesHandler matchIdRulesHandler;
+    @Autowired
+    private MatchIdRulesHandler matchIdRulesHandler;
 
-	static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
-	@Bean
-	public TaskScheduler taskScheduler() {
-		return new ConcurrentTaskScheduler();
-	}
+    @Bean
+    public TaskScheduler taskScheduler() {
+        return new ConcurrentTaskScheduler();
+    }
 
-	@Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
-	public void run() {
-		RulesObject rulesObject;
-		List<String> documents = waitListStorageHandler.getWaitList();
-		for (String document : documents) {
-			DBObject dbObject = (DBObject) JSON.parse(document);
-			String event = dbObject.get("Event").toString();
-			rulesObject = rulesHandler.getRulesForEvent(event);
-			String idRule = rulesObject.getIdentifyRules();
+    @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
+    public void run() {
+        RulesObject rulesObject;
+        List<String> documents = waitListStorageHandler.getWaitList();
+        for (String document : documents) {
+            DBObject dbObject = (DBObject) JSON.parse(document);
+            String event = dbObject.get("Event").toString();
+            rulesObject = rulesHandler.getRulesForEvent(event);
+            String idRule = rulesObject.getIdentifyRules();
 
-			if (idRule != null && !idRule.isEmpty()) {
-				JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-				if (ids.isArray()) {
-					for (final JsonNode idJsonObj : ids) {
-						Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
-								idJsonObj.textValue());
-						if (objects.size() > 0) {
-							rmqHandler.publishObjectToWaitlistQueue(event);
-							waitListStorageHandler.dropDocumentFromWaitList(document);
-						}
-					}
-				}
-			}
-		}
-	}
+            if (idRule != null && !idRule.isEmpty()) {
+                JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+                if (ids.isArray()) {
+                    for (final JsonNode idJsonObj : ids) {
+                        Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
+                                idJsonObj.textValue());
+                        if (objects.size() > 0) {
+                            rmqHandler.publishObjectToWaitlistQueue(event);
+                            waitListStorageHandler.dropDocumentFromWaitList(document);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

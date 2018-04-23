@@ -205,7 +205,7 @@
             
             <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
-            <plugin>
+               <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
                 <version>${plugin-version}</version>

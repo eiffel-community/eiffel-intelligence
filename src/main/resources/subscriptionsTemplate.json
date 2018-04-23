@@ -2,7 +2,7 @@
     "notificationMessage" : "sample@ericsson.com",
     "notificationMeta" : "http://127.0.0.1:3000/ei/test_subscription_rest",
     "notificationType" : "REST_POST",
-    "repeat" : false,
+    "repeat" : false,    
     "requirements" : [ 
         {
             "conditions" : [ 
@@ -25,7 +25,8 @@
             ]
         }
     ],
-    "subscriptionName" : "Subscription_Test"
+    "subscriptionName" : "Subscription_Test",
+    "userName" : "ABC"
 },
 {
     "notificationMessage" : "sample2@ericsson.com",
@@ -54,5 +55,6 @@
             ]
         }
     ],
-    "subscriptionName" : "Subscription_Test_Modify"
+    "subscriptionName" : "Subscription_Test_Modify",
+    "userName" : "ABC"
 }]

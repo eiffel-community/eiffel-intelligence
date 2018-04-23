@@ -38,6 +38,8 @@ public class SubscriptionService implements ISubscriptionService {
     @Value("${spring.application.name}") private String SpringApplicationName;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
+    private static final String USER_NAME = "{'userName':'%s'}";
+    
     @Autowired
     ISubscriptionRepository subscriptionRepository;
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
@@ -56,9 +58,17 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     @Override
-    public Subscription getSubscription(String name) throws SubscriptionNotFoundException {
+    public Subscription getSubscription(String name, String userName) throws SubscriptionNotFoundException {
         
         String query = String.format(SUBSCRIPTION_NAME, name);
+
+        if(!userName.isEmpty()){  
+            String queryUser = String.format(USER_NAME, userName);      
+            String operatorAnd = "{$and:[%s]}";
+            String queryTemp = query+ "," + queryUser;            
+            query = String.format(operatorAnd, queryTemp);            
+        }
+        
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
@@ -67,14 +77,11 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
                 //return mapper.readValue(input, Subscription.class);
-
-
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
@@ -83,8 +90,15 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     @Override
-    public boolean doSubscriptionExist(String name) {
+    public boolean doSubscriptionExist(String name, String userName) {
         String query = String.format(SUBSCRIPTION_NAME, name);
+
+        if(!userName.isEmpty()){  
+            String queryUser = String.format(USER_NAME, userName);      
+            String operatorAnd = "{$and:[%s]}";
+            String queryTemp = query+ "," + queryUser;            
+            query = String.format(operatorAnd, queryTemp);            
+        }        
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         if (list.isEmpty()) {
             return false;
@@ -93,11 +107,20 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     @Override
-    public boolean modifySubscription(Subscription subscription, String subscriptionName) {
+    public boolean modifySubscription(Subscription subscription, String subscriptionName, String userName) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String StringSubscription = mapper.writeValueAsString(subscription);
             String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, subscriptionName);
+ 
+            if(!userName.isEmpty()){  
+                String queryUser = String.format(USER_NAME, userName);      
+                String operatorAnd = "{$and:[%s]}";
+                String queryTemp = subscriptionNameQuery+ "," + queryUser;            
+                subscriptionNameQuery = String.format(operatorAnd, queryTemp);            
+            }
+            
+            
             return subscriptionRepository.modifySubscription(subscriptionNameQuery, StringSubscription);
         } catch (JsonProcessingException e) {
             return false;
@@ -105,14 +128,22 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     @Override
-    public boolean deleteSubscription(String name) {
+    public boolean deleteSubscription(String name, String userName) {
         String query = String.format(SUBSCRIPTION_NAME, name);
+        if(!userName.isEmpty()){  
+            String queryUser = String.format(USER_NAME, userName);      
+            String operatorAnd = "{$and:[%s]}";
+            String queryTemp = query+ "," + queryUser;            
+            query = String.format(operatorAnd, queryTemp);            
+        }
+        
         return subscriptionRepository.deleteSubscription(query);
     }
     
     @Override
     public List<Subscription> getSubscription() throws SubscriptionNotFoundException {
         String query = "{}";
+        
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<Subscription>();
         ObjectMapper mapper = new ObjectMapper();
@@ -130,8 +161,7 @@ public class SubscriptionService implements ISubscriptionService {
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOG.error("malformed json string");
-            }
-            
+            }            
         }
         return subscriptions;
     }

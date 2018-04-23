@@ -18,7 +18,7 @@ public interface LoginController {
 
 
     /**
-     * This call for login user to EI
+     * This call for getting logged in user
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)

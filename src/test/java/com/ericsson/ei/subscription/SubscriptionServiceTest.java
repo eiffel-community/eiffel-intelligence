@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -52,7 +53,9 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest(classes = {
+        App.class
+    })
 public class SubscriptionServiceTest {
 
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
@@ -80,7 +83,7 @@ public class SubscriptionServiceTest {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("mongodb.port", port);
+            System.setProperty("spring.data.mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();

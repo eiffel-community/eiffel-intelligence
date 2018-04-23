@@ -17,9 +17,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.IRuleCheckService;
 import com.mongodb.MongoClient;
@@ -28,7 +30,9 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class        
+    })
 public class TestRulesService {
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";
@@ -51,7 +55,7 @@ public class TestRulesService {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("mongodb.port", port);
+            System.setProperty("spring.data.mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();

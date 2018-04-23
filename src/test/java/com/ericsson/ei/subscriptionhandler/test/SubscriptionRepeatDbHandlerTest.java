@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -42,7 +43,9 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest(classes = {
+        App.class
+    })
 public class SubscriptionRepeatDbHandlerTest {
 
 	

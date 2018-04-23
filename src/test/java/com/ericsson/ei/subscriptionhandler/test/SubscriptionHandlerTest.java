@@ -62,6 +62,7 @@ import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -84,7 +85,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class
+    })
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
@@ -149,7 +152,7 @@ public class SubscriptionHandlerTest {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
         String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("mongodb.port", port);
+        System.setProperty("spring.data.mongodb.port", port);
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");

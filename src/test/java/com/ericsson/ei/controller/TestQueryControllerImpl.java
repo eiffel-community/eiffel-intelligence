@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.controller;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.qpid.util.FileUtils;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,7 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class, 
+        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+    })
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";

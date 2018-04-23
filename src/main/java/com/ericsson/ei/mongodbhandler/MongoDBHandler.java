@@ -49,7 +49,8 @@ import lombok.Getter;
 @Component
 public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
-
+    
+    @Getter
     MongoClient mongoClient;
 
     public void setMongoClient(MongoClient mongoClient) {

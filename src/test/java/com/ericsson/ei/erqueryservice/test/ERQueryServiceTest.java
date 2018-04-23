@@ -87,10 +87,10 @@ public class ERQueryServiceTest {
     Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class responseType) {
         return invocation -> {
-            URI arg0 = invocation.getArgumentAt(0, URI.class);
+            URI arg0 = invocation.getArgument(0);
             String expectedUri = buildUri();
             assertEquals(expectedUri, arg0.toString());
-            HttpEntity arg2 = invocation.getArgumentAt(2, HttpEntity.class);
+            HttpEntity arg2 = invocation.getArgument(2);
             SearchParameters body = (SearchParameters) arg2.getBody();
             assertBody(body);
             boolean firstStop = true;

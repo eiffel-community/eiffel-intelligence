@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +13,29 @@
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
+import static org.junit.Assert.assertEquals;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -92,6 +112,14 @@ public class SubscriptionHandlerTest {
     @Autowired
     private JmesPathInterface jmespath;
 
+    private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
+    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionObjectForEmailTest.json";
+    private static String subscriptionRepeatFlagTrueData;
+    private static String subscriptionDataEmail;
+
+
+    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+
     @Autowired
     private InformSubscription subscription;
 
@@ -104,6 +132,13 @@ public class SubscriptionHandlerTest {
     @MockBean
     private SpringRestTemplate springRestTemplate;
 
+    static String host = "localhost";
+    static int port = 27017;
+    private static String dataBaseName = "MissedNotification";
+    private static String collectionName = "Notification";
+    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
+
     @Autowired
     private SendMail sendMail;
 
@@ -113,8 +148,16 @@ public class SubscriptionHandlerTest {
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
         testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
         mongoClient = testsFactory.newMongo();
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
+        try {
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+            subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
+            subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
+        } catch (Exception e) {
+            log.info(e.getMessage(), e);
+        }
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }
@@ -127,7 +170,13 @@ public class SubscriptionHandlerTest {
 
     @AfterClass
     public static void close() {
+        mongoClient.close();
         testsFactory.shutdown();
+    }
+    
+    @Before
+    public void beforeTests() {
+    	mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
 
     @PostConstruct
@@ -139,7 +188,7 @@ public class SubscriptionHandlerTest {
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson;
+        JsonNode subscriptionJson = null;
         ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
@@ -149,8 +198,54 @@ public class SubscriptionHandlerTest {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator);
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson);
         assertEquals(output, true);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagFalseTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        Iterator<JsonNode> requirementIterator = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, false);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagTrueTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        ArrayNode requirementNode2 = null;
+        Iterator<JsonNode> requirementIterator = null;
+        Iterator<JsonNode> requirementIterator2 = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementNode2 = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+            requirementIterator2 = requirementNode2.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, true);
     }
 
     @Test
@@ -195,7 +290,8 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType)).thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
+                .thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
     }
@@ -212,8 +308,10 @@ public class SubscriptionHandlerTest {
         String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(REGEX, "");
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL)
-                .param("SubscriptionName", subscriptionName)).andReturn();
+        MvcResult result = mockMvc
+                .perform(
+                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -221,12 +319,14 @@ public class SubscriptionHandlerTest {
 
     private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData).get("notificationMessageKeyValues");
+
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
+                .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""),
-                        jmespath.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""),
-                                aggregatedObject).toString().replaceAll(REGEX, ""));
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
             }
         }
         return mapNotificationMessage;

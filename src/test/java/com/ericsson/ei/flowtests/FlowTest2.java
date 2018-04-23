@@ -16,11 +16,14 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.App;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest2.class })
+@SpringBootTest(classes = App.class)
 public class FlowTest2 extends FlowTestBase {
 
     private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";

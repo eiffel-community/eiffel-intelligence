@@ -33,12 +33,16 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.handlers.test.ObjectHandlerTest;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,8 +52,10 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = App.class)
 public class SubscriptionServiceTest {
+
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
     String subscriptionName;
     String userName = "ABC";
@@ -62,7 +68,7 @@ public class SubscriptionServiceTest {
 
     private static MongodForTestsFactory testsFactory;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
     private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
@@ -73,13 +79,17 @@ public class SubscriptionServiceTest {
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
-
-        String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
-        jsonArray_du = new JSONArray(readFileToString_du);
-        mongoClient = testsFactory.newMongo();
 
         ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -88,14 +98,17 @@ public class SubscriptionServiceTest {
     }
 
     @PostConstruct
-    public void initMocks() {
+    public void init() {
         mongoDBHandler.setMongoClient(mongoClient);
     }
 
     @AfterClass
     public static void tearDownMongoDB() throws Exception {
-        testsFactory.shutdown();
-        mongoClient.close();
+        if (mongoClient != null)
+            mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+
     }
 
     @Test
@@ -131,8 +144,8 @@ public class SubscriptionServiceTest {
             // the subscription(subscriptionName=Subscription_Test_Modify)
             subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
             String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
-            String expectedModifiedUserName = subscription2.getUserName();
-            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName, userName);
+
+            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
 
             // test update done successfully
             assertEquals(addSubscription, true);

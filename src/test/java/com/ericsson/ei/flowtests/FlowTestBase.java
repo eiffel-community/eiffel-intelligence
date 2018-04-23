@@ -14,8 +14,10 @@
 package com.ericsson.ei.flowtests;
 
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
@@ -23,20 +25,29 @@ import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.theories.Theories;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public abstract class FlowTestBase extends FlowTestConfigs {
+import javax.annotation.PostConstruct;
+
+public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowTestBase.class);
 
@@ -49,6 +60,12 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     @Autowired
     private RulesHandler rulesHandler;
 
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @Autowired
+    private WaitListStorageHandler waitlist;
+
     @Value("${database.name}")
     private String database;
 
@@ -57,9 +74,43 @@ public abstract class FlowTestBase extends FlowTestConfigs {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    
+    private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
+
+    @Override
+    public void beforeTestClass(TestContext testContext) throws Exception {
+        System.setProperty("flow.test", "true");
+        createFlowTestConfigs();
+        getFlowTestConfigs().init();
+    }
+
+    @PostConstruct
+    public void init() throws Exception {
+        mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
+        waitlist.setMongoDbHandler(mongoDBHandler);
+
+    }
+
+    protected FlowTestConfigs getFlowTestConfigs() {
+        return configsMap.get(getClasName());
+    }
+
+    private void createFlowTestConfigs() {
+        FlowTestConfigs newConfigs = new FlowTestConfigs();
+        String className = getClasName();
+        configsMap.put(className, newConfigs);
+    }
+
+    private String getClasName() {
+        return this.getClass().getName();
+    }
+
+    private void cleanFlowTestConfigs() {
+        configsMap.remove(getClasName());
+    }
+
     // setFirstEventWaitTime: variable to set the wait time after publishing the
-    // first event. So any thread looking for the events don't do it before actually
+    // first event. So any thread looking for the events don't do it before
+    // actually
     // populating events in the database
     private int firstEventWaitTime = 0;
 
@@ -71,9 +122,9 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     public void flowTest() {
         try {
             String queueName = rmqHandler.getQueueName();
-            Channel channel = conn.createChannel();
+            Channel channel = getFlowTestConfigs().getConn().createChannel();
             String exchangeName = "ei-poc-4";
-            createExchange(exchangeName, queueName);
+            getFlowTestConfigs().createExchange(exchangeName, queueName);
 
             rulesHandler.setRulePath(getRulesFilePath());
 
@@ -102,6 +153,9 @@ public abstract class FlowTestBase extends FlowTestConfigs {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
+
+        getFlowTestConfigs().tearDown();
+        cleanFlowTestConfigs();
     }
 
     /**
@@ -120,8 +174,9 @@ public abstract class FlowTestBase extends FlowTestConfigs {
     abstract List<String> getEventNamesToSend();
 
     /**
-     * @return map, where key - _id of expected aggregated object value - expected
-     *         aggregated object
+     * @return map, where key - _id of expected aggregated object value -
+     *         expected aggregated object
+
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 
@@ -132,7 +187,7 @@ public abstract class FlowTestBase extends FlowTestConfigs {
 
     // count documents that were processed
     private long countProcessedEvents(String database, String collection) {
-        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoDatabase db = getFlowTestConfigs().getMongoClient().getDatabase(database);
         MongoCollection table = db.getCollection(collection);
         return table.count();
     }

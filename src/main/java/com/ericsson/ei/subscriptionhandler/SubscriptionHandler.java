@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,8 @@ import java.util.List;
 /**
  * This class is responsible to take a aggregatedObject and match it with all
  * the Subscription Object, to check ALL Conditions/requirement for
- * notification.  (AND between conditions in requirements, "OR" between requirements with conditions)
+ * notification. (AND between conditions in requirements, "OR" between
+ * requirements with conditions)
  *
  * @author xjibbal
  */
@@ -53,8 +56,9 @@ public class SubscriptionHandler {
     @Autowired
     private InformSubscription informSubscription;
 
+    @Setter
     @Autowired
-    private MongoDBHandler handler;
+    private MongoDBHandler mongoDBHandler;
 
     @Autowired
     private RunSubscription runSubscription;
@@ -71,7 +75,8 @@ public class SubscriptionHandler {
      */
     public void checkSubscriptionForObject(final String aggregatedObject) {
         Thread subscriptionThread = new Thread(() -> {
-            List<String> subscriptions = handler.getAllDocuments(subscriptionDataBaseName, subscriptionCollectionName);
+            List<String> subscriptions = mongoDBHandler.getAllDocuments(subscriptionDataBaseName,
+                    subscriptionCollectionName);
             subscriptions.forEach(subscription -> extractConditions(aggregatedObject, subscription));
         });
         subscriptionThread.setName("SubscriptionHandler");
@@ -97,9 +102,9 @@ public class SubscriptionHandler {
             LOGGER.error(e.getMessage(), e);
         }
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        LOGGER.debug("RequirementNode : " + requirementNode.toString());
+        LOGGER.debug("Requirements : " + requirementNode.toString());
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator)) {
+        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson)) {
             LOGGER.debug("The subscription conditions match for the aggregatedObject");
             informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
         }
@@ -113,7 +118,7 @@ public class SubscriptionHandler {
     public void print() {
         LOGGER.debug("SubscriptionDataBaseName : " + subscriptionDataBaseName);
         LOGGER.debug("SubscriptionCollectionName : " + subscriptionCollectionName);
-        LOGGER.debug("MongoDBHandler object : " + handler);
+        LOGGER.debug("MongoDBHandler object : " + mongoDBHandler);
         LOGGER.debug("JmesPathInterface : " + jmespath);
 
     }

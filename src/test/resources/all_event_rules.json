@@ -1,0 +1,321 @@
+[  
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelActivityCanceledEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelActivityFinishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelActivityStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelActivityTriggeredEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelAlertAcknowledgedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelAlertCeasedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelAlertRaisedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelAnnouncementPublishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelArtifactCreatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelArtifactDeployedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelArtifactPublishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelArtifactReusedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelCompositionDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },  
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelConfidenceLevelModifiedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelEnvironmentDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelFlowContextDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelIssueVerifiedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },{
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceAllocatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceDeployedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceDiscontinuedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceReturnedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelServiceStoppedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelSourceChangeCreatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelSourceChangeSubmittedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestCaseCanceledEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestCaseFinishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestCaseStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestCaseTriggeredEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestExecutionRecipeCollectionCreatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestSuiteFinishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  },
+  {
+    "TemplateName":"Event_copy",
+    "Type":"EiffelTestSuiteStartedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@"
+  }
+]

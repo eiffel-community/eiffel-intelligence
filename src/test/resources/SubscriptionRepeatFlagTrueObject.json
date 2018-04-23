@@ -1,16 +1,10 @@
 {
         "subscriptionName": "Subscription_1",
-        "repeat": false,
+        "repeat": true,
         "created": "data-time",
-        "notificationType": "MAIL",
-        "notificationMeta": "moh.saif@ericsson.com, msdjah.df@sdc.com, abc.phy@yahoo.com",
-        "restPostBodyMediaType": "application/json",
-        "notificationMessageKeyValues" : [
-          {
-            "formkey" : "",
-            "formvalue" : "@"
-          }
-        ],
+        "notificationType": "REST_POST",
+        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+        "notificationMessage": "@",
         "requirements": [
             {
                 "type": "ARTIFACT_1",

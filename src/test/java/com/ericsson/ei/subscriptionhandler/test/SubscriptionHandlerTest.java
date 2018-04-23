@@ -134,18 +134,20 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
         try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("mongodb.port", port);
+          
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
             subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
-        }
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }       
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }

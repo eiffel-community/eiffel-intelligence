@@ -13,6 +13,18 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.rabbitmq.client.Channel;
+
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,17 +45,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.rabbitmq.client.Channel;
-
+/**
+ * @author evasiba
+ *
+ */
 public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowTestBase.class);
@@ -115,6 +120,17 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         firstEventWaitTime = value;
     }
 
+    /**
+     * Override this if you have more events that will be registered to event to
+     * object map but it is not visible in the test. For example form upstream
+     * or downstream from event repository
+     * 
+     * @return
+     */
+    protected int extraEventsCount() {
+        return 0;
+    }
+
     @Test
     public void flowTest() {
         try {
@@ -127,7 +143,8 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-            int eventsCount = eventNames.size();
+            int eventsCount = eventNames.size() + extraEventsCount();
+
             boolean alreadyExecuted = false;
             for (String eventName : eventNames) {
                 JsonNode eventJson = parsedJSON.get(eventName);

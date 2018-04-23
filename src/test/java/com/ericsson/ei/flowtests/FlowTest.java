@@ -57,7 +57,7 @@ public class FlowTest extends FlowTestBase {
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalComposition.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
     @Autowired
@@ -89,6 +89,11 @@ public class FlowTest extends FlowTestBase {
     @Override
     String getEventsFilePath() {
         return EVENTS_FILE_PATH;
+    }
+
+    @Override
+    protected int extraEventsCount() {
+        return 8;
     }
 
     @Override

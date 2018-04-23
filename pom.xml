@@ -201,7 +201,60 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>                           
+            </plugin>
+                        
+      <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+                from raml -->
+            <plugin>
+                <groupId>com.phoenixnap.oss</groupId>
+                <artifactId>springmvc-raml-plugin</artifactId>
+                <version>${plugin-version}</version>
+                <configuration>
+                    <!-- path to raml file -->
+                    <ramlPath>${raml-path}</ramlPath>
+                    <!-- output of generated code -->
+                    <outputRelativePath>${output-relative-path}</outputRelativePath>
+                    <addTimestampFolder>false</addTimestampFolder>
+                    <!-- package for generated sources -->
+                    <basePackage>${base-package}</basePackage>
+                    <baseUri>/</baseUri>
+                    <seperateMethodsByContentType>false</seperateMethodsByContentType>
+                    <useJackson1xCompatibility>false</useJackson1xCompatibility>
+                    <rule>com.phoenixnap.oss.ramlapisync.generation.rules.Spring4ControllerInterfaceRule</rule>
+                    <generationConfig>
+                        <useCommonsLang3>true</useCommonsLang3>
+                    </generationConfig>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-springmvc-controllers</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-springmvc-endpoints</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>      
+            
+            <!-- required for adding generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!-- where to find the generated sources -->
+                                <source>${output-relative-path}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>                         
                         
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.qpid.util.FileUtils;
 import org.json.JSONArray;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.SocketUtils;
 
 import java.io.File;
 
@@ -60,6 +62,12 @@ public class TestQueryControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
+    
+    @BeforeClass
+    public static void init() {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("spring.data.mongodb.port", "" + port);
+    }
 
     @Before
     public void setUp() {

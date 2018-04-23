@@ -130,7 +130,7 @@ public class SubscriptionRepeatDbHandler {
 		JsonNode updateDocJsonNode = mapper
 				.readValue("{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
 
-		LOGGER.info("SubscriptionId \"", subscriptionId, "\" document will be updated with following requirement update object: " + updateDocJsonNode.toString());
+		LOGGER.debug("SubscriptionId \"", subscriptionId, "\" document will be updated with following requirement update object: " + updateDocJsonNode.toString());
 
 		JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
 		try {

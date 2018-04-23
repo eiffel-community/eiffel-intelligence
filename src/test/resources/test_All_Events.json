@@ -1,0 +1,1034 @@
+{
+  "EiffelActivityCanceledEvent": {
+    "meta": {
+    "type": "EiffelActivityCanceledEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+  },
+  "data": {
+    "reason": "Made irrelevant by newly scheduled execution."
+  },
+  "links": [
+    {
+      "type": "ACTIVITY_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+	]
+
+  },
+  "EiffelActivityStartedEvent": {
+    "meta": {
+    "type": "EiffelActivityStartedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+  },
+  "data": {
+    "executionUri": "https://my.jenkins.host/myJob/43",
+    "liveLogs": [
+      {
+       "name": "My build log",
+       "uri": "file:///tmp/logs/data.log"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "ACTIVITY_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "PREVIOUS_ACTIVITY_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]
+  },
+  "EiffelActivityFinishedEvent": {
+    "meta": {
+    "type": "EiffelActivityFinishedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+  },
+  "data": {
+    "outcome": {
+      "conclusion": "TIMED_OUT",
+      "description": "Compilation timed out."
+    },
+    "persistentLogs": [
+      {
+       "name": "firstLog",
+       "uri": "http://myHost.com/firstLog"
+      },
+      {
+       "name": "otherLog",
+       "uri": "isbn:0-486-27557-4"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "ACTIVITY_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ]
+  },
+  "EiffelActivityTriggeredEvent": {
+   "meta": {
+    "id": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c4",
+    "type": "EiffelActivityTriggeredEvent",
+    "version": "1.1.0",
+    "time": 1234567890
+  },
+  "data": {
+    "name": "Component X Build",
+    "categories": [
+      "Component Build"
+    ],
+    "triggers": [
+      {
+        "type": "MANUAL",
+        "description": "Triggered by EiffelArtifactPublishedEvent"
+      }
+    ],
+    "executionType": "AUTOMATED"
+  },
+  "links": [
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelAnnouncementPublishedEvent": {
+   "meta": {
+    "type": "EiffelAnnouncementPublishedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+  },
+  "data": {
+    "heading": "Serious incident",
+    "body": "The third floor of the office is being flooded by out-of-control cookies.",
+    "uri": "http://cookie-report.com",
+    "severity": "CRITICAL"
+  },
+  "links": [
+    {
+      "type": "MODIFIED_ANNOUNCEMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ] 
+  },
+  "": {
+    
+  },
+  "EiffelArtifactCreatedEvent": {
+   "meta": {
+    "type": "EiffelArtifactCreatedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee6",
+    "source": {
+      "serializer": {
+        "groupId": "com.mycompany.tools",
+        "artifactId": "eiffel-serializer",
+        "version": "1.0.3"
+      }
+    },
+    "ids": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0",
+    "tags": [
+      "fast-track",
+      "customer-a"
+    ]
+  },
+  "data": {
+    "gav": {
+      "groupId": "com.mycompany.myproduct",
+      "artifactId": "artifact-name",
+      "version": "2.1.7"
+    },
+    "fileInformation": [
+      {
+        "classifier": "debug",
+        "extension": "jar"
+      },
+      {
+        "classifier": "test",
+        "extension": ""
+      },
+      {
+        "classifier": "",
+        "extension": "exe"
+      }
+    ],
+    "buildCommand": "/my/build/command with arguments",
+    "name": "Full verbose artifact name"
+  },
+  "links": [
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "PREVIOUS_VERSION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "COMPOSITION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "ENVIRONMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    }
+  ] 
+  },
+  "EiffelArtifactPublishedEvent": {
+   "meta": {
+    "type": "EiffelArtifactPublishedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee7",
+    "security": {
+      "sdm": {
+        "authorIdentity": "MyCompany/JohnDoe",
+        "encryptedDigest": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+      }
+    }
+  },
+  "data": {
+    "locations": [
+      {
+        "type": "ARTIFACTORY",
+        "uri": "https://one.place"
+      },
+      {
+        "type": "PLAIN",
+        "uri": "http://another.com"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ] 
+  },
+  "EiffelArtifactReusedEvent": {
+   "meta": {
+    "type": "EiffelArtifactReusedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee8",
+    "source": {
+      "domainId": "example.domain",
+      "serializer": {
+        "groupId": "com.mycompany.tools",
+        "artifactId": "eiffel-serializer",
+        "version": "1.0.3"
+      }
+    },
+    "ids": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0",
+    "tags": [
+      "fast-track",
+      "customer-a"
+    ]
+  },
+  "data": {
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "REUSED_ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "COMPOSITION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    }
+  ] 
+  },
+  "EiffelCompositionDefinedEvent": {
+   "meta": {
+    "type": "EiffelCompositionDefinedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee9"
+  },
+  "data": {
+    "name": "myCompositionName",
+    "version": "42.0.7"
+  },
+  "links": [
+    {
+      "type": "ELEMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "ELEMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "ELEMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "ELEMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "PREVIOUS_VERSION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ] 
+  },
+  "EiffelConfidenceLevelModifiedEvent": {
+   "meta": {
+    "type": "EiffelConfidenceLevelModifiedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee10"
+  },
+  "data": {
+    "name": "stable",
+    "value": "SUCCESS",
+    "issuer": {
+      "name": "Gary Johnston",
+      "email": "gary.johnston@teamamerica.com",
+      "id": "garyj",
+      "group": "Team America"
+    }
+  },
+  "links": [
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "SUBJECT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "SUBJECT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SUB_CONFIDENCE_LEVEL",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    },
+    {
+      "type": "SUB_CONFIDENCE_LEVEL",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee6"
+    }
+  ] 
+  },
+  "EiffelEnvironmentDefinedEvent": {
+    "meta": {
+    "type": "EiffelEnvironmentDefinedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee11"
+  },
+  "data": {
+    "name": "John's Docker Image",
+    "version": "2.10.3",
+    "image": "johndoe/docker-whale:2.10.3"
+  },
+  "links": [
+    {
+      "type": "PREVIOUS_VERSION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelFlowContextDefinedEvent": {
+   "meta": {
+    "type": "EiffelFlowContextDefinedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee12"
+  },
+  "data": {
+    "product": "MyProduct",
+    "project": "NewImportantFeatures",
+    "program": "NewMarket",
+    "track": "CustomerXAdaptations",
+    "version": "4.3.0"
+  },
+  "links": [
+  ] 
+  },
+  "EiffelIssueVerifiedEvent": {
+   "meta": {
+    "type": "EiffelIssueVerifiedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee32"
+  },
+  "data": {
+    "issues": [
+      {
+        "type": "BUG",
+        "tracker": "JIRA",
+        "id": "JIRA-1234",
+        "uri": "http://jira.company.com/browse/JIRA-1234",
+        "value": "SUCCESS"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "VERIFICATION_BASIS",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "IUT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "ENVIRONMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+  ] 
+  },
+  "EiffelSourceChangeCreatedEvent": {
+   "meta": {
+    "type": "EiffelSourceChangeCreatedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee13"
+  },
+  "data": {
+    "gitIdentifier": {
+      "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+      "branch": "myBranch",
+      "repoName": "myPrivateRepo",
+      "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+    },
+    "author": {
+      "name": "John Doe",
+      "email": "john.doe@company.com",
+      "id": "johndoe",
+      "group": "Team Gophers"
+    },
+    "change": {
+      "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+      "insertions": 173,
+      "deletions": 79,
+      "tracker": "GitHub",
+      "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+      "id": "42"
+    },
+    "issues": [
+      {
+        "type": "BUG",
+        "tracker": "JIRA",
+        "id": "JIRA-1234",
+        "uri": "http://jira.company.com/browse/JIRA-1234",
+        "transition": "RESOLVED"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "BASE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "PREVIOUS_VERSION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+  ] 
+  },
+  "EiffelSourceChangeSubmittedEvent": {
+   "meta": {
+    "type": "EiffelSourceChangeSubmittedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee14"
+  },
+  "data": {
+    "svnIdentifier": {
+      "revision": 42,
+      "directory": "trunk",
+      "repoName": "Mainline",
+      "repoUri": "svn://repohost/mainline"
+    },
+    "submitter": {
+      "name": "Jane Doe",
+      "email": "jane.doe@company.com",
+      "id": "j_doe",
+      "group": "Team Wombats"
+    }
+  },
+  "links": [
+    {
+      "type": "CHANGE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "PREVIOUS_VERSION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ] 
+  },
+  "EiffelTestCaseCanceledEvent": {
+   "meta": {
+    "type": "EiffelTestCaseCanceledEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee15"
+  },
+  "data": {
+    "reason": "Skipping this test execution due to new IUT version becoming available."
+  },
+  "links": [
+    {
+      "type": "CAUSE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "TEST_CASE_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ] 
+  },
+  "EiffelTestCaseFinishedEvent": {
+   "meta": {
+    "type": "EiffelTestCaseFinishedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee16"
+  },
+  "data": {
+    "outcome": {
+      "verdict": "PASSED",
+      "conclusion": "SUCCESSFUL",
+      "description": "Accidentally started a fire in the lab during execution.",
+      "metrics": [
+        {
+          "name": "myMetric",
+          "value": 5
+        },
+        {
+          "name": "throughput",
+          "value": 8.325
+        },
+        {
+          "name": "somethingElse",
+          "value": "hello"
+        }
+      ]
+    },
+    "persistentLogs": [
+      {
+       "name": "firstLog",
+       "uri": "http://myHost.com/firstLog"
+      },
+      {
+       "name": "otherLog",
+       "uri": "isbn:0-486-27557-4"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "TEST_CASE_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelTestCaseStartedEvent": {
+   "meta": {
+    "type": "EiffelTestCaseStartedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee17"
+  },
+  "data": {
+    "executor": "My Test Framework",
+    "liveLogs": [
+      {
+       "name": "My test log",
+       "uri": "file:///tmp/logs/data.log"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "ENVIRONMENT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelTestCaseTriggeredEvent": {
+   "meta": {
+    "type": "EiffelTestCaseTriggeredEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee18",
+    "security": {
+      "sdm": {
+        "authorIdentity": "My Test Management System",
+        "encryptedDigest": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+      }
+    }
+  },
+  "data": {
+    "testCase": {
+      "tracker": "My Test Management System",
+      "id": "TC-1234",
+      "version": "42",
+      "uri": "http://tm.company.com/browse/TC-1234/42"
+    },
+    "recipeId": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+    "parameters": [
+      {
+        "name": "login",
+        "value": "admin"
+      }
+    ],
+    "executionType": "AUTOMATED",
+    "triggers": [
+      {
+        "type": "TIMER",
+        "description": "Nightly test timer."
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "IUT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ] 
+  },
+  "EiffelTestExecutionRecipeCollectionCreatedEvent": {
+   "meta": {
+    "type": "EiffelTestExecutionRecipeCollectionCreatedEvent",
+    "version": "2.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee19",
+    "source": {
+      "domainId": "example.domain"
+    },
+    "idss": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"
+  },
+  "data": {
+    "selectionStrategy": {
+      "tracker": "My Test Selector",
+      "id": "TCSS-1234/5",
+      "uri": "http://tm.company.com/browse/TCSS-1234?version=5"
+    },
+    "batchesUri": "http://tm.company.com/recipeBatches/4093f621-17e1-4c7a-9d5b-22b4233f6e8b"
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelTestSuiteFinishedEvent": {
+   "meta": {
+    "type": "EiffelTestSuiteFinishedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee20"
+  },
+  "data": {
+    "outcome": {
+      "verdict": "FAILED",
+      "conclusion": "SUCCESSFUL",
+      "description": "16 test failures."
+    },
+    "persistentLogs": [
+      {
+       "name": "firstLog",
+       "uri": "http://myHost.com/firstLog"
+      },
+      {
+       "name": "otherLog",
+       "uri": "isbn:0-486-27557-4"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "TEST_SUITE_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelTestSuiteStartedEvent": {
+   "meta": {
+    "type": "EiffelTestSuiteStartedEvent",
+    "version": "1.1.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee21"
+  },
+  "data": {
+    "name": "Pre-release installation and security verification",
+    "categories": [
+      "Pre-release tests"
+    ],
+    "types": [
+      "INSTALLABILITY",
+      "SECURITY"
+    ],
+    "liveLogs": [
+      {
+       "name": "My test log",
+       "uri": "file:///tmp/logs/data.log"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }
+  ] 
+  },
+  "EiffelArtifactDeployedEvent": {
+    "meta": {
+    "type": "EiffelArtifactDeployedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee22",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "uri": "http://sample.com"
+  },
+  "links": [
+  	{
+      "type": "ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "ARTIFACT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+    
+  ]   
+    
+
+  },
+  "EiffelServiceAllocatedEvent": {
+   "meta": {
+    "type": "EiffelServiceAllocatedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee23",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+    "serviceinstance": "Sever1.domain.com",
+    "owner": "booking.system"
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+     {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    }
+  ]    
+
+  },
+  "EiffelServiceDeployedEvent": {
+   "meta": {
+    "type": "EiffelServiceDeployedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee24",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+    "servicename": "linux.server",
+    "instancename": "server1.domain.com",
+    "owner": "johndoe",
+    "deploymentType": "Canary",
+    "uri": "http://sample.com/instance/server1"
+  },
+  "links": [
+    {
+      "type": "ARTIFACT_DEPLOYED",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceDiscontinuedEvent": {
+   "meta": {
+    "type": "EiffelServiceDiscontinuedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee25",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+
+  "data": {
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceReturnedEvent": {
+   "meta": {
+    "type": "EiffelServiceReturnedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee26",
+    "source": {
+            "domainId":"domain"
+     }
+  }, 
+  "data": {   
+  },
+  "links": [
+     {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceStartedEvent": {
+   "meta": {
+    "type": "EiffelServiceStartedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee27",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {    
+    "pid": "10401"    
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelServiceStoppedEvent": {
+   "meta": {
+    "type": "EiffelServiceStoppedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee28",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {    
+  },
+  "links": [
+     {
+      "type": "CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
+    },
+    {
+      "type": "SERVICE",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
+    }
+  ]    
+
+  },
+  "EiffelAlertAcknowledgedEvent": {
+   "meta": {
+    "type": "EiffelAlertAcknowledgedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee29",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "acknowledgement":"acknowledgement message",
+    "entity":"server1"
+  },
+  "links": [
+    {
+      "type": "ALERT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+  	{
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
+  },
+  "EiffelAlertCeasedEvent": {
+   "meta": {
+    "type": "EiffelAlertCeasedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee30",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "entity":"machine1"
+  },
+  "links": [
+    {
+      "type": "ALERT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    },
+    {
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
+  },
+  "EiffelAlertRaisedEvent": {
+   "meta": {
+    "type": "EiffelAlertRaisedEvent",
+    "version": "1.0.0",
+    "time": 1234567890,
+    "id": "aaaaaaaa-bbbb-5ccc-8ddd-eedeeeeeeee31",
+    "source": {
+            "domainId":"domain"
+     }
+  },
+  "data": {
+    "heading":"Disk space in Jenkins low",
+    "body":"Disk space is too low. Only 0.511GB left on /tmp.",
+    "entity":"machine1",
+    "uri": "http://sample.com/provider",
+    "severity":"CRITICAL"
+  },
+  "links": [
+    {
+      "type": "CONTEXT",
+      "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
+    },
+    {
+      "type": "FLOW_CONTEXT",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
+    }
+  ]    
+
+  }
+  
+}

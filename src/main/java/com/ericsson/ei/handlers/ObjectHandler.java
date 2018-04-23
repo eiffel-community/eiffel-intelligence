@@ -139,9 +139,6 @@ public class ObjectHandler {
     public String findObjectById(String id) {
         String condition = "{\"_id\" : \"" + id + "\"}";
         String document = findObjectsByCondition(condition).get(0);
-        // JsonNode result = getAggregatedObject(document);
-        // if (result != null)
-        // return result.asText();
         return document;
     }
 
@@ -165,7 +162,7 @@ public class ObjectHandler {
 
             return jsonNode;
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return null;
     }
@@ -177,7 +174,7 @@ public class ObjectHandler {
             JsonNode objectDoc = documentJson.get("aggregatedObject");
             return objectDoc;
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return null;
     }
@@ -209,14 +206,14 @@ public class ObjectHandler {
                 Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(),
                         documentJson.toString());
                 if (result != null) {
-                    log.info("DB locked by " + Thread.currentThread().getId() + " thread");
+                    log.debug("DB locked by " + Thread.currentThread().getId() + " thread");
                     documentLocked = false;
                     return JSON.serialize(result);
                 }
                 // To Remove
-                log.info("Waiting by " + Thread.currentThread().getId() + " thread");
+                log.debug("Waiting by " + Thread.currentThread().getId() + " thread");
             } catch (Exception e) {
-                log.info(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         }
         return null;

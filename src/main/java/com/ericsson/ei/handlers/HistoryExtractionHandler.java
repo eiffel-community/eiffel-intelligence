@@ -14,24 +14,16 @@
 
 package com.ericsson.ei.handlers;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.jsonmerge.MergePrepare;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // TODO: Auto-generated Javadoc
@@ -76,16 +68,12 @@ public class HistoryExtractionHandler {
         // if we need to add append to an array then array_path will not be
         // empty so we use it instead of passed pathInAggregatedObject
         String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
-        String longRuleString = createLongMergeRule(pathInAggregatedObject, ruleJson);
         String objAtPathStr = "";
         String pathTrimmed = mergePrepare.trimLastInPath(pathInAggregatedObject, ".");
         try {
-            // if (!pathInAggregatedObject.isEmpty()) {
-
             pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
             JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
             objAtPathStr = objAtPath.toString();
-            // }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -111,28 +99,6 @@ public class HistoryExtractionHandler {
                 pathInAggregatedObject);
 
         return pathInAggregatedObject;
-    }
-
-    private String createLongMergeRule(String longPath, JsonNode ruleJson) {
-        // longPath = mergePrepare.trimLastInPath(longPath, ".");
-        String pathNoIndexes = mergePrepare.removeArrayIndexes(longPath);
-        String[] pathSubstrings = pathNoIndexes.split("\\.");
-        JsonNode mergeObject = ruleJson;
-
-        try {
-            String pathString = "";
-            for (int i = 1; i < pathSubstrings.length; i++) {
-                int mergePathIndex = pathSubstrings.length - (1 + i);
-                String pathElement = pathSubstrings[mergePathIndex];
-                ObjectNode newObject = JsonNodeFactory.instance.objectNode();
-                newObject.put(pathElement, mergeObject);
-                mergeObject = newObject;
-            }
-        } catch (Exception e) {
-            log.info(e.getMessage(), e);
-        }
-
-        return mergeObject.toString();
     }
 
     /**

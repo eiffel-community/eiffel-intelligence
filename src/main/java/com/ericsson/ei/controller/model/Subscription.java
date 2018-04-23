@@ -25,7 +25,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "notificationMessageKeyValues",
     "repeat",
     "requirements",
-    "subscriptionName"
+    "subscriptionName",
+    "userName"
 })
 public class Subscription {
 
@@ -47,6 +48,8 @@ public class Subscription {
     private List<Requirement> requirements = new ArrayList<Requirement>();
     @JsonProperty("subscriptionName")
     private String subscriptionName;
+    @JsonProperty("userName")
+    private String userName;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -140,6 +143,16 @@ public class Subscription {
         this.subscriptionName = subscriptionName;
     }
 
+    @JsonProperty("userName")
+    public String getUserName() {
+        return userName;
+    }
+
+    @JsonProperty("userName")
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -157,7 +170,7 @@ public class Subscription {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(userName).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -169,7 +182,7 @@ public class Subscription {
             return false;
         }
         Subscription rhs = ((Subscription) other);
-        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(userName, rhs.userName).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

@@ -58,7 +58,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody List<Subscription> subscriptions) {
         ResponseEntity<SubscriptionResponse> subResponse = null;
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        for (Subscription subscription :  subscriptions){
+        for (Subscription subscription : subscriptions) {
             subResponse = null;
             try {
                 subscription.setCreated(Instant.now().toEpochMilli());
@@ -69,7 +69,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOG.error(msg);
                 subscriptionResponse.setMsg(msg);
                 subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-                subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
+                subResponse = new ResponseEntity<SubscriptionResponse>(subscriptionResponse,
+                        HttpStatus.PRECONDITION_FAILED);
             }
 
             if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {

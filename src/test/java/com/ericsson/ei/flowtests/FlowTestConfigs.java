@@ -46,8 +46,8 @@ public class FlowTestConfigs {
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "500");
-        System.setProperty("waitlist.fixedRateResend", "100");
+        System.setProperty("waitlist.initialDelayResend", "5000");
+        System.setProperty("waitlist.fixedRateResend", "1000");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);

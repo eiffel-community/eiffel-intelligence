@@ -122,6 +122,19 @@ public class MergePrepare {
         return s1.substring(start, (start + max));
     }
 
+    public static String longestCommonSubstring1(String s1, String s2) {
+        String[] s1Substrings = s1.split("\\.");
+        String[] s2Substrings = s2.split("\\.");
+
+        ArrayList<String> set1 = new ArrayList(Arrays.asList(s1Substrings));
+        ArrayList<String> set2 = new ArrayList(Arrays.asList(s2Substrings));
+        set1.retainAll(set2);
+        String[] commonSubstrings = new String[set1.size()];
+        commonSubstrings = (String[]) set1.toArray(commonSubstrings);
+        String commonPath = StringUtils.join(commonSubstrings, ".");
+        return commonPath;
+    }
+
     // TODO fix so that we do not need to pass both originObject and
     // stringObject which are
     // different representations of the same object.
@@ -135,7 +148,7 @@ public class MergePrepare {
 
             if (propertyExist(stringObject, firstPathTrimmed, secondRule)) {
                 if (!firstPath.isEmpty()) {
-                    String firstPathNoIndexes = StringUtils.removePattern(firstPath, "(\\.0|\\.[1-9][0-9]*)");
+                    String firstPathNoIndexes = removeArrayIndexes(firstPath);
                     String[] firstPathSubstrings = firstPathNoIndexes.split("\\.");
                     ArrayList<String> fp = new ArrayList<String>(Arrays.asList(firstPathSubstrings));
                     fp.remove(fp.size() - 1);
@@ -170,6 +183,33 @@ public class MergePrepare {
         ArrayList<String> fp = new ArrayList<String>(Arrays.asList(firstPathSubstrings));
         fp.remove(fp.size() - 1);
         return StringUtils.join(fp, delimiter);
+    }
+
+    public String removeArrayIndexes(String path) {
+        return StringUtils.removePattern(path, "(\\.0|\\.[1-9][0-9]*)");
+    }
+
+    public String makeJmespathArrayIndexes(String path) {
+        try {
+            String resembled = "";
+            JSONArray mergePathArray = new JSONArray(path.split("\\."));
+            for (int i = 0; i < mergePathArray.length(); i++) {
+                String pathElement = mergePathArray.get(i).toString();
+
+                if (isNumeric(pathElement)) {
+                    resembled += "[" + pathElement + "]";
+                } else {
+                    if (!resembled.isEmpty())
+                        resembled += ".";
+                    resembled += pathElement;
+                }
+            }
+            return resembled;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return path;
     }
 
     public String getMergePath(String originObject, String mergeRule) {
@@ -253,9 +293,11 @@ public class MergePrepare {
                     if (index == 0) {
                         String s1 = pathsContainingRule.get(index);
                         String s2 = pathsContainingRule.get(index + 1);
+                        String temp = longestCommonSubstring1(s1, s2);
                         longestCommonString = longestCommonSubstring(s1, s2);
                     } else {
                         String s1 = pathsContainingRule.get(index + 1);
+                        String temp = longestCommonSubstring1(s1, longestCommonString);
                         longestCommonString = longestCommonSubstring(s1, longestCommonString);
                     }
                 }
@@ -293,7 +335,7 @@ public class MergePrepare {
                     mergePath = mergePath.replaceAll("\\/", "\\.");
 
                 } catch (Exception e) {
-                    log.info(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -310,6 +352,24 @@ public class MergePrepare {
      * @return
      */
     public boolean propertyExist(String originObject, String path, String targetObject) {
+
+        JsonNode value = propertyValue(originObject, path, targetObject);
+        if (value == null)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * This method can not be generalized since it removes the last element in
+     * the path before doing the check.
+     * 
+     * @param originObject
+     * @param path
+     * @param targetObject
+     * @return
+     */
+    public JsonNode propertyValue(String originObject, String path, String targetObject) {
         String fixedPath = path;
         if (path != null) {
             fixedPath = path.replaceAll("(\\.0|\\.[1-9][0-9]*)", "[$1]");
@@ -325,14 +385,12 @@ public class MergePrepare {
             } else {
                 jsonResult = jmesPathInterface.runRuleOnEvent(fixedPath, originObject);
             }
-            JsonNode value = jsonResult.get(firstKey);
-            if (value == null)
-                return false;
+            return jsonResult.get(firstKey);
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
-        return true;
+        return null;
     }
 
     public String addMissingLevels(String originObject, String objectToMerge, String mergeRule, String mergePath) {

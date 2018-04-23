@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
 public class SubscriptionControllerImpl implements SubscriptionController {
 
-    @Value("${authentication.enabled}")
+    @Value("${ldap.enabled}")
     private boolean authenticate;
 
     @Autowired

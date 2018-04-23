@@ -22,135 +22,232 @@
     [
         {
             "meta": {
-                "type": "EiffelSourceChangeSubmittedEvent",
-                "version": "1.0.0",
-                "time": 202000,
-                "id": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                "time": 1473177136433,
                 "source": {
                     "domainId": "example.domain"
-                }
-            },
-            "data": {
-                "hgIdentifier": {
-                    "commitId": "f7744f53cf95",
-                    "repoUri": "https://myrepo.com/hg"
                 },
-                "submitter": {
-                    "name": "Jane Doe",
-                    "email": "jane.doe@company.com"
-                }
+                "type": "EiffelArtifactCreatedEvent",
+                "id": "1100572b-c3j4-441e-abc9-b62f48080011",
+                "version": "1.0.0"
             },
             "links": [
                 {
-                    "type": "CHANGE",
-                    "target": "ac085e24-ac4c-41be-912d-08c7afd32285"
+                    "target": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                    "type": "COMPOSITION"
                 }
-            ]
+            ],
+            "data": {
+                "customData": [
+                    {
+                        "value": "ArtC2",
+                        "key": "name"
+                    },
+                    {
+                        "value": 58,
+                        "key": "iteration"
+                    }
+                ],
+                "fileInformation": [
+                    {
+                        "extension": "jar",
+                        "classifier": "debug"
+                    }
+                ],
+                "gav": {
+                    "version": "1.33.0",
+                    "artifactId": "other-system",
+                    "groupId": "com.othercompany.otherproduct"
+                }
+            }
         },
         [
             {
                 "meta": {
-                    "type": "EiffelSourceChangeCreatedEvent",
+                    "type": "EiffelCompositionDefinedEvent",
                     "version": "1.0.0",
-                    "time": 102000,
-                    "id": "ac085e24-ac4c-41be-912d-08c7afd32285",
+                    "time": 5005,
+                    "id": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
                     "source": {
                         "domainId": "example.domain"
                     }
                 },
                 "data": {
-                    "gitIdentifier": {
-                        "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
-                        "branch": "myBranch",
-                        "repoName": "myPrivateRepo",
-                        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
-                    },
-                    "author": {
-                        "name": "John Doe",
-                        "email": "john.doe@company.com",
-                        "id": "johndoe",
-                        "group": "Team Gophers"
-                    },
-                    "issues": [
-                    ]
+                    "name": "Other composition"
                 },
                 "links": [
                     {
-                        "type": "PREVIOUS_VERSION",
-                        "target": "552ad6a4-c522-47e2-9195-0481930979e4"
+                        "type": "ELEMENT",
+                        "target": "4400572b-c3j4-441e-abc9-b62f48080033"
                     }
                 ]
             },
-            {
-                "meta": {
-                    "type": "EiffelSourceChangeCreatedEvent",
-                    "version": "1.0.0",
-                    "time": 101000,
-                    "id": "552ad6a4-c522-47e2-9195-0481930979e4",
-                    "source": {
-                        "domainId": "example.domain"
-                    }
-                },
-                "data": {
-                    "gitIdentifier": {
-                        "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
-                        "branch": "myBranch",
-                        "repoName": "myPrivateRepo",
-                        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+            [
+                {
+                    "meta": {
+                        "type": "EiffelSourceChangeSubmittedEvent",
+                        "version": "1.0.0",
+                        "time": 202000,
+                        "id": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                        "source": {
+                            "domainId": "example.domain"
+                        }
                     },
-                    "issues": [
+                    "data": {
+                        "hgIdentifier": {
+                            "commitId": "f7744f53cf95",
+                            "repoUri": "https://myrepo.com/hg"
+                        },
+                        "submitter": {
+                            "name": "Jane Doe",
+                            "email": "jane.doe@company.com"
+                        }
+                    },
+                    "links": [
                         {
-                            "type": "BUG",
-                            "tracker": "JIRA",
-                            "id": "JIRA-1234",
-                            "uri": "http://jira.company.com/browse/JIRA-1234",
-                            "transition": "RESOLVED"
+                            "type": "CHANGE",
+                            "target": "ac085e24-ac4c-41be-912d-08c7afd32285"
                         }
                     ]
                 },
-                "links": [
+                [
+                    {
+                        "meta": {
+                            "type": "EiffelSourceChangeCreatedEvent",
+                            "version": "1.0.0",
+                            "time": 102000,
+                            "id": "ac085e24-ac4c-41be-912d-08c7afd32285",
+                            "source": {
+                                "domainId": "example.domain"
+                            }
+                        },
+                        "data": {
+                            "gitIdentifier": {
+                                "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                "branch": "myBranch",
+                                "repoName": "myPrivateRepo",
+                                "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+                            },
+                            "author": {
+                                "name": "John Doe",
+                                "email": "john.doe@company.com",
+                                "id": "johndoe",
+                                "group": "Team Gophers"
+                            },
+                            "issues": []
+                        },
+                        "links": [
+                            {
+                                "type": "PREVIOUS_VERSION",
+                                "target": "552ad6a4-c522-47e2-9195-0481930979e4"
+                            }
+                        ]
+                    },
+                    {
+                        "meta": {
+                            "type": "EiffelSourceChangeCreatedEvent",
+                            "version": "1.0.0",
+                            "time": 101000,
+                            "id": "552ad6a4-c522-47e2-9195-0481930979e4",
+                            "source": {
+                                "domainId": "example.domain"
+                            }
+                        },
+                        "data": {
+                            "gitIdentifier": {
+                                "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                "branch": "myBranch",
+                                "repoName": "myPrivateRepo",
+                                "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+                            },
+                            "issues": [
+                                {
+                                    "type": "BUG",
+                                    "tracker": "JIRA",
+                                    "id": "JIRA-1234",
+                                    "uri": "http://jira.company.com/browse/JIRA-1234",
+                                    "transition": "RESOLVED"
+                                }
+                            ]
+                        },
+                        "links": []
+                    }
                 ]
-            }
-        ]
-    ],
-    {
-        "meta": {
-            "time": 1473177136433,
-            "source": {
-                "domainId": "example.domain"
-            },
-            "type": "EiffelArtifactCreatedEvent",
-            "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-            "version": "1.0.0"
-        },
-        "links": [
-            {
-                "target": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
-                "type": "COMPOSITION"
-            }
+            ]
         ],
-        "data": {
-            "customData": [
-                {
-                    "value": "ArtC2",
-                    "key": "name"
+        {
+            "meta": {
+                "time": 147317775440,
+                "source": {
+                    "domainId": "example.domain"
                 },
-                {
-                    "value": 58,
-                    "key": "iteration"
+                "type": "EiffelArtifactCreatedEvent",
+                "id": "4400572b-c3j4-441e-abc9-b62f48080033",
+                "version": "1.0.0"
+            },
+            "links": [],
+            "data": {
+                "customData": [
+                    {
+                        "value": "ArtC3",
+                        "key": "name"
+                    },
+                    {
+                        "value": 58,
+                        "key": "iteration"
+                    }
+                ],
+                "fileInformation": [
+                    {
+                        "extension": "jar",
+                        "classifier": "debug"
+                    }
+                ],
+                "gav": {
+                    "version": "1.99.0",
+                    "artifactId": "internal-system",
+                    "groupId": "com.internalcompany.internalproduct"
                 }
-            ],
-            "fileInformation": [
-                {
-                    "extension": "jar",
-                    "classifier": "debug"
-                }
-            ],
-            "gav": {
-                "version": "1.33.0",
-                "artifactId": "other-system",
-                "groupId": "com.othercompany.otherproduct"
             }
         }
-    }
+    ],
+    {
+            "meta": {
+                "time": 1473177136433,
+                "source": {
+                    "domainId": "example.domain"
+                },
+                "type": "EiffelArtifactCreatedEvent",
+                "id": "1100572b-c3b4-461e-abc9-b62f48087011",
+                "version": "1.0.0"
+            },
+            "links": [
+                {
+                    "target": "fb6ea12d-25fb-4d77-b9fd-87638e66da4j",
+                    "type": "COMPOSITION"
+                }
+            ],
+            "data": {
+                "customData": [
+                    {
+                        "value": "ArtC2",
+                        "key": "name"
+                    },
+                    {
+                        "value": 58,
+                        "key": "iteration"
+                    }
+                ],
+                "fileInformation": [
+                    {
+                        "extension": "jar",
+                        "classifier": "debug"
+                    }
+                ],
+                "gav": {
+                    "version": "1.33.0",
+                    "artifactId": "other-system",
+                    "groupId": "com.othercompany.secondproduct"
+                }
+            }
+        }
 ]

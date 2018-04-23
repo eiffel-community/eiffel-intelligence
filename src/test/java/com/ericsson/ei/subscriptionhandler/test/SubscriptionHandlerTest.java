@@ -13,6 +13,29 @@
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
+import static org.junit.Assert.assertEquals;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -89,6 +112,14 @@ public class SubscriptionHandlerTest {
     @Autowired
     private JmesPathInterface jmespath;
 
+    private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
+    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionObjectForEmailTest.json";
+    private static String subscriptionRepeatFlagTrueData;
+    private static String subscriptionDataEmail;
+
+
+    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+
     @Autowired
     private InformSubscription subscription;
 
@@ -101,6 +132,13 @@ public class SubscriptionHandlerTest {
     @MockBean
     private SpringRestTemplate springRestTemplate;
 
+    static String host = "localhost";
+    static int port = 27017;
+    private static String dataBaseName = "MissedNotification";
+    private static String collectionName = "Notification";
+    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
+
     @Autowired
     private SendMail sendMail;
 
@@ -108,17 +146,18 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void setUpEmbeddedMongo() throws JSONException, IOException {
+        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        mongoClient = testsFactory.newMongo();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("mongodb.port", port);
         try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("mongodb.port", port);
+            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+            subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
+            subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
+            log.info(e.getMessage(), e);
         }
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }
@@ -134,6 +173,11 @@ public class SubscriptionHandlerTest {
         mongoClient.close();
         testsFactory.shutdown();
     }
+    
+    @Before
+    public void beforeTests() {
+    	mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
+    }
 
     @PostConstruct
     public void initMocks() {
@@ -144,7 +188,7 @@ public class SubscriptionHandlerTest {
     @Test
     public void runSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson;
+        JsonNode subscriptionJson = null;
         ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
@@ -154,8 +198,54 @@ public class SubscriptionHandlerTest {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator);
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson);
         assertEquals(output, true);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagFalseTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        Iterator<JsonNode> requirementIterator = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, false);
+    }
+    
+    @Test
+    public void runSubscriptionOnObjectRepeatFlagTrueTest() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode subscriptionJson = null;
+        ArrayNode requirementNode = null;
+        ArrayNode requirementNode2 = null;
+        Iterator<JsonNode> requirementIterator = null;
+        Iterator<JsonNode> requirementIterator2 = null;
+        try {
+            subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
+            requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            requirementNode2 = (ArrayNode) subscriptionJson.get("requirements");
+            requirementIterator = requirementNode.elements();
+            requirementIterator2 = requirementNode2.elements();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson);
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
+                subscriptionJson);
+        assertEquals(output1, true);
+        assertEquals(output2, true);
     }
 
     @Test

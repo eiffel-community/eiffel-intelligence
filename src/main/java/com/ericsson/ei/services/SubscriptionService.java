@@ -43,6 +43,7 @@ public class SubscriptionService implements ISubscriptionService {
     @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
+    private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     @Autowired
     ISubscriptionRepository subscriptionRepository;
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
@@ -107,7 +108,8 @@ public class SubscriptionService implements ISubscriptionService {
             result = subscriptionRepository.modifySubscription(subscriptionNameQuery, StringSubscription);
             
             if (result) {
-            	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionNameQuery)) {
+            	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+            	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
             		LOG.error("Failed to clean subscription \"" + subscriptionName + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             	}
             }
@@ -125,7 +127,8 @@ public class SubscriptionService implements ISubscriptionService {
         String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, name);
         boolean result = subscriptionRepository.deleteSubscription(subscriptionNameQuery);
         if (result) {
-        	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionNameQuery)) {
+        	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
+        	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
         		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
         	}
         }
@@ -159,6 +162,7 @@ public class SubscriptionService implements ISubscriptionService {
     }
     
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
+    	LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: " + subscriptionNameQuery);
     	MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
     	return mongoDbHandler.dropDocument(dataBaseName, RepeatFlagHandlerCollection, subscriptionNameQuery);
     }

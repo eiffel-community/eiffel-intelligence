@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,6 +47,7 @@ import com.ericsson.ei.handlers.test.ObjectHandlerTest;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -57,6 +59,10 @@ public class SubscriptionServiceTest {
 
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
+    @Value("${database.name}") private String dataBaseName;
+    
+    @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
+    
     String subscriptionName;
 
     @Autowired
@@ -219,6 +225,81 @@ public class SubscriptionServiceTest {
         } catch (IOException | JSONException e) {
         }
     }
+    
+    @Test
+    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() {
+        // Insert Subscription
+        Subscription subscription2;
+        try {
+            subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            
+            
+            subscriptionService.addSubscription(subscription2);
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            
+            // Inserting a matched subscription AggrObjIds document to RepeatHandlerDb database collection.
+            BasicDBObject docInput = new BasicDBObject();
+            docInput.put("subscriptionId", expectedSubscriptionName);
+            mongoDBHandler.insertDocument(dataBaseName, RepeatFlagHandlerCollection, docInput.toString());
+            
+            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName);
+            assertEquals(deleteSubscription, true);
+            
+            // Checking if it removes the Subscription Matched AggrObjIds document from RepeatHandlerDb database collection.
+            String subscriptionIdMatchedAggrIdObjQuery =  "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
+            ArrayList<String> result = mongoDBHandler.find(dataBaseName, RepeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
+
+            assertEquals("[]", result.toString());
+        } catch (IOException | JSONException e) {
+        	LOGGER.error(e.getMessage(), e);
+        }
+    }
+    
+  @Test
+  public void testUpdateSubscriptionAndCleanUpOfRepeatHandlerDb() {
+      Subscription subscription;
+      try {
+          // Insert Subscription
+          Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+          String expectedSubscriptionName = subscription2.getSubscriptionName();
+          subscriptionService.addSubscription(subscription2);
+          // Fetch the inserted subscription
+          subscription2 = null;
+          subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
+          subscriptionName = subscription2.getSubscriptionName();
+
+          assertEquals(subscriptionName, expectedSubscriptionName);
+          
+          // Inserting a matched subscription AggrObjIds document to RepeatHandlerDb database collection.
+          BasicDBObject docInput = new BasicDBObject();
+          docInput.put("subscriptionId", subscriptionName);
+          mongoDBHandler.insertDocument(dataBaseName, RepeatFlagHandlerCollection, docInput.toString());
+          
+          // Updating subscription2(subscriptionName=Subscription_Test) with
+          // the subscription(subscriptionName=Subscription_Test_Modify)
+          subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
+          String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
+          boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
+
+          // test update done successfully
+          assertEquals(addSubscription, true);
+          subscription = null;
+          subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName);
+          subscriptionName = subscription.getSubscriptionName();
+          assertEquals(subscriptionName, expectedModifiedSubscriptionName);
+          
+          // Checking if it removes the Subscription Matched AggrObjIds document from RepeatHandlerDb database collection.
+          String subscriptionIdMatchedAggrIdObjQuery =  "{ \"subscriptionId\" : \"" + subscriptionName + "\"}";
+          ArrayList<String> result = mongoDBHandler.find(dataBaseName, RepeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
+
+          assertEquals("[]", result.toString());
+
+          // deleting the test data
+          deleteSubscriptionsByName(subscriptionName);
+      } catch (Exception e) {
+      }
+  }
+    
 
     @Test(expected = SubscriptionNotFoundException.class)
     public void testExceptionGetSubscriptionsByName() throws SubscriptionNotFoundException {

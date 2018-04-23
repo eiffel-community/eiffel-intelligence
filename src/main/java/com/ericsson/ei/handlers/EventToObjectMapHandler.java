@@ -135,6 +135,18 @@ public class EventToObjectMapHandler {
         }
         return list;
     }
+    
+    /**
+     * The method is responsible for the delete the EventObjectMap by using the suffix template Name
+     * 
+     * @param templateName
+     * @return boolean
+     */
+    public boolean deleteEventObjectMap(String templateName) {
+        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        log.info("The Json condition for delete aggregated object is : " + condition);
+        return mongodbhandler.dropDocument(databaseName, collectionName, condition);
+    }
 
 
 }

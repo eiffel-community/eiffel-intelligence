@@ -1,100 +1,112 @@
 {
-   "_id":"fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
-   "aggregatedObject":{
-      "causedActivities":[
+   "_id": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
+   "aggregatedObject": {
+      "causedActivities": [
          {
-            "finishedEventId":"e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2",
-            "startedTime":1234567890,
-            "startedEventId":"e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2",
-            "executionUri":"https://my.jenkins.host/myJob/43",
-            "triggeredTime":1234567890,
-            "name":"Component X Build",
-            "triggeredEventId":"e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
-            "finishedTime":1234567890,
-            "categories":[
+            "finishedEventId": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2",
+            "startedTime": 1234567890,
+            "startedEventId": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2",
+            "executionUri": "https://my.jenkins.host/myJob/43",
+            "canceledEventId": "cc24f5e8-9225-4f7b-9c77-7bafc7d03f6e",
+            "triggeredTime": 1234567890,
+            "name": "Component X Build",
+            "triggeredEventId": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
+            "finishedTime": 1234567890,
+            "categories": [
                "Component Build"
             ],
-            "outcome":{
-               "conclusion":"TIMED_OUT",
-               "description":"Compilation timed out."
+            "canceledTime": 1521641056231,
+            "outcome": {
+               "conclusion": "TIMED_OUT",
+               "description": "Compilation timed out."
+            }
+         },
+         {
+            "finishedEventId": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c3",
+            "startedTime": 1234567890,
+            "startedEventId": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c3",
+            "canceledEventId": "cc24f5e8-9225-4f7b-9c77-7bafc7d03f7e",
+            "executionUri": "https://my.jenkins.host/myJob/43",
+            "triggeredTime": 1521113723785,
+            "name": "test_xneekas",
+            "triggeredEventId": "5e878b37-95f4-4d20-99b7-de9bdf351eed",
+            "finishedTime": 1234567890,
+            "categories": [],
+            "canceledTime": 1521641056231,
+            "outcome": {
+               "conclusion": "TIMED_OUT",
+               "description": "Compilation timed out."
             }
          }
       ],
-      "TemplateName":"SC_1",
-      "submission":{
-         "sourceChanges":[
+      "TemplateName": "SC_1",
+      "submission": {
+         "eventId": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
+         "submitter": {
+            "name": "Jane Doe",
+            "id": "j_doe",
+            "email": "jane.doe@company.com",
+            "group": "Team Wombats"
+         },
+         "confidenceLevels": [
             {
-               "eventId":"fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
-               "submitter":{
-                  "name":"Jane Doe",
-                  "id":"j_doe",
-                  "email":"jane.doe@company.com",
-                  "group":"Team Wombats"
-               },
-               "gitIdentifier" : null,
-               "svnIdentifier":{
-                  "repoName":"Mainline",
-                  "repoUri":"svn://repohost/mainline",
-                  "directory":"trunk",
-                  "revision":42
-               },
-               "ccCompositeIdentifier" : null,
-               "hgIdentifier" : null,
-               "time":1234567890
-            }
-         ]
-      },
-      "id":"fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
-      "creation":[
-         {
-            "eventId":"fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
-            "author":{
-               "name":"John Doe",
-               "id":"johndoe",
-               "email":"john.doe@company.com",
-               "group":"Team Gophers"
+               "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+               "name": "readyForDelivery",
+               "time": 1481875944278,
+               "value": "SUCCESS"
             },
-            "confidenceLevels":[
+            {
+               "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a76",
+               "name": "readyForSystemIntegration",
+               "time": 1481875944272,
+               "value": "SUCCESS"
+            }
+         ],
+         "svnIdentifier": {
+            "repoName": "Mainline",
+            "repoUri": "svn://repohost/mainline",
+            "directory": "trunk",
+            "revision": 42
+         },
+         "time": 1234567890
+      },
+      "id": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
+      "creation": [
+         {
+            "eventId": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+            "author": {
+               "name": "John Doe",
+               "id": "johndoe",
+               "email": "john.doe@company.com",
+               "group": "Team Gophers"
+            },
+            "time": 1234567890,
+            "issues": [
                {
-                  "eventId":"f37d59a3-069e-4f4c-8cc5-a52e73501a76",
-                  "name":"readyForSystemIntegration",
-                  "time":1481875944272,
-                  "value":"SUCCESS"
-               },
-               {
-                  "eventId":"f37d59a3-069e-4f4c-8cc5-a52e73501a75",
-                  "name":"readyForDelivery",
-                  "time":1481875944278,
-                  "value":"SUCCESS"
-               }
-            ],
-            "time":1234567890,
-            "issues":[
-               {
-                  "tracker":"JIRA",
-                  "id":"JIRA-1234",
-                  "type":"BUG",
-                  "uri":"http://jira.company.com/browse/JIRA-1234",
-                  "transition":"RESOLVED"
+                  "tracker": "JIRA",
+                  "id": "JIRA-1234",
+                  "type": "BUG",
+                  "uri": "http://jira.company.com/browse/JIRA-1234",
+                  "transition": "RESOLVED"
                }
             ]
          },
          {
-            "eventId":"fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
-            "author":{
-               "name":"John Doe",
-               "id":"johndoe",
-               "email":"john.doe@company.com",
-               "group":"Team Gophers"
+            "eventId": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
+            "author": {
+               "name": "John Doe",
+               "id": "johndoe",
+               "email": "john.doe@company.com",
+               "group": "Team Gophers"
             },
-            "time":1234567890,
-            "issues":[
+            "time": 1234567890,
+            "issues": [
                {
-                  "tracker":"JIRA",
-                  "id":"JIRA-1234",
-                  "type":"BUG",
-                  "uri":"http://jira.company.com/browse/JIRA-1234",
-                  "transition":"RESOLVED"
+                  "tracker": "JIRA",
+                  "id": "JIRA-1234",
+                  "type": "BUG",
+                  "uri": "http://jira.company.com/browse/JIRA-1234",
+                  "transition": "RESOLVED"
                }
             ]
          }

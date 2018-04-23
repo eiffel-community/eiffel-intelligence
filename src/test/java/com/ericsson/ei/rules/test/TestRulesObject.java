@@ -30,31 +30,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestRulesObject {
-    private RulesObject unitUnderTest;
-    private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
-    private final String inputRulesPath = "src/test/resources/ProcessRules.json";
-    private JsonNode rulesJson;
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesObject.class);
+    private static final String INPUT_FILE_PATH = "src/test/resources/RulesHandlerOutput2.json";
+    private static final String INPUT_RULES_PATH = "src/test/resources/ProcessRules.json";
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestRulesObject.class);
+    private RulesObject unitUnderTest;
+    private JsonNode rulesJson;
 
     @Test
     public void testPrintJson() {
         String expectedOutput = "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation "
                 + ": data.fileInformation, buildCommand : data.buildCommand }";
-
         String result;
-
         try {
-            String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+            String rulesString = FileUtils.readFileToString(new File(INPUT_FILE_PATH), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             rulesJson = objectmapper.readTree(rulesString);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         unitUnderTest = new RulesObject(rulesJson);
-
         result = unitUnderTest.getExtractionRules();
-
         assertEquals(result, expectedOutput);
     }
 
@@ -62,13 +58,12 @@ public class TestRulesObject {
     public void fetchProcessRulesTest() {
         String expectedOutput = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
         String result;
-
         try {
-            String ruleString = FileUtils.readFileToString(new File(inputRulesPath), "UTF-8");
+            String ruleString = FileUtils.readFileToString(new File(INPUT_RULES_PATH), "UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             rulesJson = objectMapper.readTree(ruleString);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         unitUnderTest = new RulesObject(rulesJson);
         result = unitUnderTest.fetchProcessRules();

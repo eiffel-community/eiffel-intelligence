@@ -16,29 +16,33 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class represents the mechanism to send e-mail notification to the
  * recipient of the Subscription Object.
- * 
- * @author xjibbal
  *
+ * @author xjibbal
  */
 
 @Component
 public class SendMail {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(SendMail.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SendMail.class);
 
     @Getter
     @Value("${email.sender}")
@@ -47,35 +51,65 @@ public class SendMail {
     @Getter
     @Value("${email.subject}")
     private String subject;
-    
-    @Autowired
-    private MailSender mailSender;
 
-    public void setMailSender(MailSender mailSender) {
-        this.mailSender = mailSender;
+    @Autowired
+    private JavaMailSender emailSender;
+
+    private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
+
+    public void setMailSender(JavaMailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject
-     * and send mail to the receiver with aggregatedObject as the body.
-     * 
+     * This method takes two arguments i.e receiver mail-id and aggregatedObject and
+     * send mail to the receiver with aggregatedObject as the body.
+     *
      * @param receiver
-     * @param aggregatedObject
+     * @param mapNotificationMessage
      */
-    public void sendMail(String receiver, String aggregatedObject) {
+    public void sendMail(String receiver, String mapNotificationMessage) throws MessagingException {
+        Set<String> extEmails = new HashSet<>();
+        try {
+            extEmails = extractEmails(receiver);
+        } catch (SubscriptionValidationException e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        String[] to = extEmails.toArray(new String[0]);
+        try {
+            helper.setFrom(sender);
+            helper.setSubject(subject);
+            helper.setText(mapNotificationMessage);
+            helper.setTo(to);
+        } catch (MessagingException e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
+        emailSender.send(message);
+    }
 
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom(sender);
-        message.setTo(receiver);
-        message.setSubject(subject);
-        message.setText(aggregatedObject);
-        mailSender.send(message);
+    /**
+     * This method takes string of comma separated email addresses and return the
+     * Set of validated email addresses
+     *
+     * @param contents
+     */
+    public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
+        Set<String> emailAdd = new HashSet<>();
+        String[] addresses = contents.split(",");
+        for (String add : addresses) {
+            subscriptionValidator.validateEmail(add.trim());
+            emailAdd.add(add);
+        }
+        return emailAdd;
     }
 
     @PostConstruct
     public void display() {
-        log.info("Email Sender : " + sender);
-        log.info("Email Subject : " + subject);
+        LOGGER.debug("Email Sender : " + sender);
+        LOGGER.debug("Email Subject : " + subject);
     }
 }

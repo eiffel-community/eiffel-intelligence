@@ -16,13 +16,12 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,25 +29,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
  * way to save the aggregatedObject details in the database when the
  * notification fails.
- * 
+ *
  * @author xjibbal
- * 
  */
 
 @Component
 public class InformSubscription {
+
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformSubscription.class);
+    //Regular expression for replacement unexpected character like \"|
+    private static final String REGEX = "^\"|\"$";
 
     @Getter
     @Value("${notification.failAttempt}")
@@ -70,100 +73,100 @@ public class InformSubscription {
     private JmesPathInterface jmespath;
 
     @Autowired
-    SpringRestTemplate restTemplate;
+    private SpringRestTemplate restTemplate;
 
     @Autowired
-    MongoDBHandler mongoDBHandler;
+    private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    SendMail sendMail;
-
-    static Logger log = (Logger) LoggerFactory.getLogger(InformSubscription.class);
+    private SendMail sendMail;
 
     /**
-     * This method extracts the mode of notification through which the
-     * subscriber should be notified, from the subscription Object. And if the
-     * notification fails, then it saved in the database.
-     * 
+     * This method extracts the mode of notification through which the subscriber
+     * should be notified, from the subscription Object. And if the notification
+     * fails, then it saved in the database.
+     *
      * @param aggregatedObject
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
-        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll("^\"|\"$", "");
-        log.info("SubscriptionName : " + subscriptionName);
-        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll("^\"|\"$", "");
-        log.info("NotificationType : " + notificationType);
-        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll("^\"|\"$", "");
-        log.info("NotificationMeta : " + notificationMeta);
-        String notificationMessage = subscriptionJson.get("notificationMessage").toString().replaceAll("^\"|\"$", "");
-        String filteredAggregatedObject = jmespath.runRuleOnEvent(notificationMessage, aggregatedObject).toString();
-        if (notificationType.trim().equals("REST_POST") || notificationType.trim().equals("REST_POST_JENKINS")) {
-            log.info("Notification through REST_POST");
-            int result = -1;
-            if(notificationType.trim().equals("REST_POST")){result = restTemplate.postData(filteredAggregatedObject, notificationMeta);}
-            if(notificationType.trim().equals("REST_POST_JENKINS")){
-                MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                map.add("json", filteredAggregatedObject);
-                result = restTemplate.postDataMultiValue(notificationMeta, map);
+        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
+        LOGGER.debug("SubscriptionName : " + subscriptionName);
+        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
+        LOGGER.debug("NotificationType : " + notificationType);
+        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
+        LOGGER.debug("NotificationMeta : " + notificationMeta);
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
             }
-            if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value() || result == HttpStatus.NO_CONTENT.value()) {
-                log.info("The result is : " + result);
+        }
+        if (notificationType.trim().equals("REST_POST")) {
+            LOGGER.debug("Notification through REST_POST");
+            int result;
+            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
+                    .replaceAll(REGEX, "");
+            LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
+            result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
+            if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
+                    || result == HttpStatus.NO_CONTENT.value()) {
+                LOGGER.debug("The result is : " + result);
             } else {
                 for (int i = 0; i < failAttempt; i++) {
-                    if(notificationType.trim().equals("REST_POST")){result = restTemplate.postData(filteredAggregatedObject, notificationMeta);}
-                    if(notificationType.trim().equals("REST_POST_JENKINS")){
-                        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                        map.add("json", filteredAggregatedObject);
-                        result = restTemplate.postDataMultiValue(notificationMeta, map);
-                    }
-                        log.info("After trying for " + (i + 1) + " times, the result is : " + result);
+                    result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
+                            headerContentMediaType);
+                    LOGGER.debug("After trying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
-
-                if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value() && result != HttpStatus.NO_CONTENT.value()) {
-                    String input = prepareMissedNotification(filteredAggregatedObject, subscriptionName, notificationMeta);
-                    log.info("Input missed Notification document : " + input);
+                if (result != HttpStatus.OK.value() && result != HttpStatus.CREATED.value()
+                        && result != HttpStatus.NO_CONTENT.value()) {
+                    String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
+                    LOGGER.debug("Input missed Notification document : " + input);
                     mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName,
                             "Time", ttlValue);
                     boolean output = mongoDBHandler.insertDocument(missedNotificationDataBaseName,
                             missedNotificationCollectionName, input);
-                    log.info("The output of insertion of missed Notification : " + output);
-                    if (output == false) {
-                        log.info("failed to insert the notification into database");
+                    LOGGER.debug("The output of insertion of missed Notification : " + output);
+                    if (!output) {
+                        LOGGER.debug("failed to insert the notification into database");
                     } else
-                        log.info("Notification saved in the database");
+                        LOGGER.debug("Notification saved in the database");
                 }
-
             }
-        }
-        else if (notificationType.trim().equals("MAIL")) {
-            log.info("Notification through EMAIL");
-            sendMail.sendMail(notificationMeta, filteredAggregatedObject);
-
+        } else if (notificationType.trim().equals("MAIL")) {
+            LOGGER.debug("Notification through EMAIL");
+            try {
+                sendMail.sendMail(notificationMeta,
+                        String.valueOf((mapNotificationMessage.get("")).get(0)));
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                LOGGER.error(e.getMessage());
+            }
         }
     }
 
     /**
-     * This method saves the missed Notification into a single document along
-     * with Subscription name, notification meta and time period.
-     * 
+     * This method saves the missed Notification into a single document along with
+     * Subscription name, notification meta and time period.
+     *
      * @param aggregatedObject
      * @param subscriptionName
-     * @param notificationType
-     * 
+     * @param notificationMeta
      * @return String
      */
-    public String prepareMissedNotification(String aggregatedObject, String subscriptionName, String notificationMeta) {
-        String time = null;
-        Date date = null;
+    private String prepareMissedNotification(String aggregatedObject, String subscriptionName, String notificationMeta) {
+        Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        date = new Date();
-        time = dateFormat.format(date);
+        String time = dateFormat.format(date);
         try {
             date = dateFormat.parse(time);
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);
@@ -174,15 +177,14 @@ public class InformSubscription {
     }
 
     /**
-     * This method is responsible to display the configurable application
-     * properties and to create TTL index on the missed Notification collection.
+     * This method is responsible to display the configurable application properties
+     * and to create TTL index on the missed Notification collection.
      */
     @PostConstruct
     public void init() {
-        log.debug("missedNotificationCollectionName : " + missedNotificationCollectionName);
-        log.debug("missedNotificationDataBaseName : " + missedNotificationDataBaseName);
-        log.debug("notification.failAttempt : " + failAttempt);
-        log.debug("Missed Notification TTL value : " + ttlValue);
+        LOGGER.debug("missedNotificationCollectionName : " + missedNotificationCollectionName);
+        LOGGER.debug("missedNotificationDataBaseName : " + missedNotificationDataBaseName);
+        LOGGER.debug("notification.failAttempt : " + failAttempt);
+        LOGGER.debug("Missed Notification TTL value : " + ttlValue);
     }
-
 }

@@ -89,7 +89,9 @@ public class SubscriptionServiceTest {
             e.printStackTrace();
         }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
-        jsonArray = new JSONArray(readFileToString);
+        jsonArray = new JSONArray(readFileToString);        
+        String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
+        jsonArray_du = new JSONArray(readFileToString_du);
 
         ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -145,7 +147,7 @@ public class SubscriptionServiceTest {
             subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
             String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
 
-            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
+            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName, userName);
 
             // test update done successfully
             assertEquals(addSubscription, true);

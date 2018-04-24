@@ -1,5 +1,6 @@
 [{
     "subscriptionName" : "Subscription1",
+    "userName" : "ABC",
     "repeat" : false,
     "created" : 1523473956269,
     "notificationType" : "REST_POST",
@@ -21,12 +22,11 @@
             ]
         }
 
-    ],
-    "subscriptionName" : "Subscription_Test",
-    "userName" : "ABC"
+    ]    
 },
 {
     "subscriptionName" : "Subscription2",
+    "userName" : "ABC",
     "repeat" : false,
     "created" : 1523473956269,
     "notificationType" : "REST_POST",
@@ -47,7 +47,6 @@
             ]
         }
 
-    ],
-    "subscriptionName" : "Subscription_Test_Modify",
-    "userName" : "ABC"
+    ]
+        
 }]

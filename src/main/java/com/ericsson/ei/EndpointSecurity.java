@@ -19,6 +19,8 @@ package com.ericsson.ei;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -30,6 +32,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
+    
+    private static Logger LOGGER = (Logger) LoggerFactory.getLogger(EndpointSecurity.class);
+    
     @Value("${ldap.enabled}")
     private boolean ldapEnabled;
     
@@ -51,6 +56,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         if(ldapEnabled) {
+            LOGGER.info("LDAP security configuration is enabled");
             http
             .authorizeRequests()
                 .anyRequest().authenticated()
@@ -63,6 +69,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
         }
         else {
+            LOGGER.info("LDAP security configuration is disabled");
             http
             .csrf().disable();
         }

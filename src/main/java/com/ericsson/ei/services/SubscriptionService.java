@@ -115,8 +115,7 @@ public class SubscriptionService implements ISubscriptionService {
             }
             
         } catch (JsonProcessingException e) {
-        	LOG.error(e.getMessage());
-        	e.printStackTrace();
+        	LOG.error(e.getMessage(), e);
             return false;
         }
         return result;

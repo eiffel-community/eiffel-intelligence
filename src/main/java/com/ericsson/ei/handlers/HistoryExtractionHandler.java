@@ -14,10 +14,6 @@
 
 package com.ericsson.ei.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.jsonmerge.MergePrepare;
@@ -25,6 +21,9 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // TODO: Auto-generated Javadoc
@@ -67,11 +66,23 @@ public class HistoryExtractionHandler {
         String ruleString = ruleJson.toString();
 
         // if we need to add append to an array then array_path will not be
-        // empty so we use it instead passed pathInAggregatedObject
+        // empty so we use it instead of passed pathInAggregatedObject
         String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
-        String array_path = getPathFromExtractedContent(aggregatedObject, ruleString);
+        String objAtPathStr = "";
+        String pathTrimmed = mergePrepare.trimLastInPath(pathInAggregatedObject, ".");
+        try {
+            pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
+            JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
+            objAtPathStr = objAtPath.toString();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        String array_path = getPathFromExtractedContent(objAtPathStr, ruleString);
+
         if (!array_path.isEmpty()) {
-            pathInAggregatedObject = array_path;
+            // pathInAggregatedObject = array_path;
+            pathInAggregatedObject = pathTrimmed + "." + array_path;
+            pathInAggregatedObject = MergePrepare.destringify(pathInAggregatedObject);
         } else {
             String ruleKey = getRulePath(ruleString);
             if (pathInAggregatedObject.isEmpty()) {

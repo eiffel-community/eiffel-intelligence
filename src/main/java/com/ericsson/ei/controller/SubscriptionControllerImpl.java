@@ -68,6 +68,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         ResponseEntity<SubscriptionResponse> subResponse = null;
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
         for (Subscription subscription : subscriptions) {
+
             // Adding user name in subscription json
             if (authenticate) {
                 user = currentUser();

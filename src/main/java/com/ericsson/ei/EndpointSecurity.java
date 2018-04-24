@@ -59,6 +59,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             LOGGER.info("LDAP security configuration is enabled");
             http
             .authorizeRequests()
+                .antMatchers("/login/auth/").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .sessionManagement()

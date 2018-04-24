@@ -1,5 +1,6 @@
 package com.ericsson.ei.controller;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 
@@ -27,6 +29,12 @@ public class TestLoginControllerImpl {
     @Autowired
     private MockMvc mockMvc;
 
+    @BeforeClass
+    public static void init() {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("spring.data.mongodb.port", "" + port);
+    }
+    
     @Test
     public void testResponseStatus() throws Exception {
         String responseBody = "{\"user\":\"anonymousUser\"}";

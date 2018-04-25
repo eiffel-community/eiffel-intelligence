@@ -49,7 +49,8 @@ import lombok.Getter;
 @Component
 public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
-
+    
+    @Getter
     MongoClient mongoClient;
 
     public void setMongoClient(MongoClient mongoClient) {
@@ -57,11 +58,11 @@ public class MongoDBHandler {
     }
 
     @Getter
-    @Value("${mongodb.host}")
+    @Value("${spring.data.mongodb.host}")
     private String host;
 
     @Getter
-    @Value("${mongodb.port}")
+    @Value("${spring.data.mongodb.port}")
     private int port;
 
     // TODO establish connection automatically when Spring instantiate this

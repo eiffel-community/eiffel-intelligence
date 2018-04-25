@@ -48,9 +48,9 @@ public class ObjectHandler {
     @Value("${aggregated.collection.name}")
     private String collectionName;
 
-    @Getter
-    @Setter
-    @Value("${database.name}")
+
+    @Getter @Setter
+    @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
     @Setter

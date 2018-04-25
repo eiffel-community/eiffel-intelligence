@@ -14,47 +14,25 @@
 package com.ericsson.ei.subscriptionhandler.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.queryservice.ProcessMissedNotification;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,18 +51,28 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SendMail;
+import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class
+    })
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
@@ -150,7 +138,7 @@ public class SubscriptionHandlerTest {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("mongodb.port", port);
+            System.setProperty("spring.data.mongodb.port", port);
           
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");

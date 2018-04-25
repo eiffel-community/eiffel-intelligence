@@ -42,7 +42,9 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest(classes = {
+        App.class
+    })
 public class SubscriptionRepeatDbHandlerTest {
 
 	
@@ -68,6 +70,8 @@ public class SubscriptionRepeatDbHandlerTest {
     mongoClient = testsFactory.newMongo();
     mongoDBHandler = new MongoDBHandler();
     mongoDBHandler.setMongoClient(mongoClient);
+    String port = "" + mongoClient.getAddress().getPort();
+    System.setProperty("spring.data.mongodb.port", port);
     subsRepeatDbHandler.mongoDbHandler = mongoDBHandler;
     
     subsRepeatDbHandler.dataBaseName = subRepeatFlagDataBaseName;

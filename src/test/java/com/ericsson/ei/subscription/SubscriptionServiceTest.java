@@ -58,7 +58,7 @@ public class SubscriptionServiceTest {
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
     String subscriptionName;
-    String userName = "ABC";
+    String userName = "ABC"; // initialized with "ABC", as test json file has this name as userName
 
     @Autowired
     private ISubscriptionService subscriptionService;
@@ -89,7 +89,7 @@ public class SubscriptionServiceTest {
             e.printStackTrace();
         }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
-        jsonArray = new JSONArray(readFileToString);        
+        jsonArray = new JSONArray(readFileToString);
         String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
         jsonArray_du = new JSONArray(readFileToString_du);
 
@@ -110,7 +110,6 @@ public class SubscriptionServiceTest {
             mongoClient.close();
         if (testsFactory != null)
             testsFactory.shutdown();
-
     }
 
     @Test
@@ -242,24 +241,34 @@ public class SubscriptionServiceTest {
     public void testGetSubscriptionsForSpecificUser() {
         Subscription subscription;
         try {
-            // Insert Subscription
+            // Insert first Subscription
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             subscriptionService.addSubscription(subscription2);
+            // extracting subscription & user name.....must be "subscription_test" & "ABC"
+            // respectively
             String expectedSubscriptionName = subscription2.getSubscriptionName();
             String expectedUserName = subscription2.getUserName();
 
+            // inserting second subscription with the same name but different user
+            // name(postfix "du" stands for....)
             Subscription subscription2_du = mapper.readValue(jsonArray_du.getJSONObject(0).toString(),
                     Subscription.class);
             subscriptionService.addSubscription(subscription2_du);
+            // extracting subscription & user name.....must be "subscription_test" & "DEF"
+            // respectively
             String expectedSubscriptionName_du = subscription2_du.getSubscriptionName();
             String expectedUserName_du = subscription2_du.getUserName();
 
+            // extracting subscription from db with:getSubscription("subscription_test" ,
+            // "ABC")
             subscription = subscriptionService.getSubscription(expectedSubscriptionName, expectedUserName);
             subscriptionName = subscription.getSubscriptionName();
             userName = subscription.getUserName();
             assertEquals(expectedSubscriptionName, subscriptionName);
             assertEquals(expectedUserName, userName);
 
+            // extracting subscription from db with:getSubscription("subscription_test"
+            // ,"DEF")
             subscription = subscriptionService.getSubscription(expectedSubscriptionName_du, expectedUserName_du);
             subscriptionName = subscription.getSubscriptionName();
             userName = subscription.getUserName();

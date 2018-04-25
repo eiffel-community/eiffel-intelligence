@@ -55,7 +55,6 @@ public class SubscriptionService implements ISubscriptionService {
         } catch (JsonProcessingException e) {
             return false;
         }
-
     }
 
     @Override
@@ -121,11 +120,9 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
-
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOG.error("malformed json string");
@@ -133,7 +130,13 @@ public class SubscriptionService implements ISubscriptionService {
         }
         return subscriptions;
     }
-
+    
+    /**
+     * This method generate query for mongoDB
+     * @param name- subscription name
+     * @param userName- name of the current user
+     * @return a String object
+     */
     public String generateQuery(String name, String userName) {
         String query = String.format(SUBSCRIPTION_NAME, name);
         if (!userName.isEmpty()) {
@@ -141,8 +144,6 @@ public class SubscriptionService implements ISubscriptionService {
             String queryTemp = query + "," + queryUser;
             query = String.format("{$and:[%s]}", queryTemp);
         }
-
         return query;
     }
-
 }

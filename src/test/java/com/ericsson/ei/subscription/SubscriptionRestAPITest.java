@@ -80,6 +80,8 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
+        // adding the current security context, otherwise
+        // "SecurityContextHolder.getContext()" throws out null pointer exception
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -101,6 +103,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -123,6 +126,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(false);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -145,6 +149,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(false);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -165,6 +170,7 @@ public class SubscriptionRestAPITest {
     public void updateSubscriptionFailWhenSubscriptionDoNotExist() throws Exception {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -186,8 +192,8 @@ public class SubscriptionRestAPITest {
         Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
         Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.eq("ABC")))
                 .thenReturn(subscription2);
-        ;
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -210,6 +216,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenThrow(
                 new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -228,6 +235,7 @@ public class SubscriptionRestAPITest {
     public void deleteSubScriptionByName() throws Exception {
         Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(true);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -248,6 +256,7 @@ public class SubscriptionRestAPITest {
     public void deleteSubScriptionByNameNotFound() throws Exception {
         Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
 
+        // adding the current security context
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");

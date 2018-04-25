@@ -24,6 +24,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -35,10 +36,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.theories.Theories;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
-
 
 /**
  * @author evasiba
@@ -71,7 +68,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Autowired
     private WaitListStorageHandler waitlist;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Value("${event_object_map.collection.name}")

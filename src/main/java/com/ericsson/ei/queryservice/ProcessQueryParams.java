@@ -42,7 +42,7 @@ public class ProcessQueryParams {
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
 
     @Value("${missedNotificationCollectionName}")

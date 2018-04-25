@@ -16,11 +16,13 @@
 */
 package com.ericsson.ei.erqueryservice.test;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.erqueryservice.SearchParameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -39,6 +42,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,7 +55,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class, 
+        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+    })
 public class ERQueryServiceTest {
 
     @Autowired
@@ -65,6 +72,12 @@ public class ERQueryServiceTest {
     private int limitParam = 85;
     private int levels = 2;
     private boolean isTree = true;
+    
+    @BeforeClass
+    public static void init() {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("spring.data.mongodb.port", "" + port);
+    }
 
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -87,10 +100,10 @@ public class ERQueryServiceTest {
     Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
             Class responseType) {
         return invocation -> {
-            URI arg0 = invocation.getArgumentAt(0, URI.class);
+            URI arg0 = invocation.getArgument(0);
             String expectedUri = buildUri();
             assertEquals(expectedUri, arg0.toString());
-            HttpEntity arg2 = invocation.getArgumentAt(2, HttpEntity.class);
+            HttpEntity arg2 = invocation.getArgument(2);
             SearchParameters body = (SearchParameters) arg2.getBody();
             assertBody(body);
             boolean firstStop = true;

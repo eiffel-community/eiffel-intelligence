@@ -56,7 +56,7 @@ public class QueryServiceTest {
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String aggregationDataBaseName;
 
     @Value("${missedNotificationCollectionName}")
@@ -92,7 +92,7 @@ public class QueryServiceTest {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("mongodb.port", port);
+            System.setProperty("spring.data.mongodb.port", port);
 
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
             log.debug("The aggregatedObject is : " + aggregatedObject);

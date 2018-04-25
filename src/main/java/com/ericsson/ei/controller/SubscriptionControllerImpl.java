@@ -200,7 +200,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     }
 
     public String currentUser() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Authentication authentication =
+        // SecurityContextHolder.getContext().getAuthentication();
         user = SecurityContextHolder.getContext().getAuthentication().getName();
         return user;
     }

@@ -17,7 +17,6 @@
 package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -38,6 +37,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.AdditionalMatchers.or;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -122,7 +122,9 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void updateSubscription() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(true);
+        Mockito.when(
+                subscriptionService.doSubscriptionExist(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(false);
 
@@ -145,7 +147,9 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void updateSubscriptionMulti() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(true);
+        Mockito.when(
+                subscriptionService.doSubscriptionExist(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
         Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(false);
 
@@ -190,7 +194,7 @@ public class SubscriptionRestAPITest {
     @Test
     public void getSubScriptionByName() throws Exception {
         Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.eq("ABC")))
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(subscription2);
 
         // adding the current security context
@@ -213,8 +217,9 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void getSubScriptionByNameNotFound() throws Exception {
-        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenThrow(
-                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenThrow(new SubscriptionNotFoundException(
+                        "No record found for the Subscription Name:Subscription_Test"));
 
         // adding the current security context
         SecurityContextHolder.setContext(securityContext);
@@ -233,7 +238,8 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void deleteSubScriptionByName() throws Exception {
-        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(true);
+        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
 
         // adding the current security context
         SecurityContextHolder.setContext(securityContext);

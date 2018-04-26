@@ -46,7 +46,7 @@ public class WaitListStorageHandler {
     private String collectionName;
 
     @Getter
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
     @Getter

@@ -23,12 +23,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.theories.Theories;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +45,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
+/**
+ * @author evasiba
+ *
+ */
 public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowTestBase.class);
@@ -66,7 +68,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Autowired
     private WaitListStorageHandler waitlist;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Value("${event_object_map.collection.name}")
@@ -118,6 +120,17 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         firstEventWaitTime = value;
     }
 
+    /**
+     * Override this if you have more events that will be registered to event to
+     * object map but it is not visible in the test. For example form upstream
+     * or downstream from event repository
+     * 
+     * @return
+     */
+    protected int extraEventsCount() {
+        return 0;
+    }
+
     @Test
     public void flowTest() {
         try {
@@ -130,7 +143,8 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-            int eventsCount = eventNames.size();
+            int eventsCount = eventNames.size() + extraEventsCount();
+
             boolean alreadyExecuted = false;
             for (String eventName : eventNames) {
                 JsonNode eventJson = parsedJSON.get(eventName);

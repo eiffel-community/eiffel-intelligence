@@ -60,7 +60,7 @@ public class SubscriptionServiceTest {
 
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
-    @Value("${database.name}") private String dataBaseName;
+    @Value("${spring.data.mongodb.database}") private String dataBaseName;
     
     @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
     

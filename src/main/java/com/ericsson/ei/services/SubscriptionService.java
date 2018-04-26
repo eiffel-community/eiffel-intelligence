@@ -38,7 +38,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Value("${spring.application.name}") private String SpringApplicationName;
     
-    @Value("${database.name}") private String dataBaseName;
+    @Value("${spring.data.mongodb.database}") private String dataBaseName;
     
     @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
 

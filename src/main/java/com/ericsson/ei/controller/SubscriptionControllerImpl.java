@@ -58,15 +58,14 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
-    // Adding variable(for development purpose) until auth is implemented
-    private String user = "";
-
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody List<Subscription> subscriptions) {
         ResponseEntity<SubscriptionResponse> subResponse = null;
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+        
+        String user = "";        
         for (Subscription subscription : subscriptions) {
 
             // Adding user name in subscription json
@@ -109,6 +108,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
     public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+        String user = "";
         if (authenticate) {
             user = currentUser();
         }
@@ -128,6 +128,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     // @CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
     public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+        String user = "";
         if (authenticate) {
             user = currentUser();
         }
@@ -166,6 +167,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")
     public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(@PathVariable String subscriptionName) {
+        String user = "";
         if (authenticate) {
             user = currentUser();
         }
@@ -200,9 +202,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     }
 
     public String currentUser() {
-        // Authentication authentication =
-        // SecurityContextHolder.getContext().getAuthentication();
-        user = SecurityContextHolder.getContext().getAuthentication().getName();
-        return user;
+        return SecurityContextHolder.getContext().getAuthentication().getName();        
     }
 }

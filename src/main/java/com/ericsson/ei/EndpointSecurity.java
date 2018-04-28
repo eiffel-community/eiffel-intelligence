@@ -23,11 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -35,7 +37,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     
     private static Logger LOGGER = (Logger) LoggerFactory.getLogger(EndpointSecurity.class);
     
-    @Value("${ldap.enabled}")
+    @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
     
     @Value("${ldap.url}")
@@ -59,7 +61,11 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             LOGGER.info("LDAP security configuration is enabled");
             http
             .authorizeRequests()
-                .anyRequest().authenticated()
+                .antMatchers("/auth/*").authenticated()
+                .antMatchers(HttpMethod.POST, "/subscriptions").authenticated()
+                .antMatchers(HttpMethod.PUT, "/subscriptions").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/subscriptions/*").authenticated()
+                .anyRequest().permitAll()
             .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

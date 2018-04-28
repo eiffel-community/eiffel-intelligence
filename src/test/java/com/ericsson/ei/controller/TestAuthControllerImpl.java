@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 @AutoConfigureMockMvc
-public class TestLoginControllerImpl {
+public class TestAuthControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,14 +34,32 @@ public class TestLoginControllerImpl {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("spring.data.mongodb.port", "" + port);
     }
-    
+
     @Test
-    public void testResponseStatus() throws Exception {
+    public void testGetAuth() throws Exception {
+        String responseBody = "{\"security\":\"false\"}";
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth")
+            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().string(responseBody))
+            .andReturn();
+    }
+
+    @Test
+    public void testGetLogin() throws Exception {
         String responseBody = "{\"user\":\"anonymousUser\"}";
         mockMvc.perform(MockMvcRequestBuilders.get("/auth/login")
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andExpect(content().string(responseBody))
+            .andReturn();
+    }
+
+    @Test
+    public void testGetCheckStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/checkStatus")
+            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
             .andReturn();
     }
 

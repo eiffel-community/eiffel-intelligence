@@ -40,7 +40,7 @@ public class SubscriptionService implements ISubscriptionService {
     
     @Value("${spring.data.mongodb.database}") private String dataBaseName;
     
-    @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
+    @Value("{subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
@@ -163,7 +163,7 @@ public class SubscriptionService implements ISubscriptionService {
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
     	LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: " + subscriptionNameQuery);
     	MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-    	return mongoDbHandler.dropDocument(dataBaseName, RepeatFlagHandlerCollection, subscriptionNameQuery);
+    	return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
     }
     
 }

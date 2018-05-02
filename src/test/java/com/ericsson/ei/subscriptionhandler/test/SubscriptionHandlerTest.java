@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -101,10 +102,9 @@ public class SubscriptionHandlerTest {
     private JmesPathInterface jmespath;
 
     private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
-    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionObjectForEmailTest.json";
+    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionForMail.json";
     private static String subscriptionRepeatFlagTrueData;
     private static String subscriptionDataEmail;
-
 
     static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
 
@@ -139,15 +139,17 @@ public class SubscriptionHandlerTest {
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
-          
+
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
-            subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
+            subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath),
+                    "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
-        }       
+        }
+
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }
@@ -163,10 +165,10 @@ public class SubscriptionHandlerTest {
         mongoClient.close();
         testsFactory.shutdown();
     }
-    
+
     @Before
     public void beforeTests() {
-    	mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
+        mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
 
     @PostConstruct
@@ -188,10 +190,11 @@ public class SubscriptionHandlerTest {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson);
+        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                subscriptionJson, "someID");
         assertEquals(output, true);
     }
-    
+
     @Test
     public void runSubscriptionOnObjectRepeatFlagFalseTest() {
         ObjectMapper mapper = new ObjectMapper();
@@ -206,13 +209,13 @@ public class SubscriptionHandlerTest {
             log.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson);
+                subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson);
+                subscriptionJson, "someID");
         assertEquals(output1, true);
         assertEquals(output2, false);
     }
-    
+
     @Test
     public void runSubscriptionOnObjectRepeatFlagTrueTest() {
         ObjectMapper mapper = new ObjectMapper();
@@ -231,9 +234,9 @@ public class SubscriptionHandlerTest {
             log.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson);
+                subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
-                subscriptionJson);
+                subscriptionJson, "someID");
         assertEquals(output1, true);
         assertEquals(output2, true);
     }
@@ -260,9 +263,14 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void missedNotificationWithTTLTest() throws IOException, InterruptedException {
+        System.out.println(subscriptionData);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        Thread.sleep(70000);
-        assertTrue(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
+        // Time to live lower than 60 seconds will not have any effect since
+        // removal runs every 60 seconds
+        Thread.sleep(65000);
+        List<String> allDocs = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
+        System.out.println(allDocs.toString());
+        assertTrue(allDocs.isEmpty());
     }
 
     @Test

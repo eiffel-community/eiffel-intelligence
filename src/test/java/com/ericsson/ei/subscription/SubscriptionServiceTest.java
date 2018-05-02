@@ -69,7 +69,7 @@ public class SubscriptionServiceTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
+    private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
     private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
 
     static JSONArray jsonArray = null;

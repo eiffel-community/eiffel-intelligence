@@ -50,7 +50,7 @@ public class SubscriptionHandler {
     private String subscriptionCollectionName;
 
     @Getter
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String subscriptionDataBaseName;
 
     @Autowired

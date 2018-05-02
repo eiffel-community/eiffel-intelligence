@@ -43,7 +43,7 @@ public class ProcessAggregatedObject {
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String aggregationDataBaseName;
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);

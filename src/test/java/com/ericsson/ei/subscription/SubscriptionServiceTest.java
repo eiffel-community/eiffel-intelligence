@@ -62,7 +62,7 @@ public class SubscriptionServiceTest {
 
     @Value("${spring.data.mongodb.database}") private String dataBaseName;
     
-    @Value("{subscription.collection.repeatFlagHandlerName}") private String RepeatFlagHandlerCollection;
+    @Value("${subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
     
     String subscriptionName;
 

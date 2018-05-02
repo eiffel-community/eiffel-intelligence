@@ -40,7 +40,7 @@ public class SubscriptionService implements ISubscriptionService {
     
     @Value("${spring.data.mongodb.database}") private String dataBaseName;
     
-    @Value("{subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
+    @Value("${subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";

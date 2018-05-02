@@ -119,13 +119,6 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public boolean deleteSubscription(String name) {
-        String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, name);
-        boolean result = subscriptionRepository.deleteSubscription(subscriptionNameQuery);
-
-        }
-        return result;
-
     public boolean deleteSubscription(String name, String userName) {
         String query = generateQuery(name, userName);
         boolean result = subscriptionRepository.deleteSubscription(query);

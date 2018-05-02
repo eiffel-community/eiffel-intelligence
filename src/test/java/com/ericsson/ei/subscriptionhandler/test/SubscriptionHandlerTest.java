@@ -71,7 +71,9 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class })
+@SpringBootTest(classes = {
+        App.class
+    })
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 

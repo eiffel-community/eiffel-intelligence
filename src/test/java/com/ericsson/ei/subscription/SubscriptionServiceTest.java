@@ -247,14 +247,14 @@ public class SubscriptionServiceTest {
             // Inserting a matched subscription AggrObjIds document to RepeatHandlerDb database collection.
             BasicDBObject docInput = new BasicDBObject();
             docInput.put("subscriptionId", expectedSubscriptionName);
-            mongoDBHandler.insertDocument(dataBaseName, RepeatFlagHandlerCollection, docInput.toString());
+            mongoDBHandler.insertDocument(dataBaseName, repeatFlagHandlerCollection, docInput.toString());
             
-            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName);
+            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName, "");
             assertEquals(deleteSubscription, true);
             
             // Checking if it removes the Subscription Matched AggrObjIds document from RepeatHandlerDb database collection.
             String subscriptionIdMatchedAggrIdObjQuery =  "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
-            ArrayList<String> result = mongoDBHandler.find(dataBaseName, RepeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
+            ArrayList<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
 
             assertEquals("[]", result.toString());
         } catch (IOException | JSONException e) {
@@ -272,37 +272,38 @@ public class SubscriptionServiceTest {
           subscriptionService.addSubscription(subscription2);
           // Fetch the inserted subscription
           subscription2 = null;
-          subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
+          subscription2 = subscriptionService.getSubscription(expectedSubscriptionName, null);
           subscriptionName = subscription2.getSubscriptionName();
+          String subscriptionUserName = subscription2.getUserName();
 
           assertEquals(subscriptionName, expectedSubscriptionName);
           
           // Inserting a matched subscription AggrObjIds document to RepeatHandlerDb database collection.
           BasicDBObject docInput = new BasicDBObject();
           docInput.put("subscriptionId", subscriptionName);
-          mongoDBHandler.insertDocument(dataBaseName, RepeatFlagHandlerCollection, docInput.toString());
+          mongoDBHandler.insertDocument(dataBaseName, repeatFlagHandlerCollection, docInput.toString());
           
           // Updating subscription2(subscriptionName=Subscription_Test) with
           // the subscription(subscriptionName=Subscription_Test_Modify)
           subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
           String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
-          boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
+          boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName, null);
 
           // test update done successfully
           assertEquals(addSubscription, true);
           subscription = null;
-          subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName);
+          subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName, null);
           subscriptionName = subscription.getSubscriptionName();
           assertEquals(subscriptionName, expectedModifiedSubscriptionName);
           
           // Checking if it removes the Subscription Matched AggrObjIds document from RepeatHandlerDb database collection.
           String subscriptionIdMatchedAggrIdObjQuery =  "{ \"subscriptionId\" : \"" + subscriptionName + "\"}";
-          ArrayList<String> result = mongoDBHandler.find(dataBaseName, RepeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
+          ArrayList<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
 
           assertEquals("[]", result.toString());
 
           // deleting the test data
-          deleteSubscriptionsByName(subscriptionName);
+          deleteSubscriptionsByName(subscriptionName, "");
       } catch (Exception e) {
       }
   }

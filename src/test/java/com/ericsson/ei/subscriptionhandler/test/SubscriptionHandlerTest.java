@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -70,9 +71,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-    })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
@@ -147,8 +146,8 @@ public class SubscriptionHandlerTest {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
-        }       
-      
+        }
+
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
     }
@@ -262,9 +261,14 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void missedNotificationWithTTLTest() throws IOException, InterruptedException {
+        System.out.println(subscriptionData);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        Thread.sleep(7000);
-        assertTrue(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
+        // Time to live lower than 60 seconds will not have any effect since
+        // removal runs every 60 seconds
+        Thread.sleep(65000);
+        List<String> allDocs = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
+        System.out.println(allDocs.toString());
+        assertTrue(allDocs.isEmpty());
     }
 
     @Test

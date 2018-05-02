@@ -53,9 +53,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-    })
+@SpringBootTest(classes = { App.class })
 public class SubscriptionServiceTest {
 
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
@@ -65,6 +63,7 @@ public class SubscriptionServiceTest {
     @Value("${subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
     
     String subscriptionName;
+    String userName = "ABC"; // initialized with "ABC", as test json file has this name as userName
 
     @Autowired
     private ISubscriptionService subscriptionService;
@@ -76,9 +75,11 @@ public class SubscriptionServiceTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
+    private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
+    private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
 
     static JSONArray jsonArray = null;
+    static JSONArray jsonArray_du = null;
     static MongoClient mongoClient = null;
 
     @BeforeClass
@@ -94,6 +95,8 @@ public class SubscriptionServiceTest {
         }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
+        String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
+        jsonArray_du = new JSONArray(readFileToString_du);
 
         ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -112,7 +115,6 @@ public class SubscriptionServiceTest {
             mongoClient.close();
         if (testsFactory != null)
             testsFactory.shutdown();
-
     }
 
     @Test
@@ -123,7 +125,7 @@ public class SubscriptionServiceTest {
             boolean addSubscription = subscriptionService.addSubscription(subscription);
             assertEquals(addSubscription, true);
             // deleting the test data
-            deleteSubscriptionsByName(subscription.getSubscriptionName());
+            deleteSubscriptionsByName(subscription.getSubscriptionName(), userName);
         } catch (Exception e) {
         }
     }
@@ -135,28 +137,32 @@ public class SubscriptionServiceTest {
             // Insert Subscription
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             String expectedSubscriptionName = subscription2.getSubscriptionName();
+            String expectedUserName = subscription2.getUserName();
             subscriptionService.addSubscription(subscription2);
             // Fetch the inserted subscription
             subscription2 = null;
-            subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
+            subscription2 = subscriptionService.getSubscription(expectedSubscriptionName, userName);
             subscriptionName = subscription2.getSubscriptionName();
 
             assertEquals(subscriptionName, expectedSubscriptionName);
+            assertEquals(userName, expectedUserName);
             // Updating subscription2(subscriptionName=Subscription_Test) with
             // the subscription(subscriptionName=Subscription_Test_Modify)
             subscription = mapper.readValue(jsonArray.getJSONObject(1).toString(), Subscription.class);
             String expectedModifiedSubscriptionName = subscription2.getSubscriptionName();
-            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName);
+
+            boolean addSubscription = subscriptionService.modifySubscription(subscription, subscriptionName, userName);
 
             // test update done successfully
             assertEquals(addSubscription, true);
             subscription = null;
-            subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName);
+            subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName, userName);
             subscriptionName = subscription.getSubscriptionName();
             assertEquals(subscriptionName, expectedModifiedSubscriptionName);
+            assertEquals(userName, expectedModifiedSubscriptionName);
 
             // deleting the test data
-            deleteSubscriptionsByName(subscriptionName);
+            deleteSubscriptionsByName(subscriptionName, userName);
         } catch (Exception e) {
         }
     }
@@ -173,7 +179,7 @@ public class SubscriptionServiceTest {
             assertTrue(subscriptions.size() > 0);
 
             // deleting the test data
-            deleteSubscriptionsByName(subscription2.getSubscriptionName());
+            deleteSubscriptionsByName(subscription2.getSubscriptionName(), userName);
         } catch (SubscriptionNotFoundException | IOException | JSONException e) {
         }
     }
@@ -186,11 +192,11 @@ public class SubscriptionServiceTest {
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             subscriptionService.addSubscription(subscription2);
             String expectedSubscriptionName = subscription2.getSubscriptionName();
-            subscription = subscriptionService.getSubscription(expectedSubscriptionName);
+            subscription = subscriptionService.getSubscription(expectedSubscriptionName, userName);
             subscriptionName = subscription.getSubscriptionName();
             assertEquals(subscriptionName, expectedSubscriptionName);
             // deleting the test data
-            deleteSubscriptionsByName(subscriptionName);
+            deleteSubscriptionsByName(subscriptionName, userName);
         } catch (SubscriptionNotFoundException | IOException | JSONException e) {
         }
     }
@@ -204,10 +210,10 @@ public class SubscriptionServiceTest {
             subscriptionService.addSubscription(subscription2);
 
             subscriptionName = subscription2.getSubscriptionName();
-            doSubscriptionExist = subscriptionService.doSubscriptionExist(subscriptionName);
+            doSubscriptionExist = subscriptionService.doSubscriptionExist(subscriptionName, userName);
             assertEquals(doSubscriptionExist, true);
             // deleting the test data
-            deleteSubscriptionsByName(subscriptionName);
+            deleteSubscriptionsByName(subscriptionName, userName);
         } catch (IOException | JSONException e) {
         }
     }
@@ -221,7 +227,7 @@ public class SubscriptionServiceTest {
 
             subscriptionService.addSubscription(subscription2);
             String expectedSubscriptionName = subscription2.getSubscriptionName();
-            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName);
+            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName, userName);
             assertEquals(deleteSubscription, true);
         } catch (IOException | JSONException e) {
         }
@@ -304,10 +310,57 @@ public class SubscriptionServiceTest {
 
     @Test(expected = SubscriptionNotFoundException.class)
     public void testExceptionGetSubscriptionsByName() throws SubscriptionNotFoundException {
-        subscriptionService.getSubscription("Subscription_Test1238586455");
+        subscriptionService.getSubscription("Subscription_Test1238586455", userName);
     }
 
-    private void deleteSubscriptionsByName(String subscriptionName) {
-        subscriptionService.deleteSubscription(subscriptionName);
+    private void deleteSubscriptionsByName(String subscriptionName, String userName) {
+        subscriptionService.deleteSubscription(subscriptionName, userName);
     }
+
+    @Test
+    public void testGetSubscriptionsForSpecificUser() {
+        Subscription subscription;
+        try {
+            // Insert first Subscription
+            Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            subscriptionService.addSubscription(subscription2);
+            // extracting subscription & user name.....must be "subscription_test" & "ABC"
+            // respectively
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            String expectedUserName = subscription2.getUserName();
+
+            // inserting second subscription with the same name but different user
+            // name(postfix "du" stands for....)
+            Subscription subscription2_du = mapper.readValue(jsonArray_du.getJSONObject(0).toString(),
+                    Subscription.class);
+            subscriptionService.addSubscription(subscription2_du);
+            // extracting subscription & user name.....must be "subscription_test" & "DEF"
+            // respectively
+            String expectedSubscriptionName_du = subscription2_du.getSubscriptionName();
+            String expectedUserName_du = subscription2_du.getUserName();
+
+            // extracting subscription from db with:getSubscription("subscription_test" ,
+            // "ABC")
+            subscription = subscriptionService.getSubscription(expectedSubscriptionName, expectedUserName);
+            subscriptionName = subscription.getSubscriptionName();
+            userName = subscription.getUserName();
+            assertEquals(expectedSubscriptionName, subscriptionName);
+            assertEquals(expectedUserName, userName);
+
+            // extracting subscription from db with:getSubscription("subscription_test"
+            // ,"DEF")
+            subscription = subscriptionService.getSubscription(expectedSubscriptionName_du, expectedUserName_du);
+            subscriptionName = subscription.getSubscriptionName();
+            userName = subscription.getUserName();
+            assertEquals(expectedSubscriptionName_du, subscriptionName);
+            assertEquals(expectedUserName_du, userName);
+
+            // deleting the test data
+            deleteSubscriptionsByName(subscriptionName, expectedUserName);
+            deleteSubscriptionsByName(subscriptionName, expectedUserName_du);
+
+        } catch (SubscriptionNotFoundException | IOException | JSONException e) {
+        }
+    }
+
 }

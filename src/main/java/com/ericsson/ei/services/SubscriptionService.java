@@ -44,10 +44,12 @@ public class SubscriptionService implements ISubscriptionService {
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
+    private static final String USER_NAME = "{'userName':'%s'}";
+
     @Autowired
     ISubscriptionRepository subscriptionRepository;
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
-    
+
     @Override
     public boolean addSubscription(Subscription subscription) {
         ObjectMapper mapper = new ObjectMapper();
@@ -58,13 +60,11 @@ public class SubscriptionService implements ISubscriptionService {
         } catch (JsonProcessingException e) {
             return false;
         }
-        
     }
-    
+
     @Override
-    public Subscription getSubscription(String name) throws SubscriptionNotFoundException {
-        
-        String query = String.format(SUBSCRIPTION_NAME, name);
+    public Subscription getSubscription(String name, String userName) throws SubscriptionNotFoundException {
+        String query = generateQuery(name, userName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
@@ -73,67 +73,71 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
-                //return mapper.readValue(input, Subscription.class);
-
-
+                // return mapper.readValue(input, Subscription.class);
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
         }
         return null;
     }
-    
+
     @Override
-    public boolean doSubscriptionExist(String name) {
-        String query = String.format(SUBSCRIPTION_NAME, name);
+    public boolean doSubscriptionExist(String name, String userName) {
+        String query = generateQuery(name, userName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         if (list.isEmpty()) {
             return false;
         }
         return true;
     }
-    
+
     @Override
-    public boolean modifySubscription(Subscription subscription, String subscriptionName) {
+    public boolean modifySubscription(Subscription subscription, String name, String userName) {
         ObjectMapper mapper = new ObjectMapper();
         boolean result = false;
         try {
             String StringSubscription = mapper.writeValueAsString(subscription);
-            String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, subscriptionName);
-            result = subscriptionRepository.modifySubscription(subscriptionNameQuery, StringSubscription);
-            
+ 
+            String query = generateQuery(name, userName);
+            result = subscriptionRepository.modifySubscription(query, StringSubscription);
             if (result) {
             	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
             		LOG.error("Failed to clean subscription \"" + subscriptionName + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             	}
             }
-            
+          
         } catch (JsonProcessingException e) {
         	LOG.error(e.getMessage(), e);
             return false;
         }
         return result;
     }
-    
+
     @Override
     public boolean deleteSubscription(String name) {
         String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, name);
         boolean result = subscriptionRepository.deleteSubscription(subscriptionNameQuery);
+
+        }
+        return result;
+
+    public boolean deleteSubscription(String name, String userName) {
+        String query = generateQuery(name, userName);
+        boolean result = subscriptionRepository.deleteSubscription(query);
+  
         if (result) {
         	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
         	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
         		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
-        	}
         }
-        return result;
+
     }
-    
+
     @Override
     public List<Subscription> getSubscription() throws SubscriptionNotFoundException {
         String query = "{}";
@@ -146,24 +150,36 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
-
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
-            
         }
         return subscriptions;
     }
-    
+
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
     	LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: " + subscriptionNameQuery);
     	MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
     	return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
     }
     
+    /**
+     * This method generate query for mongoDB
+     * @param name- subscription name
+     * @param userName- name of the current user
+     * @return a String object
+     */
+    public String generateQuery(String name, String userName) {
+        String query = String.format(SUBSCRIPTION_NAME, name);
+        if (!userName.isEmpty()) {
+            String queryUser = String.format(USER_NAME, userName);
+            String queryTemp = query + "," + queryUser;
+            query = String.format("{$and:[%s]}", queryTemp);
+        }
+        return query;
+    }
 }

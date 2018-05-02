@@ -201,9 +201,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-                        
-      <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+            </plugin>     
+            
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -254,7 +254,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>                         
+            </plugin>                                                
                         
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

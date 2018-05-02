@@ -87,7 +87,7 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-        subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
+        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
         return result;
     }
 
@@ -123,7 +123,7 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         if (result) {
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-            subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
+            subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
         }
         return result;
     }

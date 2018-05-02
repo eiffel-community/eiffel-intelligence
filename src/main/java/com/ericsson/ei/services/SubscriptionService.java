@@ -127,8 +127,8 @@ public class SubscriptionService implements ISubscriptionService {
         	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
         	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
         		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+         }
         }
-
     }
 
     @Override

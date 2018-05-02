@@ -105,9 +105,9 @@ public class SubscriptionService implements ISubscriptionService {
             String query = generateQuery(name, userName);
             result = subscriptionRepository.modifySubscription(query, StringSubscription);
             if (result) {
-            	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+            	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
             	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-            		LOG.error("Failed to clean subscription \"" + subscriptionName + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+            		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             	}
             }
           
@@ -129,6 +129,7 @@ public class SubscriptionService implements ISubscriptionService {
         		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
          }
         }
+        return result;
     }
 
     @Override

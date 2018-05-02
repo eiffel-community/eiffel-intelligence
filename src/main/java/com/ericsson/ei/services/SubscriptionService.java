@@ -35,13 +35,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class SubscriptionService implements ISubscriptionService {
 
-    @Value("${spring.application.name}") private String SpringApplicationName;
+    @Value("${spring.application.name}")
+    private String SpringApplicationName;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
+    private static final String USER_NAME = "{'userName':'%s'}";
+
     @Autowired
     ISubscriptionRepository subscriptionRepository;
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
-    
+
     @Override
     public boolean addSubscription(Subscription subscription) {
         ObjectMapper mapper = new ObjectMapper();
@@ -52,13 +55,11 @@ public class SubscriptionService implements ISubscriptionService {
         } catch (JsonProcessingException e) {
             return false;
         }
-        
     }
-    
+
     @Override
-    public Subscription getSubscription(String name) throws SubscriptionNotFoundException {
-        
-        String query = String.format(SUBSCRIPTION_NAME, name);
+    public Subscription getSubscription(String name, String userName) throws SubscriptionNotFoundException {
+        String query = generateQuery(name, userName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
@@ -67,49 +68,46 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
-                //return mapper.readValue(input, Subscription.class);
-
-
+                // return mapper.readValue(input, Subscription.class);
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
         }
         return null;
     }
-    
+
     @Override
-    public boolean doSubscriptionExist(String name) {
-        String query = String.format(SUBSCRIPTION_NAME, name);
+    public boolean doSubscriptionExist(String name, String userName) {
+        String query = generateQuery(name, userName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         if (list.isEmpty()) {
             return false;
         }
         return true;
     }
-    
+
     @Override
-    public boolean modifySubscription(Subscription subscription, String subscriptionName) {
+    public boolean modifySubscription(Subscription subscription, String name, String userName) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String StringSubscription = mapper.writeValueAsString(subscription);
-            String subscriptionNameQuery = String.format(SUBSCRIPTION_NAME, subscriptionName);
-            return subscriptionRepository.modifySubscription(subscriptionNameQuery, StringSubscription);
+            String query = generateQuery(name, userName);
+            return subscriptionRepository.modifySubscription(query, StringSubscription);
         } catch (JsonProcessingException e) {
             return false;
         }
     }
-    
+
     @Override
-    public boolean deleteSubscription(String name) {
-        String query = String.format(SUBSCRIPTION_NAME, name);
+    public boolean deleteSubscription(String name, String userName) {
+        String query = generateQuery(name, userName);
         return subscriptionRepository.deleteSubscription(query);
     }
-    
+
     @Override
     public List<Subscription> getSubscription() throws SubscriptionNotFoundException {
         String query = "{}";
@@ -122,18 +120,30 @@ public class SubscriptionService implements ISubscriptionService {
         for (String input : list) {
             Subscription subscription;
             try {
-
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
-
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOG.error("malformed json string");
             }
-            
         }
         return subscriptions;
     }
     
+    /**
+     * This method generate query for mongoDB
+     * @param name- subscription name
+     * @param userName- name of the current user
+     * @return a String object
+     */
+    public String generateQuery(String name, String userName) {
+        String query = String.format(SUBSCRIPTION_NAME, name);
+        if (!userName.isEmpty()) {
+            String queryUser = String.format(USER_NAME, userName);
+            String queryTemp = query + "," + queryUser;
+            query = String.format("{$and:[%s]}", queryTemp);
+        }
+        return query;
+    }
 }

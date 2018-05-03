@@ -298,7 +298,7 @@ public class SubscriptionServiceTest {
           
           // Checking if it removes the Subscription Matched AggrObjIds document from RepeatHandlerDb database collection.
           String subscriptionIdMatchedAggrIdObjQuery =  "{ \"subscriptionId\" : \"" + subscriptionName + "\"}";
-          ArrayList<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
+          List<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
 
           assertEquals("[]", result.toString());
 

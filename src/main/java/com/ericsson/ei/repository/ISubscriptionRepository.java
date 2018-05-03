@@ -18,6 +18,8 @@ package com.ericsson.ei.repository;
 
 import java.util.ArrayList;
 
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+
 public interface ISubscriptionRepository {
     
     ArrayList<String> getSubscription(String name);
@@ -27,5 +29,7 @@ public interface ISubscriptionRepository {
     boolean deleteSubscription(String name);
     
     boolean addSubscription(String subscription);
+    
+    MongoDBHandler getMongoDbHandler();
     
 }

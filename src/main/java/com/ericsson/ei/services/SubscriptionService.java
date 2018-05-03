@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,10 +36,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class SubscriptionService implements ISubscriptionService {
 
-    @Value("${spring.application.name}")
-    private String SpringApplicationName;
+    @Value("${spring.application.name}") private String SpringApplicationName;
+    
+    @Value("${spring.data.mongodb.database}") private String dataBaseName;
+    
+    @Value("${subscription.collection.repeatFlagHandlerName}") private String repeatFlagHandlerCollection;
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
+    private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'userName':'%s'}";
 
     @Autowired
@@ -93,19 +98,38 @@ public class SubscriptionService implements ISubscriptionService {
     @Override
     public boolean modifySubscription(Subscription subscription, String name, String userName) {
         ObjectMapper mapper = new ObjectMapper();
+        boolean result = false;
         try {
             String StringSubscription = mapper.writeValueAsString(subscription);
+ 
             String query = generateQuery(name, userName);
-            return subscriptionRepository.modifySubscription(query, StringSubscription);
+            result = subscriptionRepository.modifySubscription(query, StringSubscription);
+            if (result) {
+            	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
+            	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
+            		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+            	}
+            }
+          
         } catch (JsonProcessingException e) {
+        	LOG.error(e.getMessage(), e);
             return false;
         }
+        return result;
     }
 
     @Override
     public boolean deleteSubscription(String name, String userName) {
         String query = generateQuery(name, userName);
-        return subscriptionRepository.deleteSubscription(query);
+        boolean result = subscriptionRepository.deleteSubscription(query);
+  
+        if (result) {
+        	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, name);
+        	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
+        		LOG.error("Failed to clean subscription \"" + name + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+         }
+        }
+        return result;
     }
 
     @Override
@@ -129,6 +153,12 @@ public class SubscriptionService implements ISubscriptionService {
             }
         }
         return subscriptions;
+    }
+
+    private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
+    	LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: " + subscriptionNameQuery);
+    	MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
+    	return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
     }
     
     /**

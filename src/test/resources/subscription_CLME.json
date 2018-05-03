@@ -15,28 +15,16 @@
     {
       "conditions" : [
         {
-          "jmespath" : "gav.groupId=='com.mycompany.myproduct'"
+          "jmespath" : "meta.type == 'EiffelConfidenceLevelModifiedEvent'"
         },
         {
-          "jmespath" : "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
+          "jmespath" : "data.name == 'stable' && data.value =='SUCCESS'"
         }
       ],
-      "type" : "ARTIFACT_1"
-    },
-    {
-      "conditions" : [
-        {
-          "jmespath" : "gav.groupId=='com.mycompany.myproduct'"
-        },
-        {
-          "jmespath" : "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"
-        }
-      ],
-      "type" : "ARTIFACT_1"
+      "type" : "Event_copy"
     }
   ],
-  "subscriptionName" : "Subscription_Test",
+  "subscriptionName" : "Single_CLME_Subscription_Test",
   "userName" : "ABC"
-  
 }
 ]

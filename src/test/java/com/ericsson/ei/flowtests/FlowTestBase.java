@@ -24,7 +24,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -190,6 +189,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     /**
      * @return map, where key - _id of expected aggregated object value -
      *         expected aggregated object
+
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 

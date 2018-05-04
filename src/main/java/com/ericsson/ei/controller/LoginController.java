@@ -4,7 +4,6 @@ package com.ericsson.ei.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -14,17 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController
-@RequestMapping(value = "/queryAggregatedObject", produces = "application/json")
-public interface QueryAggregatedObjectController {
+@RequestMapping(value = "/auth/login", produces = "application/json")
+public interface LoginController {
 
 
     /**
-     * No description
+     * This call for getting logged in user
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(
-        @RequestParam
-        String id);
+    public ResponseEntity<?> getAuthLogin();
 
 }

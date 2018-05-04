@@ -4,27 +4,33 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.ericsson.ei.erqueryservice.SearchOption;
+import java.io.IOException;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.handlers.HistoryExtractionHandler;
+import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class, 
+        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+    })
 public class UpStreamEventHandlerTest {
 
     @Autowired
@@ -32,6 +38,12 @@ public class UpStreamEventHandlerTest {
 
     static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
 
+    @BeforeClass
+    public static void init() {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("spring.data.mongodb.port", "" + port);
+    }
+    
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {
         // TO DO to complete implementation

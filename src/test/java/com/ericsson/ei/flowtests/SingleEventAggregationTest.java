@@ -17,6 +17,7 @@
 package com.ericsson.ei.flowtests;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,10 +30,12 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -59,12 +62,16 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
+    private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
 
     @Autowired
     private ObjectHandler objectHandler;
 
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
+
+    @Autowired
+    private ISubscriptionService subscriptionService;
 
     @Mock
     private ERQueryService erQueryService;
@@ -81,11 +88,23 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Before
     public void before() {
+
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
                 anyBoolean())).thenReturn(null);
         super.setFirstEventWaitTime(5000);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
+            JSONArray jsonArray = new JSONArray(readFileToString);
+            Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            boolean addSubscription = subscriptionService.addSubscription(subscription);
+            assertEquals(addSubscription, true);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

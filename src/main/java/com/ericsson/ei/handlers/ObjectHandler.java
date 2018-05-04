@@ -48,9 +48,8 @@ public class ObjectHandler {
     @Value("${aggregated.collection.name}")
     private String collectionName;
 
-    @Getter
-    @Setter
-    @Value("${database.name}")
+    @Getter @Setter
+    @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
     @Setter
@@ -87,7 +86,8 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-        subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
+
+        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
         return result;
     }
 
@@ -123,7 +123,7 @@ public class ObjectHandler {
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         if (result) {
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-            subscriptionHandler.checkSubscriptionForObject(aggregatedObject);
+            subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
         }
         return result;
     }

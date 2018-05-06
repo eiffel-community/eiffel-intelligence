@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import javax.mail.MessagingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -96,6 +99,7 @@ public class InformSubscription {
         LOGGER.debug("NotificationType : " + notificationType);
         String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
         LOGGER.debug("NotificationMeta : " + notificationMeta);
+               
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
@@ -105,7 +109,7 @@ public class InformSubscription {
                         .toString().replaceAll(REGEX, ""));
             }
         }
-        if (notificationType.trim().equals("REST_POST")) {
+        if (notificationType.trim().equals("REST_POST") && !notificationMeta.contains("jenkins")) {
             LOGGER.debug("Notification through REST_POST");
             int result;
             String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
@@ -147,6 +151,20 @@ public class InformSubscription {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
+        } else if(notificationType.trim().equals("REST_POST") && notificationMeta.contains("jenkins")){
+            
+            String jenkinUser = subscriptionJson.get("jenkinUser").toString().replaceAll(REGEX, "");
+            LOGGER.debug("jenkinUser : " + jenkinUser);            
+            String token = subscriptionJson.get("token").toString().replaceAll(REGEX, "");
+            LOGGER.debug("token : " + token);  
+            
+//            HashMap<String, String> hm = new HashMap<String, String>();
+            
+            BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"},{\"name\":\"parameter2\",\"value\": \"kfile\"}]}");
+
+            
+            restTemplate.postDataMultiValue(vp, jenkinUser, token);
+            
         }
     }
 

@@ -17,7 +17,6 @@
 package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -33,8 +32,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.AdditionalMatchers.or;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -49,7 +52,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = SubscriptionController.class, secure = false)
 public class SubscriptionRestAPITest {
-    
     @Autowired
     private MockMvc mockMvc;
     static JSONArray jsonArray = null;
@@ -59,7 +61,11 @@ public class SubscriptionRestAPITest {
     ObjectMapper mapper = new ObjectMapper();
     @MockBean
     private ISubscriptionService subscriptionService;
-    
+    @MockBean
+    private Authentication authentication;
+    @MockBean
+    private SecurityContext securityContext;
+
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
@@ -68,28 +74,40 @@ public class SubscriptionRestAPITest {
         String readFileToStringMulti = FileUtils.readFileToString(new File(multisubscriptionJsonPath), "UTF-8");
         jsonArrayMulti = new JSONArray(readFileToStringMulti);
     }
-    
+
     @Test
     public void addSubscription() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
+
+        // adding the current security context, otherwise
+        // "SecurityContextHolder.getContext()" throws out null pointer exception
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscriptions").accept(MediaType.APPLICATION_JSON)
                 .content(jsonArray.toString()).contentType(MediaType.APPLICATION_JSON);
-        
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Inserted Successfully", subscriptionResponse.getMsg());
     }
 
-
     @Test
     public void addSubscriptionMulti() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscriptions").accept(MediaType.APPLICATION_JSON)
                 .content(jsonArrayMulti.toString()).contentType(MediaType.APPLICATION_JSON);
@@ -104,32 +122,45 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void updateSubscription() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
-        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
-                .thenReturn(false);
+        Mockito.when(
+                subscriptionService.doSubscriptionExist(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
+        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(false);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
-                .accept(MediaType.APPLICATION_JSON).content(jsonArray.toString())
-                .contentType(MediaType.APPLICATION_JSON);
-        
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions").accept(MediaType.APPLICATION_JSON)
+                .content(jsonArray.toString()).contentType(MediaType.APPLICATION_JSON);
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Updated Successfully", subscriptionResponse.getMsg());
     }
-
 
     @Test
     public void updateSubscriptionMulti() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
-        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
-                .thenReturn(false);
+        Mockito.when(
+                subscriptionService.doSubscriptionExist(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
+        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(false);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
-                .accept(MediaType.APPLICATION_JSON).content(jsonArrayMulti.toString())
-                .contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions").accept(MediaType.APPLICATION_JSON)
+                .content(jsonArrayMulti.toString()).contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
@@ -138,77 +169,110 @@ public class SubscriptionRestAPITest {
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Updated Successfully", subscriptionResponse.getMsg());
     }
-    
+
     @Test
     public void updateSubscriptionFailWhenSubscriptionDoNotExist() throws Exception {
-        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions")
-                .accept(MediaType.APPLICATION_JSON).content(jsonArray.toString())
-                .contentType(MediaType.APPLICATION_JSON);
-        
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/subscriptions").accept(MediaType.APPLICATION_JSON)
+                .content(jsonArray.toString()).contentType(MediaType.APPLICATION_JSON);
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
         assertEquals("Subscription can't be found", subscriptionResponse.getMsg());
     }
-    
+
     @Test
     public void getSubScriptionByName() throws Exception {
         Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenReturn(subscription2);
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(subscription2);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
                 .accept(MediaType.APPLICATION_JSON);
-        
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         Subscription[] subscription = mapper.readValue(result.getResponse().getContentAsString().toString(),
                 Subscription[].class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
+        assertEquals("ABC", subscription[0].getUserName());
     }
-    
+
     @Test
     public void getSubScriptionByNameNotFound() throws Exception {
-        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenThrow(
-                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenThrow(new SubscriptionNotFoundException(
+                        "No record found for the Subscription Name:Subscription_Test"));
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
                 .accept(MediaType.APPLICATION_JSON);
-        
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("[]", result.getResponse().getContentAsString());
     }
-    
+
     @Test
     public void deleteSubScriptionByName() throws Exception {
-        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(true);
+        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), or(Mockito.eq(""), Mockito.eq("ABC"))))
+                .thenReturn(true);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
                 .accept(MediaType.APPLICATION_JSON);
-        
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
     }
-    
+
     @Test
     public void deleteSubScriptionByNameNotFound() throws Exception {
-        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString(), Mockito.eq("ABC"))).thenReturn(false);
+
+        // adding the current security context
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
                 .accept(MediaType.APPLICATION_JSON);
-        
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         SubscriptionResponse subscriptionResponse = mapper
                 .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());

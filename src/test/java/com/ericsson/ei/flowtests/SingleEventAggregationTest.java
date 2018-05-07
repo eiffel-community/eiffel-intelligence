@@ -88,6 +88,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Before
     public void before() {
+
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),

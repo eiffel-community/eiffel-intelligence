@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 
+
 @Component
 public class SubscriptionRepository implements ISubscriptionRepository {
     
@@ -57,4 +58,8 @@ public class SubscriptionRepository implements ISubscriptionRepository {
         return mongoDBHandler.dropDocument(dataBaseName, collectionName, query);
     }
     
+    @Override
+    public MongoDBHandler getMongoDbHandler() {
+        return mongoDBHandler;
+    }
 }

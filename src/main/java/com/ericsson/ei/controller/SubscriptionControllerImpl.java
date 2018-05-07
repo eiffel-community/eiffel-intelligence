@@ -23,8 +23,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +48,9 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
 public class SubscriptionControllerImpl implements SubscriptionController {
 
+    @Value("${ldap.enabled}")
+    private boolean authenticate;
+
     @Autowired
     private ISubscriptionService subscriptionService;
 
@@ -58,7 +64,15 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody List<Subscription> subscriptions) {
         ResponseEntity<SubscriptionResponse> subResponse = null;
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+        
+        String user = "";        
         for (Subscription subscription : subscriptions) {
+
+            // Adding user name in subscription json
+            if (authenticate) {
+                user = currentUser();
+            }
+            subscription.setUserName(user);
             subResponse = null;
             try {
                 subscription.setCreated(Instant.now().toEpochMilli());
@@ -73,7 +87,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                         HttpStatus.PRECONDITION_FAILED);
             }
 
-            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
+            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName(), user)) {
                 subscriptionService.addSubscription(subscription);
                 LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
                 subscriptionResponse.setMsg("Inserted Successfully");
@@ -94,30 +108,34 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
     public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+        String user = "";
+        if (authenticate) {
+            user = currentUser();
+        }
         List<Subscription> subscriptionList = new ArrayList<Subscription>();
         try {
             LOG.info("Subscription :" + subscriptionName + " fetch started");
-            subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
+            subscriptionList.add(subscriptionService.getSubscription(subscriptionName, user));
             LOG.info("Subscription :" + subscriptionName + " fetched");
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
-
         }
-
     }
 
     @Override
-
     // @CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
     public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+        String user = "";
+        if (authenticate) {
+            user = currentUser();
+        }
         Subscription subscription = subscriptions.get(0);
         String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-
         try {
             subscription.setCreated(Instant.now().toEpochMilli());
             subscriptionValidator.validateSubscription(subscription);
@@ -130,8 +148,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
         }
 
-        if (subscriptionService.doSubscriptionExist(subscriptionName)) {
-            subscriptionService.modifySubscription(subscription, subscriptionName);
+        if (subscriptionService.doSubscriptionExist(subscriptionName, user)) {
+            subscriptionService.modifySubscription(subscription, subscriptionName, user);
             LOG.info("Subscription :" + subscriptionName + " update completed");
             subscriptionResponse.setMsg("Updated Successfully");
             subscriptionResponse.setStatusCode(HttpStatus.OK.value());
@@ -143,16 +161,19 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")
     public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(@PathVariable String subscriptionName) {
+        String user = "";
+        if (authenticate) {
+            user = currentUser();
+        }
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
         LOG.info("Subscription :" + subscriptionName + " delete started");
-        if (subscriptionService.deleteSubscription(subscriptionName)) {
+        if (subscriptionService.deleteSubscription(subscriptionName, user)) {
             LOG.info("Subscription :" + subscriptionName + " deleted Successfully");
             subscriptionResponse.setMsg("Deleted Successfully");
             subscriptionResponse.setStatusCode(HttpStatus.OK.value());
@@ -163,7 +184,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @Override
@@ -179,5 +199,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             LOG.error(e.getLocalizedMessage());
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         }
+    }
+
+    public String currentUser() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();        
     }
 }

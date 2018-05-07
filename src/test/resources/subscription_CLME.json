@@ -24,6 +24,7 @@
       "type" : "Event_copy"
     }
   ],
-  "subscriptionName" : "Single_CLME_Subscription_Test"
+  "subscriptionName" : "Single_CLME_Subscription_Test",
+  "userName" : "ABC"
 }
 ]

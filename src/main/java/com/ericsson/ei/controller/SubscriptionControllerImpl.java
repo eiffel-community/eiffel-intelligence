@@ -16,9 +16,13 @@
 */
 package com.ericsson.ei.controller;
 
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +57,19 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Autowired
     private ISubscriptionService subscriptionService;
+    
+    @Autowired 
+    private HttpServletRequest httpServletRequest;
+
 
     private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+    
+    private String user = "";
+    private String restUser = "";
+    private String token = "";
+
 
     @Override
     @CrossOrigin
@@ -71,8 +84,16 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             // Adding user name in subscription json
             if (authenticate) {
                 user = currentUser();
+            }            
+            if(httpServletRequest.getHeader("Authorization") != null && !httpServletRequest.getHeader("Authorization").isEmpty()) {
+                String [] userAndToken = getCrendentials();
+                restUser = userAndToken[0];
+                token = userAndToken[1];
             }
             subscription.setUserName(user);
+            subscription.setRestUser(restUser);
+            subscription.setToken(token);           
+
             subResponse = null;
             try {
                 subscription.setCreated(Instant.now().toEpochMilli());
@@ -204,4 +225,19 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public String currentUser() {
         return SecurityContextHolder.getContext().getAuthentication().getName();        
     }
+    
+    public String[] getCrendentials() {   
+        String[] values = null;
+        String authorization = httpServletRequest.getHeader("Authorization");
+        if (authorization != null && authorization.startsWith("Basic")) {
+            // Authorization: Basic base64credentials
+            String base64Credentials = authorization.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                    Charset.forName("UTF-8"));
+            // credentials = username:password
+            values = credentials.split(":",2);
+        }
+        return values;
+    }
+
 }

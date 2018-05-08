@@ -1,10 +1,13 @@
 {
         "subscriptionName": "Subscription_1",
+        "userName" : "DEF",
         "repeat": false,
         "created": "data-time",
         "notificationType": "REST_POST",
         "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
         "restPostBodyMediaType": "application/json",
+        "restUser": "ju",
+        "token": "tk",
         "notificationMessageKeyValues" : [
           {
             "formkey" : "",

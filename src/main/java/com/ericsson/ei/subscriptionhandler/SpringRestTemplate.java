@@ -18,6 +18,8 @@ package com.ericsson.ei.subscriptionhandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.Base64;
+
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +54,22 @@ public class SpringRestTemplate {
      * @param headerContentMediaType
      * @return integer
      */
-    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, String headerContentMediaType) {
+    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, String headerContentMediaType, String ...args) {
         ResponseEntity<JsonNode> response;
+        
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(headerContentMediaType));
             if (headerContentMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { //"application/x-www-form-urlencoded"
+                
+                if(notificationMeta.contains("jenkins") && args.length != 0) { 
+                    String user = args[0];   
+                    String password = args[1];
+                    String notEncoded = user + ":" + password;
+                    String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
+                    headers.add("Authorization", "Basic " + encodedAuth);                    
+                }
+                
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {

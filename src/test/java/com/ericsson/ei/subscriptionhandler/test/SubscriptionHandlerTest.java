@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -130,8 +131,8 @@ public class SubscriptionHandlerTest {
     @Autowired
     private ProcessMissedNotification processMissedNotification;
 
-    @MockBean
-    private SpringRestTemplate springRestTemplate;
+//    @MockBean
+//    private SpringRestTemplate springRestTemplate;
 
     static String host = "localhost";
     static int port = 27017;
@@ -303,9 +304,9 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate1.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
-                .thenReturn(STATUS_OK);
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+//        when(springRestTemplate1.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
+//                .thenReturn(STATUS_OK);
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
         verify(springRestTemplate1, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
     }
 
@@ -344,22 +345,31 @@ public class SubscriptionHandlerTest {
         }
         return mapNotificationMessage;
     }
+    
 //    @Test
-//    public void testInform() throws IOException {
-//    
-////    subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
-////        
-//        String notificationMeta = "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/test_params/buildWithParameters";
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-//        BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"},{\"name\":\"parameter2\",\"value\": \"kfile\"}]}");
-//        HttpEntity<String> request = new HttpEntity<String>(vp.toString(), httpHeaders);
-//       ResponseEntity<String> personEntity = restTemplate.postForEntity(notificationMeta, request,String.class);
-//
-//       
-//        assertEquals("3","3");
-//       
-//    }
+    public void testInform() throws IOException {
+    
+//    subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
+//        
+        String notificationMeta = "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/test_params/buildWithParameters";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        
+        String user = "ezsahoi", password = "1ec70486706e614460472f3b928fa2b0";
+        
+        String notEncoded = user + ":" + password;
+        String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.add("Authorization", "Basic " + encodedAuth); 
+        
+
+        BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"}]}");
+        HttpEntity<String> request = new HttpEntity<String>(vp.toString(), httpHeaders);
+       ResponseEntity<String> personEntity = restTemplate.postForEntity(notificationMeta, request,String.class);
+     
+        assertEquals("3","3");
+       
+    }
 }

@@ -93,13 +93,23 @@ public class InformSubscription {
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
-        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
-        LOGGER.debug("SubscriptionName : " + subscriptionName);
-        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
-        LOGGER.debug("NotificationType : " + notificationType);
-        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
-        LOGGER.debug("NotificationMeta : " + notificationMeta);
-               
+//        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
+//        LOGGER.debug("SubscriptionName : " + subscriptionName);
+//        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
+//        LOGGER.debug("NotificationType : " + notificationType);
+//        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
+//        LOGGER.debug("NotificationMeta : " + notificationMeta);
+//        String restUser = subscriptionJson.get("restUser").toString().replaceAll(REGEX, "");
+//        LOGGER.debug("restUser : " + restUser);            
+//        String token = subscriptionJson.get("token").toString().replaceAll(REGEX, "");
+//        LOGGER.debug("token : " + token);
+        
+        String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
+        String notificationType = getSubscriptionField("notificationType", subscriptionJson);
+        String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
+        String restUser = getSubscriptionField("restUser", subscriptionJson);
+        String token = getSubscriptionField("token", subscriptionJson);
+                    
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
@@ -109,13 +119,18 @@ public class InformSubscription {
                         .toString().replaceAll(REGEX, ""));
             }
         }
-        if (notificationType.trim().equals("REST_POST") && !notificationMeta.contains("jenkins")) {
+        if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
             int result;
             String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
                     .replaceAll(REGEX, "");
             LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
-            result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
+            if(notificationMeta.contains("jenkins")) {
+               result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType, restUser, token);
+            } else {
+                result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType); 
+            }
+            
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
                     || result == HttpStatus.NO_CONTENT.value()) {
                 LOGGER.debug("The result is : " + result);
@@ -151,20 +166,7 @@ public class InformSubscription {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
-        } else if(notificationType.trim().equals("REST_POST") && notificationMeta.contains("jenkins")){
-            
-            String jenkinUser = subscriptionJson.get("jenkinUser").toString().replaceAll(REGEX, "");
-            LOGGER.debug("jenkinUser : " + jenkinUser);            
-            String token = subscriptionJson.get("token").toString().replaceAll(REGEX, "");
-            LOGGER.debug("token : " + token);  
-            
-//            HashMap<String, String> hm = new HashMap<String, String>();
-            
-            BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"},{\"name\":\"parameter2\",\"value\": \"kfile\"}]}");
-
-            
-            restTemplate.postDataMultiValue(vp, jenkinUser, token);
-            
+         
         }
     }
 
@@ -192,6 +194,12 @@ public class InformSubscription {
         document.put("Time", date);
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
+    }
+    
+    private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
+        String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
+        LOGGER.debug(fieldName+" : " + value);       
+        return "";
     }
 
     /**

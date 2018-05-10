@@ -6,9 +6,7 @@
         "IdRule": "meta.id",
         "StartEvent": "YES",
         "IdentifyRules": "[meta.id]",
-        "MatchIdRules": {
-            "_id": "%IdentifyRules_objid%"
-        },
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
         "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
         "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
         "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
@@ -27,9 +25,7 @@
         "IdRule": "meta.id",
         "StartEvent": "NO",
         "IdentifyRules": "links | [?type=='ARTIFACT'].target",
-        "MatchIdRules": {
-            "_id": "%IdentifyRules_objid%"
-        },
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
         "ExtractionRules": "{ publications :[ { eventId : meta.id, time : meta.time, locations : data.locations  }] }",
         "ArrayMergeOptions": "",
         "HistoryIdentifyRules": "",
@@ -44,9 +40,7 @@
         "IdRule": "meta.id",
         "StartEvent": "NO",
         "IdentifyRules": "links | [?type=='SUBJECT'].target",
-        "MatchIdRules": {
-            "_id": "%IdentifyRules_objid%"
-        },
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
         "ExtractionRules": "{confidenceLevels :[{ eventId:meta.id, time:meta.time, name:data.name, value:data.value}]}",
         "ArrayMergeOptions": "",
         "HistoryIdentifyRules": "",

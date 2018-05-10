@@ -73,7 +73,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             .and()
                 .httpBasic()
             .and()
-                .csrf().disable().headers().disable();
+                .csrf().disable();
         }
         else {
             LOGGER.info("LDAP security configuration is disabled");

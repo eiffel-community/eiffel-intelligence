@@ -1,7 +1,26 @@
+/*
+   Copyright 2018 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +37,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Api(value = "Auth", description = "REST endpoints for authentication and authorization")
 public class AuthControllerImpl implements AuthController {
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(AuthControllerImpl.class);
+
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
 
@@ -26,8 +47,9 @@ public class AuthControllerImpl implements AuthController {
     @ApiOperation(value = "To check is security enabled", response = String.class)
     public ResponseEntity<?> getAuth() {
         try {
-            return new ResponseEntity<>("{\"security\":\"" + ldapEnabled + "\"}", HttpStatus.OK);
+            return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -38,8 +60,9 @@ public class AuthControllerImpl implements AuthController {
     public ResponseEntity<?> getLogin() {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-            return new ResponseEntity<>("{\"user\":\"" + currentUser + "\"}", HttpStatus.OK);
+            return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
         } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -51,6 +74,7 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

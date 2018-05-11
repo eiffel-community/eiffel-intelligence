@@ -318,10 +318,12 @@
       ],
       "customData": []
     },
-    "links": [{
-      "type": "CAUSE",
-      "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a76"
-    }]
+    "links": [
+      {
+        "type": "CAUSE",
+        "target": "f37d59a3-069e-4f4c-8cc5-a52e73501a76"
+      }
+    ]
   },
   "event_EiffelActivityStartedEvent_3_2": {
     "meta": {

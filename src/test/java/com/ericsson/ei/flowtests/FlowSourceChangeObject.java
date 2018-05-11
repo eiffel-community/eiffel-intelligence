@@ -13,28 +13,45 @@
 */
 package com.ericsson.ei.flowtests;
 
+import com.ericsson.ei.App;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class })
-@SpringBootTest
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class})
+@SpringBootTest(classes = App.class)
 public class FlowSourceChangeObject extends FlowTestBase {
 
     private static final String RULES_FILE_PATH = "src/test/resources/TestSourceChangeObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_ID = "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
+    private static final String UPSTREAM_RESULT_FILE = "UpstreamEventsForSourceChange.json";
 
     @Override
     String getRulesFilePath() {
@@ -46,12 +63,29 @@ public class FlowSourceChangeObject extends FlowTestBase {
         return EVENTS_FILE_PATH;
     }
 
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
+
+    @Mock
+    private ERQueryService erQueryService;
+
+    @Before
+    public void before() throws IOException {
+        MockitoAnnotations.initMocks(this);
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
+        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+    }
+
     @Override
     List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
-        eventNames.add("event_EiffelSourceChangeCreatedEvent_3");
-        eventNames.add("event_EiffelSourceChangeCreatedEvent_3_2");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelActivityTriggeredEvent_3");

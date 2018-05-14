@@ -167,7 +167,7 @@ public class SubscriptionService implements ISubscriptionService {
      * @param userName- name of the current user
      * @return a String object
      */
-    public String generateQuery(String name, String userName) {
+    private String generateQuery(String name, String userName) {
         String query = String.format(SUBSCRIPTION_NAME, name);
         if (!userName.isEmpty()) {
             String queryUser = String.format(USER_NAME, userName);

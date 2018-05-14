@@ -133,6 +133,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             user = currentUser();
         }
         Subscription subscription = subscriptions.get(0);
+        subscription.setUserName(user);
         String subscriptionName = subscription.getSubscriptionName();
         LOG.info("Subscription :" + subscriptionName + " update started");
         SubscriptionResponse subscriptionResponse = new SubscriptionResponse();

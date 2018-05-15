@@ -7,15 +7,15 @@
             "time": 1521452368194,
             "tags": [],
             "source": {
-                "domainId": "eiffel039.seli.fem101",
-                "host": "eselivm2v1464l",
-                "name": "fem101-eiffel039",
+                "domainId": "someDomain",
+                "host": "someHost",
+                "name": "someName",
                 "serializer": {
                     "groupId": "com.github.Ericsson",
                     "artifactId": "eiffel-remrem-semantics",
                     "version": "0.0.10"
                 },
-                "uri": "https://arm101-eiffel039.lmera.ericsson.se:8443/nexus/content/repositories/releases"
+                "uri": "http://host:port/path"
             },
             "security": {
                 "sdm": {
@@ -26,9 +26,9 @@
         },
         "data": {
             "gav": {
-                "groupId": "com.ericsson.eiffel",
-                "artifactId": "eiffel-dummy-component-1",
-                "version": "0.0.48-SNAPSHOT"
+                "groupId": "someGroup",
+                "artifactId": "someArtifact",
+                "version": "someVersion"
             },
             "fileInformation": [
                 {
@@ -64,15 +64,15 @@
             "time": 1521452400324,
             "tags": [],
             "source": {
-                "domainId": "eiffel039.seli.fem101",
-                "host": "eselivm2v1464l",
-                "name": "fem101-eiffel039",
+                "domainId": "someDomain",
+                "host": "someHost",
+                "name": "someName",
                 "serializer": {
                     "groupId": "com.github.Ericsson",
                     "artifactId": "eiffel-remrem-semantics",
                     "version": "0.0.10"
                 },
-                "uri": ""
+                "uri": "http://host:port/path"
             },
             "security": {
                 "sdm": {
@@ -107,8 +107,8 @@
             "time": 1521452368758,
             "tags": [],
             "source": {
-                "domainId": "eiffel039.seli.fem101",
-                "name": "fem101-eiffel039",
+                "domainId": "someDomain",
+                "name": "someName",
                 "serializer": {
                     "groupId": "com.github.Ericsson",
                     "artifactId": "eiffel-remrem-semantics",
@@ -120,7 +120,7 @@
             "locations": [
                 {
                     "type": "NEXUS",
-                    "uri": "http://localhost:8081/repository/test"
+                    "uri": "http://host:port/path"
                 }
             ],
             "customData": []

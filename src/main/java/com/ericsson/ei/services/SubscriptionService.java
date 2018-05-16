@@ -79,7 +79,6 @@ public class SubscriptionService implements ISubscriptionService {
                 // Inject aggregationtype
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
-                // return mapper.readValue(input, Subscription.class);
             } catch (IOException e) {
                 LOG.error("Malformed JSON string");
             }

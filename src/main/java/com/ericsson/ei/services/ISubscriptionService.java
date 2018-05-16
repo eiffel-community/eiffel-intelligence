@@ -44,12 +44,13 @@ public interface ISubscriptionService {
      * @return
      * @throws SubscriptionNotFoundException
      */
-    Subscription getSubscription(String name, String user) throws SubscriptionNotFoundException;
+    Subscription getSubscription(String name) throws SubscriptionNotFoundException;
     
     /**
      * 
      * @param subscription
      * @param subscriptionName
+     * @param user
      * @return
      */
     boolean modifySubscription(Subscription subscription, String subscriptionName, String user);
@@ -57,6 +58,7 @@ public interface ISubscriptionService {
     /**
      * 
      * @param name
+     * @param user
      * @return 
      * @throws SubscriptionNotFoundException
      */
@@ -67,7 +69,7 @@ public interface ISubscriptionService {
      * @param name
      * @return true when Subscription available with same name. Otherwise returns false.
      */
-    boolean doSubscriptionExist(String name, String user);
+    boolean doSubscriptionExist(String name);
 
 
 }

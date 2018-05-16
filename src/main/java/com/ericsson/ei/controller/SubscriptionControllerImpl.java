@@ -87,7 +87,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                         HttpStatus.PRECONDITION_FAILED);
             }
 
-            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName(), user)) {
+            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
                 subscriptionService.addSubscription(subscription);
                 LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
                 subscriptionResponse.setMsg("Inserted Successfully");
@@ -108,19 +108,15 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
     public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
-        String user = "";
-        if (authenticate) {
-            user = currentUser();
-        }
         List<Subscription> subscriptionList = new ArrayList<Subscription>();
         try {
             LOG.info("Subscription :" + subscriptionName + " fetch started");
-            subscriptionList.add(subscriptionService.getSubscription(subscriptionName, user));
+            subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
             LOG.info("Subscription :" + subscriptionName + " fetched");
             return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.OK);
+            return new ResponseEntity<List<Subscription>>(subscriptionList, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -149,7 +145,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<SubscriptionResponse>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
         }
 
-        if (subscriptionService.doSubscriptionExist(subscriptionName, user)) {
+        if (subscriptionService.doSubscriptionExist(subscriptionName)) {
             subscriptionService.modifySubscription(subscription, subscriptionName, user);
             LOG.info("Subscription :" + subscriptionName + " update completed");
             subscriptionResponse.setMsg("Updated Successfully");

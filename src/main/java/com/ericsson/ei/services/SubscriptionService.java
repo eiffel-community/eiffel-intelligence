@@ -48,6 +48,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Autowired
     ISubscriptionRepository subscriptionRepository;
+
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Override
@@ -63,8 +64,9 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(String name, String userName) throws SubscriptionNotFoundException {
-        String query = generateQuery(name, userName);
+    public Subscription getSubscription(String name) throws SubscriptionNotFoundException {
+        // empty userName means that result of query should not depend from userName
+        String query = generateQuery(name, "");
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
@@ -79,20 +81,18 @@ public class SubscriptionService implements ISubscriptionService {
                 return subscription;
                 // return mapper.readValue(input, Subscription.class);
             } catch (IOException e) {
-                LOG.error("malformed json string");
+                LOG.error("Malformed JSON string");
             }
         }
         return null;
     }
 
     @Override
-    public boolean doSubscriptionExist(String name, String userName) {
-        String query = generateQuery(name, userName);
+    public boolean doSubscriptionExist(String name) {
+        // empty userName means that result of query should not depend from userName 
+        String query = generateQuery(name, "");
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
-        if (list.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !list.isEmpty();
     }
 
     @Override

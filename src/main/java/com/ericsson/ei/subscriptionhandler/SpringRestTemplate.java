@@ -17,6 +17,10 @@
 package com.ericsson.ei.subscriptionhandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Base64;
+
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -24,6 +28,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * This class is responsible to send notification through REST POST to the
@@ -49,12 +54,20 @@ public class SpringRestTemplate {
      * @param headerContentMediaType
      * @return integer
      */
-    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, String headerContentMediaType) {
+    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, String headerContentMediaType, String ...args) {
         ResponseEntity<JsonNode> response;
+        
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(headerContentMediaType));
             if (headerContentMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { //"application/x-www-form-urlencoded"
+                
+                if(notificationMeta.contains("jenkins") && args.length != 0) { 
+                    String key = args[0];   
+                    String val = args[1];
+                    headers.add(key, val);                    
+                }
+                
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {

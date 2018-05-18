@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -44,13 +46,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
@@ -80,6 +87,7 @@ public class SubscriptionHandlerTest {
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static final String subscriptionPathForJenkins = "src/test/resources/SubscriptionObjectForJenkins.json";
     private static final String DB_NAME = "MissedNotification";
     private static final String COLLECTION_NAME = "Notification";
     private static final String REGEX = "^\"|\"$";
@@ -87,13 +95,21 @@ public class SubscriptionHandlerTest {
     private static final int STATUS_OK = 200;
     private static String aggregatedObject;
     private static String subscriptionData;
+    private static String subscriptionDataForJenkins;
     private static String url;
     private static String headerContentMediaType;
+    private static String urlJenkins;
+    private static String headerContentMediaTypeJenkins;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
 
+    
     @Autowired
     private RunSubscription runSubscription;
+    
+//    @Autowired
+//    private SpringRestTemplate  springRestTemplate1;
+
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -144,6 +160,8 @@ public class SubscriptionHandlerTest {
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
             subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath),
                     "UTF-8");
+            subscriptionDataForJenkins = FileUtils.readFileToString(new File(subscriptionPathForJenkins),
+                    "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -152,6 +170,8 @@ public class SubscriptionHandlerTest {
 
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
+        urlJenkins = new JSONObject(subscriptionDataForJenkins).getString("notificationMeta").replaceAll(REGEX, "");
+        headerContentMediaTypeJenkins = new JSONObject(subscriptionDataForJenkins).getString("restPostBodyMediaType");
     }
 
     @BeforeClass
@@ -288,18 +308,29 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType))
                 .thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
+        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
+    }
+    
+    @Test
+    public void testRestPostTriggerForJenkins() throws IOException {
+        String formkey = "Authorization";
+        String formvalue = "Basic XX0=";
+        when(springRestTemplate.postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue))
+                .thenReturn(STATUS_OK);
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
+        verify(springRestTemplate, times(1)).postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws IOException {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
+        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
         assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
-    }
+    }   
+    
 
     @Test
     public void testQueryMissedNotificationEndPoint() throws Exception {
@@ -315,10 +346,10 @@ public class SubscriptionHandlerTest {
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
-    private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
+    private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(data)
                 .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {

@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import javax.mail.MessagingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -90,12 +93,21 @@ public class InformSubscription {
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
-        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
-        LOGGER.debug("SubscriptionName : " + subscriptionName);
-        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
-        LOGGER.debug("NotificationType : " + notificationType);
-        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
-        LOGGER.debug("NotificationMeta : " + notificationMeta);
+        String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
+        String notificationType = getSubscriptionField("notificationType", subscriptionJson);
+        String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
+        
+        ArrayNode arrNode1 = (ArrayNode) subscriptionJson.get("notificationMessageKeyValuesAuth");
+        String key = "";
+        String val = "";
+        if (arrNode1.isArray()) {
+            for (final JsonNode objNode1 : arrNode1) {
+                key = objNode1.get("formkey").toString().replaceAll(REGEX, "");
+                val = objNode1.get("formvalue").toString().replaceAll(REGEX, "");
+            }
+        }        
+        
+                    
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
@@ -111,7 +123,12 @@ public class InformSubscription {
             String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
                     .replaceAll(REGEX, "");
             LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
-            result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType);
+            if(notificationMeta.contains("jenkins")) {
+               result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType, key, val);
+            } else {
+                result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType); 
+            }
+            
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
                     || result == HttpStatus.NO_CONTENT.value()) {
                 LOGGER.debug("The result is : " + result);
@@ -147,6 +164,7 @@ public class InformSubscription {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
+         
         }
     }
 
@@ -174,6 +192,12 @@ public class InformSubscription {
         document.put("Time", date);
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
+    }
+    
+    private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
+        String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
+        LOGGER.debug(fieldName+" : " + value);       
+        return value;
     }
 
     /**

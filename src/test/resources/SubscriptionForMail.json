@@ -1,5 +1,6 @@
 {
   "subscriptionName": "Subscription_1",
+  "userName" : "DEF",
   "repeat": false,
   "created": "data-time",
   "notificationType": "MAIL",

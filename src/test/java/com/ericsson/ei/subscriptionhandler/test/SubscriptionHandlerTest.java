@@ -87,6 +87,7 @@ public class SubscriptionHandlerTest {
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
+    private static final String subscriptionPathForJenkins = "src/test/resources/SubscriptionObjectForJenkins.json";
     private static final String DB_NAME = "MissedNotification";
     private static final String COLLECTION_NAME = "Notification";
     private static final String REGEX = "^\"|\"$";
@@ -94,19 +95,20 @@ public class SubscriptionHandlerTest {
     private static final int STATUS_OK = 200;
     private static String aggregatedObject;
     private static String subscriptionData;
+    private static String subscriptionDataForJenkins;
     private static String url;
     private static String headerContentMediaType;
+    private static String urlJenkins;
+    private static String headerContentMediaTypeJenkins;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-    
-    private static final String subscriptionPathForJenkins = "src/test/resources/SubscriptionObjectForJenkins.json";
-    private static String subscriptionDataForJenkins;
 
+    
     @Autowired
     private RunSubscription runSubscription;
     
-    @Autowired
-    private SpringRestTemplate  springRestTemplate1;
+//    @Autowired
+//    private SpringRestTemplate  springRestTemplate1;
 
 
     @Autowired
@@ -131,8 +133,8 @@ public class SubscriptionHandlerTest {
     @Autowired
     private ProcessMissedNotification processMissedNotification;
 
-//    @MockBean
-//    private SpringRestTemplate springRestTemplate;
+    @MockBean
+    private SpringRestTemplate springRestTemplate;
 
     static String host = "localhost";
     static int port = 27017;
@@ -168,6 +170,8 @@ public class SubscriptionHandlerTest {
 
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
+        urlJenkins = new JSONObject(subscriptionDataForJenkins).getString("notificationMeta").replaceAll(REGEX, "");
+        headerContentMediaTypeJenkins = new JSONObject(subscriptionDataForJenkins).getString("restPostBodyMediaType");
     }
 
     @BeforeClass
@@ -277,17 +281,17 @@ public class SubscriptionHandlerTest {
         assertEquals(expectedOutput, output);
     }
 
-//    @Test
-//    public void missedNotificationWithTTLTest() throws IOException, InterruptedException {
-//        System.out.println(subscriptionData);
-//        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-//        // Time to live lower than 60 seconds will not have any effect since
-//        // removal runs every 60 seconds
-//        Thread.sleep(65000);
-//        List<String> allDocs = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
-//        System.out.println(allDocs.toString());
-//        assertTrue(allDocs.isEmpty());
-//    }
+    @Test
+    public void missedNotificationWithTTLTest() throws IOException, InterruptedException {
+        System.out.println(subscriptionData);
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        // Time to live lower than 60 seconds will not have any effect since
+        // removal runs every 60 seconds
+        Thread.sleep(65000);
+        List<String> allDocs = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
+        System.out.println(allDocs.toString());
+        assertTrue(allDocs.isEmpty());
+    }
 
     @Test
     public void sendMailTest() {
@@ -304,18 +308,29 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-//        when(springRestTemplate1.postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType))
-//                .thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType))
+                .thenReturn(STATUS_OK);
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
+    }
+    
+    @Test
+    public void testRestPostTriggerForJenkins() throws IOException {
+        String formkey = "Authorization";
+        String formvalue = "Basic XX0=";
+        when(springRestTemplate.postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue))
+                .thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
-        verify(springRestTemplate1, times(1)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
+        verify(springRestTemplate, times(1)).postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws IOException {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate1, times(4)).postDataMultiValue(url, mapNotificationMessage(), headerContentMediaType);
+        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
         assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
-    }
+    }   
+    
 
     @Test
     public void testQueryMissedNotificationEndPoint() throws Exception {
@@ -331,10 +346,10 @@ public class SubscriptionHandlerTest {
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
-    private MultiValueMap<String, String> mapNotificationMessage() throws IOException {
+    private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(subscriptionData)
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(data)
                 .get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
@@ -344,32 +359,5 @@ public class SubscriptionHandlerTest {
             }
         }
         return mapNotificationMessage;
-    }
-    
-//    @Test
-    public void testInform() throws IOException {
-    
-//    subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
-//        
-        String notificationMeta = "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/test_params/buildWithParameters";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        
-        String user = "ezsahoi", password = "1ec70486706e614460472f3b928fa2b0";
-        
-        String notEncoded = user + ":" + password;
-        String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.add("Authorization", "Basic " + encodedAuth); 
-        
-
-        BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"}]}");
-        HttpEntity<String> request = new HttpEntity<String>(vp.toString(), httpHeaders);
-       ResponseEntity<String> personEntity = restTemplate.postForEntity(notificationMeta, request,String.class);
-     
-        assertEquals("3","3");
-       
     }
 }

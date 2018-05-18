@@ -6,12 +6,16 @@
         "notificationType": "REST_POST",
         "notificationMeta": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/test_params/build",
         "restPostBodyMediaType": "application/x-www-form-urlencoded",
-        "restUser": "ju",
-        "token": "tk",
         "notificationMessageKeyValues" : [
           {
             "formkey" : "json",
             "formvalue" : "{parameter: [{ name: 'parameter', value : 'parameterValue' }]}"
+          }
+        ],
+        "notificationMessageKeyValuesAuth" : [ 
+          {
+            "formkey" : "Authorization",
+            "formvalue" : "Basic XX0="
           }
         ],
         "requirements": [

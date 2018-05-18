@@ -63,11 +63,9 @@ public class SpringRestTemplate {
             if (headerContentMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { //"application/x-www-form-urlencoded"
                 
                 if(notificationMeta.contains("jenkins") && args.length != 0) { 
-                    String user = args[0];   
-                    String password = args[1];
-                    String notEncoded = user + ":" + password;
-                    String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
-                    headers.add("Authorization", "Basic " + encodedAuth);                    
+                    String key = args[0];   
+                    String val = args[1];
+                    headers.add(key, val);                    
                 }
                 
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
@@ -91,23 +89,5 @@ public class SpringRestTemplate {
             LOGGER.debug("The response Body is : " + restCall);
         }
         return response.getStatusCode().value();
-    }
-    
-    public void postDataMultiValue(BasicNameValuePair vp, String user, String password) {
-        
-        String notificationMeta = "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/test_params/buildWithParameters";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        
-//        String notEncoded = user + ":" + password;
-//        String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Basic " + encodedAuth);
-
-//        BasicNameValuePair vp = new BasicNameValuePair("json","{\"parameter\": [{\"name\":\"parameter\", \"value\":\"taskfile\"},{\"name\":\"parameter2\",\"value\": \"kfile\"}]}");
-        HttpEntity<String> request = new HttpEntity<String>(vp.toString(), httpHeaders);
-        ResponseEntity<String> personEntity = restTemplate.postForEntity(notificationMeta, request,String.class);
     }
 }

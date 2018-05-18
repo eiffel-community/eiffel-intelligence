@@ -67,10 +67,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
     
     private String user = "";
-    private String restUser = "";
-    private String token = "";
 
-
+    
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
@@ -85,14 +83,14 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             if (authenticate) {
                 user = currentUser();
             }            
-            if(httpServletRequest.getHeader("Authorization") != null && !httpServletRequest.getHeader("Authorization").isEmpty()) {
-                String [] userAndToken = getCrendentials();
-                restUser = userAndToken[0];
-                token = userAndToken[1];
-            }
+//            if(httpServletRequest.getHeader("Authorization") != null && !httpServletRequest.getHeader("Authorization").isEmpty()) {
+//                String [] userAndToken = getCrendentials();
+//                restUser = userAndToken[0];
+//                token = userAndToken[1];
+//            }
             subscription.setUserName(user);
-            subscription.setRestUser(restUser);
-            subscription.setToken(token);           
+//            subscription.setRestUser(restUser);
+//            subscription.setToken(token);           
 
             subResponse = null;
             try {
@@ -226,18 +224,18 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         return SecurityContextHolder.getContext().getAuthentication().getName();        
     }
     
-    public String[] getCrendentials() {   
-        String[] values = null;
-        String authorization = httpServletRequest.getHeader("Authorization");
-        if (authorization != null && authorization.startsWith("Basic")) {
-            // Authorization: Basic base64credentials
-            String base64Credentials = authorization.substring("Basic".length()).trim();
-            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-                    Charset.forName("UTF-8"));
-            // credentials = username:password
-            values = credentials.split(":",2);
-        }
-        return values;
-    }
+//    public String[] getCrendentials() {   
+//        String[] values = null;
+//        String authorization = httpServletRequest.getHeader("Authorization");
+//        if (authorization != null && authorization.startsWith("Basic")) {
+//            // Authorization: Basic base64credentials
+//            String base64Credentials = authorization.substring("Basic".length()).trim();
+//            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+//                    Charset.forName("UTF-8"));
+//            // credentials = username:password
+//            values = credentials.split(":",2);
+//        }
+//        return values;
+//    }
 
 }

@@ -93,22 +93,20 @@ public class InformSubscription {
      * @param subscriptionJson
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
-//        String subscriptionName = subscriptionJson.get("subscriptionName").toString().replaceAll(REGEX, "");
-//        LOGGER.debug("SubscriptionName : " + subscriptionName);
-//        String notificationType = subscriptionJson.get("notificationType").toString().replaceAll(REGEX, "");
-//        LOGGER.debug("NotificationType : " + notificationType);
-//        String notificationMeta = subscriptionJson.get("notificationMeta").toString().replaceAll(REGEX, "");
-//        LOGGER.debug("NotificationMeta : " + notificationMeta);
-//        String restUser = subscriptionJson.get("restUser").toString().replaceAll(REGEX, "");
-//        LOGGER.debug("restUser : " + restUser);            
-//        String token = subscriptionJson.get("token").toString().replaceAll(REGEX, "");
-//        LOGGER.debug("token : " + token);
-        
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
-        String restUser = getSubscriptionField("restUser", subscriptionJson);
-        String token = getSubscriptionField("token", subscriptionJson);
+        
+        ArrayNode arrNode1 = (ArrayNode) subscriptionJson.get("notificationMessageKeyValuesAuth");
+        String key = "";
+        String val = "";
+        if (arrNode1.isArray()) {
+            for (final JsonNode objNode1 : arrNode1) {
+                key = objNode1.get("formkey").toString().replaceAll(REGEX, "");
+                val = objNode1.get("formvalue").toString().replaceAll(REGEX, "");
+            }
+        }        
+        
                     
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
@@ -126,7 +124,7 @@ public class InformSubscription {
                     .replaceAll(REGEX, "");
             LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
             if(notificationMeta.contains("jenkins")) {
-               result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType, restUser, token);
+               result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType, key, val);
             } else {
                 result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType); 
             }
@@ -199,7 +197,7 @@ public class InformSubscription {
     private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
         String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
         LOGGER.debug(fieldName+" : " + value);       
-        return "";
+        return value;
     }
 
     /**

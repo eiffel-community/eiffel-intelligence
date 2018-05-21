@@ -70,8 +70,9 @@ public class ObjectHandler {
 
     @Getter
     @Value("${aggregated.collection.ttlValue}")
-    private int ttlValue;
-
+    private String ttlValue;
+    
+    
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
@@ -81,8 +82,8 @@ public class ObjectHandler {
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
         
-        if(ttlValue > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        if( getTtl() > 0) {
+            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
         }
 
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
@@ -219,5 +220,13 @@ public class ObjectHandler {
             }
         }
         return null;
+    }
+    
+    public int getTtl() {
+        int ttl = 0;       
+        if(ttlValue != null && !ttlValue.isEmpty()) {
+            ttl = Integer.parseInt(ttlValue);
+            }        
+        return ttl;       
     }
 }

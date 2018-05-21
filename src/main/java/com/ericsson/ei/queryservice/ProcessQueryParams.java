@@ -97,7 +97,7 @@ public class ProcessQueryParams {
 
     @PostConstruct
     public void print() {
-        LOGGER.debug("Aggregation Database : " + databaseName);
-        LOGGER.debug("Aggregation Collection is : " + aggregationCollectionName);
+        LOGGER.debug("Aggregation Database : " + databaseName
+            + "\nAggregation Collection is : " + aggregationCollectionName);
     }
 }

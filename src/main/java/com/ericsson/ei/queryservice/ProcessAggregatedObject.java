@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -40,13 +41,13 @@ import java.util.ArrayList;
 @Component
 public class ProcessAggregatedObject {
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);
+
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
     @Value("${spring.data.mongodb.database}")
     private String aggregationDataBaseName;
-
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);
 
     @Autowired
     private MongoDBHandler handler;
@@ -56,9 +57,9 @@ public class ProcessAggregatedObject {
      * the ID from the aggregatedObject.
      *
      * @param id
-     * @return ArrayList
+     * @return List
      */
-    public ArrayList<String> processQueryAggregatedObject(String id) {
+    public List<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"_id\" : \"" + id + "\"}";
         LOGGER.debug("The condition is : " + condition);
@@ -69,7 +70,7 @@ public class ProcessAggregatedObject {
             LOGGER.error(e.getMessage(), e);
         }
         LOGGER.debug("The Json condition is : " + jsonCondition);
-        ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
+        List<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
                 jsonCondition.toString());
         return response;
     }
@@ -78,7 +79,7 @@ public class ProcessAggregatedObject {
      * The method is responsible to extract the aggregated data on the basis of
      * the ID from the aggregatedObject.
      * 
-     * @param id
+     * @param templateName
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
@@ -131,7 +132,7 @@ public class ProcessAggregatedObject {
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName);
-        LOGGER.debug("The Aggregated Collection is : " + aggregationCollectionName);
+        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName
+            + "\nThe Aggregated Collection is : " + aggregationCollectionName);
     }
 }

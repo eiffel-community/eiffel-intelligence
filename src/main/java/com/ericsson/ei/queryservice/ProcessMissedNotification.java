@@ -33,13 +33,13 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessMissedNotification {
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
+
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;
 
     @Value("${missedNotificationDataBaseName}")
     private String missedNotificationDatabaseName;
-
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
 
     @Autowired
     private MongoDBHandler handler;
@@ -77,8 +77,8 @@ public class ProcessMissedNotification {
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("MissedNotification Database is : " + missedNotificationDatabaseName);
-        LOGGER.debug("MissedNotification Collection is : " + missedNotificationCollectionName);
+        LOGGER.debug("MissedNotification Database is : " + missedNotificationDatabaseName
+            + "\nMissedNotification Collection is : " + missedNotificationCollectionName);
     }
 
 }

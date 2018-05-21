@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
@@ -48,7 +48,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         QueryResponse queryResponse= new QueryResponse();
-        ArrayList<String> response = processAggregatedObject.processQueryAggregatedObject(id);
+        List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
         queryResponse.setResponseEntity(response.toString());
         LOGGER.debug("The response is : " + response.toString());
         return new ResponseEntity<>(queryResponse, HttpStatus.OK);

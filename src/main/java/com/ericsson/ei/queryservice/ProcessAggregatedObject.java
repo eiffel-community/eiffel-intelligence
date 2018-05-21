@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -57,9 +56,9 @@ public class ProcessAggregatedObject {
      * the ID from the aggregatedObject.
      *
      * @param id
-     * @return List
+     * @return ArrayList
      */
-    public List<String> processQueryAggregatedObject(String id) {
+    public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"_id\" : \"" + id + "\"}";
         LOGGER.debug("The condition is : " + condition);
@@ -70,7 +69,7 @@ public class ProcessAggregatedObject {
             LOGGER.error(e.getMessage(), e);
         }
         LOGGER.debug("The Json condition is : " + jsonCondition);
-        List<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
+        ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
                 jsonCondition.toString());
         return response;
     }

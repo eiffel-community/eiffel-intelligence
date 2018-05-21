@@ -82,9 +82,9 @@ public class ObjectHandler {
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
         
         //setting high value for ttlValue as there is no way to set it infinite
-        if(ttlValue == 0){ttlValue = 1000000000;}
-
-        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        if(ttlValue > 0) {
+            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        }
 
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)

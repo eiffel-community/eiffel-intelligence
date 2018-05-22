@@ -53,12 +53,9 @@ public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
     
     @Getter
+    @Setter
     @JsonIgnore
     private MongoClient mongoClient;
-
-    public void setMongoClient(MongoClient mongoClient) {
-        this.mongoClient = mongoClient;
-    }
 
     @Getter
     @Value("${spring.data.mongodb.host}")

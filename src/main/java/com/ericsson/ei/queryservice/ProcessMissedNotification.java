@@ -16,14 +16,6 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import org.bson.Document;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.jongo.MongoCursor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,13 +33,13 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessMissedNotification {
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
+
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;
 
     @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDataBaseName;
-
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
+    private String missedNotificationDatabaseName;
 
     @Autowired
     private MongoDBHandler handler;
@@ -71,7 +62,7 @@ public class ProcessMissedNotification {
             LOGGER.error(e.getMessage(), e);
         }
         LOGGER.debug("The Json condition is : " + jsonCondition);
-        ArrayList<String> output = handler.find(missedNotificationDataBaseName, missedNotificationCollectionName,
+        List<String> output = handler.find(missedNotificationDatabaseName, missedNotificationCollectionName,
                 jsonCondition.toString());
         return output.stream().map(a -> {
             try {
@@ -84,40 +75,10 @@ public class ProcessMissedNotification {
 
     }
 
-    /**
-     * This method is responsible for fetching all the missed notifications from
-     * the missed Notification database and return it as JSONArray.
-     *
-     * @param request
-     * @param MissedNotificationDataBaseName
-     * @param MissedNotificationCollectionName
-     * @return JSONArray
-     */
-    public JSONArray processQueryMissedNotification(JsonNode request, String MissedNotificationDataBaseName, String MissedNotificationCollectionName) {
-        DB db = new MongoClient().getDB(MissedNotificationDataBaseName);
-        Jongo jongo = new Jongo(db);
-        MongoCollection aggObjects = jongo.getCollection(MissedNotificationCollectionName);
-        LOGGER.debug("Successfully connected to MissedNotification database");
-        MongoCursor<Document> allDocuments = aggObjects.find(request.toString()).as(Document.class);
-        LOGGER.debug("Number of document returned from Notification collection is : " + allDocuments.count());
-        JSONArray jsonArray = new JSONArray();
-        JSONObject doc = null;
-        while (allDocuments.hasNext()) {
-            Document temp = allDocuments.next();
-            try {
-                doc = new JSONObject(temp.toJson());
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-            jsonArray.put(doc);
-        }
-        return jsonArray;
-    }
-
     @PostConstruct
     public void init() {
-        LOGGER.debug("The Aggregated Database is : " + missedNotificationDataBaseName);
-        LOGGER.debug("The Aggregated Collection is : " + missedNotificationCollectionName);
+        LOGGER.debug("MissedNotification Database is : " + missedNotificationDatabaseName
+            + "\nMissedNotification Collection is : " + missedNotificationCollectionName);
     }
 
 }

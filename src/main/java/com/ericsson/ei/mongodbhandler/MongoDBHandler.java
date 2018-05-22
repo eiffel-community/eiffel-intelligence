@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Setter;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +53,8 @@ public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
     
     @Getter
-    MongoClient mongoClient;
+    @JsonIgnore
+    private MongoClient mongoClient;
 
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;

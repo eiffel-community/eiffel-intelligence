@@ -16,6 +16,37 @@
 */
 package com.ericsson.ei.flowtests;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
@@ -27,35 +58,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.client.MongoCollection;
 import com.rabbitmq.client.Channel;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONException;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
 @SpringBootTest
-public class TrafficGeneratedTest extends FlowTestConfigs {
+public class TrafficGeneratedTest extends FlowTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
     private static final int EVENT_PACKAGES = 10;
@@ -81,25 +88,26 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
     @Mock
     private ERQueryService erQueryService;
 
-    @Value("${database.name}")
+    @Value("${spring.data.mongodb.database}")
     private String database;
     @Value("${event_object_map.collection.name}")
     private String event_map;
-
+    
     @Before
     public void before() throws IOException {
+        MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
-            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
-    @Test
-    public void trafficGeneratedTest() {
+    @Override
+    public void flowTest() {
         try {
             List<String> eventNames = getEventNamesToSend();
             List<String> events = getPreparedEventsToSend(eventNames);
@@ -107,8 +115,8 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
 
             String queueName = rmqHandler.getQueueName();
             String exchange = "ei-poc-4";
-            createExchange(exchange, queueName);
-            Channel channel = conn.createChannel();
+            getFlowTestConfigs().createExchange(exchange, queueName);
+            Channel channel = getFlowTestConfigs().getConn().createChannel();
 
             rulesHandler.setRulePath(RULES_FILE_PATH);
 
@@ -139,10 +147,13 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
     }
 
     /**
-     * This method loops through every package of events and changes their ids and targets to unique value.
-     * Ids of events that are located in the same package are related.
-     * Events are sent to RabbitMQ queue. Deterministic traffic is used.
-     * @param eventNames list of events to be sent.
+     * This method loops through every package of events and changes their ids
+     * and targets to unique value. Ids of events that are located in the same
+     * package are related. Events are sent to RabbitMQ queue. Deterministic
+     * traffic is used.
+     * 
+     * @param eventNames
+     *            list of events to be sent.
      * @return list of ready to send events.
      */
     private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {
@@ -151,7 +162,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
         String jsonFileContent = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
         JsonNode parsedJSON = objectMapper.readTree(jsonFileContent);
         for (int i = 0; i < EVENT_PACKAGES; i++) {
-            for(String eventName : eventNames) {
+            for (String eventName : eventNames) {
                 JsonNode eventJSON = parsedJSON.get(eventName);
                 newID = eventJSON.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));
                 ((ObjectNode) eventJSON.path("meta")).put("id", newID);
@@ -167,7 +178,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
         return events;
     }
 
-    private List<String> getEventNamesToSend() {
+    List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
 
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
@@ -188,7 +199,7 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
     private void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
         long processedEvents = 0;
-        MongoCollection eventMap = mongoClient.getDatabase(database).getCollection(event_map);
+        MongoCollection eventMap = getFlowTestConfigs().getMongoClient().getDatabase(database).getCollection(event_map);
         while (processedEvents < eventsCount) {
             processedEvents = eventMap.count();
         }
@@ -206,6 +217,24 @@ public class TrafficGeneratedTest extends FlowTestConfigs {
             LOGGER.debug("Complete aggregated object #" + i + ": " + actualJSON);
             assertEquals(expectedJSON.toString().length(), actualJSON.toString().length());
         }
+    }
+
+    @Override
+    String getRulesFilePath() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    String getEventsFilePath() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    Map<String, JsonNode> getCheckData() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

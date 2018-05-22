@@ -1,95 +1,98 @@
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.mongodb.MongoClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.SocketUtils;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import lombok.Getter;
 
 public class FlowTestConfigs {
 
-    @Autowired
-    private MongoDBHandler mongoDBHandler;
+    private AMQPBrokerManager amqpBroker;
+    private MongodForTestsFactory testsFactory;
+    private Queue queue = null;
+    private RabbitAdmin admin;
+    private ConnectionFactory cf;
 
-    @Autowired
-    private WaitListStorageHandler waitlist;
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
 
-    private static AMQPBrokerManager amqpBroker;
-    private static MongodForTestsFactory testsFactory;
-    private static Queue queue = null;
-    private static RabbitAdmin admin;
-    private static ConnectionFactory cf;
-    static Connection conn;
-    static MongoClient mongoClient = null;
+    @Getter
+    private Connection conn;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        System.setProperty("flow.test", "true");
-        System.setProperty("eiffel.intelligence.processedEventsCount", "0");
-        System.setProperty("eiffel.intelligence.waitListEventsCount", "0");
+    @Getter
+    private MongoClient mongoClient = null;
+
+    public void init() throws Exception {
         setUpMessageBus();
         setUpEmbeddedMongo();
     }
 
-    @PostConstruct
-    public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
-        waitlist.setMongoDbHandler(mongoDBHandler);
-    }
-
-    private static void setUpMessageBus() throws  Exception {
-        System.setProperty("rabbitmq.port", "8672");
+    private void setUpMessageBus() throws Exception {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "5000");
-        System.setProperty("waitlist.fixedRateResend", "1000");
+        System.setProperty("waitlist.initialDelayResend", "500");
+        System.setProperty("waitlist.fixedRateResend", "100");
 
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath());
+        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
         cf = new ConnectionFactory();
         cf.setUsername("guest");
         cf.setPassword("guest");
-        cf.setPort(8672);
+
+        cf.setPort(port);
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
+
     }
 
-    private static void setUpEmbeddedMongo() throws IOException {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("mongodb.port", port);
+    private void setUpEmbeddedMongo() throws IOException {
+        try {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();  
+            System.setProperty("spring.data.mongodb.port", port);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
-    @AfterClass
-    public static void tearDown() {
+    public void tearDown() {
         if (amqpBroker != null) {
             amqpBroker.stopBroker();
         }
         try {
             conn.close();
         } catch (Exception e) {
-            //We try to close the connection but if
-            //the connection is closed we just receive the
-            //exception and go on
+            // We try to close the connection but if
+            // the connection is closed we just receive the
+            // exception and go on
         }
+
+        if (mongoClient != null)
+            mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
+
     }
 
     void createExchange(final String exchangeName, final String queueName) {

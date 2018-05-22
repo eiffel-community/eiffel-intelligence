@@ -26,10 +26,10 @@ public interface ISubscriptionService {
     
     /**
      * 
-     * @param Subscription
+     * @param subscription
      * @return
      */
-    boolean addSubscription(Subscription Subscription);
+    boolean addSubscription(Subscription subscription);
     
     /**
      * 
@@ -40,11 +40,11 @@ public interface ISubscriptionService {
     
     /**
      * 
-     * @param name
+     * @param subscriptionName
      * @return
      * @throws SubscriptionNotFoundException
      */
-    Subscription getSubscription(String name) throws SubscriptionNotFoundException;
+    Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException;
     
     /**
      * 
@@ -56,18 +56,18 @@ public interface ISubscriptionService {
     
     /**
      * 
-     * @param name
+     * @param subscriptionName
      * @return 
      * @throws SubscriptionNotFoundException
      */
-    boolean deleteSubscription(String name);
+    boolean deleteSubscription(String subscriptionName);
 
     /**
      * doSubscriptionExist method checks the is there any Subscription By Subscription Name
-     * @param name
+     * @param subscriptionName
      * @return true when Subscription available with same name. Otherwise returns false.
      */
-    boolean doSubscriptionExist(String name);
+    boolean doSubscriptionExist(String subscriptionName);
 
 
 }

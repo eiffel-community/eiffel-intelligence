@@ -51,7 +51,7 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
         List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
         queryResponse.setResponseEntity(response.toString());
         LOGGER.debug("The response is : " + response.toString());
-        return new ResponseEntity(queryResponse, HttpStatus.OK);
+        return new ResponseEntity<>(queryResponse, HttpStatus.OK);
     }
 
 }

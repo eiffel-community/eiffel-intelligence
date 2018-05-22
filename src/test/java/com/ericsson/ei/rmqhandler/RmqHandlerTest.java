@@ -20,17 +20,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
+
+import com.ericsson.ei.App;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        App.class, 
+        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+    })
 public class RmqHandlerTest {
 
     private Boolean queueDurable = true;
@@ -47,6 +55,12 @@ public class RmqHandlerTest {
 
     @Mock
     private ConnectionFactory factory;
+    
+    @BeforeClass
+    public static void init() {
+        int port = SocketUtils.findAvailableTcpPort();
+        System.setProperty("spring.data.mongodb.port", "" + port);
+    }
 
     @Before public void setUp() {
         MockitoAnnotations.initMocks(this);

@@ -35,6 +35,8 @@
       "type" : "ARTIFACT_1"
     }
   ],
-  "subscriptionName" : "Subscription_Test"
+  "subscriptionName" : "Subscription_Test",
+  "userName" : "ABC"
+  
 }
 ]

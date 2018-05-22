@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.stream.IntStream;
 
 /**
  * This class is responsible to fetch the criterias from both the query
@@ -42,24 +40,15 @@ public class ProcessQueryParams {
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${database.name}")
-    private String dataBaseName;
-
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollectionName;
-
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDataBaseName;
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
 
-    @Autowired
-    private ProcessMissedNotification processMissedNotification;
-
     /**
-     * This method takes the parameters from the REST POST request body.
-     * If the Aggregated Object matches the condition, then it is returned.
+     * This method takes the parameters from the REST POST request body. If the
+     * Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray
@@ -70,33 +59,20 @@ public class ProcessQueryParams {
         JsonNode options = request.get("options");
         LOGGER.debug("The criteria is : " + criteria.toString());
         LOGGER.debug("The options is : " + options.toString());
+        JSONArray resultAggregatedObject;
         if (options.toString().equals("{}") || options.isNull()) {
-            return getProcessQuery(criteria);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            return getProcessQuery(new ObjectMapper().readTree(result));
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(new ObjectMapper().readTree(result), databaseName, aggregationCollectionName);
         }
+        LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+        return resultAggregatedObject;
     }
 
     /**
-     * This method is responsible for concatenating two JSONArrays.
-     *
-     * @param firstArray
-     * @param secondArray
-     * @return JSONArray
-     * @throws JSONException
-     */
-    private static JSONArray concatArray(JSONArray firstArray, JSONArray secondArray) throws JSONException {
-        JSONArray result = new JSONArray();
-        IntStream.range(0, firstArray.length()).mapToObj(firstArray::get).forEach(result::put);
-        IntStream.range(0, secondArray.length()).mapToObj(secondArray::get).forEach(result::put);
-        return result;
-    }
-
-    /**
-     * This method takes the parameters from the REST GET request query.
-     * If the Aggregated Object matches the condition, then
-     * it is returned.
+     * This method takes the parameters from the REST GET request query. If the
+     * Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray
@@ -116,37 +92,12 @@ public class ProcessQueryParams {
             criteria.put(key, value);
         }
         LOGGER.debug(criteria.toString());
-        return getProcessQuery(criteria);
-    }
-
-    /**
-     * Process parameters to create a JsonNode request to query the
-     * Aggregated Objects.
-     *
-     * @param criteria
-     * @return
-     */
-    private JSONArray getProcessQuery(JsonNode criteria) {
-        JSONArray resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, dataBaseName, aggregationCollectionName);
-        JSONArray resultMissedNotification = processMissedNotification.processQueryMissedNotification(criteria, missedNotificationDataBaseName, missedNotificationCollectionName);
-        LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
-        LOGGER.debug("resultMissedNotification : " + resultMissedNotification.toString());
-        JSONArray result = null;
-        try {
-            result = ProcessQueryParams.concatArray(resultAggregatedObject, resultMissedNotification);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-        LOGGER.debug("Final Result is : " + result.toString());
-        return result;
+        return processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
     }
 
     @PostConstruct
     public void print() {
-        LOGGER.debug("Values from application.properties file");
-        LOGGER.debug("AggregationCollectionName : " + aggregationCollectionName);
-        LOGGER.debug("AggregationDataBaseName : " + dataBaseName);
-        LOGGER.debug("MissedNotificationCollectionName : " + missedNotificationCollectionName);
-        LOGGER.debug("MissedNotificationDataBaseName : " + missedNotificationDataBaseName);
+        LOGGER.debug("Aggregation Database : " + databaseName
+            + "\nAggregation Collection is : " + aggregationCollectionName);
     }
 }

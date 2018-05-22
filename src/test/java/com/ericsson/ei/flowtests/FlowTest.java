@@ -16,20 +16,11 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,16 +29,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import com.ericsson.ei.App;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
+@SpringBootTest(classes = App.class)
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalComposition.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
     @Autowired
@@ -58,6 +68,7 @@ public class FlowTest extends FlowTestBase {
 
     @Before
     public void before() throws IOException {
+        MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
         final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
@@ -66,8 +77,8 @@ public class FlowTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(), anyBoolean()))
-            .thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
     }
 
     @Override
@@ -78,6 +89,11 @@ public class FlowTest extends FlowTestBase {
     @Override
     String getEventsFilePath() {
         return EVENTS_FILE_PATH;
+    }
+
+    @Override
+    protected int extraEventsCount() {
+        return 8;
     }
 
     @Override

@@ -54,8 +54,8 @@ public class TestWaitListStorageHandler {
     public void init() throws IOException{
         MockitoAnnotations.initMocks(this);
         output.add(FileUtils.readFileToString(new File(inputJson1), "UTF-8"));
-        Mockito.when(mongoDBHandler.getAllDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(output);
-        Mockito.when(mongoDBHandler.insertDocument(Mockito.anyString(), Mockito.anyString(),Mockito.anyString())).thenReturn(true);
+        Mockito.when(mongoDBHandler.getAllDocuments(Mockito.any(), Mockito.any())).thenReturn(output);
+        Mockito.when(mongoDBHandler.insertDocument(Mockito.any(), Mockito.any(),Mockito.anyString())).thenReturn(true);
         waitListStorageHandler.setMongoDbHandler(mongoDBHandler);
         waitListStorageHandler.setJmesPathInterface(jmespath);
     }

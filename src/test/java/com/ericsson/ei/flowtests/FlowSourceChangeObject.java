@@ -51,7 +51,7 @@ public class FlowSourceChangeObject extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_ID = "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
-    private static final String UPSTREAM_RESULT_FILE = "UpstreamEventsForSourceChange.json";
+    private static final String UPSTREAM_FILE = "UpstreamEventsForSourceChange.json";
 
     @Override
     String getRulesFilePath() {
@@ -73,7 +73,7 @@ public class FlowSourceChangeObject extends FlowTestBase {
     public void before() throws IOException {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_FILE);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));

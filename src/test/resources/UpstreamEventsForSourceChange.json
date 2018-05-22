@@ -41,10 +41,6 @@
       ]
     },
     "links": [
-      {
-        "type": "BASE",
-        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
-      }
     ]
   },
   {
@@ -52,7 +48,7 @@
       "type": "EiffelSourceChangeCreatedEvent",
       "version": "1.0.0",
       "time": 1234567890,
-      "id": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+      "id": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
       "source": {
         "domainId": "example.domain"
       }
@@ -89,6 +85,10 @@
       ]
     },
     "links": [
+      {
+        "type": "BASE",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
+      },
       {
         "type": "PREVIOUS_VERSION",
         "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47"

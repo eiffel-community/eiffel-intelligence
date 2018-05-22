@@ -1,0 +1,51 @@
+[
+    {
+        "TemplateName": "ARTIFACT_TEST",
+        "Type": "EiffelArtifactCreatedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "YES",
+        "IdentifyRules": "[meta.id]",
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
+        "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
+        "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
+        "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "links | [?type=='COMPOSITION'].target",
+        "HistoryExtractionRules": "{internalComposition:{artifacts: [{id : meta.id}]}}",
+        "HistoryPathRules": "{artifacts: {id: meta.id}}",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    },
+    {
+        "TemplateName": "ARTIFACT_TEST",
+        "Type": "EiffelArtifactPublishedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "NO",
+        "IdentifyRules": "links | [?type=='ARTIFACT'].target",
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+        "ExtractionRules": "{ publications :[ { eventId : meta.id, time : meta.time, locations : data.locations  }] }",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    },
+    {
+        "TemplateName": "ARTIFACT_TEST",
+        "Type": "EiffelConfidenceLevelModifiedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "NO",
+        "IdentifyRules": "links | [?type=='SUBJECT'].target",
+        "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+        "ExtractionRules": "{confidenceLevels :[{ eventId:meta.id, time:meta.time, name:data.name, value:data.value}]}",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    }
+]

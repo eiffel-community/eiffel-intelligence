@@ -1,7 +1,30 @@
-    /subscriptiontemplate:
-      get:
-        description: Subscription template
-        responses:
-          200:
-            body:
-              application/json:
+  get:
+    description: This call for getting list of available templates
+    responses:
+      200:
+        body:
+          application/string:
+
+  /subscriptionsTemplate:
+    get:
+      description: This call for getting subscriptions template
+      responses:
+        200:
+          body:
+            application/string:
+
+  /rulesTemplate:
+    get:
+      description: This call for getting rules template
+      responses:
+        200:
+          body:
+            application/string:
+
+  /eventsTemplate:
+    get:
+      description: This call for getting events template
+      responses:
+        200:
+          body:
+            application/string:

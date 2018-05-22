@@ -1,0 +1,135 @@
+[
+    {
+        "meta": {
+            "id": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",
+            "type": "EiffelArtifactCreatedEvent",
+            "version": "1.1.0",
+            "time": 1521452368194,
+            "tags": [],
+            "source": {
+                "domainId": "someDomain",
+                "host": "someHost",
+                "name": "someName",
+                "serializer": {
+                    "groupId": "com.github.Ericsson",
+                    "artifactId": "eiffel-remrem-semantics",
+                    "version": "0.0.10"
+                },
+                "uri": "http://host:port/path"
+            },
+            "security": {
+                "sdm": {
+                    "authorIdentity": "test",
+                    "encryptedDigest": "sample"
+                }
+            }
+        },
+        "data": {
+            "gav": {
+                "groupId": "someGroup",
+                "artifactId": "someArtifact",
+                "version": "someVersion"
+            },
+            "fileInformation": [
+                {
+                    "classifier": "",
+                    "extension": "war"
+                }
+            ],
+            "buildCommand": "trigger",
+            "requiresImplementation": "NONE",
+            "dependsOn": [
+                {
+                    "groupId": "",
+                    "artifactId": "",
+                    "version": ""
+                }
+            ],
+            "implements": [],
+            "name": "event",
+            "customData": []
+        },
+        "links": [
+            {
+                "type": "CAUSE",
+                "target": "f2752b34-e4d6-4d6e-8ea8-e5e17aa9e1b3"
+            }
+        ]
+    },
+    {
+        "meta": {
+            "id": "e3be0cf8-2ebd-4d6d-bf5c-a3b535cd084e",
+            "type": "EiffelConfidenceLevelModifiedEvent",
+            "version": "1.1.0",
+            "time": 1521452400324,
+            "tags": [],
+            "source": {
+                "domainId": "someDomain",
+                "host": "someHost",
+                "name": "someName",
+                "serializer": {
+                    "groupId": "com.github.Ericsson",
+                    "artifactId": "eiffel-remrem-semantics",
+                    "version": "0.0.10"
+                },
+                "uri": "http://host:port/path"
+            },
+            "security": {
+                "sdm": {
+                    "authorIdentity": "true",
+                    "encryptedDigest": "true"
+                }
+            }
+        },
+        "data": {
+            "name": "dummy_1_stable",
+            "value": "SUCCESS",
+            "issuer": {
+                "name": "",
+                "email": "",
+                "id": "",
+                "group": ""
+            },
+            "customData": []
+        },
+        "links": [
+            {
+                "type": "SUBJECT",
+                "target": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22"
+            }
+        ]
+    },
+    {
+        "meta": {
+            "id": "2acd348d-05e6-4945-b441-dc7c1e55534e",
+            "type": "EiffelArtifactPublishedEvent",
+            "version": "1.1.0",
+            "time": 1521452368758,
+            "tags": [],
+            "source": {
+                "domainId": "someDomain",
+                "name": "someName",
+                "serializer": {
+                    "groupId": "com.github.Ericsson",
+                    "artifactId": "eiffel-remrem-semantics",
+                    "version": "0.0.10"
+                }
+            }
+        },
+        "data": {
+            "locations": [
+                {
+                    "type": "NEXUS",
+                    "uri": "http://host:port/path"
+                }
+            ],
+            "customData": []
+        },
+        "links": [
+            {
+                "type": "ARTIFACT",
+                "target": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22"
+            }
+        ]
+    }
+]

@@ -24,7 +24,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,6 @@ import javax.mail.MessagingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -53,7 +51,7 @@ import java.util.HashMap;
 public class InformSubscription {
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformSubscription.class);
-    //Regular expression for replacement unexpected character like \"|
+    // Regular expression for replacement unexpected character like \"|
     private static final String REGEX = "^\"|\"$";
 
     @Getter
@@ -96,39 +94,39 @@ public class InformSubscription {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
-        
-        ArrayNode arrNode1 = (ArrayNode) subscriptionJson.get("notificationMessageKeyValuesAuth");
+
         String key = "";
         String val = "";
-        if (arrNode1.isArray()) {
-            for (final JsonNode objNode1 : arrNode1) {
-                key = objNode1.get("formkey").toString().replaceAll(REGEX, "");
-                val = objNode1.get("formvalue").toString().replaceAll(REGEX, "");
-            }
-        }        
-        
-                    
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-                        .toString().replaceAll(REGEX, ""));
+                if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
+                    key = "Authorization";
+                    val = objNode.get("formvalue").toString().replaceAll(REGEX, "");
+
+                } else {
+
+                    mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                            .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                            .toString().replaceAll(REGEX, ""));
+                }
             }
         }
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
             int result;
-            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString()
-                    .replaceAll(REGEX, "");
+            String headerContentMediaType = subscriptionJson.get("restPostBodyMediaType").toString().replaceAll(REGEX,
+                    "");
             LOGGER.debug("headerContentMediaType : " + headerContentMediaType);
-            if(notificationMeta.contains("jenkins")) {
-               result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType, key, val);
+            if (!key.isEmpty() && !val.isEmpty()) {
+                result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
+                        headerContentMediaType, key, val);
             } else {
-                result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headerContentMediaType); 
+                result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
+                        headerContentMediaType);
             }
-            
+
             if (result == HttpStatus.OK.value() || result == HttpStatus.CREATED.value()
                     || result == HttpStatus.NO_CONTENT.value()) {
                 LOGGER.debug("The result is : " + result);
@@ -158,13 +156,12 @@ public class InformSubscription {
         } else if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
             try {
-                sendMail.sendMail(notificationMeta,
-                        String.valueOf((mapNotificationMessage.get("")).get(0)));
+                sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)));
             } catch (MessagingException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
-         
+
         }
     }
 
@@ -177,7 +174,8 @@ public class InformSubscription {
      * @param notificationMeta
      * @return String
      */
-    private String prepareMissedNotification(String aggregatedObject, String subscriptionName, String notificationMeta) {
+    private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
+            String notificationMeta) {
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = dateFormat.format(date);
@@ -193,10 +191,10 @@ public class InformSubscription {
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
     }
-    
+
     private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
         String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
-        LOGGER.debug(fieldName+" : " + value);       
+        LOGGER.debug(fieldName + " : " + value);
         return value;
     }
 

@@ -12,12 +12,7 @@
             "formvalue" : "@"
           }
         ],
-        "notificationMessageKeyValuesAuth" : [ 
-          {
-            "formkey" : "Authorization",
-            "formvalue" : "Basic XX0="
-          }
-        ],
+        
         "requirements": [
             {
                 "type": "ARTIFACT_1",

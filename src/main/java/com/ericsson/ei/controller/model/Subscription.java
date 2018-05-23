@@ -26,9 +26,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "repeat",
     "requirements",
     "subscriptionName",
-    "userName",
-    "restUser",
-    "token"
+    "userName"
 })
 public class Subscription {
 
@@ -52,10 +50,6 @@ public class Subscription {
     private String subscriptionName;
     @JsonProperty("userName")
     private String userName;
-    @JsonProperty("restUser")
-    private String restUser;
-    @JsonProperty("token")
-    private String token;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -159,26 +153,6 @@ public class Subscription {
         this.userName = userName;
     }
 
-    @JsonProperty("restUser")
-    public String getRestUser() {
-        return restUser;
-    }
-
-    @JsonProperty("restUser")
-    public void setRestUser(String restUser) {
-        this.restUser = restUser;
-    }
-
-    @JsonProperty("token")
-    public String getToken() {
-        return token;
-    }
-
-    @JsonProperty("token")
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -196,7 +170,7 @@ public class Subscription {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(userName).append(restUser).append(token).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(userName).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -208,7 +182,7 @@ public class Subscription {
             return false;
         }
         Subscription rhs = ((Subscription) other);
-        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(userName, rhs.userName).append(restUser, rhs.restUser).append(token, rhs.token).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(userName, rhs.userName).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

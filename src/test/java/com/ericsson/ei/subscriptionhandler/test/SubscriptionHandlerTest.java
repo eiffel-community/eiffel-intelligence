@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -46,19 +44,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.exception.SubscriptionValidationException;
@@ -78,9 +70,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-    })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
@@ -102,14 +92,11 @@ public class SubscriptionHandlerTest {
     private static String headerContentMediaTypeJenkins;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
+    private static final String formkey = "Authorization";
+    private static final String formvalue = "Basic XX0=";
 
-    
     @Autowired
     private RunSubscription runSubscription;
-    
-//    @Autowired
-//    private SpringRestTemplate  springRestTemplate1;
-
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -160,8 +147,7 @@ public class SubscriptionHandlerTest {
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
             subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath),
                     "UTF-8");
-            subscriptionDataForJenkins = FileUtils.readFileToString(new File(subscriptionPathForJenkins),
-                    "UTF-8");
+            subscriptionDataForJenkins = FileUtils.readFileToString(new File(subscriptionPathForJenkins), "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -308,29 +294,29 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws IOException {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType))
-                .thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+                headerContentMediaType)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
+        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+                headerContentMediaType);
     }
-    
+
     @Test
     public void testRestPostTriggerForJenkins() throws IOException {
-        String formkey = "Authorization";
-        String formvalue = "Basic XX0=";
-        when(springRestTemplate.postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue))
-                .thenReturn(STATUS_OK);
+        when(springRestTemplate.postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins),
+                headerContentMediaTypeJenkins, formkey, formvalue)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForJenkins));
-        verify(springRestTemplate, times(1)).postDataMultiValue(urlJenkins, mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue);
+        verify(springRestTemplate, times(1)).postDataMultiValue(urlJenkins,
+                mapNotificationMessage(subscriptionDataForJenkins), headerContentMediaTypeJenkins, formkey, formvalue);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws IOException {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headerContentMediaType);
+        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+                headerContentMediaType);
         assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
-    }   
-    
+    }
 
     @Test
     public void testQueryMissedNotificationEndPoint() throws Exception {
@@ -349,13 +335,15 @@ public class SubscriptionHandlerTest {
     private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(data)
-                .get("notificationMessageKeyValues");
+        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(data).get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-                        .toString().replaceAll(REGEX, ""));
+                if (!objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
+
+                    mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                            .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                            .toString().replaceAll(REGEX, ""));
+                }
             }
         }
         return mapNotificationMessage;

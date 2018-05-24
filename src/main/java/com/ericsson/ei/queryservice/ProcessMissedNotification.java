@@ -49,7 +49,7 @@ public class ProcessMissedNotification {
      * subscriptionName from the Missed Notification Object.
      *
      * @param subscriptionName
-     * @return ArrayList
+     * @return List
      */
     public List<String> processQueryMissedNotification(String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
@@ -73,6 +73,18 @@ public class ProcessMissedNotification {
             return null;
         }).collect(Collectors.toList());
 
+    }
+
+    /**
+     * The method is responsible for the delete the missed notification using subscription name
+     *
+     * @param subscriptionName
+     * @return boolean
+     */
+    public boolean deleteMissedNotification(String subscriptionName) {
+        String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
+        LOGGER.debug("The JSON condition for delete missed notification is : " + condition);
+        return handler.dropDocument(missedNotificationDatabaseName, missedNotificationCollectionName, condition);
     }
 
     @PostConstruct

@@ -23,51 +23,52 @@ import com.ericsson.ei.exception.SubscriptionNotFoundException;
 
 public interface ISubscriptionService {
 
-    
     /**
      * 
-     * @param Subscription
+     * @param subscription
      * @return
      */
-    boolean addSubscription(Subscription Subscription);
-    
+    boolean addSubscription(Subscription subscription);
+
     /**
      * 
-     * @return
-     * @throws SubscriptionNotFoundException 
-     */
-    List<Subscription> getSubscription() throws SubscriptionNotFoundException;
-    
-    /**
-     * 
-     * @param name
      * @return
      * @throws SubscriptionNotFoundException
      */
-    Subscription getSubscription(String name, String user) throws SubscriptionNotFoundException;
-    
+    List<Subscription> getSubscription() throws SubscriptionNotFoundException;
+
+    /**
+     * 
+     * @param subscriptionName
+     * @return
+     * @throws SubscriptionNotFoundException
+     */
+    Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException;
+
     /**
      * 
      * @param subscription
      * @param subscriptionName
      * @return
      */
-    boolean modifySubscription(Subscription subscription, String subscriptionName, String user);
-    
+    boolean modifySubscription(Subscription subscription, String subscriptionName);
+
     /**
      * 
-     * @param name
-     * @return 
+     * @param subscriptionName
+     * @return
      * @throws SubscriptionNotFoundException
      */
-    boolean deleteSubscription(String name, String user);
+    boolean deleteSubscription(String subscriptionName);
 
     /**
-     * doSubscriptionExist method checks the is there any Subscription By Subscription Name
-     * @param name
-     * @return true when Subscription available with same name. Otherwise returns false.
+     * doSubscriptionExist method checks the is there any Subscription By
+     * Subscription Name
+     * 
+     * @param subscriptionName
+     * @return true when Subscription available with same name. Otherwise
+     *         returns false.
      */
-    boolean doSubscriptionExist(String name, String user);
-
+    boolean doSubscriptionExist(String subscriptionName);
 
 }

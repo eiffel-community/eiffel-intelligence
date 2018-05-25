@@ -191,10 +191,17 @@ public class InformSubscription {
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
     }
-
+    
+    /**
+     * This method, given the field name, returns its value
+     *
+     * @param subscriptionJson
+     * @param fieldName
+     * @return field value
+     */
     private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
         String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
-        LOGGER.debug(fieldName + " : " + value);
+        LOGGER.debug("Extracted field name and value from subscription json:" + fieldName + " : " + value);
         return value;
     }
 

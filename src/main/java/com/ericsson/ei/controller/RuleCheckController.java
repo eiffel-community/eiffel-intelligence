@@ -2,6 +2,7 @@
 package com.ericsson.ei.controller;
 
 import javax.validation.Valid;
+import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

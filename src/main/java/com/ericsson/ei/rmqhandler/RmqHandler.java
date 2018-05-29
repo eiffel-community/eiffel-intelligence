@@ -45,177 +45,177 @@ import lombok.Setter;
 
 @Component
 public class RmqHandler {
-	static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.queue.durable}")
-	private Boolean queueDurable;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.queue.durable}")
+    private Boolean queueDurable;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.host}")
-	private String host;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.host}")
+    private String host;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.exchange.name}")
-	private String exchangeName;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.port}")
-	private Integer port;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.port}")
+    private Integer port;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.tlsVersion}")
-	private String tlsVersion;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.tlsVersion}")
+    private String tlsVersion;
 
-	@JsonIgnore
-	@Getter
-	@Setter
-	@Value("${rabbitmq.user}")
-	private String user;
+    @JsonIgnore
+    @Getter
+    @Setter
+    @Value("${rabbitmq.user}")
+    private String user;
 
-	@JsonIgnore
-	@Getter
-	@Setter
-	@Value("${rabbitmq.password}")
-	private String password;
+    @JsonIgnore
+    @Getter
+    @Setter
+    @Value("${rabbitmq.password}")
+    private String password;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.domainId}")
-	private String domainId;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.domainId}")
+    private String domainId;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.componentName}")
-	private String componentName;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.componentName}")
+    private String componentName;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.waitlist.queue.suffix}")
-	private String waitlistSufix;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.waitlist.queue.suffix}")
+    private String waitlistSufix;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.binding.key}")
-	private String bindingKey;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.binding.key}")
+    private String bindingKey;
 
-	@Getter
-	@Setter
-	@Value("${rabbitmq.consumerName}")
-	private String consumerName;
+    @Getter
+    @Setter
+    @Value("${rabbitmq.consumerName}")
+    private String consumerName;
 
-	private RabbitTemplate rabbitTemplate;
-	private CachingConnectionFactory factory;
-	private SimpleMessageListenerContainer container;
-	private SimpleMessageListenerContainer waitlistContainer;
+    private RabbitTemplate rabbitTemplate;
+    private CachingConnectionFactory factory;
+    private SimpleMessageListenerContainer container;
+    private SimpleMessageListenerContainer waitlistContainer;
 
-	@Bean
-	ConnectionFactory connectionFactory() {
-		com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
-		connectionFactory.setHost(host);
-		connectionFactory.setPort(port);
-		if (user != null && user.length() != 0 && password != null && password.length() != 0) {
-			connectionFactory.setUsername(user);
-			connectionFactory.setPassword(password);
-		}
+    @Bean
+    ConnectionFactory connectionFactory() {
+        com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(port);
+        if (user != null && user.length() != 0 && password != null && password.length() != 0) {
+            connectionFactory.setUsername(user);
+            connectionFactory.setPassword(password);
+        }
 
-		if (tlsVersion != null && !tlsVersion.isEmpty()) {
-			try {
-				log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
-				connectionFactory.useSslProtocol(tlsVersion);
-			} catch (KeyManagementException e) {
-				log.error("Failed to set SSL/TLS version.");
-				log.error(e.getMessage(), e);
-			} catch (NoSuchAlgorithmException e) {
-				log.error("Failed to set SSL/TLS version.");
-				log.error(e.getMessage(), e);
-			}
-		}
+        if (tlsVersion != null && !tlsVersion.isEmpty()) {
+            try {
+                log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
+                connectionFactory.useSslProtocol(tlsVersion);
+            } catch (KeyManagementException e) {
+                log.error("Failed to set SSL/TLS version.");
+                log.error(e.getMessage(), e);
+            } catch (NoSuchAlgorithmException e) {
+                log.error("Failed to set SSL/TLS version.");
+                log.error(e.getMessage(), e);
+            }
+        }
 
-		factory = new CachingConnectionFactory(connectionFactory);
-		factory.setPublisherConfirms(true);
-		factory.setPublisherReturns(true);
+        factory = new CachingConnectionFactory(connectionFactory);
+        factory.setPublisherConfirms(true);
+        factory.setPublisherReturns(true);
 
-		return factory;
-	}
+        return factory;
+    }
 
-	@Bean
-	Queue queue() {
-		return new Queue(getQueueName(), true);
-	}
+    @Bean
+    Queue queue() {
+        return new Queue(getQueueName(), true);
+    }
 
-	@Bean
-	TopicExchange exchange() {
-		return new TopicExchange(exchangeName);
-	}
+    @Bean
+    TopicExchange exchange() {
+        return new TopicExchange(exchangeName);
+    }
 
-	@Bean
-	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
-	}
+    @Bean
+    Binding binding(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
+    }
 
-	@Bean
-	SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
-		String queueName = getQueueName();
-		MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
-		container = new SimpleMessageListenerContainer();
-		container.setConnectionFactory(factory);
-		container.setQueueNames(queueName);
-		container.setMessageListener(listenerAdapter);
-		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-		return container;
-	}
+    @Bean
+    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+        String queueName = getQueueName();
+        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+        container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(factory);
+        container.setQueueNames(queueName);
+        container.setMessageListener(listenerAdapter);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        return container;
+    }
 
-	public String getQueueName() {
-		String durableName = queueDurable ? "durable" : "transient";
-		return domainId + "." + componentName + "." + consumerName + "." + durableName;
-	}
+    public String getQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName;
+    }
 
-	public String getWaitlistQueueName() {
-		String durableName = queueDurable ? "durable" : "transient";
-		return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
-	}
+    public String getWaitlistQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
+    }
 
-	@Bean
-	public RabbitTemplate rabbitMqTemplate() {
-		if (rabbitTemplate == null) {
-			if (factory != null) {
-				rabbitTemplate = new RabbitTemplate(factory);
-			} else {
-				rabbitTemplate = new RabbitTemplate(connectionFactory());
-			}
+    @Bean
+    public RabbitTemplate rabbitMqTemplate() {
+        if (rabbitTemplate == null) {
+            if (factory != null) {
+                rabbitTemplate = new RabbitTemplate(factory);
+            } else {
+                rabbitTemplate = new RabbitTemplate(connectionFactory());
+            }
 
-			rabbitTemplate.setExchange(exchangeName);
-			rabbitTemplate.setRoutingKey(bindingKey);
-			rabbitTemplate.setQueue(getQueueName());
-			rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
-				@Override
-				public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-					log.info("Received confirm with result : {}", ack);
-				}
-			});
-		}
-		return rabbitTemplate;
-	}
+            rabbitTemplate.setExchange(exchangeName);
+            rabbitTemplate.setRoutingKey(bindingKey);
+            rabbitTemplate.setQueue(getQueueName());
+            rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
+                @Override
+                public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                    log.info("Received confirm with result : {}", ack);
+                }
+            });
+        }
+        return rabbitTemplate;
+    }
 
-	public void publishObjectToWaitlistQueue(String message) {
-		log.info("publishing message to message bus...");
-		rabbitMqTemplate().convertAndSend(message);
-	}
+    public void publishObjectToWaitlistQueue(String message) {
+        log.info("publishing message to message bus...");
+        rabbitMqTemplate().convertAndSend(message);
+    }
 
-	public void close() {
-		try {
-			waitlistContainer.destroy();
-			container.destroy();
-			factory.destroy();
-		} catch (Exception e) {
-			log.info("exception occured while closing connections");
-			log.info(e.getMessage(), e);
-		}
-	}
+    public void close() {
+        try {
+            waitlistContainer.destroy();
+            container.destroy();
+            factory.destroy();
+        } catch (Exception e) {
+            log.info("exception occured while closing connections");
+            log.info(e.getMessage(), e);
+        }
+    }
 }

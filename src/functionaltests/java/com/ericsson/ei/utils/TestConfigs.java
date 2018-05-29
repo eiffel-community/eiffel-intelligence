@@ -34,11 +34,6 @@ public class TestConfigs {
     @Getter
     private MongoClient mongoClient = null;
 
-    public void init() throws Exception {
-        // setUpMessageBus();
-        // setUpEmbeddedMongo();
-    }
-
     @Bean
     AMQPBrokerManager amqpBroker() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
@@ -48,7 +43,7 @@ public class TestConfigs {
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
 
-        String config = "src/test/resources/configs/qpidConfig.json";
+        String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
@@ -74,27 +69,10 @@ public class TestConfigs {
             return mongoClient;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
         }
 
         return null;
     }
-
-    // public void tearDown() {
-    // if (amqpBroker != null) {
-    // amqpBroker.stopBroker();
-    // }
-    // try {
-    // conn.close();
-    // } catch (Exception e) {
-    // // We try to close the connection but if
-    // // the connection is closed we just receive the
-    // // exception and go on
-    // }
-    //
-    // if (mongoClient != null)
-    // mongoClient.close();
-    // }
 
     public void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
@@ -106,5 +84,4 @@ public class TestConfigs {
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
     }
-
 }

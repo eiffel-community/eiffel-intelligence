@@ -13,9 +13,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-// @TestExecutionListeners(listeners = {
-// DependencyInjectionTestExecutionListener.class, SubscriptionCRUDSteps.class
-// })
 public class SubscriptionCRUDSteps extends FunctionalBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
@@ -35,5 +32,4 @@ public class SubscriptionCRUDSteps extends FunctionalBase {
     public void delete_the_updated_subscription() throws Throwable {
 
     }
-
 }

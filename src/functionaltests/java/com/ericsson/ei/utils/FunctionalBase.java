@@ -25,6 +25,7 @@ import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author evasiba
  *
  */
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -51,73 +53,74 @@ public class FunctionalBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalBase.class);
 
-    @Autowired
-    private RmqHandler rmqHandler;
-
-    @Autowired
-    public ObjectHandler objectHandler;
-
-    @Autowired
-    private RulesHandler rulesHandler;
-
+    // @Autowired
+    // private RmqHandler rmqHandler;
+    //
+    // @Autowired
+    // public ObjectHandler objectHandler;
+    //
+    // @Autowired
+    // private RulesHandler rulesHandler;
+    //
     @Autowired
     private MongoDBHandler mongoDBHandler;
-
-    @Autowired
-    private WaitListStorageHandler waitlist;
+    //
+    // @Autowired
+    // private WaitListStorageHandler waitlist;
 
     // @Autowired
     // AMQPBrokerManager amqpBroker;
 
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Value("${event_object_map.collection.name}")
-    private String event_map;
-
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    private static HashMap<String, TestConfigs> configsMap = new HashMap<String, TestConfigs>();
-
-    @Override
-    public void beforeTestClass(TestContext testContext) throws Exception {
-        // System.setProperty("flow.test", "true");
-        // createFlowTestConfigs();
-        // getFlowTestConfigs().init();
-    }
-
-    @PostConstruct
-    public void init() throws Exception {
-        // mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
-        // waitlist.setMongoDbHandler(mongoDBHandler);
-        int i = 0;
-
-    }
+    // @Value("${spring.data.mongodb.database}")
+    // private String database;
+    //
+    // @Value("${event_object_map.collection.name}")
+    // private String event_map;
+    //
+    // private static ObjectMapper objectMapper = new ObjectMapper();
+    //
+    // private static HashMap<String, TestConfigs> configsMap = new
+    // HashMap<String, TestConfigs>();
+    //
+    // @Override
+    // public void beforeTestClass(TestContext testContext) throws Exception {
+    // // System.setProperty("flow.test", "true");
+    // // createFlowTestConfigs();
+    // // getFlowTestConfigs().init();
+    // }
+    //
+    // @PostConstruct
+    // public void init() throws Exception {
+    // // mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
+    // // waitlist.setMongoDbHandler(mongoDBHandler);
+    // int i = 0;
+    //
+    // }
 
     public int getMongoDbPort() {
         return mongoDBHandler.getPort();
     }
 
-    protected TestConfigs getFlowTestConfigs() {
-        return configsMap.get(getClasName());
-    }
-
-    private void createFlowTestConfigs() {
-        TestConfigs newConfigs = new TestConfigs();
-        String className = getClasName();
-        configsMap.put(className, newConfigs);
-    }
-
-    private String getClasName() {
-        return this.getClass().getName();
-    }
-
-    private void cleanFlowTestConfigs() {
-        configsMap.remove(getClasName());
-    }
-
-    @Override
-    public void afterTestClass(TestContext testContext) throws Exception {
-        // cleanFlowTestConfigs();
-    }
+    // protected TestConfigs getFlowTestConfigs() {
+    // return configsMap.get(getClasName());
+    // }
+    //
+    // private void createFlowTestConfigs() {
+    // TestConfigs newConfigs = new TestConfigs();
+    // String className = getClasName();
+    // configsMap.put(className, newConfigs);
+    // }
+    //
+    // private String getClasName() {
+    // return this.getClass().getName();
+    // }
+    //
+    // private void cleanFlowTestConfigs() {
+    // configsMap.remove(getClasName());
+    // }
+    //
+    // @Override
+    // public void afterTestClass(TestContext testContext) throws Exception {
+    // // cleanFlowTestConfigs();
+    // }
 }

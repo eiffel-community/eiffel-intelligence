@@ -11,9 +11,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-// @TestExecutionListeners(listeners = {
-// DependencyInjectionTestExecutionListener.class,
-// SubscriptionTriggerSteps.class })
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);

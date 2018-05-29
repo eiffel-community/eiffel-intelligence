@@ -46,10 +46,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
-public class FunctionalTestBase extends AbstractTestExecutionListener {
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalBase.class })
+public class FunctionalBase extends AbstractTestExecutionListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalBase.class);
 
     @Autowired
     private RmqHandler rmqHandler;

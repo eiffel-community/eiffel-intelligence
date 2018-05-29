@@ -1,6 +1,6 @@
 package com.ericsson.ei.subscriptions.trigger;
 
-import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.FunctionalBase;
 
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import cucumber.api.java.en.When;
 // @TestExecutionListeners(listeners = {
 // DependencyInjectionTestExecutionListener.class,
 // SubscriptionTriggerSteps.class })
-public class SubscriptionTriggerSteps extends FunctionalTestBase {
+public class SubscriptionTriggerSteps extends FunctionalBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 

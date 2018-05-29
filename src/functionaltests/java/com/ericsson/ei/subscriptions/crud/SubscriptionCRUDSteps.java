@@ -1,6 +1,6 @@
 package com.ericsson.ei.subscriptions.crud;
 
-import com.ericsson.ei.utils.FunctionalBase;
+import com.ericsson.ei.utils.FunctionalTestBase;
 
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-public class SubscriptionCRUDSteps extends FunctionalBase {
+public class SubscriptionCRUDSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
 

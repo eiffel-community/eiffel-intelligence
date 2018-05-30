@@ -37,6 +37,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.AdditionalMatchers.or;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -80,7 +81,8 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
         // adding the current security context, otherwise
-        // "SecurityContextHolder.getContext()" throws out null pointer exception
+        // "SecurityContextHolder.getContext()" throws out null pointer
+        // exception
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
@@ -103,19 +105,20 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
         // adding the current security context, otherwise
-        // "SecurityContextHolder.getContext()" throws out null pointer exception
+        // "SecurityContextHolder.getContext()" throws out null pointer
+        // exception
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("XYZ");
 
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscriptions").accept(MediaType.APPLICATION_JSON)
-            .content(jsonArray.toString()).contentType(MediaType.APPLICATION_JSON);
+                .content(jsonArray.toString()).contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         SubscriptionResponse subscriptionResponse = mapper
-            .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
+                .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
         assertEquals("Subscription already exists", subscriptionResponse.getMsg());
     }
@@ -144,9 +147,9 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void updateSubscription() throws Exception {
-        Mockito.when(
-                subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
-        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
+        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
+                .thenReturn(false);
 
         // adding the current security context
         SecurityContextHolder.setContext(securityContext);
@@ -167,9 +170,9 @@ public class SubscriptionRestAPITest {
 
     @Test
     public void updateSubscriptionMulti() throws Exception {
-        Mockito.when(
-                subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
-        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString())).thenReturn(false);
+        Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
+        Mockito.when(subscriptionService.modifySubscription(Mockito.any(Subscription.class), Mockito.anyString()))
+                .thenReturn(false);
 
         // adding the current security context
         SecurityContextHolder.setContext(securityContext);
@@ -224,13 +227,13 @@ public class SubscriptionRestAPITest {
                 Subscription[].class);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
+        assertEquals("ABC", subscription[0].getUserName());
     }
 
     @Test
     public void getSubScriptionByNameNotFound() throws Exception {
-        Mockito.when(subscriptionService.getSubscription(Mockito.anyString()))
-                .thenThrow(new SubscriptionNotFoundException(
-                        "No record found for the Subscription Name:Subscription_Test"));
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenThrow(
+                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
 
         // Send subscription as body to /subscriptions
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")

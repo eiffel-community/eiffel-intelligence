@@ -189,7 +189,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     /**
      * @return map, where key - _id of expected aggregated object value -
      *         expected aggregated object
-
+     * 
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 

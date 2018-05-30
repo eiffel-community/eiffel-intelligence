@@ -23,21 +23,20 @@ import com.ericsson.ei.exception.SubscriptionNotFoundException;
 
 public interface ISubscriptionService {
 
-    
     /**
      * 
      * @param subscription
      * @return
      */
     boolean addSubscription(Subscription subscription);
-    
+
     /**
      * 
      * @return
-     * @throws SubscriptionNotFoundException 
+     * @throws SubscriptionNotFoundException
      */
     List<Subscription> getSubscription() throws SubscriptionNotFoundException;
-    
+
     /**
      * 
      * @param subscriptionName
@@ -45,7 +44,7 @@ public interface ISubscriptionService {
      * @throws SubscriptionNotFoundException
      */
     Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException;
-    
+
     /**
      * 
      * @param subscription
@@ -53,21 +52,23 @@ public interface ISubscriptionService {
      * @return
      */
     boolean modifySubscription(Subscription subscription, String subscriptionName);
-    
+
     /**
      * 
      * @param subscriptionName
-     * @return 
+     * @return
      * @throws SubscriptionNotFoundException
      */
     boolean deleteSubscription(String subscriptionName);
 
     /**
-     * doSubscriptionExist method checks the is there any Subscription By Subscription Name
+     * doSubscriptionExist method checks the is there any Subscription By
+     * Subscription Name
+     * 
      * @param subscriptionName
-     * @return true when Subscription available with same name. Otherwise returns false.
+     * @return true when Subscription available with same name. Otherwise
+     *         returns false.
      */
     boolean doSubscriptionExist(String subscriptionName);
-
 
 }

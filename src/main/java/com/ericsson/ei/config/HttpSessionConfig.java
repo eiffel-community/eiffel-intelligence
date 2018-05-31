@@ -8,12 +8,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 
-@EnableMongoHttpSession(collectionName="sessions")
+@EnableMongoHttpSession()
 public class HttpSessionConfig {
-    
+
     @Value("${server.session-timeout}")
     private int maxInactiveIntervalInSeconds;
-    
+
+    @Value("${sessions.collection.name}")
+    private String collectionName;
+
     @Primary
     @Bean
     public MongoOperationsSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {

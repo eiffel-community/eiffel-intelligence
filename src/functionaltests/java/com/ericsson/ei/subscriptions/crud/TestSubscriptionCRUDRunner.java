@@ -7,7 +7,8 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/functionaltests/resources/features/subscriptionCRUD.feature", glue = {
-        "com.ericsson.ei.subscriptions.crud" })
+        "com.ericsson.ei.subscriptions.crud" }, plugin = { "pretty",
+                "html:target/cucumber-reports/TestSubscriptionCRUDRunner" }, monochrome = true)
 public class TestSubscriptionCRUDRunner {
 
 }

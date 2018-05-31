@@ -7,7 +7,8 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/functionaltests/resources/features/subscriptionTrigger.feature", glue = {
-        "com.ericsson.ei.subscriptions.trigger" })
+        "com.ericsson.ei.subscriptions.trigger" }, plugin = {
+                "html:target/cucumber-reports/TestSubscriptionTriggerRunner" }, monochrome = true)
 public class TestSubscriptionTriggerRunner {
 
 }

@@ -24,10 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import cucumber.api.java.Before;
 
 /**
  * @author evasiba
@@ -47,5 +50,15 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     public int getMongoDbPort() {
         return mongoDBHandler.getPort();
+    }
+
+    @Override
+    public void beforeTestClass(TestContext testContext) throws Exception {
+        int debug = 1;
+    }
+
+    @Override
+    public void afterTestClass(TestContext testContext) throws Exception {
+        int debug = 1;
     }
 }

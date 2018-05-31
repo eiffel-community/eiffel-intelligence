@@ -2,7 +2,7 @@
   {
   "created" : "2017-07-26",
   "notificationMeta" : "http://127.0.0.1:3000/ei/test_subscription_rest",
-  "notificationType" : "REST_POST",
+  "notificationType" : "MAIL",
   "restPostBodyMediaType" : "application/x-www-form-urlencoded",
   "notificationMessageKeyValues" : [
     {
@@ -36,7 +36,7 @@
     }
   ],
   "subscriptionName" : "Subscription_Test",
-  "userName" : "XYZ"
+  "userName" : "ABC"
   
 }
 ]

@@ -28,23 +28,21 @@ Feature: Test Subscription CRUD
   #@tag2
   Scenario: Read subscription using REST API by GET method
     Given The REST API "/subscriptions" is up and running
-    When  I make a GET request with subscription name "Subscription_Test" to the  subscription REST API "/subscriptions/Subscription_Test"
+    When  I make a GET request with subscription name "Subscription_Test" to the  subscription REST API "/subscriptions/"
     Then  I get response code of 200 and subscription name "Subscription_Test"
     
   #@tag3
   Scenario: Update subscription using REST API by PUT method and validate updation
     Given The REST API "/subscriptions" is up and running
-    When I make a PUT request with modified user name as "XYZ"
+    When I make a PUT request with modified notificationType as "MAIL" to REST API "/subscriptions"
     Then I get response code of 200 for successful updation
-    And  I can validate modified user name "XYZ" with GET request at "/subscriptions/Subscription_Test"
+    And  I can validate modified notificationType "MAIL" with GET request at "/subscriptions/Subscription_Test"
   
   #@tag4 
   Scenario: Delete subscription using REST API by DELETE method and validate deletion
     Given The REST API "/subscriptions" is up and running
-    When  I make a DELETE request with subscription name "Subscription_Test" to the  subscription REST API "/subscriptions/Subscription_Test"
+    When  I make a DELETE request with subscription name "Subscription_Test" to the  subscription REST API "/subscriptions/"
     Then  I get response code of 200 for successful delete
-    And   My GET request with subscription name "Subscription_Test" return
-
-
+    And   My GET request with subscription name "Subscription_Test" at REST API "/subscriptions/" returns empty String "[]"
 
 

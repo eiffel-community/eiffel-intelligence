@@ -48,7 +48,8 @@ public class ObjectHandler {
     @Value("${aggregated.collection.name}")
     private String collectionName;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
@@ -70,7 +71,7 @@ public class ObjectHandler {
 
     @Getter
     @Value("${aggregated.collection.ttlValue}")
-    private int ttlValue;
+    private String ttlValue;
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
@@ -81,7 +82,9 @@ public class ObjectHandler {
         JsonNode document = prepareDocumentForInsertion(id, aggregatedObject);
         log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
 
-        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        if (getTtl() > 0) {
+            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+        }
 
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         if (result)
@@ -96,9 +99,9 @@ public class ObjectHandler {
     }
 
     /**
-     * This method uses previously locked in database aggregatedObject (lock was
-     * set in lockDocument method) and modifies this document with the new
-     * values and removes the lock in one query
+     * This method uses previously locked in database aggregatedObject (lock was set
+     * in lockDocument method) and modifies this document with the new values and
+     * removes the lock in one query
      * 
      * @param aggregatedObject
      *            String to insert in database
@@ -185,8 +188,7 @@ public class ObjectHandler {
 
     /**
      * Locks the document in database to achieve pessimistic locking. Method
-     * findAndModify is used to optimize the quantity of requests towards
-     * database.
+     * findAndModify is used to optimize the quantity of requests towards database.
      * 
      * @param id
      *            String to search
@@ -217,5 +219,17 @@ public class ObjectHandler {
             }
         }
         return null;
+    }
+
+    public int getTtl() {
+        int ttl = 0;
+        if (ttlValue != null && !ttlValue.isEmpty()) {
+            try {
+                ttl = Integer.parseInt(ttlValue);
+            } catch (NumberFormatException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return ttl;
     }
 }

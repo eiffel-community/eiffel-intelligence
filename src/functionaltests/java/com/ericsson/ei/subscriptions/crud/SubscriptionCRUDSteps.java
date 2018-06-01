@@ -84,7 +84,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     public void i_get_response_code_of(int statusCode) {
         Assert.assertEquals(statusCode, result.getResponse().getStatus());
     }
-    /// ===============================================================================
+    ///Scenario:1 ends ===============================================================================
 
     @When("^I make a GET request with subscription name \"([^\"]*)\" to the  subscription REST API \"([^\"]*)\"$")
     public void i_make_a_GET_request_with_subscription_name_to_the_subscription_REST_API(String name, String endPoint) {
@@ -107,8 +107,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         Assert.assertEquals(statusCode, result.getResponse().getStatus());
         Assert.assertEquals(name, subscription[0].getSubscriptionName());
     }
-
-    // =========================================================================================
+    // Scenario:2 ends=========================================================================================
 
     @When("^I make a PUT request with modified notificationType as \"([^\"]*)\" to REST API \"([^\"]*)\"$")
     public void i_make_a_PUT_request_with_modified_notificationType_as_to_REST_API(String notificationType,
@@ -156,8 +155,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         }
         assertEquals(notificationType, subscription[0].getNotificationType());
     }
-
-    // ==========================================================================================
+    //Scenario:3 ends ==========================================================================================
 
     @When("^I make a DELETE request with subscription name \"([^\"]*)\" to the  subscription REST API \"([^\"]*)\"$")
     public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
@@ -200,4 +198,5 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
     }
+    ////Scenario:4 ends ==========================================================================================
 }

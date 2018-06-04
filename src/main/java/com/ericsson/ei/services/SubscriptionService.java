@@ -42,14 +42,15 @@ public class SubscriptionService implements ISubscriptionService {
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'userName':'%s'}";
+
     private static final String AND = "{$and:[%s]}";
 
     @Value("${spring.application.name}")
     private String SpringApplicationName;
-    
+
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
-    
+
     @Value("${subscription.collection.repeatFlagHandlerName}")
     private String repeatFlagHandlerCollection;
 
@@ -73,8 +74,10 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
-        // empty userName means that result of query should not depend from userName
+        // empty userName means that result of query should not depend from
+        // userName
         String query = generateQuery(subscriptionName, "");
+
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
@@ -96,7 +99,8 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean doSubscriptionExist(String subscriptionName) {
-        // empty userName means that result of query should not depend from userName 
+        // empty userName means that result of query should not depend from
+        // userName
         String query = generateQuery(subscriptionName, "");
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
@@ -112,14 +116,15 @@ public class SubscriptionService implements ISubscriptionService {
             String query = generateQuery(subscriptionName, userName);
             result = subscriptionRepository.modifySubscription(query, StringSubscription);
             if (result) {
-            	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
-            	if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-            		LOG.error("Failed to clean subscription \"" + subscriptionName + "\" matched AggregatedObjIds from RepeatFlagHandler database");
-            	}
+                String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+                if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
+                    LOG.error("Failed to clean subscription \"" + subscriptionName
+                            + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+                }
             }
-          
+
         } catch (JsonProcessingException e) {
-        	LOG.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             return false;
         }
         return result;
@@ -130,12 +135,13 @@ public class SubscriptionService implements ISubscriptionService {
         String userName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
         String query = generateQuery(subscriptionName, userName);
         boolean result = subscriptionRepository.deleteSubscription(query);
-  
+
         if (result) {
-        	String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
-        	if(!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-        		LOG.error("Failed to clean subscription \"" + subscriptionName + "\" matched AggregatedObjIds from RepeatFlagHandler database");
-         }
+            String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+            if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
+                LOG.error("Failed to clean subscription \"" + subscriptionName
+                        + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+            }
         }
         return result;
     }
@@ -164,17 +170,22 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
-    	LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: " + subscriptionNameQuery);
-    	MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-    	return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
+        LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: "
+                + subscriptionNameQuery);
+        MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
+        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
     }
-    
+
     /**
      * This method generate query for mongoDB
-     * @param subscriptionName- subscription name
-     * @param userName- name of the current user
+     * 
+     * @param subscriptionName-
+     *            subscription name
+     * @param userName-
+     *            name of the current user
      * @return a String object
      */
+
     private String generateQuery(String subscriptionName, String userName) {
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
         if (!userName.isEmpty()) {

@@ -17,27 +17,22 @@
 package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.*;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Block;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoWriteException;
-import com.mongodb.WriteResult;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -65,16 +60,35 @@ public class MongoDBHandler {
     @Value("${spring.data.mongodb.port}")
     private int port;
 
+    @Getter
+    @Value("${spring.data.mongodb.database}")
+    private String database;
+
+    @Getter
+    @Value("${spring.data.mongodb.username}")
+    private String username;
+
+    @Getter
+    @Value("${spring.data.mongodb.password}")
+    private char[] password;
+
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
     public void init() {
-        createConnection(host, port);
+        List<ServerAddress> addresses = new ArrayList<>();
+        addresses.add(new ServerAddress(host, port));
+        createConnection(addresses, database, username, password);
     }
 
     // Establishing the connection to mongodb and creating a collection
-    public void createConnection(String host, int port) {
-        mongoClient = new MongoClient(host, port);
+    private void createConnection(List<ServerAddress> addresses, String database, String username, char[] password) {
+        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(new String(password))) {
+            MongoCredential credential = MongoCredential.createCredential(username, database, password);
+            mongoClient = new MongoClient(addresses, Collections.singletonList(credential));
+        } else {
+            mongoClient = new MongoClient(addresses);
+        }
     }
 
     /**

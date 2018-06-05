@@ -65,29 +65,27 @@ public class MongoDBHandler {
     private String database;
 
     @Getter
-    @Value("${spring.data.mongodb.username}")
+    @Value("${mongodb.username}")
     private String username;
 
     @Getter
-    @Value("${spring.data.mongodb.password}")
-    private char[] password;
+    @Value("${mongodb.password}")
+    private String password;
 
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
     public void init() {
-        List<ServerAddress> addresses = new ArrayList<>();
-        addresses.add(new ServerAddress(host, port));
-        createConnection(addresses, database, username, password);
+        createConnection(host, port, database, username, password);
     }
 
     // Establishing the connection to mongodb and creating a collection
-    private void createConnection(List<ServerAddress> addresses, String database, String username, char[] password) {
-        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(new String(password))) {
-            MongoCredential credential = MongoCredential.createCredential(username, database, password);
-            mongoClient = new MongoClient(addresses, Collections.singletonList(credential));
+    private void createConnection(String host, int port, String database, String username, String password) {
+        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
+            MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
+            mongoClient = new MongoClient(new ServerAddress(host, port), Collections.singletonList(credential));
         } else {
-            mongoClient = new MongoClient(addresses);
+            mongoClient = new MongoClient(host, port);
         }
     }
 

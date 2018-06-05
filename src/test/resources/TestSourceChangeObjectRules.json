@@ -5,7 +5,7 @@
     "StartEvent": "YES",
     "TypeRule": "meta.type",
     "IdRule": "meta.id",
-    "IdentifyRules": "links | [?type=='CHANGE'].target",
+    "IdentifyRules": "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules": "{id : meta.id, submission: {eventId : meta.id, time : meta.time, svnIdentifier: data.svnIdentifier, submitter:data.submitter}}",
     "MergeResolverRules": null,
@@ -25,9 +25,9 @@
     "ExtractionRules": "",
     "MergeResolverRules": "",
     "ArrayMergeOptions": "",
-    "HistoryIdentifyRules": "links | [?type=='BASE'].target",
+    "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "{eventId : meta.id, time : meta.time, author:data.author, issues:data.issues}",
-    "HistoryPathRules":"[{NONEPATH:NONE},  {creation: [{ eventId : meta.id}]}]",
+    "HistoryPathRules":"[{NONEPATH:NONE},  {creations: [{ eventId : meta.id}]}]",
     "ProcessRules": null
   },
   {

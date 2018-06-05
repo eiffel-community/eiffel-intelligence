@@ -71,9 +71,13 @@ public class HistoryExtractionHandler {
         String objAtPathStr = "";
         String pathTrimmed = mergePrepare.trimLastInPath(pathInAggregatedObject, ".");
         try {
-            pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
-            JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
-            objAtPathStr = objAtPath.toString();
+            if (pathTrimmed.isEmpty()) {
+                objAtPathStr = aggregatedObject;
+            } else {
+                pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
+                JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
+                objAtPathStr = objAtPath.toString();
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -81,7 +85,8 @@ public class HistoryExtractionHandler {
 
         if (!array_path.isEmpty()) {
             // pathInAggregatedObject = array_path;
-            pathInAggregatedObject = pathTrimmed + "." + array_path;
+            String pathPrefix = pathTrimmed.isEmpty() ? "" : pathTrimmed + ".";
+            pathInAggregatedObject = pathPrefix + array_path;
             pathInAggregatedObject = MergePrepare.destringify(pathInAggregatedObject);
         } else {
             String ruleKey = getRulePath(ruleString);
@@ -123,7 +128,7 @@ public class HistoryExtractionHandler {
      * @return the path from given content
      */
     private String getPathFromExtractedContent(String content, String mergeRules) {
-        return mergePrepare.getMergePath(content, mergeRules);
+        return mergePrepare.getMergePath(content, mergeRules, true);
     }
 
     /**

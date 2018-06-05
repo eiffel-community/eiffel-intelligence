@@ -75,7 +75,7 @@ public class TestMergePrepare {
 
     @Test
     public void getMergePath() {
-        String result = mergePrepareObject.getMergePath(originObject, mergeRule);
+        String result = mergePrepareObject.getMergePath(originObject, mergeRule, false);
         assertEquals(mergePath, result);
     }
 

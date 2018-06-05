@@ -16,6 +16,18 @@
 */
 package com.ericsson.ei.mongodbhandler;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoWriteException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import com.mongodb.util.JSON;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,28 +40,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Block;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoWriteException;
-import com.mongodb.WriteResult;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import com.mongodb.util.JSON;
-
 import lombok.Getter;
 
 @Component
 public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
-    
+
     @Getter
     MongoClient mongoClient;
 
@@ -104,7 +100,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the retrieve the all documents from the collection
+     * This method is used for the retrieve the all documents from the
+     * collection
      * 
      * @param dataBaseName
      * @param collectionName
@@ -168,8 +165,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the lock
-     * in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the
+     * lock in one query. Lock is needed for multi process execution
      * 
      * @param dataBaseName
      * @param collectionName
@@ -198,9 +195,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the input
-     * condition in one query. Lock is needed for multi process execution. This
-     * method is executed in a loop.
+     * This method is used for lock and return the document that matches the
+     * input condition in one query. Lock is needed for multi process execution.
+     * This method is executed in a loop.
      * 
      * @param dataBaseName
      * @param collectionName
@@ -291,11 +288,11 @@ public class MongoDBHandler {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
-    
+
     public void dropCollection(String dataBaseName, String collectionName) {
-    	MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-    	MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
-    	mongoCollection.drop();
+        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
+        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+        mongoCollection.drop();
     }
 
 }

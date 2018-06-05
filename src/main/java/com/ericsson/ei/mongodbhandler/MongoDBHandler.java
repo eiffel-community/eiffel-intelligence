@@ -30,7 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.client.MongoCollection;
@@ -46,46 +47,31 @@ import lombok.Getter;
 @Component
 public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
+
+    @Autowired
+    private MongoProperties mongoProperties;
     
     @Getter
     @Setter
     @JsonIgnore
     private MongoClient mongoClient;
 
-    @Getter
-    @Value("${spring.data.mongodb.host}")
-    private String host;
-
-    @Getter
-    @Value("${spring.data.mongodb.port}")
-    private int port;
-
-    @Getter
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Getter
-    @Value("${spring.data.mongodb.username}")
-    private String username;
-
-    @Getter
-    @Value("${spring.data.mongodb.password}")
-    private String password;
-
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
     public void init() {
-        createConnection(host, port, database, username, password);
+        createConnection();
     }
 
     // Establishing the connection to mongodb and creating a collection
-    private void createConnection(String host, int port, String database, String username, String password) {
-        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
-            MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
-            mongoClient = new MongoClient(new ServerAddress(host, port), Collections.singletonList(credential));
+    private void createConnection() {
+        if (!StringUtils.isBlank(mongoProperties.getUsername()) && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
+            ServerAddress address = new ServerAddress(mongoProperties.getHost(), mongoProperties.getPort());
+            MongoCredential credential = MongoCredential.createCredential(mongoProperties.getUsername(),
+                mongoProperties.getDatabase(), mongoProperties.getPassword());
+            mongoClient = new MongoClient(address, Collections.singletonList(credential));
         } else {
-            mongoClient = new MongoClient(host, port);
+            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
         }
     }
 

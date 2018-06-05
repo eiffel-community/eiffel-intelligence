@@ -65,11 +65,11 @@ public class MongoDBHandler {
     private String database;
 
     @Getter
-    @Value("${mongodb.username}")
+    @Value("${spring.data.mongodb.username}")
     private String username;
 
     @Getter
-    @Value("${mongodb.password}")
+    @Value("${spring.data.mongodb.password}")
     private String password;
 
     // TODO establish connection automatically when Spring instantiate this

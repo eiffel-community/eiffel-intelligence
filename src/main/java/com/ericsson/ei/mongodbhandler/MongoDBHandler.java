@@ -17,27 +17,23 @@
 package com.ericsson.ei.mongodbhandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.*;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Block;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoWriteException;
-import com.mongodb.WriteResult;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -51,30 +47,32 @@ import lombok.Getter;
 @Component
 public class MongoDBHandler {
     static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
+
+    @Autowired
+    private MongoProperties mongoProperties;
     
     @Getter
     @Setter
     @JsonIgnore
     private MongoClient mongoClient;
 
-    @Getter
-    @Value("${spring.data.mongodb.host}")
-    private String host;
-
-    @Getter
-    @Value("${spring.data.mongodb.port}")
-    private int port;
-
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
     public void init() {
-        createConnection(host, port);
+        createConnection();
     }
 
     // Establishing the connection to mongodb and creating a collection
-    public void createConnection(String host, int port) {
-        mongoClient = new MongoClient(host, port);
+    private void createConnection() {
+        if (!StringUtils.isBlank(mongoProperties.getUsername()) && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
+            ServerAddress address = new ServerAddress(mongoProperties.getHost(), mongoProperties.getPort());
+            MongoCredential credential = MongoCredential.createCredential(mongoProperties.getUsername(),
+                mongoProperties.getDatabase(), mongoProperties.getPassword());
+            mongoClient = new MongoClient(address, Collections.singletonList(credential));
+        } else {
+            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+        }
     }
 
     /**

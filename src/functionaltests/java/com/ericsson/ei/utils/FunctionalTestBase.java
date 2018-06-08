@@ -35,7 +35,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  */
 @Ignore
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
 public class FunctionalTestBase extends AbstractTestExecutionListener {

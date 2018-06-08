@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HistoryExtractionHandler.
  */
@@ -84,7 +83,6 @@ public class HistoryExtractionHandler {
         String array_path = getPathFromExtractedContent(objAtPathStr, ruleString);
 
         if (!array_path.isEmpty()) {
-            // pathInAggregatedObject = array_path;
             String pathPrefix = pathTrimmed.isEmpty() ? "" : pathTrimmed + ".";
             pathInAggregatedObject = pathPrefix + array_path;
             pathInAggregatedObject = MergePrepare.destringify(pathInAggregatedObject);

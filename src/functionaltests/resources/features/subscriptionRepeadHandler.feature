@@ -27,7 +27,7 @@ Feature: Test Subscription Repeat Handler
 
   #@tag2
   Scenario: Remove Subscription via RestApi
-    Given The REST API "/subscriptions" is up and running
+    Given Add subscription to MongoDB
     When  I make a DELETE request with subscription name "Subscription_Test" to the subscription REST API "/subscriptions/"
     Then  Check in MongoDB that subscription has been removed
     And   Check in MongoDB RepeatFlagHandler collection that the subscription has been removed

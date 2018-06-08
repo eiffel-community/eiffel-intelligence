@@ -1,5 +1,6 @@
 {
         "subscriptionName": "Subscription_1",
+        "userName" : "DEF",
         "repeat": false,
         "created": "data-time",
         "notificationType": "REST_POST",
@@ -11,6 +12,7 @@
             "formvalue" : "@"
           }
         ],
+        
         "requirements": [
             {
                 "type": "ARTIFACT_1",

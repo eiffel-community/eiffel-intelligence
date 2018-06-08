@@ -1,0 +1,38 @@
+{
+        "subscriptionName": "Subscription_1",
+        "userName" : "DEF",
+        "repeat": false,
+        "created": "data-time",
+        "notificationType": "REST_POST",
+        "notificationMeta": "https://jenkins.domain.com:8100/jenkins/job/test_params/build",
+        "restPostBodyMediaType": "application/x-www-form-urlencoded",
+        "notificationMessageKeyValues" : [
+          {
+            "formkey" : "json",
+            "formvalue" : "{parameter: [{ name: 'parameter', value : 'parameterValue' }]}"
+          },
+          {
+            "formkey" : "Authorization",
+            "formvalue" : "Basic XX0="
+          }
+        ],
+
+        "requirements": [
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+                ]
+
+            },
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+                ]
+
+            }
+        ]
+    }

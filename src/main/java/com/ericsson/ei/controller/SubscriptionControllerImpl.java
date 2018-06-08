@@ -80,7 +80,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOG.error(msg);
                 subscriptionResponse.setMsg(msg);
                 subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-                subResponse = new ResponseEntity<>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
+                return new ResponseEntity<>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
             }
 
             if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {

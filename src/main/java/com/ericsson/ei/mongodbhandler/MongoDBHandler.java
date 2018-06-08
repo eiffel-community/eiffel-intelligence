@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,7 +39,23 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.stereotype.Component;
+
 import lombok.Getter;
+import lombok.Setter;
 
 @Component
 public class MongoDBHandler {
@@ -65,10 +78,11 @@ public class MongoDBHandler {
 
     // Establishing the connection to mongodb and creating a collection
     private void createConnection() {
-        if (!StringUtils.isBlank(mongoProperties.getUsername()) && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
+        if (!StringUtils.isBlank(mongoProperties.getUsername())
+                && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
             ServerAddress address = new ServerAddress(mongoProperties.getHost(), mongoProperties.getPort());
             MongoCredential credential = MongoCredential.createCredential(mongoProperties.getUsername(),
-                mongoProperties.getDatabase(), mongoProperties.getPassword());
+                    mongoProperties.getDatabase(), mongoProperties.getPassword());
             mongoClient = new MongoClient(address, Collections.singletonList(credential));
         } else {
             mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
@@ -102,7 +116,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the retrieve the all documents from the collection
+     * This method is used for the retrieve the all documents from the
+     * collection
      * 
      * @param dataBaseName
      * @param collectionName
@@ -166,8 +181,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the lock
-     * in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the
+     * lock in one query. Lock is needed for multi process execution
      * 
      * @param dataBaseName
      * @param collectionName
@@ -196,9 +211,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the input
-     * condition in one query. Lock is needed for multi process execution. This
-     * method is executed in a loop.
+     * This method is used for lock and return the document that matches the
+     * input condition in one query. Lock is needed for multi process execution.
+     * This method is executed in a loop.
      * 
      * @param dataBaseName
      * @param collectionName
@@ -289,11 +304,11 @@ public class MongoDBHandler {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
-    
+
     public void dropCollection(String dataBaseName, String collectionName) {
-    	MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-    	MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
-    	mongoCollection.drop();
+        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
+        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+        mongoCollection.drop();
     }
 
 }

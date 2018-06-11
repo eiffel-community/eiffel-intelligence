@@ -1,0 +1,98 @@
+[
+  {
+    "meta": {
+      "type": "EiffelSourceChangeCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "gitIdentifier": {
+        "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "branch": "myBranch",
+        "repoName": "myPrivateRepo",
+        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+      },
+      "author": {
+        "name": "John Doe",
+        "email": "john.doe@company.com",
+        "id": "johndoe",
+        "group": "Team Gophers"
+      },
+      "change": {
+        "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "insertions": 173,
+        "deletions": 79,
+        "tracker": "GitHub",
+        "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "id": "42"
+      },
+      "issues": [
+        {
+          "type": "BUG",
+          "tracker": "JIRA",
+          "id": "JIRA-1234",
+          "uri": "http://jira.company.com/browse/JIRA-1234",
+          "transition": "RESOLVED"
+        }
+      ]
+    },
+    "links": [
+    ]
+  },
+  {
+    "meta": {
+      "type": "EiffelSourceChangeCreatedEvent",
+      "version": "1.0.0",
+      "time": 1234567890,
+      "id": "fb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
+      "source": {
+        "domainId": "example.domain"
+      }
+    },
+    "data": {
+      "gitIdentifier": {
+        "commitId": "fd090b60a4aedc5161dn9c035a47b14a319829b4",
+        "branch": "myBranch",
+        "repoName": "myPrivateRepo",
+        "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+      },
+      "author": {
+        "name": "John Doe",
+        "email": "john.doe@company.com",
+        "id": "johndoe",
+        "group": "Team Gophers"
+      },
+      "change": {
+        "files": "https://company.com/changes/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "insertions": 135,
+        "deletions": 23,
+        "tracker": "GitHub",
+        "details": "https://github.com/johndoe/myPrivateRepo/commit/fd090b60a4aedc5161da9c035a49b14a319829b4",
+        "id": "43"
+      },
+      "issues": [
+        {
+          "type": "BUG",
+          "tracker": "JIRA",
+          "id": "JIRA-1234",
+          "uri": "http://jira.company.com/browse/JIRA-1234",
+          "transition": "RESOLVED"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "BASE",
+        "target": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47"
+      }
+    ]
+  }
+]

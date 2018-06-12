@@ -51,12 +51,12 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     }
 
     @Override
-    public void afterTestClass(TestContext testContext) throws Exception {
+    public void beforeTestClass(TestContext testContext) throws Exception {
         int debug = 1;
     }
 
     @Override
-    public void beforeTestClass(TestContext testContext) throws Exception {
+    public void afterTestClass(TestContext testContext) throws Exception {
         int debug = 1;
     }
 }

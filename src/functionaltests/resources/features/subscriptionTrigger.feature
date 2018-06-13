@@ -22,8 +22,9 @@ Feature: Subscription trigger test
 
   @tag1
   Scenario: Test subscription triggering
-    Given Subscription rest trigger is created
-    And Subscription mail trigger is created
-    And Subscription rest authenticated trigger is created
-    When I send events
+  	Given The REST API "/subscriptions" is up and running
+    And Subscription with "MAIL" trigger is created at REST API "/subscriptions"
+    And Subscription with "REST" trigger with both parameters and header values is created at REST API "/subscriptions" 
+    And Subscription with "REST" trigger with both parameters and header values and authentication values is created at REST API "/subscriptions" 
+    When I send Eiffel events
     Then Subscriptions were triggered 

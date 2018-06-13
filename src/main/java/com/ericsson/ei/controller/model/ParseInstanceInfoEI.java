@@ -96,31 +96,31 @@ public class ParseInstanceInfoEI {
     public ParseInstanceInfoEI(){
     }
     
-	@Component
-	private class MailServerValues {
-		@Getter
-		@Value("${spring.mail.host}")
-		private String host;
+    @Component
+    private class MailServerValues {
+        @Getter
+        @Value("${spring.mail.host}")
+        private String host;
 
-		@Getter
-		@Value("${spring.mail.port}")
-		private String port;
+        @Getter
+        @Value("${spring.mail.port}")
+        private String port;
 
-		@Getter
-		@Value("${spring.mail.username}")
-		private String username;
+        @Getter
+        @Value("${spring.mail.username}")
+        private String username;
 
-		@Getter
-		private String password = "*********";
+        @Getter
+        private String password = "*********";
 
-		@Getter
-		@Value("${spring.mail.properties.mail.smtp.auth}")
-		private String smtpAuth;
+        @Getter
+        @Value("${spring.mail.properties.mail.smtp.auth}")
+        private String smtpAuth;
 
-		@Getter
-		@Value("${spring.mail.properties.mail.smtp.starttls.enable}")
-		private String startTls;
-	}
+        @Getter
+        @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+        private String startTls;
+    }
     
     @Component
     private class MongoDbValues {

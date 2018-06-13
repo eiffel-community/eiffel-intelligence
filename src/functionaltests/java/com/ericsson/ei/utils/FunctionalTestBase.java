@@ -14,7 +14,6 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;

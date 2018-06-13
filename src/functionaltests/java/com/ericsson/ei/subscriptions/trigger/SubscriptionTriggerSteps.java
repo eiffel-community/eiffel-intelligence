@@ -69,7 +69,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
         Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());  
     }
-    
+
     @When("^I send Eiffel events$")
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("Sending events");

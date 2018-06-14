@@ -46,7 +46,7 @@ public class ParseInstanceInfoEI {
     private String version;
     
     @Getter
-    @Value("${testaggregated.enabled}")
+    @Value("${testaggregated.enabled:false}")
     private String testRulesEnabled;
 
     @Getter
@@ -111,9 +111,6 @@ public class ParseInstanceInfoEI {
         private String username;
 
         @Getter
-        private String password = "*********";
-
-        @Getter
         @Value("${spring.mail.properties.mail.smtp.auth}")
         private String smtpAuth;
 
@@ -158,9 +155,6 @@ public class ParseInstanceInfoEI {
         @Getter
         @Value("${ldap.username}")
         private String username;
-
-        @Getter
-        private String password = "*********";
     }
 
 

@@ -3,12 +3,17 @@ package com.ericsson.ei.subscriptions.trigger;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +29,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import gherkin.deps.com.google.gson.JsonArray;
+import gherkin.deps.com.google.gson.JsonElement;
+import gherkin.deps.com.google.gson.JsonObject;
+import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
 @AutoConfigureMockMvc
@@ -48,7 +57,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());        		
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());        		
     }    	
 
     @Given("^Subscriptions is setup using REST API \"([^\"]*)\"$")
@@ -59,6 +68,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
+        
+        ArrayList<String> subscriptions = new ArrayList<String>();
+        JsonParser parser = new JsonParser();
+        JsonElement rootNode = parser.parse(readFileToString);
+        JsonArray array = rootNode.getAsJsonArray();
+        for(int i=0; i<array.size(); i++) {
+            subscriptions.add(array.get(i).getAsJsonObject().get("subscriptionName").toString());
+        }
+        
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
                 .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
         try {
@@ -67,7 +85,25 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());  
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+
+        RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
+        try {
+            result = mockMvc.perform(getRequest).andReturn();
+            LOGGER.debug("Response code from REST when getting subscriptions: " + String.valueOf(result.getResponse().getStatus()));
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+
+        LOGGER.debug("Checking that response contains all subscriptions");
+        for(String sub : subscriptions) {
+            try {
+                assertTrue(result.getResponse().getContentAsString().contains(sub));
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
     }
 
     @When("^I send Eiffel events$")

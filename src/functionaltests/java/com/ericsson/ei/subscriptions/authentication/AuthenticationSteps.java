@@ -10,8 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +23,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Ignore
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
@@ -68,7 +66,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Then("^get response code of (\\d+) and subscription with name \"(\\w+)\" is not created$")
     public void get_response_code_of_and_subscription_with_name_is_not_created(int statusCode, String subscriptionName) throws Throwable {
-        Assert.assertEquals(statusCode, mvcResult.getResponse().getStatus());
+        assertEquals(statusCode, mvcResult.getResponse().getStatus());
         mockMvc.perform(MockMvcRequestBuilders.get("/subscriptions/" + subscriptionName)
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest())
@@ -92,7 +90,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Then("^get response code of (\\d+) and subscription with name \"(\\w+)\" is created$")
     public void get_response_code_of_and_subscription_with_name_is_created(int statusCode, String subscriptionName) throws Throwable {
-        Assert.assertEquals(statusCode, mvcResult.getResponse().getStatus());
+        assertEquals(statusCode, mvcResult.getResponse().getStatus());
         mockMvc.perform(MockMvcRequestBuilders.get("/subscriptions/" + subscriptionName)
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

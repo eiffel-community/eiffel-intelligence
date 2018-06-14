@@ -16,9 +16,9 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
+
 @tag
 Feature: Subscription trigger test
-#  I want to use this template for my feature file
 
   @tag1
   Scenario: Test subscription triggering

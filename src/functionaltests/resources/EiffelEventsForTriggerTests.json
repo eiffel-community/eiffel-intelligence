@@ -1,0 +1,188 @@
+[
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7260",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  },
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7261",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  },
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7262",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  },
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7263",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  },
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7264",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  },
+  {
+    "meta": {
+      "time": 1528976830,
+      "source": {
+        "domainId": "example.domain"
+      },
+      "type": "EiffelTestCaseFinishedEvent",
+      "id": "1238ae3a-5332-4676-8cad-6eee56ab7265",
+      "version": "1.0.0"
+    },
+    "links": [
+      {
+        "target": "13af4a14-f951-4346-a1ba-624c79f10e98",
+        "type": "TEST_CASE_EXECUTION"
+      }
+    ],
+    "data": {
+      "gav": {
+        "groupId": "com.mycompany.myproduct",
+        "artifactId": "artifact-name",
+        "version": "2.1.7"
+      },
+      "testCase": {
+        "id": "TC5",
+        "conclusion": "SUCCESSFUL"
+      },
+      "outcome": {
+        "verdict": "PASSED"
+      }
+    }
+  }
+]

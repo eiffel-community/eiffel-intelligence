@@ -61,7 +61,7 @@ public class TestRulesRestAPI {
     private static final String EXTRACTION_RULE_FILE_PATH = "src/test/resources/ExtractionRule.txt";
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";
-    private static final String AGGREATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
+    private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
 
     private static final String ENVIRONMENT_DISABLED = "{\"message\": \"Test environment is not enabled. "
         + "Please use the test environment for this execution\"}";
@@ -114,7 +114,7 @@ public class TestRulesRestAPI {
         try {
             jsonInput = new JSONArray(FileUtils.readFileToString(new File(EVENTS), "UTF-8"));
             extractionRules_test = new JSONArray(FileUtils.readFileToString(new File(RULES), "UTF-8"));
-            aggregatedResult = FileUtils.readFileToString(new File(AGGREATED_RESULT_OBJECT), "UTF-8");
+            aggregatedResult = FileUtils.readFileToString(new File(AGGREGATED_RESULT_OBJECT), "UTF-8");
             expectedAggObject = new JSONArray(aggregatedResult);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

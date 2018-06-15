@@ -10,7 +10,6 @@ import com.mongodb.MongoClient;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.rabbitmq.client.Channel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,17 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
@@ -42,7 +32,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.Ignore;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
@@ -220,20 +209,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void check_subscriptions_were_triggered() throws Throwable {
    	
     	//Mock SMTP
-        int smtpPort = smtpServer.getPort();
-        String sender = "christoffer@ericsson.se";
-        String receiver = "anders@ericsson.se";
-        String subject = "Hello!";
-        String content = "This is a test for the mocked smtp server.";
-        sendMessage(smtpPort, sender, subject, content, receiver);
-        
+        String sender = System.getProperty("email.sender");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assertEquals(emails.size(), 1);
+        assertEquals(2, emails.size());
         
-        SmtpMessage email = emails.get(0);
-        LOGGER.debug("Email: "+email.toString());
-        assertEquals(email.getHeaderValue("From"), sender);
-    	
+        for(SmtpMessage email : emails) {
+            LOGGER.debug("Email: "+email.toString());
+            assertEquals(email.getHeaderValue("From"), sender);
+        }
+
     	//Mock REST API
     	String baseURL ="localhost";
     	int restPort = restServer.getPort();
@@ -268,34 +252,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         );
     	
     	mockClient.close();
-    }
-    
-    private void sendMessage(int port, String from, String subject, String body, String to) throws MessagingException {
-        Properties mailProps = getMailProperties(port);
-        Session session = Session.getInstance(mailProps, null);
-        //session.setDebug(true);
-
-        MimeMessage msg = createMessage(session, from, to, subject, body);
-        Transport.send(msg);
-    }
-    
-    private Properties getMailProperties(int port) {
-        Properties mailProps = new Properties();
-        mailProps.setProperty("mail.smtp.host", "localhost");
-        mailProps.setProperty("mail.smtp.port", "" + port);
-        mailProps.setProperty("mail.smtp.sendpartial", "true");
-        return mailProps;
-    }
-    
-    private MimeMessage createMessage(
-        Session session, String from, String to, String subject, String body) throws MessagingException {
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(from));
-        msg.setSubject(subject);
-        msg.setSentDate(new Date());
-        msg.setText(body);
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-        return msg;
     }
     
     private List<String> getEventNamesToSend() {

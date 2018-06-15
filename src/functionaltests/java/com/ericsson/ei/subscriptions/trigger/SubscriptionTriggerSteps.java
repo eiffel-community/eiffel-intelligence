@@ -78,6 +78,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Value("${event_object_map.collection.name}")
     private String collection;
 
+    @Value("${email.sender}")
+    private String sender;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -85,8 +88,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private RmqHandler rmqHandler;
 
     @Autowired
-    JavaMailSenderImpl mailSender;
-
+    private JavaMailSenderImpl mailSender;
+    
     MvcResult result;
     ObjectMapper mapper = new ObjectMapper();
     static JSONArray jsonArray = null;
@@ -217,14 +220,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-        // Mock SMTP
-        String sender = System.getProperty("email.sender");
-        List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert (emails.size() > 0);
+    	//Mock SMTP
 
-        for (SmtpMessage email : emails) {
-            LOGGER.debug("Email: " + email.toString());
-            //assertEquals(email.getHeaderValue("From"), sender);
+        List<SmtpMessage> emails = smtpServer.getReceivedEmails();
+        assert(emails.size() > 0);
+        
+        for(SmtpMessage email : emails) {
+            LOGGER.debug("Email: "+email.toString());
+            assertEquals(email.getHeaderValue("From"), sender);
         }
 
         // Mock REST API

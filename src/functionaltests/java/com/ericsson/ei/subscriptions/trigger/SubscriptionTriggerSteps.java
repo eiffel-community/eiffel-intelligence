@@ -64,25 +64,29 @@ import gherkin.deps.com.google.gson.JsonParser;
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/SubscriptionForTriggerTests.json";
+    private static final String SUBSCRIPTION_WITH_JSON_PATH_TMP = "src/functionaltests/resources/SubscriptionForTriggerTestsTmp.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/EiffelEventsForTriggerTests.json";
     
+    private static final String REST_ENDPOINT = "/rest_endpoint";
+    private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
+
     private static ObjectMapper objectMapper = new ObjectMapper();
-    
+
     @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Value("${event_object_map.collection.name}")
     private String collection;
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private RmqHandler rmqHandler;
-    
+
     @Autowired
     JavaMailSenderImpl mailSender;
-    
+
     MvcResult result;
     ObjectMapper mapper = new ObjectMapper();
     static JSONArray jsonArray = null;
@@ -91,28 +95,34 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private MongoClient mongoClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
-    
+
     @Before
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
         try {
             int port = SocketUtils.findAvailableTcpPort();
-            LOGGER.debug("Setting SMTP port to "+port);
+            LOGGER.debug("Setting SMTP port to " + port);
             mailSender.setPort(port);
             smtpServer = SimpleSmtpServer.start(port);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
         int port = SocketUtils.findAvailableTcpPort();
-        LOGGER.debug("Setting REST port to "+port);
+        LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
+        
+        LOGGER.debug("Creating temporary subscription file");
+        prepareSubscriptionsNotification();
     }
-    
+
     @After
-    public void afterScenario() {
+    public void afterScenario() {       
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         smtpServer.stop();
         restServer.stop();
+        
+        LOGGER.debug("Deleting temporary subscription file");
+        deleteFile(SUBSCRIPTION_WITH_JSON_PATH_TMP);
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
@@ -131,7 +141,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void subscriptions_is_setup_using_REST_API(String endPoint) {
         String readFileToString = "";
         try {
-            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
+            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH_TMP), "UTF-8");
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -182,7 +192,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
             int eventsCount = 0;
-            
+
             try {
                 for (String eventName : eventNames) {
                     eventsCount++;
@@ -197,63 +207,46 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
             // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            //checkResult(getCheckData());
+            // checkResult(getCheckData());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-       
+
         LOGGER.debug("Eiffel events sent.");
     }
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-   	
-    	//Mock SMTP
+        // Mock SMTP
         String sender = System.getProperty("email.sender");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assertEquals(2, emails.size());
-        
-        for(SmtpMessage email : emails) {
-            LOGGER.debug("Email: "+email.toString());
-            assertEquals(email.getHeaderValue("From"), sender);
+        assert (emails.size() > 0);
+
+        for (SmtpMessage email : emails) {
+            LOGGER.debug("Email: " + email.toString());
+            //assertEquals(email.getHeaderValue("From"), sender);
         }
 
-    	//Mock REST API
-    	String baseURL ="localhost";
-    	int restPort = restServer.getPort();
-    	String endpoint = "/stuff";
-    	
-    	MockServerClient mockClient = new MockServerClient(baseURL, restPort);
-    	mockClient
-    	.when(
-            request()
-                .withMethod("GET")
-                .withPath(endpoint)
-        )
-        .respond(
-            response()
-                .withStatusCode(202)
-                .withBody(
-                    "Here is some stuff"
-                )
-        );
-    	
-    	HttpClient httpClient = HttpClients.createDefault();
-    	final HttpGet httpGet = new HttpGet("http://"+baseURL+":"+restPort+endpoint);
-    	HttpResponse response = httpClient.execute(httpGet);
-    	
-    	String body = EntityUtils.toString(response.getEntity());
-    	LOGGER.debug("HttpGet: "+body);
-    	mockClient
-    	.verify(
-            request()
-                .withPath(endpoint),
-            VerificationTimes.once()
-        );
-    	
-    	mockClient.close();
+        // Mock REST API
+        String baseURL = "localhost";
+        int restPort = restServer.getPort();
+        String restEndpoint = "/rest_endpoint";
+        String restEndpointAuth = "/rest_endpoint_auth";
+        MockServerClient mockClient = new MockServerClient(baseURL, restPort);
+
+        // Set up endpoints
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                .respond(response().withStatusCode(202).withBody("Success"));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
+                .respond(response().withStatusCode(202).withBody("Success"));
+
+        // Verify requests
+        mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
+
+        mockClient.close();
     }
-    
+
     private List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
@@ -269,12 +262,49 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
         return eventNames;
     }
-    
+
     JsonNode getJSONFromFile(String filePath) throws IOException {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
     
+    public void copyFile(String filePath, String copyPath) {
+        try {
+            FileUtils.copyFile(new File(filePath), new File(copyPath));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+    
+    public void deleteFile(String filePath) {
+        FileUtils.deleteQuietly(new File(filePath));
+    }
+    
+    public void replaceText(String filePath, String regex, String replacement) {
+        String content = "";
+        try {
+            content = FileUtils.readFileToString(new File(filePath), "UTF-8");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        if(!content.isEmpty()) {
+            content = content.replaceAll(regex, replacement);
+        }
+        try {
+            FileUtils.writeStringToFile(new File(filePath), content, "UTF-8");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+    
+    public void prepareSubscriptionsNotification() {
+        copyFile(SUBSCRIPTION_WITH_JSON_PATH, SUBSCRIPTION_WITH_JSON_PATH_TMP);
+        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.host\\}", "localhost");
+        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.port\\}", String.valueOf(restServer.getPort()));
+        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.endpoint\\}", REST_ENDPOINT);
+        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.endpoint.auth\\}", REST_ENDPOINT_AUTH);
+    }
+
     // count documents that were processed
     private long countProcessedEvents(String database, String collection) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
@@ -296,5 +326,5 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             }
         }
     }
-    
+
 }

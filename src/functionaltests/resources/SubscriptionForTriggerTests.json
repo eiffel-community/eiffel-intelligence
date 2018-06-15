@@ -44,7 +44,7 @@
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
-    "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint}",
     "restPostBodyMediaType": "application/json",
     "notificationMessageKeyValues": [
       {
@@ -83,7 +83,7 @@
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
-    "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest_auth",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
     "restPostBodyMediaType": "application/x-www-form-urlencoded",
     "notificationMessageKeyValues" : [
       {

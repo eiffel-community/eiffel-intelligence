@@ -52,6 +52,10 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public int getMongoDbPort() {
         return mongoProperties.getPort();
     }
+    
+    public String getMongoDbHost() {
+        return mongoProperties.getHost();
+    }
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {

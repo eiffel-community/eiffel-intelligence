@@ -2,10 +2,14 @@ package com.ericsson.ei.subscriptions.trigger;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.MongoClient;
 
 import com.mongodb.client.MongoCollection;
@@ -13,7 +17,11 @@ import com.mongodb.client.MongoDatabase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
@@ -21,18 +29,16 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.junit.Ignore;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
@@ -43,6 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -69,6 +76,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     
     private static final String REST_ENDPOINT = "/rest_endpoint";
     private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
+    private static final String BASE_URL = "localhost";
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -95,10 +103,18 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     static JSONArray jsonArray = null;
     SimpleSmtpServer smtpServer;
     ClientAndServer restServer;
+    MockServerClient mockClient;
     private MongoClient mongoClient;
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
+    /* Used to mock erQueryService.getEventStreamDataById currently disabled
+    private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
+    @Mock
+    private ERQueryService erQueryService;
+    */
     @Before
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
@@ -110,12 +126,42 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
+
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
         
+        int restPort = restServer.getPort();
+        mockClient = new MockServerClient(BASE_URL, restPort);
+        
+        // Set up endpoints
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                .respond(response().withStatusCode(202));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
+                .respond(response().withStatusCode(202));
+
         LOGGER.debug("Creating temporary subscription file");
         prepareSubscriptionsNotification();
+        
+        /* 
+         * * Note Mocking erQueryService.getEventStreamDataById causes other exceptions
+        MockitoAnnotations.initMocks(this);
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+
+        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        try {
+            objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        */
     }
 
     @After
@@ -123,6 +169,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         smtpServer.stop();
         restServer.stop();
+        try {
+            mockClient.close();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
         
         LOGGER.debug("Deleting temporary subscription file");
         deleteFile(SUBSCRIPTION_WITH_JSON_PATH_TMP);
@@ -220,8 +271,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-    	//Mock SMTP
-
+    	// Verify recieved emails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert(emails.size() > 0);
         
@@ -230,24 +280,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
-        // Mock REST API
-        String baseURL = "localhost";
-        int restPort = restServer.getPort();
-        String restEndpoint = "/rest_endpoint";
-        String restEndpointAuth = "/rest_endpoint_auth";
-        MockServerClient mockClient = new MockServerClient(baseURL, restPort);
-
-        // Set up endpoints
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(202).withBody("Success"));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
-                .respond(response().withStatusCode(202).withBody("Success"));
-
         // Verify requests
         mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
-
-        mockClient.close();
     }
 
     private List<String> getEventNamesToSend() {
@@ -312,6 +347,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private long countProcessedEvents(String database, String collection) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
+        @SuppressWarnings("rawtypes")
         MongoCollection table = db.getCollection(collection);
         return table.count();
     }

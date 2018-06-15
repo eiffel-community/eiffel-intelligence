@@ -5,6 +5,7 @@ import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,12 +47,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -68,14 +72,44 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Autowired
     private MockMvc mockMvc;
+    
+    @Autowired
+    private RmqHandler rmqHandler;
+    
+    @Autowired
+    JavaMailSenderImpl mailSender;
+    
     MvcResult result;
     ObjectMapper mapper = new ObjectMapper();
     static JSONArray jsonArray = null;
-
-    @Autowired
-    private RmqHandler rmqHandler;
+    SimpleSmtpServer smtpServer;
+    ClientAndServer restServer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
+    
+    @Before
+    public void beforeScenario() {
+        LOGGER.debug("Starting SMTP and REST Mock Servers");
+        try {
+            int port = SocketUtils.findAvailableTcpPort();
+            LOGGER.debug("Setting SMTP port to "+port);
+            mailSender.setPort(port);
+            smtpServer = SimpleSmtpServer.start(port);
+            //smtpServer = SimpleSmtpServer.start(SimpleSmtpServer.AUTO_SMTP_PORT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        int port = SocketUtils.findAvailableTcpPort();
+        LOGGER.debug("Setting REST port to "+port);
+        restServer = startClientAndServer(port);
+    }
+    
+    @After
+    public void afterScenario() {
+        LOGGER.debug("Stopping SMTP and REST Mock Servers");
+        smtpServer.stop();
+        restServer.stop();
+    }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
     public void the_REST_API_is_up_and_running(String endPoint) {
@@ -171,37 +205,31 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void check_subscriptions_were_triggered() throws Throwable {
    	
     	//Mock SMTP
-    	try (SimpleSmtpServer dumbster = SimpleSmtpServer.start(SimpleSmtpServer.AUTO_SMTP_PORT)) {
-            
-    	    int port = dumbster.getPort();
-    	    String sender = "christoffer@ericsson.se";
-    	    String receiver = "anders@ericsson.se";
-    	    String subject = "Hello!";
-    	    String content = "This is a test for the mocked smtp server.";
-            sendMessage(port, sender, subject, content, receiver);
-            
-            List<SmtpMessage> emails = dumbster.getReceivedEmails();
-            assertEquals(emails.size(), 1);
-            
-            SmtpMessage email = emails.get(0);
-            LOGGER.debug("Email: "+email.toString());
-            assertEquals(email.getHeaderValue("From"), sender);
-        }
+        int smtpPort = smtpServer.getPort();
+        String sender = "christoffer@ericsson.se";
+        String receiver = "anders@ericsson.se";
+        String subject = "Hello!";
+        String content = "This is a test for the mocked smtp server.";
+        sendMessage(smtpPort, sender, subject, content, receiver);
+        
+        List<SmtpMessage> emails = smtpServer.getReceivedEmails();
+        assertEquals(emails.size(), 1);
+        
+        SmtpMessage email = emails.get(0);
+        LOGGER.debug("Email: "+email.toString());
+        assertEquals(email.getHeaderValue("From"), sender);
     	
     	//Mock REST API
-    	String baseURL ="127.0.0.1";
-    	int port = SocketUtils.findAvailableTcpPort();
-    	String path = "/stuff";
+    	String baseURL ="localhost";
+    	int restPort = restServer.getPort();
+    	String endpoint = "/stuff";
     	
-    	
-    	ClientAndServer mockServer = startClientAndServer(port);
-    	
-    	MockServerClient mockClient = new MockServerClient(baseURL, port);
+    	MockServerClient mockClient = new MockServerClient(baseURL, restPort);
     	mockClient
     	.when(
             request()
                 .withMethod("GET")
-                .withPath(path)
+                .withPath(endpoint)
         )
         .respond(
             response()
@@ -212,7 +240,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         );
     	
     	HttpClient httpClient = HttpClients.createDefault();
-    	final HttpGet httpGet = new HttpGet("http://"+baseURL+":"+port+path);
+    	final HttpGet httpGet = new HttpGet("http://"+baseURL+":"+restPort+endpoint);
     	HttpResponse response = httpClient.execute(httpGet);
     	
     	String body = EntityUtils.toString(response.getEntity());
@@ -220,12 +248,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     	mockClient
     	.verify(
             request()
-                .withPath(path),
+                .withPath(endpoint),
             VerificationTimes.once()
         );
     	
     	mockClient.close();
-    	mockServer.stop();
     }
     
     private void sendMessage(int port, String from, String subject, String body, String to) throws MessagingException {

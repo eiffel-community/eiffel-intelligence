@@ -15,6 +15,7 @@ package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.mongodb.MongoClient;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -51,6 +52,10 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     public int getMongoDbPort() {
         return mongoProperties.getPort();
+    }
+    
+    public String getMongoDbHost() {
+        return mongoProperties.getHost();
     }
 
     @Override

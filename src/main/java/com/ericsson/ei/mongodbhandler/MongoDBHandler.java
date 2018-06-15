@@ -298,7 +298,16 @@ public class MongoDBHandler {
         if (!collectionList.contains(collectionName)) {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
-            db.createCollection(collectionName);
+            try {
+                db.createCollection(collectionName);                
+            } catch (MongoCommandException e) {
+                String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
+                if (e.getMessage().contains(message)) {
+                    log.warn("A " + message + ".");
+                } else {
+                    throw e;
+                }
+            }
             log.debug("done....");
         }
         MongoCollection<Document> collection = db.getCollection(collectionName);

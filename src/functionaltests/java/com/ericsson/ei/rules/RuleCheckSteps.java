@@ -1,4 +1,4 @@
-package com.ericsson.ei.subscriptions.ruleCheck;
+package com.ericsson.ei.rules;
 
 import com.ericsson.ei.controller.RuleCheckController;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class RuleCheckSteps extends FunctionalTestBase {
 
-    private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources/ruleCheck/";
+    private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources/rules/";
 
     @Autowired
     private RuleCheckController ruleCheckController;
@@ -45,9 +45,9 @@ public class RuleCheckSteps extends FunctionalTestBase {
     }
 
     @When("^make a POST request with JMESPath rule \"([^\"]*)\" and JSON object \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_JMESPath_rule_and_JSON_object_to_the_REST_API(String ruleFilename, String eventFilename, String endpoint) throws Throwable {
-        String extractionRules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + ruleFilename), "UTF-8");
-        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventFilename), "UTF-8");
+    public void make_a_POST_request_with_JMESPath_rule_and_JSON_object_to_the_REST_API(String ruleFileName, String eventFileName, String endpoint) throws Throwable {
+        String extractionRules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + ruleFileName), "UTF-8");
+        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventFileName), "UTF-8");
         mvcResult = mockMvc.perform(post(endpoint)
             .param("rule", extractionRules)
             .accept(MediaType.APPLICATION_JSON)
@@ -57,8 +57,8 @@ public class RuleCheckSteps extends FunctionalTestBase {
     }
 
     @When("^make a POST request with list of JMESPath rules and list of JSON objects \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_list_of_JMESPath_rules_and_list_of_JSON_objects_to_the_REST_API(String requestBodyFilename, String endpoint) throws Throwable {
-        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + requestBodyFilename), "UTF-8");
+    public void make_a_POST_request_with_list_of_JMESPath_rules_and_list_of_JSON_objects_to_the_REST_API(String requestBodyFileName, String endpoint) throws Throwable {
+        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + requestBodyFileName), "UTF-8");
         mvcResult = mockMvc.perform(post(endpoint)
             .accept(MediaType.APPLICATION_JSON)
             .content(requestBody)
@@ -67,8 +67,8 @@ public class RuleCheckSteps extends FunctionalTestBase {
     }
 
     @Then("^get response code of (\\d+) and content \"([^\"]*)\"$")
-    public void get_response_code_of_and_content(int statusCode, String contentFilename) throws Throwable {
-        String responseBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + contentFilename), "UTF-8");
+    public void get_response_code_of_and_content(int statusCode, String contentFileName) throws Throwable {
+        String responseBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + contentFileName), "UTF-8");
         assertEquals(statusCode, mvcResult.getResponse().getStatus());
         assertEquals(responseBody, mvcResult.getResponse().getContentAsString(), true);
     }

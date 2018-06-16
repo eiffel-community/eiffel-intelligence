@@ -34,18 +34,18 @@ import cucumber.api.java.en.When;
 @Ignore
 @AutoConfigureMockMvc
 public class SubscriptionCRUDSteps extends FunctionalTestBase {
-    
-    private static final String subscriptionJsonPath = "src/functionaltests/resources/subscription_single.json";
-    private static final String subscriptionJsonPathUpdated = "src/functionaltests/resources/subscription_single_updated.json";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
+
+    private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/subscriptions/subscription_single.json";
+    private static final String SUBSCRIPTION_UPDATED_FILE_PATH = "src/functionaltests/resources/subscriptions/subscription_single_updated.json";
 
     @Autowired
     private MockMvc mockMvc;
-    MvcResult result;
-    ObjectMapper mapper = new ObjectMapper();
-    static JSONArray jsonArray = null;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
-    
+    private MvcResult result;
+    private ObjectMapper mapper = new ObjectMapper();
+    private static JSONArray jsonArray = null;
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
     public void the_REST_API_is_up_and_running(String endPoint) {
@@ -62,7 +62,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     public void i_make_a_POST_request_with_valid_to_the_subscription_REST_API(String arg1, String endPoint) {
         String readFileToString = "";
         try {
-            readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
+            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "UTF-8");
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -114,7 +114,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
             String endPoint){
         String readFileToString = null;
         try {
-            readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPathUpdated), "UTF-8");
+            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_UPDATED_FILE_PATH), "UTF-8");
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -174,7 +174,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         Assert.assertEquals(statusCode, result.getResponse().getStatus());
         SubscriptionResponse subscriptionResponse = null;
         try {
-            subscriptionResponse = mapper.readValue(result.getResponse().getContentAsString().toString(),
+            subscriptionResponse = mapper.readValue(result.getResponse().getContentAsString(),
                     SubscriptionResponse.class);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);

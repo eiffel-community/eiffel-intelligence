@@ -1,0 +1,41 @@
+[
+  {
+    "created": "2017-07-26",
+    "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+    "notificationType": "REST_POST",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "e",
+        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}"
+      }
+    ],
+    "repeat": false,
+    "requirements": [
+      {
+        "conditions": [
+          {
+            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+          },
+          {
+            "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
+          }
+        ],
+        "type": "ARTIFACT_1"
+      },
+      {
+        "conditions": [
+          {
+            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+          },
+          {
+            "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"
+          }
+        ],
+        "type": "ARTIFACT_1"
+      }
+    ],
+    "subscriptionName": "Subscription_Test",
+    "userName": "ABC"
+  }
+]

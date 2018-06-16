@@ -1,0 +1,71 @@
+[
+  {
+    "subscriptionName": "Subscription_Test_1",
+    "repeat": false,
+    "created": 1523473956269,
+    "notificationType": "MAIL",
+    "notificationMeta": "mail1@company.com",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "json",
+        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }]}"
+      }
+    ],
+    "requirements": [
+      {
+        "conditions": [
+          {
+            "jmespath": "gav.groupId=='com.othercompany.library'"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Test_2",
+    "repeat": false,
+    "created": 1523473956269,
+    "notificationType": "MAIL",
+    "notificationMeta": "mail2@company.com",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "json",
+        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }]}"
+      }
+    ],
+    "requirements": [
+      {
+        "conditions": [
+          {
+            "jmespath": "gav.groupId=='com.othercompany.library'"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Test_3",
+    "repeat": false,
+    "created": 1523473956269,
+    "notificationType": "MAIL",
+    "notificationMeta": "mail3@company.com",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "json",
+        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }]}"
+      }
+    ],
+    "requirements": [
+      {
+        "conditions": [
+          {
+            "jmespath": "gav.groupId=='com.othercompany.library'"
+          }
+        ]
+      }
+    ]
+  }
+]

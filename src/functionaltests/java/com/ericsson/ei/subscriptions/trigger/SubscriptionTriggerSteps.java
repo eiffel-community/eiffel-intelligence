@@ -91,7 +91,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     SimpleSmtpServer smtpServer;
     ClientAndServer restServer;
     MockServerClient mockClient;
-    private MongoClient mongoClient;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
@@ -263,7 +262,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(emails.size() > 0);
         
         for(SmtpMessage email : emails) {
-            LOGGER.debug("Email: "+email.toString());
+            // LOGGER.debug("Email: "+email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 

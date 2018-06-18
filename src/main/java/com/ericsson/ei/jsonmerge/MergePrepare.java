@@ -130,7 +130,7 @@ public class MergePrepare {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.getString(0);
             String secondRule = ruleJSONArray.getString(1);
-            String firstPath = getMergePath(originObject, firstRule);
+            String firstPath = getMergePath(originObject, firstRule, false);
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 
             if (propertyExist(stringObject, firstPathTrimmed, secondRule)) {
@@ -145,9 +145,9 @@ public class MergePrepare {
                         secondRuleComplete += "}";
                     }
 
-                    return getMergePath(originObject, secondRuleComplete);
+                    return getMergePath(originObject, secondRuleComplete, false);
                 } else {
-                    return getMergePath(originObject, secondRule);
+                    return getMergePath(originObject, secondRule, false);
                 }
             } else {
                 String flattenRule = JsonFlattener.flatten(secondRule);
@@ -199,7 +199,7 @@ public class MergePrepare {
         return path;
     }
 
-    public String getMergePath(String originObject, String mergeRule) {
+    public String getMergePath(String originObject, String mergeRule, boolean skipPathSearch) {
         String mergePath = "";
         String stringObject = "";
         String stringRule = "";
@@ -236,20 +236,33 @@ public class MergePrepare {
         ArrayList<String> pathsWithValue = new ArrayList<String>();
         ArrayList<String> pathsContainingRule = new ArrayList<String>();
 
-        for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
-            String entryKey = entry.getKey();
-            Object entryValue = entry.getValue();
-            if (entryValue != null && entryValue.equals(ruleValue)) {
-                pathsWithValue.add(destringify(entryKey));
+        if (skipPathSearch) {
+            int pos = ruleKey.lastIndexOf(".");
+            if (pos > 0)
+                ruleKey = ruleKey.substring(0, pos);
+            try {
+                Object object = objectJSONObject.get(ruleKey);
+                if (object != null)
+                    mergePath = ruleKey;
+            } catch (JSONException e) {
+                log.error(e.getMessage(), e);
             }
-
-            int factorCount = 0;
-            for (String factor : ruleKeyFactors) {
-                if (entryKey.contains(factor)) {
-                    factorCount++;
+        } else {
+            for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
+                String entryKey = entry.getKey();
+                Object entryValue = entry.getValue();
+                if (entryValue != null && entryValue.equals(ruleValue)) {
+                    pathsWithValue.add(destringify(entryKey));
                 }
-                if (factorCount == ruleKeyFactors.length) {
-                    pathsContainingRule.add(destringify(entryKey));
+
+                int factorCount = 0;
+                for (String factor : ruleKeyFactors) {
+                    if (entryKey.contains(factor)) {
+                        factorCount++;
+                    }
+                    if (factorCount == ruleKeyFactors.length) {
+                        pathsContainingRule.add(destringify(entryKey));
+                    }
                 }
             }
         }

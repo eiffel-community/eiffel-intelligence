@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
     
     <packaging>war</packaging>
 
@@ -50,11 +50,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
-    		<exclusion>
-        		<groupId>org.springframework.boot</groupId>
-        		<artifactId>spring-boot-starter-tomcat</artifactId>
-    		</exclusion>
-    		</exclusions>
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+            </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -92,6 +92,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
         </dependency>
         
         <dependency>
@@ -310,7 +316,7 @@
 		              </configuration>
 	                </execution>
                 </executions>
-            </plugin>                                                
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

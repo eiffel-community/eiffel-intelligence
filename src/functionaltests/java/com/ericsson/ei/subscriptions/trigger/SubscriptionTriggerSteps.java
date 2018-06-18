@@ -152,9 +152,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.info("String before: " + readFileToString);
         readFileToString = stringReplaceText(readFileToString);
-        LOGGER.info("String after: " + readFileToString);
         
         ArrayList<String> subscriptions = new ArrayList<String>();
         JsonParser parser = new JsonParser();

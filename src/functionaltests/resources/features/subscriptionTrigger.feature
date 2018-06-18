@@ -17,10 +17,10 @@
 ## (Comments)
 #Sample Feature Definition Template
 
-@tag
+@SubscriptionTriggerFeature
 Feature: Subscription trigger test
 
-  @tag1
+  @SubscriptionTriggerScenario
   Scenario: Test subscription triggering
   	Given The REST API "/subscriptions" is up and running
     And Subscriptions is setup using REST API "/subscriptions"

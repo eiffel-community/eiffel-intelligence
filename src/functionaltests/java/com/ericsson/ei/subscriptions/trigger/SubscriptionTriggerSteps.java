@@ -26,13 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.junit.Ignore;
+import org.bson.Document;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
@@ -59,14 +53,13 @@ import gherkin.deps.com.google.gson.JsonArray;
 import gherkin.deps.com.google.gson.JsonElement;
 import gherkin.deps.com.google.gson.JsonParser;
 
-@Ignore
 @AutoConfigureMockMvc
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/SubscriptionForTriggerTests.json";
     private static final String SUBSCRIPTION_WITH_JSON_PATH_TMP = "src/functionaltests/resources/SubscriptionForTriggerTestsTmp.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/EiffelEventsForTriggerTests.json";
-    
+
     private static final String REST_ENDPOINT = "/rest_endpoint";
     private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
 
@@ -89,17 +82,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Autowired
     private JavaMailSenderImpl mailSender;
-    
-    MvcResult result;
-    ObjectMapper mapper = new ObjectMapper();
-    static JSONArray jsonArray = null;
-    SimpleSmtpServer smtpServer;
-    ClientAndServer restServer;
+
+    private MvcResult result;
+    private SimpleSmtpServer smtpServer;
+    private ClientAndServer restServer;
     private MongoClient mongoClient;
+    private MockServerClient mockClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
-    @Before
+    @Before("@SubscriptionTriggerScenario")
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
         try {
@@ -113,17 +105,29 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
-        
+
+        String baseURL = "localhost";
+        mockClient = new MockServerClient(baseURL, port);
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                .respond(response().withStatusCode(202).withBody("Success"));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
+                .respond(response().withStatusCode(202).withBody("Success"));
+
         LOGGER.debug("Creating temporary subscription file");
         prepareSubscriptionsNotification();
     }
 
-    @After
-    public void afterScenario() {       
+    @After("@SubscriptionTriggerScenario")
+    public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         smtpServer.stop();
+        try {
+            mockClient.close();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
         restServer.stop();
-        
+
         LOGGER.debug("Deleting temporary subscription file");
         deleteFile(SUBSCRIPTION_WITH_JSON_PATH_TMP);
     }
@@ -208,9 +212,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
 
-            // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            // checkResult(getCheckData());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -220,34 +222,18 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-    	//Mock SMTP
-
+        // Verify SMTP E-mails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert(emails.size() > 0);
-        
-        for(SmtpMessage email : emails) {
-            LOGGER.debug("Email: "+email.toString());
+        assert (emails.size() > 0);
+
+        for (SmtpMessage email : emails) {
+            LOGGER.debug("Email: " + email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
-        // Mock REST API
-        String baseURL = "localhost";
-        int restPort = restServer.getPort();
-        String restEndpoint = "/rest_endpoint";
-        String restEndpointAuth = "/rest_endpoint_auth";
-        MockServerClient mockClient = new MockServerClient(baseURL, restPort);
-
-        // Set up endpoints
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(202).withBody("Success"));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
-                .respond(response().withStatusCode(202).withBody("Success"));
-
-        // Verify requests
+        // Verify REST API requests
         mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
-
-        mockClient.close();
     }
 
     private List<String> getEventNamesToSend() {
@@ -270,7 +256,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
-    
+
     public void copyFile(String filePath, String copyPath) {
         try {
             FileUtils.copyFile(new File(filePath), new File(copyPath));
@@ -278,11 +264,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
     }
-    
+
     public void deleteFile(String filePath) {
         FileUtils.deleteQuietly(new File(filePath));
     }
-    
+
     public void replaceText(String filePath, String regex, String replacement) {
         String content = "";
         try {
@@ -290,7 +276,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        if(!content.isEmpty()) {
+        if (!content.isEmpty()) {
             content = content.replaceAll(regex, replacement);
         }
         try {
@@ -299,7 +285,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
     }
-    
+
     public void prepareSubscriptionsNotification() {
         copyFile(SUBSCRIPTION_WITH_JSON_PATH, SUBSCRIPTION_WITH_JSON_PATH_TMP);
         replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.host\\}", "localhost");
@@ -308,16 +294,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.endpoint.auth\\}", REST_ENDPOINT_AUTH);
     }
 
-    // count documents that were processed
+    // Count documents that were processed
     private long countProcessedEvents(String database, String collection) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection table = db.getCollection(collection);
+        MongoCollection<Document> table = db.getCollection(collection);
         return table.count();
     }
 
     private void waitForEventsToBeProcessed(int eventsCount) {
-        // wait for all events to be processed
+        // Wait for all events to be processed
         long processedEvents = 0;
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, collection);
@@ -329,5 +315,4 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             }
         }
     }
-
 }

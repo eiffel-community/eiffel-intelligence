@@ -13,7 +13,6 @@ import com.mongodb.client.MongoDatabase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
@@ -62,6 +61,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final String REST_ENDPOINT = "/rest_endpoint";
     private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
+    private static final String BASE_URL = "localhost";
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -91,6 +91,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
+    /*
+     * Used to mock erQueryService.getEventStreamDataById currently disabled
+     * private static final String UPSTREAM_RESULT_FILE =
+     * "upStreamResultFile.json";
+     * 
+     * @Autowired private UpStreamEventsHandler upStreamEventsHandler;
+     * 
+     * @Mock private ERQueryService erQueryService;
+     */
     @Before("@SubscriptionTriggerScenario")
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
@@ -102,12 +111,13 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
+
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
 
-        String baseURL = "localhost";
-        mockClient = new MockServerClient(baseURL, port);
+        // Set up endpoints
+        mockClient = new MockServerClient(BASE_URL, port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
                 .respond(response().withStatusCode(202).withBody("Success"));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
@@ -115,6 +125,26 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
         LOGGER.debug("Creating temporary subscription file");
         prepareSubscriptionsNotification();
+
+        /* 
+         * * Note Mocking erQueryService.getEventStreamDataById causes other exceptions
+        MockitoAnnotations.initMocks(this);
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+
+        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        try {
+            objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        */  
     }
 
     @After("@SubscriptionTriggerScenario")
@@ -222,16 +252,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-        // Verify SMTP E-mails
+        // Verify received emails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert (emails.size() > 0);
 
         for (SmtpMessage email : emails) {
-            LOGGER.debug("Email: " + email.toString());
+            // LOGGER.debug("Email: "+email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
-        // Verify REST API requests
+        // Verify requests
         mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
     }

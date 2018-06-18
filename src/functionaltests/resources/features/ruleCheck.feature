@@ -27,17 +27,17 @@ Feature: Test Rules Checker
   @tag2
   Scenario: Execute list of JMESPath rules on list of JSON objects
     Given rules checking is enabled
-    When make a POST request with list of JMESPath rules and list of JSON objects "inputData.json" to the REST API "/rules/rule-check/aggregation"
+    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "events.json" to the REST API "/rules/rule-check/aggregation"
     Then get response code of 200 and content "resultAggregatedObject.json"
 
   @tag3
   Scenario: Execute incorrect list of JMESPath rules on list of JSON objects
     Given rules checking is enabled
-    When make a POST request with list of JMESPath rules and list of JSON objects "incorrectInputData.json" to the REST API "/rules/rule-check/aggregation"
+    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "emptyArray.json" to the REST API "/rules/rule-check/aggregation"
     Then get response code of 400 and content "badRequestResponse.json"
 
   @tag4
   Scenario: Execute list of JMESPath rules on list of JSON objects, when rules checking is not enabled
     Given rules checking is not enabled
-    When make a POST request with list of JMESPath rules and list of JSON objects "inputData.json" to the REST API "/rules/rule-check/aggregation"
+    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "events.json" to the REST API "/rules/rule-check/aggregation"
     Then get response code of 503 and content "environmentDisabledResponse.json"

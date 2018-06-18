@@ -6,6 +6,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -56,9 +58,12 @@ public class RuleCheckSteps extends FunctionalTestBase {
             .andReturn();
     }
 
-    @When("^make a POST request with list of JMESPath rules and list of JSON objects \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_list_of_JMESPath_rules_and_list_of_JSON_objects_to_the_REST_API(String requestBodyFileName, String endpoint) throws Throwable {
-        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + requestBodyFileName), "UTF-8");
+    @When("^make a POST request with list of JMESPath rules \"([^\"]*)\" and list of JSON objects \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
+    public void make_a_POST_request_with_list_of_JMESPath_rules_and_list_of_JSON_objects_to_the_REST_API(String rulesFileName, String eventsFileName, String endpoint) throws Throwable {
+        String rules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + rulesFileName), "UTF-8");
+        String events = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventsFileName), "UTF-8");
+        String requestBody = new JSONObject().put("listRulesJson", new JSONArray(rules)).put("listEventsJson", new JSONArray(events)).toString();
+        System.out.println(requestBody);
         mvcResult = mockMvc.perform(post(endpoint)
             .accept(MediaType.APPLICATION_JSON)
             .content(requestBody)

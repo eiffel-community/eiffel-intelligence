@@ -55,9 +55,8 @@ import gherkin.deps.com.google.gson.JsonParser;
 @AutoConfigureMockMvc
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
-    private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/SubscriptionForTriggerTests.json";
-    private static final String SUBSCRIPTION_WITH_JSON_PATH_TMP = "src/functionaltests/resources/SubscriptionForTriggerTestsTmp.json";
-    private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/EiffelEventsForTriggerTests.json";
+    private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
+    private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
 
     private static final String REST_ENDPOINT = "/rest_endpoint";
     private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
@@ -91,15 +90,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
-    /*
-     * Used to mock erQueryService.getEventStreamDataById currently disabled
-     * private static final String UPSTREAM_RESULT_FILE =
-     * "upStreamResultFile.json";
-     * 
-     * @Autowired private UpStreamEventsHandler upStreamEventsHandler;
-     * 
-     * @Mock private ERQueryService erQueryService;
-     */
     @Before("@SubscriptionTriggerScenario")
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
@@ -122,29 +112,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 .respond(response().withStatusCode(202).withBody("Success"));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
                 .respond(response().withStatusCode(202).withBody("Success"));
-
-        LOGGER.debug("Creating temporary subscription file");
-        prepareSubscriptionsNotification();
-
-        /* 
-         * * Note Mocking erQueryService.getEventStreamDataById causes other exceptions
-        MockitoAnnotations.initMocks(this);
-        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        try {
-            objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
-
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
-        */  
     }
 
     @After("@SubscriptionTriggerScenario")
@@ -157,9 +124,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
         restServer.stop();
-
-        LOGGER.debug("Deleting temporary subscription file");
-        deleteFile(SUBSCRIPTION_WITH_JSON_PATH_TMP);
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
@@ -178,11 +142,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void subscriptions_is_setup_using_REST_API(String endPoint) {
         String readFileToString = "";
         try {
-            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH_TMP), "UTF-8");
+            readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-
+        LOGGER.info("String before: " + readFileToString);
+        readFileToString = stringReplaceText(readFileToString);
+        LOGGER.info("String after: " + readFileToString);
+        
         ArrayList<String> subscriptions = new ArrayList<String>();
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(readFileToString);
@@ -254,10 +221,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void check_subscriptions_were_triggered() throws Throwable {
         // Verify received emails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert (emails.size() > 0);
-
-        for (SmtpMessage email : emails) {
-            // LOGGER.debug("Email: "+email.toString());
+        assert(emails.size() > 0);
+        
+        for(SmtpMessage email : emails) {
+            LOGGER.debug("Email: "+email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
@@ -286,42 +253,17 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
-
-    public void copyFile(String filePath, String copyPath) {
-        try {
-            FileUtils.copyFile(new File(filePath), new File(copyPath));
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
+    
     public void deleteFile(String filePath) {
         FileUtils.deleteQuietly(new File(filePath));
     }
-
-    public void replaceText(String filePath, String regex, String replacement) {
-        String content = "";
-        try {
-            content = FileUtils.readFileToString(new File(filePath), "UTF-8");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        if (!content.isEmpty()) {
-            content = content.replaceAll(regex, replacement);
-        }
-        try {
-            FileUtils.writeStringToFile(new File(filePath), content, "UTF-8");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    public void prepareSubscriptionsNotification() {
-        copyFile(SUBSCRIPTION_WITH_JSON_PATH, SUBSCRIPTION_WITH_JSON_PATH_TMP);
-        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.host\\}", "localhost");
-        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.port\\}", String.valueOf(restServer.getPort()));
-        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.endpoint\\}", REST_ENDPOINT);
-        replaceText(SUBSCRIPTION_WITH_JSON_PATH_TMP, "\\$\\{rest.endpoint.auth\\}", REST_ENDPOINT_AUTH);
+    
+    private String stringReplaceText(String text) {
+        text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
+        text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\}", REST_ENDPOINT);
+        text = text.replaceAll("\\$\\{rest\\.endpoint.auth\\}", REST_ENDPOINT_AUTH);
+        return text;
     }
 
     // Count documents that were processed

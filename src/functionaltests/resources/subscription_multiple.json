@@ -39,7 +39,7 @@
     ]
   },
   {
-    "subscriptionName": "Subscription_Rest",
+    "subscriptionName": "Subscription_Rest_Params_in_Head",
     "userName": "DEF",
     "repeat": false,
     "created": "data-time",
@@ -48,8 +48,8 @@
     "restPostBodyMediaType": "application/json",
     "notificationMessageKeyValues": [
       {
-        "formkey": "",
-        "formvalue": "@"
+        "formkey" : "",
+        "formvalue" : "@"
       }
     ],
     "requirements": [
@@ -78,7 +78,7 @@
     ]
   },
   {
-    "subscriptionName": "Subscription_Rest_Auth",
+    "subscriptionName": "Subscription_Rest_Auth_Params_in_Head",
     "userName": "DEF",
     "repeat": false,
     "created": "data-time",
@@ -88,7 +88,7 @@
     "notificationMessageKeyValues" : [
       {
         "formkey" : "json",
-        "formvalue" : "{parameter: [{ name: 'parameter', value : 'parameterValue' }]}"
+        "formvalue" : "{parameter: [{ name: 'parameter', value : testCase.conclusion }]}"
       },
       {
         "formkey" : "Authorization",

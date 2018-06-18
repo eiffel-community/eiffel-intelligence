@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.junit.Ignore;
+import org.bson.Document;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
@@ -53,13 +52,12 @@ import gherkin.deps.com.google.gson.JsonArray;
 import gherkin.deps.com.google.gson.JsonElement;
 import gherkin.deps.com.google.gson.JsonParser;
 
-@Ignore
 @AutoConfigureMockMvc
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
-    
+
     private static final String REST_ENDPOINT = "/rest_endpoint";
     private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
     private static final String BASE_URL = "localhost";
@@ -83,18 +81,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Autowired
     private JavaMailSenderImpl mailSender;
-    
-    MvcResult result;
-    ObjectMapper mapper = new ObjectMapper();
-    static JSONArray jsonArray = null;
-    SimpleSmtpServer smtpServer;
-    ClientAndServer restServer;
-    MockServerClient mockClient;
+
+    private MvcResult result;
+    private SimpleSmtpServer smtpServer;
+    private ClientAndServer restServer;
     private MongoClient mongoClient;
-    
+    private MockServerClient mockClient;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
-    @Before
+    @Before("@SubscriptionTriggerScenario")
     public void beforeScenario() {
         LOGGER.debug("Starting SMTP and REST Mock Servers");
         try {
@@ -109,27 +105,25 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
-        
-        int restPort = restServer.getPort();
-        mockClient = new MockServerClient(BASE_URL, restPort);
-        
+
         // Set up endpoints
+        mockClient = new MockServerClient(BASE_URL, port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(202));
+                .respond(response().withStatusCode(202).withBody("Success"));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
-                .respond(response().withStatusCode(202));
+                .respond(response().withStatusCode(202).withBody("Success"));
     }
 
-    @After
-    public void afterScenario() {       
+    @After("@SubscriptionTriggerScenario")
+    public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         smtpServer.stop();
-        restServer.stop();
         try {
             mockClient.close();
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
+        restServer.stop();
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
@@ -213,9 +207,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
 
-            // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
-            // checkResult(getCheckData());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -225,7 +217,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-    	// Verify recieved emails
+        // Verify received emails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert(emails.size() > 0);
         
@@ -272,17 +264,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return text;
     }
 
-    // count documents that were processed
+    // Count documents that were processed
     private long countProcessedEvents(String database, String collection) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-        @SuppressWarnings("rawtypes")
-        MongoCollection table = db.getCollection(collection);
+        MongoCollection<Document> table = db.getCollection(collection);
         return table.count();
     }
 
     private void waitForEventsToBeProcessed(int eventsCount) {
-        // wait for all events to be processed
+        // Wait for all events to be processed
         long processedEvents = 0;
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, collection);
@@ -294,5 +285,4 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             }
         }
     }
-
 }

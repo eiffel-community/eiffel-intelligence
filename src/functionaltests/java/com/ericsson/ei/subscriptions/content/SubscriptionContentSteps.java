@@ -3,7 +3,9 @@ package com.ericsson.ei.subscriptions.content;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequests;
+import com.ericsson.ei.utils.HttpDeleteRequests;
+import com.ericsson.ei.utils.HttpPostRequests;
+import com.ericsson.ei.utils.HttpGetRequests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
@@ -20,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import javax.annotation.PostConstruct;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,117 +32,113 @@ import static org.junit.Assert.assertEquals;
 public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @LocalServerPort
-    int applicationPort;
-
+    private int applicationPort;
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
-    private HttpRequests request;
+    private HttpGetRequests get;
+    private HttpPostRequests post;
+    private HttpDeleteRequests delete;
     private ResponseEntity response;
+    private ObjectMapper mapper = new ObjectMapper();
+    private Map<String, String> headerMap = new HashMap();
 
-    private String validSubscriptionFile = "src/functionaltests/resources/ValidSubscription.json";
-    private String invalidSubscriptionFile = "src/functionaltests/resources/InvalidSubscription.json";
-
-    ObjectMapper mapper = new ObjectMapper();
 
     @PostConstruct
     private void setUp() {
-        request = new HttpRequests(applicationPort);
-    }
+        get = new HttpGetRequests(applicationPort, "http://localhost:", "/subscriptions");
+        delete = new HttpDeleteRequests(applicationPort, "http://localhost:", "/subscriptions");
 
+        post = new HttpPostRequests(
+                applicationPort,
+                "http://localhost:",
+                "/subscriptions");
+        headerMap.put("content-type", "application/json");
+        headerMap.put("Accept", "application/json");
+        post.setHeaders(headerMap);
+    }
 
     // SCENARIO 1
 
-
     @Given("^No subscriptions exist$")
     public void fetch_subscriptions() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
-        response = request.makeHttpGetRequest(url);
+        response = get.build();
         assertEquals("[]", response.getBody().toString());
     }
 
-    @When("^Create subscription request$")
-    public void send_subscription_request() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
-        response = request.makeHttpPostRequest(url, validSubscriptionFile);
+    @When("^I create subscription request with \"(.*)\"$")
+    public void create_subscription_request(String validSubscriptionFile) {
+        post.setParams(validSubscriptionFile);
+        response = post.build();
     }
 
     @Then("^The subscription is created successfully$")
-    public void subscription_created_successfully() {
+    public void the_subscription_is_created_successfully() {
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
-    @And("^Valid subscription exists$")
-    public void ensure_valid_subscription_exists() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions/mySubscription";
-        response = request.makeHttpGetRequest(url);
+    @And("^Valid subscription \"([A-Za-z0-9_]+)\" exists$")
+    public void valid_subscription_exists(String subscriptionName) {
+        get.setEndpoint("/subscriptions/" + subscriptionName);
+        response = get.build();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
-
 
     // SCENARIO 2
 
-
-    @Given("^Subscription ([A-Za-z0-9_]+) already exists$")
-    public void check_a_subscription_exists(String subscriptionName) {
-        String url = "http://localhost:" + applicationPort + "/subscriptions/" + subscriptionName;
-        response = request.makeHttpGetRequest(url);
+    @Given("^Subscription \"([A-Za-z0-9_]+)\" already exists$")
+    public void subscription_already_exists(String subscriptionName) {
+        get.setEndpoint("/subscriptions/" + subscriptionName);
+        response = get.build();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
-    @When("^I create a duplicate subscription$")
-    public void create_duplicate_subscription() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
-        response = request.makeHttpPostRequest(url, validSubscriptionFile);
+    @When("^I create a duplicate subscription with \"(.*)\"$")
+    public void create_duplicate_subscription_with(String validSubscriptionFile) {
+        post.setParams(validSubscriptionFile);
+        response = post.build();
     }
 
-    @Then("^The new subscription is rejected$")
+    @Then("^Duplicate subscription is rejected$")
     public void duplicate_subscription_is_rejected() {
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
     }
 
-    @And("^([A-Za-z0-9_]+) is not duplicated$")
-    public void check_duplicate_was_not_created(String name) {
-        String url = "http://localhost:" + applicationPort + "/subscriptions/" + name;
+    @And("^\"([A-Za-z0-9_]+)\" is not duplicated$")
+    public void is_not_duplicated(String name) {
         Subscription[] subscription = null;
-
-        response = request.makeHttpGetRequest(url);
+        get.setEndpoint("/subscriptions/" + name);
+        response = get.build();
 
         try {
             subscription = mapper.readValue(response.getBody().toString(), Subscription[].class);
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-
         // Ensure only one subscription exists
         assertEquals(1, subscription.length);
     }
 
-
     // SCENARIO 3
 
-    @Given("^I delete ([A-Za-z0-9_]+)$")
+    @Given("^I delete \"([A-Za-z0-9_]+)\"$")
     public void delete_subscription(String subscriptionName) {
         SubscriptionResponse subscriptionResponse = null;
-        String url = "http://localhost:" + applicationPort + "/subscriptions/mySubscription";
-
-        subscriptionResponse = request.makeHttpDeleteRequest(url);
+        delete.setEndpoint("/subscriptions/" + subscriptionName);
+        subscriptionResponse = delete.build();
         assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
     }
 
     @And("^Subscriptions does not exist$")
-    public void get_all_subscriptions() {
-        ResponseEntity<String> response = null;
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
-
-        response = request.makeHttpGetRequest(url);
-
+    public void subscriptions_does_not_exist() {
+        get.setEndpoint("/subscriptions");
+        response = get.build();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("[]", response.getBody().toString());
     }
 
-    @When("^I create an invalid subscription$")
-    public void create_invalid_subscription() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
-        response = request.makeHttpPostRequest(url, invalidSubscriptionFile);
+    @When("^I create an invalid subscription with \"(.*)\"$")
+    public void create_invalid_subscription_with(String invalidSubscriptionFile) {
+        post.setParams(invalidSubscriptionFile);
+        response = post.build();
     }
 
     @Then("^The invalid subscription is rejected$")
@@ -147,11 +147,10 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     }
 
     @And("^The invalid subscription does not exist$")
-    public void ensure_invalid_subscription_not_exists() {
-        String url = "http://localhost:" + applicationPort + "/subscriptions";
+    public void invalid_subscription_does_not_exist() {
         String invalidName = "#Subscription-&-with-&-mal-&-formatted-&-name";
-
-        response = request.makeHttpGetRequest(url + invalidName);
+        get.setEndpoint("/subscriptions/" + invalidName);
+        response = get.build();
         assertEquals("[]", response.getBody().toString());
     }
 

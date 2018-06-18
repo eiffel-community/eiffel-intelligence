@@ -17,30 +17,30 @@
 ## (Comments)
 #Sample Feature Definition Template
 
-@tag
+@SubscriptionContent
 Feature: Test Subscription Content
 
-  @tag1
+  @ValidSubscription
   Scenario: Test creating valid subscriptions
   Given No subscriptions exist
-  When Create subscription request
+  When I create subscription request with "src/functionaltests/resources/ValidSubscription.json"
   Then The subscription is created successfully
-  And Valid subscription exists
+  And Valid subscription "mySubscription" exists
 
 
-  @tag2
+  @DuplicateSubscription
   Scenario: Test duplicate subscriptions are rejected
-  Given Subscription mySubscription already exists
-  When I create a duplicate subscription
-  Then The new subscription is rejected
-  And mySubscription is not duplicated
+  Given Subscription "mySubscription" already exists
+  When I create a duplicate subscription with "src/functionaltests/resources/ValidSubscription.json"
+  Then Duplicate subscription is rejected
+  And "mySubscription" is not duplicated
 
 
-  @tag3
+  @InvalidSubscription
   Scenario: Test invalid subscriptions are rejected
-  Given I delete mySubscription
+  Given I delete "mySubscription"
   And Subscriptions does not exist
-  When I create an invalid subscription
+  When I create an invalid subscription with "src/functionaltests/resources/InvalidSubscription.json"
   Then The invalid subscription is rejected
   And The invalid subscription does not exist
 

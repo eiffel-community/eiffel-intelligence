@@ -22,6 +22,8 @@ This repository contains a software implementation based on the Eiffel protocol.
 
 Eiffel Intelligence is licensed under the [Apache License 2.0](./LICENSE).
 
+## Detailed documentation is provided at the following link: http://ericsson.github.io/eiffel-intelligence
+
 ## How to Propose Changes
 
 Anyone is welcome to propose changes to this repository by creating a new [Issue](https://github.com/Ericsson/eiffel-intelligence/issues) ticket in GitHub. These requests may concern anything contained in the repo: changes to documentation, changes to interfaces, changes to implementations, additional tests et cetera.

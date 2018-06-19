@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +44,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.controller.SubscriptionController;
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,8 +52,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(value = SubscriptionController.class, secure = false)
 public class SubscriptionRestAPITest {
 
-    private static final String subscriptionJsonPath = "src/test/resources/subscription_single.json";
-    private static final String multisubscriptionJsonPath = "src/test/resources/subscription_multi.json";
+    private static final String SUBSCRIPTION = "src/test/resources/subscription_single.json";
+    private static final String SUBSCRIPTION_MULTIPLE = "src/test/resources/subscription_multi.json";
     private static final String REASON_FIELD = "reason";
 
     @Autowired
@@ -77,10 +75,10 @@ public class SubscriptionRestAPITest {
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {
-        String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
+        String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
 
-        String readFileToStringMulti = FileUtils.readFileToString(new File(multisubscriptionJsonPath), "UTF-8");
+        String readFileToStringMulti = FileUtils.readFileToString(new File(SUBSCRIPTION_MULTIPLE), "UTF-8");
         jsonArrayMulti = new JSONArray(readFileToStringMulti);
     }
 
@@ -209,68 +207,64 @@ public class SubscriptionRestAPITest {
         assertEquals("Subscription cannot be found", responseBody.getString(REASON_FIELD));
     }
 
-//    @Test
-//    public void getSubScriptionByName() throws Exception {
-//        Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-//        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenReturn(subscription2);
-//
-//        // Send subscription as body to /subscriptions
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
-//                .accept(MediaType.APPLICATION_JSON);
-//
-//        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-//
-//        Subscription[] subscription = mapper.readValue(result.getResponse().getContentAsString().toString(),
-//                Subscription[].class);
-//        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-//        assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
-//        assertEquals("ABC", subscription[0].getUserName());
-//    }
-//
-//    @Test
-//    public void getSubScriptionByNameNotFound() throws Exception {
-//        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenThrow(
-//                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
-//
-//        // Send subscription as body to /subscriptions
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
-//                .accept(MediaType.APPLICATION_JSON);
-//
-//        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-//
-//        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-//        assertEquals("[]", result.getResponse().getContentAsString());
-//    }
-//
-//    @Test
-//    public void deleteSubScriptionByName() throws Exception {
-//        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(true);
-//
-//        // Send subscription as body to /subscriptions
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
-//                .accept(MediaType.APPLICATION_JSON);
-//
-//        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-//
-//        SubscriptionResponse subscriptionResponse = mapper
-//                .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
-//        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-//        assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
-//    }
-//
-//    @Test
-//    public void deleteSubScriptionByNameNotFound() throws Exception {
-//        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(false);
-//
-//        // Send subscription as body to /subscriptions
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
-//                .accept(MediaType.APPLICATION_JSON);
-//
-//        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-//
-//        SubscriptionResponse subscriptionResponse = mapper
-//                .readValue(result.getResponse().getContentAsString().toString(), SubscriptionResponse.class);
-//        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-//        assertEquals("Record not found for delete", subscriptionResponse.getMsg());
-//    }
+    @Test
+    public void getSubscriptionByName() throws Exception {
+        Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenReturn(subscription2);
+
+        // Send subscription as body to /subscriptions
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        Subscription[] subscription = mapper.readValue(result.getResponse().getContentAsString(), Subscription[].class);
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
+        assertEquals("ABC", subscription[0].getUserName());
+    }
+
+    @Test
+    public void getSubscriptionByNameNotFound() throws Exception {
+        Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenThrow(
+                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
+
+        // Send subscription as body to /subscriptions
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        assertEquals("[]", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void deleteSubscriptionByName() throws Exception {
+        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(true);
+
+        // Send subscription as body to /subscriptions
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void deleteSubscriptionByNameNotFound() throws Exception {
+        Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(false);
+
+        // Send subscription as body to /subscriptions
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/subscriptions/Subscription_Test")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        assertEquals("Subscription was not found", responseBody.getString(REASON_FIELD));
+    }
 }

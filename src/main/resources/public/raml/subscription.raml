@@ -2,7 +2,7 @@
 
     description: Provides interaction with Subscription resource
     get:
-      description: List the names of all subscriptions      
+      description: Fetches all subscriptions as list
       responses:
         200:        
           body:
@@ -21,7 +21,7 @@
               schema: subscriptionResponse
 
     put:      
-      description: Modify an existing Subscription. 
+      description: Modify an existing Subscriptions.
       body:
         application/json:
           schema: subscriptionList
@@ -41,7 +41,7 @@
             type: string
       
       get:
-        description: Returns the subscription rules for given subscription name. 
+        description: Returns the subscriptions for given subscription names.
         responses:
           200:        
             body:
@@ -51,7 +51,7 @@
 
 
       delete:
-        description: Removes the subscription from the database.
+        description: Removes the subscriptions from the database for given subscription names.
         responses:
           200:        
             body:

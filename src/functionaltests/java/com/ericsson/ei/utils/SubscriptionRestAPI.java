@@ -1,18 +1,18 @@
 package com.ericsson.ei.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
 
 public class SubscriptionRestAPI {
 
@@ -31,17 +31,7 @@ public class SubscriptionRestAPI {
         String jsonContent = "";
 
         try(CloseableHttpResponse httpResponse = client.execute(request)) {
-            InputStream inStream = httpResponse.getEntity().getContent();
-            BufferedReader bufReader = new BufferedReader(new InputStreamReader(inStream, "UTF-8"));
-
-            for (String line = bufReader.readLine(); line != null; line = bufReader.readLine()) {
-                jsonContent += line;
-            }
-            if (jsonContent.isEmpty()) {
-                jsonContent = "[]";
-            }
-            bufReader.close();
-            inStream.close();
+            jsonContent = StringUtils.defaultIfBlank(EntityUtils.toString(httpResponse.getEntity(), "utf-8"), "");
             statusCode = httpResponse.getStatusLine().getStatusCode();
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);

@@ -107,16 +107,16 @@ public class RunSubscription {
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
                 String new_Rule = rule.replace("'", "\"");
-                LOGGER.info("Rule : " + rule);
-                LOGGER.info("New Rule after replacing single quote : " + new_Rule);
+                LOGGER.debug("Rule : " + rule);
+                LOGGER.debug("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                LOGGER.info("Result : " + result.toString());
+                LOGGER.debug("Result : " + result.toString());
                 Boolean conclusion1 = !result.toString().equals("null");
                 Boolean conclusion2 = !result.toString().equals("false");
                 Boolean conclusion3 = !result.toString().equals("[]");
-                LOGGER.info("Condition 1 : " + conclusion1);
-                LOGGER.info("Condition 2 : " + conclusion2);
-                LOGGER.info("Condition 3 : " + conclusion3);
+                LOGGER.debug("Condition 1 : " + conclusion1);
+                LOGGER.debug("Condition 2 : " + conclusion2);
+                LOGGER.debug("Condition 3 : " + conclusion3);
                 if (conclusion1 && conclusion2 && conclusion3) {
                     count_condition_fulfillment++;
                 }
@@ -125,7 +125,7 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
-                    LOGGER.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                    LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
                     try {
                         subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
                                 requirementIndex, id);

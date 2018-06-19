@@ -137,22 +137,22 @@ subscriptionList: |
     }
 subscriptionResponse: |
     {
-       "$schema":"http://json-schema.org/draft-04/schema#",
-       "javaType":"com.ericsson.ei.controller.model.SubscriptionResponse",
-       "definitions":{
-       },
-       "properties":{
-          "msg":{
-             "type":"string"
+       "type": "array",
+       "items": {
+          "$schema":"http://json-schema.org/draft-04/schema#",
+          "javaType":"com.ericsson.ei.controller.model.SubscriptionResponse",
+          "definitions":{
           },
-          "statusCode":{
-             "type":"integer"
+          "properties":{
+             "subscription":{
+                "type":"string"
+             },
+             "reason":{
+                "type":"string"
+             }
           },
-          "responseEntity":{
-             "type":"string"
-          }
-       },
-       "type":"object"
+          "type":"object"
+       }
     }
 stringServiceResponse: |
     {

@@ -33,7 +33,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createSubscription(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> createSubscription(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
@@ -43,7 +43,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> updateSubscriptions(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> updateSubscriptions(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
@@ -62,7 +62,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.DELETE)
-    public ResponseEntity<com.ericsson.ei.controller.model.SubscriptionResponse> deleteSubscriptionById(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionById(
         @PathVariable(required = false)
         String subscriptionName);
 

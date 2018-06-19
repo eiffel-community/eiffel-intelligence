@@ -114,7 +114,9 @@ public class SubscriptionValidator {
      */
     private void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
         String regex = ".*[\\s].*";
-        if (Pattern.matches(regex, notificationMeta)) {
+        if (notificationMeta == null) {
+            throw new SubscriptionValidationException("Required field NotificationMeta is missed");
+        } else if (Pattern.matches(regex, notificationMeta)) {
             throw new SubscriptionValidationException("Wrong format of NotificationMeta: " + notificationMeta);
         }
     }
@@ -129,7 +131,9 @@ public class SubscriptionValidator {
     private void validateNotificationType(String notificationType) throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
-        if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
+        if (notificationType == null) {
+            throw new SubscriptionValidationException("Required field NotificationType is missed");
+        } else if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
             throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
         }
     }

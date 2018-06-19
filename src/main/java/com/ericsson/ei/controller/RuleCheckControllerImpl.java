@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Api(value = "Check Rules", description = "REST endpoints for executing rule(s) on the JSON")
 public class RuleCheckControllerImpl implements RuleCheckController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckControllerImpl.class);
     private static final String BAD_REQUEST = "{\"message\": \"Bad request\"}";
     private static final String INVALID_JSON = "{\"message\": \"Invalid JSON content\"}";
     private static final String ENVIRONMENT_DISABLED = "{\"message\": \"Test environment is not enabled. "

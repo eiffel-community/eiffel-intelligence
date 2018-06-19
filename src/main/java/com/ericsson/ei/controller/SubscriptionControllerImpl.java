@@ -16,38 +16,35 @@
 */
 package com.ericsson.ei.controller;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ericsson.ei.config.HttpSessionConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.time.Instant;
+import java.util.*;
 
 @Component
 @CrossOrigin
 @Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
 public class SubscriptionControllerImpl implements SubscriptionController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
     @Value("${ldap.enabled}")
     private boolean authenticate;
@@ -57,133 +54,126 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
 
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
+    private Map<String, String> errorMap;
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscription")
-    public ResponseEntity<SubscriptionResponse> createSubscription(@RequestBody List<Subscription> subscriptions) {
-        ResponseEntity<SubscriptionResponse> subResponse = null;
-        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+    public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
+        errorMap = new HashMap<>();
+        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
 
-        for (Subscription subscription : subscriptions) {
-
-            String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-            subscription.setUserName(user);
-            subResponse = null;
+        subscriptions.forEach(subscription -> {
+            String subscriptionName = subscription.getSubscriptionName();
             try {
-                subscription.setCreated(Instant.now().toEpochMilli());
+                LOG.debug("Subscription create started :: " + subscriptionName);
                 subscriptionValidator.validateSubscription(subscription);
-            } catch (SubscriptionValidationException e) {
-                String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName()
-                        + " failed! Error: " + e.getMessage();
-                LOG.error(msg);
-                subscriptionResponse.setMsg(msg);
-                subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-                return new ResponseEntity<>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
-            }
 
-            if (!subscriptionService.doSubscriptionExist(subscription.getSubscriptionName())) {
-                subscriptionService.addSubscription(subscription);
-                LOG.info("Subscription :" + subscription.getSubscriptionName() + " Inserted Successfully");
-                subscriptionResponse.setMsg("Inserted Successfully");
-                subscriptionResponse.setStatusCode(HttpStatus.OK.value());
-                subResponse = new ResponseEntity<>(subscriptionResponse, HttpStatus.OK);
-
-            } else {
-                LOG.error("Subscription :" + subscription.getSubscriptionName() + " already exists");
-                subscriptionResponse.setMsg("Subscription already exists");
-                subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-                subResponse = new ResponseEntity<>(subscriptionResponse, HttpStatus.BAD_REQUEST);
+                if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
+                    subscription.setUserName(user);
+                    subscription.setCreated(Instant.now().toEpochMilli());
+                    subscriptionService.addSubscription(subscription);
+                    LOG.debug("Subscription inserted successfully :: " + subscriptionName);
+                } else {
+                    LOG.error("Subscription already exists :: " + subscriptionName);
+                    errorMap.put(subscriptionName, "Subscription already exists");
+                }
+            } catch (Exception e) {
+                LOG.error("Error on subscription " + subscriptionName + ", " + e.getMessage());
+                errorMap.put(subscriptionName, e.getMessage());
             }
-        }
-        return subResponse;
+        });
+        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscription rules for given subscription name")
     public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+        List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
         List<Subscription> subscriptionList = new ArrayList<>();
-        try {
-            LOG.info("Subscription :" + subscriptionName + " fetch started");
-            subscriptionList.add(subscriptionService.getSubscription(subscriptionName));
-            LOG.info("Subscription :" + subscriptionName + " fetched");
-            return new ResponseEntity<>(subscriptionList, HttpStatus.OK);
-        } catch (SubscriptionNotFoundException e) {
-            LOG.error("Subscription :" + subscriptionName + " not found in records");
-            return new ResponseEntity<>(subscriptionList, HttpStatus.BAD_REQUEST);
-        }
+
+        subscriptionNames.forEach(name -> {
+            try {
+                LOG.debug("Subscription fetch started :: " + name);
+                subscriptionList.add(subscriptionService.getSubscription(name));
+                LOG.debug("Subscription was fetched :: " + name);
+            } catch (SubscriptionNotFoundException e) {
+                LOG.error("Subscription was not found :: " + name);
+            }
+        });
+        return new ResponseEntity<>(subscriptionList, HttpStatus.OK);
     }
 
     @Override
-    // @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Update the existing subscription by the subscription name")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
-        Subscription subscription = subscriptions.get(0);
+    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+        errorMap = new HashMap<>();
         String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-        subscription.setUserName(user);
-        String subscriptionName = subscription.getSubscriptionName();
-        LOG.info("Subscription :" + subscriptionName + " update started");
-        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        try {
-            subscription.setCreated(Instant.now().toEpochMilli());
-            subscriptionValidator.validateSubscription(subscription);
-        } catch (SubscriptionValidationException e) {
-            String msg = "Validation of Subscription parameters on:" + subscription.getSubscriptionName()
-                    + " failed! Error: " + e.getMessage();
-            LOG.error(msg);
-            subscriptionResponse.setMsg(msg);
-            subscriptionResponse.setStatusCode(HttpStatus.PRECONDITION_FAILED.value());
-            return new ResponseEntity<>(subscriptionResponse, HttpStatus.PRECONDITION_FAILED);
-        }
 
-        if (subscriptionService.doSubscriptionExist(subscriptionName)) {
-            subscriptionService.modifySubscription(subscription, subscriptionName);
-            LOG.info("Subscription :" + subscriptionName + " update completed");
-            subscriptionResponse.setMsg("Updated Successfully");
-            subscriptionResponse.setStatusCode(HttpStatus.OK.value());
-            return new ResponseEntity<>(subscriptionResponse, HttpStatus.OK);
+        subscriptions.forEach(subscription -> {
+            String subscriptionName = subscription.getSubscriptionName();
+            try {
+                subscriptionValidator.validateSubscription(subscription);
 
-        } else {
-            LOG.error("Subscription :" + subscription.getSubscriptionName() + " can't be found.");
-            subscriptionResponse.setMsg("Subscription can't be found");
-            subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-            return new ResponseEntity<>(subscriptionResponse, HttpStatus.BAD_REQUEST);
-        }
+                if (subscriptionService.doSubscriptionExist(subscriptionName)) {
+                    subscription.setUserName(user);
+                    subscription.setCreated(Instant.now().toEpochMilli());
+                    subscriptionService.modifySubscription(subscription, subscriptionName);
+                    LOG.debug("Subscription update completed :: " + subscriptionName);
+                } else {
+                    LOG.error("Subscription cannot be found :: " + subscriptionName);
+                    errorMap.put(subscriptionName, "Subscription cannot be found");
+                }
+            } catch (Exception e) {
+                LOG.error("Error on subscription " + subscriptionName + ", " + e.getMessage());
+                errorMap.put(subscriptionName, e.getMessage());
+            }
+        });
+        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscription from the database")
-    public ResponseEntity<SubscriptionResponse> deleteSubscriptionById(@PathVariable String subscriptionName) {
-        SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-        LOG.info("Subscription :" + subscriptionName + " delete started");
-        if (subscriptionService.deleteSubscription(subscriptionName)) {
-            LOG.info("Subscription :" + subscriptionName + " deleted Successfully");
-            subscriptionResponse.setMsg("Deleted Successfully");
-            subscriptionResponse.setStatusCode(HttpStatus.OK.value());
-            return new ResponseEntity<>(subscriptionResponse, HttpStatus.OK);
-        } else {
-            LOG.info("Subscription :" + subscriptionName + " delete completed :: Record not found for delete");
-            subscriptionResponse.setMsg("Record not found for delete");
-            subscriptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-            return new ResponseEntity<>(subscriptionResponse, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionName) {
+        errorMap = new HashMap<>();
+        List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
+
+        subscriptionNames.forEach(name -> {
+            LOG.debug("Subscription delete started :: " + name);
+            if (subscriptionService.deleteSubscription(name)) {
+                LOG.debug("Subscription was deleted successfully :: " + name);
+            } else {
+                LOG.error("Subscription was not found :: " + name);
+                errorMap.put(name, "Subscription was not found");
+            }
+        });
+        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieve all the subscriptions")
     public ResponseEntity<List<Subscription>> getSubscriptions() {
-        LOG.info("Subscription : get all records started");
-        List<Subscription> subscriptionList = new ArrayList<>();
+        LOG.debug("Subscription get all records started");
         try {
-            subscriptionList = subscriptionService.getSubscription();
-            return new ResponseEntity<>(subscriptionList, HttpStatus.OK);
+            return new ResponseEntity<>(subscriptionService.getSubscription(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getLocalizedMessage());
-            return new ResponseEntity<>(subscriptionList, HttpStatus.OK);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
+    }
+
+    private List<SubscriptionResponse> getSubscriptionResponseList(Map<String, String> errorMap) {
+        List<SubscriptionResponse> subscriptionResponseList = new ArrayList<>();
+        errorMap.forEach((subscriptionName, reason) -> {
+            SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+            subscriptionResponse.setSubscription(subscriptionName);
+            subscriptionResponse.setReason(reason);
+            subscriptionResponseList.add(subscriptionResponse);
+        });
+        return subscriptionResponseList;
     }
 }

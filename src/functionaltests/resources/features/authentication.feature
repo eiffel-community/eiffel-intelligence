@@ -25,7 +25,7 @@ Feature: Test Authentication
     When make a POST request to the subscription REST API "/subscriptions" without credentials
     Then get response code of 401 and subscription with name "Subscription_Test" is not created
 
-  @tag2
+  #@tag2
   Scenario: Call an REST API with credentials
     Given LDAP is activated
     When make a POST request to the subscription REST API "/subscriptions" with username "gauss" and password "password"

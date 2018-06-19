@@ -89,19 +89,19 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionName) {
-        List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionNames) {
+        List<String> subscriptionNamesList = Arrays.asList(subscriptionNames.split(","));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
         List<String> notFoundSubscriptionList = new ArrayList<>();
 
-        subscriptionNames.forEach(name -> {
+        subscriptionNamesList.forEach(subscriptionName -> {
             try {
-                LOG.debug("Subscription fetch started :: " + name);
-                foundSubscriptionList.add(subscriptionService.getSubscription(name));
-                LOG.debug("Subscription was fetched :: " + name);
+                LOG.debug("Subscription fetch started :: " + subscriptionName);
+                foundSubscriptionList.add(subscriptionService.getSubscription(subscriptionName));
+                LOG.debug("Subscription was fetched :: " + subscriptionName);
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription was not found :: " + name);
-                notFoundSubscriptionList.add(name);
+                LOG.error("Subscription was not found :: " + subscriptionName);
+                notFoundSubscriptionList.add(subscriptionName);
             }
         });
         GetSubscriptionResponse response = new GetSubscriptionResponse();
@@ -143,17 +143,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionName) {
+    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
-        List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
+        List<String> subscriptionNamesList = Arrays.asList(subscriptionNames.split(","));
 
-        subscriptionNames.forEach(name -> {
-            LOG.debug("Subscription delete started :: " + name);
-            if (subscriptionService.deleteSubscription(name)) {
-                LOG.debug("Subscription was deleted successfully :: " + name);
+        subscriptionNamesList.forEach(subscriptionName -> {
+            LOG.debug("Subscription delete started :: " + subscriptionName);
+            if (subscriptionService.deleteSubscription(subscriptionName)) {
+                LOG.debug("Subscription was deleted successfully :: " + subscriptionName);
             } else {
-                LOG.error("Subscription was not found :: " + name);
-                errorMap.put(name, "Subscription was not found");
+                LOG.error("Subscription was not found :: " + subscriptionName);
+                errorMap.put(subscriptionName, "Subscription was not found");
             }
         });
         return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
@@ -165,7 +165,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<List<Subscription>> getSubscriptions() {
         LOG.debug("Subscription get all records started");
         try {
-            return new ResponseEntity<>(subscriptionService.getSubscription(), HttpStatus.OK);
+            return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getLocalizedMessage());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);

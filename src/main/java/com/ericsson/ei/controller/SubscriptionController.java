@@ -53,18 +53,18 @@ public interface SubscriptionController {
      * Returns the subscriptions for given subscription names.
      * 
      */
-    @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
     public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(
-        @PathVariable(required = false)
-        String subscriptionName);
+        @PathVariable
+        String subscriptionNames);
 
     /**
      * Removes the subscriptions from the database for given subscription names.
      * 
      */
-    @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
     public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionById(
-        @PathVariable(required = false)
-        String subscriptionName);
+        @PathVariable
+        String subscriptionNames);
 
 }

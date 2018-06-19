@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class RuleCheckSteps extends FunctionalTestBase {
 
-    private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources/rules/";
+    private static final String TEST_RESOURCES_PATH = "src/test/resources";
 
     @Autowired
     private RuleCheckController ruleCheckController;
@@ -35,6 +35,9 @@ public class RuleCheckSteps extends FunctionalTestBase {
     private MockMvc mockMvc;
 
     private MvcResult mvcResult;
+
+    private String rules;
+    private String events;
 
     @Given("^rules checking is enabled$")
     public void rules_checking_is_enabled() throws Throwable {
@@ -46,35 +49,43 @@ public class RuleCheckSteps extends FunctionalTestBase {
         ReflectionTestUtils.setField(ruleCheckController, "testEnable", false);
     }
 
-    @When("^make a POST request with JMESPath rule \"([^\"]*)\" and JSON object \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_JMESPath_rule_and_JSON_object_to_the_REST_API(String ruleFileName, String eventFileName, String endpoint) throws Throwable {
-        String extractionRules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + ruleFileName), "UTF-8");
-        String requestBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventFileName), "UTF-8");
+    @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")
+    public void file_with_JMESPath_rules_and_file_with_events(String rulesFileName, String eventsFileName) throws Throwable {
+        rules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + rulesFileName), "UTF-8");
+        events = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventsFileName), "UTF-8");
+    }
+
+    @When("^make a POST request to the REST API \"([^\"]*)\" with request parameter \"([^\"]*)\"$")
+    public void make_a_POST_request_to_the_REST_API_with_request_parameter(String endpoint, String requestParam) throws Throwable {
         mvcResult = mockMvc.perform(post(endpoint)
-            .param("rule", extractionRules)
+            .param(requestParam, rules)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(events)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
+    }
+
+    @When("^make a POST request to the REST API \"([^\"]*)\"$")
+    public void make_a_POST_request_to_the_REST_API(String endpoint) throws Throwable {
+        String requestBody = new JSONObject()
+            .put("listRulesJson", new JSONArray(rules))
+            .put("listEventsJson", new JSONArray(events))
+            .toString();
+        mvcResult = mockMvc.perform(post(endpoint)
             .accept(MediaType.APPLICATION_JSON)
             .content(requestBody)
             .contentType(MediaType.APPLICATION_JSON))
             .andReturn();
     }
 
-    @When("^make a POST request with list of JMESPath rules \"([^\"]*)\" and list of JSON objects \"([^\"]*)\" to the REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_list_of_JMESPath_rules_and_list_of_JSON_objects_to_the_REST_API(String rulesFileName, String eventsFileName, String endpoint) throws Throwable {
-        String rules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + rulesFileName), "UTF-8");
-        String events = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventsFileName), "UTF-8");
-        String requestBody = new JSONObject().put("listRulesJson", new JSONArray(rules)).put("listEventsJson", new JSONArray(events)).toString();
-        System.out.println(requestBody);
-        mvcResult = mockMvc.perform(post(endpoint)
-            .accept(MediaType.APPLICATION_JSON)
-            .content(requestBody)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andReturn();
-    }
-
-    @Then("^get response code of (\\d+) and content \"([^\"]*)\"$")
-    public void get_response_code_of_and_content(int statusCode, String contentFileName) throws Throwable {
-        String responseBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + contentFileName), "UTF-8");
+    @Then("^get response code of (\\d+)$")
+    public void get_response_code_of(int statusCode) throws Throwable {
         assertEquals(statusCode, mvcResult.getResponse().getStatus());
+    }
+
+    @Then("^get content \"([^\"]*)\"$")
+    public void get_content(String contentFileName) throws Throwable {
+        String responseBody = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + contentFileName), "UTF-8");
         assertEquals(responseBody, mvcResult.getResponse().getContentAsString(), true);
     }
 

@@ -21,23 +21,29 @@ Feature: Test Rules Checker
 
   @tag1
   Scenario: Execute JMESPath rule on JSON object
-    When make a POST request with JMESPath rule "extractionRule.txt" and JSON object "artCEvent.json" to the REST API "/rules/rule-check"
-    Then get response code of 200 and content "resultOfExtraction.json"
+    Given file with JMESPath rules "/ExtractionRule.txt" and file with events "/EiffelArtifactCreatedEvent.json"
+    When make a POST request to the REST API "/rules/rule-check" with request parameter "rule"
+    Then get response code of 200
+    And get content "/ExtractedContent.json"
 
-  @tag2
+  #@tag2
   Scenario: Execute list of JMESPath rules on list of JSON objects
     Given rules checking is enabled
-    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "events.json" to the REST API "/rules/rule-check/aggregation"
-    Then get response code of 200 and content "resultAggregatedObject.json"
+    And file with JMESPath rules "/AggregateListRules.json" and file with events "/AggregateListEvents.json"
+    When make a POST request to the REST API "/rules/rule-check/aggregation"
+    Then get response code of 200
+    And get content "/AggregateResultObject.json"
 
-  @tag3
+  #@tag3
   Scenario: Execute incorrect list of JMESPath rules on list of JSON objects
     Given rules checking is enabled
-    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "emptyArray.json" to the REST API "/rules/rule-check/aggregation"
-    Then get response code of 400 and content "badRequestResponse.json"
+    And file with JMESPath rules "/AggregateListRules.json" and file with events "/subscription_single.json"
+    When make a POST request to the REST API "/rules/rule-check/aggregation"
+    Then get response code of 400
 
-  @tag4
+  #@tag4
   Scenario: Execute list of JMESPath rules on list of JSON objects, when rules checking is not enabled
     Given rules checking is not enabled
-    When make a POST request with list of JMESPath rules "rules.json" and list of JSON objects "events.json" to the REST API "/rules/rule-check/aggregation"
-    Then get response code of 503 and content "environmentDisabledResponse.json"
+    And file with JMESPath rules "/AggregateListRules.json" and file with events "/AggregateListEvents.json"
+    When make a POST request to the REST API "/rules/rule-check/aggregation"
+    Then get response code of 503

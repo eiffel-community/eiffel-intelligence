@@ -15,7 +15,7 @@
    limitations under the License.
 --->
 
-![Build Status](https://travis-ci.org/Ericsson/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-intelligence)
+[![Build Status](https://travis-ci.org/Ericsson/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-intelligence)
 [![Coverage Status](https://coveralls.io/repos/github/Ericsson/eiffel-intelligence/badge.svg?branch=master)](https://coveralls.io/github/Ericsson/eiffel-intelligence?branch=master)
 [![](https://jitpack.io/v/Ericsson/eiffel-intelligence.svg)](https://jitpack.io/#Ericsson/eiffel-intelligence)
 

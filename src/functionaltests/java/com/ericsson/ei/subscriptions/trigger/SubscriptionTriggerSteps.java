@@ -58,8 +58,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
 
-    private static final String REST_ENDPOINT = "/rest_endpoint";
-    private static final String REST_ENDPOINT_AUTH = "/rest_endpoint_auth";
+    private static final String REST_ENDPOINT = "/rest";
+    private static final String REST_ENDPOINT_AUTH = "/rest/with/auth";
+    private static final String REST_ENDPOINT_PARAMS = "/rest/with/params";
+    private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
     private static final String BASE_URL = "localhost";
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -105,13 +107,17 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
-
+        
         // Set up endpoints
         mockClient = new MockServerClient(BASE_URL, port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(202).withBody("Success"));
+                .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
-                .respond(response().withStatusCode(202).withBody("Success"));
+                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
+                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
+                .respond(response().withStatusCode(201));
     }
 
     @After("@SubscriptionTriggerScenario")
@@ -222,13 +228,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(emails.size() > 0);
         
         for(SmtpMessage email : emails) {
-            LOGGER.debug("Email: "+email.toString());
+            //LOGGER.debug("Email: "+email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
         // Verify requests
         mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
+        LOGGER.info("#####################################");
+        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT)));
+        LOGGER.info("#####################################");
     }
 
     private List<String> getEventNamesToSend() {
@@ -260,7 +269,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));
         text = text.replaceAll("\\$\\{rest\\.endpoint\\}", REST_ENDPOINT);
-        text = text.replaceAll("\\$\\{rest\\.endpoint.auth\\}", REST_ENDPOINT_AUTH);
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\}", REST_ENDPOINT_AUTH);
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\.params\\}", REST_ENDPOINT_PARAMS);
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\.params\\}", REST_ENDPOINT_AUTH_PARAMS);
         return text;
     }
 

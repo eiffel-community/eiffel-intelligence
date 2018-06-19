@@ -3,6 +3,7 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptionById(
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(
         @PathVariable(required = false)
         String subscriptionName);
 

@@ -17,10 +17,10 @@
 package com.ericsson.ei.controller;
 
 import com.ericsson.ei.config.HttpSessionConfig;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 import io.swagger.annotations.Api;
@@ -88,26 +88,32 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Returns the subscription rules for given subscription name")
-    public ResponseEntity<List<Subscription>> getSubscriptionById(@PathVariable String subscriptionName) {
+    @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionName) {
         List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
-        List<Subscription> subscriptionList = new ArrayList<>();
+        List<Subscription> foundSubscriptionList = new ArrayList<>();
+        List<String> notFoundSubscriptionList = new ArrayList<>();
 
         subscriptionNames.forEach(name -> {
             try {
                 LOG.debug("Subscription fetch started :: " + name);
-                subscriptionList.add(subscriptionService.getSubscription(name));
+                foundSubscriptionList.add(subscriptionService.getSubscription(name));
                 LOG.debug("Subscription was fetched :: " + name);
             } catch (SubscriptionNotFoundException e) {
                 LOG.error("Subscription was not found :: " + name);
+                notFoundSubscriptionList.add(name);
             }
         });
-        return new ResponseEntity<>(subscriptionList, HttpStatus.OK);
+        GetSubscriptionResponse response = new GetSubscriptionResponse();
+        response.setFoundSubscriptions(foundSubscriptionList);
+        response.setNotFoundSubscriptions(notFoundSubscriptionList);
+        HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Update the existing subscription by the subscription name")
+    @ApiOperation(value = "Updates the existing subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
@@ -136,7 +142,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Removes the subscription from the database")
+    @ApiOperation(value = "Removes the subscriptions from the database")
     public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionName) {
         errorMap = new HashMap<>();
         List<String> subscriptionNames = Arrays.asList(subscriptionName.split(","));
@@ -155,7 +161,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieve all the subscriptions")
+    @ApiOperation(value = "Retrieves all the subscriptions")
     public ResponseEntity<List<Subscription>> getSubscriptions() {
         LOG.debug("Subscription get all records started");
         try {

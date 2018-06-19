@@ -27,7 +27,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionBulkSteps.class);
 
-    private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources/subscriptions/";
+    private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources";
 
     @Autowired
     private MockMvc mockMvc;

@@ -218,25 +218,29 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        Subscription[] subscription = mapper.readValue(result.getResponse().getContentAsString(), Subscription[].class);
+        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("foundSubscriptions");
+        Subscription subscription = mapper.readValue(foundSubscriptions.get(0).toString(), Subscription.class);
+
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        assertEquals("Subscription_Test", subscription[0].getSubscriptionName());
-        assertEquals("ABC", subscription[0].getUserName());
+        assertEquals("Subscription_Test", subscription.getSubscriptionName());
+        assertEquals("ABC", subscription.getUserName());
     }
 
     @Test
     public void getSubscriptionByNameNotFound() throws Exception {
         Mockito.when(subscriptionService.getSubscription(Mockito.anyString())).thenThrow(
-                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test"));
+                new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test_Not_Found"));
 
         // Send subscription as body to /subscriptions
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions/Subscription_Test_Not_Found")
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        assertEquals("[]", result.getResponse().getContentAsString());
+        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("notFoundSubscriptions");
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
+        assertEquals("Subscription_Test_Not_Found", notFoundSubscriptions.get(0).toString());
     }
 
     @Test

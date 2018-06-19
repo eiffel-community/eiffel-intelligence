@@ -21,12 +21,12 @@ Feature: Test Subscription Bulk Operations
 
   @tag1
   Scenario: Create multiple subscriptions using REST API
-    Given file with subscriptions "subscriptions_multiple.json"
+    Given file with subscriptions "/subscriptions_multiple.json"
     When make a POST request with list of subscriptions to the subscription REST API "/subscriptions"
     Then get response code of 200 and retrieved subscriptions using REST API "/subscriptions" are same as given
 
   #@tag2
   Scenario: Create multiple subscriptions using REST API
-    Given file with subscriptions "subscriptions_multiple_updated.json"
+    Given file with subscriptions "/subscriptions_multiple_updated.json"
     When make a PUT request with list of subscriptions to the subscription REST API "/subscriptions"
     Then get response code of 200 and retrieved subscriptions using REST API "/subscriptions" are same as given

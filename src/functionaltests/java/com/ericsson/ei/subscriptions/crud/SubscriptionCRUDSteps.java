@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
 
-    private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/subscriptions/subscription_single.json";
-    private static final String SUBSCRIPTION_UPDATED_FILE_PATH = "src/functionaltests/resources/subscriptions/subscription_single_updated.json";
+    private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/subscription_single.json";
+    private static final String SUBSCRIPTION_UPDATED_FILE_PATH = "src/functionaltests/resources/subscription_single_updated.json";
 
     @Autowired
     private MockMvc mockMvc;
@@ -147,13 +148,14 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        Subscription[] subscription = null;
+        Subscription subscription = null;
         try {
-            subscription = mapper.readValue(result.getResponse().getContentAsString(), Subscription[].class);
-        } catch (IOException e) {
+            JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("foundSubscriptions");
+            subscription = mapper.readValue(foundSubscriptions.getJSONObject(0).toString(), Subscription.class);
+        } catch (IOException | JSONException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        assertEquals(notificationType, subscription[0].getNotificationType());
+        assertEquals(notificationType, subscription.getNotificationType());
     }
     //Scenario:3 ends ==========================================================================================
 
@@ -179,7 +181,6 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-//        assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
     }
 
     @Then("^My GET request with subscription name \"([^\"]*)\" at REST API \"([^\"]*)\" returns empty String \"([^\"]*)\"$")
@@ -193,8 +194,10 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
         try {
-            assertEquals(emptyString, result.getResponse().getContentAsString());
-        } catch (UnsupportedEncodingException e) {
+            JSONObject response = new JSONObject(result.getResponse().getContentAsString());
+            assertEquals(emptyString, response.getJSONArray("foundSubscriptions").toString());
+            assertEquals(name, response.getJSONArray("notFoundSubscriptions").getString(0));
+        } catch (UnsupportedEncodingException | JSONException e) {
             LOGGER.error(e.getMessage(), e);
         }
     }

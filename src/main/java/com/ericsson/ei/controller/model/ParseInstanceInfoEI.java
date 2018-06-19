@@ -18,7 +18,6 @@ package com.ericsson.ei.controller.model;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.subscriptionhandler.InformSubscription;
 import com.ericsson.ei.subscriptionhandler.SendMail;
@@ -37,6 +36,7 @@ import java.util.List;
  */
 @Component
 public class ParseInstanceInfoEI {
+	
     @Getter
     @Value("${spring.application.name}")
     private String applicationName;
@@ -44,6 +44,10 @@ public class ParseInstanceInfoEI {
     @Getter
     @Value("${build.version}")
     private String version;
+    
+    @Getter
+    @Value("${testaggregated.enabled:false}")
+    private String testRulesEnabled;
 
     @Getter
     @Autowired
@@ -51,7 +55,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private List<MongoDBHandler> mongodb;
+    private List<MongoDbValues> mongodb;
 
     @Getter
     @Autowired
@@ -60,7 +64,15 @@ public class ParseInstanceInfoEI {
     @Getter
     @Autowired
     private List<SendMail> email;
+    
+    @Getter
+    @Autowired
+    private List<MailServerValues> mailServerValues;
 
+    @Getter
+    @Autowired
+    private LdapValues ldap;
+ 
     @Getter
     @Autowired
     private List<WaitListStorageHandler> waitList;
@@ -80,6 +92,72 @@ public class ParseInstanceInfoEI {
     @Getter
     @Autowired
     private ERQueryService erUrl;
+   
+    public ParseInstanceInfoEI(){
+    }
+    
+    @Component
+    private class MailServerValues {
+        @Getter
+        @Value("${spring.mail.host}")
+        private String host;
+
+        @Getter
+        @Value("${spring.mail.port}")
+        private String port;
+
+        @Getter
+        @Value("${spring.mail.username}")
+        private String username;
+
+        @Getter
+        @Value("${spring.mail.properties.mail.smtp.auth}")
+        private String smtpAuth;
+
+        @Getter
+        @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+        private String startTls;
+    }
+    
+    @Component
+    private class MongoDbValues {
+        @Getter
+        @Value("${spring.data.mongodb.host}")
+        private String host;
+
+        @Getter
+        @Value("${spring.data.mongodb.port}")
+        private String port;
+
+        @Getter
+        @Value("${spring.data.mongodb.database}")
+        private String database;
+    }
+    
+    @Component
+    private class LdapValues {
+        @Getter
+        @Value("${ldap.enabled}")
+        private String enabled;
+
+        @Getter
+        @Value("${ldap.url}")
+        private String url;
+
+        @Getter
+        @Value("${ldap.base.dn}")
+        private String baseDn;
+        
+        @Getter
+        @Value("${ldap.user.filter}")
+        private String filter;
+        
+        @Getter
+        @Value("${ldap.username}")
+        private String username;
+    }
+
+
 
     @Component
     private class ThreadsValue {

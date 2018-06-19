@@ -1,6 +1,8 @@
 package com.ericsson.ei.utils;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -15,39 +17,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@Accessors(chain = true)
 public class HttpPostRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpPostRequest.class);
-    @Getter private int port;
-    @Getter private String url;
-    @Getter private String endpoint;
+    @Getter @Setter private int port;
+    @Getter @Setter private String url;
+    @Getter @Setter private String endpoint;
     @Getter private Map<String, String> headers = new HashMap<>();
     @Getter private StringEntity params;
 
     private static JSONArray jsonParams = null;
     private SubscriptionRestAPI restApi = new SubscriptionRestAPI();
 
-
-    /**
-     * Constructor for initializing a HttpPostRequest object
-     */
-    public HttpPostRequest() {
-
-    }
-
-    public HttpPostRequest setPort(int port) {
-        this.port = port;
-        return this;
-    }
-
-    public HttpPostRequest setUrl(String url) {
-        this.url = url;
-        return this;
-    }
-
-    public HttpPostRequest setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-        return this;
-    }
 
     public HttpPostRequest setHeaders(String headerKey, String headerValue) {
         this.headers.put(headerKey, headerValue);

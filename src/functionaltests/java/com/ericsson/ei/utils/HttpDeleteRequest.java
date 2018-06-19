@@ -4,6 +4,7 @@ import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.http.client.methods.HttpDelete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,37 +13,15 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 
 
+@Accessors(chain = true)
 public class HttpDeleteRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpDeleteRequest.class);
-    @Getter private int port;
-    @Getter private String url;
-    @Getter private String endpoint;
+    @Getter @Setter private int port;
+    @Getter @Setter private String url;
+    @Getter @Setter private String endpoint;
     private ObjectMapper mapper = new ObjectMapper();
     private SubscriptionRestAPI restApi = new SubscriptionRestAPI();
 
-
-    /**
-     * Constructor for initializing a HttpPostRequest object
-     *
-     * */
-    public HttpDeleteRequest() {
-
-    }
-
-    public HttpDeleteRequest setPort(int port) {
-        this.port = port;
-        return this;
-    }
-
-    public HttpDeleteRequest setUrl(String url) {
-        this.url = url;
-        return this;
-    }
-
-    public HttpDeleteRequest setEndpoint(String endpoint){
-        this.endpoint = endpoint;
-        return this;
-    }
 
     /**
      * Build together a httpDelete object

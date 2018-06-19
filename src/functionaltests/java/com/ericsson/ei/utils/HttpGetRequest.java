@@ -23,11 +23,9 @@ public class HttpGetRequest {
      * Build together a httpGet object
      * */
     public ResponseEntity<String> build() {
-        ResponseEntity<String> response = null;
         HttpGet httpGet = new HttpGet(url + port + endpoint);
 
-        response = restApi.getResponse(httpGet);
-        return response;
+        return restApi.getResponse(httpGet);
     }
 
 }

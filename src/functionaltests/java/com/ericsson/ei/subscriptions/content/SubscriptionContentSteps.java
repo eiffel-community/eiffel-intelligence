@@ -1,7 +1,6 @@
 package com.ericsson.ei.subscriptions.content;
 
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.controller.model.SubscriptionResponse;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpDeleteRequest;
 import com.ericsson.ei.utils.HttpPostRequest;
@@ -103,27 +102,25 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @And("^\"([A-Za-z0-9_]+)\" is not duplicated$")
     public void is_not_duplicated(String name) {
-        Subscription[] subscription = null;
         getRequest.setEndpoint("/subscriptions/" + name);
         response = getRequest.build();
 
         try {
-            subscription = mapper.readValue(response.getBody().toString(), Subscription[].class);
+            GetSubscriptionResponse getSubscriptionResponse = mapper.readValue(response.getBody().toString(), GetSubscriptionResponse.class);
+            // Ensure only one subscription exists
+            assertEquals(1, getSubscriptionResponse.getFoundSubscriptions().size());
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        // Ensure only one subscription exists
-        assertEquals(1, subscription.length);
     }
 
     // SCENARIO 3
 
     @Given("^I delete \"([A-Za-z0-9_]+)\"$")
     public void delete_subscription(String subscriptionName) {
-        SubscriptionResponse subscriptionResponse = null;
         deleteRequest.setEndpoint("/subscriptions/" + subscriptionName);
-        subscriptionResponse = deleteRequest.build();
-        assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
+        response = deleteRequest.build();
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
     @And("^Subscriptions does not exist$")
@@ -142,7 +139,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^The invalid subscription is rejected$")
     public void invalid_subscription_is_rejected() {
-        assertEquals(HttpStatus.PRECONDITION_FAILED.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
     }
 
     @And("^The invalid subscription does not exist$")
@@ -150,6 +147,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         String invalidName = "#Subscription-&-with-&-mal-&-formatted-&-name";
         getRequest.setEndpoint("/subscriptions/" + invalidName);
         response = getRequest.build();
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("[]", response.getBody().toString());
     }
 

@@ -8,4 +8,5 @@ Eiffel Intelligence uses a set of rules to define what information will be extra
 Eiffel intelligence uses subscriptions to notify interested parties when several evens have occured with desired content in each event aggregated in an aggregated object. Every time an aggregated object is updated we check whether any subscription is fulfilled by the curent state of the aggregated object. 
 
 [Rules](rules.md)
+
 [Subscriptions](subscription.md)

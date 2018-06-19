@@ -213,7 +213,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
 
-            waitForEventsToBeProcessed(eventsCount);
+            assert(waitForEventsToBeProcessed(eventsCount));
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -228,31 +228,29 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(emails.size() > 0);
         
         for(SmtpMessage email : emails) {
-            //LOGGER.debug("Email: "+email.toString());
+            LOGGER.debug("Email: "+email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
         }
 
         // Verify requests
         mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_PARAMS), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH_PARAMS), VerificationTimes.atLeast(1));
         LOGGER.info("#####################################");
         LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT)));
+        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH)));
+        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_PARAMS)));
+        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH_PARAMS)));
         LOGGER.info("#####################################");
     }
 
     private List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3");
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
         eventNames.add("event_EiffelTestCaseStartedEvent_3");
         eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
         return eventNames;
     }
 
@@ -283,17 +281,25 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return table.count();
     }
 
-    private void waitForEventsToBeProcessed(int eventsCount) {
+    private boolean waitForEventsToBeProcessed(int eventsCount) {
         // Wait for all events to be processed
+        int maxTime = 30;
+        int counterTime = 0;
         long processedEvents = 0;
-        while (processedEvents < eventsCount) {
+        while (processedEvents < eventsCount && counterTime < maxTime) {
             processedEvents = countProcessedEvents(database, collection);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
                 TimeUnit.MILLISECONDS.sleep(3000);
+                counterTime += 3;
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage(), e);
             }
+        }
+        if(processedEvents == eventsCount) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

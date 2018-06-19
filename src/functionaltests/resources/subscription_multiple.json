@@ -18,14 +18,14 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
     ]
@@ -49,14 +49,14 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
     ]
@@ -72,7 +72,7 @@
     "notificationMessageKeyValues" : [
       {
         "formkey" : "json",
-        "formvalue" : "{parameter: [{ name: 'parameter', value : testCase.conclusion }]}"
+        "formvalue" : "{parameter: [{ name: 'parameter', value : outcome.conclusion }]}"
       },
       {
         "formkey" : "Authorization",
@@ -85,7 +85,7 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
       },
@@ -93,7 +93,7 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
     ]
@@ -111,14 +111,14 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
     ]
@@ -136,7 +136,7 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
       },
@@ -144,7 +144,7 @@
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
     ]

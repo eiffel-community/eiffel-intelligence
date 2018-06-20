@@ -76,13 +76,19 @@ public class ArrayAggregationTest extends FlowTestBase {
     }
 
     @Override
+    protected int extraEventsCount() {
+        // extra events from ER upstream
+        return 2;
+    }
+
+    @Override
     List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
-        // eventNames.add("EiffelArtifactPublishedEvent_1");
-        // eventNames.add("EiffelArtifactPublishedEvent_2");
+        eventNames.add("EiffelArtifactPublishedEvent_1");
+        eventNames.add("EiffelArtifactPublishedEvent_2");
         eventNames.add("EiffelCompositionDefinedEvent");
-        // eventNames.add("EiffelArtifactPublishedEvent_3");
-        // eventNames.add("EiffelArtifactPublishedEvent_4");
+        eventNames.add("EiffelArtifactPublishedEvent_3");
+        eventNames.add("EiffelArtifactPublishedEvent_4");
         return eventNames;
     }
 

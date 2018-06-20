@@ -20,6 +20,7 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
 import java.util.ArrayList;
@@ -208,7 +209,10 @@ public class MergePrepare {
         String stringObject = "";
         String stringRule = "";
         JSONObject objectJSONObject = null;
+        JsonNode objectJsonNode = null;
         try {
+            ObjectMapper objectmapper = new ObjectMapper();
+            objectJsonNode = objectmapper.readTree(originObject);
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
             Object ruleJSONObject = new JSONObject(mergeRule);
@@ -245,10 +249,14 @@ public class MergePrepare {
             if (pos > 0)
                 ruleKey = ruleKey.substring(0, pos);
             try {
-                Object object = objectJSONObject.get(ruleKey);
-                if (object != null)
+                // Object object = objectJSONObject.get(ruleKey);
+                // Object object = objectJsonNode.get(ruleKey);
+                // Object object1 = objectJsonNode.path(ruleKey);
+                // Object object2 = objectJsonNode.at(ruleKey);
+                JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
+                if (!(jsonResult instanceof NullNode))
                     mergePath = ruleKey;
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
         } else {

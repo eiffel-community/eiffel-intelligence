@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.StringBody.subString;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 
 import java.io.File;
@@ -29,10 +28,10 @@ import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
-import org.mockserver.verify.VerificationTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +55,7 @@ import gherkin.deps.com.google.gson.JsonArray;
 import gherkin.deps.com.google.gson.JsonElement;
 import gherkin.deps.com.google.gson.JsonParser;
 
+@Ignore
 @AutoConfigureMockMvc
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 

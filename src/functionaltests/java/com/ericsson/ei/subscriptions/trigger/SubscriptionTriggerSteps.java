@@ -29,7 +29,6 @@ import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
@@ -228,28 +227,22 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Subscriptions were triggered$")
     public void check_subscriptions_were_triggered() throws Throwable {
-        // Verify received emails
+        LOGGER.debug("Verifying received emails.");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert(emails.size() > 0);
         
         for(SmtpMessage email : emails) {
-            //LOGGER.debug("Email: "+email.toString());
             // assert correct sender.
             assertEquals(email.getHeaderValue("From"), sender);
             // assert given test case exist in body.
             assert(email.getBody().toString().contains("TC5"));
         }
 
-        // Verify requests
-        mockClient.verify(request().withPath(REST_ENDPOINT).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_PARAMS), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH_PARAMS), VerificationTimes.atLeast(1));
+        LOGGER.debug("Verifying REST requests.");
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_PARAMS), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH_PARAMS), Format.JSON))));
-
     }
 
     private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
@@ -289,7 +282,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return text;
     }
 
-    // Count documents that were processed
     private long countProcessedEvents(String database, String collection) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
@@ -298,7 +290,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     }
 
     private boolean waitForEventsToBeProcessed(int eventsCount) {
-        // Wait for all events to be processed
         int maxTime = 30;
         int counterTime = 0;
         long processedEvents = 0;

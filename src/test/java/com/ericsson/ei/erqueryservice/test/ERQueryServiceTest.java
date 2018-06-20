@@ -77,6 +77,7 @@ public class ERQueryServiceTest {
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("spring.data.mongodb.port", "" + port);
+        System.setProperty("er.url", "http://localhost:8080/search/");
     }
 
     @Before public void setUp() throws Exception {

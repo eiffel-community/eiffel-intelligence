@@ -1,22 +1,12 @@
 package com.ericsson.ei.subscriptions.trigger;
 
-import com.dumbster.smtp.SimpleSmtpServer;
-import com.dumbster.smtp.SmtpMessage;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.Parameter.param;
 import static org.mockserver.model.StringBody.subString;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +33,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
+
+import com.dumbster.smtp.SimpleSmtpServer;
+import com.dumbster.smtp.SmtpMessage;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -108,11 +108,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting REST port to " + port);
         restServer = startClientAndServer(port);
-        
-        // Set up endpoints
+
         mockClient = new MockServerClient(BASE_URL, port);
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
@@ -154,7 +152,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
         readFileToString = stringReplaceText(readFileToString);
-        
+
         ArrayList<String> subscriptions = new ArrayList<String>();
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(readFileToString);
@@ -214,7 +212,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
 
-            assert(waitForEventsToBeProcessed(eventsCount));
+            assert (waitForEventsToBeProcessed(eventsCount));
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -226,24 +224,23 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void check_subscriptions_were_triggered() throws Throwable {
         // Verify received emails
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert(emails.size() > 0);
-        
-        for(SmtpMessage email : emails) {
-            LOGGER.debug("Email: "+email.toString());
+        assert (emails.size() > 0);
+
+        for (SmtpMessage email : emails) {
+            LOGGER.debug("Email: " + email.toString());
             assertEquals(email.getHeaderValue("From"), sender);
+            assert(email.getBody().contains("TC5"));
         }
 
         // Verify requests
+        mockClient.verify(request().withPath(REST_ENDPOINT).withBody(subString("TC5")), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH).withBody(subString("TC5")), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_PARAMS), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH_PARAMS), VerificationTimes.atLeast(1));
-        LOGGER.info("#####################################");
-        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT)));
-        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH)));
-        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_PARAMS)));
-        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH_PARAMS)));
-        LOGGER.info("#####################################");
+        mockClient.verify(request().withPath(REST_ENDPOINT_PARAMS).withQueryStringParameters(
+                param("parameter1", "TC5"), param("parameter2", "SUCCESSFUL")), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH_PARAMS).withQueryStringParameters(
+                param("parameter1", "TC5"), param("parameter2", "SUCCESSFUL")), VerificationTimes.atLeast(1));
     }
 
     private List<String> getEventNamesToSend() {
@@ -259,11 +256,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
-    
+
     public void deleteFile(String filePath) {
         FileUtils.deleteQuietly(new File(filePath));
     }
-    
+
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));
@@ -297,7 +294,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
         }
-        if(processedEvents == eventsCount) {
+        if (processedEvents == eventsCount) {
             return true;
         } else {
             return false;

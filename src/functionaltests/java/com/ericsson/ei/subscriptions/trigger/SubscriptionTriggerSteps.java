@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.StringBody.subString;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 
 import java.io.File;
@@ -233,15 +234,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
 
         // Verify requests
-        mockClient.verify(request().withPath(REST_ENDPOINT), VerificationTimes.atLeast(1));
-        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
+        mockClient.verify(request().withPath(REST_ENDPOINT_AUTH).withBody(subString("SUCCESSFUL")), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_PARAMS), VerificationTimes.atLeast(1));
         mockClient.verify(request().withPath(REST_ENDPOINT_AUTH_PARAMS), VerificationTimes.atLeast(1));
         LOGGER.info("#####################################");
-        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT)));
-        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH)));
+        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT)));
+        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH)));
         LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_PARAMS)));
-        LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH_PARAMS)));
+        //LOGGER.info(mockClient.retrieveLogMessages(request().withPath(REST_ENDPOINT_AUTH_PARAMS)));
         LOGGER.info("#####################################");
     }
 

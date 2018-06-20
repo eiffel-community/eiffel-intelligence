@@ -37,11 +37,11 @@
     "created": "data-time",
     "notificationType": "REST_POST",
     "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint}",
-    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "restPostBodyMediaType": "application/json",
     "notificationMessageKeyValues": [
       {
-        "formkey" : "json",
-        "formvalue" : "{parameter: [{ name: 'parameter', value : testCaseExecutions[?outcome.id=='TC5'] | [0] | outcome.conclusion }]}"
+        "formkey" : "",
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
       }
     ],
     "requirements": [
@@ -69,14 +69,15 @@
     "notificationType": "REST_POST",
     "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
     "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "urlParams": true,
     "notificationMessageKeyValues" : [
       {
         "formkey" : "json",
-        "formvalue" : "{parameter: [{ name: 'parameter', value : outcome.conclusion }]}"
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
       },
       {
         "formkey" : "Authorization",
-        "formvalue" : "Basic TXkgQ2F0IFNtdWxhbiBMaWtlcyBUbyBmZXRjaCBjb21wdXRlciBtb3VzZXM="
+        "formvalue" : "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"
       }
     ],
 
@@ -104,7 +105,7 @@
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
-    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.params}?parameter1='value1'&parameter2=testCase.id",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.params}?parameter1=testCaseExecutions[0].outcome.id&parameter2=testCaseExecutions[0].outcome.conclusion",
     "restPostBodyMediaType": "application/x-www-form-urlencoded",
     "requirements": [
       {
@@ -129,7 +130,7 @@
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
-    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth.params}?token='TXkgQ2F0IFNtdWxhbiBMaWtlcyBUbyBmZXRjaCBjb21wdXRlciBtb3VzZXM%3D&'$parameter1='value1'&parameter2=testCase.id",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth.params}?token='TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5'&parameter1=testCaseExecutions[0].outcome.id&parameter2=testCaseExecutions[0].outcome.conclusion",
     "restPostBodyMediaType": "application/x-www-form-urlencoded",
     "requirements": [
       {

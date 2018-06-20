@@ -1,0 +1,35 @@
+[
+{
+    "TemplateName":"ARRAY_AGGREGATION_1",
+    "Type":"EiffelCompositionDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "YES",
+    "IdentifyRules" : "[meta.id]",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "{events:[@]}"
+  },
+  {
+    "TemplateName":"ARRAY_AGGREGATION_1",
+    "Type":"EiffelArtifactPublishedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules" : "links | [?type=='ARTIFACT'].target",
+    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "ExtractionRules" : "@",
+    "MergeResolverRules": "[ {NONEPATH:NONE}, {events: []} ]"
+  },
+  {
+    "TemplateName":"ARRAY_AGGREGATION_1",
+    "Type":"EiffelArtifactCreatedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules" : "",
+    "MatchIdRules": {},
+    "ExtractionRules" : "",
+    "HistoryExtractionRules":"@",
+    "HistoryPathRules": "{events: []}"
+  }
+]

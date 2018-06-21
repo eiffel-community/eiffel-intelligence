@@ -178,7 +178,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
     public ResponseEntity<List<Subscription>> getSubscriptions() {
-        LOG.debug("Subscription fetching all has been started");
+        LOG.debug("Subscriptions fetching all has been started");
         try {
             return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {

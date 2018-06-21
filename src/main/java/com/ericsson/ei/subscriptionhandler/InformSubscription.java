@@ -91,9 +91,9 @@ public class InformSubscription {
     private SendMail sendMail;
 
     /**
-     * This method extracts the mode of notification through which the subscriber
-     * should be notified, from the subscription Object. And if the notification
-     * fails, then it saved in the database.
+     * This method extracts the mode of notification through which the
+     * subscriber should be notified, from the subscription Object. And if the
+     * notification fails, then it saved in the database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
@@ -106,8 +106,8 @@ public class InformSubscription {
         String val = "";
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
-        
-        Boolean notificationMessageKeyValuesHasValues =  !arrNode.toString().equals("[]");
+
+        boolean notificationMessageKeyValuesHasValues = !arrNode.toString().equals("[]");
         if (notificationMessageKeyValuesHasValues) {
             for (final JsonNode objNode : arrNode) {
                 if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
@@ -123,12 +123,10 @@ public class InformSubscription {
             }
         } else if (notificationMeta.contains("?")) {
             LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
-            
             notificationMeta = reformatNotificationMeta(aggregatedObject, notificationMeta);
-            
             LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
         }
-        
+
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
             int result;
@@ -180,9 +178,10 @@ public class InformSubscription {
 
         }
     }
-    
+
     /**
-     * This method reformats notificationMeta and fetches values if applicable for the requested parameters.
+     * This method reformats notificationMeta and fetches values if applicable
+     * for the requested parameters.
      *
      * @param aggregatedObject
      * @param notificationMeta
@@ -191,32 +190,33 @@ public class InformSubscription {
     private String reformatNotificationMeta(String aggregatedObject, String notificationMeta) {
         String[] splittednotificationMeta = notificationMeta.split("\\?");
         String URL = splittednotificationMeta[0];
-        
+
         List<NameValuePair> params = null;
         try {
             params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        
-        List<NameValuePair> processedParams = new ArrayList<NameValuePair>();
+
+        List<NameValuePair> processedParams = new ArrayList<>();
         for (NameValuePair param : params) {
-            String name = param.getName(), value =  param.getValue();
+            String name = param.getName(), value = param.getValue();
             LOGGER.debug("Old: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX, "");
+            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
+                    "");
 
             processedParams.add(new BasicNameValuePair(name, value));
             LOGGER.debug("New: " + name + " : " + value);
         }
         String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
-        
+
         notificationMeta = URL + "?" + encodedQuery;
         return notificationMeta;
     }
 
     /**
-     * This method saves the missed Notification into a single document along with
-     * Subscription name, notification meta and time period.
+     * This method saves the missed Notification into a single document along
+     * with Subscription name, notification meta and time period.
      *
      * @param aggregatedObject
      * @param subscriptionName
@@ -240,7 +240,7 @@ public class InformSubscription {
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
     }
-    
+
     /**
      * This method, given the field name, returns its value
      *
@@ -255,8 +255,8 @@ public class InformSubscription {
     }
 
     /**
-     * This method is responsible to display the configurable application properties
-     * and to create TTL index on the missed Notification collection.
+     * This method is responsible to display the configurable application
+     * properties and to create TTL index on the missed Notification collection.
      */
     @PostConstruct
     public void init() {

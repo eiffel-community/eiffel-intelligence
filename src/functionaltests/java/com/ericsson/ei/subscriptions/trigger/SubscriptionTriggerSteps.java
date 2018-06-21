@@ -158,7 +158,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
         readFileToString = stringReplaceText(readFileToString);
         
-        ArrayList<String> subscriptions = new ArrayList<String>();
+        ArrayList<String> subscriptions = new ArrayList<>();
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(readFileToString);
         JsonArray array = rootNode.getAsJsonArray();
@@ -295,7 +295,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         long processedEvents = 0;
         while (processedEvents < eventsCount && counterTime < maxTime) {
             processedEvents = countProcessedEvents(database, collection);
-            LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
                 TimeUnit.MILLISECONDS.sleep(3000);
                 counterTime += 3;
@@ -303,10 +303,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 LOGGER.error(e.getMessage(), e);
             }
         }
-        if(processedEvents == eventsCount) {
-            return true;
-        } else {
-            return false;
-        }
+        return (processedEvents == eventsCount);
     }
 }

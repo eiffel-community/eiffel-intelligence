@@ -111,13 +111,13 @@ public class RunSubscription {
                 LOGGER.debug("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
                 LOGGER.debug("Result : " + result.toString());
-                Boolean conclusion1 = !result.toString().equals("null");
-                Boolean conclusion2 = !result.toString().equals("false");
-                Boolean conclusion3 = !result.toString().equals("[]");
-                LOGGER.debug("Condition 1 : " + conclusion1);
-                LOGGER.debug("Condition 2 : " + conclusion2);
-                LOGGER.debug("Condition 3 : " + conclusion3);
-                if (conclusion1 && conclusion2 && conclusion3) {
+                boolean condition1 = !result.toString().equals("null");
+                boolean condition2 = !result.toString().equals("false");
+                boolean condition3 = !result.toString().equals("[]");
+                LOGGER.debug("Condition 1 : " + condition1);
+                LOGGER.debug("Condition 2 : " + condition2);
+                LOGGER.debug("Condition 3 : " + condition3);
+                if (condition1 && condition2 && condition3) {
                     count_condition_fulfillment++;
                 }
             }

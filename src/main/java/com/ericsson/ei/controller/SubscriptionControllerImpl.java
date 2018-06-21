@@ -163,7 +163,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             if (subscriptionService.deleteSubscription(subscriptionName)) {
                 LOG.debug("Subscription is deleted successfully: " + subscriptionName);
             } else {
-                LOG.error("Subscription is not found :: " + subscriptionName);
+                LOG.error("Subscription is not found: " + subscriptionName);
                 errorMap.put(subscriptionName, "Subscription is not found");
             }
         });

@@ -79,7 +79,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, "Subscription already exists");
                 }
             } catch (Exception e) {
-                LOG.error("Error on subscription " + subscriptionName + ", " + e.getMessage());
+                LOG.error("Error on subscription " + subscriptionName + ". " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -90,7 +90,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
     public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionNames) {
-        List<String> subscriptionNamesList = Arrays.asList(subscriptionNames.split(","));
+        // set is used to prevent subscription names repeating
+        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
         List<String> notFoundSubscriptionList = new ArrayList<>();
 
@@ -129,11 +130,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     subscriptionService.modifySubscription(subscription, subscriptionName);
                     LOG.debug("Subscription update completed :: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription cannot be found :: " + subscriptionName);
-                    errorMap.put(subscriptionName, "Subscription cannot be found");
+                    LOG.error("Subscription was not found :: " + subscriptionName);
+                    errorMap.put(subscriptionName, "Subscription was not found");
                 }
             } catch (Exception e) {
-                LOG.error("Error on subscription " + subscriptionName + ", " + e.getMessage());
+                LOG.error("Error on subscription " + subscriptionName + ". " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -145,7 +146,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Removes the subscriptions from the database")
     public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
-        List<String> subscriptionNamesList = Arrays.asList(subscriptionNames.split(","));
+        // set is used to prevent subscription names repeating
+        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
 
         subscriptionNamesList.forEach(subscriptionName -> {
             LOG.debug("Subscription delete started :: " + subscriptionName);
@@ -167,7 +169,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         try {
             return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.error(e.getLocalizedMessage());
+            LOG.info(e.getLocalizedMessage());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
     }

@@ -24,9 +24,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +35,9 @@ import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
-
-import java.net.URI;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -91,9 +83,9 @@ public class InformSubscription {
     private SendMail sendMail;
 
     /**
-     * This method extracts the mode of notification through which the
-     * subscriber should be notified, from the subscription Object. And if the
-     * notification fails, then it saved in the database.
+     * This method extracts the mode of notification through which the subscriber
+     * should be notified, from the subscription Object. And if the notification
+     * fails, then it saved in the database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
@@ -102,13 +94,12 @@ public class InformSubscription {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
+
         String key = "";
         String val = "";
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
-
-        boolean notificationMessageKeyValuesHasValues = !arrNode.toString().equals("[]");
-        if (notificationMessageKeyValuesHasValues) {
+        if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
                 if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
                     key = "Authorization";
@@ -121,12 +112,7 @@ public class InformSubscription {
                             .toString().replaceAll(REGEX, ""));
                 }
             }
-        } else if (notificationMeta.contains("?")) {
-            LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
-            notificationMeta = reformatNotificationMeta(aggregatedObject, notificationMeta);
-            LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
         }
-
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
             int result;
@@ -180,43 +166,8 @@ public class InformSubscription {
     }
 
     /**
-     * This method reformats notificationMeta and fetches values if applicable
-     * for the requested parameters.
-     *
-     * @param aggregatedObject
-     * @param notificationMeta
-     * @return String
-     */
-    private String reformatNotificationMeta(String aggregatedObject, String notificationMeta) {
-        String[] splittednotificationMeta = notificationMeta.split("\\?");
-        String URL = splittednotificationMeta[0];
-
-        List<NameValuePair> params = null;
-        try {
-            params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        List<NameValuePair> processedParams = new ArrayList<>();
-        for (NameValuePair param : params) {
-            String name = param.getName(), value = param.getValue();
-            LOGGER.debug("Old: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
-                    "");
-
-            processedParams.add(new BasicNameValuePair(name, value));
-            LOGGER.debug("New: " + name + " : " + value);
-        }
-        String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
-
-        notificationMeta = URL + "?" + encodedQuery;
-        return notificationMeta;
-    }
-
-    /**
-     * This method saves the missed Notification into a single document along
-     * with Subscription name, notification meta and time period.
+     * This method saves the missed Notification into a single document along with
+     * Subscription name, notification meta and time period.
      *
      * @param aggregatedObject
      * @param subscriptionName
@@ -240,7 +191,7 @@ public class InformSubscription {
         document.put("AggregatedObject", JSON.parse(aggregatedObject));
         return document.toString();
     }
-
+    
     /**
      * This method, given the field name, returns its value
      *
@@ -255,8 +206,8 @@ public class InformSubscription {
     }
 
     /**
-     * This method is responsible to display the configurable application
-     * properties and to create TTL index on the missed Notification collection.
+     * This method is responsible to display the configurable application properties
+     * and to create TTL index on the missed Notification collection.
      */
     @PostConstruct
     public void init() {

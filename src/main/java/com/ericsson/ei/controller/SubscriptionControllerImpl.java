@@ -58,7 +58,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Creates the subscription")
+    @ApiOperation(value = "Creates the subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
@@ -66,16 +66,16 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
             try {
-                LOG.debug("Subscription create started :: " + subscriptionName);
+                LOG.debug("Subscription creation has been started: " + subscriptionName);
                 subscriptionValidator.validateSubscription(subscription);
 
                 if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setUserName(user);
                     subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.addSubscription(subscription);
-                    LOG.debug("Subscription inserted successfully :: " + subscriptionName);
+                    LOG.debug("Subscription is inserted successfully: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription already exists :: " + subscriptionName);
+                    LOG.error("Subscription already exists: " + subscriptionName);
                     errorMap.put(subscriptionName, "Subscription already exists");
                 }
             } catch (Exception e) {
@@ -83,7 +83,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        if (errorMap.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
@@ -97,11 +101,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
         subscriptionNamesList.forEach(subscriptionName -> {
             try {
-                LOG.debug("Subscription fetch started :: " + subscriptionName);
+                LOG.debug("Subscription fetching has been started: " + subscriptionName);
                 foundSubscriptionList.add(subscriptionService.getSubscription(subscriptionName));
-                LOG.debug("Subscription was fetched :: " + subscriptionName);
+                LOG.debug("Subscription is fetched: " + subscriptionName);
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription was not found :: " + subscriptionName);
+                LOG.error("Subscription is not found: " + subscriptionName);
                 notFoundSubscriptionList.add(subscriptionName);
             }
         });
@@ -121,6 +125,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
+            LOG.debug("Subscription updating has been started: " + subscriptionName);
             try {
                 subscriptionValidator.validateSubscription(subscription);
 
@@ -128,17 +133,21 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     subscription.setUserName(user);
                     subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.modifySubscription(subscription, subscriptionName);
-                    LOG.debug("Subscription update completed :: " + subscriptionName);
+                    LOG.debug("Subscription updating is completed: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription was not found :: " + subscriptionName);
-                    errorMap.put(subscriptionName, "Subscription was not found");
+                    LOG.error("Subscription is not found: " + subscriptionName);
+                    errorMap.put(subscriptionName, "Subscription is not found");
                 }
             } catch (Exception e) {
                 LOG.error("Error on subscription " + subscriptionName + ". " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        if (errorMap.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
@@ -150,22 +159,26 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
 
         subscriptionNamesList.forEach(subscriptionName -> {
-            LOG.debug("Subscription delete started :: " + subscriptionName);
+            LOG.debug("Subscription deleting has been started: " + subscriptionName);
             if (subscriptionService.deleteSubscription(subscriptionName)) {
-                LOG.debug("Subscription was deleted successfully :: " + subscriptionName);
+                LOG.debug("Subscription is deleted successfully: " + subscriptionName);
             } else {
-                LOG.error("Subscription was not found :: " + subscriptionName);
-                errorMap.put(subscriptionName, "Subscription was not found");
+                LOG.error("Subscription is not found :: " + subscriptionName);
+                errorMap.put(subscriptionName, "Subscription is not found");
             }
         });
-        return (errorMap.isEmpty()) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        if (errorMap.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
     public ResponseEntity<List<Subscription>> getSubscriptions() {
-        LOG.debug("Subscription get all records started");
+        LOG.debug("Subscription fetching all has been started");
         try {
             return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {

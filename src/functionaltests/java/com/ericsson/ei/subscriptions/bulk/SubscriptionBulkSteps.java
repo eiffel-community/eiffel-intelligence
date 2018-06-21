@@ -46,13 +46,6 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         subscriptions = new JSONArray(fileContent);
     }
 
-    @When("^make a GET request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
-    public void make_a_GET_request_with_list_of_subscriptions_names_to_the_subscription_REST_API(String subscriptionsNamesList, String endpoint) throws Throwable {
-        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(endpoint + "/" + subscriptionsNamesList)
-            .accept(MediaType.APPLICATION_JSON))
-            .andReturn();
-    }
-
     @When("^make a POST request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
     public void make_a_POST_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint) throws Throwable {
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
@@ -62,12 +55,10 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             .andReturn();
     }
 
-    @When("^make a PUT request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
-    public void make_a_PUT_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint) throws Throwable {
-        mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(endpoint)
-            .accept(MediaType.APPLICATION_JSON)
-            .content(subscriptions.toString())
-            .contentType(MediaType.APPLICATION_JSON))
+    @When("^make a GET request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
+    public void make_a_GET_request_with_list_of_subscriptions_names_to_the_subscription_REST_API(String subscriptionsNamesList, String endpoint) throws Throwable {
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(endpoint + "/" + subscriptionsNamesList)
+            .accept(MediaType.APPLICATION_JSON))
             .andReturn();
     }
 
@@ -75,6 +66,15 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
     public void make_a_DELETE_request_with_list_of_subscriptions_names_to_the_subscription_REST_API(String subscriptionsNamesList, String endpoint) throws Throwable {
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(endpoint + "/" + subscriptionsNamesList)
             .accept(MediaType.APPLICATION_JSON))
+            .andReturn();
+    }
+
+    @When("^make a PUT request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
+    public void make_a_PUT_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint) throws Throwable {
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(endpoint)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(subscriptions.toString())
+            .contentType(MediaType.APPLICATION_JSON))
             .andReturn();
     }
 

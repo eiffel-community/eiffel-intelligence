@@ -204,7 +204,7 @@ public class SubscriptionRestAPITest {
         JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Subscription was not found", responseBody.getString(REASON_FIELD));
+        assertEquals("Subscription is not found", responseBody.getString(REASON_FIELD));
     }
 
     @Test
@@ -300,6 +300,6 @@ public class SubscriptionRestAPITest {
         JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Subscription was not found", responseBody.getString(REASON_FIELD));
+        assertEquals("Subscription is not found", responseBody.getString(REASON_FIELD));
     }
 }

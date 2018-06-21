@@ -23,7 +23,7 @@ public interface SubscriptionController {
 
 
     /**
-     * Fetches all subscriptions as list
+     * Fetches all subscriptions as list.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -40,7 +40,7 @@ public interface SubscriptionController {
         List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
-     * Modify an existing Subscriptions.
+     * Modify existing Subscriptions.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
@@ -50,7 +50,7 @@ public interface SubscriptionController {
         List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
-     * Returns the subscriptions for given subscription names.
+     * Returns the subscriptions for the given subscription names.
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
@@ -59,7 +59,7 @@ public interface SubscriptionController {
         String subscriptionNames);
 
     /**
-     * Removes the subscriptions from the database for given subscription names.
+     * Removes the subscriptions from the database for the given subscription names.
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)

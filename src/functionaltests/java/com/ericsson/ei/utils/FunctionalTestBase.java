@@ -14,12 +14,19 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
+import java.util.concurrent.TimeUnit;
+
+import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,6 +53,14 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Autowired
     private MongoProperties mongoProperties;
 
+    @Value("${spring.data.mongodb.database}")
+    private String database;
+
+    @Value("${event_object_map.collection.name}")
+    private String collection;
+
+    private MongoClient mongoClient;
+    
     public int getMongoDbPort() {
         return mongoProperties.getPort();
     }
@@ -53,7 +68,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public String getMongoDbHost() {
         return mongoProperties.getHost();
     }
-
+    
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         int debug = 1;
@@ -63,4 +78,30 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public void afterTestClass(TestContext testContext) throws Exception {
         int debug = 1;
     }
+
+    public boolean waitForEventsToBeProcessed(int eventsCount) {
+        int maxTime = 30;
+        int counterTime = 0;
+        long processedEvents = 0;
+        while (processedEvents < eventsCount && counterTime < maxTime) {
+            processedEvents = countProcessedEvents(database, collection);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            try {
+                TimeUnit.MILLISECONDS.sleep(3000);
+                counterTime += 3;
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return (processedEvents == eventsCount);
+    }
+    
+    private long countProcessedEvents(String database, String collection) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> table = db.getCollection(collection);
+        return table.count();
+    }
+
+    
 }

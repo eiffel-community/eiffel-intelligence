@@ -70,12 +70,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Value("${event_object_map.collection.name}")
-    private String collection;
-
     @Value("${email.sender}")
     private String sender;
 
@@ -91,7 +85,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private MvcResult result;
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
-    private MongoClient mongoClient;
     private MockServerClient mockClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
@@ -158,7 +151,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
         readFileToString = stringReplaceText(readFileToString);
         
-        ArrayList<String> subscriptions = new ArrayList<>();
+        List<String> subscriptions = new ArrayList<>();
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(readFileToString);
         JsonArray array = rootNode.getAsJsonArray();
@@ -282,27 +275,4 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return text;
     }
 
-    private long countProcessedEvents(String database, String collection) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(collection);
-        return table.count();
-    }
-
-    private boolean waitForEventsToBeProcessed(int eventsCount) {
-        int maxTime = 30;
-        int counterTime = 0;
-        long processedEvents = 0;
-        while (processedEvents < eventsCount && counterTime < maxTime) {
-            processedEvents = countProcessedEvents(database, collection);
-            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            try {
-                TimeUnit.MILLISECONDS.sleep(3000);
-                counterTime += 3;
-            } catch (InterruptedException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-        return (processedEvents == eventsCount);
-    }
 }

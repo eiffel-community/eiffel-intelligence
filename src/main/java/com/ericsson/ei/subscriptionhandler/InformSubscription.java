@@ -107,8 +107,7 @@ public class InformSubscription {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
-        boolean notificationMessageKeyValuesHasValues = !arrNode.toString().equals("[]");
-        if (notificationMessageKeyValuesHasValues) {
+        if (!arrNode.toString().equals("[]")) {
             for (final JsonNode objNode : arrNode) {
                 if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
                     key = "Authorization";
@@ -188,8 +187,7 @@ public class InformSubscription {
      * @return String
      */
     private String reformatNotificationMeta(String aggregatedObject, String notificationMeta) {
-        String[] splittednotificationMeta = notificationMeta.split("\\?");
-        String URL = splittednotificationMeta[0];
+        String URL = notificationMeta.split("\\?")[0];
 
         List<NameValuePair> params = null;
         try {

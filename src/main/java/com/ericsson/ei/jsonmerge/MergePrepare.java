@@ -448,10 +448,8 @@ public class MergePrepare {
             Object valueForKey = null;
             for (int i = 0; i < mergePathIndex; i++) {
                 String key = mergePathArray.getString(i);
-                if (valueForKey == null) {
-                    if (originJSONObject.has(key)) {
-                        valueForKey = originJSONObject.get(key);
-                    }
+                if (valueForKey == null && originJSONObject.has(key)) {
+                    valueForKey = originJSONObject.get(key);
                 } else {
                     if (valueForKey instanceof JSONObject) {
                         valueForKey = ((JSONObject) valueForKey).get(key);

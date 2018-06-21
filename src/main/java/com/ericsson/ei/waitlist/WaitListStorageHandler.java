@@ -19,11 +19,12 @@ package com.ericsson.ei.waitlist;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,10 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 
 @Component
 public class WaitListStorageHandler {
-    static Logger log = (Logger) LoggerFactory.getLogger(WaitListStorageHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WaitListStorageHandler.class);
 
     @Getter
     @Value("${waitlist.collection.name}")
@@ -62,46 +61,43 @@ public class WaitListStorageHandler {
     private JmesPathInterface jmesPathInterface;
 
     public void addEventToWaitList(String event, RulesObject rulesObject) throws Exception {
-        String input = addProprtiesToEvent(event, rulesObject);
+        String condition = "{\"meta.id\" : \"" + new JSONObject(event).getJSONObject("meta").getString("id") + "\"}";
+        LOGGER.error("CONDITION :: " + condition);
+        List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, new JSONObject(condition).toString());
+        foundEventsInWaitList.forEach(e -> LOGGER.error("EVENT :: " + e));
+        String input = addPropertiesToEvent(event, rulesObject);
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, input);
-        if (result == false) {
-            throw new Exception("failed to insert the document into database");
+        if (!result) {
+            throw new Exception("Failed to insert the document into database");
         }
     }
 
-    private String addProprtiesToEvent(String event, RulesObject rulesObject) {
-        String time = null;
-        Date date = null;
+    private String addPropertiesToEvent(String event, RulesObject rulesObject) {
+        String time;
+        Date date = new Date();
         String idRule = rulesObject.getIdRule();
         JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
-        String condition = "{Event:" + JSON.parse(event).toString() + "}";
-        ArrayList<String> documents = mongoDbHandler.find(databaseName, collectionName, condition);
-        if (documents.size() == 0) {
+        String condition = "{Event:" + event + "}";
+        List<String> documents = mongoDbHandler.find(databaseName, collectionName, condition);
+        if (documents.isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            date = new Date();
             time = dateFormat.format(date);
             try {
                 date = dateFormat.parse(time);
             } catch (ParseException e) {
-                log.info(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
-
         }
-        BasicDBObject document = new BasicDBObject();
-        document.put("_id", id.textValue());
-        document.put("Time", date);
-        document.put("Event", JSON.parse(event));
+        JSONObject document = new JSONObject()
+            .put("_id", id.textValue())
+            .put("Time", date)
+            .put("Event", event);
         mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
         return document.toString();
     }
 
-    public ArrayList<String> getWaitList() {
-        ArrayList<String> documents = mongoDbHandler.getAllDocuments(databaseName, collectionName);
-        return documents;
+    public List<String> getWaitList() {
+        return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
-    public boolean dropDocumentFromWaitList(String document) {
-        boolean result = mongoDbHandler.dropDocument(databaseName, collectionName, document);
-        return result;
-    }
 }

@@ -142,20 +142,6 @@ public class TestWaitListWorker {
         }
     }
 
-    // TO DO fix this test
-    // @Test
-    // public void testDropDocumentFromWaitList() {
-    // try {
-    // String event = FileUtils.readFileToString(new File(eventPath), "UTF-8");
-    // String condition = "{Event:" + JSON.parse(event).toString() + "}";
-    // assertTrue(waitListStorageHandler.dropDocumentFromWaitList(condition));
-    // } catch (Exception e) {
-    // assertFalse(true);
-    // System.out.println("error occured while deleting document from
-    // waitlist");
-    // }
-    // }
-
     @Test
     public void testPublishandReceiveEvent() {
         try {

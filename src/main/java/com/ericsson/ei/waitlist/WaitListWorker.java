@@ -23,7 +23,7 @@ import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ import java.util.List;
 
 @Component
 public class WaitListWorker {
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
 
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
@@ -54,8 +55,6 @@ public class WaitListWorker {
     @Autowired
     private MatchIdRulesHandler matchIdRulesHandler;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
-
     @Bean
     public TaskScheduler taskScheduler() {
         return new ConcurrentTaskScheduler();
@@ -66,8 +65,7 @@ public class WaitListWorker {
         RulesObject rulesObject;
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
-            DBObject dbObject = (DBObject) JSON.parse(document);
-            String event = dbObject.get("Event").toString();
+            String event = new JSONObject(document).getString("Event");
             rulesObject = rulesHandler.getRulesForEvent(event);
             String idRule = rulesObject.getIdentifyRules();
 
@@ -77,9 +75,8 @@ public class WaitListWorker {
                     for (final JsonNode idJsonObj : ids) {
                         Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
                                 idJsonObj.textValue());
-                        if (objects.size() > 0) {
+                        if (!objects.isEmpty()) {
                             rmqHandler.publishObjectToWaitlistQueue(event);
-                            waitListStorageHandler.dropDocumentFromWaitList(document);
                         }
                     }
                 }

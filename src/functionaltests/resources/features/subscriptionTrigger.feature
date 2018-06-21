@@ -16,14 +16,13 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
-@tag
-Feature: Subscription trigger test
-#  I want to use this template for my feature file
 
-  @tag1
+@SubscriptionTriggerFeature
+Feature: Subscription trigger test
+
+  @SubscriptionTriggerScenario
   Scenario: Test subscription triggering
-    Given Subscription rest trigger is created
-    And Subscription mail trigger is created
-    And Subscription rest authenticated trigger is created
-    When I send events
+  	Given The REST API "/subscriptions" is up and running
+    And Subscriptions is setup using REST API "/subscriptions"
+    When I send Eiffel events
     Then Subscriptions were triggered 

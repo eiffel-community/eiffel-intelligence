@@ -107,11 +107,17 @@ public class RunSubscription {
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
                 String new_Rule = rule.replace("'", "\"");
-                LOGGER.info("Rule : " + rule);
-                LOGGER.info("New Rule after replacing single quote : " + new_Rule);
+                LOGGER.debug("Rule : " + rule);
+                LOGGER.debug("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                LOGGER.info("Result : " + result.toString());
-                if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")) {
+                LOGGER.debug("Result : " + result.toString());
+                boolean condition1 = !result.toString().equals("null");
+                boolean condition2 = !result.toString().equals("false");
+                boolean condition3 = !result.toString().equals("[]");
+                LOGGER.debug("Condition 1 : " + condition1);
+                LOGGER.debug("Condition 2 : " + condition2);
+                LOGGER.debug("Condition 3 : " + condition3);
+                if (condition1 && condition2 && condition3) {
                     count_condition_fulfillment++;
                 }
             }
@@ -119,7 +125,7 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
-                    LOGGER.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                    LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
                     try {
                         subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
                                 requirementIndex, id);

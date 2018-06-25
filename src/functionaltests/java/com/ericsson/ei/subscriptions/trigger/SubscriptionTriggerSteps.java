@@ -215,10 +215,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
         int tc5 = 0, successfull = 0;
         for(int i = 0; i < jsonArray.length(); i++){
-            if (jsonArray.getString(i).contains("TC5")) {
+            String requestBody = jsonArray.getString(i);
+            if (requestBody.contains("TC5")) {
                 tc5++;
             }
-            if (jsonArray.getString(i).contains("SUCCESSFUL")) {
+            if (requestBody.contains("SUCCESSFUL")) {
                 successfull++;
             }
         }

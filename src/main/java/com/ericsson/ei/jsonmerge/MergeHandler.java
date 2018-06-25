@@ -77,7 +77,7 @@ public class MergeHandler {
                 preparedToMergeObject = objectToMerge.toString();
             }
 
-            // System.out.println("PREPARED OBJECT: " + preparedToMergeObject);
+            // System.out.("PREPARED OBJECT: " + preparedToMergeObject);
 
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
             log.debug("Merged Aggregated Object:\n" + mergedObject);
@@ -100,12 +100,6 @@ public class MergeHandler {
         try {
             // lock and get the AggregatedObject
             String aggregatedObject = getAggregatedObject(id, true);
-            /* For test prints
-            System.out.println("\n\n\n");
-            System.out.println("should merge at: " + mergePath);
-            System.out.println("BEFORE:");
-            System.out.println(aggregatedObject);
-            */
 
             // String mergeRule = getMergeRules(rules);
             if (mergePath != null && !mergePath.isEmpty()) {
@@ -115,8 +109,6 @@ public class MergeHandler {
                 preparedToMergeObject = objectToMerge.toString();
             }
 
-            // System.out.println("PREPARED OBJECT: " + preparedToMergeObject);
-
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
             log.debug("Merged Aggregated Object:\n" + mergedObject);
             // unlocking of document will be performed, when mergedObject will
@@ -125,12 +117,6 @@ public class MergeHandler {
         } catch (Exception e) {
             // TODO: don't catch naked Exception class
             log.info(e.getMessage(), e);
-        } finally {
-            /*
-            System.out.println("AFTER:");
-            System.out.println(mergedObject);
-            System.out.println("\n\n\n");
-            */
         }
 
         return mergedObject;
@@ -167,10 +153,8 @@ public class MergeHandler {
             Iterator<String> preparedJsonKeys = preparedJsonObject != null ? preparedJsonObject.keys()
                     : new JSONObject().keys();
 
-            // System.out.println("PREPARED OBJECT BEFORE WHILE: " + preparedJsonObject);
             while (preparedJsonKeys.hasNext()) {
                 String preparedJsonKey = preparedJsonKeys.next();
-                // System.out.println("PREPARED KEY: " + preparedJsonKey);
                 if (aggregatedJsonObject.has(preparedJsonKey)) {
                     Class valueClass = aggregatedJsonObject.get(preparedJsonKey).getClass();
                     if (valueClass.equals(JSONObject.class)) {
@@ -210,9 +194,6 @@ public class MergeHandler {
                 final Object eFromAgg = aggregatedJsonObject.get(i);
                 final Object eFromPrep = preparedJsonObject.get(i);
                 if (eFromAgg instanceof JSONObject) {
-                    // System.out.println("INDEX: " + i + " in prep array: " + preparedJsonObject);
-                    // System.out.println("INDEX: " + i + " in agg array: " + aggregatedJsonObject);
-
                     updateJsonObject((JSONObject) (eFromAgg.equals(null) ? new JSONObject() : eFromAgg),
                             (JSONObject) (eFromPrep.equals(null) ? new JSONObject() : eFromPrep));
 

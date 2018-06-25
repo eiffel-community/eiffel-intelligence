@@ -16,13 +16,13 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
-
 @SubscriptionTriggerFeature
 Feature: Subscription trigger test
-
+  
   @SubscriptionTriggerScenario
   Scenario: Test subscription triggering
   	Given The REST API "/subscriptions" is up and running
-    And Subscriptions is setup using REST API "/subscriptions"
+    And Subscriptions are setup using REST API "/subscriptions"
     When I send Eiffel events
-    Then Subscriptions were triggered 
+    Then Mail subscriptions were triggered 
+    Then Rest subscriptions were triggered 

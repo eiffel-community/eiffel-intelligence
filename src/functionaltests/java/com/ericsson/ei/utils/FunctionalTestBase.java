@@ -102,6 +102,4 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         MongoCollection<Document> table = db.getCollection(collection);
         return table.count();
     }
-
-    
 }

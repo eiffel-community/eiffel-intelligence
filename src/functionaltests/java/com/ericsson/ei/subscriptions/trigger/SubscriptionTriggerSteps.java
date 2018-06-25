@@ -122,47 +122,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         try {
             readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
             readFileToString = stringReplaceText(readFileToString);
-            updateSubscriptionNames(readFileToString);
-            
-            RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
-                    .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
-
-            postResult = mockMvc.perform(requestBuilder).andReturn();
-            LOGGER.debug("Response code from REST when adding subscriptions: "
-                    + String.valueOf(postResult.getResponse().getStatus()));
-
-            assertEquals(HttpStatus.OK.value(), postResult.getResponse().getStatus());
-                  
+            readSubscriptionNames(readFileToString);
+            postSubscriptions(readFileToString, endPoint);
             validateSubscriptionsSuccessfullyAdded(endPoint);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-        }
- 
+        } 
     }
-
-    private void validateSubscriptionsSuccessfullyAdded(String endPoint) {
-        try {
-            RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
-            getResult = mockMvc.perform(getRequest).andReturn();
-            
-            LOGGER.debug("Response code from REST when getting subscriptions: "
-                    + String.valueOf(getResult.getResponse().getStatus()));
-            assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-            
-            LOGGER.debug("Checking that response contains all subscriptions");
-            for (String subscriptionName : subscriptionNames) {
-                try {
-                    assertTrue(getResult.getResponse().getContentAsString().contains(subscriptionName));
-                } catch (UnsupportedEncodingException e) {
-                    LOGGER.error(e.getMessage(), e);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        
-    }
-
+    
     @Then("^Mail subscriptions were triggered$")
     public void check_mail_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying received emails.");
@@ -184,16 +151,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_PARAMS), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH_PARAMS), Format.JSON))));
-    }
-
-
-    private void updateSubscriptionNames(String readFileToString) {
-        JsonParser parser = new JsonParser();
-        JsonElement rootNode = parser.parse(readFileToString);
-        JsonArray array = rootNode.getAsJsonArray();
-        for (int i = 0; i < array.size(); i++) {
-            subscriptionNames.add(array.get(i).getAsJsonObject().get("subscriptionName").toString());
-        }        
     }
 
     @When("^I send Eiffel events$")
@@ -218,7 +175,43 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
         LOGGER.debug("Eiffel events sent.");
     }
-    
+
+    private void readSubscriptionNames(String readFileToString) {
+        try {
+            JSONArray array = new JSONArray(readFileToString);
+            for (int i = 0; i < array.length(); i++) {
+                subscriptionNames.add(array.getJSONObject(i).get("subscriptionName").toString());
+            }
+        } catch (JSONException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private void postSubscriptions(String readFileToString, String endPoint) throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
+                .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
+
+        postResult = mockMvc.perform(requestBuilder).andReturn();
+        LOGGER.debug("Response code from REST when adding subscriptions: "
+                + String.valueOf(postResult.getResponse().getStatus()));
+
+        assertEquals(HttpStatus.OK.value(), postResult.getResponse().getStatus());
+    } 
+
+    private void validateSubscriptionsSuccessfullyAdded(String endPoint) throws Exception {
+        RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
+        getResult = mockMvc.perform(getRequest).andReturn();
+
+        LOGGER.debug("Response code from REST when getting subscriptions: "
+                + String.valueOf(getResult.getResponse().getStatus()));
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+
+        LOGGER.debug("Checking that response contains all subscriptions");
+        for (String subscriptionName : subscriptionNames) {
+            assertTrue(getResult.getResponse().getContentAsString().contains(subscriptionName));
+        }        
+    }
+
     private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
         int tc5 = 0, successfull = 0;
         for(int i = 0; i < jsonArray.length(); i++){
@@ -259,7 +252,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             LOGGER.error(e.getMessage(), e);
         }
     }
-    
+
     private List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
@@ -273,7 +266,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
-    
+
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));

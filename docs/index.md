@@ -11,6 +11,6 @@ Eiffel intelligence uses subscriptions to notify interested parties when several
 
 [Rules](rules.md)
 
-[Subscriptions](subscription.md)
+[Subscriptions](subscriptions.md)
 
 [Starting Eiffel Intelligence](starting.md)

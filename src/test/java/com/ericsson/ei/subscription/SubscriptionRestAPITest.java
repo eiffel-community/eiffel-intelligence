@@ -56,6 +56,9 @@ public class SubscriptionRestAPITest {
     private static final String SUBSCRIPTION_MULTIPLE = "src/test/resources/subscription_multi.json";
     private static final String REASON_FIELD = "reason";
 
+    private static final String NOT_FOUND = "Subscription is not found";
+    private static final String ALREADY_EXISTS = "Subscription already exists";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -124,7 +127,7 @@ public class SubscriptionRestAPITest {
         JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Subscription already exists", responseBody.getString(REASON_FIELD));
+        assertEquals(ALREADY_EXISTS, responseBody.getString(REASON_FIELD));
     }
 
     @Test
@@ -204,7 +207,7 @@ public class SubscriptionRestAPITest {
         JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Subscription is not found", responseBody.getString(REASON_FIELD));
+        assertEquals(NOT_FOUND, responseBody.getString(REASON_FIELD));
     }
 
     @Test
@@ -300,6 +303,6 @@ public class SubscriptionRestAPITest {
         JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals("Subscription is not found", responseBody.getString(REASON_FIELD));
+        assertEquals(NOT_FOUND, responseBody.getString(REASON_FIELD));
     }
 }

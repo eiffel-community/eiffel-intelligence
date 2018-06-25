@@ -46,6 +46,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
+    private static final String NOT_FOUND = "Subscription is not found";
+    private static final String ALREADY_EXISTS = "Subscription already exists";
+
     @Value("${ldap.enabled}")
     private boolean authenticate;
 
@@ -73,20 +76,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     subscription.setUserName(user);
                     subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.addSubscription(subscription);
-                    LOG.debug("Subscription is inserted successfully: " + subscriptionName);
+                    LOG.debug("Subscription is created successfully: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription already exists: " + subscriptionName);
-                    errorMap.put(subscriptionName, "Subscription already exists");
+                    LOG.error("Subscription to create already exists: " + subscriptionName);
+                    errorMap.put(subscriptionName, ALREADY_EXISTS);
                 }
             } catch (Exception e) {
                 LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        if (!errorMap.isEmpty()) {
-            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getResponse();
     }
 
     @Override
@@ -134,18 +134,15 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     subscriptionService.modifySubscription(subscription, subscriptionName);
                     LOG.debug("Subscription updating is completed: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription is not found: " + subscriptionName);
-                    errorMap.put(subscriptionName, "Subscription is not found");
+                    LOG.error("Subscription to update is not found: " + subscriptionName);
+                    errorMap.put(subscriptionName, NOT_FOUND);
                 }
             } catch (Exception e) {
                 LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        if (!errorMap.isEmpty()) {
-            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getResponse();
     }
 
     @Override
@@ -161,14 +158,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             if (subscriptionService.deleteSubscription(subscriptionName)) {
                 LOG.debug("Subscription is deleted successfully: " + subscriptionName);
             } else {
-                LOG.error("Subscription is not found: " + subscriptionName);
-                errorMap.put(subscriptionName, "Subscription is not found");
+                LOG.error("Subscription to delete is not found: " + subscriptionName);
+                errorMap.put(subscriptionName, NOT_FOUND);
             }
         });
-        if (!errorMap.isEmpty()) {
-            return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getResponse();
     }
 
     @Override
@@ -184,14 +178,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
     }
 
-    private List<SubscriptionResponse> getSubscriptionResponseList(Map<String, String> errorMap) {
-        List<SubscriptionResponse> subscriptionResponseList = new ArrayList<>();
-        errorMap.forEach((subscriptionName, reason) -> {
-            SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-            subscriptionResponse.setSubscription(subscriptionName);
-            subscriptionResponse.setReason(reason);
-            subscriptionResponseList.add(subscriptionResponse);
-        });
-        return subscriptionResponseList;
+    private ResponseEntity<List<SubscriptionResponse>> getResponse() {
+        if (!errorMap.isEmpty()) {
+            List<SubscriptionResponse> subscriptionResponseList = new ArrayList<>();
+            errorMap.forEach((subscriptionName, reason) -> {
+                SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+                subscriptionResponse.setSubscription(subscriptionName);
+                subscriptionResponse.setReason(reason);
+                subscriptionResponseList.add(subscriptionResponse);
+            });
+            return new ResponseEntity<>(subscriptionResponseList, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

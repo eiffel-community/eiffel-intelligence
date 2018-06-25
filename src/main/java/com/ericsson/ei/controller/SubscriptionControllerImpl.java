@@ -165,7 +165,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, "Subscription is not found");
             }
         });
-        if (errorMap.isEmpty()) {
+        if (!errorMap.isEmpty()) {
             return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);

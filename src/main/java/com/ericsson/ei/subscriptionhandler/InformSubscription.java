@@ -195,18 +195,18 @@ public class InformSubscription {
         try {
             params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to parse url parameters from '" + notificationMeta + "'.\nException message: " + e.getMessage(), e);
         }
 
         List<NameValuePair> processedParams = new ArrayList<>();
         for (NameValuePair param : params) {
             String name = param.getName(), value = param.getValue();
-            LOGGER.debug("Old: " + name + " : " + value);
+            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
             value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
                     "");
 
             processedParams.add(new BasicNameValuePair(name, value));
-            LOGGER.debug("New: " + name + " : " + value);
+            LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
         }
         String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 

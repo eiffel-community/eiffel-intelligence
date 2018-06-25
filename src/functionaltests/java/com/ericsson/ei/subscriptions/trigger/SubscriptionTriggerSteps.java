@@ -99,9 +99,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             smtpServer.stop();
             restServer.stop();
             mockClient.close();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -136,8 +134,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             assertEquals(HttpStatus.OK.value(), postResult.getResponse().getStatus());
                   
             validateSubscriptionsSuccessfullyAdded(endPoint);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -225,7 +221,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     
     private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
         int tc5 = 0, successfull = 0;
-        for(int i=0;i<jsonArray.length();i++){
+        for(int i = 0; i < jsonArray.length(); i++){
             if (jsonArray.getString(i).contains("TC5")) {
                 tc5++;
             }

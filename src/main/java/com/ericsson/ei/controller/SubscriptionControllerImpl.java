@@ -79,7 +79,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, "Subscription already exists");
                 }
             } catch (Exception e) {
-                LOG.error("Error on subscription " + subscriptionName + ". " + e.getMessage());
+                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -139,7 +139,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, "Subscription is not found");
                 }
             } catch (Exception e) {
-                LOG.error("Error on subscription " + subscriptionName + ". " + e.getMessage());
+                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage());
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });

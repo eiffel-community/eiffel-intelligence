@@ -83,11 +83,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        if (errorMap.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+        if (!errorMap.isEmpty()) {
             return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -143,11 +142,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        if (errorMap.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+        if (!errorMap.isEmpty()) {
             return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -168,10 +166,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             }
         });
         if (errorMap.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
             return new ResponseEntity<>(getSubscriptionResponseList(errorMap), HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

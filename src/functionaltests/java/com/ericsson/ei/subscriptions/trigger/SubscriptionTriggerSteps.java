@@ -6,10 +6,6 @@ import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -22,10 +18,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
@@ -67,8 +61,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_PARAMS = "/rest/with/params";
     private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
     private static final String BASE_URL = "localhost";
-
+    
     private static ObjectMapper objectMapper = new ObjectMapper();
+    private List<String> subscriptionNames = new ArrayList<>();
 
     @Value("${email.sender}")
     private String sender;
@@ -83,6 +78,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private JavaMailSenderImpl mailSender;
 
     private MvcResult result;
+    private MvcResult postResult;
+    private MvcResult getResult;
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
@@ -91,42 +88,22 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Before("@SubscriptionTriggerScenario")
     public void beforeScenario() {
-        LOGGER.debug("Starting SMTP and REST Mock Servers");
-        try {
-            int port = SocketUtils.findAvailableTcpPort();
-            LOGGER.debug("Setting SMTP port to " + port);
-            mailSender.setPort(port);
-            smtpServer = SimpleSmtpServer.start(port);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        int port = SocketUtils.findAvailableTcpPort();
-        LOGGER.debug("Setting REST port to " + port);
-        restServer = startClientAndServer(port);
-        
-        // Set up endpoints
-        mockClient = new MockServerClient(BASE_URL, port);
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
-                .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
-                .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
-                .respond(response().withStatusCode(201));
+        setupSMTPServer();
+        setupRestEndpoints();
     }
 
     @After("@SubscriptionTriggerScenario")
     public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
-        smtpServer.stop();
         try {
+            smtpServer.stop();
+            restServer.stop();
             mockClient.close();
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
+        }catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        restServer.stop();
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
@@ -141,85 +118,57 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
-    @Given("^Subscriptions is setup using REST API \"([^\"]*)\"$")
-    public void subscriptions_is_setup_using_REST_API(String endPoint) {
+    @Given("^Subscriptions are setup using REST API \"([^\"]*)\"$")
+    public void subscriptions_are_setup_using_REST_API(String endPoint) {
         String readFileToString = "";
         try {
             readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        readFileToString = stringReplaceText(readFileToString);
-        
-        List<String> subscriptions = new ArrayList<>();
-        JsonParser parser = new JsonParser();
-        JsonElement rootNode = parser.parse(readFileToString);
-        JsonArray array = rootNode.getAsJsonArray();
-        for (int i = 0; i < array.size(); i++) {
-            subscriptions.add(array.get(i).getAsJsonObject().get("subscriptionName").toString());
-        }
+            readFileToString = stringReplaceText(readFileToString);
+            updateSubscriptionNames(readFileToString);
+            
+            RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
+                    .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
-                .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
-        try {
-            result = mockMvc.perform(requestBuilder).andReturn();
+            postResult = mockMvc.perform(requestBuilder).andReturn();
             LOGGER.debug("Response code from REST when adding subscriptions: "
-                    + String.valueOf(result.getResponse().getStatus()));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+                    + String.valueOf(postResult.getResponse().getStatus()));
 
-        RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
-        try {
-            result = mockMvc.perform(getRequest).andReturn();
-            LOGGER.debug("Response code from REST when getting subscriptions: "
-                    + String.valueOf(result.getResponse().getStatus()));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-
-        LOGGER.debug("Checking that response contains all subscriptions");
-        for (String sub : subscriptions) {
-            try {
-                assertTrue(result.getResponse().getContentAsString().contains(sub));
-            } catch (UnsupportedEncodingException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    @When("^I send Eiffel events$")
-    public void send_eiffel_events() throws Throwable {
-        LOGGER.debug("About to sent Eiffel events.");
-        try {
-            List<String> eventNames = getEventNamesToSend();
-            JsonNode parsedJSON = getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
-            int eventsCount = 0;
-
-            try {
-                for (String eventName : eventNames) {
-                    eventsCount++;
-                    JsonNode eventJson = parsedJSON.get(eventName);
-                    String event = eventJson.toString();
-                    rmqHandler.publishObjectToWaitlistQueue(event);
-                }
-
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-
-            assert(waitForEventsToBeProcessed(eventsCount));
+            assertEquals(HttpStatus.OK.value(), postResult.getResponse().getStatus());
+                  
+            validateSubscriptionsSuccessfullyAdded(endPoint);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
-
-        LOGGER.debug("Eiffel events sent.");
+ 
     }
 
-    @Then("^Subscriptions were triggered$")
-    public void check_subscriptions_were_triggered() throws Throwable {
+    private void validateSubscriptionsSuccessfullyAdded(String endPoint) {
+        try {
+            RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
+            getResult = mockMvc.perform(getRequest).andReturn();
+            
+            LOGGER.debug("Response code from REST when getting subscriptions: "
+                    + String.valueOf(getResult.getResponse().getStatus()));
+            assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+            
+            LOGGER.debug("Checking that response contains all subscriptions");
+            for (String subscriptionName : subscriptionNames) {
+                try {
+                    assertTrue(getResult.getResponse().getContentAsString().contains(subscriptionName));
+                } catch (UnsupportedEncodingException e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        
+    }
+
+    @Then("^Mail subscriptions were triggered$")
+    public void check_mail_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying received emails.");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert(emails.size() > 0);
@@ -230,7 +179,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             // assert given test case exist in body.
             assert(email.getBody().toString().contains("TC5"));
         }
-
+    }
+    
+    @Then("^Rest subscriptions were triggered$")
+    public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT), Format.JSON))));
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH), Format.JSON))));
@@ -238,6 +190,39 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH_PARAMS), Format.JSON))));
     }
 
+
+    private void updateSubscriptionNames(String readFileToString) {
+        JsonParser parser = new JsonParser();
+        JsonElement rootNode = parser.parse(readFileToString);
+        JsonArray array = rootNode.getAsJsonArray();
+        for (int i = 0; i < array.size(); i++) {
+            subscriptionNames.add(array.get(i).getAsJsonObject().get("subscriptionName").toString());
+        }        
+    }
+
+    @When("^I send Eiffel events$")
+    public void send_eiffel_events() {
+        LOGGER.debug("About to send Eiffel events.");
+        try {
+            List<String> eventNames = getEventNamesToSend();
+            JsonNode parsedJSON = getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+            int eventsCount = 0;
+
+            for (String eventName : eventNames) {
+                eventsCount++;
+                JsonNode eventJson = parsedJSON.get(eventName);
+                String event = eventJson.toString();
+                rmqHandler.publishObjectToWaitlistQueue(event);
+            }
+
+            assert(waitForEventsToBeProcessed(eventsCount));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        LOGGER.debug("Eiffel events sent.");
+    }
+    
     private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
         int tc5 = 0, successfull = 0;
         for(int i=0;i<jsonArray.length();i++){
@@ -251,6 +236,34 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return (tc5 > 0 && successfull > 0);
     }
 
+    private void setupRestEndpoints() {
+        // Set up endpoints
+        int port = SocketUtils.findAvailableTcpPort();
+        restServer = startClientAndServer(port);
+        
+        LOGGER.debug("Setting up endponts on host '" + BASE_URL + "' and port '" + port + "'.");
+        mockClient = new MockServerClient(BASE_URL, port);
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
+                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
+                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
+                .respond(response().withStatusCode(201));        
+    }
+    
+    private void setupSMTPServer() {
+        try {
+            int port = SocketUtils.findAvailableTcpPort();
+            LOGGER.debug("Setting SMTP port to " + port);
+            mailSender.setPort(port);
+            smtpServer = SimpleSmtpServer.start(port);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+    
     private List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
@@ -274,5 +287,4 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\.params\\}", REST_ENDPOINT_AUTH_PARAMS);
         return text;
     }
-
 }

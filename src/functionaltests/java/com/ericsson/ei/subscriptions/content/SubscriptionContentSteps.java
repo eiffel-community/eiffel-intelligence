@@ -1,20 +1,18 @@
 package com.ericsson.ei.subscriptions.content;
 
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.controller.model.SubscriptionResponse;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpDeleteRequest;
-import com.ericsson.ei.utils.HttpPostRequest;
 import com.ericsson.ei.utils.HttpGetRequest;
-
+import com.ericsson.ei.utils.HttpPostRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +27,10 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class SubscriptionContentSteps extends FunctionalTestBase {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
+
     @LocalServerPort
     private int applicationPort;
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
     private HttpGetRequest getRequest;
     private HttpPostRequest postRequest;
     private HttpDeleteRequest deleteRequest;
@@ -102,28 +101,20 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     }
 
     @And("^\"([A-Za-z0-9_]+)\" is not duplicated$")
-    public void is_not_duplicated(String name) {
-        Subscription[] subscription = null;
+    public void is_not_duplicated(String name) throws IOException {
         getRequest.setEndpoint("/subscriptions/" + name);
         response = getRequest.build();
-
-        try {
-            subscription = mapper.readValue(response.getBody().toString(), Subscription[].class);
-        } catch(IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        // Ensure only one subscription exists
-        assertEquals(1, subscription.length);
+        GetSubscriptionResponse getSubscriptionResponse = mapper.readValue(response.getBody().toString(), GetSubscriptionResponse.class);
+        assertEquals(1, getSubscriptionResponse.getFoundSubscriptions().size());
     }
 
     // SCENARIO 3
 
     @Given("^I delete \"([A-Za-z0-9_]+)\"$")
     public void delete_subscription(String subscriptionName) {
-        SubscriptionResponse subscriptionResponse = null;
         deleteRequest.setEndpoint("/subscriptions/" + subscriptionName);
-        subscriptionResponse = deleteRequest.build();
-        assertEquals("Deleted Successfully", subscriptionResponse.getMsg());
+        response = deleteRequest.build();
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
     @And("^Subscriptions does not exist$")
@@ -142,7 +133,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^The invalid subscription is rejected$")
     public void invalid_subscription_is_rejected() {
-        assertEquals(HttpStatus.PRECONDITION_FAILED.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
     }
 
     @And("^The invalid subscription does not exist$")
@@ -150,6 +141,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         String invalidName = "#Subscription-&-with-&-mal-&-formatted-&-name";
         getRequest.setEndpoint("/subscriptions/" + invalidName);
         response = getRequest.build();
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("[]", response.getBody().toString());
     }
 

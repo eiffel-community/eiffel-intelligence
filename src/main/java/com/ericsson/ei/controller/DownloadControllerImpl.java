@@ -57,7 +57,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Subscriptions template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,7 +71,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Rules template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -85,7 +85,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Events template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

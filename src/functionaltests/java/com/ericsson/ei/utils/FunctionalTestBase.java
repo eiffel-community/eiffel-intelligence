@@ -14,12 +14,21 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.tomcat.jni.Time;
 import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -53,6 +62,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Autowired
     private MongoProperties mongoProperties;
 
+    @Autowired
+    private RmqHandler rmqHandler;
+    
     @Value("${spring.data.mongodb.database}")
     private String database;
 
@@ -68,7 +80,11 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public String getMongoDbHost() {
         return mongoProperties.getHost();
     }
-    
+
+    protected List<String> getEventNamesToSend() {
+        return new ArrayList<>();
+    }
+
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         int debug = 1;
@@ -78,28 +94,56 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public void afterTestClass(TestContext testContext) throws Exception {
         int debug = 1;
     }
+    
+    protected List<String> sendEiffelEvents(String EIFFEL_EVENTS_JSON_PATH) throws InterruptedException, IOException {
+        List<String> eventNames = getEventNamesToSend();
+        List<String> eventsIdList = new ArrayList<>();
 
-    public boolean waitForEventsToBeProcessed(int eventsCount) {
-        int maxTime = 30;
-        int counterTime = 0;
-        long processedEvents = 0;
-        while (processedEvents < eventsCount && counterTime < maxTime) {
-            processedEvents = countProcessedEvents(database, collection);
-            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            try {
-                TimeUnit.MILLISECONDS.sleep(3000);
-                counterTime += 3;
-            } catch (InterruptedException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+        JsonNode parsedJSON = getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+
+        for (String eventName : eventNames) {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
+            rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
-        return (processedEvents == eventsCount);
+
+        TimeUnit.MILLISECONDS.sleep(2000);
+        List<String> notRecievedEvents = getNotRecievedEvents(eventsIdList);
+        return notRecievedEvents;
     }
     
-    private long countProcessedEvents(String database, String collection) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+    protected JsonNode getJSONFromFile(String filePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
+        return objectMapper.readTree(expectedDocument);
+    }
+   
+    private List<String> getNotRecievedEvents(List<String> eventsIdList) throws InterruptedException {
+        List<String> notSeenEvents = eventsIdList;
+        long stopTime = System.currentTimeMillis() + 30000;
+        while (!notSeenEvents.isEmpty() && stopTime > System.currentTimeMillis()) {
+            notSeenEvents = compareSentEventsWithEventsInDb(notSeenEvents);
+            if (notSeenEvents.isEmpty()) {
+                break;
+            }
+            TimeUnit.MILLISECONDS.sleep(1000);
+        }        
+        return notSeenEvents;
+    }
+
+    private List<String> compareSentEventsWithEventsInDb(List<String> notSeenEvents) {
+        mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
-        return table.count();
+        List<Document> documents = table.find().into(new ArrayList<Document>());
+        for (Document document : documents) {
+            for (int i = 0; i < notSeenEvents.size(); i++) {
+                if (notSeenEvents.get(i).equals(document.get("_id").toString())) {
+                    notSeenEvents.remove(i);
+                }
+            }
+        }
+        return notSeenEvents;
     }
+    
 }

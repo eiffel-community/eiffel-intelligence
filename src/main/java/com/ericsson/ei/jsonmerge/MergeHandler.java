@@ -77,8 +77,6 @@ public class MergeHandler {
                 preparedToMergeObject = objectToMerge.toString();
             }
 
-            // System.out.("PREPARED OBJECT: " + preparedToMergeObject);
-
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
             log.debug("Merged Aggregated Object:\n" + mergedObject);
         } catch (Exception e) {

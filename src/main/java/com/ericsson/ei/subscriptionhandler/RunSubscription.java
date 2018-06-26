@@ -106,16 +106,15 @@ public class RunSubscription {
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
-                String new_Rule = rule.replace("'", "\"");
-                LOGGER.debug("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                boolean condition1 = !result.toString().equals("null");
-                boolean condition2 = !result.toString().equals("false");
-                boolean condition3 = !result.toString().equals("[]");
-                LOGGER.debug("Jmespath rule result: '" + result.toString() 
-                        + "'\nConditions fullfulled: '1'  is '" + condition1 + " '2'  is '" + condition2 + "' '3'  is '" 
-                        + condition3 + "'");
-                if (condition1 && condition2 && condition3) {
+                boolean resultNotEqualsToNull = !result.toString().equals("null");
+                boolean resultNotEqualsToFalse = !result.toString().equals("false");
+                boolean resultNotEmpty = !result.toString().equals("[]");
+                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fullfullment:" 
+                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull 
+                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse 
+                        + "' '\nResult not empty' is '" + resultNotEmpty + "'");
+                if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }
             }

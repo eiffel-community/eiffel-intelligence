@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.waitlist;
 
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rmqhandler.RmqHandler;
@@ -54,6 +55,9 @@ public class WaitListWorker {
     @Autowired
     private MatchIdRulesHandler matchIdRulesHandler;
 
+    @Autowired
+    private EventToObjectMapHandler eventToObjectMapHandler;
+
     @Bean
     public TaskScheduler taskScheduler() {
         return new ConcurrentTaskScheduler();
@@ -64,18 +68,23 @@ public class WaitListWorker {
         RulesObject rulesObject;
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
-            String event = new JSONObject(document).getString("Event");
-            rulesObject = rulesHandler.getRulesForEvent(event);
-            String idRule = rulesObject.getIdentifyRules();
+            if (eventToObjectMapHandler.isEventExistsInEventObjectMap(new JSONObject(document).getString("_id"))) {
+                System.out.println("EXISTS");
+                waitListStorageHandler.dropDocumentFromWaitList(document);
+            } else {
+                System.out.println("DOES NOT EXISTS");
+                String event = new JSONObject(document).getString("Event");
+                rulesObject = rulesHandler.getRulesForEvent(event);
+                String idRule = rulesObject.getIdentifyRules();
 
-            if (idRule != null && !idRule.isEmpty()) {
-                JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-                if (ids.isArray()) {
-                    for (final JsonNode idJsonObj : ids) {
-                        Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
-                                idJsonObj.textValue());
-                        if (!objects.isEmpty()) {
-                            rmqHandler.publishObjectToWaitlistQueue(event);
+                if (idRule != null && !idRule.isEmpty()) {
+                    JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+                    if (ids.isArray()) {
+                        for (final JsonNode idJsonObj : ids) {
+                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                            if (!objects.isEmpty()) {
+                                rmqHandler.publishObjectToWaitlistQueue(event);
+                            }
                         }
                     }
                 }

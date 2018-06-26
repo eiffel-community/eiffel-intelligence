@@ -79,6 +79,14 @@ public class WaitListStorageHandler {
         }
     }
 
+    public boolean dropDocumentFromWaitList(String document) {
+        return mongoDbHandler.dropDocument(databaseName, collectionName, document);
+    }
+
+    public List<String> getWaitList() {
+        return mongoDbHandler.getAllDocuments(databaseName, collectionName);
+    }
+
     private String addPropertiesToEvent(String event, RulesObject rulesObject) {
         String time;
         Date date = new Date();
@@ -101,10 +109,6 @@ public class WaitListStorageHandler {
             .put("Event", event);
         mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
         return document.toString();
-    }
-
-    public List<String> getWaitList() {
-        return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
 }

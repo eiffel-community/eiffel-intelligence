@@ -16,12 +16,10 @@
 */
 package com.ericsson.ei.waitlist;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
@@ -31,10 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class WaitListStorageHandler {
@@ -81,20 +80,15 @@ public class WaitListStorageHandler {
     }
 
     private String addPropertiesToEvent(String event, RulesObject rulesObject) {
-        String time;
-        Date date = new Date();
         String idRule = rulesObject.getIdRule();
         JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
-        String condition = "{Event:" + event + "}";
-        List<String> documents = mongoDbHandler.find(databaseName, collectionName, condition);
-        if (documents.isEmpty()) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            time = dateFormat.format(date);
-            try {
-                date = dateFormat.parse(time);
-            } catch (ParseException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String time = dateFormat.format(date);
+        try {
+            date = dateFormat.parse(time);
+        } catch (ParseException e) {
+            LOGGER.error(e.getMessage(), e);
         }
         JSONObject document = new JSONObject()
             .put("_id", id.textValue())

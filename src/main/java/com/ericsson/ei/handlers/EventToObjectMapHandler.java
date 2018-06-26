@@ -149,7 +149,7 @@ public class EventToObjectMapHandler {
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 
-    public boolean isEventExistsInEventObjectMap(String eventId) {
+    public boolean isEventInEventObjectMap(String eventId) {
         String condition = "{\"_id\" : \"" + eventId + "\"}";
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();

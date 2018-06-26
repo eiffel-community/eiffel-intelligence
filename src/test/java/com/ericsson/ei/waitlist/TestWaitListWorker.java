@@ -119,7 +119,7 @@ public class TestWaitListWorker {
 
     @Test
     public void testRunWithoutMatchObjects() throws JSONException {
-        Mockito.when(eventToObjectMapHandler.isEventExistsInEventObjectMap(Mockito.anyString())).thenReturn(false);
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
         Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(new ArrayList<>());
         try {
             waitListWorker.run();
@@ -132,7 +132,7 @@ public class TestWaitListWorker {
 
     @Test
     public void testRunWithMatchObjects() {
-        Mockito.when(eventToObjectMapHandler.isEventExistsInEventObjectMap(Mockito.anyString())).thenReturn(false);
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
         Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(list);
         try {
             waitListWorker.run();
@@ -145,7 +145,7 @@ public class TestWaitListWorker {
 
     @Test
     public void testRunIfEventExistsInEventObjectMap() {
-        Mockito.when(eventToObjectMapHandler.isEventExistsInEventObjectMap(Mockito.anyString())).thenReturn(true);
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(true);
         try {
             waitListWorker.run();
             assertTrue(true);

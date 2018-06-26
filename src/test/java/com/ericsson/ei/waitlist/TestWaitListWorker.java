@@ -16,9 +16,6 @@
 */
 package com.ericsson.ei.waitlist;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import com.ericsson.ei.flowtests.AMQPBrokerManager;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -27,18 +24,7 @@ import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
+import com.rabbitmq.client.*;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +39,13 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestWaitListWorker {
 
@@ -141,6 +134,18 @@ public class TestWaitListWorker {
             e.printStackTrace();
         }
     }
+
+    // TO DO fix this test
+    // @Test public void testDropDocumentFromWaitList() {
+    // try {
+    // String event = FileUtils.readFileToString(new File(eventPath), "UTF-8");
+    // String condition = "{Event:" + JSON.parse(event).toString() + "}";
+    // assertTrue(waitListStorageHandler.dropDocumentFromWaitList(condition));
+    // } catch (Exception e) {
+    // assertFalse(true);
+    // System.out.println("error occured while deleting document from	 waitlist");
+    // }
+    // }
 
     @Test
     public void testPublishandReceiveEvent() {

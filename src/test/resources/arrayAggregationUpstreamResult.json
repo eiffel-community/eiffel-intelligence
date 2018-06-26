@@ -1,0 +1,16 @@
+[{
+  "data":{"customData":[{"key":"Type","value":"Source"}],"name":"TestCompositionName","version":"TestCompositionVersion"},
+  "links":[{"target":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2","type":"ELEMENT"}, {"target":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf","type":"ELEMENT"}],
+  "meta":{"id":"175f08ff-1e4b-4265-a0d4-36e744297dc3","time":1529405139338,"type":"EiffelCompositionDefinedEvent","version":"1.1.0"}
+},
+{
+  "data":{"customData":[],"gav":{"artifactId":"artifact id","groupId":"group id","version":"0.0.0a"}},
+  "links":[],
+  "meta":{"id":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2","time":1529405139319,"type":"EiffelArtifactCreatedEvent","version":"1.1.0"}
+},
+{
+  "data":{"customData":[],"gav":{"artifactId":"artifact id","groupId":"group id","version":"0.0.0a"}},
+  "links":[],
+  "meta":{"id":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf","time":1529405139319,"type":"EiffelArtifactCreatedEvent","version":"1.1.0"}
+}
+]

@@ -137,21 +137,41 @@ subscriptionList: |
     }
 subscriptionResponse: |
     {
+       "type": "array",
+       "items": {
+          "$schema":"http://json-schema.org/draft-04/schema#",
+          "javaType":"com.ericsson.ei.controller.model.SubscriptionResponse",
+          "definitions":{
+          },
+          "properties":{
+             "subscription":{
+                "type":"string"
+             },
+             "reason":{
+                "type":"string"
+             }
+          },
+          "type":"object"
+       }
+    }
+getSubscriptionResponse: |
+    {
        "$schema":"http://json-schema.org/draft-04/schema#",
-       "javaType":"com.ericsson.ei.controller.model.SubscriptionResponse",
-       "definitions":{
-       },
-       "properties":{
-          "msg":{
-             "type":"string"
+       "javaType":"com.ericsson.ei.controller.model.GetSubscriptionResponse",
+          "properties":{
+             "foundSubscriptions":{
+                "type":"array",
+                "items":{
+                   "javaType":"com.ericsson.ei.controller.model.Subscription"
+                }
+             },
+             "notFoundSubscriptions":{
+                "type":"array",
+                "items":{
+                   "type":"string"
+                }
+             }
           },
-          "statusCode":{
-             "type":"integer"
-          },
-          "responseEntity":{
-             "type":"string"
-          }
-       },
        "type":"object"
     }
 stringServiceResponse: |
@@ -167,15 +187,15 @@ stringServiceResponse: |
     }
 ruleCheckBody: |
     {
-        "$schema":"http://json-schema.org/draft-04/schema#",
-        "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
-            "properties":{
-                "listRulesJson":{
-                    "type":"array"
-                },
-                "listEventsJson":{
-                    "type":"array"
-                }
-            },
-        "type":"object"
+       "$schema":"http://json-schema.org/draft-04/schema#",
+       "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
+          "properties":{
+             "listRulesJson":{
+                "type":"array"
+             },
+             "listEventsJson":{
+                "type":"array"
+             }
+          },
+       "type":"object"
     }

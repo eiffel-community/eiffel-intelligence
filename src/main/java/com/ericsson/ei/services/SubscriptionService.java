@@ -147,7 +147,7 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public List<Subscription> getSubscription() throws SubscriptionNotFoundException {
+    public List<Subscription> getSubscriptions() throws SubscriptionNotFoundException {
         String query = "{}";
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<>();

@@ -71,7 +71,7 @@ public class RulesObject {
     }
 
     public String getHistoryExtractionRules() {
-        return rulesObject.get("HistoryExtractionRules").textValue();
+        return getTextValue("HistoryExtractionRules");
     }
 
     public String getHistoryPathRules() {
@@ -83,10 +83,10 @@ public class RulesObject {
     }
 
     public String getTextValue(String fieldName) {
-         JsonNode jsonNode = rulesObject.get(fieldName);
-         if (jsonNode != null)
-             return jsonNode.textValue();
-         return null;
+        JsonNode jsonNode = rulesObject.get(fieldName);
+        if (jsonNode != null)
+            return jsonNode.textValue();
+        return null;
     }
 
     public String getString(String fieldName) {
@@ -94,7 +94,7 @@ public class RulesObject {
         if (jsonNode != null)
             return jsonNode.toString();
         return "";
-   }
+    }
 
     public boolean equals(Object other) {
         if (other instanceof RulesObject) {

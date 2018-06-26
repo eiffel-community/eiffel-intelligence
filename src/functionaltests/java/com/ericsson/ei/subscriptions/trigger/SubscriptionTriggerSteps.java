@@ -4,8 +4,6 @@ import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +13,6 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +39,9 @@ import org.springframework.util.SocketUtils;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import gherkin.deps.com.google.gson.JsonArray;
-import gherkin.deps.com.google.gson.JsonElement;
-import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
 @AutoConfigureMockMvc
@@ -125,7 +118,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
         List<String> missingEvents = getMissingEvents(eventsIdList);
-        assert(missingEvents.size() == 0) : "The following events are missing in mongoDB: " + missingEvents.toString();
+        assertEquals("The following events are missing in mongoDB: " + missingEvents.toString(),0, missingEvents.size());
         LOGGER.debug("Eiffel events sent.");
     }
     

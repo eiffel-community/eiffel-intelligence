@@ -107,7 +107,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
         
-        TimeUnit.MILLISECONDS.sleep(2000);
+        TimeUnit.MILLISECONDS.sleep(3000);
         return eventsIdList;
     }
     

@@ -143,7 +143,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
     }
     
-    @And("^Rest subscriptions were triggered$")
+    @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT), Format.JSON))));

@@ -25,4 +25,4 @@ Feature: Subscription trigger test
     And Subscriptions are setup using REST API "/subscriptions"
     When I send Eiffel events
     Then Mail subscriptions were triggered 
-    Then Rest subscriptions were triggered 
+    And Rest subscriptions were triggered 

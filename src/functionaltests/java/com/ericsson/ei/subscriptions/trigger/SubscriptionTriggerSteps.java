@@ -42,6 +42,7 @@ import org.springframework.util.SocketUtils;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -122,8 +123,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @When("^I send Eiffel events$")
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("About to send Eiffel events.");
-        List<String> notSentEvents = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        assertEquals("[]", notSentEvents.toString());
+        List<String> eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
+        List<String> missingEvents = getMissingEvents(eventsIdList);
+        assert(missingEvents.size() == 0) : "The following events are missing in mongoDB: " + missingEvents.toString();
         LOGGER.debug("Eiffel events sent.");
     }
     
@@ -141,7 +143,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
     }
     
-    @Then("^Rest subscriptions were triggered$")
+    @And("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT), Format.JSON))));

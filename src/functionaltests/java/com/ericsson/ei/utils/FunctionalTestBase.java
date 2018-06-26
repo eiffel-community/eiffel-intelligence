@@ -106,10 +106,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
             rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
-
+        
         TimeUnit.MILLISECONDS.sleep(2000);
-        List<String> notRecievedEvents = getNotRecievedEvents(eventsIdList);
-        return notRecievedEvents;
+        return eventsIdList;
     }
     
     protected JsonNode getJSONFromFile(String filePath) throws IOException {
@@ -118,32 +117,31 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         return objectMapper.readTree(expectedDocument);
     }
    
-    private List<String> getNotRecievedEvents(List<String> eventsIdList) throws InterruptedException {
-        List<String> notSeenEvents = eventsIdList;
+    protected List<String> getMissingEvents(List<String> eventsIdList) throws InterruptedException {
+        List<String> missingEvents = eventsIdList;
         long stopTime = System.currentTimeMillis() + 30000;
-        while (!notSeenEvents.isEmpty() && stopTime > System.currentTimeMillis()) {
-            notSeenEvents = compareSentEventsWithEventsInDb(notSeenEvents);
-            if (notSeenEvents.isEmpty()) {
+        while (!missingEvents.isEmpty() && stopTime > System.currentTimeMillis()) {
+            missingEvents = compareSentEventsWithEventsInDb(missingEvents);
+            if (missingEvents.isEmpty()) {
                 break;
             }
             TimeUnit.MILLISECONDS.sleep(1000);
         }        
-        return notSeenEvents;
+        return missingEvents;
     }
 
-    private List<String> compareSentEventsWithEventsInDb(List<String> notSeenEvents) {
+    private List<String> compareSentEventsWithEventsInDb(List<String> missingEvents) {
         mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
         List<Document> documents = table.find().into(new ArrayList<Document>());
         for (Document document : documents) {
-            for (int i = 0; i < notSeenEvents.size(); i++) {
-                if (notSeenEvents.get(i).equals(document.get("_id").toString())) {
-                    notSeenEvents.remove(i);
+            for (int i = 0; i < missingEvents.size(); i++) {
+                if (missingEvents.get(i).equals(document.get("_id").toString())) {
+                    missingEvents.remove(i);
                 }
             }
         }
-        return notSeenEvents;
+        return missingEvents;
     }
-    
 }

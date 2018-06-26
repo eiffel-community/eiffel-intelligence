@@ -62,10 +62,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RuleCheckControllerImpl implements RuleCheckController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckControllerImpl.class);
-    private static final String BAD_REQUEST = "{\"message\": \"Bad request\"}";
-    private static final String INVALID_JSON = "{\"message\": \"Invalid JSON content\"}";
-    private static final String ENVIRONMENT_DISABLED = "{\"message\": \"Test environment is not enabled. "
-        + "Please use the test environment for this execution\"}";
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -99,8 +95,9 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             LOGGER.debug("Query: " + rule + " executed successfully");
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -115,15 +112,19 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 if (aggregatedObject != null) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>(INVALID_JSON, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Aggregated event is not generated. List of rules or list of events are not correct",
+                        HttpStatus.BAD_REQUEST);
                 }
             } catch (JSONException | IOException e) {
-                LOGGER.error(e.getMessage(), e);
-                return new ResponseEntity<>(INVALID_JSON, HttpStatus.BAD_REQUEST);
+                String errorMessage = "Failed to generate aggregated object. Error message:\n" + e.getMessage();
+                LOGGER.error(errorMessage, e);
+                return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            LOGGER.debug("testaggregated.controller.enabled is not enabled in application.properties file, Unable to test the rules on list of events");
-            return new ResponseEntity<>(ENVIRONMENT_DISABLED, HttpStatus.SERVICE_UNAVAILABLE);
+            String errorMessage = "Test environment is not enabled. Please use the test environment for this execution. "
+                + "Property testaggregated.controller.enabled should be set to true in properties file";
+            LOGGER.error(errorMessage);
+            return new ResponseEntity<>(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 

@@ -69,10 +69,8 @@ public class WaitListWorker {
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
             if (eventToObjectMapHandler.isEventExistsInEventObjectMap(new JSONObject(document).getString("_id"))) {
-                System.out.println("EXISTS");
                 waitListStorageHandler.dropDocumentFromWaitList(document);
             } else {
-                System.out.println("DOES NOT EXISTS");
                 String event = new JSONObject(document).getString("Event");
                 rulesObject = rulesHandler.getRulesForEvent(event);
                 String idRule = rulesObject.getIdentifyRules();

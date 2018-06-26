@@ -63,19 +63,12 @@ public class WaitListStorageHandler {
     public void addEventToWaitList(String event, RulesObject rulesObject) throws Exception {
         String condition = "{\"_id\" : \"" + new JSONObject(event).getJSONObject("meta").getString("id") + "\"}";
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
-        foundEventsInWaitList.forEach(e -> System.out.println("EVENT :: " + e));
-        System.out.println("NUMBER OF FOUND EVENTS :: " + foundEventsInWaitList.size());
         if (foundEventsInWaitList.isEmpty()) {
-            System.out.println("TRUE");
             String input = addPropertiesToEvent(event, rulesObject);
             boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, input);
-            List<String> waitList = mongoDbHandler.getAllDocuments(databaseName, collectionName);
-            waitList.forEach(w -> System.out.println("WAIT :: " + w));
             if (!result) {
                 throw new Exception("Failed to insert the document into database");
             }
-        } else {
-            System.out.println("FALSE");
         }
     }
 

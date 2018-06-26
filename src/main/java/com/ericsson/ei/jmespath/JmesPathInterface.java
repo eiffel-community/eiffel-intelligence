@@ -16,12 +16,12 @@
  */
 package com.ericsson.ei.jmespath;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.burt.jmespath.Expression;
 import io.burt.jmespath.JmesPath;
@@ -50,14 +50,16 @@ public class JmesPathInterface {
         if (input == null) {
             input = "";
         }
-        Expression<JsonNode> expression = jmespath.compile(rule);
+
+        JsonNode result = null;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            Expression<JsonNode> expression = jmespath.compile(rule);
             event = objectMapper.readValue(input, JsonNode.class);
+            result = expression.search(event);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }
-        JsonNode result = expression.search(event);
 
         return result;
     }

@@ -209,10 +209,7 @@ public class MergePrepare {
         String stringObject = "";
         String stringRule = "";
         JSONObject objectJSONObject = null;
-        JsonNode objectJsonNode = null;
         try {
-            ObjectMapper objectmapper = new ObjectMapper();
-            objectJsonNode = objectmapper.readTree(originObject);
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
             Object ruleJSONObject = new JSONObject(mergeRule);
@@ -249,10 +246,6 @@ public class MergePrepare {
             if (pos > 0)
                 ruleKey = ruleKey.substring(0, pos);
             try {
-                // Object object = objectJSONObject.get(ruleKey);
-                // Object object = objectJsonNode.get(ruleKey);
-                // Object object1 = objectJsonNode.path(ruleKey);
-                // Object object2 = objectJsonNode.at(ruleKey);
                 JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
                 if (!(jsonResult instanceof NullNode))
                     mergePath = ruleKey;

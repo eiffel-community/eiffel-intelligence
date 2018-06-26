@@ -46,8 +46,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
 
-    private static final String NOT_FOUND = "Subscription is not found";
-    private static final String ALREADY_EXISTS = "Subscription already exists";
+    private static final String SUBSCRIPTION_NOT_FOUND = "Subscription is not found";
+    private static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists";
 
     @Value("${ldap.enabled}")
     private boolean authenticate;
@@ -79,7 +79,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     LOG.debug("Subscription is created successfully: " + subscriptionName);
                 } else {
                     LOG.error("Subscription to create already exists: " + subscriptionName);
-                    errorMap.put(subscriptionName, ALREADY_EXISTS);
+                    errorMap.put(subscriptionName, SUBSCRIPTION_ALREADY_EXISTS);
                 }
             } catch (Exception e) {
                 LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage());
@@ -135,7 +135,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     LOG.debug("Subscription updating is completed: " + subscriptionName);
                 } else {
                     LOG.error("Subscription to update is not found: " + subscriptionName);
-                    errorMap.put(subscriptionName, NOT_FOUND);
+                    errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
                 LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage());
@@ -159,7 +159,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOG.debug("Subscription is deleted successfully: " + subscriptionName);
             } else {
                 LOG.error("Subscription to delete is not found: " + subscriptionName);
-                errorMap.put(subscriptionName, NOT_FOUND);
+                errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
             }
         });
         return getResponse();

@@ -90,11 +90,10 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         assertEquals(notFoundSubscriptionsName, response.getNotFoundSubscriptions().get(0));
     }
 
-    @Then("^get in response content subscription \"([^\"]*)\" and reason \"([^\"]*)\"$")
-    public void get_in_response_content_subscription_and_reason(String subscriptionName, String reason) throws Throwable {
+    @Then("^get in response content subscription \"([^\"]*)\"$")
+    public void get_in_response_content_subscription_and_reason(String subscriptionName) throws Throwable {
         JSONObject response = new JSONArray(mvcResult.getResponse().getContentAsString()).getJSONObject(0);
         assertEquals(subscriptionName, response.getString("subscription"));
-        assertEquals(reason, response.getString("reason"));
     }
 
     @Then("^number of retrieved subscriptions using REST API \"([^\"]*)\" is (\\d+)$")

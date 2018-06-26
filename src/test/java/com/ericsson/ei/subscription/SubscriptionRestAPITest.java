@@ -54,10 +54,9 @@ public class SubscriptionRestAPITest {
 
     private static final String SUBSCRIPTION = "src/test/resources/subscription_single.json";
     private static final String SUBSCRIPTION_MULTIPLE = "src/test/resources/subscription_multi.json";
-    private static final String REASON_FIELD = "reason";
 
-    private static final String NOT_FOUND = "Subscription is not found";
-    private static final String ALREADY_EXISTS = "Subscription already exists";
+    private static final String FOUND_SUBSCRIPTIONS_ARRAY = "foundSubscriptions";
+    private static final String NOT_FOUND_SUBSCRIPTIONS_ARRAY = "notFoundSubscriptions";
 
     @Autowired
     private MockMvc mockMvc;
@@ -124,10 +123,7 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
-
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals(ALREADY_EXISTS, responseBody.getString(REASON_FIELD));
     }
 
     @Test
@@ -204,10 +200,7 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
-
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals(NOT_FOUND, responseBody.getString(REASON_FIELD));
     }
 
     @Test
@@ -220,7 +213,7 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("foundSubscriptions");
+        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(FOUND_SUBSCRIPTIONS_ARRAY);
         Subscription subscription = mapper.readValue(foundSubscriptions.get(0).toString(), Subscription.class);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -241,8 +234,8 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("foundSubscriptions");
-        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("notFoundSubscriptions");
+        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(FOUND_SUBSCRIPTIONS_ARRAY);
+        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(NOT_FOUND_SUBSCRIPTIONS_ARRAY);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(3, foundSubscriptions.length());
@@ -260,7 +253,7 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray("notFoundSubscriptions");
+        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(NOT_FOUND_SUBSCRIPTIONS_ARRAY);
 
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
         assertEquals("Subscription_Test_Not_Found", notFoundSubscriptions.get(0).toString());
@@ -300,9 +293,6 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONObject responseBody = new JSONArray(result.getResponse().getContentAsString()).getJSONObject(0);
-
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        assertEquals(NOT_FOUND, responseBody.getString(REASON_FIELD));
     }
 }

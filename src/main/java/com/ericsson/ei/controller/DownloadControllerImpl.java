@@ -36,8 +36,6 @@ public class DownloadControllerImpl implements DownloadController {
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DownloadControllerImpl.class);
 
-    private static final String NOT_FOUND = "File is not found";
-
     @Override
     public ResponseEntity<?> getDownload() {
         try {
@@ -59,7 +57,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(NOT_FOUND, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Subscriptions template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,7 +71,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(NOT_FOUND, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Rules template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -87,7 +85,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(NOT_FOUND, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Events template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

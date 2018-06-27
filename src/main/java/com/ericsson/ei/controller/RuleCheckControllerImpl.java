@@ -112,8 +112,9 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 if (aggregatedObject != null) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Aggregated event is not generated. List of rules or list of events are not correct",
-                        HttpStatus.BAD_REQUEST);
+                    String errorMessage = "Aggregated event is not generated. List of rules or list of events are not correct";
+                    LOGGER.error(errorMessage);
+                    return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
                 }
             } catch (JSONException | IOException e) {
                 String errorMessage = "Failed to generate aggregated object. Error message:\n" + e.getMessage();

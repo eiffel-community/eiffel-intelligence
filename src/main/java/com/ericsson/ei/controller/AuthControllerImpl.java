@@ -76,8 +76,9 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>("Backend is active", HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

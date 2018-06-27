@@ -122,8 +122,9 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            String errorMessage = "Test environment is not enabled. Please use the test environment for this execution. "
-                + "Property testaggregated.controller.enabled should be set to true in properties file";
+            String errorMessage = "Test Rules functionality is disabled in backend server. "
+                + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
+                + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
             return new ResponseEntity<>(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
         }

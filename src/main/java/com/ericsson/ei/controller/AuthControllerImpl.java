@@ -74,7 +74,7 @@ public class AuthControllerImpl implements AuthController {
     @ApiOperation(value = "To check backend status", response = String.class)
     public ResponseEntity<?> getCheckStatus() {
         try {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);

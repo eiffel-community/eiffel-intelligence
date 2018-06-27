@@ -171,7 +171,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
-    public ResponseEntity<List<Subscription>> getSubscriptions() {
+    public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Subscriptions fetching all has been started");
         try {
             return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
@@ -181,7 +181,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         } catch (Exception e) {
             String errorMessage = "Failed to fetch all subscriptions. Error message:\n" + e.getMessage();
             LOG.error(errorMessage, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -125,7 +125,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
-        int millisecondsToWait = 7000;
+        int millisecondsToWait = 20000;
         LOGGER.debug("Waiting " + (millisecondsToWait/1000) + " seconds to make sure EI trigger subscriptions.");
         TimeUnit.MILLISECONDS.sleep(millisecondsToWait);
     }

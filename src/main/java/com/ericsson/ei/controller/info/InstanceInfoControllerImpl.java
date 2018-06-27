@@ -39,8 +39,9 @@ public class InstanceInfoControllerImpl implements InstanceInfoController {
         try {
             return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(istanceInfo);
         } catch (Exception e) {
-            LOGGER.error("Serialization has failed " + e.getMessage());
+            String errorMessage = "Failed to parse EI backend information. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage);
+            return errorMessage;
         }
-        return null;
     }
 }

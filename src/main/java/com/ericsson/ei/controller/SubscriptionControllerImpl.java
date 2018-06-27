@@ -106,6 +106,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             } catch (SubscriptionNotFoundException e) {
                 LOG.error("Subscription is not found: " + subscriptionName);
                 notFoundSubscriptionList.add(subscriptionName);
+            } catch (Exception e) {
+                LOG.error("Failed to fetch subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
+                notFoundSubscriptionList.add(subscriptionName);
             }
         });
         GetSubscriptionResponse response = new GetSubscriptionResponse();

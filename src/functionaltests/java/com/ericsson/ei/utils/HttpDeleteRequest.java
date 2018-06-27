@@ -26,18 +26,9 @@ public class HttpDeleteRequest {
     /**
      * Build together a httpDelete object
      * */
-    public SubscriptionResponse build() {
-        ResponseEntity<String> response = null;
-        SubscriptionResponse subscriptionResponse = null;
+    public ResponseEntity<String>  build() {
         HttpDelete httpDelete = new HttpDelete(url + port + endpoint);
-        response = restApi.getResponse(httpDelete);
 
-        try {
-            subscriptionResponse = mapper.readValue(response.getBody().toString(), SubscriptionResponse.class);
-        } catch(IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        return subscriptionResponse;
+        return restApi.getResponse(httpDelete);
     }
 }

@@ -15,12 +15,18 @@
    limitations under the License.
 --->
 
+[![Build Status](https://travis-ci.org/Ericsson/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-intelligence)
+[![Coverage Status](https://coveralls.io/repos/github/Ericsson/eiffel-intelligence/badge.svg?branch=master)](https://coveralls.io/github/Ericsson/eiffel-intelligence?branch=master)
+[![](https://jitpack.io/v/Ericsson/eiffel-intelligence.svg)](https://jitpack.io/#Ericsson/eiffel-intelligence)
+
 # Eiffel Intelligence
 Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation.
 
 This repository contains a software implementation based on the Eiffel protocol. For more information on Eiffel, its vocabulary, descriptions, guides and schemas, please see [the Eiffel repository](https://github.com/Ericsson/eiffel). For news, discussions and questions, please visit the [Eiffel Community Google group](https://groups.google.com/forum/#!forum/eiffel-community).
 
 Eiffel Intelligence is licensed under the [Apache License 2.0](./LICENSE).
+
+## Detailed documentation is provided in wiki section above
 
 ## How to Propose Changes
 

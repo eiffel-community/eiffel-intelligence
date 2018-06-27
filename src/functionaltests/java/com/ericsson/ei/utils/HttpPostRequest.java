@@ -53,7 +53,6 @@ public class HttpPostRequest {
      * Build together a httpPost object
      * */
     public ResponseEntity<String> build() {
-        ResponseEntity<String> response = null;
         HttpPost httpPost = new HttpPost(url + port + endpoint);
 
         // set params on httpPost
@@ -65,8 +64,7 @@ public class HttpPostRequest {
                 httpPost.addHeader(e.getKey(), e.getValue());
             }
         }
-        response = restApi.getResponse(httpPost);
-        return response;
+        return restApi.getResponse(httpPost);
     }
 
 }

@@ -3,6 +3,7 @@ package com.ericsson.ei.subscriptions.trigger;
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.subscriptionhandler.SubscriptionRepeatDbHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -65,8 +67,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private MockMvc mockMvc;
 
     @Autowired
-    private RmqHandler rmqHandler;
-
+    private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
+    
     @Autowired
     private JavaMailSenderImpl mailSender;
 
@@ -105,11 +107,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Given("^Subscriptions are setup using REST API \"([^\"]*)\"$")
     public void subscriptions_are_setup_using_REST_API(String endPoint) throws Throwable {
-        String readFileToString = "";
-        readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
-        readFileToString = stringReplaceText(readFileToString);
-        readSubscriptionNames(readFileToString);
-        postSubscriptions(readFileToString, endPoint);
+        String jsonDataAsString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
+        jsonDataAsString = stringReplaceText(jsonDataAsString);
+        readSubscriptionNames(jsonDataAsString);
+        postSubscriptions(jsonDataAsString, endPoint);
         validateSubscriptionsSuccessfullyAdded(endPoint);
     }
 
@@ -120,6 +121,13 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         List<String> missingEvents = getMissingEvents(eventsIdList);
         assertEquals("The following events are missing in mongoDB: " + missingEvents.toString(),0, missingEvents.size());
         LOGGER.debug("Eiffel events sent.");
+    }
+    
+    @When("^Wait for EI to aggregate objects and trigger subscriptions")
+    public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
+        int millisecondsToWait = 7000;
+        LOGGER.debug("Waiting " + (millisecondsToWait/1000) + " seconds to make sure EI trigger subscriptions.");
+        TimeUnit.MILLISECONDS.sleep(millisecondsToWait);
     }
     
     @Then("^Mail subscriptions were triggered$")
@@ -145,16 +153,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH_PARAMS), Format.JSON))));
     }
 
-    private void readSubscriptionNames(String readFileToString) throws Throwable {
-        JSONArray array = new JSONArray(readFileToString);
-        for (int i = 0; i < array.length(); i++) {
-            subscriptionNames.add(array.getJSONObject(i).get("subscriptionName").toString());
+    private void readSubscriptionNames(String jsonDataAsString) throws Throwable {
+        JSONArray jsonArray = new JSONArray(jsonDataAsString);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            subscriptionNames.add(jsonArray.getJSONObject(i).get("subscriptionName").toString());
         }
     }
 
-    private void postSubscriptions(String readFileToString, String endPoint) throws Exception {
+    private void postSubscriptions(String jsonDataAsString, String endPoint) throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
-                .content(readFileToString).contentType(MediaType.APPLICATION_JSON);
+                .content(jsonDataAsString).contentType(MediaType.APPLICATION_JSON);
 
         postResult = mockMvc.perform(requestBuilder).andReturn();
         LOGGER.debug("Response code from REST when adding subscriptions: "

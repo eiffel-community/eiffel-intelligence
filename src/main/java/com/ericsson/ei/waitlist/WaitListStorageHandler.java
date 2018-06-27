@@ -22,6 +22,7 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class WaitListStorageHandler {
         return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
-    private String addPropertiesToEvent(String event, RulesObject rulesObject) {
+    private String addPropertiesToEvent(String event, RulesObject rulesObject) throws JSONException {
         String idRule = rulesObject.getIdRule();
         JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

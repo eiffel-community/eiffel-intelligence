@@ -23,6 +23,7 @@ import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class WaitListWorker {
     }
 
     @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
-    public void run() {
+    public void run() throws JSONException {
         RulesObject rulesObject;
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {

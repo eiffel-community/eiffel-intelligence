@@ -16,10 +16,8 @@
 */
 package com.ericsson.ei.waitlist;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import com.ericsson.ei.flowtests.AMQPBrokerManager;
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -27,19 +25,9 @@ import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
+import com.rabbitmq.client.*;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,46 +42,57 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class TestWaitListWorker {
 
+    private static final String EVENT_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private static final String INPUT_1 = "src/test/resources/testWaitListinput1.json";
+    private static final String INPUT_2 = "src/test/resources/testWaitListinput2.json";
+
     private static File qpidConfig = null;
+    private static String jsonFileContent;
     static AMQPBrokerManager amqpBrocker;
     static ConnectionFactory cf;
     static Connection conn;
-    private static String jsonFileContent;
-    private ArrayList<String> list = new ArrayList<>();
-    private final static String eventPath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-    private final String input1 = "src/test/resources/testWaitListinput1.json";
-    private final String input2 = "src/test/resources/testWaitListinput2.json";
-    protected String message;
+
+    private List<String> list;
+    private String message;
 
     @InjectMocks
-    WaitListWorker waitListWorker;
+    private WaitListWorker waitListWorker;
     @Mock
-    RulesHandler rulesHandler;
+    private RulesHandler rulesHandler;
     @Mock
-    MatchIdRulesHandler matchId;
+    private MatchIdRulesHandler matchId;
     @Mock
-    RmqHandler rmqHandler;
+    private RmqHandler rmqHandler;
     @Mock
-    WaitListStorageHandler waitListStorageHandler;
+    private WaitListStorageHandler waitListStorageHandler;
     @Mock
-    MongoDBHandler mongoDBHandler;
+    private MongoDBHandler mongoDBHandler;
     @Mock
-    ArrayList<String> newList;
+    private JmesPathInterface jmesPathInterface;
     @Mock
-    JmesPathInterface jmesPathInterface;
+    private JsonNode jsonNode;
     @Mock
-    JsonNode jsonNode;
+    private RulesObject rulesObject;
     @Mock
-    RulesObject rulesObject;
+    private EventToObjectMapHandler eventToObjectMapHandler;
 
     @Before
     public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
         setupMB();
-        list.add(FileUtils.readFileToString(new File(input1), "UTF-8"));
-        list.add(FileUtils.readFileToString(new File(input2), "UTF-8"));
+        list = new ArrayList<>();
+        list.add(FileUtils.readFileToString(new File(INPUT_1), "UTF-8"));
+        list.add(FileUtils.readFileToString(new File(INPUT_2), "UTF-8"));
         Mockito.when(waitListStorageHandler.getWaitList()).thenReturn(list);
         Mockito.when(rulesHandler.getRulesForEvent(Mockito.anyString())).thenReturn(rulesObject);
         Mockito.when(jmesPathInterface.runRuleOnEvent(Mockito.anyString(), Mockito.anyString())).thenReturn(jsonNode);
@@ -105,7 +104,7 @@ public class TestWaitListWorker {
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         String config = "src/test/resources/configs/qpidConfig.json";
-        jsonFileContent = FileUtils.readFileToString(new File(eventPath), "UTF-8");
+        jsonFileContent = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
         qpidConfig = new File(config);
         amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBrocker.startBroker();
@@ -119,8 +118,9 @@ public class TestWaitListWorker {
     }
 
     @Test
-    public void testRunWithoutMatchObjects() {
-        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(newList);
+    public void testRunWithoutMatchObjects() throws JSONException {
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
+        Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(new ArrayList<>());
         try {
             waitListWorker.run();
             assertTrue(true);
@@ -131,8 +131,21 @@ public class TestWaitListWorker {
     }
 
     @Test
-    public void testRunWithMatchbjects() {
-        Mockito.when(matchId.fetchObjectsById(Mockito.anyObject(), Mockito.anyString())).thenReturn(list);
+    public void testRunWithMatchObjects() {
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
+        Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(list);
+        try {
+            waitListWorker.run();
+            assertTrue(true);
+        } catch (Exception e) {
+            assertFalse(true);
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRunIfEventExistsInEventObjectMap() {
+        Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(true);
         try {
             waitListWorker.run();
             assertTrue(true);
@@ -157,7 +170,7 @@ public class TestWaitListWorker {
     // }
 
     @Test
-    public void testPublishandReceiveEvent() {
+    public void testPublishAndReceiveEvent() {
         try {
             Channel channel = conn.createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";

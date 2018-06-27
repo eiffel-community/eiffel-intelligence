@@ -61,7 +61,9 @@ public class SubscriptionValidator {
      */
     private void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
         String regex = "^[A-Za-z0-9_]+$";
-        if (!Pattern.matches(regex, subscriptionName)) {
+        if (subscriptionName == null) {
+            throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
+        } else if (!Pattern.matches(regex, subscriptionName)) {
             throw new SubscriptionValidationException("Wrong format of SubscriptionName: " + subscriptionName);
         }
     }
@@ -114,7 +116,9 @@ public class SubscriptionValidator {
      */
     private void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
         String regex = ".*[\\s].*";
-        if (Pattern.matches(regex, notificationMeta)) {
+        if (notificationMeta == null) {
+            throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
+        } else if (Pattern.matches(regex, notificationMeta)) {
             throw new SubscriptionValidationException("Wrong format of NotificationMeta: " + notificationMeta);
         }
     }
@@ -129,7 +133,9 @@ public class SubscriptionValidator {
     private void validateNotificationType(String notificationType) throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
-        if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
+        if (notificationType == null) {
+            throw new SubscriptionValidationException("Required field NotificationType has not been set");
+        } else if (!(Pattern.matches(regexMail, notificationType) || Pattern.matches(regexRestPost, notificationType))) {
             throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
         }
     }
@@ -137,7 +143,9 @@ public class SubscriptionValidator {
     private void RestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
         String regexApplication_JSON = "[\\s]*application/json[\\\\s]*";
         String regexApplicationFormUrlEncoded = "[\\s]*application/x-www-form-urlencoded[\\\\s]*";
-        if (!(Pattern.matches(regexApplication_JSON, restPostMediaType)
+        if (restPostMediaType == null) {
+            throw new SubscriptionValidationException("Required field RestPostMediaType has not been set");
+        } else if (!(Pattern.matches(regexApplication_JSON, restPostMediaType)
                 || Pattern.matches(regexApplicationFormUrlEncoded, restPostMediaType))) {
             throw new SubscriptionValidationException("Wrong format of RestPostMediaType: " + restPostMediaType);
         }
@@ -157,5 +165,4 @@ public class SubscriptionValidator {
             throw new SubscriptionValidationException("Wrong email address: " + email);
         }
     }
-    // TODO: Validator for Jmepath syntax need to be implemented here.
 }

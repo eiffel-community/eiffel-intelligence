@@ -27,7 +27,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.Subscription>> getSubscriptions();
+    public ResponseEntity<?> getSubscriptions();
 
     /**
      * Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique.

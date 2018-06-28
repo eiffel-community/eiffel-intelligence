@@ -43,7 +43,7 @@ public class TestConfigs {
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
-        System.setProperty("waitlist.fixedRateResend", "100");
+        System.setProperty("waitlist.fixedRateResend", "300");
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.jni.Time;
 import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -90,12 +89,12 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
-        int debug = 1;
+        // Before running test.
     }
 
     @Override
     public void afterTestClass(TestContext testContext) throws Exception {
-        int debug = 1;
+        // After running tests.
     }
     
     protected List<String> sendEiffelEvents(String EIFFEL_EVENTS_JSON_PATH) throws InterruptedException, IOException {
@@ -120,7 +119,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     }
    
     protected List<String> getMissingEvents(List<String> eventsIdList) throws InterruptedException {
-        List<String> missingEvents = eventsIdList;
+        List<String> missingEvents = new ArrayList<String>(eventsIdList);
         long stopTime = System.currentTimeMillis() + 30000;
         while (!missingEvents.isEmpty() && stopTime > System.currentTimeMillis()) {
             missingEvents = compareSentEventsWithEventsInDb(missingEvents);

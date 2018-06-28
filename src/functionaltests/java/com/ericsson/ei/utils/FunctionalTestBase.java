@@ -70,6 +70,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Value("${event_object_map.collection.name}")
     private String collection;
+    
+    @Value("${aggregated.collection.name}")
+    private String aggregatedCollectionName;
 
     private MongoClient mongoClient;
     
@@ -125,12 +128,12 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
                 break;
             }
             TimeUnit.MILLISECONDS.sleep(1000);
-        }        
+        }
         return missingEvents;
     }
 
     private List<String> compareSentEventsWithEventsInDb(List<String> missingEvents) {
-        mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
         List<Document> documents = table.find().into(new ArrayList<Document>());
@@ -142,5 +145,27 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             }
         }
         return missingEvents;
+    }
+    
+    protected boolean verifyAggregatedObjectInDB(List<String> arguments) throws InterruptedException {
+        boolean found = false;
+        MongoClient mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        long stopTime = System.currentTimeMillis() + 30000;
+        while (!found && stopTime > System.currentTimeMillis()) {      
+            MongoDatabase db = mongoClient.getDatabase(database);
+            MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
+            List<Document> documents = table.find().into(new ArrayList<Document>());
+            if(documents.size() > 0) {
+                for (Document document : documents) {
+                    LOGGER.debug("Aggregated Object: "+document.toString());
+                    for(String argument : arguments) {
+                        found = document.toString().contains(argument);
+                    }
+                }
+            }
+            TimeUnit.MILLISECONDS.sleep(3000);
+        }
+        mongoClient.close();
+        return found;
     }
 }

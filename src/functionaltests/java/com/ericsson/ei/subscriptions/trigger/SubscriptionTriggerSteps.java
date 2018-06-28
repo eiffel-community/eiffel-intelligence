@@ -2,9 +2,10 @@ package com.ericsson.ei.subscriptions.trigger;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.subscriptionhandler.SubscriptionRepeatDbHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
@@ -62,12 +64,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Value("${email.sender}")
     private String sender;
+    
+    @Value("${aggregated.collection.name}")
+    private String aggregatedCollectionName;
+    
+    @Value("${spring.data.mongodb.database}")
+    private String database;
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
     
     @Autowired
     private JavaMailSenderImpl mailSender;
@@ -125,9 +130,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
-        int millisecondsToWait = 20000;
-        LOGGER.debug("Waiting " + (millisecondsToWait/1000) + " seconds to make sure EI trigger subscriptions.");
-        TimeUnit.MILLISECONDS.sleep(millisecondsToWait);
+        List<String> arguments = new ArrayList<String>();
+        arguments.add("id=TC5");
+        arguments.add("conclusion=SUCCESSFUL");
+        assert verifyAggregatedObjectInDB(arguments);
     }
     
     @Then("^Mail subscriptions were triggered$")

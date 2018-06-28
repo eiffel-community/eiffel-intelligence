@@ -2,8 +2,6 @@ package com.ericsson.ei.subscriptions.trigger;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.subscriptionhandler.SubscriptionRepeatDbHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 
 import static org.junit.Assert.assertEquals;
@@ -65,9 +63,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
     
     @Autowired
     private JavaMailSenderImpl mailSender;
@@ -118,14 +113,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        List<String> missingEvents = getMissingEvents(eventsIdList);
-        assertEquals("The following events are missing in mongoDB: " + missingEvents.toString(),0, missingEvents.size());
+        List<String> missingEventIds = getMissingEvents(eventsIdList);
+        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),0, missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
     
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
-        int millisecondsToWait = 20000;
+        int millisecondsToWait = 5000;
         LOGGER.debug("Waiting " + (millisecondsToWait/1000) + " seconds to make sure EI trigger subscriptions.");
         TimeUnit.MILLISECONDS.sleep(millisecondsToWait);
     }
@@ -147,10 +142,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT), Format.JSON))));
-        assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH), Format.JSON))));
-        assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_PARAMS), Format.JSON))));
-        assert(requestBodyContainsStatedValues(new JSONArray(mockClient.retrieveRecordedRequests(request().withPath(REST_ENDPOINT_AUTH_PARAMS), Format.JSON))));
+        assert(requestBodyContainsStatedValues(REST_ENDPOINT));
+        assert(requestBodyContainsStatedValues(REST_ENDPOINT_AUTH));
+        assert(requestBodyContainsStatedValues(REST_ENDPOINT_PARAMS));
+        assert(requestBodyContainsStatedValues(REST_ENDPOINT_AUTH_PARAMS));
     }
 
     private void readSubscriptionNames(String jsonDataAsString) throws Throwable {
@@ -185,8 +180,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }        
     }
 
-    private boolean requestBodyContainsStatedValues(JSONArray jsonArray) throws JSONException {
+    private boolean requestBodyContainsStatedValues(String endpoint) throws JSONException {
         int tc5 = 0, successfull = 0;
+        String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
+        if (restBodyData == null) {
+            LOGGER.error("No calls made to rest endpoint '" + endpoint + "'.");
+            return false;
+        }
+        JSONArray jsonArray = new JSONArray(restBodyData);
+        
         for(int i = 0; i < jsonArray.length(); i++){
             String requestBody = jsonArray.getString(i);
             if (requestBody.contains("TC5")) {
@@ -200,7 +202,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     }
 
     private void setupRestEndpoints() {
-        // Set up endpoints
         int port = SocketUtils.findAvailableTcpPort();
         restServer = startClientAndServer(port);
         
@@ -213,7 +214,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
-                .respond(response().withStatusCode(201));        
+                .respond(response().withStatusCode(201));     
     }
     
     private void setupSMTPServer() throws IOException {

@@ -78,6 +78,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
+    private List<String> eventsIdList;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
@@ -117,18 +118,20 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @When("^I send Eiffel events$")
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("About to send Eiffel events.");
-        List<String> eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        List<String> missingEventIds = getMissingEvents(eventsIdList);
+        eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
+        List<String> missingEventIds = verifyEventsInDB(eventsIdList);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),0, missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
     
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
-        List<String> arguments = new ArrayList<String>();
+        LOGGER.debug("Checking Aggregated Objects.");
+        List<String> arguments = new ArrayList<String>(eventsIdList);
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
-        assert verifyAggregatedObjectInDB(arguments);
+        List<String> missingArguments = verifyAggregatedObjectInDB(arguments);
+        assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: " + missingArguments.toString(),0, missingArguments.size());
     }
     
     @Then("^Mail subscriptions were triggered$")

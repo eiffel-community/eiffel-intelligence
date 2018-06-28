@@ -118,53 +118,60 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         return objectMapper.readTree(expectedDocument);
     }
    
-    protected List<String> getMissingEvents(List<String> eventsIdList) throws InterruptedException {
-        List<String> missingEvents = new ArrayList<String>(eventsIdList);
+    protected List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
+        List<String> checklist = new ArrayList<String>(eventsIdList);
         long stopTime = System.currentTimeMillis() + 30000;
-        while (!missingEvents.isEmpty() && stopTime > System.currentTimeMillis()) {
-            missingEvents = compareSentEventsWithEventsInDb(missingEvents);
-            if (missingEvents.isEmpty()) {
+        while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
+            checklist = compareSentEventsWithEventsInDB(checklist);
+            if (checklist.isEmpty()) {
                 break;
             }
             TimeUnit.MILLISECONDS.sleep(1000);
         }
-        return missingEvents;
+        return checklist;
     }
 
-    private List<String> compareSentEventsWithEventsInDb(List<String> missingEvents) {
+    private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
         List<Document> documents = table.find().into(new ArrayList<Document>());
         for (Document document : documents) {
-            for (int i = 0; i < missingEvents.size(); i++) {
-                if (missingEvents.get(i).equals(document.get("_id").toString())) {
-                    missingEvents.remove(i);
+            for (int i = 0; i < checklist.size(); i++) {
+                if (checklist.get(i).equals(document.get("_id").toString())) {
+                    checklist.remove(i);
                 }
             }
         }
-        return missingEvents;
+        return checklist;
     }
     
-    protected boolean verifyAggregatedObjectInDB(List<String> arguments) throws InterruptedException {
-        boolean found = false;
+    protected List<String> verifyAggregatedObjectInDB(List<String> arguments) throws InterruptedException {
+        List<String> checklist = new ArrayList<String>(arguments);
         MongoClient mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         long stopTime = System.currentTimeMillis() + 30000;
-        while (!found && stopTime > System.currentTimeMillis()) {      
-            MongoDatabase db = mongoClient.getDatabase(database);
-            MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
-            List<Document> documents = table.find().into(new ArrayList<Document>());
-            if(documents.size() > 0) {
-                for (Document document : documents) {
-                    LOGGER.debug("Aggregated Object: "+document.toString());
-                    for(String argument : arguments) {
-                        found = document.toString().contains(argument);
-                    }
-                }
+        while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
+            checklist = compareArgumentsWithAggregatedObjectInDB(checklist);
+            if (checklist.isEmpty()) {
+                break;
             }
-            TimeUnit.MILLISECONDS.sleep(3000);
+            TimeUnit.MILLISECONDS.sleep(1000);
         }
         mongoClient.close();
-        return found;
+        return checklist;
+    }
+    
+    private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
+        List<Document> documents = table.find().into(new ArrayList<Document>());
+        for (Document document : documents) {
+            for (int i = 0; i < checklist.size(); i++) {
+                if (document.toString().contains(checklist.get(i))) {
+                    checklist.remove(i);
+                }
+            }
+        }
+        return checklist;
     }
 }

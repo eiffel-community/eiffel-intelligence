@@ -137,9 +137,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         MongoCollection<Document> table = db.getCollection(collection);
         List<Document> documents = table.find().into(new ArrayList<Document>());
         for (Document document : documents) {
-            for (int i = 0; i < checklist.size(); i++) {
-                if (checklist.get(i).equals(document.get("_id").toString())) {
-                    checklist.remove(i);
+            for (String expectedID : new ArrayList<String>(checklist)) {
+                if (expectedID.equals(document.get("_id").toString())) {
+                    checklist.remove(expectedID);
                 }
             }
         }
@@ -166,10 +166,10 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
         List<Document> documents = table.find().into(new ArrayList<Document>());
         for (Document document : documents) {
-            for (int i = 0; i < checklist.size(); i++) {
-                if (document.toString().contains(checklist.get(i))) {
-                    checklist.remove(i);
-                }
+            for (String expectedValue : new ArrayList<String>(checklist)) {
+                if (document.toString().contains(expectedValue)) {
+                    checklist.remove(expectedValue);
+                }                
             }
         }
         return checklist;

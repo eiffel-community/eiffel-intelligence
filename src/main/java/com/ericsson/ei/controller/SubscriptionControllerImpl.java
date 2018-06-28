@@ -82,7 +82,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_ALREADY_EXISTS);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage());
+                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -105,6 +105,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOG.debug("Subscription is fetched: " + subscriptionName);
             } catch (SubscriptionNotFoundException e) {
                 LOG.error("Subscription is not found: " + subscriptionName);
+                notFoundSubscriptionList.add(subscriptionName);
+            } catch (Exception e) {
+                LOG.error("Failed to fetch subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
                 notFoundSubscriptionList.add(subscriptionName);
             }
         });
@@ -138,7 +141,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage());
+                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -168,13 +171,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
-    public ResponseEntity<List<Subscription>> getSubscriptions() {
+    public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Subscriptions fetching all has been started");
         try {
             return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.info(e.getLocalizedMessage());
+            LOG.info(e.getMessage(), e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        } catch (Exception e) {
+            String errorMessage = "Failed to fetch all subscriptions. Error message:\n" + e.getMessage();
+            LOG.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

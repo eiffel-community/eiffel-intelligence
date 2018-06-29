@@ -236,12 +236,6 @@
             <artifactId>dumbster</artifactId>
             <version>1.7.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.7.3</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mock-server</groupId>
@@ -338,7 +332,7 @@
 
                     <execution>
                         <id>add-test-source</id>
-                        <phase>process-resources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-test-source</goal>
                         </goals>

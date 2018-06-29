@@ -154,19 +154,21 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        List<String> endpointsToCheck = new ArrayList<String>() {{
-            add(REST_ENDPOINT);
-            add(REST_ENDPOINT_AUTH);
-            add(REST_ENDPOINT_PARAMS);
-            add(REST_ENDPOINT_AUTH_PARAMS);
-        }};
+        List<String> endpointsToCheck = new ArrayList<String>() {
+            {
+                add(REST_ENDPOINT);
+                add(REST_ENDPOINT_AUTH);
+                add(REST_ENDPOINT_PARAMS);
+                add(REST_ENDPOINT_AUTH_PARAMS);
+            }
+        };
         assert (allEndpointsGotAtLeastOneCall(endpointsToCheck, 1));
         for (String endpoint : endpointsToCheck) {
             assert (requestBodyContainsStatedValues(endpoint));
-            
+
         }
     }
- 
+
     /**
      * Assemble subscription names in a list.
      * 
@@ -222,19 +224,20 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
     }
 
-    
     /**
      * Checks that an enpoint got at least the number of calls as expected.
      * 
      * @param endpoints
-     *          List of endpoints to check
+     *            List of endpoints to check
      * @param expectedCalls
-     *          Integer with the least number of calls
-     * @return true if all endpoints had atleast the number of calls as expected.
+     *            Integer with the least number of calls
+     * @return true if all endpoints had atleast the number of calls as
+     *         expected.
      * @throws JSONException
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
-    private boolean allEndpointsGotAtLeastOneCall(final List<String> endpoints, int expectedCalls) throws JSONException, InterruptedException {
+    private boolean allEndpointsGotAtLeastOneCall(final List<String> endpoints, int expectedCalls)
+            throws JSONException, InterruptedException {
         List<String> endpointsToCheck = new ArrayList<String>(endpoints);
 
         long stopTime = System.currentTimeMillis() + 30000;
@@ -249,7 +252,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
         return endpointsToCheck.isEmpty();
     }
-    
+
     /**
      * Verify that request made to endpoint contains the correct information.
      * 

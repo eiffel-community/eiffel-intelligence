@@ -228,9 +228,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      * Checks that an enpoint got at least the number of calls as expected.
      * 
      * @param endpoints
-     *            List of endpoints to check
+     *            List of endpoints to check.
      * @param expectedCalls
-     *            Integer with the least number of calls
+     *            Integer with the least number of calls.
      * @return true if all endpoints had atleast the number of calls as
      *         expected.
      * @throws JSONException

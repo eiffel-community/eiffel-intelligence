@@ -106,12 +106,15 @@ public class RunSubscription {
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
-                String new_Rule = rule.replace("'", "\"");
-                LOGGER.info("Rule : " + rule);
-                LOGGER.info("New Rule after replacing single quote : " + new_Rule);
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                LOGGER.info("Result : " + result.toString());
-                if (result.toString() != null && result.toString() != "false" && !result.toString().equals("[]")) {
+                boolean resultNotEqualsToNull = !result.toString().equals("null");
+                boolean resultNotEqualsToFalse = !result.toString().equals("false");
+                boolean resultNotEmpty = !result.toString().equals("[]");
+                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fullfullment:" 
+                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull 
+                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse 
+                        + "' '\nResult not empty' is '" + resultNotEmpty + "'");
+                if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }
             }
@@ -119,7 +122,7 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
-                    LOGGER.info("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                    LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
                     try {
                         subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
                                 requirementIndex, id);

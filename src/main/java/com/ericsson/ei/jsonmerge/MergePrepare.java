@@ -456,7 +456,7 @@ public class MergePrepare {
             Object valueForKey = null;
             for (int i = 0; i < mergePathIndex; i++) {
                 String key = mergePathArray.getString(i);
-                if (valueForKey == null) {
+                if (valueForKey == null && originJSONObject.has(key)) {
                     valueForKey = originJSONObject.get(key);
                 } else {
                     if (valueForKey instanceof JSONObject) {
@@ -466,7 +466,7 @@ public class MergePrepare {
                     }
                 }
             }
-            if (valueForKey.getClass().equals(JSONArray.class)) {
+            if (valueForKey != null && valueForKey.getClass().equals(JSONArray.class)) {
                 size = ((JSONArray) valueForKey).length();
                 if ((Integer.parseInt(pathElement) + 1) > size) {
                     return Integer.parseInt(pathElement) + 1;

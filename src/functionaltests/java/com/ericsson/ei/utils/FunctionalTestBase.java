@@ -153,7 +153,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             if (checklist.isEmpty()) {
                 break;
             }
-            TimeUnit.MILLISECONDS.sleep(3000);
+            TimeUnit.MILLISECONDS.sleep(1000);
         }
         return checklist;
     }
@@ -197,7 +197,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             if (checklist.isEmpty()) {
                 break;
             }
-            TimeUnit.MILLISECONDS.sleep(3000);
+            TimeUnit.MILLISECONDS.sleep(1000);
         }
         mongoClient.close();
         return checklist;

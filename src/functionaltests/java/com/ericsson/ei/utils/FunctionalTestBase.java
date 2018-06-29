@@ -63,22 +63,22 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Autowired
     private RmqHandler rmqHandler;
-    
+
     @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Value("${event_object_map.collection.name}")
     private String collection;
-    
+
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
 
     private MongoClient mongoClient;
-    
+
     public int getMongoDbPort() {
         return mongoProperties.getPort();
     }
-    
+
     public String getMongoDbHost() {
         return mongoProperties.getHost();
     }
@@ -96,28 +96,55 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public void afterTestClass(TestContext testContext) throws Exception {
         // After running tests.
     }
-    
-    protected List<String> sendEiffelEvents(String EIFFEL_EVENTS_JSON_PATH) throws InterruptedException, IOException {
+
+    /**
+     * Send Eiffel Events to the waitlist queue. Takes a path to a JSON file
+     * containing events and uses getEventNamesToSend to get specific events
+     * from that file. getEventNamesToSend needs to be overridden.
+     * 
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
+     * @return list of eiffel event IDs
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    protected List<String> sendEiffelEvents(String eiffelEventsJsonPath) throws InterruptedException, IOException {
         List<String> eventNames = getEventNamesToSend();
         List<String> eventsIdList = new ArrayList<>();
 
-        JsonNode parsedJSON = getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+        JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
 
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
             rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
-        
+
         return eventsIdList;
     }
-    
+
+    /**
+     * Converts a JSON string into a tree model.
+     * 
+     * @param filePath
+     *            path to JSON file
+     * @return JsonNode tree model
+     * @throws IOException
+     */
     protected JsonNode getJSONFromFile(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return objectMapper.readTree(expectedDocument);
     }
-   
+
+    /**
+     * Verify that events are located in the database collection.
+     * 
+     * @param eventsIdList
+     *            list of events IDs
+     * @return list of missing events
+     * @throws InterruptedException
+     */
     protected List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
         List<String> checklist = new ArrayList<String>(eventsIdList);
         long stopTime = System.currentTimeMillis() + 30000;
@@ -131,6 +158,13 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         return checklist;
     }
 
+    /**
+     * Checks collection of events against event list.
+     * 
+     * @param checklist
+     *            list of event IDs
+     * @return list of missing events
+     */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
@@ -145,7 +179,15 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         }
         return checklist;
     }
-    
+
+    /**
+     * Verify that aggregated object contains the expected information.
+     * 
+     * @param arguments
+     *            list of arguments to check
+     * @return list of missing arguments
+     * @throws InterruptedException
+     */
     protected List<String> verifyAggregatedObjectInDB(List<String> arguments) throws InterruptedException {
         List<String> checklist = new ArrayList<String>(arguments);
         MongoClient mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
@@ -160,7 +202,14 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         mongoClient.close();
         return checklist;
     }
-    
+
+    /**
+     * Checks that aggregated object contains specified arguments.
+     * 
+     * @param checklist
+     *            list of arguments
+     * @return list of missing arguments
+     */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
@@ -169,7 +218,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             for (String expectedValue : new ArrayList<String>(checklist)) {
                 if (document.toString().contains(expectedValue)) {
                     checklist.remove(expectedValue);
-                }                
+                }
             }
         }
         return checklist;

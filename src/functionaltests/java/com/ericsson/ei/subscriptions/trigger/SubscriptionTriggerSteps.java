@@ -54,21 +54,21 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_PARAMS = "/rest/with/params";
     private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
     private static final String BASE_URL = "localhost";
-    
+
     private List<String> subscriptionNames = new ArrayList<>();
 
     @Value("${email.sender}")
     private String sender;
-    
+
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
-    
+
     @Value("${spring.data.mongodb.database}")
     private String database;
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private JavaMailSenderImpl mailSender;
 
@@ -120,10 +120,11 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
         List<String> missingEventIds = verifyEventsInDB(eventsIdList);
-        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),0, missingEventIds.size());
+        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+                missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
-    
+
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
         LOGGER.debug("Checking Aggregated Objects.");
@@ -131,32 +132,40 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
         List<String> missingArguments = verifyAggregatedObjectInDB(arguments);
-        assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: " + missingArguments.toString(),0, missingArguments.size());
+        assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: "
+                + missingArguments.toString(), 0, missingArguments.size());
     }
-    
+
     @Then("^Mail subscriptions were triggered$")
     public void check_mail_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying received emails.");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert(emails.size() > 0);
-        
-        for(SmtpMessage email : emails) {
+        assert (emails.size() > 0);
+
+        for (SmtpMessage email : emails) {
             // assert correct sender.
             assertEquals(email.getHeaderValue("From"), sender);
             // assert given test case exist in body.
-            assert(email.getBody().toString().contains("TC5"));
+            assert (email.getBody().toString().contains("TC5"));
         }
     }
-    
+
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        assert(requestBodyContainsStatedValues(REST_ENDPOINT));
-        assert(requestBodyContainsStatedValues(REST_ENDPOINT_AUTH));
-        assert(requestBodyContainsStatedValues(REST_ENDPOINT_PARAMS));
-        assert(requestBodyContainsStatedValues(REST_ENDPOINT_AUTH_PARAMS));
+        assert (requestBodyContainsStatedValues(REST_ENDPOINT));
+        assert (requestBodyContainsStatedValues(REST_ENDPOINT_AUTH));
+        assert (requestBodyContainsStatedValues(REST_ENDPOINT_PARAMS));
+        assert (requestBodyContainsStatedValues(REST_ENDPOINT_AUTH_PARAMS));
     }
 
+    /**
+     * Assemble subscription names in a list.
+     * 
+     * @param jsonDataAsString
+     *            JSON string containing subscriptions
+     * @throws Throwable
+     */
     private void readSubscriptionNames(String jsonDataAsString) throws Throwable {
         JSONArray jsonArray = new JSONArray(jsonDataAsString);
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -164,6 +173,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         }
     }
 
+    /**
+     * POST subscriptions to endpoint.
+     * 
+     * @param jsonDataAsString
+     *            JSON string containing subscriptions
+     * @param endPoint
+     *            endpoint to use in POST
+     * @throws Exception
+     */
     private void postSubscriptions(String jsonDataAsString, String endPoint) throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(endPoint).accept(MediaType.APPLICATION_JSON)
                 .content(jsonDataAsString).contentType(MediaType.APPLICATION_JSON);
@@ -173,8 +191,15 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 + String.valueOf(postResult.getResponse().getStatus()));
 
         assertEquals(HttpStatus.OK.value(), postResult.getResponse().getStatus());
-    } 
+    }
 
+    /**
+     * Verify that subscriptions were successfully posted.
+     * 
+     * @param endPoint
+     *            endpoint to use in GET
+     * @throws Exception
+     */
     private void validateSubscriptionsSuccessfullyAdded(String endPoint) throws Exception {
         RequestBuilder getRequest = MockMvcRequestBuilders.get(endPoint);
         getResult = mockMvc.perform(getRequest).andReturn();
@@ -186,9 +211,17 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("Checking that response contains all subscriptions");
         for (String subscriptionName : subscriptionNames) {
             assertTrue(getResult.getResponse().getContentAsString().contains(subscriptionName));
-        }        
+        }
     }
 
+    /**
+     * Verify that request made to endpoint contains the correct information.
+     * 
+     * @param endpoint
+     *            endpoint to check
+     * @return true if verification was successful, false otherwise
+     * @throws JSONException
+     */
     private boolean requestBodyContainsStatedValues(String endpoint) throws JSONException {
         int tc5 = 0, successfull = 0;
         String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
@@ -197,8 +230,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
             return false;
         }
         JSONArray jsonArray = new JSONArray(restBodyData);
-        
-        for(int i = 0; i < jsonArray.length(); i++){
+
+        for (int i = 0; i < jsonArray.length(); i++) {
             String requestBody = jsonArray.getString(i);
             if (requestBody.contains("TC5")) {
                 tc5++;
@@ -210,22 +243,29 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return (tc5 > 0 && successfull > 0);
     }
 
+    /**
+     * Setting up the needed endpoints for the functional test.
+     */
     private void setupRestEndpoints() {
         int port = SocketUtils.findAvailableTcpPort();
         restServer = startClientAndServer(port);
-        
+
         LOGGER.debug("Setting up endpoints on host '" + BASE_URL + "' and port '" + port + "'.");
         mockClient = new MockServerClient(BASE_URL, port);
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
-                .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
-                .respond(response().withStatusCode(201));     
+                .respond(response().withStatusCode(201));
     }
-    
+
+    /**
+     * Setup and start SMTP mock server.
+     * 
+     * @throws IOException
+     */
     private void setupSMTPServer() throws IOException {
         int port = SocketUtils.findAvailableTcpPort();
         LOGGER.debug("Setting SMTP port to " + port);
@@ -233,6 +273,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         smtpServer = SimpleSmtpServer.start(port);
     }
 
+    /**
+     * Events used in the aggregation.
+     */
     @Override
     protected List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
@@ -243,6 +286,12 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         return eventNames;
     }
 
+    /**
+     * Replaces tags in the subscription JSON string with valid information.
+     * 
+     * @param text  JSON string containing replaceable tags
+     * @return  Processed content
+     */
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));

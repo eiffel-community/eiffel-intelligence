@@ -235,6 +235,11 @@
             <groupId>com.github.kirviq</groupId>
             <artifactId>dumbster</artifactId>
             <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.7.3</version>
             <scope>test</scope>
         </dependency>
 

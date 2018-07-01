@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.utils.test.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,6 +50,9 @@ public class FreeStyleQueryTestSteps extends FunctionalTestBase {
     @Autowired
     private MockMvc mockMvc;
     private MvcResult mvcResult;
+    
+    @Autowired
+    private MongoProperties mongoProperties;
     
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -94,7 +98,7 @@ public class FreeStyleQueryTestSteps extends FunctionalTestBase {
     @Then("^Perform valid query on newly created Aggregated object")
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
         String entryPoint = "/query";
-        String queryRequest = "{\"criteria\" :{\"id\":\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}}";
+        String queryRequest = "{\"criteria\" :{\"_id\":\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}}";
         System.out.println("KKKKAAAAALLLLLLEEEEEEEEEEEEEEEEEEEEEE");
         mvcResult = mockMvc.perform(get(entryPoint)
                 .param("request", queryRequest)

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -25,11 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.SocketUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,11 +61,8 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     // setting up mockserver which will receive requests with these values in
     // notification meta in missed notification object
-    private static final String BASE_URL = "https://localhost:";
+    private static final String BASE_URL = "localhost";
     private static final String ENDPOINT = "/missed_notification";
-
-    @LocalServerPort
-    private int port;
 
     // TODO: remove the unneeded values from here? only keep ttl values + failattempt
     @Value("${missedNotificationDataBaseName}")
@@ -101,26 +97,102 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Autowired
     private JmesPathInterface jmespath; //why?
 
-    @Before
-    private void beforeScenario() {
-        // set up mock server
+    @Before("@TestSubscription")
+    public void beforeScenario() {
+        LOGGER.debug("Starting up mock server.");
         setUpMockServer();
     }
 
     @After("@TestSubscription")
-    private void afterScenario() throws IOException {
-        LOGGER.debug("Shutting down both mockServerClient and clientAndServer");
+    public void afterScenario() throws IOException {
+        LOGGER.debug("Shutting down mock servers.");
         mockServerClient.close();
         clientAndServer.stop();
     }
 
+    // START TEST SCENARIOS
+
+    @Given("^\"(.*)\" is prepared with index \"([A-Za-z0-9_]+)\"$")
+    public void prepare_with_index(String fileName, String indexName) throws IOException {
+
+        fileContent = FileUtils.readFileToString(new File(fileName), "utf-8");
+
+        // Preparing object with a new fieldname to be used for index
+        dbObject = prepareDocument(fileContent, indexName);
+    }
+
+    @When("^\"([A-Za-z0-9_]+)\" is created in database \"([A-Za-z0-9_]+)\" with index \"([A-Za-z0-9_]+)\"$")
+    public void objects_are_created_in_database(String collection, String database, String indexName) {
+        // setting 1 second TTL on index in db
+        mongoDBHandler.createTTLIndex(database, collection, indexName, 1);
+
+        Boolean isInserted = mongoDBHandler.insertDocument(database, collection, dbObject.toString());
+        assertEquals(true, isInserted);
+
+        result = mongoDBHandler.getAllDocuments(database, collection);
+        assertEquals(false, result.isEmpty());
+    }
+
+    @When("^I sleep for \"([^\"]*)\" seconds")
+    public void i_sleep_for_time(int sleepTime) throws Throwable {
+        System.out.println("Sleeping for " + sleepTime + " at " + LocalTime.now());
+
+        // The background task deleting notifications from Mongo db runs every 60 seconds,
+        // so 60 seconds sleep is needed for overhead
+        TimeUnit.SECONDS.sleep(sleepTime);
+
+        System.out.println("Woke up at " + LocalTime.now());
+    }
+
+
+    @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
+    public void has_been_deleted_from_database(String collection, String database) {
+        result = mongoDBHandler.getAllDocuments(database, collection);
+        assertEquals("[]", result.toString());
+    }
+
+
+    // TODO: Test using Inform subscription instead
+    // check mock server has received calls per subscription made?
+    // SCENARIO @TestSubscription
+
+
+    @Given("^Subscription is created$")
+    public void create_subscription() throws IOException {
+        LOGGER.debug("Creating subscription.");
+        subscriptionObject = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
+        LOGGER.debug("Subscription " + subscriptionObject);
+    }
+
+    @When("^Notification is triggered$")
+    public void trigger_notification() throws JSONException, IOException {
+        // Trigger post request to mock server with subscription?
+
+        //TODO: mapNotificationMessage
+        // why null pointer exception on informSubscriber?
+        String url = new JSONObject(subscriptionObject).getString("notificationMeta").replaceAll("^\"|\"$", "");
+        informSubscription.informSubscriber(AGGREGATED_OBJECT_FILE_PATH, new ObjectMapper().readTree(subscriptionObject));
+        System.out.println("Informing subscriber...");
+    }
+
+    @Then("^Verify that request has been made several times$")
+    public void verify_request_has_been_made() {
+        // check mockserver from here
+        System.out.println("Checking mock server ...");
+        // TODO: null pointer exception here?
+        System.out.println("what is this? " + mockServerClient.toString());
+        //HttpRequest[] retrievedRequests = mockServerClient.retrieveRecordedRequests(request());
+        //System.out.println("Mock server client " + mockServerClient.toString());
+        //System.out.println("Received requests " + retrievedRequests.length);
+
+    }
+
     private void setUpMockServer() {
+        int port = SocketUtils.findAvailableTcpPort();
         clientAndServer = ClientAndServer.startClientAndServer(port);
 
         System.out.println("Setting up mockServerClient with port " + port);
         mockServerClient = new MockServerClient(BASE_URL, port);
-
-        System.out.println("mockserver client " + mockServerClient.toString());
 
         // set up expectations on mock server to get calls on this endpoint
         mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
@@ -172,6 +244,7 @@ public class TestTTLSteps extends FunctionalTestBase {
      *      A new BasicDBObject document
      * */
     public BasicDBObject prepareDocument(String fileContent, String fieldName) {
+        int port = SocketUtils.findAvailableTcpPort();
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = dateFormat.format(date);
@@ -185,102 +258,13 @@ public class TestTTLSteps extends FunctionalTestBase {
         document.put(fieldName, date);
 
         //update notification meta with url + port for mockserver
-        document.put("notificationMeta", BASE_URL + port + ENDPOINT);
+        //document.put("notificationMeta", BASE_URL + port + ENDPOINT);
         System.out.println("notification meta: " + document.get("notificationMeta").toString());
 
         System.out.println("Document is ready " + document.toString());
 
         return document;
     }
-
-
-    // START TEST SCENARIOS
-
-    @Given("^\"(.*)\" is prepared with index \"([A-Za-z0-9_]+)\"$")
-    public void prepare_with_index(String fileName, String indexName) {
-
-        try {
-            fileContent = FileUtils.readFileToString(new File(fileName), "utf-8");
-        } catch(IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        // Preparing object with a new fieldname to be used for index
-        dbObject = prepareDocument(fileContent, indexName);
-    }
-
-    @And("^\"([A-Za-z0-9_]+)\" is created in database \"([A-Za-z0-9_]+)\" with index \"([A-Za-z0-9_]+)\"$")
-    public void objects_are_created_in_database(String collection, String database, String indexName) {
-        // setting 1 second TTL on index in db
-        mongoDBHandler.createTTLIndex(database, collection, indexName, 1);
-
-        Boolean isInserted = mongoDBHandler.insertDocument(database, collection, dbObject.toString());
-        assertEquals(true, isInserted);
-
-        result = mongoDBHandler.getAllDocuments(database, collection);
-        assertEquals(false, result.isEmpty());
-    }
-
-    @When("^I sleep for \"([^\"]*)\" seconds")
-    public void i_sleep_for_time(int sleepTime) throws Throwable {
-        System.out.println("Sleeping for " + sleepTime + " at " + LocalTime.now());
-        System.out.println("TTL for notification is " + missedNotificationTTL);
-        System.out.println("TTL for aggregated object is " + aggregatedObjectTTL);
-
-        // The background task deleting notifications from Mongo db runs every 60 seconds
-        TimeUnit.SECONDS.sleep(sleepTime);
-
-        System.out.println("Woke up at " + LocalTime.now());
-    }
-
-    @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
-    public void has_been_deleted_from_database(String collection, String database) {
-        result = mongoDBHandler.getAllDocuments(database, collection);
-        assertEquals("[]", result.toString());
-    }
-
-    @And("^Verify that request has been made several times$")
-    public void verify_request_has_been_made() {
-        // check mockserver from here
-        System.out.println("Checking mock server ...");
-        // TODO: null pointer exception here?
-        HttpRequest[] retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT));
-        System.out.println("Mock server client " + mockServerClient.toString());
-        System.out.println("Received requests " + retrievedRequests.length);
-    }
-
-    // TODO: Test using Inform subscription instead
-    // check mock server has received calls per subscription made?
-    // SCENARIO @TestSubscription
-
-
-    @Given("^Subscription is created$")
-    public void create_subscription() {
-        try {
-            subscriptionObject = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
-            System.out.println("Subscription " + subscriptionObject);
-        } catch(IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
-
-    @When("^Notification is triggered$")
-    public void trigger_notification() {
-        // Trigger post request to mock server with subscription?
-
-        //TODO: mapNotificationMessage
-        // why null pointer exception on informSubscriber?
-        try {
-            String url = new JSONObject(subscriptionObject).getString("notificationMeta").replaceAll("^\"|\"$", "");
-            informSubscription.informSubscriber(AGGREGATED_OBJECT_FILE_PATH, new ObjectMapper().readTree(subscriptionObject));
-            System.out.println("Informing subscriber...");
-        } catch(IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        } catch(JSONException e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
-
 
 
 }

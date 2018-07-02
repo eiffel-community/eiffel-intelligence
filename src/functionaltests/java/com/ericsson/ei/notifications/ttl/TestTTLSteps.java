@@ -128,17 +128,21 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     /**
-     * Retrieve number of requests made to mock server
+     * Get number of requests made to mock server
      * @return receivedRequests
      *      an array of http requests made to mock server
      * */
-    private HttpRequest[] retrieveRequests() {
+    private HttpRequest[] getRequests() {
         // retrieveRecordedRequests from mock server
         // use to compare with in assert
 
         HttpRequest[] receivedRequests = {};
         receivedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT));
+        if (receivedRequests == null) {
+            System.out.println("No received requests");
+        }
         System.out.println("Received requests: " + receivedRequests.length);
+
         return receivedRequests;
     }
 
@@ -223,8 +227,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         System.out.println("TTL for notification is " + missedNotificationTTL);
         System.out.println("TTL for aggregated object is " + aggregatedObjectTTL);
 
-        // The background task deleting notifications from Mongo db runs every 60 seconds,
-        // so 60 seconds sleep is needed for overhead
+        // The background task deleting notifications from Mongo db runs every 60 seconds
         TimeUnit.SECONDS.sleep(sleepTime);
 
         System.out.println("Woke up at " + LocalTime.now());
@@ -241,11 +244,9 @@ public class TestTTLSteps extends FunctionalTestBase {
         // check mockserver from here
         System.out.println("Checking mock server ...");
         // TODO: null pointer exception here?
-        System.out.println("what is this? " + mockServerClient.toString());
-        //HttpRequest[] retrievedRequests = mockServerClient.retrieveRecordedRequests(request());
-        //System.out.println("Mock server client " + mockServerClient.toString());
-        //System.out.println("Received requests " + retrievedRequests.length);
-
+        HttpRequest[] retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT));
+        System.out.println("Mock server client " + mockServerClient.toString());
+        System.out.println("Received requests " + retrievedRequests.length);
     }
 
     // TODO: Test using Inform subscription instead

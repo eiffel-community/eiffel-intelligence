@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -53,8 +52,9 @@ public class QueryControllerImpl implements QueryController {
             JSONArray result = processQueryParams.filterFormParam(new ObjectMapper().readTree(request));
             return new ResponseEntity<>(result.toString(), HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,8 +67,9 @@ public class QueryControllerImpl implements QueryController {
             LOGGER.debug("Final Output : " + result.toString());
             return new ResponseEntity<>(result.toString(), HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

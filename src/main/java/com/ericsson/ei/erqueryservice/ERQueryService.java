@@ -19,6 +19,7 @@ package com.ericsson.ei.erqueryservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,8 +48,10 @@ import java.util.Map;
 @Component
 public class ERQueryService {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ERQueryService.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ERQueryService.class);
+
     private RestOperations rest;
+
     @Getter
     @Value("${er.url}")
     private String url;
@@ -70,16 +73,20 @@ public class ERQueryService {
      * @return ResponseEntity
      */
     public ResponseEntity<String> getEventDataById(String eventId) {
-        final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
-        log.debug("The URL to ER is: " + erUrl);
+        if(StringUtils.isNotBlank(url)) {
+            final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
+            LOGGER.debug("The URL to ER is: " + erUrl);
 
-        final Map<String, String> params = Collections.singletonMap("id", eventId);
-        log.trace("The ID parameter is set");
-        try {
-            final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
-            log.trace("The response is : " + response.toString());
-        } catch (RestClientException e) {
-            log.error("Error occurred while executing REST GET to: " + erUrl + " for " + eventId, e);
+            final Map<String, String> params = Collections.singletonMap("id", eventId);
+            LOGGER.trace("The ID parameter is set");
+            try {
+                final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
+                LOGGER.trace("The response is : " + response.toString());
+            } catch (RestClientException e) {
+                LOGGER.error("Error occurred while executing REST GET to: " + erUrl + " for " + eventId, e);
+            }
+        } else {
+            LOGGER.info("The URL to ER is not provided");
         }
 
         return null;
@@ -108,26 +115,30 @@ public class ERQueryService {
     public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) {
 
-        final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
-        log.debug("The URL to ER is: " + erUrl);
+        if(StringUtils.isNotBlank(url)) {
+            final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
+            LOGGER.debug("The URL to ER is: " + erUrl);
 
-        // Request Body parameters
-        final SearchParameters searchParameters = getSearchParameters(searchOption);
+            // Request Body parameters
+            final SearchParameters searchParameters = getSearchParameters(searchOption);
 
-        // Build query parameters
-        final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limit)
-                .queryParam("levels", levels).queryParam("tree", tree);
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            // Build query parameters
+            final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limit)
+                    .queryParam("levels", levels).queryParam("tree", tree);
+            final HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
-        final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
-        log.debug("The request is : " + uriComponents.toUri().toString());
+            final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
+            final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
+            LOGGER.debug("The request is : " + uriComponents.toUri().toString());
 
-        try {
-            return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
-        } catch (RestClientException e) {
-            log.error("Error occurred while executing REST POST to: " + erUrl + " for\n" + requestEntity, e);
+            try {
+                return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
+            } catch (RestClientException e) {
+                LOGGER.error("Error occurred while executing REST POST to: " + erUrl + " for\n" + requestEntity, e);
+            }
+        } else {
+            LOGGER.info("The URL to ER is not provided");
         }
 
         return null;
@@ -164,6 +175,6 @@ public class ERQueryService {
     @PostConstruct
     public void init() {
         // TODO: is this needed?
-        log.debug("The url parameter is : " + url);
+        LOGGER.debug("The url parameter is : " + url);
     }
 }

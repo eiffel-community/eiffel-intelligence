@@ -13,6 +13,7 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -154,15 +155,10 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        List<String> endpointsToCheck = new ArrayList<String>() {
-            {
-                add(REST_ENDPOINT);
-                add(REST_ENDPOINT_AUTH);
-                add(REST_ENDPOINT_PARAMS);
-                add(REST_ENDPOINT_AUTH_PARAMS);
-            }
-        };
-        assert (allEndpointsGotAtLeastOneCall(endpointsToCheck, 1));
+        List<String> endpointsToCheck = new ArrayList<>(
+                Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH, REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS));
+
+        assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, 1));
         for (String endpoint : endpointsToCheck) {
             assert (requestBodyContainsStatedValues(endpoint));
 
@@ -236,7 +232,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      * @throws JSONException
      * @throws InterruptedException
      */
-    private boolean allEndpointsGotAtLeastOneCall(final List<String> endpoints, int expectedCalls)
+    private boolean allEndpointsGotAtLeastXCalls(final List<String> endpoints, int expectedCalls)
             throws JSONException, InterruptedException {
         List<String> endpointsToCheck = new ArrayList<String>(endpoints);
 

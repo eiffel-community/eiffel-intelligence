@@ -1,0 +1,28 @@
+{
+"EiffelArtifactPublishedEvent_1" : {
+  "data":{"customData":[],"locations":[{"type":"PLAIN","uri":"https://external.example.com/84e9dfe1-09f7-4002-83b9-1aff4b7844a2"}]},
+  "links":[{"target":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2","type":"ARTIFACT"}],
+  "meta":{"id":"cc78087b-dc58-4da6-a009-51cea15bfa46","time":1529405139327,"type":"EiffelArtifactPublishedEvent","version":"1.1.0"}
+},
+"EiffelArtifactPublishedEvent_2" :{
+  "data":{"customData":[],"locations":[{"type":"PLAIN","uri":"https://external.example.com/cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf"}]},
+  "links":[{"target":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf","type":"ARTIFACT"}],
+  "meta":{"id":"d7cf357d-9c05-4b51-84e7-af36b73d42df","time":1529405139330,"type":"EiffelArtifactPublishedEvent","version":"1.1.0"}
+},
+"EiffelCompositionDefinedEvent" :{
+  "data":{"customData":[{"key":"Type","value":"Source"}],"name":"TestCompositionName","version":"TestCompositionVersion"},
+  "links":[{"target":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2","type":"ELEMENT"}, {"target":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf","type":"ELEMENT"}],
+  "meta":{"id":"175f08ff-1e4b-4265-a0d4-36e744297dc3","time":1529405139338,"type":"EiffelCompositionDefinedEvent","version":"1.1.0"}
+},
+"EiffelArtifactPublishedEvent_3" : {
+  "data":{"customData":[],"locations":[{"type":"PLAIN","uri":"https://subdomain.example.com/84e9dfe1-09f7-4002-83b9-1aff4b7844a2"}]},
+  "links":[{"target":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2","type":"ARTIFACT"}],
+  "meta":{"id":"908ff42d-786c-4a45-bf94-b43883d29784","time":1529405139639,"type":"EiffelArtifactPublishedEvent","version":"1.1.0"}
+},
+"EiffelArtifactPublishedEvent_4" :{
+  "data":{"customData":[],"locations":[{"type":"PLAIN","uri":"https://subdomain.example.com/cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf"}]},
+  "links":[{"target":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf","type":"ARTIFACT"}],
+  "meta":{"id":"908ff42d-786c-4a45-bf94-b43883d49784","time":1529405139701,"type":"EiffelArtifactPublishedEvent","version":"1.1.0"}
+}
+
+}

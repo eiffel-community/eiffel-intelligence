@@ -35,7 +35,7 @@ public interface ISubscriptionService {
      * @return
      * @throws SubscriptionNotFoundException
      */
-    List<Subscription> getSubscription() throws SubscriptionNotFoundException;
+    List<Subscription> getSubscriptions() throws SubscriptionNotFoundException;
 
     /**
      * 

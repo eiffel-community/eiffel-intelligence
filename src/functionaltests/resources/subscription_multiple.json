@@ -1,0 +1,153 @@
+[
+  {
+    "subscriptionName": "Subscription_Mail",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "MAIL",
+    "notificationMeta": "example@ericsson.com",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id == 'TC5']"}
+        ]
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Rest_Params_in_Head",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint}",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey" : "",
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id == 'TC5']"}
+        ]
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Rest_Auth_Params_in_Head",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "urlParams": true,
+    "notificationMessageKeyValues" : [
+      {
+        "formkey" : "json",
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
+      },
+      {
+        "formkey" : "Authorization",
+        "formvalue" : "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"
+      }
+    ],
+
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
+        ]
+
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Rest_Params_in_Url",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.params}?parameter1=testCaseExecutions[0].outcome.id&parameter2=testCaseExecutions[0].outcome.conclusion",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
+        ]
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  },
+  {
+    "subscriptionName": "Subscription_Rest_Auth_Params_in_Url",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth.params}?token='TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5'&parameter1=testCaseExecutions[0].outcome.id&parameter2=testCaseExecutions[0].outcome.conclusion",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
+        ]
+
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  }
+]

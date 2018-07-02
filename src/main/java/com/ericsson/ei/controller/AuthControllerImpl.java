@@ -44,13 +44,14 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To check is security enabled", response = String.class)
+    @ApiOperation(value = "To check if security is enabled", response = String.class)
     public ResponseEntity<?> getAuth() {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to check if security is enabled. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -62,8 +63,9 @@ public class AuthControllerImpl implements AuthController {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to log in user. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -72,10 +74,11 @@ public class AuthControllerImpl implements AuthController {
     @ApiOperation(value = "To check backend status", response = String.class)
     public ResponseEntity<?> getCheckStatus() {
         try {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

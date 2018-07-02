@@ -16,31 +16,29 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
-
 @Name
 Feature: TestTTL
 
   #@TestAggregatedObject
   #Scenario: Test time to live for aggregated object
-  #Given "src/functionaltests/resources/AggregatedObject.json" is prepared with index "expTime"
-  #And "aggregated_object" is created in database "eiffel_intelligence" with index "expTime"
-  #When I sleep for "10" seconds
-  #Then "aggregated_objects" has been deleted from "eiffel_intelligence" database
+  #  Given "src/functionaltests/resources/AggregatedObject.json" is prepared with index "expTime"
+  #  And "aggregated_object" is created in database "eiffel_intelligence" with index "expTime"
+  #  When I sleep for "10" seconds
+  #  Then "aggregated_objects" has been deleted from "eiffel_intelligence" database
 
   #@TestMissedNotification
   #Scenario: Test time to live for missed notifications
-  #Given "src/functionaltests/resources/MissedNotification.json" is prepared with index "expTime"
-  #And "Notification" is created in database "MissedNotification" with index "expTime"
-  #When I sleep for "60" seconds
-  #Then "Notification" has been deleted from "MissedNotification" database
-  #And Verify that request has been made several times
+  #  Given "src/functionaltests/resources/MissedNotification.json" is prepared with index "expTime"
+  #  And "Notification" is created in database "MissedNotification" with index "expTime"
+  #  When I sleep for "60" seconds
+  #  Then "Notification" has been deleted from "MissedNotification" database
+  #  And Verify that request has been made several times
 
   @TestSubscription
   Scenario: Test with subscription
-  Given Subscription is created
-  #And "Notification" is created in database "MissedNotification" with index "expTime"
-  #When I sleep for "60" seconds
-  #When Notification is triggered
-  #Then "Notification" has been deleted from "MissedNotification" database
-  And Verify that request has been made several times
-
+  	Given Subscription is created
+  	#And "Notification" is created in database "MissedNotification" with index "expTime"
+  	#When I sleep for "60" seconds
+  	#And Notification is triggered
+  	#Then "Notification" has been deleted from "MissedNotification" database
+  	Then Verify that request has been made several times

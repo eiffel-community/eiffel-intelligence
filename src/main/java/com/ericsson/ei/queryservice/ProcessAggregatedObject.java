@@ -16,9 +16,11 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
@@ -60,11 +62,13 @@ public class ProcessAggregatedObject {
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
-        String condition = "{\"_id\" : \"" + id + "\"}";
-        LOGGER.debug("The condition is : " + condition);
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(id));
+        
+        LOGGER.debug("The condition is : " + query.toString());
         JsonNode jsonCondition = null;
         try {
-            jsonCondition = mapper.readTree(condition);
+            jsonCondition = mapper.readTree(query.toString());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

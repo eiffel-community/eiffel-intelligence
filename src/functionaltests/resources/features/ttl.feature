@@ -19,25 +19,19 @@
 @Name
 Feature: TestTTL
 
-  @TestAggregatedObject
-  Scenario: Test time to live for aggregated object
-    Given "src/functionaltests/resources/AggregatedObject.json" is prepared with index "expTime"
-    And "aggregated_object" is created in database "eiffel_intelligence" with index "expTime"
-    When I sleep for "10" seconds
-    Then "aggregated_objects" has been deleted from "eiffel_intelligence" database
-    And Verify that request has been made several times
-
-  @TestMissedNotification
-  Scenario: Test time to live for missed notifications
-    Given "src/functionaltests/resources/MissedNotification.json" is prepared with index "expTime"
-    And "Notification" is created in database "MissedNotification" with index "expTime"
-    When I sleep for "60" seconds
-    Then "Notification" has been deleted from "MissedNotification" database
-    And Verify that request has been made several times
-
-  @TestSubscription
-  Scenario: Test with subscription
-    Given Subscription is created
+  #@TestTTL
+  #Scenario: Test time to live for missed notification and aggregated object
+    #Given Missed notification is created in database with index "expTime"
+    #And Aggregated object is created in database with index "expTime"
     #When I sleep for "60" seconds
-    And Notification is triggered
-    Then Verify that request has been made once
+    #Then "aggregated_object" has been deleted from "eiffel_intelligence" database
+    #And "Notification" has been deleted from "MissedNotification" database
+
+  @TestNotificationRetries
+  Scenario: Test notification retries
+    Given Subscription is created
+    #And No missed notifications exists in database
+    When I fail to inform subscriber
+    Then Verify that request has been made
+    And Missed notification is in database
+

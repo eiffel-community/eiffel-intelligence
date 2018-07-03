@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
@@ -50,9 +51,7 @@ import static org.mockserver.verify.VerificationTimes.exactly;
 @ContextConfiguration(initializers = TestContextInitializer.class)
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
-    private static String fileContent;
-    private ArrayList<String> result;
-    private BasicDBObject dbObject;
+
 
     //TODO: trying with subscription file...
     private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/SubscriptionObject.json";
@@ -66,12 +65,9 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    // setting up mockserver which will receive requests with these values in
-    // notification meta in missed notification object
     private static final String BASE_URL = "localhost";
     private static final String ENDPOINT = "/missed_notification";
 
-    // TODO: remove the unneeded values from here? only keep ttl values + failattempt
     @Value("${missedNotificationDataBaseName}")
     private String missedNotificationDatabase;
 
@@ -104,12 +100,12 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Autowired
     private JmesPathInterface jmespath; //why?
 
-    @Before("@TestSubscription")
+    @Before("@TestNotificationRetries") //TODO: byt till TestTTL
     public void beforeScenario() {
         setUpMockServer();
     }
 
-    @After("@TestSubscription")
+    @After("@TestNotificationRetries")
     public void afterScenario() throws IOException {
         LOGGER.debug("Shutting down mock servers.");
         mockServerClient.close();
@@ -118,17 +114,26 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     // START TEST SCENARIOS
 
-    @Given("^\"(.*)\" is prepared with index \"([A-Za-z0-9_]+)\"$")
-    public void prepare_with_index(String fileName, String indexName) throws IOException {
-        //fileContent = FileUtils.readFileToString(new File(fileName), "utf-8");
+    @Given("^Missed notification is created in database with index \"([A-Za-z0-9_]+)\"$")
+    public void missed_notification_is_created_in_database(String indexName) throws IOException {
+        LOGGER.debug("Starting scenario @TestTTL");
+        missedNotification = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_FILE_PATH), "utf-8");
+        BasicDBObject missedNotificationDocument = prepareDocumentWithIndex(missedNotification, indexName);
+
+        // setting 1 second TTL on index in db
+        mongoDBHandler.createTTLIndex(missedNotificationDatabase, missedNotificationCollectionName, indexName, 1);
+
+        Boolean isInserted = mongoDBHandler.insertDocument(missedNotificationDatabase, missedNotificationCollectionName, missedNotificationDocument.toString());
+        assertEquals(true, isInserted);
+
+        ArrayList<String> result = mongoDBHandler.getAllDocuments(missedNotificationDatabase, missedNotificationCollectionName);
+        assertEquals("Database " + missedNotificationDatabase + " is not empty.", false, result.isEmpty());
     }
 
-    @Given("^\"([A-Za-z0-9_]+)\" is created in database$")
-    public void objects_are_created_in_database(String indexName) throws IOException {
-        // Preparing object with a new fieldname to be used for index
-
+    @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
+    public void aggregated_object_is_created_in_database(String indexName) throws IOException {
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "utf-8");
-        BasicDBObject aggregatedDocument = prepareDocument(aggregatedObject, indexName);
+        BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
 
         // setting 1 second TTL on index in db
         mongoDBHandler.createTTLIndex(aggregationDataBaseName, aggregationCollectionName, indexName, 1);
@@ -136,69 +141,69 @@ public class TestTTLSteps extends FunctionalTestBase {
         Boolean isInserted = mongoDBHandler.insertDocument(aggregationDataBaseName, aggregationCollectionName, aggregatedDocument.toString());
         assertEquals(true, isInserted);
 
-        result = mongoDBHandler.getAllDocuments(aggregationDataBaseName, aggregationCollectionName);
+        ArrayList<String> result = mongoDBHandler.getAllDocuments(aggregationDataBaseName, aggregationCollectionName);
         assertEquals("Database " + aggregationDataBaseName + " is not empty.", false, result.isEmpty());
-        //TODO: make same for missed notification
     }
 
     @When("^I sleep for \"([^\"]*)\" seconds")
     public void i_sleep_for_time(int sleepTime) throws Throwable {
         LOGGER.debug("Sleeping for " + sleepTime + " at " + LocalTime.now());
 
-        // The background task deleting notifications from Mongo db runs every 60 seconds,
-        // so 60 seconds sleep is needed for overhead
+        // The background task deleting notifications from Mongo db runs every 60 seconds
         TimeUnit.SECONDS.sleep(sleepTime);
-
-        LOGGER.debug("Woke up at " + LocalTime.now());
     }
 
 
     @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
     public void has_been_deleted_from_database(String collection, String database) {
-        result = mongoDBHandler.getAllDocuments(database, collection);
+        LOGGER.debug("Checking " + collection + " in " + database);
+        ArrayList<String> result = mongoDBHandler.getAllDocuments(database, collection);
         assertEquals("[]", result.toString());
     }
 
 
-    // TODO: Test using Inform subscription instead
-    // check mock server has received calls per subscription made?
-    // SCENARIO @TestSubscription
+    // SCENARIO @TestNotificationRetries
 
 
     @Given("^Subscription is created$")
     public void create_subscription() throws IOException, JSONException {
-        LOGGER.debug("Creating subscription.");
+        LOGGER.debug("Starting scenario @TestNotificationRetries.");
         subscriptionObject = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
         // replace with port of running mock server
         subscriptionObject = subscriptionObject.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
-
-        LOGGER.debug("Subscription " + subscriptionObject);
-        LOGGER.debug("Notification meta: " + new JSONObject(subscriptionObject).getString("notificationMeta"));
-
     }
 
-    @When("^Notification is triggered$")
-    public void trigger_notification() throws IOException {
-        // Function informSubscriber will perform a POST request with
-        // the notificationmeta as url
+    @Given("^No missed notifications exists in database$")
+    public void no_missed_notifications_exists_in_database() {
+        // drop collection
+    }
 
-        LOGGER.debug(subscriptionObject);
+    @When("^I fail to inform subscriber$")
+    public void trigger_notification() throws IOException {
+        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "utf-8");
         informSubscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionObject));
     }
 
-    @Then("^Verify that request has been made several times$")
+    @Then("^Verify that request has been made$")
     public void verify_request_has_been_made() throws JSONException {
-        // check that mock server has received requests with 'notification' meta endpoint
-        // exactly 1 time because failattempt is set to 1
-
         String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
         JSONArray requests = new JSONArray(retrievedRequests);
+        LOGGER.debug("Requests made: " + requests.toString());
+
+        // expect 2 requests made because failattempt is set to 1
         assertEquals(1, requests.length());
 
         //TODO: wait?
         mockServerClient.verify(request().withPath(ENDPOINT), exactly(1));
+    }
 
+    @Then("^Missed notification is in database$")
+    public void missed_notification_is_in_database() {
+        // check mongo DB contains missed_notification after failing post requests
+        ArrayList<String> result = mongoDBHandler.getAllDocuments(missedNotificationDatabase, missedNotificationCollectionName);
+        int size = result.size();
+        LOGGER.debug("Size of result" + size); // check arraylist only contains one element?
     }
 
 
@@ -212,10 +217,8 @@ public class TestTTLSteps extends FunctionalTestBase {
 
         // set up expectations on mock server to get calls on this endpoint
         mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
-                .respond(HttpResponse.response().withStatusCode(200)); // change to status_ok?
+                .respond(HttpResponse.response().withStatusCode(HttpStatus.NO_CONTENT.value()));
     }
-
-
 
     /**
      * Add a fieldname of date-type to be used as index in database
@@ -226,7 +229,7 @@ public class TestTTLSteps extends FunctionalTestBase {
      * @return
      *      A new BasicDBObject document
      * */
-    public BasicDBObject prepareDocument(String fileContent, String fieldName) {
+    private BasicDBObject prepareDocumentWithIndex(String fileContent, String fieldName) {
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = dateFormat.format(date);
@@ -239,12 +242,6 @@ public class TestTTLSteps extends FunctionalTestBase {
         document = document.parse(fileContent);
         document.put(fieldName, date);
 
-        LOGGER.debug("notification meta: " + document.get("notificationMeta").toString());
-
-        // LOGGER.debug("Document is ready " + document.toString());
-
         return document;
     }
-
-
 }

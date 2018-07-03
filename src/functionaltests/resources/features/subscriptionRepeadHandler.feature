@@ -20,20 +20,15 @@
 Feature: Test Subscription Repeat Handler
 
   @tag1
-  Scenario: Subscription should only match Aggregated Object only one time
-    Given Subscription that will match this Aggregated Object
-    When  Publish events on MessageBus
-    Then  Subscription should only match Aggregated Object only one time
-
-  #@tag2
-  Scenario: Remove Subscription via RestApi
-    Given Add subscription to MongoDB
-    When  I make a DELETE request with subscription name "Subscription_Test" to the subscription REST API "/subscriptions/"
-    Then  Check in MongoDB that subscription has been removed
+  Scenario: Subscription match the Aggragated Object one time
+    Given Publish events on Message Bus
+    When  In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId
+    Then  I make a DELETE request with subscription name "Subscription_Test" to the subscription REST API "/subscriptions/"
     And   Check in MongoDB RepeatFlagHandler collection that the subscription has been removed
 
-  #@tag3
-  Scenario: Subscription should match Aggregated Object at least two times
-    Given Subscription that will match this Aggregated Object
-    When  Publish events on MessageBus
-    Then  Subscription should match Aggregated Object at least two times
+  #@tag2
+  Scenario: Subscription match the Aggragated Object at least two time
+    Given Publish events on Message Bus
+    When  In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId at least two times
+    Then  I make a DELETE request with subscription name "Subscription_Test" to the subscription REST API "/subscriptions/"
+    And   Check in MongoDB RepeatFlagHandler collection that the subscription has been removed

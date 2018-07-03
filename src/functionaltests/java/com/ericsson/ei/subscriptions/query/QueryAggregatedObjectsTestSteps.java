@@ -36,9 +36,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Ignore
 @AutoConfigureMockMvc
-public class FreeStyleQueryTestSteps extends FunctionalTestBase {
+public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FreeStyleQueryTestSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
     
     private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedObject.json";
@@ -75,7 +75,7 @@ public class FreeStyleQueryTestSteps extends FunctionalTestBase {
     
     private ObjectMapper objMapper;
     
-    public FreeStyleQueryTestSteps(){
+    public QueryAggregatedObjectsTestSteps(){
         objMapper = new ObjectMapper();
 
         try {

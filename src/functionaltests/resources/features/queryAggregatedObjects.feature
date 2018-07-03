@@ -1,8 +1,8 @@
 
 @tag
-Feature: FreeStyleQueryTests
+Feature: QueryAggregatedObjectsTestSteps
 
-	Scenario: Test FreeStyleQuery
+	Scenario: Test QueryAggregatedObjectsTestSteps
   	Given Aggregated object is created
     And Missed Notification object is created
     Then Perform valid query on newly created Aggregated object

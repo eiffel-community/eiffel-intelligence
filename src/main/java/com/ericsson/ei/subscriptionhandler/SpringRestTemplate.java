@@ -24,6 +24,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestOperations;
 
 /**
@@ -73,13 +75,19 @@ public class SpringRestTemplate {
                         headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
+        } catch (HttpClientErrorException e) {
+            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta);
+            return HttpStatus.BAD_REQUEST.value();            
+        } catch (HttpServerErrorException e) {
+            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: " + notificationMeta);
+            return HttpStatus.INTERNAL_SERVER_ERROR.value();            
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             try {
                 return Integer.parseInt(e.getMessage());
             } catch (NumberFormatException error) {
                 return HttpStatus.NOT_FOUND.value();
-            }
+            }            
         }
         HttpStatus status = response.getStatusCode();
         LOGGER.debug("The response code after POST is : " + status);

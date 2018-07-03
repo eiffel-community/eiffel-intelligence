@@ -149,7 +149,7 @@ public class InformSubscription {
                 for (int i = 0; i < failAttempt; i++) {
                     result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
                             headerContentMediaType);
-                    LOGGER.debug("After trying for " + (i + 1) + " times, the result is : " + result);
+                    LOGGER.debug("After retrying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }

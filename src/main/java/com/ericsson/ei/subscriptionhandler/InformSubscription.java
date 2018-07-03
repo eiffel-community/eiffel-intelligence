@@ -163,7 +163,7 @@ public class InformSubscription {
                             missedNotificationCollectionName, input);
                     LOGGER.debug("The output of insertion of missed Notification : " + output);
                     if (!output) {
-                        LOGGER.debug("failed to insert the notification into database");
+                        LOGGER.debug("Failed to insert the notification into database");
                     } else
                         LOGGER.debug("Notification saved in the database");
                 }

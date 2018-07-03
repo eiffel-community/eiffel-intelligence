@@ -120,8 +120,8 @@ public class InformSubscription {
                             .toString().replaceAll(REGEX, ""));
                 }
             }
-        } 
-        
+        }
+
         if (notificationMeta.contains("?")) {
             LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
             notificationMeta = reformatNotificationMeta(aggregatedObject, notificationMeta);

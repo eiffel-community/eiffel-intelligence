@@ -13,11 +13,13 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.Format;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 import org.slf4j.Logger;
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.verify.VerificationTimes.exactly;
 
 @Ignore
 @TestPropertySource(properties = {"notification.ttl.value:1", "aggregated.collection.ttlValue:1", "notification.failAttempt:1"})
@@ -53,8 +56,12 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     //TODO: trying with subscription file...
     private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/SubscriptionObject.json";
-    private static String subscriptionObject;
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/AggregatedObject.json";
+    private static final String MISSED_NOTIFICATION_FILE_PATH = "src/functionaltests/resources/MissedNotification.json";
+    private static String subscriptionObject;
+    private static String aggregatedObject;
+    private static String missedNotification;
+
 
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
@@ -99,7 +106,6 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Before("@TestSubscription")
     public void beforeScenario() {
-        LOGGER.debug("Starting up mock server.");
         setUpMockServer();
     }
 
@@ -114,34 +120,36 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Given("^\"(.*)\" is prepared with index \"([A-Za-z0-9_]+)\"$")
     public void prepare_with_index(String fileName, String indexName) throws IOException {
-
-        fileContent = FileUtils.readFileToString(new File(fileName), "utf-8");
-
-        // Preparing object with a new fieldname to be used for index
-        dbObject = prepareDocument(fileContent, indexName);
+        //fileContent = FileUtils.readFileToString(new File(fileName), "utf-8");
     }
 
-    @When("^\"([A-Za-z0-9_]+)\" is created in database \"([A-Za-z0-9_]+)\" with index \"([A-Za-z0-9_]+)\"$")
-    public void objects_are_created_in_database(String collection, String database, String indexName) {
-        // setting 1 second TTL on index in db
-        mongoDBHandler.createTTLIndex(database, collection, indexName, 1);
+    @Given("^\"([A-Za-z0-9_]+)\" is created in database$")
+    public void objects_are_created_in_database(String indexName) throws IOException {
+        // Preparing object with a new fieldname to be used for index
 
-        Boolean isInserted = mongoDBHandler.insertDocument(database, collection, dbObject.toString());
+        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "utf-8");
+        BasicDBObject aggregatedDocument = prepareDocument(aggregatedObject, indexName);
+
+        // setting 1 second TTL on index in db
+        mongoDBHandler.createTTLIndex(aggregationDataBaseName, aggregationCollectionName, indexName, 1);
+
+        Boolean isInserted = mongoDBHandler.insertDocument(aggregationDataBaseName, aggregationCollectionName, aggregatedDocument.toString());
         assertEquals(true, isInserted);
 
-        result = mongoDBHandler.getAllDocuments(database, collection);
-        assertEquals(false, result.isEmpty());
+        result = mongoDBHandler.getAllDocuments(aggregationDataBaseName, aggregationCollectionName);
+        assertEquals("Database " + aggregationDataBaseName + " is not empty.", false, result.isEmpty());
+        //TODO: make same for missed notification
     }
 
     @When("^I sleep for \"([^\"]*)\" seconds")
     public void i_sleep_for_time(int sleepTime) throws Throwable {
-        System.out.println("Sleeping for " + sleepTime + " at " + LocalTime.now());
+        LOGGER.debug("Sleeping for " + sleepTime + " at " + LocalTime.now());
 
         // The background task deleting notifications from Mongo db runs every 60 seconds,
         // so 60 seconds sleep is needed for overhead
         TimeUnit.SECONDS.sleep(sleepTime);
 
-        System.out.println("Woke up at " + LocalTime.now());
+        LOGGER.debug("Woke up at " + LocalTime.now());
     }
 
 
@@ -158,40 +166,48 @@ public class TestTTLSteps extends FunctionalTestBase {
 
 
     @Given("^Subscription is created$")
-    public void create_subscription() throws IOException {
+    public void create_subscription() throws IOException, JSONException {
         LOGGER.debug("Creating subscription.");
         subscriptionObject = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
+
+        // replace with port of running mock server
+        subscriptionObject = subscriptionObject.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
+
         LOGGER.debug("Subscription " + subscriptionObject);
+        LOGGER.debug("Notification meta: " + new JSONObject(subscriptionObject).getString("notificationMeta"));
+
     }
 
     @When("^Notification is triggered$")
-    public void trigger_notification() throws JSONException, IOException {
-        // Trigger post request to mock server with subscription?
+    public void trigger_notification() throws IOException {
+        // Function informSubscriber will perform a POST request with
+        // the notificationmeta as url
 
-        //TODO: mapNotificationMessage
-        // why null pointer exception on informSubscriber?
-        String url = new JSONObject(subscriptionObject).getString("notificationMeta").replaceAll("^\"|\"$", "");
-        informSubscription.informSubscriber(AGGREGATED_OBJECT_FILE_PATH, new ObjectMapper().readTree(subscriptionObject));
-        System.out.println("Informing subscriber...");
+        LOGGER.debug(subscriptionObject);
+        informSubscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionObject));
     }
 
     @Then("^Verify that request has been made several times$")
-    public void verify_request_has_been_made() {
-        // check mockserver from here
-        System.out.println("Checking mock server ...");
-        // TODO: null pointer exception here?
-        System.out.println("what is this? " + mockServerClient.toString());
-        //HttpRequest[] retrievedRequests = mockServerClient.retrieveRecordedRequests(request());
-        //System.out.println("Mock server client " + mockServerClient.toString());
-        //System.out.println("Received requests " + retrievedRequests.length);
+    public void verify_request_has_been_made() throws JSONException {
+        // check that mock server has received requests with 'notification' meta endpoint
+        // exactly 1 time because failattempt is set to 1
+
+        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
+        JSONArray requests = new JSONArray(retrievedRequests);
+        assertEquals(1, requests.length());
+
+        //TODO: wait?
+        mockServerClient.verify(request().withPath(ENDPOINT), exactly(1));
 
     }
 
+
     private void setUpMockServer() {
         int port = SocketUtils.findAvailableTcpPort();
+
         clientAndServer = ClientAndServer.startClientAndServer(port);
 
-        System.out.println("Setting up mockServerClient with port " + port);
+        LOGGER.debug("Setting up mockServerClient with port " + port);
         mockServerClient = new MockServerClient(BASE_URL, port);
 
         // set up expectations on mock server to get calls on this endpoint
@@ -199,39 +215,6 @@ public class TestTTLSteps extends FunctionalTestBase {
                 .respond(HttpResponse.response().withStatusCode(200)); // change to status_ok?
     }
 
-    /**
-     * Get number of requests made to mock server
-     * @return receivedRequests
-     *      an array of http requests made to mock server
-     * */
-    private HttpRequest[] getRequests() {
-        // retrieveRecordedRequests from mock server
-        // use to compare with in assert
-
-        HttpRequest[] receivedRequests = {};
-        receivedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT));
-        if (receivedRequests == null) {
-            System.out.println("No received requests");
-        }
-        System.out.println("Received requests: " + receivedRequests.length);
-
-        return receivedRequests;
-    }
-
-    /**
-     * Build together a multivaluemap containing the formkey and formvalue from
-     * subscription object
-     * This map can not be empty when calling informSubscriber or get a
-     * NullpointerException...
-     *
-     * */
-    private MultiValueMap<String, String> mapNotificationMessage() {
-        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-
-        mapNotificationMessage.add("myKey", "myValue");
-
-        return mapNotificationMessage;
-    }
 
 
     /**
@@ -244,7 +227,6 @@ public class TestTTLSteps extends FunctionalTestBase {
      *      A new BasicDBObject document
      * */
     public BasicDBObject prepareDocument(String fileContent, String fieldName) {
-        int port = SocketUtils.findAvailableTcpPort();
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = dateFormat.format(date);
@@ -257,11 +239,9 @@ public class TestTTLSteps extends FunctionalTestBase {
         document = document.parse(fileContent);
         document.put(fieldName, date);
 
-        //update notification meta with url + port for mockserver
-        //document.put("notificationMeta", BASE_URL + port + ENDPOINT);
-        System.out.println("notification meta: " + document.get("notificationMeta").toString());
+        LOGGER.debug("notification meta: " + document.get("notificationMeta").toString());
 
-        System.out.println("Document is ready " + document.toString());
+        // LOGGER.debug("Document is ready " + document.toString());
 
         return document;
     }

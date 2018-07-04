@@ -31,4 +31,4 @@ Feature: TestTTL
     Given Subscription is created
     When I fail to inform subscriber
     Then Verify that request has been retried
-    And Missed notification is in database
+    And Check missed notification is in database

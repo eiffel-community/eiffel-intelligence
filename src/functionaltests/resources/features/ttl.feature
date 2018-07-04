@@ -29,9 +29,7 @@ Feature: TestTTL
 
   @TestNotificationRetries
   Scenario: Test notification retries
-    Given No missed notifications exists in database
-    And Subscription is created
+    Given Subscription is created
     When I fail to inform subscriber
     Then Verify that request has been retried
     And Missed notification is in database
-

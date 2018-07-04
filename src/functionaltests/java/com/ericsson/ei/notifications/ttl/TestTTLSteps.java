@@ -4,6 +4,7 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.InformSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import cucumber.api.java.After;
@@ -30,6 +31,7 @@ import org.springframework.util.SocketUtils;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
@@ -52,9 +54,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/AggregatedObject.json";
         private static final String MISSED_NOTIFICATION_FILE_PATH = "src/functionaltests/resources/MissedNotification.json";
 
-        private static String subscriptionObject;
-        private static String aggregatedObject;
-        private static String missedNotification;
+        private static JsonNode subscriptionObject;
 
         private MockServerClient mockServerClient;
         private ClientAndServer clientAndServer;
@@ -95,12 +95,10 @@ public class TestTTLSteps extends FunctionalTestBase {
         // START TEST SCENARIOS
 
         @Given("^Missed notification is created in database with index \"([A-Za-z0-9_]+)\"$")
-        public void missed_notification_is_created_in_database(
-            String indexName) throws IOException {
+        public void missed_notification_is_created_in_database(String indexName) throws IOException, ParseException {
             LOGGER.debug("Starting scenario @TestTTL");
-            missedNotification = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_FILE_PATH), "utf-8");
-            BasicDBObject missedNotificationDocument = prepareDocumentWithIndex(missedNotification,
-                    indexName);
+            JsonNode missedNotification = getJSONFromFile(MISSED_NOTIFICATION_FILE_PATH);
+            BasicDBObject missedNotificationDocument = prepareDocumentWithIndex(missedNotification, indexName);
 
             // setting 1 second TTL on index in db
             mongoDBHandler.createTTLIndex(missedNotificationDatabase, missedNotificationCollectionName,
@@ -109,7 +107,7 @@ public class TestTTLSteps extends FunctionalTestBase {
                     .insertDocument(missedNotificationDatabase,
                             missedNotificationCollectionName,
                             missedNotificationDocument.toString());
-            assertEquals(true, isInserted);
+            assertEquals("Failed to create missed notification in database", true, isInserted);
 
             List<String> result = mongoDBHandler.getAllDocuments(missedNotificationDatabase,
                     missedNotificationCollectionName);
@@ -117,9 +115,9 @@ public class TestTTLSteps extends FunctionalTestBase {
         }
 
         @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
-        public void aggregated_object_is_created_in_database(
-            String indexName) throws IOException {
-            aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "utf-8");
+        public void aggregated_object_is_created_in_database(String indexName) throws IOException, ParseException {
+
+            JsonNode aggregatedObject = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
             BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
 
             // setting 1 second TTL on index in db
@@ -127,7 +125,7 @@ public class TestTTLSteps extends FunctionalTestBase {
                     indexName, 1);
             Boolean isInserted = mongoDBHandler.insertDocument(aggregationDataBaseName,
                     aggregationCollectionName, aggregatedDocument.toString());
-            assertEquals(true, isInserted);
+            assertEquals("Failed to create aggregated object in database",true, isInserted);
 
             List<String> result = mongoDBHandler.getAllDocuments(aggregationDataBaseName,
                     aggregationCollectionName);
@@ -146,31 +144,30 @@ public class TestTTLSteps extends FunctionalTestBase {
         public void has_been_deleted_from_database(String collection, String database) {
             LOGGER.debug("Checking " + collection + " in " + database);
             List<String> result = mongoDBHandler.getAllDocuments(database, collection);
-            assertEquals("[]", result.toString());
+            assertEquals("Database is not empty.", true, result.isEmpty());
         }
 
         // SCENARIO @TestNotificationRetries
 
-        @Given("^No missed notifications exists in database$")
-        public void no_missed_notifications_exists_in_database() {
-            mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollectionName);
-        }
-
         @Given("^Subscription is created$")
-        public void create_subscription() throws IOException, JSONException {
+        public void create_subscription_object() throws IOException, JSONException {
             LOGGER.debug("Starting scenario @TestNotificationRetries.");
-            subscriptionObject = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
+            mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollectionName);
+
+            String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
             // replace with port of running mock server
-            subscriptionObject = subscriptionObject.replaceAll("\\{port\\}",
+            subscriptionStr = subscriptionStr.replaceAll("\\{port\\}",
                     String.valueOf(clientAndServer.getPort()));
+
+            subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
+            assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
         }
 
         @When("^I fail to inform subscriber$")
         public void trigger_notification() throws IOException {
-            aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "utf-8");
-            informSubscription.informSubscriber(aggregatedObject, new ObjectMapper()
-                    .readTree(subscriptionObject));
+            JsonNode aggregatedObject = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+            informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
         }
 
         @Then("^Verify that request has been retried")
@@ -213,17 +210,14 @@ public class TestTTLSteps extends FunctionalTestBase {
          * @param fieldName   The name of the field to be inserted
          * @return A new BasicDBObject document
          */
-        private BasicDBObject prepareDocumentWithIndex(String fileContent, String fieldName) {
+        private BasicDBObject prepareDocumentWithIndex(JsonNode fileContent, String fieldName) throws ParseException {
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             String time = dateFormat.format(date);
-            try {
-                    date = dateFormat.parse(time);
-            } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-            }
+            date = dateFormat.parse(time);
+
             BasicDBObject document = new BasicDBObject();
-            document = document.parse(fileContent);
+            document = document.parse(fileContent.toString());
             document.put(fieldName, date);
 
             return document;

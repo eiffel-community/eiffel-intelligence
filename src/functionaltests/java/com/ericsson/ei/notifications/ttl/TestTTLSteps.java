@@ -100,8 +100,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         // START TEST SCENARIOS
 
         @Given("^Missed notification is created in database with index \"([A-Za-z0-9_]+)\"$")
-        public void missed_notification_is_created_in_database(
-                String indexName) throws IOException, ParseException {
+        public void missed_notification_is_created_in_database(String indexName)
+                throws IOException, ParseException {
 
             LOGGER.debug("Starting scenario @TestTTL");
             JsonNode missedNotification = getJSONFromFile(MISSED_NOTIFICATION_FILE_PATH);
@@ -125,8 +125,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         }
 
         @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
-        public void aggregated_object_is_created_in_database(
-                String indexName) throws IOException, ParseException {
+        public void aggregated_object_is_created_in_database(String indexName)
+                throws IOException, ParseException {
 
             JsonNode aggregatedObject = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
             BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
@@ -146,8 +146,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         }
 
         @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
-        public void has_been_deleted_from_database(
-                String collection, String database) throws InterruptedException {
+        public void has_been_deleted_from_database(String collection, String database)
+                throws InterruptedException {
 
             LOGGER.debug("Checking " + collection + " in " + database);
             long maxTime = System.currentTimeMillis() + 60000;
@@ -236,8 +236,8 @@ public class TestTTLSteps extends FunctionalTestBase {
          * @return A new BasicDBObject document
          * @throws ParseException
          */
-        private BasicDBObject prepareDocumentWithIndex(
-                JsonNode fileContent, String fieldName) throws ParseException {
+        private BasicDBObject prepareDocumentWithIndex(JsonNode fileContent, String fieldName)
+                throws ParseException {
 
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

@@ -15,13 +15,12 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,19 +42,19 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 @AutoConfigureMockMvc
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRepeatHandlerSteps.class);
-
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggragatedObject.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
-    private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS = "src/functionaltests/resources/subscriptionRepeatHandler.json";
+    private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerOneMatch.json";
+    private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerTwoMatch.json";
     private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";
 
-    private JSONObject jsonArray;
-    private String subscriptionStr;
+    private JSONObject subscriptionWithOneMatch;
+    private JSONObject subscriptionWithTwoMatch;
+    private String subscriptionStrWithOneMatch;
+    private String subscriptionStrWithTwoMatch;
     private String aggregatedObject;
     private String subscriptionIdMatchedAggrIdObjQuery;
-    private MvcResult result;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Value("${aggregated.collection.name}")
@@ -91,9 +90,11 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Before
     public void init() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
-        subscriptionStr = FileUtils.readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS), "UTF-8");
+        subscriptionStrWithOneMatch = FileUtils.readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
+        subscriptionStrWithTwoMatch = FileUtils.readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "UTF-8");
-        jsonArray = new JSONObject(subscriptionStr);
+        subscriptionWithOneMatch = new JSONObject(subscriptionStrWithOneMatch);
+        subscriptionWithTwoMatch = new JSONObject(subscriptionStrWithTwoMatch);
     }
 
     @Given("^Publish events on Message Bus$")
@@ -109,26 +110,15 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     @When("^In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId$")
     public void in_MongoDb_RepeatFlagHandler_and_subscription_collections_the_subscription_has_matched_the_AggrObjectId() throws IOException {
-        Subscription subscription = mapper.readValue(jsonArray.toString(), Subscription.class);
-        assertTrue(subscriptionService.addSubscription(subscription));
-        String expectedSubscriptionName = subscription.getSubscriptionName();
-        JsonNode subscriptionJson = mapper.readTree(subscriptionStr);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        assertTrue(runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, AGGREGATED_OBJECT_ID));
-        subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
+        processSubscription(subscriptionStrWithOneMatch, subscriptionWithOneMatch);
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
-        String aggregatedObjectId = new JsonParser().parse(resultRepeatFlagHandler.get(0)).getAsJsonObject().get("requirements").getAsJsonObject().get("0").getAsJsonArray().get(0).toString();
-        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", aggregatedObjectId);
+        assertEquals(1, resultRepeatFlagHandler.size());
+        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 0));
     }
 
     @Then("^I make a DELETE request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
-    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name, String subscriptionEndPoint) {
-        try {
-            result = mockMvc.perform(MockMvcRequestBuilders.delete(subscriptionEndPoint + name).accept(MediaType.APPLICATION_JSON)).andReturn();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name, String subscriptionEndPoint) throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete(subscriptionEndPoint + name).accept(MediaType.APPLICATION_JSON)).andReturn();
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
@@ -141,20 +131,11 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     @When("^In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId at least two times$")
     public void in_MongoDb_RepeatFlagHandler_collection_the_subscription_has_matched_the_AggrObjectId_at_least_two_times() throws IOException {
-        Subscription subscription = mapper.readValue(jsonArray.toString(), Subscription.class);
-        assertTrue(subscriptionService.addSubscription(subscription));
-        String expectedSubscriptionName = subscription.getSubscriptionName();
-        JsonNode subscriptionJson = mapper.readTree(subscriptionStr);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        assertTrue(runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, AGGREGATED_OBJECT_ID));
-        subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
+        processSubscription(subscriptionStrWithTwoMatch, subscriptionWithTwoMatch);
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection, subscriptionIdMatchedAggrIdObjQuery);
-        String aggregatedObjectId = new JsonParser().parse(resultRepeatFlagHandler.get(0)).getAsJsonObject().get("requirements").getAsJsonObject().get("0").getAsJsonArray().get(0).toString();
-        String aggregatedObjectIdTwo = new JsonParser().parse(resultRepeatFlagHandler.get(0)).getAsJsonObject().get("requirements").getAsJsonObject().get("0").getAsJsonArray().get(0).toString();
         assertEquals(2, resultRepeatFlagHandler.size());
-        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", aggregatedObjectId);
-        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", aggregatedObjectIdTwo);
+        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 0));
+        assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 1));
     }
 
     @Override
@@ -163,5 +144,23 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         eventNames.add("event_EiffelTestCaseFinishedEvent_2");
         eventNames.add("event_EiffelActivityFinishedEvent");
         return eventNames;
+    }
+
+    private String getAggregatedObjectId(List<String> resultRepeatFlagHandler, int index) {
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObject = parser.parse(resultRepeatFlagHandler.get(index)).getAsJsonObject();
+        JsonObject requirements = jsonObject.get("requirements").getAsJsonObject();
+        return requirements.get(String.valueOf(index)).getAsJsonArray().get(0).toString();
+    }
+
+    private void processSubscription(String subscriptionStrValue, JSONObject subscriptionObject) throws IOException {
+        Subscription subscription = mapper.readValue(subscriptionObject.toString(), Subscription.class);
+        assertTrue(subscriptionService.addSubscription(subscription));
+        String expectedSubscriptionName = subscription.getSubscriptionName();
+        JsonNode subscriptionJson = mapper.readTree(subscriptionStrValue);
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
+        assertTrue(runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, AGGREGATED_OBJECT_ID));
+        subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
     }
 }

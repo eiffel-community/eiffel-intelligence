@@ -179,7 +179,6 @@ public class TestTTLSteps extends FunctionalTestBase {
                     .withPath(ENDPOINT), Format.JSON);
             JSONArray requests = new JSONArray(retrievedRequests);
 
-            //TODO: wait for requests to have been made in travis
             // received requests include number of retries
             assertEquals(2, requests.length());
         }

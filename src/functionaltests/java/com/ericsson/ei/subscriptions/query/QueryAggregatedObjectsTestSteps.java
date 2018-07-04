@@ -2,10 +2,8 @@ package com.ericsson.ei.subscriptions.query;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.List;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
@@ -13,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; 
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -29,10 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.spring.SpringFactory;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; 
 
 @Ignore
 @AutoConfigureMockMvc
@@ -51,9 +46,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     
     @LocalServerPort
     private int port;
-    
-    @Autowired
-    private MongoProperties mongoProperties;
     
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -75,7 +67,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     
     private ObjectMapper objMapper;
     
-    public QueryAggregatedObjectsTestSteps(){
+    public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
 
         try {
@@ -135,7 +127,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         String entryPoint = "/queryAggregatedObject";
         String expectedResponse = "{\"responseEntity\":\"[]\"}";
         
-        LOGGER.debug("Trying a invalid query on /queryAggregatedObject RestApi with invalid documentId: " + invalidDocumentId);
+        LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: " + invalidDocumentId);
         mvcResult = mockMvc.perform(get(entryPoint)
                 .param("ID", invalidDocumentId)
                 .accept(MediaType.APPLICATION_JSON)

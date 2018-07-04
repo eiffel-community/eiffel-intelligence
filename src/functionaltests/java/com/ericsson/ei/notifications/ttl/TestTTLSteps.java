@@ -116,7 +116,6 @@ public class TestTTLSteps extends FunctionalTestBase {
 
         @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
         public void aggregated_object_is_created_in_database(String indexName) throws IOException, ParseException {
-
             JsonNode aggregatedObject = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
             BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
 
@@ -132,18 +131,20 @@ public class TestTTLSteps extends FunctionalTestBase {
             assertEquals("Database " + aggregationDataBaseName + " is not empty.", false, result.isEmpty());
         }
 
-        @When("^I sleep for \"([^\"]*)\" seconds")
-        public void i_sleep_for_time(int sleepTime) throws Throwable {
-            LOGGER.debug("Sleeping for " + sleepTime + " at " + LocalTime.now());
-            // The background task deleting notifications from Mongo DB
-            // runs every 60 seconds
-            TimeUnit.SECONDS.sleep(sleepTime);
-        }
-
         @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
-        public void has_been_deleted_from_database(String collection, String database) {
+        public void has_been_deleted_from_database(String collection, String database) throws InterruptedException {
             LOGGER.debug("Checking " + collection + " in " + database);
-            List<String> result = mongoDBHandler.getAllDocuments(database, collection);
+            long maxTime = System.currentTimeMillis() + 60000;
+            List<String> result = null;
+
+            while(System.currentTimeMillis() < maxTime){
+                result = mongoDBHandler.getAllDocuments(database, collection);
+
+                if (result.isEmpty()) {
+                    break;
+                }
+                TimeUnit.SECONDS.sleep(2);
+            }
             assertEquals("Database is not empty.", true, result.isEmpty());
         }
 

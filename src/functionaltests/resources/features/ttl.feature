@@ -23,7 +23,6 @@ Feature: TestTTL
   Scenario: Test time to live for missed notification and aggregated object
     Given Missed notification is created in database with index "expTime"
     And Aggregated object is created in database with index "expTime"
-    When I sleep for "60" seconds
     Then "aggregated_object" has been deleted from "eiffel_intelligence" database
     And "Notification" has been deleted from "MissedNotification" database
 

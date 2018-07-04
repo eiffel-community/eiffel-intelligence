@@ -87,8 +87,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Autowired
     private RunSubscription runSubscription;
 
-    @Before
-    public void init() throws IOException, JSONException {
+    @Before("@SubscriptionRepeatHandler")
+    public void beforeScenario() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
         subscriptionStrWithOneMatch = FileUtils.readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
         subscriptionStrWithTwoMatch = FileUtils.readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
@@ -146,6 +146,12 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         return eventNames;
     }
 
+    /**
+     * Process list of documents which gotten from RepeatFlagHandler collection
+     * @param resultRepeatFlagHandler list from RepeatFlagHandler collection
+     * @param index
+     * @return value of aggregatedObjectId
+     */
     private String getAggregatedObjectId(List<String> resultRepeatFlagHandler, int index) {
         JsonParser parser = new JsonParser();
         JsonObject jsonObject = parser.parse(resultRepeatFlagHandler.get(index)).getAsJsonObject();
@@ -153,6 +159,12 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         return requirements.get(String.valueOf(index)).getAsJsonArray().get(0).toString();
     }
 
+    /**
+     * Adding subscription to RepeatFlagHandler collection
+     * @param subscriptionStrValue
+     * @param subscriptionObject
+     * @throws IOException
+     */
     private void processSubscription(String subscriptionStrValue, JSONObject subscriptionObject) throws IOException {
         Subscription subscription = mapper.readValue(subscriptionObject.toString(), Subscription.class);
         assertTrue(subscriptionService.addSubscription(subscription));

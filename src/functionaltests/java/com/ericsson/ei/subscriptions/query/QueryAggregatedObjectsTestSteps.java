@@ -2,8 +2,10 @@ package com.ericsson.ei.subscriptions.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.List;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
@@ -17,8 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import com.eclipsesource.json.JsonArray;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +39,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
     
-    private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedObject.json";
+    private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedDocument.json";
     private static final String missedNotificationJsonPath = "src/test/resources/MissedNotification.json";
 
     
@@ -94,10 +97,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Then("^Perform valid query on newly created Aggregated object")
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
-        String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
+        String expectedTestCaseFinishedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c1111";
         String entryPoint = "/queryAggregatedObject";
-        String queryRequest = "{\"id\":\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
-        String documentId = getDocumentIdBasedOnQuery(eiDatabseName, aggrCollectionName, queryRequest);
+        String documentId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         LOGGER.debug("Got AggregateObject actual DocumentId after querying MongoDB: " + documentId);
         mvcResult = mockMvc.perform(get(entryPoint)
                 .param("ID", documentId)
@@ -108,22 +110,21 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                            "\nResponse: " + mvcResult.getResponse().getContentAsString());
         
         JsonNode jsonNodeResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
-        JsonNode responseEntityNode = jsonNodeResult.get("responseEntity");
-        String responseEntityNodeFormatted = responseEntityNode.asText().replace("[", "").replace("]", "");
-        JsonNode responseEntityFormattedJsonNode = new ObjectMapper().readValue(responseEntityNodeFormatted, JsonNode.class);
+        JsonNode responseEntityNode = new ObjectMapper().readValue(jsonNodeResult.get("responseEntity").asText(), JsonNode.class); 
+        String responseEntityFormattedString = responseEntityNode.toString().substring(1, responseEntityNode.toString().length()-1);
         
-        LOGGER.debug("AggregatedObject from Response: " + responseEntityFormattedJsonNode.toString());
-       
-        String actualTestCaseStartedEventId = responseEntityFormattedJsonNode.get("testCaseExecutions").get("testCaseStartedEventId").asText();
+        LOGGER.debug("AggregatedObject from Response: " + responseEntityFormattedString);
+        JsonNode responseEntityFormattedJsonNode = new ObjectMapper().readValue(responseEntityFormattedString, JsonNode.class);
+        String actualTestCaseFinishedEventId = responseEntityFormattedJsonNode.get("aggregatedObject").get("testCaseExecutions").get(0).get("testCaseFinishedEventId").asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
-        assertEquals("Failed to compare actual Aggregated Object:\n" + expectedTestCaseStartedEventId
-                + "\nwith expected Aggregated Object:\n" + actualTestCaseStartedEventId,
-                expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
+        assertEquals("Failed to compare actual Aggregated Object:\n" + expectedTestCaseFinishedEventId
+                + "\nwith expected Aggregated Object:\n" + actualTestCaseFinishedEventId,
+                expectedTestCaseFinishedEventId, actualTestCaseFinishedEventId);
     }
     
     @And("^Perform an invalid query on same Aggregated object$")
     public void perform_invalid_query_on_newly_created_aggregated_object() throws Throwable {
-        String invalidDocumentId = "5b3b4e1cccfbd55e6911dccc";
+        String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         String entryPoint = "/queryAggregatedObject";
         String expectedResponse = "{\"responseEntity\":\"[]\"}";
         

@@ -62,8 +62,7 @@ public class ProcessAggregatedObject {
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
-        BasicDBObject query = new BasicDBObject();
-        query.put("_id", new ObjectId(id));
+        String query = "{\"aggregatedObject.id\": \"" + id + "\"}";
         
         LOGGER.debug("The condition is : " + query.toString());
         JsonNode jsonCondition = null;
@@ -86,7 +85,7 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
-        String condition = "{\"_id\": /.*" + templateName + "/}";
+        String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition is : " + condition);
         return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
     }
@@ -98,7 +97,7 @@ public class ProcessAggregatedObject {
      * @return boolean
      */
     public boolean deleteAggregatedObject(String templateName) {
-        String condition = "{\"_id\": /.*" + templateName + "/}";
+        String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
         LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
         return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
     }

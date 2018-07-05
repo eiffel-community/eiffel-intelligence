@@ -15,49 +15,36 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "msg",
-    "statusCode",
-    "responseEntity"
+    "subscription",
+    "reason"
 })
 public class SubscriptionResponse {
 
-    @JsonProperty("msg")
-    private String msg;
-    @JsonProperty("statusCode")
-    private Integer statusCode;
-    @JsonProperty("responseEntity")
-    private String responseEntity;
+    @JsonProperty("subscription")
+    private String subscription;
+    @JsonProperty("reason")
+    private String reason;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("msg")
-    public String getMsg() {
-        return msg;
+    @JsonProperty("subscription")
+    public String getSubscription() {
+        return subscription;
     }
 
-    @JsonProperty("msg")
-    public void setMsg(String msg) {
-        this.msg = msg;
+    @JsonProperty("subscription")
+    public void setSubscription(String subscription) {
+        this.subscription = subscription;
     }
 
-    @JsonProperty("statusCode")
-    public Integer getStatusCode() {
-        return statusCode;
+    @JsonProperty("reason")
+    public String getReason() {
+        return reason;
     }
 
-    @JsonProperty("statusCode")
-    public void setStatusCode(Integer statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    @JsonProperty("responseEntity")
-    public String getResponseEntity() {
-        return responseEntity;
-    }
-
-    @JsonProperty("responseEntity")
-    public void setResponseEntity(String responseEntity) {
-        this.responseEntity = responseEntity;
+    @JsonProperty("reason")
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     @Override
@@ -77,7 +64,7 @@ public class SubscriptionResponse {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(msg).append(statusCode).append(responseEntity).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(subscription).append(reason).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -89,7 +76,7 @@ public class SubscriptionResponse {
             return false;
         }
         SubscriptionResponse rhs = ((SubscriptionResponse) other);
-        return new EqualsBuilder().append(msg, rhs.msg).append(statusCode, rhs.statusCode).append(responseEntity, rhs.responseEntity).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(subscription, rhs.subscription).append(reason, rhs.reason).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

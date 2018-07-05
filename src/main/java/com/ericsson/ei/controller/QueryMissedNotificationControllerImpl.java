@@ -48,13 +48,21 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      */
     public ResponseEntity<QueryResponse> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
         QueryResponse queryResponse = new QueryResponse();
-        List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
-        queryResponse.setResponseEntity(response.toString());
-        LOGGER.debug("The response is : " + response.toString());
-        if(processMissedNotification.deleteMissedNotification(subscriptionName)) {
-            LOGGER.debug("Missed notification with subscription name " + subscriptionName + " was successfully removed from database");
+        try {
+            List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+            queryResponse.setResponseEntity(response.toString());
+            LOGGER.debug("The response is : " + response.toString());
+            if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
+                LOGGER.debug("Missed notification with subscription name " + subscriptionName + " was successfully removed from database");
+            }
+            return new ResponseEntity<>(queryResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            String errorMessage = "Failed to extract the data from the Missed Notification Object based on subscription name "
+                + subscriptionName + ". Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            queryResponse.setResponseEntity(errorMessage);
+            return new ResponseEntity<>(queryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(queryResponse, HttpStatus.OK);
     }
 
 }

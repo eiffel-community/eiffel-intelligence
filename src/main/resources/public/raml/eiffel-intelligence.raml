@@ -1,6 +1,7 @@
 #%RAML 0.8
   schemas:
     - !include common-schema.raml
+    - !include info_instance-schema.raml
   resourceTypes:
   - standard:
       get?:
@@ -34,3 +35,4 @@
   /download: !include template.raml
   /rules: !include rules.raml
   /auth: !include auth.raml
+  /information: !include instance_info.raml

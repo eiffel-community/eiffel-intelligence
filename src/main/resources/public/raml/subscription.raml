@@ -2,21 +2,25 @@
 
     description: Provides interaction with Subscription resource
     get:
-      description: List the names of all subscriptions      
+      description: Fetches all subscriptions as list.
       responses:
         200:        
           body:
             application/json:
-              schema: subscriptionList
               
     post:
       description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique. 
       body:
         application/json:
           schema: subscriptionList
+      responses:
+        200:
+          body:
+            application/json:
+              schema: subscriptionResponse
 
     put:      
-      description: Modify an existing Subscription. 
+      description: Modify existing Subscriptions.
       body:
         application/json:
           schema: subscriptionList
@@ -24,29 +28,28 @@
         200:        
           body:
             application/json:
-              schema: subscriptionResponse            
+              schema: subscriptionResponse
                 
-    /{subscriptionName}:    
+    /{subscriptionNames}:
       uriParameters:
-        subscriptionName:
-          displayName: SubscriptionName
-          description: |
-            The name of the Subscription for info
-            required: true
-            type: string
+        subscriptionNames:
+          displayName: SubscriptionNames
+          description: The names of the Subscriptions separated by comma.
+          required: true
+          type: string
       
       get:
-        description: Returns the subscription rules for given subscription name. 
+        description: Returns the subscriptions for the given subscription names.
         responses:
           200:        
             body:
               application/json:
-                schema: subscriptionList
-              
-        
-              
+                schema: getSubscriptionResponse
+
+
+
       delete:
-        description: Removes the subscription from the database.
+        description: Removes the subscriptions from the database for the given subscription names.
         responses:
           200:        
             body:

@@ -121,7 +121,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     /**
      * Override this if you have more events that will be registered to event to
-     * object map but it is not visible in the test. For example form upstream
+     * object map but it is not visible in the test. For example from upstream
      * or downstream from event repository
      * 
      * @return

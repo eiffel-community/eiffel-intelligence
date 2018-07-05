@@ -2,15 +2,15 @@ package com.ericsson.ei.subscriptions.query;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.List;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,15 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import com.eclipsesource.json.JsonArray;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.utils.FunctionalTestBase;
 
 
 @Ignore
@@ -54,7 +51,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private MongoDBHandler mongoDBHandler;
     
     @Value("${spring.data.mongodb.database}")
-    private String eiDatabseName;
+    private String eiDatabaseName;
     
     @Value("${aggregated.collection.name}")
     private String aggrCollectionName;
@@ -86,7 +83,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
         LOGGER.debug("Creating aggregated object in MongoDb");
-        assertEquals(true, createDocumentInMongoDb(eiDatabseName, aggrCollectionName, aggrObj));
+        assertEquals(true, createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj));
     }
 
     @Given("^Missed Notification object is created$")
@@ -97,9 +94,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Then("^Perform valid query on newly created Aggregated object")
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
-        String expectedTestCaseFinishedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c1111";
-        String entryPoint = "/queryAggregatedObject";
-        String documentId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+        final String expectedTestCaseFinishedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c1111";
+        final String entryPoint = "/queryAggregatedObject";
+        final String documentId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         LOGGER.debug("Got AggregateObject actual DocumentId after querying MongoDB: " + documentId);
         mvcResult = mockMvc.perform(get(entryPoint)
                 .param("ID", documentId)
@@ -109,13 +106,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + mvcResult.getResponse().getStatus() +
                            "\nResponse: " + mvcResult.getResponse().getContentAsString());
         
-        JsonNode jsonNodeResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
-        JsonNode responseEntityNode = new ObjectMapper().readValue(jsonNodeResult.get("responseEntity").asText(), JsonNode.class); 
-        String responseEntityFormattedString = responseEntityNode.toString().substring(1, responseEntityNode.toString().length()-1);
+        JsonNode jsonNodeResult = objMapper.readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
+        JsonNode responseEntityNode = objMapper.readValue(jsonNodeResult.get("responseEntity").asText(), JsonNode.class); 
+        String responseEntityFormattedString = responseEntityNode.toString().
+                substring(1, responseEntityNode.toString().length()-1);
         
         LOGGER.debug("AggregatedObject from Response: " + responseEntityFormattedString);
-        JsonNode responseEntityFormattedJsonNode = new ObjectMapper().readValue(responseEntityFormattedString, JsonNode.class);
-        String actualTestCaseFinishedEventId = responseEntityFormattedJsonNode.get("aggregatedObject").get("testCaseExecutions").get(0).get("testCaseFinishedEventId").asText();
+        JsonNode responseEntityFormattedJsonNode = objMapper.readValue(responseEntityFormattedString, JsonNode.class);
+        String actualTestCaseFinishedEventId = responseEntityFormattedJsonNode.get("aggregatedObject")
+                .get("testCaseExecutions").get(0).get("testCaseFinishedEventId").asText();
+        
         assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
         assertEquals("Failed to compare actual Aggregated Object:\n" + expectedTestCaseFinishedEventId
                 + "\nwith expected Aggregated Object:\n" + actualTestCaseFinishedEventId,
@@ -124,9 +124,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     
     @And("^Perform an invalid query on same Aggregated object$")
     public void perform_invalid_query_on_newly_created_aggregated_object() throws Throwable {
-        String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
-        String entryPoint = "/queryAggregatedObject";
-        String expectedResponse = "{\"responseEntity\":\"[]\"}";
+        final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
+        final String entryPoint = "/queryAggregatedObject";
+        final String expectedResponse = "{\"responseEntity\":\"[]\"}";
         
         LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: " + invalidDocumentId);
         mvcResult = mockMvc.perform(get(entryPoint)
@@ -148,16 +148,17 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @And("^Perform a query for missed notification$")
     public void perform_a_query_for_missed_notification() throws Throwable {
         
-        String subscriptionName = "Subscription_1";
-        String entryPoint = "/queryMissedNotifications";
-        
-        String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
-
-        
+        final String subscriptionName = "Subscription_1";
+        final String entryPoint = "/queryMissedNotifications";
+        final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
+ 
         LOGGER.debug("Check if MissedNotification and " + subscriptionName + " exist in Database");
-        String queryRequest = "{\"subscriptionName\":\"" + subscriptionName + "\"}";
-        String subscriptionNameCheck = objMapper.readValue(mongoDBHandler.find(missedNotificationDatabaseName, missedNotificationCollectionName, queryRequest).get(0), JsonNode.class).get("subscriptionName").asText();
-        assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",subscriptionName, subscriptionNameCheck);
+        final String queryRequest = "{\"subscriptionName\":\"" + subscriptionName + "\"}";
+        String subscriptionNameCheck = objMapper.readValue(mongoDBHandler
+                .find(missedNotificationDatabaseName, missedNotificationCollectionName, queryRequest).get(0),
+                JsonNode.class).get("subscriptionName").asText();
+        assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",
+                subscriptionName, subscriptionNameCheck);
         
         LOGGER.debug("Trying to query /queryMissedNotifications RestApi with subscriptionName: " + subscriptionName);
         mvcResult = mockMvc.perform(get(entryPoint)
@@ -171,14 +172,15 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + reponseStatusCode +
                 "\nResponse: " + responseAsString);
         
-        JsonNode jsonNodeResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
+        JsonNode jsonNodeResult = objMapper.readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
         JsonNode responseEntityNode = jsonNodeResult.get("responseEntity");
         String responseEntityNodeFormatted = responseEntityNode.asText().replace("[", "").replace("]", "");
-        JsonNode responseEntityFormattedJsonNode = new ObjectMapper().readValue(responseEntityNodeFormatted, JsonNode.class);
+        JsonNode responseEntityFormattedJsonNode = objMapper.readValue(responseEntityNodeFormatted, JsonNode.class);
         
         LOGGER.debug("AggregatedObject from Response: " + responseEntityFormattedJsonNode.toString());
        
-        String actualTestCaseStartedEventId = responseEntityFormattedJsonNode.get("testCaseExecutions").get("testCaseStartedEventId").asText();
+        String actualTestCaseStartedEventId = responseEntityFormattedJsonNode
+                .get("testCaseExecutions").get("testCaseStartedEventId").asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
         assertEquals("Diffences between actual Missed Notification response:\n" + expectedTestCaseStartedEventId
                 + "\nand expected  Missed Notification response:\n" + actualTestCaseStartedEventId,
@@ -188,11 +190,12 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Check missed notification has been returned$")
     public void check_missed_notification_has_been_returned() throws Throwable {
-        String expectedResponse = "{\"responseEntity\":\"[]\"}";
-        String subscriptionName = "Subscription_1";
-        String entryPoint = "/queryMissedNotifications";
+        final String expectedResponse = "{\"responseEntity\":\"[]\"}";
+        final String subscriptionName = "Subscription_1";
+        final String entryPoint = "/queryMissedNotifications";
         
-        LOGGER.debug("Trying to query /queryMissedNotifications RestApi one more time with subscriptionName: " + subscriptionName);
+        LOGGER.debug("Trying to query /queryMissedNotifications RestApi one more time with subscriptionName: "
+                    + subscriptionName);
         mvcResult = mockMvc.perform(get(entryPoint)
                 .param("SubscriptionName", subscriptionName)
                 .accept(MediaType.APPLICATION_JSON)
@@ -209,22 +212,21 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 expectedResponse, responseAsString);
     }
     
+    /*
+     * Method that creates a document in MongoDb database.
+     * 
+     * @param databaseName - Name of the database in MongoDb to use.
+     * @param databaseName - Name of the collection in MongoDb to use.
+     * @param objToBeInserted - Object in string format to be inserted to database.
+     * 
+     * @return boolean - Returns true or false depending if object/document was successfully created in database.
+     * 
+     */
     private boolean createDocumentInMongoDb(String databaseName, String collectionName, String objToBeInserted) {
         LOGGER.debug("Inserting Object to MongoDb.\nDatabase: " + databaseName
                      + "\nCollection: " + collectionName
                      + "\nDocument to be inserted\n: " + objToBeInserted);
         return mongoDBHandler.insertDocument(databaseName, collectionName, objToBeInserted);
     }
-    
-    private String getDocumentIdBasedOnQuery(String dataBaseName, String collectionName, String query) {
-        String result = "";
-        try {
-            JsonNode jsonNodeId = objMapper.readValue(mongoDBHandler.find(dataBaseName, collectionName, query).get(0), JsonNode.class).get("_id");
-            result = jsonNodeId.get("$oid").asText();
-        } catch (IOException e) {
-            LOGGER.error("Failed to read response of MongoDb document query: " + query);
-            e.printStackTrace();
-        }
-        return result;
-    }
+
 }

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import gherkin.deps.com.google.gson.JsonObject;
+import gherkin.deps.com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.junit.Ignore;
@@ -101,7 +103,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * Send Eiffel Events to the waitlist queue. Takes a path to a JSON file
      * containing events and uses getEventNamesToSend to get specific events
      * from that file. getEventNamesToSend needs to be overridden.
-     * 
+     *
      * @param eiffelEventsJsonPath
      *            JSON file containing Eiffel Events
      * @return list of eiffel event IDs
@@ -125,7 +127,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Converts a JSON string into a tree model.
-     * 
+     *
      * @param filePath
      *            path to JSON file
      * @return JsonNode tree model
@@ -139,7 +141,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Verify that events are located in the database collection.
-     * 
+     *
      * @param eventsIdList
      *            list of events IDs
      * @return list of missing events
@@ -160,7 +162,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Checks collection of events against event list.
-     * 
+     *
      * @param checklist
      *            list of event IDs
      * @return list of missing events
@@ -182,7 +184,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Verify that aggregated object contains the expected information.
-     * 
+     *
      * @param arguments
      *            list of arguments to check
      * @return list of missing arguments
@@ -205,7 +207,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Checks that aggregated object contains specified arguments.
-     * 
+     *
      * @param checklist
      *            list of arguments
      * @return list of missing arguments
@@ -222,5 +224,20 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             }
         }
         return checklist;
+    }
+
+    /**
+     * Retrieve a value from a database query result
+     * @param key
+     * @param index
+     * @return String value matching the given key
+     *
+     *  */
+    protected String getValueFromQuery(List<String> databaseQueryResult, String key, int index) {
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index))
+                .getAsJsonObject();
+
+        return jsonObject.get(key).toString();
     }
 }

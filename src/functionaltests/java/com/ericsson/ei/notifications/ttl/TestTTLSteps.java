@@ -12,6 +12,8 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import gherkin.deps.com.google.gson.JsonObject;
+import gherkin.deps.com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,15 +50,18 @@ public class TestTTLSteps extends FunctionalTestBase {
         private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
         private static final String BASE_URL = "localhost";
         private static final String ENDPOINT = "/missed_notification";
+        private static final String SUBSCRIPTION_NAME = "Subscription_1";
+        private static final String AGGREGATED_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+
 
         private static final String SUBSCRIPTION_FILE_PATH =
                 "src/functionaltests/resources/SubscriptionObject.json";
 
         private static final String AGGREGATED_OBJECT_FILE_PATH =
-                "src/functionaltests/resources/AggregatedObject.json";
+                "src/test/resources/AggregatedObject.json";
 
         private static final String MISSED_NOTIFICATION_FILE_PATH =
-                "src/functionaltests/resources/MissedNotification.json";
+                "src/test/resources/MissedNotification.json";
 
         private static JsonNode subscriptionObject;
 
@@ -73,10 +78,10 @@ public class TestTTLSteps extends FunctionalTestBase {
         private String notificationFailAttempt;
 
         @Value("${spring.data.mongodb.database}")
-        private String aggregationDataBase;
+        private String dataBase;
 
         @Value("${aggregated.collection.name}")
-        private String aggregationCollection;
+        private String collection;
 
         @Autowired
         private MongoDBHandler mongoDBHandler;
@@ -118,10 +123,15 @@ public class TestTTLSteps extends FunctionalTestBase {
             assertEquals("Failed to create missed notification in database",
                     true, isInserted);
 
-            List<String> result = mongoDBHandler.getAllDocuments(missedNotificationDatabase,
-                    missedNotificationCollection);
-            assertEquals("Database " + missedNotificationDatabase + " is not empty.",
-                    false, result.isEmpty());
+            //verifying that document exists in mongodb
+            String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
+            List<String> result = mongoDBHandler
+                    .find(missedNotificationDatabase, missedNotificationCollection, condition);
+
+            assertEquals(1, result.size());
+            assertEquals("Could not find a missed notification matching the condition: "
+                            + condition,"\"" + SUBSCRIPTION_NAME + "\"",
+                    getValueFromQuery(result, "subscriptionName",0));
         }
 
         @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
@@ -132,21 +142,22 @@ public class TestTTLSteps extends FunctionalTestBase {
             BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
 
             // setting 1 second TTL on index in db
-            mongoDBHandler.createTTLIndex(aggregationDataBase, aggregationCollection,
+            mongoDBHandler.createTTLIndex(dataBase, collection,
                     indexName, 1);
-            Boolean isInserted = mongoDBHandler.insertDocument(aggregationDataBase,
-                    aggregationCollection, aggregatedDocument.toString());
+            Boolean isInserted = mongoDBHandler.insertDocument(dataBase, collection, aggregatedDocument.toString());
             assertEquals("Failed to create aggregated object in database",
                     true, isInserted);
 
-            List<String> result = mongoDBHandler.getAllDocuments(aggregationDataBase,
-                    aggregationCollection);
-            assertEquals("Database " + aggregationDataBase + " is not empty.",
-                    false, result.isEmpty());
+            //verifying that document exists in mongodb
+            String condition = "{\"id\" : \"" + AGGREGATED_ID + "\"}";
+            List<String> result = mongoDBHandler.find(dataBase, collection, condition);
+            assertEquals(1, result.size());
+            assertEquals("Could not find an aggregated object matching the condition: " + condition,
+                    "\"" + AGGREGATED_ID + "\"", getValueFromQuery(result, "id",0));
         }
 
-        @Then("^\"([^\"]*)\" has been deleted from \"([A-Za-z0-9_]+)\" database$")
-        public void has_been_deleted_from_database(String collection, String database)
+        @Then("^\"([^\"]*)\" document has been deleted from \"([A-Za-z0-9_]+)\" database$")
+        public void document_has_been_deleted_from_database(String collection, String database)
                 throws InterruptedException {
 
             LOGGER.debug("Checking " + collection + " in " + database);
@@ -185,8 +196,8 @@ public class TestTTLSteps extends FunctionalTestBase {
                     .toString().contains("{port}"));
         }
 
-        @When("^I fail to inform subscriber$")
-        public void trigger_notification() throws IOException {
+        @When("^I want to inform subscriber$")
+        public void inform_subscriber() throws IOException {
 
             JsonNode aggregatedObject = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
             informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
@@ -205,11 +216,14 @@ public class TestTTLSteps extends FunctionalTestBase {
 
         @Then("^Check missed notification is in database$")
         public void check_missed_notification_is_in_database() {
+            String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
+            List<String> result = mongoDBHandler.find(missedNotificationDatabase,
+                    missedNotificationCollection, condition);
 
-            List<String> result = mongoDBHandler.getAllDocuments(
-                    missedNotificationDatabase,
-                    missedNotificationCollection);
             assertEquals(1, result.size());
+            assertEquals("Could not find a missed notification matching the condition: "
+                    + condition, "\"" + SUBSCRIPTION_NAME + "\"",
+                    getValueFromQuery(result, "subscriptionName", 0));
         }
 
         /**
@@ -250,4 +264,5 @@ public class TestTTLSteps extends FunctionalTestBase {
 
             return document;
         }
+
 }

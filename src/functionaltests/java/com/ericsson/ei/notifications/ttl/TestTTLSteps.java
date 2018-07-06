@@ -74,9 +74,6 @@ public class TestTTLSteps extends FunctionalTestBase {
         @Value("${missedNotificationCollectionName}")
         private String missedNotificationCollection;
 
-        @Value("${notification.failAttempt}")
-        private String notificationFailAttempt;
-
         @Value("${spring.data.mongodb.database}")
         private String dataBase;
 
@@ -243,7 +240,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         }
 
         /**
-         * Add a fieldname of date-type to be used as index in database
+         * Add a field of date-type to be used as index in database
          *
          * @param fileContent File containing JSON string
          * @param fieldName   The name of the field to be inserted
@@ -264,5 +261,4 @@ public class TestTTLSteps extends FunctionalTestBase {
 
             return document;
         }
-
 }

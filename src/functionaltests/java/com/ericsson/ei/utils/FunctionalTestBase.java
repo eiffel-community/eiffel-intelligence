@@ -20,6 +20,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import gherkin.deps.com.google.gson.JsonObject;
+import gherkin.deps.com.google.gson.JsonParser;
+
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
@@ -211,5 +220,20 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             }
         }
         return checklist;
+    }
+
+    /**
+     * Retrieve a value from a database query result
+     * @param key
+     * @param index
+     * @return String value matching the given key
+     *
+     *  */
+    protected String getValueFromQuery(List<String> databaseQueryResult, String key, int index) {
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index))
+                .getAsJsonObject();
+
+        return jsonObject.get(key).toString();
     }
 }

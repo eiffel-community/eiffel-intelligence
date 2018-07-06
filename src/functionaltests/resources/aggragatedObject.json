@@ -1,0 +1,122 @@
+{
+  "_id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+  "aggregatedObject": {
+    "ongoing": true,
+    "test_suite": [
+      {
+        "test_suite_started_event_id": "v46ef19d-20gb-4d7y-h9fd-8763re6kde47",
+        "test_case": [
+          {
+            "conclusion": "SUCCESSFUL",
+            "ongoing": "false",
+            "test_data": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "version": "42",
+              "uri": "http://tm.company.com/browse/TC-1234/42"
+            },
+            "test_case_started_event_id": "v46ef19d-20ab-4e2y-e9se-8762ae6kde47",
+            "verdict": "PASSED",
+            "description": "Accidentally started a fire in the lab during execution.",
+            "test_case_finished_event_id": "v46ef19d-20fb-4e2k-h9fa-8763ae6ese47",
+            "metrics": [
+              {
+                "name": "myMetric",
+                "value": 5
+              },
+              {
+                "name": "throughput",
+                "value": 8.325
+              },
+              {
+                "name": "somethingElse",
+                "value": "hello"
+              }
+            ],
+            "test_case_triggered_event_id": "v46ef19a-20ga-4d2y-h9fa-8763ae6kde47"
+          },
+          {
+            "conclusion": "SUCCESSFUL",
+            "ongoing": "false",
+            "test_data": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "version": "42",
+              "uri": "http://tm.company.com/browse/TC-1234/42"
+            },
+            "test_case_started_event_id": "v46ef19d-20ab-4d2y-h9fe-87haha6kde47",
+            "verdict": "PASSED",
+            "description": "Accidentally started a fire in the lab during execution.",
+            "test_case_finished_event_id": "v46ef19d-20gb-4c2a-h9fa-8763heheae47",
+            "metrics": [
+              {
+                "name": "myMetric",
+                "value": 5
+              },
+              {
+                "name": "throughput",
+                "value": 8.325
+              },
+              {
+                "name": "somethingElse",
+                "value": "hello"
+              }
+            ],
+            "test_case_triggered_event_id": "v46ef19d-20gb-4d2y-h9fa-87dada6kde47"
+          }
+        ],
+        "test_suite_name": "Pre-release installation and security verification"
+      }
+    ],
+    "activity_triggered_event_id": "b46ef12d-25gb-4d7y-b9fd-8763re66de47",
+    "test_batches": [
+      {
+        "recipes": [
+          {
+            "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0",
+            "constraints": {
+              "environment": {
+                "os": "ubuntu-15.04",
+                "MY_PATH": "/home/lt-worf"
+              },
+              "load": 10000
+            },
+            "testCase": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "uri": "http://tm.company.com/browse/TC-1234"
+            }
+          },
+          {
+            "id": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
+            "constraints": {
+              "environment": {
+                "os": "ubuntu-16.04.1",
+                "MY_PATH": "/home/cpt-picard"
+              },
+              "load": 500
+            },
+            "testCase": {
+              "tracker": "My Test Management System",
+              "id": "TC-1234",
+              "uri": "http://tm.company.com/browse/TC-1234"
+            }
+          }
+        ],
+        "name": "First batch",
+        "priority": 1,
+        "dependencies": [
+          {
+            "dependency": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee1",
+            "dependent": "aaaaaaaa-bbbb-5ccc-addd-eeeeeeeeeee0"
+          }
+        ]
+      }
+    ],
+    "TemplateName": "TEST_EXECUTION_1",
+    "time": 1234567890,
+    "activity_started_event_id": "b46e01ud-25gb-4d7y-b9f6-836fre6yde47",
+    "type": "EiffelActivityTriggeredEvent",
+    "version": "1.0.0"
+  }
+}

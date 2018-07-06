@@ -20,13 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.junit.Ignore;
@@ -45,15 +39,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author evasiba
- *
  */
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class})
 public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
@@ -74,6 +73,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     private String aggregatedCollectionName;
 
     private MongoClient mongoClient;
+
+    @Getter
+    private List<String> eventsIdList;
 
     public int getMongoDbPort() {
         return mongoProperties.getPort();
@@ -101,33 +103,27 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * Send Eiffel Events to the waitlist queue. Takes a path to a JSON file
      * containing events and uses getEventNamesToSend to get specific events
      * from that file. getEventNamesToSend needs to be overridden.
-     * 
-     * @param eiffelEventsJsonPath
-     *            JSON file containing Eiffel Events
+     *
+     * @param eiffelEventsJsonPath JSON file containing Eiffel Events
      * @return list of eiffel event IDs
      * @throws InterruptedException
      * @throws IOException
      */
-    protected List<String> sendEiffelEvents(String eiffelEventsJsonPath) throws InterruptedException, IOException {
+    protected void sendEiffelEvents(String eiffelEventsJsonPath) throws IOException {
+        eventsIdList = new ArrayList<>();
         List<String> eventNames = getEventNamesToSend();
-        List<String> eventsIdList = new ArrayList<>();
-
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
-
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
             rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
-
-        return eventsIdList;
     }
 
     /**
      * Converts a JSON string into a tree model.
-     * 
-     * @param filePath
-     *            path to JSON file
+     *
+     * @param filePath path to JSON file
      * @return JsonNode tree model
      * @throws IOException
      */
@@ -139,39 +135,36 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Verify that events are located in the database collection.
-     * 
-     * @param eventsIdList
-     *            list of events IDs
+     *
+     * @param eventsIdList list of events IDs
      * @return list of missing events
      * @throws InterruptedException
      */
     protected List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
-        List<String> checklist = new ArrayList<String>(eventsIdList);
         long stopTime = System.currentTimeMillis() + 30000;
-        while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
-            checklist = compareSentEventsWithEventsInDB(checklist);
-            if (checklist.isEmpty()) {
+        while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
+            eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
+            if (eventsIdList.isEmpty()) {
                 break;
             }
             TimeUnit.MILLISECONDS.sleep(1000);
         }
-        return checklist;
+        return eventsIdList;
     }
 
     /**
      * Checks collection of events against event list.
-     * 
-     * @param checklist
-     *            list of event IDs
+     *
+     * @param checklist list of event IDs
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
-        List<Document> documents = table.find().into(new ArrayList<Document>());
+        List<Document> documents = table.find().into(new ArrayList<>());
         for (Document document : documents) {
-            for (String expectedID : new ArrayList<String>(checklist)) {
+            for (String expectedID : new ArrayList<>(checklist)) {
                 if (expectedID.equals(document.get("_id").toString())) {
                     checklist.remove(expectedID);
                 }
@@ -182,15 +175,12 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Verify that aggregated object contains the expected information.
-     * 
-     * @param arguments
-     *            list of arguments to check
-     * @return list of missing arguments
+     *
+     * @param checklist list of checklist to check
+     * @return list of missing checklist
      * @throws InterruptedException
      */
-    protected List<String> verifyAggregatedObjectInDB(List<String> arguments) throws InterruptedException {
-        List<String> checklist = new ArrayList<String>(arguments);
-        MongoClient mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+    protected List<String> verifyAggregatedObjectInDB(List<String> checklist) throws InterruptedException {
         long stopTime = System.currentTimeMillis() + 30000;
         while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
             checklist = compareArgumentsWithAggregatedObjectInDB(checklist);
@@ -199,23 +189,22 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             }
             TimeUnit.MILLISECONDS.sleep(1000);
         }
-        mongoClient.close();
         return checklist;
     }
 
     /**
      * Checks that aggregated object contains specified arguments.
-     * 
-     * @param checklist
-     *            list of arguments
+     *
+     * @param checklist list of arguments
      * @return list of missing arguments
      */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
-        List<Document> documents = table.find().into(new ArrayList<Document>());
+        List<Document> documents = table.find().into(new ArrayList<>());
         for (Document document : documents) {
-            for (String expectedValue : new ArrayList<String>(checklist)) {
+            for (String expectedValue : new ArrayList<>(checklist)) {
                 if (document.toString().contains(expectedValue)) {
                     checklist.remove(expectedValue);
                 }

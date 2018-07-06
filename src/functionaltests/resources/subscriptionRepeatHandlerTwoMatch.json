@@ -1,0 +1,33 @@
+{
+  "created": "2017-07-26",
+  "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+  "notificationType": "REST_POST",
+  "restPostBodyMediaType": "application/x-www-form-urlencoded",
+  "notificationMessageKeyValues": [
+    {
+      "formkey": "e",
+      "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}"
+    }
+  ],
+  "repeat": false,
+  "requirements": [
+    {
+      "conditions": [
+        {
+          "jmespath": "ongoing==true"
+        }
+      ],
+      "type": "ARTIFACT_1"
+    },
+    {
+      "conditions": [
+        {
+          "jmespath": "ongoing==true"
+        }
+      ],
+      "type": "ARTIFACT_1"
+    }
+  ],
+  "subscriptionName": "Subscription_Test",
+  "userName": "ABC"
+}

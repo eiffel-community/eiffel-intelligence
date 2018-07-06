@@ -12,8 +12,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import gherkin.deps.com.google.gson.JsonObject;
-import gherkin.deps.com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;

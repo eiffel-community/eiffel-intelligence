@@ -13,7 +13,9 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -78,7 +80,6 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
-    private List<String> eventsIdList;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
 
@@ -118,8 +119,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @When("^I send Eiffel events$")
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("About to send Eiffel events.");
-        eventsIdList = sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        List<String> missingEventIds = verifyEventsInDB(eventsIdList);
+        sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
+        List<String> missingEventIds = verifyEventsInDB(getEventsIdList());
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
@@ -128,7 +129,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
         LOGGER.debug("Checking Aggregated Objects.");
-        List<String> arguments = new ArrayList<String>(eventsIdList);
+        List<String> arguments = new ArrayList<>(getEventsIdList());
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
         List<String> missingArguments = verifyAggregatedObjectInDB(arguments);
@@ -153,10 +154,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        assert (requestBodyContainsStatedValues(REST_ENDPOINT));
-        assert (requestBodyContainsStatedValues(REST_ENDPOINT_AUTH));
-        assert (requestBodyContainsStatedValues(REST_ENDPOINT_PARAMS));
-        assert (requestBodyContainsStatedValues(REST_ENDPOINT_AUTH_PARAMS));
+        List<String> endpointsToCheck = new ArrayList<>(
+                Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH, REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS));
+
+        assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, 1));
+        for (String endpoint : endpointsToCheck) {
+            assert (requestBodyContainsStatedValues(endpoint));
+
+        }
     }
 
     /**
@@ -212,6 +217,35 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         for (String subscriptionName : subscriptionNames) {
             assertTrue(getResult.getResponse().getContentAsString().contains(subscriptionName));
         }
+    }
+
+    /**
+     * Checks that an enpoint got at least the number of calls as expected.
+     * 
+     * @param endpoints
+     *            List of endpoints to check.
+     * @param expectedCalls
+     *            Integer with the least number of calls.
+     * @return true if all endpoints had atleast the number of calls as
+     *         expected.
+     * @throws JSONException
+     * @throws InterruptedException
+     */
+    private boolean allEndpointsGotAtLeastXCalls(final List<String> endpoints, int expectedCalls)
+            throws JSONException, InterruptedException {
+        List<String> endpointsToCheck = new ArrayList<String>(endpoints);
+
+        long stopTime = System.currentTimeMillis() + 30000;
+        while (!endpointsToCheck.isEmpty() && stopTime > System.currentTimeMillis()) {
+            for (String endpoint : endpoints) {
+                String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
+                if ((new JSONArray(restBodyData)).length() >= expectedCalls) {
+                    endpointsToCheck.remove(endpoint);
+                }
+            }
+            TimeUnit.MILLISECONDS.sleep(1000);
+        }
+        return endpointsToCheck.isEmpty();
     }
 
     /**
@@ -289,8 +323,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     /**
      * Replaces tags in the subscription JSON string with valid information.
      * 
-     * @param text  JSON string containing replaceable tags
-     * @return  Processed content
+     * @param text
+     *            JSON string containing replaceable tags
+     * @return Processed content
      */
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");

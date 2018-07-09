@@ -117,8 +117,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .get("testCaseExecutions").get(0).get("testCaseFinishedEventId").asText();
         
         assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
-        assertEquals("Failed to compare actual Aggregated Object:\n" + expectedTestCaseFinishedEventId
-                + "\nwith expected Aggregated Object:\n" + actualTestCaseFinishedEventId,
+        assertEquals("Failed to compare actual Aggregated Object TestCaseFinishedEventId:\n" + actualTestCaseFinishedEventId
+                + "\nwith expected Aggregated Object TestCaseFinishedEventId:\n" + expectedTestCaseFinishedEventId,
                 expectedTestCaseFinishedEventId, actualTestCaseFinishedEventId);
     }
     
@@ -182,8 +182,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         String actualTestCaseStartedEventId = responseEntityFormattedJsonNode
                 .get("testCaseExecutions").get("testCaseStartedEventId").asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
-        assertEquals("Diffences between actual Missed Notification response:\n" + expectedTestCaseStartedEventId
-                + "\nand expected  Missed Notification response:\n" + actualTestCaseStartedEventId,
+        assertEquals("Diffences between actual Missed Notification response TestCaseStartedEventId:\n" + actualTestCaseStartedEventId
+                + "\nand expected  Missed Notification response TestCaseStartedEventId:\n" + expectedTestCaseStartedEventId,
                 expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
         
     }
@@ -216,7 +216,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
      * Method that creates a document in MongoDb database.
      * 
      * @param databaseName - Name of the database in MongoDb to use.
-     * @param databaseName - Name of the collection in MongoDb to use.
+     * @param collectionName - Name of the collection in MongoDb to use.
      * @param objToBeInserted - Object in string format to be inserted to database.
      * 
      * @return boolean - Returns true or false depending if object/document was successfully created in database.

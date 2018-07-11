@@ -33,9 +33,9 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
     
-    private static final String subscriptionTemplateFilePath = "src/main/resources/templates/subscriptionsTemplate.json";
-    private static final String rulesTemplateFilePath = "src/main/resources/templates/rulesTemplate.json";
-    private static final String eventsTemplateFilePath = "src/main/resources/templates/eventsTemplate.json";
+    private static final String SUBSCRIPTIONS_TEMPLATE_FILEPATH = "src/main/resources/templates/subscriptionsTemplate.json";
+    private static final String RULES_TEMPLATE_FILEPATH = "src/main/resources/templates/rulesTemplate.json";
+    private static final String EVENTS_TEMPLATE_FILEPATH = "src/main/resources/templates/eventsTemplate.json";
     
     ObjectMapper objMapper = new ObjectMapper();
     
@@ -68,7 +68,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     
     @And("^Get subscription template file$")
     public void get_subscription_template_file() throws Exception {
-        String expectedSubscriptionTemplateContent = FileUtils.readFileToString(new File(subscriptionTemplateFilePath), "UTF-8");
+        String expectedSubscriptionTemplateContent = FileUtils.readFileToString(new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
         
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/download/subscriptionsTemplate")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -82,7 +82,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     
     @And("^Get rules template file$")
     public void get_rules_template_file() throws Exception {
-        String expectedRulesTemplateContent = FileUtils.readFileToString(new File(rulesTemplateFilePath), "UTF-8");
+        String expectedRulesTemplateContent = FileUtils.readFileToString(new File(RULES_TEMPLATE_FILEPATH), "UTF-8");
         
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -96,7 +96,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     
     @And("^Get event template file$")
     public void get_event_template_file() throws Exception {
-        String expectedEventsTemplateContent = FileUtils.readFileToString(new File(eventsTemplateFilePath), "UTF-8");
+        String expectedEventsTemplateContent = FileUtils.readFileToString(new File(EVENTS_TEMPLATE_FILEPATH), "UTF-8");
         
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate")
                 .accept(MediaType.APPLICATION_JSON_VALUE))

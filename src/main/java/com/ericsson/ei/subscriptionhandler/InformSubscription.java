@@ -120,8 +120,8 @@ public class InformSubscription {
                             .toString().replaceAll(REGEX, ""));
                 }
             }
-        } 
-        
+        }
+
         if (notificationMeta.contains("?")) {
             LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
             notificationMeta = reformatNotificationMeta(aggregatedObject, notificationMeta);
@@ -149,7 +149,7 @@ public class InformSubscription {
                 for (int i = 0; i < failAttempt; i++) {
                     result = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage,
                             headerContentMediaType);
-                    LOGGER.debug("After trying for " + (i + 1) + " times, the result is : " + result);
+                    LOGGER.debug("After retrying for " + (i + 1) + " times, the result is : " + result);
                     if (result == HttpStatus.OK.value())
                         break;
                 }
@@ -163,7 +163,7 @@ public class InformSubscription {
                             missedNotificationCollectionName, input);
                     LOGGER.debug("The output of insertion of missed Notification : " + output);
                     if (!output) {
-                        LOGGER.debug("failed to insert the notification into database");
+                        LOGGER.debug("Failed to insert the notification into database");
                     } else
                         LOGGER.debug("Notification saved in the database");
                 }

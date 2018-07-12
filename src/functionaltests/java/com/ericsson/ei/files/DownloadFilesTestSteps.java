@@ -37,7 +37,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     private static final String RULES_TEMPLATE_FILEPATH = "src/main/resources/templates/rulesTemplate.json";
     private static final String EVENTS_TEMPLATE_FILEPATH = "src/main/resources/templates/eventsTemplate.json";
     
-    ObjectMapper objMapper = new ObjectMapper();
+    private ObjectMapper objMapper = new ObjectMapper();
     
     @Autowired
     private MockMvc mockMvc;

@@ -14,9 +14,14 @@
 package com.ericsson.ei.queryservice;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * This class is responsible to fetch the criterias from both the query
@@ -61,10 +67,10 @@ public class ProcessQueryParams {
         LOGGER.debug("The options is : " + options.toString());
         JSONArray resultAggregatedObject;
         if (options.toString().equals("{}") || options.isNull()) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(new ObjectMapper().readTree(result), databaseName, aggregationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
         LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         return resultAggregatedObject;
@@ -76,23 +82,17 @@ public class ProcessQueryParams {
      *
      * @param request
      * @return JSONArray
+     * @throws IOException 
+     * @throws JsonMappingException 
+     * @throws JsonParseException 
      */
-    public JSONArray filterQueryParam(String request) {
+    public JSONArray filterQueryParam(String request) throws JsonParseException, JsonMappingException, IOException {
         LOGGER.debug("The query string is : " + request);
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode criteria = mapper.createObjectNode();
-        String[] criterias = request.split(",");
-        LOGGER.debug("The query parameters are :");
-        for (String s : criterias) {
-            String[] node = s.split(":");
-            String key = node[0];
-            String value = node[1];
-            LOGGER.debug("The key is : " + key);
-            LOGGER.debug("The value is : " + value);
-            criteria.put(key, value);
-        }
-        LOGGER.debug(criteria.toString());
-        return processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
+        JsonNode criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
+
+        LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
+        return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
 
     @PostConstruct

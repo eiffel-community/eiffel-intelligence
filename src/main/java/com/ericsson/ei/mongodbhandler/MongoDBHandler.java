@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.*;
 import lombok.Setter;
+import springfox.documentation.spring.web.json.Json;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -156,6 +158,7 @@ public class MongoDBHandler {
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
+        
         log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName
                 + "\nwith Condition: " + condition);
 
@@ -163,7 +166,7 @@ public class MongoDBHandler {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 collection.find(BasicDBObject.parse(condition)).forEach((Block<Document>) document -> {
-                    result.add(JSON.serialize(document));
+                    result.add(document.toJson());
                 });
                 if (result.size() != 0) {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
@@ -172,6 +175,9 @@ public class MongoDBHandler {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " documents are not found");
                 }
+            }
+            else {
+                log.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

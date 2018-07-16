@@ -35,12 +35,10 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FreestyleQueryAggregatedObjectsTestSteps.class);
-
     
     private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedDocument.json";
     private static final String missedNotificationJsonPath = "src/test/resources/MissedNotification.json";
 
-    
     @Autowired
     private MockMvc mockMvc;
     private MvcResult mvcResult;
@@ -84,12 +82,6 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
         assertEquals(true, createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj));
     }
 
-    @Given("^Missed Notification2 object is created$")
-    public void missed_notification_object_is_created() throws Throwable {
-        LOGGER.debug("Missed Notification object has been created in MongoDb");
-        assertEquals(true, createDocumentInMongoDb(missedNotificationDatabaseName, missedNotificationCollectionName, missedNotificationObj));
-    }
-
     @Then("^Perform valid freestyle query on newly created Aggregated object$")
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
         final String expectedAggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
@@ -118,7 +110,7 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
                 expectedAggrId, actualAggrObjId);
     }
     
-    @And("^Perform an invalid freesyle query on same Aggregated object$")
+    @And("^Perform an invalid freesyle query on Aggregated object$")
     public void perform_invalid_query_on_newly_created_aggregated_object() throws Throwable {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
         final String entryPoint = "/query";
@@ -139,73 +131,6 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
         assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
         assertEquals("Diffences between actual Aggregated Object:\n" + responseAsString
                 + "\nand expected Aggregated Object:\n" + expectedResponse,
-                expectedResponse, responseAsString);
-    }
-    
-    @And("^Perform a query2 for missed notification$")
-    public void perform_a_query_for_missed_notification() throws Throwable {
-        
-        final String subscriptionName = "Subscription_1";
-        final String entryPoint = "/queryMissedNotifications";
-        final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
- 
-        LOGGER.debug("Check if MissedNotification and " + subscriptionName + " exist in Database");
-        final String queryRequest = "{\"subscriptionName\":\"" + subscriptionName + "\"}";
-        String subscriptionNameCheck = objMapper.readValue(mongoDBHandler
-                .find(missedNotificationDatabaseName, missedNotificationCollectionName, queryRequest).get(0),
-                JsonNode.class).get("subscriptionName").asText();
-        assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",
-                subscriptionName, subscriptionNameCheck);
-        
-        LOGGER.debug("Trying to query /queryMissedNotifications RestApi with subscriptionName: " + subscriptionName);
-        mvcResult = mockMvc.perform(get(entryPoint)
-                .param("SubscriptionName", subscriptionName)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-        
-        String responseAsString = mvcResult.getResponse().getContentAsString();
-        int reponseStatusCode = mvcResult.getResponse().getStatus();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + reponseStatusCode +
-                "\nResponse: " + responseAsString);
-        
-        JsonNode jsonNodeResult = objMapper.readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
-        JsonNode responseEntityNode = jsonNodeResult.get("responseEntity");
-        String responseEntityNodeFormatted = responseEntityNode.asText().replace("[", "").replace("]", "");
-        JsonNode responseEntityFormattedJsonNode = objMapper.readValue(responseEntityNodeFormatted, JsonNode.class);
-        
-        LOGGER.debug("AggregatedObject from Response: " + responseEntityFormattedJsonNode.toString());
-       
-        String actualTestCaseStartedEventId = responseEntityFormattedJsonNode
-                .get("testCaseExecutions").get("testCaseStartedEventId").asText();
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
-        assertEquals("Diffences between actual Missed Notification response TestCaseStartedEventId:\n" + actualTestCaseStartedEventId
-                + "\nand expected  Missed Notification response TestCaseStartedEventId:\n" + expectedTestCaseStartedEventId,
-                expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
-        
-    }
-
-    @And("^Check missed2 notification has been returned$")
-    public void check_missed_notification_has_been_returned() throws Throwable {
-        final String expectedResponse = "{\"responseEntity\":\"[]\"}";
-        final String subscriptionName = "Subscription_1";
-        final String entryPoint = "/queryMissedNotifications";
-        
-        LOGGER.debug("Trying to query /queryMissedNotifications RestApi one more time with subscriptionName: "
-                    + subscriptionName);
-        mvcResult = mockMvc.perform(get(entryPoint)
-                .param("SubscriptionName", subscriptionName)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-        String responseAsString = mvcResult.getResponse().getContentAsString();
-        int reponseStatusCode = mvcResult.getResponse().getStatus();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + reponseStatusCode +
-                "\nResponse: " + responseAsString);
-        
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
-        assertEquals("Diffences between actual Missed Notification response:\n" + responseAsString
-                + "\nand expected  Missed Notification response:\n" + expectedResponse,
                 expectedResponse, responseAsString);
     }
     

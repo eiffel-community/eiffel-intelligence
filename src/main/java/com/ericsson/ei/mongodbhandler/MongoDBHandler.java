@@ -166,7 +166,7 @@ public class MongoDBHandler {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 collection.find(BasicDBObject.parse(condition)).forEach((Block<Document>) document -> {
-                    result.add(document.toJson());
+                    result.add(JSON.serialize(document));
                 });
                 if (result.size() != 0) {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName

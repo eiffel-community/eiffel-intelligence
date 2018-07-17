@@ -86,7 +86,7 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
         final String expectedAggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         final String entryPoint = "/query";
-        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + expectedAggrId + "\"}}";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + expectedAggrId + "\", \"aggregatedObject.gav.groupId\" : \"com.mycompany.myproduct\"}}";
 
         LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + queryAggrObj);
         mvcResult = mockMvc.perform(get(entryPoint)
@@ -114,7 +114,7 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
     public void perform_invalid_query_on_newly_created_aggregated_object() throws Throwable {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
         final String entryPoint = "/query";
-        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\"}}";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }}";
         final String expectedResponse = "[]";
         
         LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
@@ -134,7 +134,7 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
                 expectedResponse, responseAsString);
     }
     
-    /*
+    /**
      * Method that creates a document in MongoDb database.
      * 
      * @param databaseName - Name of the database in MongoDb to use.

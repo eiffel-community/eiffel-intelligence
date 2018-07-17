@@ -82,15 +82,18 @@ public class ProcessQueryParams {
      *
      * @param request
      * @return JSONArray
-     * @throws IOException 
-     * @throws JsonMappingException 
-     * @throws JsonParseException 
      */
-    public JSONArray filterQueryParam(String request) throws JsonParseException, JsonMappingException, IOException {
+    public JSONArray filterQueryParam(String request) {
         LOGGER.debug("The query string is : " + request);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
-
+        JsonNode criteriasJsonNode = null;
+        try {
+            criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
+        }
+        catch (IOException e) {
+            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n" + request);
+            return new JSONArray();
+        }
         LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
         return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }

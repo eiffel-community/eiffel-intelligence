@@ -16,14 +16,6 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.jongo.MongoCursor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -113,9 +105,6 @@ public class ProcessAggregatedObject {
      * @return JSONArray
      */
     public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName, String AggregationCollectionName) {
-        LOGGER.debug("Querying database: " +  AggregationDataBaseName
-                    + "\nand Collection: " + AggregationCollectionName
-                    + "\nwith query: " + request);
         ArrayList<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
         LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.size());
         Iterator<String> allDocumentsItr = allDocuments.iterator();

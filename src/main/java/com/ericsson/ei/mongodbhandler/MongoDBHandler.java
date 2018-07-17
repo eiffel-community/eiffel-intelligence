@@ -159,8 +159,10 @@ public class MongoDBHandler {
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
         
-        log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName
-                + "\nwith Condition: " + condition);
+        log.debug("Find and retrieve data from database."
+                  + "\nDatabase: " + dataBaseName
+                  + "\nCollection: " + collectionName
+                  + "\nCondition/Query: " + condition);
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);

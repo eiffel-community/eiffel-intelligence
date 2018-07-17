@@ -209,7 +209,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 expectedResponse, responseAsString);
     }
     
-    /*
+    /**
      * Method that creates a document in MongoDb database.
      * 
      * @param databaseName - Name of the database in MongoDb to use.

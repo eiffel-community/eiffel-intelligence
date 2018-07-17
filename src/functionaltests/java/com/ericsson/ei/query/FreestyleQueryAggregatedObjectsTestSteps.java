@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
-import org.bson.types.ObjectId;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,7 +35,6 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
     private static final Logger LOGGER = LoggerFactory.getLogger(FreestyleQueryAggregatedObjectsTestSteps.class);
     
     private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedDocument.json";
-    private static final String missedNotificationJsonPath = "src/test/resources/MissedNotification.json";
 
     @Autowired
     private MockMvc mockMvc;

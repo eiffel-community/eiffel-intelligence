@@ -14,13 +14,8 @@
 package com.ericsson.ei.queryservice;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import org.json.JSONArray;
 import org.slf4j.Logger;
@@ -31,7 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * This class is responsible to fetch the criterias from both the query

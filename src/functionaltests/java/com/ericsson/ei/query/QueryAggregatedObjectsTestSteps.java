@@ -1,4 +1,4 @@
-package com.ericsson.ei.subscriptions.query;
+package com.ericsson.ei.query;
 
 import static org.junit.Assert.assertEquals;
 

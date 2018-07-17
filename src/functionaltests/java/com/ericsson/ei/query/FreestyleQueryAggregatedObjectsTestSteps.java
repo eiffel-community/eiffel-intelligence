@@ -1,4 +1,4 @@
-package com.ericsson.ei.subscriptions.query;
+package com.ericsson.ei.query;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,7 +59,6 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
     private String missedNotificationDatabaseName;
 
     private String aggrObj;
-    private String missedNotificationObj;
     
     private ObjectMapper objMapper;
     
@@ -68,7 +67,6 @@ public class FreestyleQueryAggregatedObjectsTestSteps extends FunctionalTestBase
 
         try {
             aggrObj = FileUtils.readFileToString(new File(aggregatedObjJsonPath), "UTF-8");
-            missedNotificationObj = FileUtils.readFileToString(new File(missedNotificationJsonPath), "UTF-8");
 
         } catch (IOException e) {
             LOGGER.error("Failed to open test json files for test. Error message\n: " + e.getMessage());

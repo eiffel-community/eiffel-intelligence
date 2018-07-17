@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,8 +35,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
     
-    private static final String aggregatedObjJsonPath = "src/test/resources/AggregatedDocument.json";
-    private static final String missedNotificationJsonPath = "src/test/resources/MissedNotification.json";
+    private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocument.json";
+    private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
 
     
     @Autowired
@@ -68,8 +67,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         objMapper = new ObjectMapper();
 
         try {
-            aggrObj = FileUtils.readFileToString(new File(aggregatedObjJsonPath), "UTF-8");
-            missedNotificationObj = FileUtils.readFileToString(new File(missedNotificationJsonPath), "UTF-8");
+            aggrObj = FileUtils.readFileToString(new File(AGGREGATED_OBJ_JSON_PATH), "UTF-8");
+            missedNotificationObj = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
 
         } catch (IOException e) {
             LOGGER.error("Failed to open test json files for test. Error message\n: " + e.getMessage());
@@ -89,7 +88,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         assertEquals(true, createDocumentInMongoDb(missedNotificationDatabaseName, missedNotificationCollectionName, missedNotificationObj));
     }
 
-    @Then("^Perform valid query on newly created Aggregated object")
+    @Then("^Perform valid query on created Aggregated object")
     public void perform_valid_query_on_newly_created_aggregated_object() throws Throwable {
         final String expectedTestCaseFinishedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c1111";
         final String entryPoint = "/queryAggregatedObject";
@@ -120,7 +119,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     }
     
     @And("^Perform an invalid query on same Aggregated object$")
-    public void perform_invalid_query_on_newly_created_aggregated_object() throws Throwable {
+    public void perform_invalid_query_on_created_aggregated_object() throws Throwable {
         final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         final String entryPoint = "/queryAggregatedObject";
         final String expectedResponse = "{\"responseEntity\":\"[]\"}";
@@ -134,6 +133,58 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         String responseAsString = mvcResult.getResponse().getContentAsString();
         int reponseStatusCode = mvcResult.getResponse().getStatus();
         LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + reponseStatusCode +
+                "\nResponse: " + responseAsString);
+    
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+        assertEquals("Diffences between actual Aggregated Object:\n" + responseAsString
+                + "\nand expected Aggregated Object:\n" + expectedResponse,
+                expectedResponse, responseAsString);
+    }
+    
+    @And("^Perform valid freestyle query on created Aggregated object$")
+    public void perform_valid_freestyle_query_on_created_aggregated_object() throws Throwable {
+        final String expectedAggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+        final String entryPoint = "/query";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + expectedAggrId + "\", \"aggregatedObject.gav.groupId\" : \"com.mycompany.myproduct\"}}";
+
+        LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + queryAggrObj);
+        mvcResult = mockMvc.perform(get(entryPoint)
+                .param("request", queryAggrObj)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        LOGGER.debug("Response of /query RestApi, Status Code: " + mvcResult.getResponse().getStatus() +
+                           "\nResponse: " + mvcResult.getResponse().getContentAsString());
+        
+        JsonNode jsonNodeResult = objMapper.readValue(mvcResult.getResponse().getContentAsString(), JsonNode.class);
+        JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).get("aggregatedObject").toString(), JsonNode.class); 
+
+        String actualAggrObjId = aggrObjResponse.get("id").asText();
+        LOGGER.debug("AggregatedObject id from Response: " + actualAggrObjId);
+   
+        
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(mvcResult.getResponse().getStatus()));
+        assertEquals("Failed to compare actual Aggregated Object Id:\n" + actualAggrObjId
+                + "\nwith expected Aggregated Object Id:\n" + expectedAggrId,
+                expectedAggrId, actualAggrObjId);
+    }
+    
+    @And("^Perform an invalid freesyle query on Aggregated object$")
+    public void perform_invalid_freestyle_query_on_created_aggregated_object() throws Throwable {
+        final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
+        final String entryPoint = "/query";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }}";
+        final String expectedResponse = "[]";
+        
+        LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
+        mvcResult = mockMvc.perform(get(entryPoint)
+                .param("request", queryAggrObj)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        String responseAsString = mvcResult.getResponse().getContentAsString();
+        int reponseStatusCode = mvcResult.getResponse().getStatus();
+        LOGGER.debug("Response of /query RestApi, Status Code: " + reponseStatusCode +
                 "\nResponse: " + responseAsString);
     
         assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));

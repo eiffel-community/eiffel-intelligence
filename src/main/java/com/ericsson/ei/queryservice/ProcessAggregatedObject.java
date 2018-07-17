@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -105,7 +106,7 @@ public class ProcessAggregatedObject {
      * @return JSONArray
      */
     public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName, String AggregationCollectionName) {
-        ArrayList<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
+        List<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
         LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.size());
         Iterator<String> allDocumentsItr = allDocuments.iterator();
         JSONArray jsonArray = new JSONArray();

@@ -16,7 +16,7 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.controller.QueryControllerImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,10 +61,10 @@ public class ProcessQueryParams {
         LOGGER.debug("The options is : " + options.toString());
         JSONArray resultAggregatedObject;
         if (options.toString().equals("{}") || options.isNull()) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(new ObjectMapper().readTree(result), databaseName, aggregationCollectionName);
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
         LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         return resultAggregatedObject;
@@ -80,19 +80,16 @@ public class ProcessQueryParams {
     public JSONArray filterQueryParam(String request) {
         LOGGER.debug("The query string is : " + request);
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode criteria = mapper.createObjectNode();
-        String[] criterias = request.split(",");
-        LOGGER.debug("The query parameters are :");
-        for (String s : criterias) {
-            String[] node = s.split(":");
-            String key = node[0];
-            String value = node[1];
-            LOGGER.debug("The key is : " + key);
-            LOGGER.debug("The value is : " + value);
-            criteria.put(key, value);
+        JsonNode criteriasJsonNode = null;
+        try {
+            criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
         }
-        LOGGER.debug(criteria.toString());
-        return processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
+        catch (IOException e) {
+            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n" + request);
+            return new JSONArray();
+        }
+        LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
+        return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
 
     @PostConstruct

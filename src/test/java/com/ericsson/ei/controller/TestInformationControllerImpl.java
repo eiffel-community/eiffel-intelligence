@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.controller.info;
+package com.ericsson.ei.controller;
 
 import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
 import org.junit.Test;
@@ -28,8 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = InstanceInfoController.class, secure = false)
-public class TestInstanceInfoControllerImpl {
+@WebMvcTest(value = InformationController.class, secure = false)
+public class TestInformationControllerImpl {
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,7 +37,7 @@ public class TestInstanceInfoControllerImpl {
     private ParseInstanceInfoEI istanceInfo;
 
     @MockBean
-    private InstanceInfoController infoController;
+    private InformationController infoController;
 
     @Test
     public void testResponseStatus() throws Exception {

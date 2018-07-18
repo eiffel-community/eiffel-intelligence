@@ -7,6 +7,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -41,7 +43,7 @@ public class TestConfigs {
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
-        System.setProperty("waitlist.fixedRateResend", "100");
+        System.setProperty("waitlist.fixedRateResend", "3000");
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
@@ -74,6 +76,17 @@ public class TestConfigs {
         }
 
         return null;
+    }
+
+    @Bean
+    void setAuthorization() {
+        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
+        System.setProperty("ldap.enabled", "true");
+        System.setProperty("ldap.url", "ldap://ldap.forumsys.com:389/dc=example,dc=com");
+        System.setProperty("ldap.base.dn", "dc=example,dc=com");
+        System.setProperty("ldap.username", "cn=read-only-admin,dc=example,dc=com");
+        System.setProperty("ldap.password", password);
+        System.setProperty("ldap.user.filter", "uid={0}");
     }
 
     public void createExchange(final String exchangeName, final String queueName) {

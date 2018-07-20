@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.ArrayList;
@@ -26,11 +27,14 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
 
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
+    private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
+    
     @LocalServerPort
     private int port;
     private List<Integer> portList = new ArrayList<Integer>();
@@ -41,11 +45,11 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingAndFailoverSteps.class);
 
-    @Before("@SubscriptionTriggerScenario")
+    @Before("@ScalingAndFailoverScenario")
     public void beforeScenario() {
     }
 
-    @After("@SubscriptionTriggerScenario")
+    @After("@ScalingAndFailoverScenario")
     public void afterScenario() {
     }
 
@@ -83,5 +87,28 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
             MvcResult resultInstance = mockMvcInstance.perform(requestBuilder).andReturn();
             LOGGER.debug("Additional instance {}: {}", i+1, String.valueOf(resultInstance.getResponse().getStatus()));
         }
+    }
+    
+    @When("^\"([0-9]+)\" eiffel events are sent$")
+    public void multiple_eiffel_intelligence_instances(int multiple) throws Exception {
+        LOGGER.debug("About to send Eiffel events");
+        sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
+        List<String> missingEventIds = verifyEventsInDB(getEventsIdList());
+        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+                missingEventIds.size());
+        LOGGER.debug("Eiffel events sent");
+    }
+    
+    /**
+     * Events to send
+     */
+    @Override
+    protected List<String> getEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+        return eventNames;
     }
 }

@@ -22,3 +22,4 @@ Feature: Scaling and Failover test
   @ScalingAndFailoverScenario
   Scenario: Scaling and Failover
     Given "2" additional instances of Eiffel Intelligence
+    When "10" eiffel events are sent

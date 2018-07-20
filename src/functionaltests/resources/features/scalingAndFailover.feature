@@ -21,4 +21,4 @@ Feature: Scaling and Failover test
 
   @ScalingAndFailoverScenario
   Scenario: Scaling and Failover
-    Given two instances of Eiffel Intelligence
+    Given "2" additional instances of Eiffel Intelligence

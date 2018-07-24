@@ -20,6 +20,8 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.mongodb.BasicDBObject;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -81,7 +83,7 @@ public class WaitListStorageHandler {
         return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
-    private String addPropertiesToEvent(String event, RulesObject rulesObject) throws JSONException {
+    private String addPropertiesToEvent(String event, RulesObject rulesObject) {
         String idRule = rulesObject.getIdRule();
         JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -92,10 +94,10 @@ public class WaitListStorageHandler {
         } catch (ParseException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        JSONObject document = new JSONObject()
-            .put("_id", id.textValue())
-            .put("Time", date)
-            .put("Event", event);
+        BasicDBObject document = new BasicDBObject();
+        document.put("_id", id.textValue());
+        document.put("Time", date);
+        document.put("Event", event);
         mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
         return document.toString();
     }

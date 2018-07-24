@@ -81,9 +81,11 @@ public class WaitListWorker {
                 if (idRule != null && !idRule.isEmpty()) {
                     JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
                     if (ids.isArray()) {
-                        LOGGER.debug("[EIFFEL EVENT RESENT] id:" + eventObject.getString("_id") + " time:" + eventObject.getString("Time"));
+                        LOGGER.debug("[EIFFEL EVENT RESENT] id:" + eventObject.getString("_id") + " time:"
+                                + eventObject.getString("Time"));
                         for (final JsonNode idJsonObj : ids) {
-                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
+                                    idJsonObj.textValue());
                             if (!objects.isEmpty()) {
                                 rmqHandler.publishObjectToWaitlistQueue(event);
                             }

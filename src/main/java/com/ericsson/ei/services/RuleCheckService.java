@@ -69,9 +69,11 @@ public class RuleCheckService implements IRuleCheckService {
                 + templateName;
         if (jsonObject.has("meta"))
             jsonObject.getJSONObject("meta").put("id", idTemplateSuffix);
-        for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
-            JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
-            link.put("target", link.getString("target") + "_" + templateName);
+        if (jsonObject.has("links")) {
+            for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
+                JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
+                link.put("target", link.getString("target") + "_" + templateName);
+            }
         }
     }
 }

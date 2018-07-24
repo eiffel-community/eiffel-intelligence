@@ -22,6 +22,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,9 @@ public class EventHandler {
     @Autowired
     DownstreamIdRulesHandler downstreamIdRulesHandler;
     
+    @Autowired
+    Environment environment;
+    
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
@@ -55,6 +59,8 @@ public class EventHandler {
     }
 
     public void eventReceived(byte[] message) {
+        String port = environment.getProperty("local.server.port");
+        System.out.println("Event received on backend with port "+port);
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
         log.info("Event received <" + actualMessage + ">");

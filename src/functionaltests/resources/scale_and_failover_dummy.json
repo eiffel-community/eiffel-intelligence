@@ -1,0 +1,30 @@
+{
+    "meta": {
+        "time": 493812000,
+        "source": {
+            "domainId": "example.domain"
+        },
+        "type": "EiffelArtifactCreatedEvent",
+        "id": "{uuid}",
+        "version": "1.0.0"
+    },
+    "links": [
+        {
+            "target": "72fe056e-2768-41dd-a452-8a79ee58599b",
+            "type": "CAUSE"
+        }
+    ],
+    "data": {
+        "fileInformation": [
+            {
+                "extension": "jar",
+                "classifier": ""
+            }
+        ],
+        "gav": {
+            "version": "0.0.1",
+            "artifactId": "dummy-artifact",
+            "groupId": "com.dummy.group"
+        }
+    }
+}

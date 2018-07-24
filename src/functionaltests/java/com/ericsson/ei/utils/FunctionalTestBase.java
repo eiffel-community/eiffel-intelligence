@@ -61,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class})
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
 public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
@@ -113,7 +113,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * containing events and uses getEventNamesToSend to get specific events
      * from that file. getEventNamesToSend needs to be overridden.
      *
-     * @param eiffelEventsJsonPath JSON file containing Eiffel Events
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
      * @return list of eiffel event IDs
      * @throws InterruptedException
      * @throws IOException
@@ -125,14 +126,25 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
-            rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
+            sendEiffelEvent(eventJson.toString());
         }
+    }
+
+    /**
+     * Send Eiffel Events to the waitlist queue. Takes a Json String containing
+     * a single event.
+     * 
+     * @param eiffelEventJson
+     */
+    protected void sendEiffelEvent(String eiffelEventJson) {
+        rmqHandler.publishObjectToWaitlistQueue(eiffelEventJson);
     }
 
     /**
      * Converts a JSON string into a tree model.
      *
-     * @param filePath path to JSON file
+     * @param filePath
+     *            path to JSON file
      * @return JsonNode tree model
      * @throws IOException
      */
@@ -145,7 +157,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Verify that events are located in the database collection.
      *
-     * @param eventsIdList list of events IDs
+     * @param eventsIdList
+     *            list of events IDs
      * @return list of missing events
      * @throws InterruptedException
      */
@@ -164,7 +177,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Checks collection of events against event list.
      *
-     * @param checklist list of event IDs
+     * @param checklist
+     *            list of event IDs
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
@@ -185,7 +199,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Verify that aggregated object contains the expected information.
      *
-     * @param checklist list of checklist to check
+     * @param checklist
+     *            list of checklist to check
      * @return list of missing checklist
      * @throws InterruptedException
      */
@@ -204,7 +219,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Checks that aggregated object contains specified arguments.
      *
-     * @param checklist list of arguments
+     * @param checklist
+     *            list of arguments
      * @return list of missing arguments
      */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
@@ -224,15 +240,15 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Retrieve a value from a database query result
+     * 
      * @param key
      * @param index
      * @return String value matching the given key
      *
-     *  */
+     */
     protected String getValueFromQuery(List<String> databaseQueryResult, String key, int index) {
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index))
-                .getAsJsonObject();
+        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index)).getAsJsonObject();
 
         return jsonObject.get(key).toString();
     }

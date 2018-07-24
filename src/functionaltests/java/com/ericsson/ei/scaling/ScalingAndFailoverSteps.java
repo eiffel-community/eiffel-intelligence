@@ -1,5 +1,7 @@
 package com.ericsson.ei.scaling;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,22 +20,27 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.MultiOutputStream;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
-
-    private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
+    private static final String EVENT_DUMMY = "src/functionaltests/resources/scale_and_failover_dummy.json";
     
     @LocalServerPort
     private int port;
@@ -43,10 +50,18 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private MockMvc mockMvc;
     private List<MockMvc> mockMvcList = new ArrayList<MockMvc>();
 
+    private int numberOfInstances;
+    ByteArrayOutputStream baos;
+    MultiOutputStream multiOutput;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingAndFailoverSteps.class);
 
     @Before("@ScalingAndFailoverScenario")
     public void beforeScenario() {
+        baos = new ByteArrayOutputStream();
+        multiOutput = new MultiOutputStream(System.out, baos);
+        PrintStream printStream = new PrintStream(multiOutput);
+        System.setOut(printStream);
     }
 
     @After("@ScalingAndFailoverScenario")
@@ -56,12 +71,15 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     @Given("^\"([0-9]+)\" additional instance(.*) of Eiffel Intelligence$")
     public void multiple_eiffel_intelligence_instances(int multiple, String plural) throws Exception {       
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
+        numberOfInstances = multiple + 1;
         
-        for(int i = 0; i < multiple ; i++) {
+        portList.add(this.port);
+        for(int i = 1; i < numberOfInstances ; i++) {
             portList.add(SocketUtils.findAvailableTcpPort());
         }
         
-        for(int i = 0; i < multiple ; i++) {
+        mockMvcList.add(this.mockMvc);
+        for(int i = 1; i < numberOfInstances ; i++) {
             LOGGER.debug("Starting instance on port: {}", portList.get(i));
             SpringApplicationBuilder appBuilder = new SpringApplicationBuilder(App.class);          
             
@@ -73,42 +91,69 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         }
         
         LOGGER.debug("Ports for all available Application instances");
-        LOGGER.debug("Default instance: {}", port);
-        for(int i = 0; i < multiple ; i++) {
-            LOGGER.debug("Additional instance {}: {}", i+1, portList.get(i));
+        for(int i = 0; i < numberOfInstances ; i++) {
+            LOGGER.debug("Instance {}, Port: {}", i+1, portList.get(i));
         }
         
         LOGGER.debug("Testing REST API response code on all available Application instances");
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions").accept(MediaType.APPLICATION_JSON);
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        LOGGER.debug("Default instance: {}", String.valueOf(result.getResponse().getStatus()));
-        for(int i = 0; i < multiple ; i++) {
+        for(int i = 0; i < numberOfInstances ; i++) {
             MockMvc mockMvcInstance = mockMvcList.get(i);
             MvcResult resultInstance = mockMvcInstance.perform(requestBuilder).andReturn();
-            LOGGER.debug("Additional instance {}: {}", i+1, String.valueOf(resultInstance.getResponse().getStatus()));
+            int code = resultInstance.getResponse().getStatus();
+            LOGGER.debug("Instance {}, Code: {}", i+1, code);
+            assertEquals("Bad response code on port " + portList.get(i), 200, code);
         }
+        
     }
     
     @When("^\"([0-9]+)\" eiffel events are sent$")
     public void multiple_eiffel_intelligence_instances(int multiple) throws Exception {
-        LOGGER.debug("About to send Eiffel events");
-        sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        List<String> missingEventIds = verifyEventsInDB(getEventsIdList());
-        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+        LOGGER.debug("{} eiffel events will be sent", multiple);
+        String event = FileUtils.readFileToString(new File(EVENT_DUMMY), "UTF-8");
+        List<String> eventsIdList = new ArrayList<String>();
+        for(int i = 0; i < multiple ; i++) {
+            String uuid = UUID.randomUUID().toString();
+            eventsIdList.add(uuid);
+            String eventWithUUID = event;
+            eventWithUUID = eventWithUUID.replaceAll("\\{uuid\\}", uuid);
+            sendEiffelEvent(eventWithUUID);
+        }
+        List<String> missingEventIds = verifyEventsInDB(eventsIdList);
+        assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0,
                 missingEventIds.size());
-        LOGGER.debug("Eiffel events sent");
+        LOGGER.debug("All eiffel events sent");
     }
     
-    /**
-     * Events to send
-     */
-    @Override
-    protected List<String> getEventNamesToSend() {
-        List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelArtifactCreatedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-        return eventNames;
+    @Then("^event messages are evenly distributed$")
+    public void event_messages_evenly_distributed() throws Exception {
+        List<Integer> messageCount = new ArrayList<Integer>();
+        String consoleLog;
+        int port, index, count;
+        for(int i = 0; i < numberOfInstances ; i++) {
+            consoleLog = baos.toString();
+            port = portList.get(i);
+            index = consoleLog.indexOf("Event received on backend with port "+port);
+            count = 0;
+            while (index != -1) {
+                count++;
+                consoleLog = consoleLog.substring(index + 1);
+                index = consoleLog.indexOf("Event received on backend with port "+port);
+            }
+            messageCount.add(count);
+        }
+        
+        double[] doubleArray = new double[numberOfInstances];
+        for(int i = 0; i < numberOfInstances ; i++) {
+            doubleArray[i] = messageCount.get(i);
+            LOGGER.debug("Instance {}, Port: {}, Message count: {}", i+1, portList.get(i), messageCount.get(i));
+        }
+        
+        DescriptiveStatistics stats = new DescriptiveStatistics(doubleArray);
+        double standardDeviation = stats.getStandardDeviation();
+        double mean = stats.getMean();
+        double coefficientOfVariation = standardDeviation/mean;
+        LOGGER.debug("StandardDeviation: {}, Mean: {}, CV: {}", standardDeviation, mean, coefficientOfVariation);
+        assertEquals("Coefficient of variation is abnormally high", coefficientOfVariation<1, true);
     }
 }

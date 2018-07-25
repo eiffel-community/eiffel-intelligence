@@ -16,14 +16,6 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.jongo.MongoCursor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,6 +26,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -111,19 +105,16 @@ public class ProcessAggregatedObject {
      * @param AggregationCollectionName
      * @return JSONArray
      */
-    public JSONArray processQueryAggregatedObject(JsonNode request, String AggregationDataBaseName, String AggregationCollectionName) {
-        DB db = new MongoClient().getDB(AggregationDataBaseName);
-        Jongo jongo = new Jongo(db);
-        MongoCollection aggObjects = jongo.getCollection(AggregationCollectionName);
-        LOGGER.debug("Successfully connected to AggregatedObject database");
-        MongoCursor<Document> allDocuments = aggObjects.find(request.toString()).as(Document.class);
-        LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.count());
+    public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName, String AggregationCollectionName) {
+        List<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
+        LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.size());
+        Iterator<String> allDocumentsItr = allDocuments.iterator();
         JSONArray jsonArray = new JSONArray();
         JSONObject doc = null;
-        while (allDocuments.hasNext()) {
-            Document temp = allDocuments.next();
+        while (allDocumentsItr.hasNext()) {
+            String temp = allDocumentsItr.next();
             try {
-                doc = new JSONObject(temp.toJson());
+                doc = new JSONObject(temp);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

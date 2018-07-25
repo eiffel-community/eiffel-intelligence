@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.utils.MessageCounter;
 import com.rabbitmq.client.Channel;
 
 @Component
@@ -67,9 +66,7 @@ public class EventHandler {
         //Used in TestScalingAndFailoverRunner test
         if(Boolean.valueOf(System.getProperty("scaling.test"))) {
             String port = environment.getProperty("local.server.port");
-            String property = "ei."+port+".index";
-            int index = Integer.valueOf(System.getProperty(property));
-            MessageCounter.getInstance().addOne(index);
+            System.out.println("Message on port "+port);
         }
     }
 

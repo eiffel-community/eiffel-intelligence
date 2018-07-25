@@ -293,21 +293,7 @@ public class MongoDBHandler {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.MINUTES);
         ListIndexesIterable<Document> indexes = collection.listIndexes();
-     
-//        boolean generateIndex = true;
-//        
-//        for (Document index : indexes) {
-//            String key = index.toString();  //index.containsValue(fieldName+":1")
-//            if (key.contains(fieldName)) {
-//                generateIndex = false;
-//                              
-//            } 
-//        }
-//        if(generateIndex) {
-            collection.createIndex(Indexes.ascending(fieldName), indexOptions);                
-//        }
-        
-       
+        collection.createIndex(Indexes.ascending(fieldName), indexOptions);    
     }
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {

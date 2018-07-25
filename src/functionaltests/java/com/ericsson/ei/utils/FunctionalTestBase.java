@@ -249,10 +249,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     protected int waitListSize() {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-
         MongoCollection<Document> table = db.getCollection(waitlistCollectionName);
         List<Document> documents = table.find().into(new ArrayList<>());
-
         return documents.size();
     }
 

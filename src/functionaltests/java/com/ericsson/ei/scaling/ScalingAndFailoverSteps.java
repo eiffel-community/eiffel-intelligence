@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.MessageCounter;
 import com.ericsson.ei.utils.MultiOutputStream;
 
 import cucumber.api.java.After;
@@ -58,6 +59,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     @Before("@ScalingAndFailoverScenario")
     public void beforeScenario() {
+        System.setProperty("scaling.test","true");
         baos = new ByteArrayOutputStream();
         multiOutput = new MultiOutputStream(System.out, baos);
         PrintStream printStream = new PrintStream(multiOutput);
@@ -69,9 +71,10 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
 
     @Given("^\"([0-9]+)\" additional instance(.*) of Eiffel Intelligence$")
-    public void multiple_eiffel_intelligence_instances(int multiple, String plural) throws Exception {       
+    public void multiple_eiffel_intelligence_instances(int multiple, String plural) throws Exception {
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
         numberOfInstances = multiple + 1;
+        MessageCounter.getInstance().setSize(numberOfInstances);
         
         portList.add(this.port);
         for(int i = 1; i < numberOfInstances ; i++) {
@@ -93,8 +96,10 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         LOGGER.debug("Ports for all available Application instances");
         for(int i = 0; i < numberOfInstances ; i++) {
             LOGGER.debug("Instance {}, Port: {}", i+1, portList.get(i));
+            String property = "ei."+portList.get(i)+".index";
+            System.setProperty(property, ""+i);
         }
-        
+
         LOGGER.debug("Testing REST API response code on all available Application instances");
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions").accept(MediaType.APPLICATION_JSON);
         for(int i = 0; i < numberOfInstances ; i++) {
@@ -104,7 +109,6 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
             LOGGER.debug("Instance {}, Code: {}", i+1, code);
             assertEquals("Bad response code on port " + portList.get(i), 200, code);
         }
-        
     }
     
     @When("^\"([0-9]+)\" eiffel events are sent$")
@@ -126,27 +130,11 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
     
     @Then("^event messages are evenly distributed$")
-    public void event_messages_evenly_distributed() throws Exception {
-        List<Integer> messageCount = new ArrayList<Integer>();
-        String consoleLog;
-        int port, index, count;
-        for(int i = 0; i < numberOfInstances ; i++) {
-            consoleLog = baos.toString();
-            port = portList.get(i);
-            index = consoleLog.indexOf("Event received on backend with port "+port);
-            count = 0;
-            while (index != -1) {
-                count++;
-                consoleLog = consoleLog.substring(index + 1);
-                index = consoleLog.indexOf("Event received on backend with port "+port);
-            }
-            messageCount.add(count);
-        }
-        
+    public void event_messages_evenly_distributed() throws Exception {       
         double[] doubleArray = new double[numberOfInstances];
         for(int i = 0; i < numberOfInstances ; i++) {
-            doubleArray[i] = messageCount.get(i);
-            LOGGER.debug("Instance {}, Port: {}, Message count: {}", i+1, portList.get(i), messageCount.get(i));
+            doubleArray[i] = MessageCounter.getInstance().getCount(i);
+            LOGGER.debug("Port: {}, Message Count: {}", portList.get(i), (int)doubleArray[i]);
         }
         
         DescriptiveStatistics stats = new DescriptiveStatistics(doubleArray);

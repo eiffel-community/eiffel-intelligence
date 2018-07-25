@@ -168,7 +168,7 @@ public class RmqHandler {
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        container.setPrefetchCount(1);
+        container.setPrefetchCount(150);
         return container;
     }
 

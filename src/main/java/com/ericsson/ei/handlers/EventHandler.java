@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.utils.MessageCounter;
 import com.rabbitmq.client.Channel;
 
 @Component
@@ -59,18 +60,17 @@ public class EventHandler {
     }
 
     public void eventReceived(byte[] message) {
-        String port = environment.getProperty("local.server.port");
-        System.out.println("Event received on backend with port "+port);
         log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         String actualMessage = new String(message);
         log.info("Event received <" + actualMessage + ">");
         eventReceived(actualMessage);
-//        if (System.getProperty("flow.test") == "true") {
-//            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-//            int count = Integer.parseInt(countStr);
-//            count++;
-//            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
-//        }
+        //Used in TestScalingAndFailoverRunner test
+        if(Boolean.valueOf(System.getProperty("scaling.test"))) {
+            String port = environment.getProperty("local.server.port");
+            String property = "ei."+port+".index";
+            int index = Integer.valueOf(System.getProperty(property));
+            MessageCounter.getInstance().addOne(index);
+        }
     }
 
     @Async

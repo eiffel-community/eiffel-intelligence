@@ -27,8 +27,9 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-@TestPropertySource(properties = { "threads.corePoolSize= 2", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
-        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 3000"})
+@TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
+        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
+        "logging.level.com.ericsson.ei.waitlist=DEBUG"})
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
@@ -101,12 +102,12 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
                 numberOfThreads += 1;
             }
         }
-        assertEquals(3, numberOfThreads);
+        assertEquals(getEventNamesToSend().size() - queueCapacity, numberOfThreads);
     }
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        TimeUnit.SECONDS.sleep(waitlistTtl + 1);
+        TimeUnit.SECONDS.sleep(waitlistTtl + 10);
         int waitListSize = waitListSize();
         assertEquals(0, waitListSize);
     }

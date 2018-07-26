@@ -27,7 +27,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 2", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
-        "waitlist.collection.ttlValue: 1", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 3000",
+        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 3000",
         "logging.level.root= DEBUG", "logging.level.com.ericsson.ei= DEBUG" })
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
@@ -105,7 +105,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        TimeUnit.MINUTES.sleep(waitlistTtl + 1);
+        TimeUnit.SECONDS.sleep(waitlistTtl + 1);
         int waitListSize = waitListSize();
         assertEquals(0, waitListSize);
     }

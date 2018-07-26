@@ -291,9 +291,8 @@ public class MongoDBHandler {
      */
     public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-        IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.MINUTES);
-        ListIndexesIterable<Document> indexes = collection.listIndexes();
-        collection.createIndex(Indexes.ascending(fieldName), indexOptions);    
+        IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+        collection.createIndex(Indexes.ascending(fieldName), indexOptions);
     }
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {

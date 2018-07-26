@@ -41,20 +41,20 @@ public class SubscriptionRepeatDbHandler {
 
 	private static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionRepeatDbHandler.class);
 
-	
     @Autowired
-    public MongoDBHandler mongoDbHandler;
+    private MongoDBHandler mongoDbHandler;
     
     private ObjectMapper mapper = new ObjectMapper();
     
     @Getter
     @Setter
     @Value("${spring.data.mongodb.database}")
-    public String dataBaseName;
+    private String dataBaseName;
+
     @Getter
     @Setter
     @Value("${subscription.collection.repeatFlagHandlerName}")
-    public String collectionName;
+    private String collectionName;
     
     
     /*
@@ -117,7 +117,7 @@ public class SubscriptionRepeatDbHandler {
 
 			LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
 			boolean result = mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
-			if (result == false) {
+			if (!result) {
 				throw new Exception("Failed to insert the document into database");
 			}
 		}
@@ -146,7 +146,7 @@ public class SubscriptionRepeatDbHandler {
 	}
 
     
-	public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, int requirementId, String aggrObjId) {
+	boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, int requirementId, String aggrObjId) {
 		
 		LOGGER.debug("Checking if AggrObjId: " + aggrObjId + " exist in SubscriptionId: " + subscriptionId + " AggrId matched list.");
 		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";

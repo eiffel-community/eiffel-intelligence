@@ -16,10 +16,7 @@
 */
 package com.ericsson.ei.handlers.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
+import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -28,61 +25,52 @@ import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-
-import java.io.File;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = {App.class})
 public class ObjectHandlerTest {
 
-    final Logger log = (Logger) LoggerFactory.getLogger(ObjectHandlerTest.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ObjectHandlerTest.class);
 
-    private ObjectHandler objHandler = new ObjectHandler();
+    @Autowired
+    private ObjectHandler objHandler;
 
-    private MongodForTestsFactory testsFactory;
-    private MongoClient mongoClient = null;
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
-    private MongoDBHandler mongoDBHandler = new MongoDBHandler();
+    @Autowired
+    private JmesPathInterface jmesPathInterface;
 
-    private JmesPathInterface jmesPathInterface = new JmesPathInterface();
-
-    private SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
+    @Autowired
+    private SubscriptionHandler subscriptionHandler;
 
     private RulesObject rulesObject;
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     private JsonNode rulesJson;
-
     private String dataBaseName = "EventStorageDBbbb";
     private String collectionName = "SampleEvents";
     private String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
-    public void setUpEmbeddedMongo() throws Exception {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
-
-    }
-
     @Before
-    public void init() throws Exception {
-        setUpEmbeddedMongo();
-        mongoDBHandler.setMongoClient(mongoClient);
-        subscriptionHandler.setMongoDBHandler(mongoDBHandler);
+    public void init() {
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);
@@ -90,13 +78,12 @@ public class ObjectHandlerTest {
         objHandler.setCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
         objHandler.setSubscriptionHandler(subscriptionHandler);
-
         try {
             String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             rulesJson = objectmapper.readTree(rulesString);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         rulesObject = new RulesObject(rulesJson);
         assertTrue(objHandler.insertObject(input, rulesObject, event, null));
@@ -106,17 +93,11 @@ public class ObjectHandlerTest {
     public void test() {
         String document = objHandler.findObjectById("eventId");
         JsonNode result = objHandler.getAggregatedObject(document);
-
         assertEquals(input, result.toString());
     }
 
     @After
     public void dropCollection() {
         mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
-
     }
 }

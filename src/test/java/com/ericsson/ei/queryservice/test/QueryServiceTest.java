@@ -13,8 +13,6 @@
 */
 package com.ericsson.ei.queryservice.test;
 
-import static org.junit.Assert.assertEquals;
-
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -23,19 +21,8 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.MongoClient;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
-import org.bson.BsonDocument;
 import org.bson.Document;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,8 +33,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
@@ -76,72 +68,44 @@ public class QueryServiceTest {
     @Autowired
     private ProcessMissedNotification processMissedNotification;
 
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String missedNotificationPath = "src/test/resources/MissedNotification.json";
     private static String aggregatedObject;
     private static String missedNotification;
 
-    private static MongodForTestsFactory testsFactory;
-    static MongoClient mongoClient = null;
-
-    @Autowired
-    private MongoDBHandler mongoDBHandler;
-
-    public static void setUpEmbeddedMongo() throws Exception {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("spring.data.mongodb.port", port);
-
-            aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-            LOG.debug("The aggregatedObject is : " + aggregatedObject);
-            missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
-            LOG.debug("The missedNotification is : " + missedNotification);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
-    }
-
     @BeforeClass
-    public static void init() throws Exception {
-        setUpEmbeddedMongo();
+    public static void init() throws IOException {
+        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+        LOG.debug("The aggregatedObject is : " + aggregatedObject);
+        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath), "UTF-8");
+        LOG.debug("The missedNotification is : " + missedNotification);
     }
 
     @PostConstruct
     public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
-        LOG.debug("Database connected");
         // deleting all documents before inserting
-        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
-                .deleteMany(new BsonDocument());
-        Document missedDocument = Document.parse(missedNotification);
-        Document aggDocument = Document.parse(aggregatedObject);
-        mongoClient.getDatabase(missedNotificationDataBaseName).getCollection(missedNotificationCollectionName)
-                .insertOne(missedDocument);
+        mongoDBHandler.dropCollection(aggregationDataBaseName, aggregationCollectionName);
+        mongoDBHandler.insertDocument(missedNotificationDataBaseName, missedNotificationCollectionName, missedNotification);
         LOG.debug("Document Inserted in missed Notification Database");
-
+        Document aggDocument = Document.parse(aggregatedObject);
         JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
                 aggregatedObject);
-        aggDocument = Document.parse(preparedAggDocument.toString());
-        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
-                .insertOne(aggDocument);
+        mongoDBHandler.insertDocument(aggregationDataBaseName, aggregationCollectionName, preparedAggDocument.toString());
         LOG.debug("Document Inserted in Aggregated Object Database");
     }
 
     @Test
     public void processMissedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(missedNotificationDataBaseName)
-                .getCollection(missedNotificationCollectionName).find();
-        Iterator itr = responseDB.iterator();
+        Iterator itr = mongoDBHandler.getAllDocuments(missedNotificationDataBaseName, missedNotificationCollectionName).iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
         List<String> result = processMissedNotification.processQueryMissedNotification("Subscription_1");
         LOG.debug("The retrieved data is : " + result.toString());
         ObjectNode record = null;
         JsonNode actual = null;
-
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
@@ -157,30 +121,24 @@ public class QueryServiceTest {
 
     @Test
     public void deleteMissedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(missedNotificationDataBaseName)
-            .getCollection(missedNotificationCollectionName).find();
-        Iterator itr = responseDB.iterator();
+        Iterator itr = mongoDBHandler.getAllDocuments(missedNotificationDataBaseName, missedNotificationCollectionName).iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
         boolean removed = processMissedNotification.deleteMissedNotification("Subscription_1");
-        assertEquals(true, removed);
-        Iterable<Document> responseDBAfter = mongoClient.getDatabase(missedNotificationDataBaseName)
-            .getCollection(missedNotificationCollectionName).find();
-        assertEquals(false, responseDBAfter.iterator().hasNext());
+        assertTrue(removed);
+        Iterator responseDBAfter = mongoDBHandler.getAllDocuments(missedNotificationDataBaseName, missedNotificationCollectionName).iterator();
+        assertFalse(responseDBAfter.hasNext());
     }
 
     @Test
     public void processAggregatedObjectTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(aggregationDataBaseName)
-                .getCollection(aggregationCollectionName).find();
-        Iterator itr = responseDB.iterator();
+        Iterator itr = mongoDBHandler.getAllDocuments(aggregationDataBaseName, aggregationCollectionName).iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
-        ArrayList<String> result = processAggregatedObject
+        List<String> result = processAggregatedObject
                 .processQueryAggregatedObject("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         ObjectNode record = null;
         JsonNode actual = null;
-
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
@@ -192,13 +150,5 @@ public class QueryServiceTest {
         }
         LOG.debug("The result is : " + record.toString());
         assertEquals(record.get("aggregatedObject").toString(), actual.toString());
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
     }
 }

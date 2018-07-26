@@ -16,30 +16,26 @@
 */
 package com.ericsson.ei.mongoDBHandler.test;
 
+import com.ericsson.ei.App;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+
 import static org.junit.Assert.assertTrue;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.mongodb.MongoClient;
-
-import java.util.ArrayList;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = {App.class})
 public class MongoDBHandlerTest {
 
-    final Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandlerTest.class);
-
+    @Autowired
     private MongoDBHandler mongoDBHandler;
-
-    private MongodForTestsFactory testsFactory;
-    private MongoClient mongoClient = null;
 
     private String dataBaseName = "EventStorageDBbbb";
     private String collectionName = "SampleEvents";
@@ -47,45 +43,22 @@ public class MongoDBHandlerTest {
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
 
-    public void setUpEmbeddedMongo() throws Exception {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
-    }
-
-    @Before
-    public void init() throws Exception {
-        setUpEmbeddedMongo();
-        mongoDBHandler = new MongoDBHandler();
-        mongoDBHandler.setMongoClient(mongoClient);
+    @PostConstruct
+    public void initMocks() {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, input));
     }
 
     @Test
     public void testGetDocuments() {
-        ArrayList<String> documents = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        List<String> documents = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         assertTrue(documents.size() > 0);
     }
 
     @Test
     public void testGetDocumentsOnCondition() {
-        ArrayList<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
+        List<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
         assertTrue(documents.size() > 0);
     }
-
-    // @Test
-    // TODO fix this test case
-    // public void testGetDocumentOnCondition(){
-    // ArrayList<String> documents =
-    // mongoDBHandler.getDocumentsOnCondition(dataBaseName, collectionName,
-    // condition);
-    // String document = documents.get(0);
-    // assertEquals(document, input);
-    // }
 
     @Test
     public void testUpdateDocument() {
@@ -95,8 +68,5 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        mongoClient.close();
-        testsFactory.shutdown();
-
     }
 }

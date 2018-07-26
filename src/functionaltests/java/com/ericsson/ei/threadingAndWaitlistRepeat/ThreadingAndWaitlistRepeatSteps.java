@@ -27,8 +27,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 2", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
-        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 3000",
-        "logging.level.root= DEBUG", "logging.level.com.ericsson.ei= DEBUG" })
+        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 3000"})
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 

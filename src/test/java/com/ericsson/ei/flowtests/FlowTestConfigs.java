@@ -3,10 +3,9 @@ package com.ericsson.ei.flowtests;
 import com.mongodb.MongoClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-
-import java.io.File;
-import java.io.IOException;
-
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -16,19 +15,16 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-import lombok.Getter;
+import java.io.File;
+import java.io.IOException;
 
 public class FlowTestConfigs {
 
     private AMQPBrokerManager amqpBroker;
     private MongodForTestsFactory testsFactory;
-    private Queue queue = null;
-    private RabbitAdmin admin;
     private ConnectionFactory cf;
 
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
+    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
 
     @Getter
     private Connection conn;
@@ -61,14 +57,13 @@ public class FlowTestConfigs {
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
-
     }
 
     private void setUpEmbeddedMongo() throws IOException {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();  
+            String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -92,18 +87,16 @@ public class FlowTestConfigs {
             mongoClient.close();
         if (testsFactory != null)
             testsFactory.shutdown();
-
     }
 
     void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
-        admin = new RabbitAdmin(ccf);
-        queue = new Queue(queueName, false);
+        RabbitAdmin admin = new RabbitAdmin(ccf);
+        Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);
         final TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
     }
-
 }

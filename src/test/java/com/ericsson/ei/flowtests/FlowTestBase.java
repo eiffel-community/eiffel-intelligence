@@ -23,16 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Channel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.junit.Test;
@@ -44,9 +34,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author evasiba
- *
  */
 public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
@@ -56,7 +53,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     private RmqHandler rmqHandler;
 
     @Autowired
-    public ObjectHandler objectHandler;
+    private ObjectHandler objectHandler;
 
     @Autowired
     private RulesHandler rulesHandler;
@@ -75,7 +72,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
+    private static Map<String, FlowTestConfigs> configsMap = new HashMap<>();
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
@@ -88,10 +85,9 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     public void init() throws Exception {
         mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
         waitlist.setMongoDbHandler(mongoDBHandler);
-
     }
 
-    protected FlowTestConfigs getFlowTestConfigs() {
+    FlowTestConfigs getFlowTestConfigs() {
         return configsMap.get(getClasName());
     }
 
@@ -115,7 +111,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     // populating events in the database
     private int firstEventWaitTime = 0;
 
-    public void setFirstEventWaitTime(int value) {
+    void setFirstEventWaitTime(int value) {
         firstEventWaitTime = value;
     }
 
@@ -123,7 +119,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
      * Override this if you have more events that will be registered to event to
      * object map but it is not visible in the test. For example from upstream
      * or downstream from event repository
-     * 
+     *
      * @return
      */
     protected int extraEventsCount() {
@@ -188,8 +184,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     /**
      * @return map, where key - _id of expected aggregated object value -
-     *         expected aggregated object
-     * 
+     * expected aggregated object
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 

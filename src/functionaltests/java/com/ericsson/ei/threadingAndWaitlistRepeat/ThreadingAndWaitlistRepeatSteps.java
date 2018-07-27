@@ -56,8 +56,14 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     @Given("^that eiffel events are sent$")
     public void that_eiffel_events_are_sent() throws Throwable {
         sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
-        // How do we know they are sent?
     }
+    
+    @Then("^waitlist should not be empty$")
+    public void waitlist_should_not_be_empty() throws Throwable {
+        TimeUnit.SECONDS.sleep(5);
+        int waitListSize = waitListSize();
+        assertNotEquals(0, waitListSize);
+    }  
 
     @Given("^no event is aggregated$")
     public void no_event_is_aggregated() throws Throwable {
@@ -65,16 +71,9 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
-    @Then("^waitlist should not be empty$")
-    public void waitlist_should_not_be_empty() throws Throwable {
-        TimeUnit.SECONDS.sleep(1);
-        int waitListSize = waitListSize();
-        assertNotEquals(0, waitListSize);
-    }
 
-    @Then("^the events should be resent at given time interval$")
-    public void the_events_should_be_resent_at_given_time_interval() throws Throwable {
-        // WaitListWorker logs every time an event is resent from the waitlist.
+    @Then("^the waitlist will try to resent the events at given time interval$")
+    public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
         List<String> resentEvents = new ArrayList<String>();
         List<String> lines = new ArrayList<String>(Files.readAllLines(Paths.get(LOGFILE)));
@@ -107,7 +106,10 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        TimeUnit.SECONDS.sleep(waitlistTtl + 10);
+        long stopTime = System.currentTimeMillis() + 120000;        
+        while (waitListSize() > 0  && stopTime > System.currentTimeMillis()) {
+            TimeUnit.MILLISECONDS.sleep(10000);        
+        }
         int waitListSize = waitListSize();
         assertEquals(0, waitListSize);
     }

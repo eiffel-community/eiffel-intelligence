@@ -23,11 +23,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-
 @Ignore
 public class SubscriptionContentSteps extends FunctionalTestBase {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
 
     @LocalServerPort
     private int applicationPort;
@@ -144,5 +141,4 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("[]", response.getBody().toString());
     }
-
 }

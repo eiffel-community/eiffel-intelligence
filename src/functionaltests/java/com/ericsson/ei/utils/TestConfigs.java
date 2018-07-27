@@ -3,10 +3,9 @@ package com.ericsson.ei.utils;
 import com.mongodb.MongoClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-
-import java.io.File;
-import java.io.IOException;
-
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import lombok.Getter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
@@ -19,16 +18,13 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.SocketUtils;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-import lombok.Getter;
+import java.io.File;
+import java.io.IOException;
 
 public class TestConfigs {
 
-    private static AMQPBrokerManager amqpBroker;
     private static ConnectionFactory cf;
-
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
+    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
 
     @Getter
     private Connection conn;
@@ -37,7 +33,7 @@ public class TestConfigs {
     private MongoClient mongoClient = null;
 
     @Bean
-    AMQPBrokerManager amqpBroker() throws Exception {
+    void amqpBroker() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
@@ -47,7 +43,7 @@ public class TestConfigs {
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
+        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
         cf = new ConnectionFactory();
         cf.setUsername("guest");
@@ -58,11 +54,10 @@ public class TestConfigs {
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
-        return amqpBroker;
     }
 
     @Bean
-    MongoClient mongoClient() throws IOException {
+    void mongoClient() throws IOException {
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
@@ -70,12 +65,10 @@ public class TestConfigs {
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
             // testsFactory.shutdown();
-            return mongoClient;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
 
-        return null;
     }
 
     @Bean

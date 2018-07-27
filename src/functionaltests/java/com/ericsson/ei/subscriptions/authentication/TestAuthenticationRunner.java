@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/functionaltests/resources/features/authentication.feature", glue = {
     "com.ericsson.ei.subscriptions.authentication" }, plugin = { "pretty",
-    "html:target/cucumber-reports/TestSubscriptionCRUDRunner" }, monochrome = false)
+    "html:target/cucumber-reports/TestSubscriptionCRUDRunner" })
 public class TestAuthenticationRunner {
 
 

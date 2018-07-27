@@ -15,7 +15,6 @@ public class TestContextInitializer extends TestConfigs
         try {
             amqpBroker();
             mongoClient();
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

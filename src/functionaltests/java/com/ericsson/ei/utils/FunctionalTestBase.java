@@ -41,19 +41,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author evasiba
@@ -81,6 +74,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
+
+    @Value("${waitlist.collection.name}")
+    private String waitlistCollectionName;
 
     private MongoClient mongoClient;
 
@@ -203,6 +199,28 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     }
 
     /**
+     * Verify that aggregated objects exists or not.
+     *
+     * @return boolean whether aggregated objects exists or not.
+     * @throws InterruptedException
+     */
+    protected boolean verifyAggregatedObjectExistsInDB() throws InterruptedException {
+        long stopTime = System.currentTimeMillis() + 30000;
+        while (stopTime > System.currentTimeMillis()) {
+            mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+            MongoDatabase db = mongoClient.getDatabase(database);
+            MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
+            List<Document> documents = table.find().into(new ArrayList<>());
+
+            TimeUnit.MILLISECONDS.sleep(1000);
+            if (!documents.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks that aggregated object contains specified arguments.
      *
      * @param checklist list of arguments
@@ -221,6 +239,19 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
             }
         }
         return checklist;
+    }
+
+    /**
+     * Returns the size of the waitlist.
+     *
+     * @return int of the size of the waitlist.
+     */
+    protected int waitListSize() {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> table = db.getCollection(waitlistCollectionName);
+        List<Document> documents = table.find().into(new ArrayList<>());
+        return documents.size();
     }
 
     /**

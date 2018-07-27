@@ -106,7 +106,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        long stopTime = System.currentTimeMillis() + 120000;        
+        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);   
         while (waitListSize() > 0  && stopTime > System.currentTimeMillis()) {
             TimeUnit.MILLISECONDS.sleep(10000);        
         }

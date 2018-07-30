@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = {App.class})
 public class SubscriptionRepeatDbHandlerTest {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
 
     @Autowired
     private SubscriptionRepeatDbHandler subsRepeatDbHandler;

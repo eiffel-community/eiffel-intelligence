@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 @SpringBootTest(classes = {App.class})
 public class ObjectHandlerTest {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ObjectHandlerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandlerTest.class);
 
     @Autowired
     private ObjectHandler objHandler;

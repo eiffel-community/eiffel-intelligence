@@ -63,7 +63,7 @@ import static org.mockito.Mockito.*;
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";

@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = App.class)
 public class QueryServiceTest {
 
-    private static final Logger LOG = (Logger) LoggerFactory.getLogger(QueryServiceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueryServiceTest.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;

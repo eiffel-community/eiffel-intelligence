@@ -31,7 +31,7 @@ import javax.annotation.PostConstruct;
         SubscriptionServiceTest.class})
 public class SuiteCasesForMongo {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SuiteCasesForMongo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SuiteCasesForMongo.class);
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
 

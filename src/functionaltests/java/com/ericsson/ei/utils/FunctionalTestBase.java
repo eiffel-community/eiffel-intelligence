@@ -75,7 +75,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     private String aggregatedCollectionName;
 
     private MongoClient mongoClient;
-    private MongoDatabase db;
 
     @Getter
     private List<String> eventsIdList;
@@ -93,15 +92,13 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     }
 
     @Override
-    public void beforeTestClass(TestContext testContext) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        db = mongoClient.getDatabase(database);
+    public void beforeTestClass(TestContext testContext) throws Exception {
+        // Before running test.
     }
 
     @Override
-    public void afterTestClass(TestContext testContext) {
-        if (mongoClient != null)
-            mongoClient.close();
+    public void afterTestClass(TestContext testContext) throws Exception {
+        // After running tests.
     }
 
     /**
@@ -163,6 +160,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(collection);
         List<Document> documents = table.find().into(new ArrayList<>());
         for (Document document : documents) {
@@ -201,6 +200,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @return list of missing arguments
      */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
         List<Document> documents = table.find().into(new ArrayList<>());
         for (Document document : documents) {
@@ -224,6 +225,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index))
                 .getAsJsonObject();
+
         return jsonObject.get(key).toString();
     }
 }

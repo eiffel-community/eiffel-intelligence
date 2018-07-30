@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
 public class TestRulesService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestRulesService.class);
 
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";

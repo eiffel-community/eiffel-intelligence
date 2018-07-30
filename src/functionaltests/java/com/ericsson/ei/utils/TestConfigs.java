@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.SocketUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 public class TestConfigs {
 

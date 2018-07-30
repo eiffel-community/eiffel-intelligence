@@ -57,18 +57,16 @@ public class TestConfigs {
     }
 
     @Bean
-    void mongoClient() throws IOException {
+    void mongoClient() {
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
-            // testsFactory.shutdown();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
     }
 
     @Bean

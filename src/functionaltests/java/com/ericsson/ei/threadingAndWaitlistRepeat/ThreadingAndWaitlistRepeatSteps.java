@@ -29,7 +29,8 @@ import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG" })
+        "logging.level.com.ericsson.ei.waitlist=DEBUG"})
+
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
@@ -72,6 +73,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
+
     @Then("^the waitlist will try to resent the events at given time interval$")
     public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
@@ -111,6 +113,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
             TimeUnit.MILLISECONDS.sleep(10000);
         }
         int waitListSize = dbManager.waitListSize();
+
         assertEquals(0, waitListSize);
     }
 

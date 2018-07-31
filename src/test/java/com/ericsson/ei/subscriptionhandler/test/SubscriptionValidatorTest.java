@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
@@ -99,7 +95,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -110,7 +107,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -122,8 +120,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -133,8 +132,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -147,7 +147,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -162,7 +163,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -177,7 +179,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -196,7 +199,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -212,8 +216,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -227,8 +232,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -244,7 +250,7 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), true);
             return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -262,8 +268,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -281,8 +288,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -290,7 +298,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "RestPostMediaType", MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -300,7 +309,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "RestPostMediaType", MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -311,8 +321,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "RestPostMediaType", MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     @Test
@@ -323,7 +334,7 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), true);
             return;
         }
-        fail();
+        assertTrue(false);
     }
 
     /**
@@ -338,7 +349,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta);
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -350,8 +362,9 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
     /**
@@ -364,7 +377,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationType", notificationType);
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -375,7 +389,8 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationType", notificationType);
         } catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
+            assertTrue(e.getMessage(), false);
+            return;
         }
         assertTrue(true);
     }
@@ -387,37 +402,38 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationType", notificationType);
         } catch (SubscriptionValidationException e) {
             assertTrue(true);
+            return;
         }
-        fail();
+        assertTrue(false);
     }
 
-	
-	// TODO: Validator Unit tests for Jmepath syntax validator needs to be implemented here.
-	
-	
-	/**
-	 * Unit tests for testing a whole  Subscription Json object.
-	 * Valid Result: true or false
-	 */
-	@Test
-	public void validateFullSubscriptionWithValidSubscriptionParameters() {
-		try {
-			subscriptionValidator.validateSubscription(subscriptionValid);
-		}
-		catch (SubscriptionValidationException e) {
-            fail(e.getMessage());
-		}
-		assertTrue(true);
-	}
-	
-	@Test
-	public void validateFullSubscriptionWithInvalidSubscriptionParameters() {
-		try {
-			subscriptionValidator.validateSubscription(subscriptionInvalid);
-		}
-		catch (SubscriptionValidationException e) {
-			assertTrue(true);
-		}
-        fail();
-	}
+
+    // TODO: Validator Unit tests for Jmepath syntax validator needs to be implemented here.
+
+
+    /**
+     * Unit tests for testing a whole  Subscription Json object.
+     * Valid Result: true or false
+     */
+    @Test
+    public void validateFullSubscriptionWithValidSubscriptionParameters() {
+        try {
+            subscriptionValidator.validateSubscription(subscriptionValid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(e.getMessage(), false);
+            return;
+        }
+        assertTrue(true);
+    }
+
+    @Test
+    public void validateFullSubscriptionWithInvalidSubscriptionParameters() {
+        try {
+            subscriptionValidator.validateSubscription(subscriptionInvalid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(true);
+            return;
+        }
+        assertTrue(false);
+    }
 }

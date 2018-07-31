@@ -36,8 +36,6 @@ public class UpStreamEventHandlerTest {
     @Autowired
     private UpStreamEventsHandler classUnderTest;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
-
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -65,5 +63,4 @@ public class UpStreamEventHandlerTest {
 
         assertEquals("1", "1");
     }
-
 }

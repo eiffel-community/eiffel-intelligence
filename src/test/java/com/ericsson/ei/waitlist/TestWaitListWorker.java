@@ -27,7 +27,6 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rabbitmq.client.*;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestWaitListWorker {
 
@@ -98,7 +96,7 @@ public class TestWaitListWorker {
         Mockito.when(jmesPathInterface.runRuleOnEvent(Mockito.anyString(), Mockito.anyString())).thenReturn(jsonNode);
     }
 
-    void setupMB() throws Exception {
+    private void setupMB() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
@@ -118,14 +116,14 @@ public class TestWaitListWorker {
     }
 
     @Test
-    public void testRunWithoutMatchObjects() throws JSONException {
+    public void testRunWithoutMatchObjects() {
         Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
         Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(new ArrayList<>());
         try {
             waitListWorker.run();
             assertTrue(true);
         } catch (Exception e) {
-            assertFalse(true);
+            fail();
             e.printStackTrace();
         }
     }
@@ -138,7 +136,7 @@ public class TestWaitListWorker {
             waitListWorker.run();
             assertTrue(true);
         } catch (Exception e) {
-            assertFalse(true);
+            fail();
             e.printStackTrace();
         }
     }
@@ -150,24 +148,10 @@ public class TestWaitListWorker {
             waitListWorker.run();
             assertTrue(true);
         } catch (Exception e) {
-            assertFalse(true);
+            fail();
             e.printStackTrace();
         }
     }
-
-    // TO DO fix this test
-    // @Test
-    // public void testDropDocumentFromWaitList() {
-    // try {
-    // String event = FileUtils.readFileToString(new File(eventPath), "UTF-8");
-    // String condition = "{Event:" + JSON.parse(event).toString() + "}";
-    // assertTrue(waitListStorageHandler.dropDocumentFromWaitList(condition));
-    // } catch (Exception e) {
-    // assertFalse(true);
-    // System.out.println("error occured while deleting document from
-    // waitlist");
-    // }
-    // }
 
     @Test
     public void testPublishAndReceiveEvent() {

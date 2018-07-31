@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesRestAPI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesRestAPI.class);
     private static final String INPUT_FILE_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private static final String EXTRACTION_RULE_FILE_PATH = "src/test/resources/ExtractionRule.txt";
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
@@ -65,8 +65,6 @@ public class TestRulesRestAPI {
 
     @Autowired
     private MockMvc mockMvc;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
     private IRuleCheckService ruleCheckService;
@@ -132,5 +130,4 @@ public class TestRulesRestAPI {
         }
 
     }
-
 }

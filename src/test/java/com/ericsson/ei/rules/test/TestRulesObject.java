@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestRulesObject {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesObject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesObject.class);
     private static final String INPUT_FILE_PATH = "src/test/resources/RulesHandlerOutput2.json";
     private static final String INPUT_RULES_PATH = "src/test/resources/ProcessRules.json";
 

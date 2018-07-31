@@ -39,17 +39,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestWaitListStorageHandler {
 
-    WaitListStorageHandler waitListStorageHandler = new WaitListStorageHandler();
-    JmesPathInterface jmespath = new JmesPathInterface();
+    private WaitListStorageHandler waitListStorageHandler = new WaitListStorageHandler();
+    private JmesPathInterface jmesPath = new JmesPathInterface();
 
     @Mock
     MongoDBHandler mongoDBHandler;
-    static Logger log = (Logger) LoggerFactory.getLogger(TestWaitListStorageHandler.class);
+
     private final String rulesPath = "src/test/resources/WaitlistStorageHandlerRule.json";
     private final String eventPath = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private final String inputJson1="src/test/resources/testWaitListinput1.json";
     
-    ArrayList<String> output=new ArrayList<String>();
+    private ArrayList<String> output=new ArrayList<>();
 
     @Before
     public void init() throws IOException{
@@ -58,14 +58,14 @@ public class TestWaitListStorageHandler {
         Mockito.when(mongoDBHandler.getAllDocuments(Mockito.any(), Mockito.any())).thenReturn(output);
         Mockito.when(mongoDBHandler.insertDocument(Mockito.any(), Mockito.any(),Mockito.anyString())).thenReturn(true);
         waitListStorageHandler.setMongoDbHandler(mongoDBHandler);
-        waitListStorageHandler.setJmesPathInterface(jmespath);
+        waitListStorageHandler.setJmesPathInterface(jmesPath);
     }
 
     @Test
     public void testAddEventToWaitList(){
-        String jsonRule = null;
-        String eventFile = null;
-        RulesObject rulesObject = null;
+        String jsonRule;
+        String eventFile;
+        RulesObject rulesObject;
         try{
             jsonRule = FileUtils.readFileToString(new File(rulesPath), "UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -74,7 +74,7 @@ public class TestWaitListStorageHandler {
             waitListStorageHandler.addEventToWaitList(eventFile, rulesObject);
             assertTrue(true);
         } catch (Exception e) {
-            assertFalse(true);
+            fail();
         }
     }
 
@@ -83,5 +83,4 @@ public class TestWaitListStorageHandler {
         List<String> documents = waitListStorageHandler.getWaitList();
         assertTrue(documents.size() > 0);
     }
-
 }

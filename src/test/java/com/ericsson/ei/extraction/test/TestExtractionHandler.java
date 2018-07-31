@@ -48,11 +48,7 @@ public class TestExtractionHandler {
     private RulesObject rulesObject;
     private String event;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestRulesHandler.class);
-
-    /*@Mock MergeHandler mergeHandler;
-    @Mock ProcessRulesHandler processRulesHandler;
-    @Mock HistoryIdRulesHandler historyIdRulesHandler;*/
+    private static Logger log = LoggerFactory.getLogger(TestRulesHandler.class);
 
     @Test
     public void testExtractContent() {

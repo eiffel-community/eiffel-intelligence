@@ -50,8 +50,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -80,7 +79,7 @@ public class ERQueryServiceTest {
         System.setProperty("er.url", "http://localhost:8080/search/");
     }
 
-    @Before public void setUp() throws Exception {
+    @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
@@ -107,22 +106,17 @@ public class ERQueryServiceTest {
             HttpEntity arg2 = invocation.getArgument(2);
             SearchParameters body = (SearchParameters) arg2.getBody();
             assertBody(body);
-            boolean firstStop = true;
             return new ResponseEntity(HttpStatus.OK);
         };
     }
 
     public String buildUri() {
         String uri = "";
-//        example uri
-//        http://localhost:8080/search/01?limit=85&levels=2&tree=true
         uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree=" + isTree;
         return uri;
     }
 
     public void assertBody(SearchParameters body) {
-//    	example body
-//      {"ult":["ALL"]}
         assertNotNull(body);
         boolean searchActionIsRight = false;
         if (searchOption == SearchOption.DOWN_STREAM) {
@@ -133,7 +127,7 @@ public class ERQueryServiceTest {
             searchActionIsRight = body.getDlt() != null && !body.getDlt().isEmpty() &&
                 body.getUlt() != null && !body.getUlt().isEmpty();
         }
-        assertEquals(searchActionIsRight, true);
+        assertTrue(searchActionIsRight);
     }
 
     @Test
@@ -164,5 +158,4 @@ public class ERQueryServiceTest {
         assertEquals("/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.getPath());
         assertEquals("https://127.0.0.1/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.toUriString());
     }
-
 }

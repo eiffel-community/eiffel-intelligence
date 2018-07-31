@@ -39,15 +39,15 @@ import org.apache.commons.io.FileUtils;
 
 @RunWith(Parameterized.class)
 public class TestMergePrepare {
-    public static final String testDataPath = "src/test/resources/MergePrepareData.json";
-    public String originObject;
-    public String mergeObject;
-    public String mergeRule;
-    public String mergePath;
-    public String ruleValue;
-    public String mergedObject;
+    private static final String testDataPath = "src/test/resources/MergePrepareData.json";
+    private String originObject;
+    private String mergeObject;
+    private String mergeRule;
+    private String mergePath;
+    private String ruleValue;
+    private String mergedObject;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestMergePrepare.class);
+    private static Logger log = LoggerFactory.getLogger(TestMergePrepare.class);
 
     public TestMergePrepare(String originObject, String mergeObject, String mergeRule, String mergePath,
             String ruleValue, String mergedObject) {
@@ -59,10 +59,10 @@ public class TestMergePrepare {
         this.mergedObject = mergedObject;
     }
 
-    static MergePrepare mergePrepareObject;
+    private static MergePrepare mergePrepareObject;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void setup() {
         mergePrepareObject = new MergePrepare();
         mergePrepareObject.setJmesPathInterface(new JmesPathInterface());
     }

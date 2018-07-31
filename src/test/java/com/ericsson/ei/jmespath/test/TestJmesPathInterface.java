@@ -37,7 +37,7 @@ public class TestJmesPathInterface {
 	private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
 	private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-	static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
+	private static Logger log = LoggerFactory.getLogger(TestJmesPathInterface.class);
 
 	@Test
 	public void testRunRuleOnEvent() {

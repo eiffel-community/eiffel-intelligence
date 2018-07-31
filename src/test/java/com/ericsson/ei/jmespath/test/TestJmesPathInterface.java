@@ -48,9 +48,9 @@ public class TestJmesPathInterface {
 		JsonNode output = null;
 
 		try {
-			jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-			jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
-			extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
+			jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+			jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
+			extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
 			ObjectMapper objectmapper = new ObjectMapper();
 			output = objectmapper.readTree(jsonOutput);
 		} catch (Exception e) {
@@ -67,7 +67,7 @@ public class TestJmesPathInterface {
 		String jsonInput = null;
 		JsonNode expectedResult = null;
 		try {
-			jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+			jsonInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
 			ObjectMapper mapper = new ObjectMapper();
 			expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
 		} catch (Exception e) {
@@ -94,7 +94,5 @@ public class TestJmesPathInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		//        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
 	}
 }

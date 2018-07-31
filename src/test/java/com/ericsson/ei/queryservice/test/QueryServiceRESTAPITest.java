@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,9 +55,7 @@ public class QueryServiceRESTAPITest {
     @Autowired
     private MockMvc mockMvc;
 
-    static JSONArray jsonArray = null;
-
-    static Logger log = (Logger) LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
+    private static Logger log = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String missedNotificationPath = "src/test/resources/MissedNotification.json";
@@ -65,8 +64,6 @@ public class QueryServiceRESTAPITest {
     private static String aggregatedObject;
     private static String missedNotification;
 
-    ObjectMapper mapper = new ObjectMapper();
-
     @MockBean
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
@@ -74,17 +71,17 @@ public class QueryServiceRESTAPITest {
     private QueryMissedNotificationControllerImpl missedNotificationController;
 
     @BeforeClass
-    public static void init() throws IOException, JSONException {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
+    public static void init() throws IOException {
+        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath), "UTF-8");
     }
 
     @Test
     public void getQueryAggregatedObjectTest() throws Exception {
-        ArrayList<String> response = new ArrayList<String>();
+        List<String> response = new ArrayList<>();
         response.add(aggregatedObject);
-        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
+        log.debug("The expected output is : " + expectedOutput);
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
@@ -94,7 +91,7 @@ public class QueryServiceRESTAPITest {
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output = result.getResponse().getContentAsString().toString();
+        String output = result.getResponse().getContentAsString();
         output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
         log.info("The Output is : " + output);
 
@@ -104,10 +101,10 @@ public class QueryServiceRESTAPITest {
 
     @Test
     public void getQueryMissedNotificationsTest() throws Exception {
-        ArrayList<String> response = new ArrayList<String>();
+        List<String> response = new ArrayList<>();
         response.add(missedNotification);
-        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath), "UTF-8");
+        log.debug("The expected output is : " + expectedOutput);
 
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
@@ -116,9 +113,9 @@ public class QueryServiceRESTAPITest {
                 .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output = result.getResponse().getContentAsString().toString();
+        String output = result.getResponse().getContentAsString();
         output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
-        log.info("The Output is : " + output);
+        log.debug("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(expectedOutput, output);

@@ -39,28 +39,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 @RunWith(Parameterized.class)
 public class TestMergeHandler {
-	public static final String testDataPath = "src/test/resources/MergeHandlerData.json";
+	private static final String testDataPath = "src/test/resources/MergeHandlerData.json";
 	public String rule;
 	public String id;
-	public String updatedRule;
+	private String updatedRule;
 	public String event;
-	public JsonNode objectToMerge;
 	public String aggregatedObject;
-	public String preparedObject;
-	public String mergeObjectResult;
+	private String preparedObject;
+	private String mergeObjectResult;
 
-	static Logger log = (Logger) LoggerFactory.getLogger(TestMergeHandler.class);
+	private static Logger log = LoggerFactory.getLogger(TestMergeHandler.class);
 
 	public TestMergeHandler(String rule, String id, String updatedRule, String event, String aggregatedObject,
 			String objectToMerge, String preparedObject, String mergeObjectResult) {
 		ObjectMapper objectmapper = new ObjectMapper();
 		try {
-			this.objectToMerge = objectmapper.readTree((new JSONObject(objectToMerge)).toString());
+			JsonNode objectToMerge1 = objectmapper.readTree((new JSONObject(objectToMerge)).toString());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -78,14 +78,14 @@ public class TestMergeHandler {
 		MergeHandler mergeHandlerObject = new MergeHandler();
 		// TODO read marker from application.properties
 		mergeHandlerObject.setMergeIdMarker("%IdentifyRules%");
-		String result = (String) mergeHandlerObject.replaceIdMarkerInRules(rule, id);
+		String result = mergeHandlerObject.replaceIdMarkerInRules(rule, id);
 		assertEquals(updatedRule, result);
 	}
 
 	@Test
 	public void mergeContentToObject() {
-		String output = new String("output");
-		String result = new String("result");
+		String output = "output";
+		String result = "result";
 		MergeHandler mocked = mock(MergeHandler.class);
 		when(mocked.getAggregatedObject(id, true)).thenReturn(aggregatedObject);
 		when(mocked.mergeContentToObject(aggregatedObject, preparedObject)).thenCallRealMethod();
@@ -104,13 +104,13 @@ public class TestMergeHandler {
 
 	@Parameters
 	public static Collection<Object[]> inputTestData() {
-		String testData = null;
-		Collection<Object[]> baseList = new ArrayList<Object[]>();
+		String testData;
+		Collection<Object[]> baseList = new ArrayList<>();
 		try {
 			testData = FileUtils.readFileToString(new File(testDataPath), "UTF-8");
 			JSONArray testDataJson = new JSONArray(testData);
 			for (int i = 0; i < testDataJson.length(); i++) {
-				ArrayList<String> childList = new ArrayList<String>();
+				List<String> childList = new ArrayList<>();
 				for (int k = 0; k < ((JSONArray) testDataJson.get(i)).length(); k++) {
 					childList.add(((String) ((JSONArray) testDataJson.get(i)).get(k)));
 				}

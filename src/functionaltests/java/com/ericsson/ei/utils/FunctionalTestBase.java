@@ -141,7 +141,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     }
 
     /**
-     * Converts a JSON string into a tree model.
+     * Converts a JSON file into a tree model.
      *
      * @param filePath
      *            path to JSON file
@@ -149,9 +149,21 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @throws IOException
      */
     protected JsonNode getJSONFromFile(String filePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
-        return objectMapper.readTree(expectedDocument);
+        return getJSONFromString(expectedDocument);
+    }
+    
+    /**
+     * Converts a JSON string into a tree model.
+     *
+     * @param body
+     *            JSON string
+     * @return JsonNode tree model
+     * @throws IOException
+     */
+    protected JsonNode getJSONFromString(String body) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readTree(body);
     }
 
     /**
@@ -163,7 +175,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @throws InterruptedException
      */
     protected List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + 120000;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
             if (eventsIdList.isEmpty()) {
@@ -205,7 +217,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @throws InterruptedException
      */
     protected List<String> verifyAggregatedObjectInDB(List<String> checklist) throws InterruptedException {
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + 120000;
         while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
             checklist = compareArgumentsWithAggregatedObjectInDB(checklist);
             if (checklist.isEmpty()) {

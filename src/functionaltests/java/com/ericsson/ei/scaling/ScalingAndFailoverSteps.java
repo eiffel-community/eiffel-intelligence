@@ -1,7 +1,6 @@
 package com.ericsson.ei.scaling;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -37,6 +38,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers=INFO" })
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
@@ -46,10 +48,13 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private int port;
     private List<Integer> portList = new ArrayList<Integer>();
 
+    private List<WebApplicationContext> appContextList = new ArrayList<WebApplicationContext>();
+
     @Autowired
     private MockMvc mockMvc;
     private List<MockMvc> mockMvcList = new ArrayList<MockMvc>();
 
+    private List<String> eventsIdList = new ArrayList<String>();
     private int numberOfInstances;
     private ByteArrayOutputStream baos;
     private MultiOutputStream multiOutput;
@@ -72,7 +77,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
 
     @Given("^\"([0-9]+)\" additional instance(.*) of Eiffel Intelligence$")
-    public void multiple_eiffel_intelligence_instances(int multiple, String plural) throws Exception {
+    public void additional_eiffel_intelligence_instances(int multiple, String plural) throws Exception {
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
         numberOfInstances = multiple + 1;
 
@@ -90,6 +95,8 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
             System.setProperty("spring.jmx.default-domain", "eiffel-intelligence-" + i);
 
             WebApplicationContext appContext = (WebApplicationContext) appBuilder.run();
+            appContextList.add(appContext);
+
             mockMvcList.add(webAppContextSetup(appContext).build());
         }
 
@@ -112,10 +119,9 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
 
     @When("^\"([0-9]+)\" eiffel events are sent$")
-    public void multiple_eiffel_intelligence_instances(int multiple) throws Exception {
+    public void multiple_events(int multiple) throws Exception {
         LOGGER.debug("{} eiffel events will be sent", multiple);
         String event = FileUtils.readFileToString(new File(EVENT_DUMMY), "UTF-8");
-        List<String> eventsIdList = new ArrayList<String>();
         for (int i = 0; i < multiple; i++) {
             String uuid = UUID.randomUUID().toString();
             eventsIdList.add(uuid);
@@ -123,40 +129,66 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
             eventWithUUID = eventWithUUID.replaceAll("\\{uuid\\}", uuid);
             sendEiffelEvent(eventWithUUID);
         }
-        List<String> missingEventIds = verifyEventsInDB(eventsIdList);
-        assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
-        LOGGER.debug("All eiffel events sent");
     }
 
-    @Then("^event messages are evenly distributed$")
-    public void event_messages_evenly_distributed() throws Exception {
-        List<Integer> messageCount = new ArrayList<Integer>();
-        String consoleLog, match;
-        int index, count;
+    @When("^additional instances are closed$")
+    public void additional_instances_closed() {
+        for (int x = 0; x < numberOfInstances - 1; x++) {
+            ((ConfigurableApplicationContext) appContextList.get(x)).close();
+            LOGGER.debug("Closed Application running on port {}", portList.get(x + 1));
+        }
+    }
+
+    @Then("^all event messages are processed$")
+    public void messages_processed() throws Exception {
+        List<String> missingEventIds = verifyEventsInDB(eventsIdList);
+        LOGGER.debug("Missing events: {}", missingEventIds.toString());
+        assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
+    }
+
+    @Then("^unprocessed events are affected by failover$")
+    public void events_failover() throws Exception {
+        List<Integer> receivedCount = new ArrayList<Integer>();
+        List<Integer> processedCount = new ArrayList<Integer>();
+        String match;
+
+        int receivedTotal = 0;
         for (int i = 0; i < numberOfInstances; i++) {
-            consoleLog = baos.toString();
-            match = "Message on port " + portList.get(i);
+            match = "received on port " + portList.get(i);
+            int counter = logCounter(match);
+            receivedTotal += counter;
+            receivedCount.add(counter);
+        }
+
+        int processedTotal = 0;
+        for (int i = 0; i < numberOfInstances; i++) {
+            match = "processed on port " + portList.get(i);
+            int counter = logCounter(match);
+            processedTotal += counter;
+            processedCount.add(counter);
+        }
+
+        for (int i = 0; i < numberOfInstances; i++) {
+            LOGGER.debug("Received, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
+                    receivedCount.get(i));
+            LOGGER.debug("Processed, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
+                    processedCount.get(i));
+        }
+        LOGGER.debug("Total received message count: {}, Total processed message count: {}", receivedTotal,
+                processedTotal);
+        assertEquals("No failover took place", true, receivedTotal > processedTotal);
+        LOGGER.debug("Failover successfully took place");
+    }
+
+    private int logCounter(String match) {
+        String consoleLog = baos.toString();
+        int index = consoleLog.indexOf(match);
+        int count = 0;
+        while (index != -1) {
+            count++;
+            consoleLog = consoleLog.substring(index + 1);
             index = consoleLog.indexOf(match);
-            count = 0;
-            while (index != -1) {
-                count++;
-                consoleLog = consoleLog.substring(index + 1);
-                index = consoleLog.indexOf(match);
-            }
-            messageCount.add(count);
         }
-
-        double[] doubleArray = new double[numberOfInstances];
-        for (int i = 0; i < numberOfInstances; i++) {
-            doubleArray[i] = messageCount.get(i);
-            LOGGER.debug("Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i), messageCount.get(i));
-        }
-
-        DescriptiveStatistics stats = new DescriptiveStatistics(doubleArray);
-        double standardDeviation = stats.getStandardDeviation();
-        double mean = stats.getMean();
-        double coefficientOfVariation = standardDeviation / mean;
-        LOGGER.debug("Standard Deviation: {}, Mean: {}, CV: {}", standardDeviation, mean, coefficientOfVariation);
-        assertEquals("Coefficient of variation is abnormally high", coefficientOfVariation < 1, true);
+        return count;
     }
 }

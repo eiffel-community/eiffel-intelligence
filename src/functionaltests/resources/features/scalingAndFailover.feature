@@ -21,6 +21,8 @@ Feature: Scaling and Failover test
 
   @ScalingAndFailoverScenario
   Scenario: Scaling and Failover
-    Given "3" additional instances of Eiffel Intelligence
-    When "100" eiffel events are sent
-    Then event messages are evenly distributed
+    Given "3" additional instance of Eiffel Intelligence
+    When "10000" eiffel events are sent
+    And additional instances are closed
+    Then all event messages are processed
+    And unprocessed events are affected by failover

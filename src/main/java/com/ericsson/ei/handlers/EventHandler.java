@@ -28,10 +28,12 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 
 @Component
-@Scope(value="thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EventHandler {
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
@@ -44,37 +46,34 @@ public class EventHandler {
 
     @Autowired
     DownstreamIdRulesHandler downstreamIdRulesHandler;
-    
+
     @Autowired
     Environment environment;
-    
+
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
 
     public void eventReceived(String event) {
+        log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
-//        downstreamIdRulesHandler.runIdRules(eventRules, event);
-    }
-
-    public void eventReceived(byte[] message) {
-        log.info("Thread id " + Thread.currentThread().getId() + " spawned");
-        String actualMessage = new String(message);
-        log.info("Event received <" + actualMessage + ">");
-        eventReceived(actualMessage);
-        //Used in TestScalingAndFailoverRunner test
-        if(Boolean.valueOf(System.getProperty("scaling.test"))) {
-            String port = environment.getProperty("local.server.port");
-            System.out.println("Message on port "+port);
-        }
+        // downstreamIdRulesHandler.runIdRules(eventRules, event);
     }
 
     @Async
     public void onMessage(Message message, Channel channel) throws Exception {
-        byte[] messageBody = message.getBody();
+        String messageBody = new String(message.getBody());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(messageBody);
+        String id = node.get("meta").get("id").toString();
+        String port = environment.getProperty("local.server.port");
+        log.info("Event {} received on port {}", id, port);
+
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
+
+        log.info("Event {} processed on port {}", id, port);
     }
 }

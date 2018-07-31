@@ -25,6 +25,15 @@ import java.io.IOException;
 @Configuration
 public class TestConfigs {
 
+    static {
+        try {
+            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static ConnectionFactory cf;
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
@@ -33,7 +42,7 @@ public class TestConfigs {
     private Connection conn;
 
     @Getter
-    private MongoClient mongoClient = null;
+    private static MongoClient mongoClient;
 
     void amqpBroker() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
@@ -60,8 +69,6 @@ public class TestConfigs {
 
     void mongoClient() {
         try {
-            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);

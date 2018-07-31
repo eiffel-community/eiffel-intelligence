@@ -16,14 +16,18 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.SocketUtils;
 
 import java.io.File;
+import java.io.IOException;
 
+@Configuration
 public class TestConfigs {
 
     private static ConnectionFactory cf;
-    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
     @Getter
     private Connection conn;
@@ -31,7 +35,6 @@ public class TestConfigs {
     @Getter
     private MongoClient mongoClient = null;
 
-    @Bean
     void amqpBroker() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("rabbitmq.port", "" + port);
@@ -55,7 +58,6 @@ public class TestConfigs {
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
     }
 
-    @Bean
     void mongoClient() {
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
@@ -68,7 +70,6 @@ public class TestConfigs {
         }
     }
 
-    @Bean
     void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.enabled", "true");

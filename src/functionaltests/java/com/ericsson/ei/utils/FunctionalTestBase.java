@@ -14,6 +14,7 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -56,8 +55,6 @@ import java.util.concurrent.TimeUnit;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class})
 public class FunctionalTestBase extends AbstractTestExecutionListener {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
 
     @Autowired
     private MongoProperties mongoProperties;

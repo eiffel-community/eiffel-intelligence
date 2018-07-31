@@ -15,28 +15,17 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.SocketUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 @Configuration
 public class TestConfigs {
 
-    static {
-        try {
-            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static ConnectionFactory cf;
-
     private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
+    private static final int PORT = SocketUtils.findAvailableTcpPort();
+    private static ConnectionFactory cf;
 
     @Getter
     private Connection conn;
@@ -44,27 +33,34 @@ public class TestConfigs {
     @Getter
     private static MongoClient mongoClient;
 
+    static {
+        try {
+            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+            String config = "src/functionaltests/resources/configs/qpidConfig.json";
+            File qpidConfig = new File(config);
+            AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), PORT);
+            amqpBroker.startBroker();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     void amqpBroker() throws Exception {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("rabbitmq.port", "" + port);
+        System.setProperty("rabbitmq.port", "" + PORT);
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "3000");
 
-        String config = "src/functionaltests/resources/configs/qpidConfig.json";
-        File qpidConfig = new File(config);
-        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        amqpBroker.startBroker();
         cf = new ConnectionFactory();
         cf.setUsername("guest");
         cf.setPassword("guest");
-
-        cf.setPort(port);
+        cf.setPort(PORT);
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
-        LOGGER.debug("Started embedded message bus for tests on port: " + port);
+        LOGGER.debug("Started embedded message bus for tests on port: " + PORT);
     }
 
     void mongoClient() {

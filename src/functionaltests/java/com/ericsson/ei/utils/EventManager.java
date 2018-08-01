@@ -19,9 +19,6 @@ public class EventManager {
     @Autowired
     private RmqHandler rmqHandler;
 
-    @Getter
-    private List<String> eventsIdList;
-
     protected List<String> getEventNamesToSend() {
         return new ArrayList<>();
     }
@@ -38,14 +35,23 @@ public class EventManager {
      * @throws IOException
      */
     public void sendEiffelEvents(String eiffelEventsJsonPath, List<String> eventNamesToSend) throws IOException {
-        eventsIdList = new ArrayList<>();
+        List<String> eventNames = eventNamesToSend;
+        JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
+        for (String eventName : eventNames) {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
+        }
+    }
+    
+    public List<String> getEventsIdList(String eiffelEventsJsonPath, List<String> eventNamesToSend) throws IOException {
+        List<String> eventsIdList = new ArrayList<>();;
         List<String> eventNames = eventNamesToSend;
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
-            rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
+        return eventsIdList;
     }
 
     /**

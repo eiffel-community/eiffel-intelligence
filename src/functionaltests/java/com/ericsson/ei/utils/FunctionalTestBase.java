@@ -14,7 +14,6 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.rmqhandler.RmqHandler;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -48,9 +47,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Autowired
     protected DataBaseManager dbManager;
 
-    @Autowired
-    private RmqHandler rmqHandler;
-
     @Value("${spring.data.mongodb.database}")
     private String database;
 
@@ -59,9 +55,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
-
-    @Value("${waitlist.collection.name}")
-    private String waitlistCollectionName;
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {

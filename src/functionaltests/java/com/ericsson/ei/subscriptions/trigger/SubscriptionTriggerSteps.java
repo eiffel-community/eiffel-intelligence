@@ -121,7 +121,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager.verifyEventsInDB(eventManager.getEventsIdList());
+        List<String> missingEventIds = dbManager.verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
@@ -129,8 +129,9 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @When("^Wait for EI to aggregate objects and trigger subscriptions")
     public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
+        List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");
-        List<String> arguments = new ArrayList<>(eventManager.getEventsIdList());
+        List<String> arguments = new ArrayList<>(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
         List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);

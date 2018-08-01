@@ -14,7 +14,6 @@
 package com.ericsson.ei.utils;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +38,12 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author evasiba

@@ -13,17 +13,18 @@
 */
 package com.ericsson.ei.mongodbhandler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.*;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import com.mongodb.util.JSON;
-import lombok.Getter;
 import lombok.Setter;
+import springfox.documentation.spring.web.json.Json;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -32,11 +33,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import com.mongodb.client.ListIndexesIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import com.mongodb.util.JSON;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
 public class MongoDBHandler {
@@ -44,7 +66,7 @@ public class MongoDBHandler {
 
     @Autowired
     private MongoProperties mongoProperties;
-    
+
     @Getter
     @Setter
     @JsonIgnore
@@ -97,8 +119,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the retrieve the all documents from the
-     * collection
+     * This method is used for the retrieve the all documents from the collection
      * 
      * @param dataBaseName
      * @param collectionName
@@ -137,11 +158,9 @@ public class MongoDBHandler {
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
-        
-        log.debug("Find and retrieve data from database."
-                  + "\nDatabase: " + dataBaseName
-                  + "\nCollection: " + collectionName
-                  + "\nCondition/Query: " + condition);
+
+        log.debug("Find and retrieve data from database." + "\nDatabase: " + dataBaseName + "\nCollection: "
+                + collectionName + "\nCondition/Query: " + condition);
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -156,8 +175,7 @@ public class MongoDBHandler {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " documents are not found");
                 }
-            }
-            else {
+            } else {
                 log.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
             }
         } catch (Exception e) {
@@ -168,8 +186,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the
-     * lock in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock
+     * in one query. Lock is needed for multi process execution
      * 
      * @param dataBaseName
      * @param collectionName
@@ -198,9 +216,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the
-     * input condition in one query. Lock is needed for multi process execution.
-     * This method is executed in a loop.
+     * This method is used for lock and return the document that matches the input
+     * condition in one query. Lock is needed for multi process execution. This
+     * method is executed in a loop.
      * 
      * @param dataBaseName
      * @param collectionName
@@ -286,7 +304,7 @@ public class MongoDBHandler {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
             try {
-                db.createCollection(collectionName);                
+                db.createCollection(collectionName);
             } catch (MongoCommandException e) {
                 String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
                 if (e.getMessage().contains(message)) {

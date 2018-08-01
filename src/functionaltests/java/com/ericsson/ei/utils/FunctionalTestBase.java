@@ -51,9 +51,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     protected DataBaseManager dbManager;
 
     @Autowired
-    private MongoProperties mongoProperties;
-
-    @Autowired
     private RmqHandler rmqHandler;
 
     @Value("${spring.data.mongodb.database}")
@@ -67,16 +64,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
-
-    private MongoClient mongoClient;
-
-    public int getMongoDbPort() {
-        return mongoProperties.getPort();
-    }
-
-    public String getMongoDbHost() {
-        return mongoProperties.getHost();
-    }
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {

@@ -113,7 +113,6 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
             TimeUnit.MILLISECONDS.sleep(10000);
         }
         int waitListSize = dbManager.waitListSize();
-
         assertEquals(0, waitListSize);
     }
 

@@ -313,7 +313,7 @@ public class SubscriptionHandlerTest {
     @Test
     public void testRestPostTriggerFailure() throws IOException {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+        verify(springRestTemplate, times(3)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType);
         assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
     }

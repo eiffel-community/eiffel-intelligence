@@ -75,7 +75,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
 
     @Given("^\"([0-9]+)\" additional instance(s)? of Eiffel Intelligence$")
-    public void additional_eiffel_intelligence_instances(int multiple, String plural) throws Exception {
+    public void additional_eiffel_intelligence_instances(int multiple, String plural) {
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
         numberOfInstances = multiple + 1;
 
@@ -101,10 +101,11 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         LOGGER.debug("Ports for all available instances");
         for (int i = 0; i < numberOfInstances; i++) {
             LOGGER.debug("Instance {}, Port: {}", i + 1, portList.get(i));
-            String property = "ei." + portList.get(i) + ".index";
-            System.setProperty(property, "" + i);
         }
+    }
 
+    @Given("^instances are up and running$")
+    public void instances_running() throws Exception {
         LOGGER.debug("Testing REST API response code on all available instances");
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/subscriptions").accept(MediaType.APPLICATION_JSON);
         for (int i = 0; i < numberOfInstances; i++) {
@@ -116,7 +117,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         }
     }
 
-    @When("^\"([0-9]+)\" eiffel events are sent$")
+    @When("^\"([0-9]+)\" event messages are sent$")
     public void multiple_events(int multiple) throws Exception {
         LOGGER.debug("{} eiffel events will be sent", multiple);
         String event = FileUtils.readFileToString(new File(EVENT_DUMMY), "UTF-8");
@@ -144,7 +145,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
     }
 
-    @Then("^unprocessed events are affected by failover$")
+    @Then("^event messages are unaffected by instance failure$")
     public void events_failover() throws Exception {
         List<Integer> receivedCount = new ArrayList<Integer>();
         List<Integer> processedCount = new ArrayList<Integer>();
@@ -163,8 +164,8 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
         LOGGER.debug("Total received message count: {}, Total processed message count: {}", receivedTotal,
                 processedTotal);
-        assertEquals("No failover took place", true, receivedTotal > processedTotal);
-        LOGGER.debug("Failover successfully took place");
+        assertEquals("Total received messages is lower than the total processed count", true,
+                receivedTotal >= processedTotal);
     }
 
     /**

@@ -38,7 +38,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers=INFO" })
+@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers.EventHandler=INFO" })
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
@@ -57,16 +57,14 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private List<String> eventsIdList = new ArrayList<String>();
     private int numberOfInstances;
     private ByteArrayOutputStream baos;
-    private MultiOutputStream multiOutput;
     private PrintStream printStream;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingAndFailoverSteps.class);
 
     @Before("@ScalingAndFailoverScenario")
     public void beforeScenario() {
-        System.setProperty("scaling.test", "true");
         baos = new ByteArrayOutputStream();
-        multiOutput = new MultiOutputStream(System.out, baos);
+        MultiOutputStream multiOutput = new MultiOutputStream(System.out, baos);
         printStream = new PrintStream(multiOutput);
         System.setOut(printStream);
     }
@@ -76,7 +74,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         printStream.close();
     }
 
-    @Given("^\"([0-9]+)\" additional instance(.*) of Eiffel Intelligence$")
+    @Given("^\"([0-9]+)\" additional instance(s)? of Eiffel Intelligence$")
     public void additional_eiffel_intelligence_instances(int multiple, String plural) throws Exception {
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
         numberOfInstances = multiple + 1;
@@ -133,9 +131,9 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     @When("^additional instances are closed$")
     public void additional_instances_closed() {
-        for (int x = 0; x < numberOfInstances - 1; x++) {
-            ((ConfigurableApplicationContext) appContextList.get(x)).close();
-            LOGGER.debug("Closed Application running on port {}", portList.get(x + 1));
+        for (int i = 0; i < numberOfInstances - 1; i++) {
+            ((ConfigurableApplicationContext) appContextList.get(i)).close();
+            LOGGER.debug("Closed Application running on port {}", portList.get(i + 1));
         }
     }
 
@@ -150,23 +148,9 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     public void events_failover() throws Exception {
         List<Integer> receivedCount = new ArrayList<Integer>();
         List<Integer> processedCount = new ArrayList<Integer>();
-        String match;
 
-        int receivedTotal = 0;
-        for (int i = 0; i < numberOfInstances; i++) {
-            match = "received on port " + portList.get(i);
-            int counter = logCounter(match);
-            receivedTotal += counter;
-            receivedCount.add(counter);
-        }
-
-        int processedTotal = 0;
-        for (int i = 0; i < numberOfInstances; i++) {
-            match = "processed on port " + portList.get(i);
-            int counter = logCounter(match);
-            processedTotal += counter;
-            processedCount.add(counter);
-        }
+        receivedCount = eventMessageCounter("received");
+        processedCount = eventMessageCounter("processed");
 
         for (int i = 0; i < numberOfInstances; i++) {
             LOGGER.debug("Received, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
@@ -174,12 +158,38 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
             LOGGER.debug("Processed, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
                     processedCount.get(i));
         }
+        int receivedTotal = receivedCount.stream().mapToInt(Integer::intValue).sum();
+        int processedTotal = processedCount.stream().mapToInt(Integer::intValue).sum();
+
         LOGGER.debug("Total received message count: {}, Total processed message count: {}", receivedTotal,
                 processedTotal);
         assertEquals("No failover took place", true, receivedTotal > processedTotal);
         LOGGER.debug("Failover successfully took place");
     }
 
+    /**
+     * Counts events received or processed by EventHandler
+     *
+     * @param type
+     *            either received or processed
+     * @return list of event occurrences
+     */
+    private List<Integer> eventMessageCounter(String type) {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < numberOfInstances; i++) {
+            String match = type + " on port " + portList.get(i);
+            list.add(logCounter(match));
+        }
+        return list;
+    }
+
+    /**
+     * Counts occurrence of matching string in log output
+     *
+     * @param match
+     *            string to match with
+     * @return amount of times string matched
+     */
     private int logCounter(String match) {
         String consoleLog = baos.toString();
         int index = consoleLog.indexOf(match);

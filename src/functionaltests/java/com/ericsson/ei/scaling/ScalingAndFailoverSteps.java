@@ -38,7 +38,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers.EventHandler=INFO" })
+@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
@@ -46,15 +46,15 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     @LocalServerPort
     private int port;
-    private List<Integer> portList = new ArrayList<Integer>();
+    private List<Integer> portList = new ArrayList<>();
 
-    private List<WebApplicationContext> appContextList = new ArrayList<WebApplicationContext>();
+    private List<WebApplicationContext> appContextList = new ArrayList<>();
 
     @Autowired
     private MockMvc mockMvc;
-    private List<MockMvc> mockMvcList = new ArrayList<MockMvc>();
+    private List<MockMvc> mockMvcList = new ArrayList<>();
 
-    private List<String> eventsIdList = new ArrayList<String>();
+    private List<String> eventsIdList = new ArrayList<>();
     private int numberOfInstances;
     private ByteArrayOutputStream baos;
     private PrintStream printStream;
@@ -147,8 +147,8 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     @Then("^event messages are unaffected by instance failure$")
     public void events_failover() throws Exception {
-        List<Integer> receivedCount = new ArrayList<Integer>();
-        List<Integer> processedCount = new ArrayList<Integer>();
+        List<Integer> receivedCount = new ArrayList<>();
+        List<Integer> processedCount = new ArrayList<>();
 
         receivedCount = eventMessageCounter("received");
         processedCount = eventMessageCounter("processed");

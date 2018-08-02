@@ -8,7 +8,7 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/functionaltests/resources/features/scalingAndFailover.feature", glue = {
         "com.ericsson.ei.scaling" }, plugin = {
-                "html:target/cucumber-reports/TestSubscriptionTriggerRunner" }, monochrome = false)
+                "html:target/cucumber-reports/TestSubscriptionTriggerRunner" })
 public class TestScalingAndFailoverRunner {
 
 }

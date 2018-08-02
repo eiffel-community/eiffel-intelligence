@@ -68,12 +68,12 @@ public class EventHandler {
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
         String port = environment.getProperty("local.server.port");
-        log.info("Event {} received on port {}", id, port);
+        log.debug("Event {} received on port {}", id, port);
 
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
 
-        log.info("Event {} processed on port {}", id, port);
+        log.debug("Event {} processed on port {}", id, port);
     }
 }

@@ -13,27 +13,8 @@
 */
 package com.ericsson.ei.mongodbhandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.*;
-import lombok.Setter;
-import springfox.documentation.spring.web.json.Json;
-
-import org.apache.commons.lang3.StringUtils;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.stereotype.Component;
-
-import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -41,14 +22,8 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -57,12 +32,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class MongoDBHandler {
-    static Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandler.class);
+    private static Logger log = LoggerFactory.getLogger(MongoDBHandler.class);
 
     @Autowired
     private MongoProperties mongoProperties;
@@ -94,11 +72,10 @@ public class MongoDBHandler {
 
     /**
      * This method used for the insert the document into collection
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            json String
+     * @param input          json String
      * @return
      */
     public boolean insertDocument(String dataBaseName, String collectionName, String input) {
@@ -120,7 +97,7 @@ public class MongoDBHandler {
 
     /**
      * This method is used for the retrieve the all documents from the collection
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
      * @return
@@ -149,11 +126,10 @@ public class MongoDBHandler {
 
     /**
      * This method is used for the retrieve the documents based on the condition
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            string json
+     * @param condition      string json
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
@@ -188,13 +164,11 @@ public class MongoDBHandler {
     /**
      * This method is used for update the document in collection and remove the lock
      * in one query. Lock is needed for multi process execution
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a json string
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a json string
+     * @param updateInput    is updated document without lock
      * @return
      */
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -219,13 +193,11 @@ public class MongoDBHandler {
      * This method is used for lock and return the document that matches the input
      * condition in one query. Lock is needed for multi process execution. This
      * method is executed in a loop.
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a condition for update documents
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a condition for update documents
+     * @param updateInput    is updated document without lock
      * @return
      */
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -250,11 +222,10 @@ public class MongoDBHandler {
     /**
      * This method is used for the delete documents from collection using the a
      * condition
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            string json
+     * @param condition      string json
      * @return
      */
     public boolean dropDocument(String dataBaseName, String collectionName, String condition) {
@@ -281,13 +252,11 @@ public class MongoDBHandler {
 
     /**
      * This method is used for the create time to live index
-     * 
+     *
      * @param dataBaseName
      * @param collectionName
-     * @param fieldName
-     *            for index creation field
-     * @param ttlValue
-     *            seconds
+     * @param fieldName      for index creation field
+     * @param ttlValue       seconds
      */
     public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -299,7 +268,7 @@ public class MongoDBHandler {
         if (mongoClient == null)
             return null;
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
+        List<String> collectionList = db.listCollectionNames().into(new ArrayList<>());
         if (!collectionList.contains(collectionName)) {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");

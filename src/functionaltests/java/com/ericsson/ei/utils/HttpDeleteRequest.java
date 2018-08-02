@@ -28,7 +28,6 @@ public class HttpDeleteRequest {
      */
     public ResponseEntity<String> build() {
         HttpDelete httpDelete = new HttpDelete(url + port + endpoint);
-
         return restApi.getResponse(httpDelete);
     }
 }

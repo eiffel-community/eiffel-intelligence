@@ -14,6 +14,7 @@
 package com.ericsson.ei.queryservice.test;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
@@ -31,7 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -43,6 +47,8 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
+@ContextConfiguration(initializers = MongoClientInitializer.class)
+@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class QueryServiceTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryServiceTest.class);
@@ -75,6 +81,11 @@ public class QueryServiceTest {
     private static String missedNotificationPath = "src/test/resources/MissedNotification.json";
     private static String aggregatedObject;
     private static String missedNotification;
+
+    @PostConstruct
+    public void setUp() {
+        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
+    }
 
     @BeforeClass
     public static void init() throws IOException {

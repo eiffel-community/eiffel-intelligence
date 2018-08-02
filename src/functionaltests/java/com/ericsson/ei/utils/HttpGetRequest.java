@@ -28,7 +28,6 @@ public class HttpGetRequest {
      */
     public ResponseEntity<String> build() {
         HttpGet httpGet = new HttpGet(url + port + endpoint);
-
         return restApi.getResponse(httpGet);
     }
 }

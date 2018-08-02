@@ -18,6 +18,7 @@ package com.ericsson.ei.subscriptionhandler.test;
 
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.SubscriptionRepeatDbHandler;
 import com.mongodb.BasicDBObject;
@@ -29,7 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +43,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
+@ContextConfiguration(initializers = MongoClientInitializer.class)
+@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class SubscriptionRepeatDbHandlerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
@@ -48,6 +56,11 @@ public class SubscriptionRepeatDbHandlerTest {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @PostConstruct
+    public void init() {
+        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
+    }
 
     @After
     public void beforeTests() {

@@ -17,6 +17,7 @@
 package com.ericsson.ei.handlers.test;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -34,8 +35,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -44,6 +49,8 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
+@ContextConfiguration(initializers = MongoClientInitializer.class)
+@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class ObjectHandlerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandlerTest.class);
@@ -68,6 +75,11 @@ public class ObjectHandlerTest {
     private String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
+
+    @PostConstruct
+    public void setUp() {
+        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
+    }
 
     @Before
     public void init() {

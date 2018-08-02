@@ -1,47 +1,51 @@
 package com.ericsson.ei.handlers.test;
 
+import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.util.SocketUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
-
-import com.ericsson.ei.App;
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class, 
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = {App.class})
+@ContextConfiguration(initializers = MongoClientInitializer.class)
+@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class UpStreamEventHandlerTest {
 
     @Autowired
     private UpStreamEventsHandler classUnderTest;
 
-    @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @PostConstruct
+    public void setUp() {
+        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
     }
-    
+
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {
         // TO DO to complete implementation

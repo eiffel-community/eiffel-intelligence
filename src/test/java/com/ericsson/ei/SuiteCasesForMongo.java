@@ -11,6 +11,7 @@ import com.ericsson.ei.subscriptionhandler.test.SubscriptionRepeatDbHandlerTest;
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import lombok.Getter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({TestRulesService.class,
@@ -33,13 +35,12 @@ public class SuiteCasesForMongo {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SuiteCasesForMongo.class);
     private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
 
-    @Autowired
-    public MongoDBHandler mongoDBHandler;
+    @Getter
+    private static MongoClient mongoClient;
 
-    @BeforeClass
-    public static void init() {
+    @PostConstruct
+    public void init() {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
@@ -50,14 +51,9 @@ public class SuiteCasesForMongo {
         }
     }
 
-    @AfterClass
-    public static void close() {
+    @PreDestroy
+    public void close() {
         mongoClient.close();
         testsFactory.shutdown();
-    }
-
-    @PostConstruct
-    public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
     }
 }

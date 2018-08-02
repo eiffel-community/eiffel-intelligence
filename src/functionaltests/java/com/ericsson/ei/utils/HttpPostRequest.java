@@ -49,9 +49,8 @@ public class HttpPostRequest {
     }
 
     public void setParams(String filePath) {
-        String fileContent;
         try {
-            fileContent = FileUtils.readFileToString(new File(filePath), "UTF-8");
+            String fileContent = FileUtils.readFileToString(new File(filePath), "UTF-8");
             jsonParams = new JSONArray(fileContent);
         } catch (IOException | JSONException e) {
             LOGGER.error(e.getMessage(), e);

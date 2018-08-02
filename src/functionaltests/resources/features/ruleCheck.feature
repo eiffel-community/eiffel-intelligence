@@ -39,7 +39,7 @@ Feature: Test Rules Checker
     Given rules checking is enabled
     And file with JMESPath rules "/AggregateListRules.json" and file with events "/subscription_single.json"
     When make a POST request to the REST API "/rules/rule-check/aggregation"
-    Then get response code of 500
+    Then get response code of 400
 
   #@tag4
   Scenario: Execute list of JMESPath rules on list of JSON objects, when rules checking is not enabled

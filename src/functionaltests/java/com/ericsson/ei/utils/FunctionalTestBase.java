@@ -47,15 +47,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Autowired
     protected DataBaseManager dbManager;
 
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Value("${event_object_map.collection.name}")
-    private String collection;
-
-    @Value("${aggregated.collection.name}")
-    private String aggregatedCollectionName;
-
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         // Before running test.

@@ -17,12 +17,14 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.SocketUtils;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import lombok.Getter;
 
+@Component
 public class TestConfigs {
 
     private static AMQPBrokerManager amqpBroker;
@@ -35,6 +37,8 @@ public class TestConfigs {
 
     @Getter
     private MongoClient mongoClient = null;
+    
+    private MongodForTestsFactory testsFactory;
 
     @Bean
     AMQPBrokerManager amqpBroker() throws Exception {
@@ -64,7 +68,7 @@ public class TestConfigs {
     @Bean
     MongoClient mongoClient() throws IOException {
         try {
-            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
@@ -79,7 +83,7 @@ public class TestConfigs {
     }
 
     @Bean
-    void setAuthorization() {
+    String setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.enabled", "true");
         System.setProperty("ldap.url", "ldap://ldap.forumsys.com:389/dc=example,dc=com");
@@ -87,6 +91,25 @@ public class TestConfigs {
         System.setProperty("ldap.username", "cn=read-only-admin,dc=example,dc=com");
         System.setProperty("ldap.password", password);
         System.setProperty("ldap.user.filter", "uid={0}");
+        return null;
+    }
+    
+    public void tearDown() {
+        if (amqpBroker != null) {
+            amqpBroker.stopBroker();
+        }
+        try {
+            conn.close();
+        } catch (Exception e) {
+            // We try to close the connection but if
+            // the connection is closed we just receive the
+            // exception and go on
+        }
+
+        if (mongoClient != null)
+            mongoClient.close();
+        if (testsFactory != null)
+            testsFactory.shutdown();
     }
 
     public void createExchange(final String exchangeName, final String queueName) {

@@ -459,7 +459,7 @@ public class MergePrepare {
                 if (valueForKey == null && originJSONObject.has(key)) {
                     valueForKey = originJSONObject.get(key);
                 } else {
-                    if (valueForKey instanceof JSONObject) {
+                    if (valueForKey instanceof JSONObject && ((JSONObject) valueForKey).has(key)) {
                         valueForKey = ((JSONObject) valueForKey).get(key);
                     } else if (valueForKey instanceof JSONArray) {
                         valueForKey = ((JSONArray) valueForKey).get(Integer.parseInt(key));

@@ -70,18 +70,22 @@ public class WaitListWorker {
         RulesObject rulesObject;
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
-            if (eventToObjectMapHandler.isEventInEventObjectMap(new JSONObject(document).getString("_id"))) {
+            JSONObject eventObject = new JSONObject(document);
+            if (eventToObjectMapHandler.isEventInEventObjectMap(eventObject.getString("_id"))) {
                 waitListStorageHandler.dropDocumentFromWaitList(document);
             } else {
-                String event = new JSONObject(document).getString("Event");
+                String event = eventObject.getString("Event");
                 rulesObject = rulesHandler.getRulesForEvent(event);
                 String idRule = rulesObject.getIdentifyRules();
 
                 if (idRule != null && !idRule.isEmpty()) {
                     JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
                     if (ids.isArray()) {
+                        LOGGER.debug("[EIFFEL EVENT RESENT] id:" + eventObject.getString("_id") + " time:"
+                                + eventObject.getString("Time"));
                         for (final JsonNode idJsonObj : ids) {
-                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject, idJsonObj.textValue());
+                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
+                                    idJsonObj.textValue());
                             if (!objects.isEmpty()) {
                                 rmqHandler.publishObjectToWaitlistQueue(event);
                             }

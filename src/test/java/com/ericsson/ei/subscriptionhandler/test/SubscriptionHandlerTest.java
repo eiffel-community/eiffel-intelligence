@@ -89,8 +89,8 @@ public class SubscriptionHandlerTest {
     private static String headerContentMediaTypeAuthorization;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-    private static final String formkey = "Authorization";
-    private static final String formvalue = "Basic XX0=";
+    private static final String formKey = "Authorization";
+    private static final String formValue = "Basic XX0=";
 
     @Autowired
     private RunSubscription runSubscription;
@@ -108,8 +108,6 @@ public class SubscriptionHandlerTest {
     private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
     private static String subscriptionForMapNotification;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
-
     @Autowired
     private InformSubscription subscription;
 
@@ -122,10 +120,6 @@ public class SubscriptionHandlerTest {
     @MockBean
     private SpringRestTemplate springRestTemplate;
 
-    static String host = "localhost";
-    static int port = 27017;
-    private static String dataBaseName = "MissedNotification";
-    private static String collectionName = "Notification";
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
@@ -199,36 +193,36 @@ public class SubscriptionHandlerTest {
         }
         boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
-        assertEquals(output, true);
+        assertTrue(output);
     }
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagFalseTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode requirementNode = null;
+        ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(subscriptionData);
             requirementNode = (ArrayNode) subscriptionJson.get("requirements");
             requirementIterator = requirementNode.elements();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
-        assertEquals(output1, true);
-        assertEquals(output2, false);
+        assertTrue(output1);
+        assertFalse(output2);
     }
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagTrueTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode requirementNode = null;
-        ArrayNode requirementNode2 = null;
+        ArrayNode requirementNode;
+        ArrayNode requirementNode2;
         Iterator<JsonNode> requirementIterator = null;
         Iterator<JsonNode> requirementIterator2 = null;
         try {
@@ -238,14 +232,14 @@ public class SubscriptionHandlerTest {
             requirementIterator = requirementNode.elements();
             requirementIterator2 = requirementNode2.elements();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
                 subscriptionJson, "someID");
-        assertEquals(output1, true);
-        assertEquals(output2, true);
+        assertTrue(output1);
+        assertTrue(output2);
     }
 
     @Test
@@ -261,7 +255,7 @@ public class SubscriptionHandlerTest {
             expectedOutput = mapper.readTree(aggregatedObject);
             jsonResult = mapper.readTree(data);
         } catch (IOException e) {
-            assertTrue(false);
+            fail();
             LOGGER.error(e.getMessage(), e);
         }
         JsonNode output = jsonResult.get("AggregatedObject");
@@ -305,10 +299,10 @@ public class SubscriptionHandlerTest {
     @Test
     public void testRestPostTriggerForAuthorization() throws IOException {
         when(springRestTemplate.postDataMultiValue(urlAuthorization, mapNotificationMessage(subscriptionDataForAuthorization),
-                headerContentMediaTypeAuthorization, formkey, formvalue)).thenReturn(STATUS_OK);
+                headerContentMediaTypeAuthorization, formKey, formValue)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
-                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formkey, formvalue);
+                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey, formValue);
     }
 
     @Test
@@ -325,8 +319,7 @@ public class SubscriptionHandlerTest {
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         MvcResult result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);

@@ -43,6 +43,16 @@ public class EventManager {
         }
     }
     
+    /**
+     * Send Eiffel Events to the waitlist queue. Takes a Json String containing
+     * a single event.
+     * 
+     * @param eiffelEventJson
+     */
+    public void sendEiffelEvent(String eiffelEventJson) {
+        rmqHandler.publishObjectToWaitlistQueue(eiffelEventJson);
+    }
+    
     public List<String> getEventsIdList(String eiffelEventsJsonPath, List<String> eventNamesToSend) throws IOException {
         List<String> eventsIdList = new ArrayList<>();;
         List<String> eventNames = eventNamesToSend;

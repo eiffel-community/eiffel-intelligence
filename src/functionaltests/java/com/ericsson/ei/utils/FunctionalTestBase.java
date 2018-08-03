@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,7 +35,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class})
 public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);

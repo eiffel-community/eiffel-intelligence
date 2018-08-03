@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,9 @@ public class SubscriptionHandlerTest {
 
     @Autowired
     private SendMail sendMail;
+
+    @Mock
+    private QueryResponse queryResponse;
 
     @PostConstruct
     public void setUp() {
@@ -219,25 +223,25 @@ public class SubscriptionHandlerTest {
         assertTrue(output2);
     }
 
-//    @Test
-//    public void missedNotificationTest() throws IOException {
-//        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-//        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
-//        Iterator itr = outputDoc.iterator();
-//        String data = itr.next().toString();
-//        JsonNode jsonResult = null;
-//        JsonNode expectedOutput = null;
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            expectedOutput = mapper.readTree(aggregatedObject);
-//            jsonResult = mapper.readTree(data);
-//        } catch (IOException e) {
-//            fail();
-//            LOGGER.error(e.getMessage(), e);
-//        }
-//        JsonNode output = jsonResult.get("AggregatedObject");
-//        assertEquals(expectedOutput, output);
-//    }
+    @Test
+    public void missedNotificationTest() throws IOException {
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME);
+        Iterator itr = outputDoc.iterator();
+        String data = itr.next().toString();
+        JsonNode jsonResult = null;
+        JsonNode expectedOutput = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            expectedOutput = mapper.readTree(aggregatedObject);
+            jsonResult = mapper.readTree(data);
+        } catch (IOException e) {
+            fail();
+            LOGGER.error(e.getMessage(), e);
+        }
+        JsonNode output = jsonResult.get("AggregatedObject");
+        assertEquals(expectedOutput, output);
+    }
 
     @Test
     public void missedNotificationWithTTLTest() throws IOException, InterruptedException {
@@ -282,13 +286,13 @@ public class SubscriptionHandlerTest {
                 mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formkey, formvalue);
     }
 
-//    @Test
-//    public void testRestPostTriggerFailure() throws IOException {
-//        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-//        verify(springRestTemplate, atLeast(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
-//                headerContentMediaType);
-//        assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
-//    }
+    @Test
+    public void testRestPostTriggerFailure() throws IOException {
+        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        verify(springRestTemplate, atLeast(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+                headerContentMediaType);
+        assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
+    }
 
     @Test
     public void testQueryMissedNotificationEndPoint() throws Exception {

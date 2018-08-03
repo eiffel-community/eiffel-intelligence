@@ -22,15 +22,18 @@ import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 
 @Component
-@Scope(value="thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EventHandler {
 
     private static Logger log = LoggerFactory.getLogger(EventHandler.class);
@@ -43,35 +46,34 @@ public class EventHandler {
 
     @Autowired
     DownstreamIdRulesHandler downstreamIdRulesHandler;
-    
+
+    @Autowired
+    Environment environment;
+
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
 
     public void eventReceived(String event) {
+        log.info("Thread id " + Thread.currentThread().getId() + " spawned");
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
-//        downstreamIdRulesHandler.runIdRules(eventRules, event);
-    }
-
-    public void eventReceived(byte[] message) {
-        log.info("Thread id " + Thread.currentThread().getId() + " spawned");
-        String actualMessage = new String(message);
-        log.info("Event received <" + actualMessage + ">");
-        eventReceived(actualMessage);
-//        if (System.getProperty("flow.test") == "true") {
-//            String countStr = System.getProperty("eiffel.intelligence.processedEventsCount");
-//            int count = Integer.parseInt(countStr);
-//            count++;
-//            System.setProperty("eiffel.intelligence.processedEventsCount", "" + count);
-//        }
+        // downstreamIdRulesHandler.runIdRules(eventRules, event);
     }
 
     @Async
     public void onMessage(Message message, Channel channel) throws Exception {
-        byte[] messageBody = message.getBody();
+        String messageBody = new String(message.getBody());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(messageBody);
+        String id = node.get("meta").get("id").toString();
+        String port = environment.getProperty("local.server.port");
+        log.debug("Event {} received on port {}", id, port);
+
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
+
+        log.debug("Event {} processed on port {}", id, port);
     }
 }

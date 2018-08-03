@@ -109,7 +109,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         if (testEnable) {
             try {
                 String aggregatedObject = ruleCheckService.prepareAggregatedObject(new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
-                if (aggregatedObject != null) {
+                if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
                     String errorMessage = "Aggregated event is not generated. List of rules or list of events are not correct";

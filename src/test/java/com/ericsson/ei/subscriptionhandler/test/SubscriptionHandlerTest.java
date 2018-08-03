@@ -70,7 +70,7 @@ import static org.powermock.reflect.Whitebox.invokeMethod;
 public class SubscriptionHandlerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandlerTest.class);
-    private static final String aggregatedPath = "src/test/resources/aggregated_document_MP.json";
+    private static final String aggregatedPath = "src/test/resources/aggregatedObject.json";
     private static final String aggregatedPathForMapNotification = "src/test/resources/aggregatedObjectForMapNotification.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";

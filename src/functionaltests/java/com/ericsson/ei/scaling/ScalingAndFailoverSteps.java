@@ -176,7 +176,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
      * @return list of event occurrences
      */
     private List<Integer> eventMessageCounter(String type) {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < numberOfInstances; i++) {
             String match = type + " on port " + portList.get(i);
             list.add(logCounter(match));

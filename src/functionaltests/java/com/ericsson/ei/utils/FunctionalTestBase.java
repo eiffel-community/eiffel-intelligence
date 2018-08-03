@@ -55,7 +55,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class})
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
 public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
@@ -110,7 +110,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * containing events and uses getEventNamesToSend to get specific events
      * from that file. getEventNamesToSend needs to be overridden.
      *
-     * @param eiffelEventsJsonPath JSON file containing Eiffel Events
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
      * @return list of eiffel event IDs
      * @throws InterruptedException
      * @throws IOException
@@ -122,32 +123,56 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             eventsIdList.add(eventJson.get("meta").get("id").toString().replaceAll("\"", ""));
-            rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
+            sendEiffelEvent(eventJson.toString());
         }
     }
 
     /**
-     * Converts a JSON string into a tree model.
+     * Send Eiffel Events to the waitlist queue. Takes a Json String containing
+     * a single event.
+     * 
+     * @param eiffelEventJson
+     */
+    protected void sendEiffelEvent(String eiffelEventJson) {
+        rmqHandler.publishObjectToWaitlistQueue(eiffelEventJson);
+    }
+
+    /**
+     * Converts a JSON file into a tree model.
      *
-     * @param filePath path to JSON file
+     * @param filePath
+     *            path to JSON file
      * @return JsonNode tree model
      * @throws IOException
      */
     protected JsonNode getJSONFromFile(String filePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
-        return objectMapper.readTree(expectedDocument);
+        return getJSONFromString(expectedDocument);
+    }
+    
+    /**
+     * Converts a JSON string into a tree model.
+     *
+     * @param body
+     *            JSON string
+     * @return JsonNode tree model
+     * @throws IOException
+     */
+    protected JsonNode getJSONFromString(String body) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readTree(body);
     }
 
     /**
      * Verify that events are located in the database collection.
      *
-     * @param eventsIdList list of events IDs
+     * @param eventsIdList
+     *            list of events IDs
      * @return list of missing events
      * @throws InterruptedException
      */
     protected List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + 120000;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
             if (eventsIdList.isEmpty()) {
@@ -161,7 +186,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Checks collection of events against event list.
      *
-     * @param checklist list of event IDs
+     * @param checklist
+     *            list of event IDs
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
@@ -182,12 +208,13 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Verify that aggregated object contains the expected information.
      *
-     * @param checklist list of checklist to check
+     * @param checklist
+     *            list of checklist to check
      * @return list of missing checklist
      * @throws InterruptedException
      */
     protected List<String> verifyAggregatedObjectInDB(List<String> checklist) throws InterruptedException {
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + 120000;
         while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
             checklist = compareArgumentsWithAggregatedObjectInDB(checklist);
             if (checklist.isEmpty()) {
@@ -223,7 +250,8 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     /**
      * Checks that aggregated object contains specified arguments.
      *
-     * @param checklist list of arguments
+     * @param checklist
+     *            list of arguments
      * @return list of missing arguments
      */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
@@ -256,15 +284,15 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
 
     /**
      * Retrieve a value from a database query result
+     * 
      * @param key
      * @param index
      * @return String value matching the given key
      *
-     *  */
+     */
     protected String getValueFromQuery(List<String> databaseQueryResult, String key, int index) {
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index))
-                .getAsJsonObject();
+        JsonObject jsonObject = jsonParser.parse(databaseQueryResult.get(index)).getAsJsonObject();
 
         return jsonObject.get(key).toString();
     }

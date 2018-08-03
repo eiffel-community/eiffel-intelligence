@@ -108,6 +108,9 @@ public class RmqHandler {
     @Setter
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
+    
+    @Value("${threads.maxPoolSize}")
+    private int maxThreads;
 
     private RabbitTemplate rabbitTemplate;
     private CachingConnectionFactory factory;
@@ -168,6 +171,7 @@ public class RmqHandler {
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        container.setPrefetchCount(maxThreads);
         return container;
     }
 

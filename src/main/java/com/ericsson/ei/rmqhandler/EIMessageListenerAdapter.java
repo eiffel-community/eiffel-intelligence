@@ -34,7 +34,6 @@ public class EIMessageListenerAdapter extends MessageListenerAdapter {
         if (delegate != this) {
             if (delegate instanceof EventHandler) {
                 if (channel != null) {
-                    channel.basicQos(150);
                     ((EventHandler) delegate).onMessage(message, channel);
                     return;
                 }

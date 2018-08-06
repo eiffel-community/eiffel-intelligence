@@ -1,9 +1,7 @@
 package com.ericsson.ei.subscriptions.repeatHandler;
 
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
@@ -11,6 +9,7 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -68,12 +67,6 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private RmqHandler rmqHandler;
-
-    @Autowired
-    private ObjectHandler objectHandler;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;

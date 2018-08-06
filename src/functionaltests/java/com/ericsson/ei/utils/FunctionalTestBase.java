@@ -34,8 +34,6 @@ import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -57,8 +55,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FunctionalTestBase.class })
 public class FunctionalTestBase extends AbstractTestExecutionListener {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestBase.class);
 
     @Autowired
     private MongoProperties mongoProperties;
@@ -113,7 +109,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
      * @param eiffelEventsJsonPath
      *            JSON file containing Eiffel Events
      * @return list of eiffel event IDs
-     * @throws InterruptedException
      * @throws IOException
      */
     protected void sendEiffelEvents(String eiffelEventsJsonPath) throws IOException {
@@ -149,7 +144,7 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
         String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
         return getJSONFromString(expectedDocument);
     }
-    
+
     /**
      * Converts a JSON string into a tree model.
      *

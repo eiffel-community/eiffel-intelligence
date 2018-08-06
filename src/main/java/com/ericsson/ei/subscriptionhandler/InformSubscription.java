@@ -59,8 +59,8 @@ public class InformSubscription {
     private static final Logger LOGGER = LoggerFactory.getLogger(InformSubscription.class);
     // Regular expression for replacement unexpected character like \"|
     private static final String REGEX = "^\"|\"$";
-    private static String key = "";
-    private static String val = "";
+    private String key = "";
+    private String val = "";
 
     @Getter
     @Value("${notification.failAttempt}")
@@ -159,8 +159,10 @@ public class InformSubscription {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
-
         }
+        //set as empty because we should avoid leaking of authentication details
+        key = "";
+        val = "";
     }
 
     /**
@@ -238,6 +240,7 @@ public class InformSubscription {
 
     /**
      * This method extracting key and value from subscription
+     *
      * @param aggregatedObject
      * @param subscriptionJson
      * @return

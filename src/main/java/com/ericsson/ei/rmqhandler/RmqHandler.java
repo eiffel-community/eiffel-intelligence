@@ -16,18 +16,15 @@
 */
 package com.ericsson.ei.rmqhandler;
 
+import java.net.ConnectException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.AmqpConnectException;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -108,7 +105,7 @@ public class RmqHandler {
     @Setter
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
-    
+
     @Value("${threads.maxPoolSize}")
     private int maxThreads;
 
@@ -116,12 +113,16 @@ public class RmqHandler {
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
     private SimpleMessageListenerContainer waitlistContainer;
+    private ConnectionListener connectionListener;
+
+    private Boolean isMessageBusRunning = false;
 
     @Bean
     ConnectionFactory connectionFactory() {
         com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);
+        log.debug("is automatic recovery? " + connectionFactory.isAutomaticRecoveryEnabled());
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
             connectionFactory.setUsername(user);
             connectionFactory.setPassword(password);
@@ -144,6 +145,8 @@ public class RmqHandler {
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
 
+        //where is connection created?
+        factory.addConnectionListener(connectionListener());
         return factory;
     }
 
@@ -175,12 +178,34 @@ public class RmqHandler {
         return container;
     }
 
+    @Bean
+    ConnectionListener connectionListener() {
+        if (connectionListener != null)
+            return  connectionListener;
+
+        connectionListener = new ConnectionListener() {
+            @Override public void onCreate(Connection connection) {
+                log.debug("Connection listener was created");
+                isMessageBusRunning = true;
+            }
+
+            @Override public void onShutDown(com.rabbitmq.client.ShutdownSignalException signal) {
+                log.debug("Shutting down connection to message bus. Reason: " + signal.getCause().toString());
+                isMessageBusRunning = false;
+            }
+        };
+
+        return connectionListener;
+    }
+
+
     public String getQueueName() {
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
     }
 
     public String getWaitlistQueueName() {
+
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
     }
@@ -208,8 +233,18 @@ public class RmqHandler {
     }
 
     public void publishObjectToWaitlistQueue(String message) {
-        log.info("publishing message to message bus...");
-        rabbitMqTemplate().convertAndSend(message);
+        log.info("Publishing message to message bus...");
+
+        while(true) {
+            try {
+                rabbitTemplate.convertAndSend(message);
+                break;
+            } catch (Exception e) {
+                //
+                log.error("Could not connect to message bus, retrying");
+                log.error(e.getMessage());
+            }
+        }
     }
 
     public void close() {
@@ -218,8 +253,9 @@ public class RmqHandler {
             container.destroy();
             factory.destroy();
         } catch (Exception e) {
-            log.info("exception occured while closing connections");
+            log.info("Exception occured while closing connections");
             log.info(e.getMessage(), e);
         }
     }
+
 }

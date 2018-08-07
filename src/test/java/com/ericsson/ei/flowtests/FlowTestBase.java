@@ -93,7 +93,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     @After
     public void teardown() {
-        mongoDBHandler.getMongoClient().close();
         mongoDBHandler.setMongoClient(null);
         getFlowTestConfigs().tearDown();
         cleanFlowTestConfigs();

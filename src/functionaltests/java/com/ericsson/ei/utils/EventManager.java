@@ -22,12 +22,14 @@ public class EventManager {
     protected List<String> getEventNamesToSend() {
         return new ArrayList<>();
     }
-    
+
     /**
      * Send Eiffel Events to the waitlist queue.
      *
-     * @param eiffelEventsJsonPath JSON file containing Eiffel Events
-     * @param eventNames list of event names
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
+     * @param eventNames
+     *            list of event names
      * @throws IOException
      */
     public void sendEiffelEvents(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
@@ -39,20 +41,22 @@ public class EventManager {
     }
 
     /**
-     * Send Eiffel Event to the waitlist queue. Takes a Json String containing
-     * a single event.
+     * Send Eiffel Event to the waitlist queue. Takes a Json String containing a
+     * single event.
      * 
      * @param eiffelEventJson
      */
     public void sendEiffelEvent(String eiffelEventJson) {
         rmqHandler.publishObjectToWaitlistQueue(eiffelEventJson);
     }
-    
+
     /**
      * Get list of IDs.
      *
-     * @param eiffelEventsJsonPath JSON file containing Eiffel Events
-     * @param eventNames list of event names
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
+     * @param eventNames
+     *            list of event names
      * @return list of event IDs
      * @throws IOException
      */

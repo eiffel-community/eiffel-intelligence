@@ -74,7 +74,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         printStream.close();
     }
 
-    @Given("^\"([0-9]+)\" additional instance(s)? of Eiffel Intelligence$")
+    @Given("^(\\d+) additional instance(s)? of Eiffel Intelligence$")
     public void additional_eiffel_intelligence_instances(int multiple, String plural) {
         LOGGER.debug("{} additional eiffel intelligence instance{} will start", multiple, plural);
         numberOfInstances = multiple + 1;
@@ -117,7 +117,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         }
     }
 
-    @When("^\"([0-9]+)\" event messages are sent$")
+    @When("^(\\d+) event messages are sent$")
     public void multiple_events(int multiple) throws Exception {
         LOGGER.debug("{} eiffel events will be sent", multiple);
         String event = FileUtils.readFileToString(new File(EVENT_DUMMY), "UTF-8");

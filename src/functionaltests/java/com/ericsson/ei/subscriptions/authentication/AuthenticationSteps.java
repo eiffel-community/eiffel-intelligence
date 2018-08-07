@@ -1,21 +1,18 @@
 package com.ericsson.ei.subscriptions.authentication;
 
-import com.ericsson.ei.controller.AuthControllerImpl;
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.TestLDAPInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.commons.io.FileUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
@@ -37,14 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationSteps.class);
     private static final String SUBSCRIPTION = "src/functionaltests/resources/subscription_single.json";
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private AuthControllerImpl authController;
 
     private MvcResult mvcResult;
 

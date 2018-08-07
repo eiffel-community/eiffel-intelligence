@@ -38,7 +38,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@TestPropertySource(properties = { "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })
 @Ignore
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
@@ -56,23 +55,8 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     private List<String> eventsIdList = new ArrayList<>();
     private int numberOfInstances;
-    private ByteArrayOutputStream baos;
-    private PrintStream printStream;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingAndFailoverSteps.class);
-
-    @Before("@ScalingAndFailoverScenario")
-    public void beforeScenario() {
-        baos = new ByteArrayOutputStream();
-        MultiOutputStream multiOutput = new MultiOutputStream(System.out, baos);
-        printStream = new PrintStream(multiOutput);
-        System.setOut(printStream);
-    }
-
-    @After("@ScalingAndFailoverScenario")
-    public void afterScenario() {
-        printStream.close();
-    }
 
     @Given("^(\\d+) additional instance(s)? of Eiffel Intelligence$")
     public void additional_eiffel_intelligence_instances(int multiple, String plural) {
@@ -143,63 +127,5 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList);
         LOGGER.debug("Missing events: {}", missingEventIds.toString());
         assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
-    }
-
-    @Then("^event messages are unaffected by instance failure$")
-    public void events_failover() throws Exception {
-        List<Integer> receivedCount = new ArrayList<>();
-        List<Integer> processedCount = new ArrayList<>();
-
-        receivedCount = eventMessageCounter("received");
-        processedCount = eventMessageCounter("processed");
-
-        for (int i = 0; i < numberOfInstances; i++) {
-            LOGGER.debug("Received, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
-                    receivedCount.get(i));
-            LOGGER.debug("Processed, Instance {}, Port: {}, Message count: {}", i + 1, portList.get(i),
-                    processedCount.get(i));
-        }
-        int receivedTotal = receivedCount.stream().mapToInt(Integer::intValue).sum();
-        int processedTotal = processedCount.stream().mapToInt(Integer::intValue).sum();
-
-        LOGGER.debug("Total received message count: {}, Total processed message count: {}", receivedTotal,
-                processedTotal);
-        assertEquals("Total received messages is lower than the total processed count", true,
-                receivedTotal >= processedTotal);
-    }
-
-    /**
-     * Counts events received or processed by EventHandler
-     *
-     * @param type
-     *            either received or processed
-     * @return list of event occurrences
-     */
-    private List<Integer> eventMessageCounter(String type) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < numberOfInstances; i++) {
-            String match = type + " on port " + portList.get(i);
-            list.add(logCounter(match));
-        }
-        return list;
-    }
-
-    /**
-     * Counts occurrence of matching string in log output
-     *
-     * @param match
-     *            string to match with
-     * @return amount of times string matched
-     */
-    private int logCounter(String match) {
-        String consoleLog = baos.toString();
-        int index = consoleLog.indexOf(match);
-        int count = 0;
-        while (index != -1) {
-            count++;
-            consoleLog = consoleLog.substring(index + 1);
-            index = consoleLog.indexOf(match);
-        }
-        return count;
     }
 }

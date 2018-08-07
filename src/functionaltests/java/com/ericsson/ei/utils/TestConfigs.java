@@ -16,7 +16,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.stereotype.Component;
 import org.springframework.util.SocketUtils;
 
 import de.flapdoodle.embed.mongo.distribution.Version;

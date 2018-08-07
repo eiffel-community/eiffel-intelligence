@@ -21,13 +21,14 @@ import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG"})
+        "logging.level.com.ericsson.ei.waitlist=DEBUG" })
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
@@ -50,24 +51,28 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         System.setOut(new PrintStream(logfile));
     }
 
+    @After("@ThreadingAndWaitlistRepeatScenario")
+    public void afterScenario() throws IOException {
+        Files.deleteIfExists(Paths.get(LOGFILE));
+    }
+
     @Given("^that eiffel events are sent$")
     public void that_eiffel_events_are_sent() throws Throwable {
         sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH);
     }
-    
+
     @Then("^waitlist should not be empty$")
     public void waitlist_should_not_be_empty() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
         int waitListSize = waitListSize();
         assertNotEquals(0, waitListSize);
-    }  
+    }
 
     @Given("^no event is aggregated$")
     public void no_event_is_aggregated() throws Throwable {
         boolean aggregatedObjectExists = verifyAggregatedObjectExistsInDB();
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
-
 
     @Then("^the waitlist will try to resent the events at given time interval$")
     public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {
@@ -103,9 +108,9 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);   
-        while (waitListSize() > 0  && stopTime > System.currentTimeMillis()) {
-            TimeUnit.MILLISECONDS.sleep(10000);        
+        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);
+        while (waitListSize() > 0 && stopTime > System.currentTimeMillis()) {
+            TimeUnit.MILLISECONDS.sleep(10000);
         }
         int waitListSize = waitListSize();
         assertEquals(0, waitListSize);

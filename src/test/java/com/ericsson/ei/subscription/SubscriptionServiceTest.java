@@ -192,7 +192,7 @@ public class SubscriptionServiceTest {
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             subscriptionService.addSubscription(subscription2);
 
-            subscriptions = subscriptionService.getSubscription();
+            subscriptions = subscriptionService.getSubscriptions();
             assertTrue(subscriptions.size() > 0);
 
             // deleting the test data

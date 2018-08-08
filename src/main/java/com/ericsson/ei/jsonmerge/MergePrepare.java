@@ -16,22 +16,27 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.json.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
-import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import lombok.Setter;
 
 @Component
 public class MergePrepare {
@@ -126,6 +131,8 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
+       log.debug(" mergeRules are : " + mergeRule);
+       log.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.getString(0);
@@ -241,10 +248,10 @@ public class MergePrepare {
             if (pos > 0)
                 ruleKey = ruleKey.substring(0, pos);
             try {
-                Object object = objectJSONObject.get(ruleKey);
-                if (object != null)
+                JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
+                if (!(jsonResult instanceof NullNode))
                     mergePath = ruleKey;
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
         } else {
@@ -320,13 +327,14 @@ public class MergePrepare {
                     Object value = parsedJson.at(mergePath);
                     if (value instanceof ArrayNode) {
                         int arraySize = ((ArrayNode) value).size();
-                        mergePath += "." + arraySize++ + "." + ruleKeyLast;
-                    } else {
+                        mergePath += "." + arraySize++;
+                    }
+                    if (!StringUtils.isAllBlank(ruleKeyLast)) {
                         mergePath += "." + ruleKeyLast;
                     }
+
                     mergePath = mergePath.replaceFirst("\\/", "");
                     mergePath = mergePath.replaceAll("\\/", "\\.");
-
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -448,17 +456,17 @@ public class MergePrepare {
             Object valueForKey = null;
             for (int i = 0; i < mergePathIndex; i++) {
                 String key = mergePathArray.getString(i);
-                if (valueForKey == null) {
+                if (valueForKey == null && originJSONObject.has(key)) {
                     valueForKey = originJSONObject.get(key);
                 } else {
-                    if (valueForKey instanceof JSONObject) {
+                    if (valueForKey instanceof JSONObject && ((JSONObject) valueForKey).has(key)) {
                         valueForKey = ((JSONObject) valueForKey).get(key);
                     } else if (valueForKey instanceof JSONArray) {
                         valueForKey = ((JSONArray) valueForKey).get(Integer.parseInt(key));
                     }
                 }
             }
-            if (valueForKey.getClass().equals(JSONArray.class)) {
+            if (valueForKey != null && valueForKey.getClass().equals(JSONArray.class)) {
                 size = ((JSONArray) valueForKey).length();
                 if ((Integer.parseInt(pathElement) + 1) > size) {
                     return Integer.parseInt(pathElement) + 1;

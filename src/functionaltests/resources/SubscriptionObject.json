@@ -1,0 +1,34 @@
+{
+        "subscriptionName": "Subscription_1",
+        "userName" : "DEF",
+        "repeat": false,
+        "created": "data-time",
+        "notificationType": "REST_POST",
+        "notificationMeta": "http://localhost:{port}/missed_notification",
+        "restPostBodyMediaType": "application/json",
+        "notificationMessageKeyValues" : [
+          {
+            "formkey" : "",
+            "formvalue" : "@"
+          }
+        ],
+
+        "requirements": [
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"}
+                ]
+
+            },
+            {
+                "type": "ARTIFACT_1",
+                "conditions": [
+                    {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+                    {"jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"}
+                ]
+
+            }
+        ]
+}

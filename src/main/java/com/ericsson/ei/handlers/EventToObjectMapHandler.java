@@ -17,6 +17,7 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,6 +147,12 @@ public class EventToObjectMapHandler {
         String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
         log.info("The Json condition for delete aggregated object is : " + condition);
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
+    }
+
+    public boolean isEventInEventObjectMap(String eventId) {
+        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
+        return !documents.isEmpty();
     }
 
 

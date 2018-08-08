@@ -21,6 +21,6 @@ script:
 #
 # It is also importan that the first test to be run is a Spring Boot Test since spring boot also downloads
 # another version of embedded mongo db so all Spring Boot tests will end up in a race condition also
-  -  mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test jacoco:report coveralls:report
-  -  mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test jacoco:report coveralls:report
+  -  mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test
+  -  mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test
  

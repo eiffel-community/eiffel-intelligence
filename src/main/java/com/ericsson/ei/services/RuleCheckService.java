@@ -1,9 +1,9 @@
 package com.ericsson.ei.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-
+import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,10 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.EventHandler;
-import com.ericsson.ei.handlers.EventToObjectMapHandler;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 
 @Component
 public class RuleCheckService implements IRuleCheckService {
@@ -53,7 +52,7 @@ public class RuleCheckService implements IRuleCheckService {
         }
         String templateName = templateNames.iterator().next();
         if (templateNames.size() == 1) {
-            ArrayList<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
+            List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
             response = responseList.toString();
         } else {
             response = "Multiple template names are not allowed, Please use single name for all rules.";
@@ -68,10 +67,13 @@ public class RuleCheckService implements IRuleCheckService {
     private void addTemplateNameToIds(JSONObject jsonObject, final String templateName) throws JSONException {
         String idTemplateSuffix = jmesPathInterface.runRuleOnEvent("meta.id", jsonObject.toString()).asText() + "_"
                 + templateName;
-        jsonObject.getJSONObject("meta").put("id", idTemplateSuffix);
-        for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
-            JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
-            link.put("target", link.getString("target") + "_" + templateName);
+        if (jsonObject.has("meta"))
+            jsonObject.getJSONObject("meta").put("id", idTemplateSuffix);
+        if (jsonObject.has("links")) {
+            for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
+                JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
+                link.put("target", link.getString("target") + "_" + templateName);
+            }
         }
     }
 }

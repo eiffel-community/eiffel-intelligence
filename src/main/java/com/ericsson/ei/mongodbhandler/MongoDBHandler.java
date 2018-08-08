@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.*;
 import lombok.Setter;
+import springfox.documentation.spring.web.json.Json;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
+import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -63,7 +66,7 @@ public class MongoDBHandler {
 
     @Autowired
     private MongoProperties mongoProperties;
-    
+
     @Getter
     @Setter
     @JsonIgnore
@@ -116,8 +119,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the retrieve the all documents from the
-     * collection
+     * This method is used for the retrieve the all documents from the collection
      * 
      * @param dataBaseName
      * @param collectionName
@@ -156,8 +158,9 @@ public class MongoDBHandler {
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
-        log.debug("Find and retrieve data from database: " + dataBaseName + " Collection: " + collectionName
-                + "\nwith Condition: " + condition);
+
+        log.debug("Find and retrieve data from database." + "\nDatabase: " + dataBaseName + "\nCollection: "
+                + collectionName + "\nCondition/Query: " + condition);
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -172,6 +175,8 @@ public class MongoDBHandler {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " documents are not found");
                 }
+            } else {
+                log.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -181,8 +186,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the
-     * lock in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock
+     * in one query. Lock is needed for multi process execution
      * 
      * @param dataBaseName
      * @param collectionName
@@ -211,9 +216,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the
-     * input condition in one query. Lock is needed for multi process execution.
-     * This method is executed in a loop.
+     * This method is used for lock and return the document that matches the input
+     * condition in one query. Lock is needed for multi process execution. This
+     * method is executed in a loop.
      * 
      * @param dataBaseName
      * @param collectionName
@@ -298,7 +303,16 @@ public class MongoDBHandler {
         if (!collectionList.contains(collectionName)) {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
-            db.createCollection(collectionName);
+            try {
+                db.createCollection(collectionName);
+            } catch (MongoCommandException e) {
+                String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
+                if (e.getMessage().contains(message)) {
+                    log.warn("A " + message + ".");
+                } else {
+                    throw e;
+                }
+            }
             log.debug("done....");
         }
         MongoCollection<Document> collection = db.getCollection(collectionName);

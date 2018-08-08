@@ -27,8 +27,6 @@ import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,8 +84,6 @@ public class SubscriptionHandlerTest {
     private static String headerContentMediaType;
     private static String urlAuthorization;
     private static String headerContentMediaTypeAuthorization;
-    private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
     private static final String formKey = "Authorization";
     private static final String formValue = "Basic XX0=";
 

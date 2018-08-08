@@ -41,7 +41,7 @@ public class TestConfigs {
     protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerPool = new HashMap<Integer, AMQPBrokerManager>();
 
     //@Bean
-    AMQPBrokerManager amqpBroker() throws Exception {
+    AMQPBrokerManager createAmqpBroker() throws Exception {
         // Generates a random port for amqpBroker and starts up a new broker
 
         int port = SocketUtils.findAvailableTcpPort();
@@ -72,15 +72,6 @@ public class TestConfigs {
 
         return amqpBroker;
     }
-
-    //TODO: remove unused amqpBrokers from pool after tests are finished
-    public void removeAmqpBroker(int port){
-        LOGGER.debug("Removing AMQP broker from pool...");
-        AMQPBrokerManager broker = amqpBrokerPool.get(port);
-        broker.stopBroker();
-        amqpBrokerPool.remove(port);
-    }
-
 
     //@Bean
     MongoClient startUpMongoClient() throws IOException {
@@ -118,5 +109,14 @@ public class TestConfigs {
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
+    }
+
+    public static AMQPBrokerManager getBrokerFromPool(int port) {
+        return amqpBrokerPool.get(port);
+    }
+
+    public static void removeBrokerFromPool(int port) {
+        //TODO: shutdown before removing from pool? here or in tests?
+        amqpBrokerPool.remove(port);
     }
 }

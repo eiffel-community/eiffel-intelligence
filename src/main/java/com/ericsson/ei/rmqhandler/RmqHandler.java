@@ -114,6 +114,7 @@ public class RmqHandler {
     private SimpleMessageListenerContainer container;
     private SimpleMessageListenerContainer waitlistContainer;
     private ConnectionListener connectionListener;
+    private Connection conn;
 
     private Boolean isMessageBusRunning = false;
 
@@ -122,7 +123,6 @@ public class RmqHandler {
         com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);
-        log.debug("is automatic recovery? " + connectionFactory.isAutomaticRecoveryEnabled());
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
             connectionFactory.setUsername(user);
             connectionFactory.setPassword(password);
@@ -142,11 +142,15 @@ public class RmqHandler {
         }
 
         factory = new CachingConnectionFactory(connectionFactory);
+
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
 
-        //where is connection created?
         factory.addConnectionListener(connectionListener());
+
+        // This will disable connectionFactories auto recovery and use Spring AMQP auto recovery
+        connectionFactory.setAutomaticRecoveryEnabled(false);
+
         return factory;
     }
 
@@ -178,6 +182,7 @@ public class RmqHandler {
         return container;
     }
 
+
     @Bean
     ConnectionListener connectionListener() {
         if (connectionListener != null)
@@ -189,8 +194,8 @@ public class RmqHandler {
                 isMessageBusRunning = true;
             }
 
-            @Override public void onShutDown(com.rabbitmq.client.ShutdownSignalException signal) {
-                log.debug("Shutting down connection to message bus. Reason: " + signal.getCause().toString());
+            @Override public void onClose(Connection connection) {
+                log.debug("Shutting down connection to message bus.");
                 isMessageBusRunning = false;
             }
         };
@@ -226,6 +231,7 @@ public class RmqHandler {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                     log.info("Received confirm with result : {}", ack);
+                    log.error(cause);
                 }
             });
         }
@@ -234,17 +240,7 @@ public class RmqHandler {
 
     public void publishObjectToWaitlistQueue(String message) {
         log.info("Publishing message to message bus...");
-
-        while(true) {
-            try {
-                rabbitTemplate.convertAndSend(message);
-                break;
-            } catch (Exception e) {
-                //
-                log.error("Could not connect to message bus, retrying");
-                log.error(e.getMessage());
-            }
-        }
+        rabbitTemplate.convertAndSend(message);
     }
 
     public void close() {

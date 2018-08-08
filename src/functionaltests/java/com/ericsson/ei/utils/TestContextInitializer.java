@@ -19,19 +19,16 @@ public class TestContextInitializer extends TestConfigs
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestContextInitializer.class);
 
-    @Getter
-    public static AMQPBrokerManager amqpBroker; // make private
-
     public static MongoClient mongoClient;
 
     @Override
     public void initialize(ConfigurableApplicationContext ac) {
 
         try {
-            amqpBroker = amqpBroker(); // get instance from pool where? here, or from tests steps?
+            createAmqpBroker(); // get instance from pool where? here, or from tests steps?
             mongoClient = startUpMongoClient();
         } catch (Exception e) {
-
+            LOGGER.error("Failed to startup Mongo client or AMQP broker for test");
         }
     }
 }

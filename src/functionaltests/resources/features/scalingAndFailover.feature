@@ -26,4 +26,3 @@ Feature: Scaling and Failover test
     When 1000 event messages are sent
     And additional instances are closed
     Then all event messages are processed
-    And event messages are unaffected by instance failure

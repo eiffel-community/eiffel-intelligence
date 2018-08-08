@@ -30,8 +30,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.annotation.PostConstruct;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,10 +44,7 @@ public class TestAuthControllerImpl {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @PostConstruct
-    public void setUp(){
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
 
     @Test
     public void testGetAuth() throws Exception {

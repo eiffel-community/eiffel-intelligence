@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -62,6 +61,8 @@ public class ObjectHandlerTest {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+
     private RulesObject rulesObject;
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     private JsonNode rulesJson;
@@ -70,11 +71,6 @@ public class ObjectHandlerTest {
     private String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
-
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
 
     @Before
     public void init() {

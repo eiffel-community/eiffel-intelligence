@@ -32,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -52,10 +50,7 @@ public class SubscriptionRepeatDbHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @PostConstruct
-    public void init() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
 
     @After
     public void beforeTests() {

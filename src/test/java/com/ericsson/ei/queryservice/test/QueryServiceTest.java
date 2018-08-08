@@ -72,15 +72,12 @@ public class QueryServiceTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String missedNotificationPath = "src/test/resources/MissedNotification.json";
     private static String aggregatedObject;
     private static String missedNotification;
-
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
 
     @BeforeClass
     public static void init() throws IOException {

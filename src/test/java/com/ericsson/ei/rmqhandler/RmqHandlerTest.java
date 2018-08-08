@@ -56,9 +56,10 @@ public class RmqHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+
     @PostConstruct
     public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
         MockitoAnnotations.initMocks(this);
         initProperties();
     }

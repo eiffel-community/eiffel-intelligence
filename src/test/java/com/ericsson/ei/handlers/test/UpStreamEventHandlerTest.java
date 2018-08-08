@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -33,10 +32,7 @@ public class UpStreamEventHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
 
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {

@@ -41,7 +41,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -70,10 +69,7 @@ public class TestRulesRestAPI {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
 
     @Test
     public void testJmesPathRestApi() throws Exception {

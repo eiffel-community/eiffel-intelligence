@@ -38,6 +38,8 @@ public class MongoDBHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+
     private String dataBaseName = "EventStorageDBbbb";
     private String collectionName = "SampleEvents";
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
@@ -46,7 +48,6 @@ public class MongoDBHandlerTest {
 
     @PostConstruct
     public void initMocks() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, input));
     }
 

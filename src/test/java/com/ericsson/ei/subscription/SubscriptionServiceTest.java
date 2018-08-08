@@ -40,7 +40,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -74,13 +73,10 @@ public class SubscriptionServiceTest {
     @MockBean
     private SecurityContext securityContext;
 
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+
     private ObjectMapper mapper = new ObjectMapper();
     private static JSONArray jsonArray = null;
-
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
 
     @BeforeClass
     public static void setMongoDB() throws IOException, JSONException {

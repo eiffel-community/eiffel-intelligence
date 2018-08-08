@@ -49,7 +49,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -124,10 +123,7 @@ public class SubscriptionHandlerTest {
     @Mock
     private QueryResponse queryResponse;
 
-    @PostConstruct
-    public void setUp() {
-        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
-    }
+    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
 
     private static void setUpEmbeddedMongo() throws JSONException {
         try {

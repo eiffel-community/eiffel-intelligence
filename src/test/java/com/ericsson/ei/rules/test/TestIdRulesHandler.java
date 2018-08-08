@@ -42,7 +42,6 @@ public class TestIdRulesHandler {
     @Test
     public void testGetIds(){
         RulesObject rulesObject = null;
-        JsonNode eventJsonNode = null;
         String eventFile = "";
         String expectedIds = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
 
@@ -54,13 +53,12 @@ public class TestIdRulesHandler {
             ObjectMapper rulesObjectMapper = new ObjectMapper();
             eventFile = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
             rulesObject = new RulesObject(rulesObjectMapper.readTree(jsonRules.replace("[", "").replace("]", "")));
-            System.out.println("RulesObject: " + rulesObject.getJsonRulesObject());
-            System.out.println("EventJson: " + eventJsonNode.toString());
+            LOGGER.debug("RulesObject: {}", rulesObject.getJsonRulesObject());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         JsonNode ids = idRulesHandler.getIds(rulesObject, eventFile);
-        System.out.println("Ids: " + ids.textValue());
+        LOGGER.debug("Ids: {}", ids.textValue());
 
         assertEquals(expectedIds, ids.textValue());
     }

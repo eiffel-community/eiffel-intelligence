@@ -6,6 +6,7 @@ import com.ericsson.ei.utils.HttpDeleteRequest;
 import com.ericsson.ei.utils.HttpGetRequest;
 import com.ericsson.ei.utils.HttpPostRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

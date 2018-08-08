@@ -18,23 +18,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG"})
-
+        "logging.level.com.ericsson.ei.waitlist=DEBUG" })
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadingAndWaitlistRepeatSteps.class);
     private static final String LOGFILE = "src/functionaltests/resources/logfile.txt";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
 
@@ -52,6 +49,11 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         File logfile = new File(LOGFILE);
         logfile.createNewFile();
         System.setOut(new PrintStream(logfile));
+    }
+
+    @After("@ThreadingAndWaitlistRepeatScenario")
+    public void afterScenario() throws IOException {
+        Files.deleteIfExists(Paths.get(LOGFILE));
     }
 
     @Given("^that eiffel events are sent$")
@@ -72,7 +74,6 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         boolean aggregatedObjectExists = dbManager.verifyAggregatedObjectExistsInDB();
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
-
 
     @Then("^the waitlist will try to resent the events at given time interval$")
     public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {

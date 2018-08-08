@@ -14,7 +14,6 @@
 package com.ericsson.ei.subscriptionhandler.test;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -27,9 +26,13 @@ import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,6 +62,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.powermock.reflect.Whitebox.invokeMethod;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
@@ -67,6 +71,7 @@ public class SubscriptionHandlerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
+    private static final String aggregatedPathForMapNotification = "src/test/resources/aggregatedObjectForMapNotification.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
     private static final String DB_NAME = "MissedNotification";
@@ -75,14 +80,17 @@ public class SubscriptionHandlerTest {
     private static final String MISSED_NOTIFICATION_URL = "/queryMissedNotifications";
     private static final int STATUS_OK = 200;
     private static String aggregatedObject;
+    private static String aggregatedObjectMapNotification;
     private static String subscriptionData;
     private static String subscriptionDataForAuthorization;
     private static String url;
     private static String headerContentMediaType;
     private static String urlAuthorization;
     private static String headerContentMediaTypeAuthorization;
-    private static final String formkey = "Authorization";
-    private static final String formvalue = "Basic XX0=";
+    private static MongodForTestsFactory testsFactory;
+    private static MongoClient mongoClient = null;
+    private static final String formKey = "Authorization";
+    private static final String formValue = "Basic XX0=";
 
     @Autowired
     private RunSubscription runSubscription;
@@ -97,6 +105,8 @@ public class SubscriptionHandlerTest {
     private static String subscriptionPathForEmail = "src/test/resources/SubscriptionForMail.json";
     private static String subscriptionRepeatFlagTrueData;
     private static String subscriptionDataEmail;
+    private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
+    private static String subscriptionForMapNotification;
 
     @Autowired
     private InformSubscription subscription;
@@ -127,14 +137,18 @@ public class SubscriptionHandlerTest {
     private static void setUpEmbeddedMongo() throws JSONException {
         try {
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
             subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath),
                     "UTF-8");
             subscriptionDataForAuthorization = FileUtils.readFileToString(new File(subscriptionPathForAuthorization), "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
+            subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
         }
+
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(REGEX, "");
         headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
         urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta").replaceAll(REGEX, "");
@@ -266,23 +280,23 @@ public class SubscriptionHandlerTest {
         when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, atLeast(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws IOException {
         when(springRestTemplate.postDataMultiValue(urlAuthorization, mapNotificationMessage(subscriptionDataForAuthorization),
-                headerContentMediaTypeAuthorization, formkey, formvalue)).thenReturn(STATUS_OK);
+                headerContentMediaTypeAuthorization, formKey, formValue)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
-                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formkey, formvalue);
+                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey, formValue);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws IOException {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, atLeast(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType);
         assertFalse(mongoDBHandler.getAllDocuments(DB_NAME, COLLECTION_NAME).isEmpty());
     }
@@ -293,12 +307,20 @@ public class SubscriptionHandlerTest {
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         MvcResult result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void testMapNotificationMessage() throws Exception {
+        MultiValueMap<String, String> actual = invokeMethod(subscription, "mapNotificationMessage",
+                aggregatedObjectMapNotification, new ObjectMapper().readTree(subscriptionForMapNotification));
+        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
+        expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
+        assertEquals(expected, actual);
     }
 
     private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {

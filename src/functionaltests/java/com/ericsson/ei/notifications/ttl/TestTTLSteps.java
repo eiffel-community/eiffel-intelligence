@@ -87,7 +87,6 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @After("@TestNotificationRetries")
     public void afterScenario() throws IOException {
-
         LOGGER.debug("Shutting down mock servers.");
         mockServerClient.close();
         clientAndServer.stop();
@@ -174,7 +173,6 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @When("^I want to inform subscriber$")
     public void inform_subscriber() throws IOException {
-
         JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
     }

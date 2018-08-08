@@ -13,22 +13,22 @@
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SendMail;
+import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,31 +51,27 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.queryservice.ProcessMissedNotification;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.powermock.reflect.Whitebox.invokeMethod;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class })
+@SpringBootTest(classes = {App.class})
 @AutoConfigureMockMvc
 public class SubscriptionHandlerTest {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandlerTest.class);
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
+    private static final String aggregatedPathForMapNotification = "src/test/resources/aggregatedObjectForMapNotification.json";
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
     private static final String DB_NAME = "MissedNotification";
@@ -84,6 +80,7 @@ public class SubscriptionHandlerTest {
     private static final String MISSED_NOTIFICATION_URL = "/queryMissedNotifications";
     private static final int STATUS_OK = 200;
     private static String aggregatedObject;
+    private static String aggregatedObjectMapNotification;
     private static String subscriptionData;
     private static String subscriptionDataForAuthorization;
     private static String url;
@@ -92,8 +89,8 @@ public class SubscriptionHandlerTest {
     private static String headerContentMediaTypeAuthorization;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-    private static final String formkey = "Authorization";
-    private static final String formvalue = "Basic XX0=";
+    private static final String formKey = "Authorization";
+    private static final String formValue = "Basic XX0=";
 
     @Autowired
     private RunSubscription runSubscription;
@@ -108,8 +105,8 @@ public class SubscriptionHandlerTest {
     private static String subscriptionPathForEmail = "src/test/resources/SubscriptionForMail.json";
     private static String subscriptionRepeatFlagTrueData;
     private static String subscriptionDataEmail;
-
-    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionHandlerTest.class);
+    private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
+    private static String subscriptionForMapNotification;
 
     @Autowired
     private InformSubscription subscription;
@@ -123,10 +120,6 @@ public class SubscriptionHandlerTest {
     @MockBean
     private SpringRestTemplate springRestTemplate;
 
-    static String host = "localhost";
-    static int port = 27017;
-    private static String dataBaseName = "MissedNotification";
-    private static String collectionName = "Notification";
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
@@ -144,11 +137,13 @@ public class SubscriptionHandlerTest {
             System.setProperty("spring.data.mongodb.port", port);
 
             aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+            aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification), "UTF-8");
             subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
             subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath),
                     "UTF-8");
             subscriptionDataForAuthorization = FileUtils.readFileToString(new File(subscriptionPathForAuthorization), "UTF-8");
             subscriptionDataEmail = FileUtils.readFileToString(new File(subscriptionPathForEmail), "UTF-8");
+            subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath), "UTF-8");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
@@ -198,36 +193,36 @@ public class SubscriptionHandlerTest {
         }
         boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
-        assertEquals(output, true);
+        assertTrue(output);
     }
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagFalseTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode requirementNode = null;
+        ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(subscriptionData);
             requirementNode = (ArrayNode) subscriptionJson.get("requirements");
             requirementIterator = requirementNode.elements();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
-        assertEquals(output1, true);
-        assertEquals(output2, false);
+        assertTrue(output1);
+        assertFalse(output2);
     }
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagTrueTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
-        ArrayNode requirementNode = null;
-        ArrayNode requirementNode2 = null;
+        ArrayNode requirementNode;
+        ArrayNode requirementNode2;
         Iterator<JsonNode> requirementIterator = null;
         Iterator<JsonNode> requirementIterator2 = null;
         try {
@@ -237,14 +232,14 @@ public class SubscriptionHandlerTest {
             requirementIterator = requirementNode.elements();
             requirementIterator2 = requirementNode2.elements();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
         boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
                 subscriptionJson, "someID");
-        assertEquals(output1, true);
-        assertEquals(output2, true);
+        assertTrue(output1);
+        assertTrue(output2);
     }
 
     @Test
@@ -260,7 +255,7 @@ public class SubscriptionHandlerTest {
             expectedOutput = mapper.readTree(aggregatedObject);
             jsonResult = mapper.readTree(data);
         } catch (IOException e) {
-            assertTrue(false);
+            fail();
             LOGGER.error(e.getMessage(), e);
         }
         JsonNode output = jsonResult.get("AggregatedObject");
@@ -304,10 +299,10 @@ public class SubscriptionHandlerTest {
     @Test
     public void testRestPostTriggerForAuthorization() throws IOException {
         when(springRestTemplate.postDataMultiValue(urlAuthorization, mapNotificationMessage(subscriptionDataForAuthorization),
-                headerContentMediaTypeAuthorization, formkey, formvalue)).thenReturn(STATUS_OK);
+                headerContentMediaTypeAuthorization, formKey, formValue)).thenReturn(STATUS_OK);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
-                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formkey, formvalue);
+                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey, formValue);
     }
 
     @Test
@@ -324,12 +319,20 @@ public class SubscriptionHandlerTest {
         JSONObject input = new JSONObject(aggregatedObject);
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         MvcResult result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
+                .perform(MockMvcRequestBuilders.get(MISSED_NOTIFICATION_URL).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void testMapNotificationMessage() throws Exception {
+        MultiValueMap<String, String> actual = invokeMethod(subscription, "mapNotificationMessage",
+                aggregatedObjectMapNotification, new ObjectMapper().readTree(subscriptionForMapNotification));
+        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
+        expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
+        assertEquals(expected, actual);
     }
 
     private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {

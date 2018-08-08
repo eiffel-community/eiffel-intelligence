@@ -1,0 +1,96 @@
+{
+  "fileInformation": [
+    {
+      "extension": "jar",
+      "classifier": "debug"
+    },
+    {
+      "extension": "txt",
+      "classifier": "test"
+    },
+    {
+      "extension": "exe",
+      "classifier": "application"
+    }
+  ],
+  "buildCommand": null,
+  "testCaseExecutions": [
+    {
+      "testCaseStartedTime": 1481875925918,
+      "testCaseFinishedEventId": "17b20d3a-23a6-41c6-8da0-a87a24000000",
+      "testCaseStartedEventId": "e06defd8-fcf0-4e08-bf32-43bbc0000000",
+      "testCaseFinishedTime": 1481875938919,
+      "testCaseTriggeredTime": 1490777357289,
+      "testCaseDuration": 13001,
+      "testCaseTriggeredEventId": "9o1df0e0-404d-46ee-ab4f-311845000000",
+      "outcome": {
+        "conclusion": "SUCCESSFUL",
+        "verdict": "PASSED",
+        "tracker": "My Other Test Management System",
+        "id": "TC6",
+        "uri": "https://other-tm.company.com/testCase/TC6"
+      }
+    },
+    {
+      "testCaseStartedTime": 1481875925916,
+      "testCaseFinishedEventId": "bb9d64b1-a6e9-4419-8b5d-a650c2000000",
+      "testCaseStartedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c2000000",
+      "testCaseFinishedTime": 1481875935919,
+      "testCaseTriggeredTime": 1490777327230,
+      "testCaseDuration": 10003,
+      "testCaseTriggeredEventId": "6d3df0e0-404d-46ee-ab4f-311845000000",
+      "outcome": {
+        "conclusion": "SUCCESSFUL",
+        "verdict": "PASSED",
+        "tracker": "My Other Test Management System",
+        "id": "TC5",
+        "uri": "https://other-tm.company.com/testCase/TC5"
+      }
+    }
+  ],
+  "confidenceLevels": [
+    {
+      "eventId": "a10d59a3-069e-4f4c-8cc5-a52e73000000",
+      "name": "performance",
+      "time": 1481875988767,
+      "value": "SUCCESS"
+    },
+    {
+      "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73000000",
+      "name": "readyForDelivery",
+      "time": 1481875944272,
+      "value": "SUCCESS"
+    }
+  ],
+  "TemplateName": "ARTIFACT_1",
+  "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4000000",
+  "time": 1481875891763,
+  "type": "EiffelArtifactCreatedEvent",
+  "gav": {
+    "groupId": "com.mycompany.myproduct",
+    "artifactId": "sub-system",
+    "version": "1.1.0"
+  },
+  "publications": [
+    {
+      "eventId": "33d05e6f-9bd9-4138-83b6-e20cc7000000",
+      "locations": [
+        {
+          "type": "PLAIN",
+          "uri": "https://myrepository.com/mySubSystemArtifact"
+        }
+      ],
+      "time": 1481875921763
+    },
+    {
+      "eventId": "44c05e6f-9bd9-4138-83b6-e20cc7000000",
+      "locations": [
+        {
+          "type": "ARTIFACTORY",
+          "uri": "https://myrepository.com/artifactory"
+        }
+      ],
+      "time": 1481875921843
+    }
+  ]
+}

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -38,7 +37,6 @@ import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
-
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -58,9 +56,11 @@ import java.util.List;
 @Component
 public class InformSubscription {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformSubscription.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InformSubscription.class);
     // Regular expression for replacement unexpected character like \"|
     private static final String REGEX = "^\"|\"$";
+    private String key = "";
+    private String val = "";
 
     @Getter
     @Value("${notification.failAttempt}")
@@ -102,25 +102,8 @@ public class InformSubscription {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
-        String key = "";
-        String val = "";
-        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
-        if (arrNode.isArray()) {
-            for (final JsonNode objNode : arrNode) {
-                if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
-                    key = "Authorization";
-                    val = objNode.get("formvalue").toString().replaceAll(REGEX, "");
-
-                } else {
-
-                    mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-                            .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-                            .toString().replaceAll(REGEX, ""));
-                }
-            }
-        }
+        MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(aggregatedObject, subscriptionJson);
 
         if (notificationMeta.contains("?")) {
             LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
@@ -176,8 +159,10 @@ public class InformSubscription {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
             }
-
         }
+        //set as empty because we should avoid leaking of authentication details
+        key = "";
+        val = "";
     }
 
     /**
@@ -223,8 +208,7 @@ public class InformSubscription {
      * @param notificationMeta
      * @return String
      */
-    private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
-            String notificationMeta) {
+    private String prepareMissedNotification(String aggregatedObject, String subscriptionName, String notificationMeta) {
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String time = dateFormat.format(date);
@@ -252,6 +236,31 @@ public class InformSubscription {
         String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
         LOGGER.debug("Extracted field name and value from subscription json:" + fieldName + " : " + value);
         return value;
+    }
+
+    /**
+     * This method extracting key and value from subscription
+     *
+     * @param aggregatedObject
+     * @param subscriptionJson
+     * @return
+     */
+    private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
+                    key = "Authorization";
+                    val = objNode.get("formvalue").toString().replaceAll(REGEX, "");
+                } else {
+                    mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                            .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                            .toString().replaceAll(REGEX, ""));
+                }
+            }
+        }
+        return mapNotificationMessage;
     }
 
     /**

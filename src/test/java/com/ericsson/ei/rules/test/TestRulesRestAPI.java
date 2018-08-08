@@ -16,14 +16,13 @@
  */
 package com.ericsson.ei.rules.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-
+import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.services.IRuleCheckService;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,16 +40,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SocketUtils;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.services.IRuleCheckService;
+import javax.annotation.PostConstruct;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class, 
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = {App.class})
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
@@ -70,11 +66,13 @@ public class TestRulesRestAPI {
 
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
-    
-    @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @PostConstruct
+    public void setUp() {
+        mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
     }
 
     @Test

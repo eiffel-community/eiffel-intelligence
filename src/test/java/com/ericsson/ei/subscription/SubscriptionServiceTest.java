@@ -35,15 +35,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -53,11 +48,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@ActiveProfiles("beans")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
-@ContextConfiguration(initializers = MongoClientInitializer.class)
-@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class SubscriptionServiceTest {
 
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
@@ -76,10 +68,10 @@ public class SubscriptionServiceTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @Autowired
+    @MockBean
     private Authentication authentication;
 
-    @Autowired
+    @MockBean
     private SecurityContext securityContext;
 
     private ObjectMapper mapper = new ObjectMapper();

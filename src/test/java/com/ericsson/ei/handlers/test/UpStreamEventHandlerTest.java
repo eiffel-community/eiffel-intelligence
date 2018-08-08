@@ -8,19 +8,13 @@ import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.util.SocketUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -31,8 +25,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
-@ContextConfiguration(initializers = MongoClientInitializer.class)
-@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class UpStreamEventHandlerTest {
 
     @Autowired

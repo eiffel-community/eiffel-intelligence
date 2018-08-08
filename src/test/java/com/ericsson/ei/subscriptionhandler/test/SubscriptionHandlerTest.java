@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,12 +40,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -64,12 +60,9 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("beans")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = MongoClientInitializer.class)
-@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class SubscriptionHandlerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandlerTest.class);
@@ -114,7 +107,7 @@ public class SubscriptionHandlerTest {
     @Autowired
     private ProcessMissedNotification processMissedNotification;
 
-    @Autowired
+    @MockBean
     private SpringRestTemplate springRestTemplate;
 
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";

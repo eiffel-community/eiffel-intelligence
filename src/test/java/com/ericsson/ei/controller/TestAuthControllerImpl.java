@@ -26,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -41,8 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {App.class})
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = MongoClientInitializer.class)
-@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class})
 public class TestAuthControllerImpl {
 
     @Autowired
@@ -52,7 +47,7 @@ public class TestAuthControllerImpl {
     private MongoDBHandler mongoDBHandler;
 
     @PostConstruct
-    public void setUp() {
+    public void setUp(){
         mongoDBHandler.setMongoClient(MongoClientInitializer.getMongoClient());
     }
 

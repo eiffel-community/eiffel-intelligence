@@ -6,12 +6,12 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-public class MongoClientInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@Component
+public class MongoClientInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientInitializer.class);
 
     @Getter
@@ -21,18 +21,10 @@ public class MongoClientInitializer implements ApplicationContextInitializer<Con
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
+            String port = "" + mongoClient.getAddress().getPort();
+            System.setProperty("spring.data.mongodb.port", port);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-    }
-
-    private void mongoClient() {
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
-    }
-
-    @Override
-    public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-        mongoClient();
     }
 }

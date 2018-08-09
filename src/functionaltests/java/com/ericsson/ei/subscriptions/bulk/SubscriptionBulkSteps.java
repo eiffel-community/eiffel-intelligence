@@ -3,6 +3,7 @@ package com.ericsson.ei.subscriptions.bulk;
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -10,8 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -26,8 +25,6 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 @AutoConfigureMockMvc
 public class SubscriptionBulkSteps extends FunctionalTestBase {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionBulkSteps.class);
 
     private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources";
 

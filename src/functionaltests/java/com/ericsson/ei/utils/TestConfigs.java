@@ -1,8 +1,6 @@
 package com.ericsson.ei.utils;
 
 import com.mongodb.MongoClient;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,17 +10,10 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.context.annotation.Bean;
 import org.springframework.util.SocketUtils;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-import lombok.Getter;
 
 public class TestConfigs {
 
@@ -61,7 +52,6 @@ public class TestConfigs {
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
-            // testsFactory.shutdown();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

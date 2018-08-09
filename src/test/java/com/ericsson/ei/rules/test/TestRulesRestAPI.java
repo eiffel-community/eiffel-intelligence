@@ -46,7 +46,6 @@ import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.services.IRuleCheckService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
@@ -65,8 +64,6 @@ public class TestRulesRestAPI {
 
     @Autowired
     private MockMvc mockMvc;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
     private IRuleCheckService ruleCheckService;

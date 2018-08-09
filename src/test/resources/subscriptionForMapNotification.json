@@ -1,0 +1,39 @@
+{
+  "subscriptionName": "Subscription_1",
+  "userName" : "DEF",
+  "repeat": false,
+  "created": "data-time",
+  "notificationType": "MAIL",
+  "notificationMeta": "example@ericsson.com",
+  "restPostBodyMediaType": "application/json",
+  "notificationMessageKeyValues": [
+    {
+      "formkey": "",
+      "formvalue": "{conclusion:testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5'] | [0].outcome.conclusion,id:testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5'] | [0].outcome.id}"
+    }
+  ],
+  "requirements": [
+    {
+      "type": "ARTIFACT_1",
+      "conditions": [
+        {
+          "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+        },
+        {
+          "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
+        }
+      ]
+    },
+    {
+      "type": "ARTIFACT_1",
+      "conditions": [
+        {
+          "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+        },
+        {
+          "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"
+        }
+      ]
+    }
+  ]
+}

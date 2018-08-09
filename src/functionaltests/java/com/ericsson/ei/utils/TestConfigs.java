@@ -26,24 +26,14 @@ import lombok.Getter;
 
 public class TestConfigs {
 
-    private ConnectionFactory cf;
-
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
 
-    @Getter
-    private Connection conn;
-
-    @Getter
-    protected MongoClient mongoClient = null;
-
-    protected static AMQPBrokerManager amqpBroker;
+    private MongoClient mongoClient = null;
 
     protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerPool = new HashMap<Integer, AMQPBrokerManager>();
 
-    //@Bean
     AMQPBrokerManager createAmqpBroker() throws Exception {
         // Generates a random port for amqpBroker and starts up a new broker
-
         int port = SocketUtils.findAvailableTcpPort();
 
         System.setProperty("rabbitmq.port", Integer.toString(port));
@@ -54,27 +44,17 @@ public class TestConfigs {
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), Integer.toString(port));
-        amqpBroker.startBroker();
-
-        cf = new ConnectionFactory();
-        cf.setUsername("guest");
-        cf.setPassword("guest");
-
-        cf.setPort(port);
-        cf.setHandshakeTimeout(600000);
-        cf.setConnectionTimeout(600000);
-        //conn = cf.newConnection();
+        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), Integer.toString(port));
 
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
+        amqpBroker.startBroker();
 
-        amqpBrokerPool.put(port, amqpBroker); // add new instance to pool
+        amqpBrokerPool.put(port, amqpBroker); // add new amqp broker to pool
 
         return amqpBroker;
     }
 
-    //@Bean
-    MongoClient startUpMongoClient() throws IOException {
+    void startUpMongoClient() throws IOException {
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
@@ -82,12 +62,9 @@ public class TestConfigs {
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
             // testsFactory.shutdown();
-            return mongoClient;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
-        return null;
     }
 
     void setAuthorization() {
@@ -100,23 +77,11 @@ public class TestConfigs {
         System.setProperty("ldap.user.filter", "uid={0}");
     }
 
-    public void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
-        RabbitAdmin admin = new RabbitAdmin(ccf);
-        Queue queue = new Queue(queueName, false);
-        admin.declareQueue(queue);
-        final TopicExchange exchange = new TopicExchange(exchangeName);
-        admin.declareExchange(exchange);
-        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
-        ccf.destroy();
-    }
-
     public static AMQPBrokerManager getBrokerFromPool(int port) {
         return amqpBrokerPool.get(port);
     }
 
     public static void removeBrokerFromPool(int port) {
-        //TODO: shutdown before removing from pool? here or in tests?
         amqpBrokerPool.remove(port);
     }
 }

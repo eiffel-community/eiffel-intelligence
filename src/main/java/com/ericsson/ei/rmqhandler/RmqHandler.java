@@ -16,13 +16,11 @@
 */
 package com.ericsson.ei.rmqhandler;
 
-import java.net.ConnectException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -113,10 +111,7 @@ public class RmqHandler {
     private CachingConnectionFactory factory;
     private SimpleMessageListenerContainer container;
     private SimpleMessageListenerContainer waitlistContainer;
-    private ConnectionListener connectionListener;
-    private Connection conn;
 
-    private Boolean isMessageBusRunning = false;
 
     @Bean
     ConnectionFactory connectionFactory() {
@@ -142,11 +137,8 @@ public class RmqHandler {
         }
 
         factory = new CachingConnectionFactory(connectionFactory);
-
         factory.setPublisherConfirms(true);
         factory.setPublisherReturns(true);
-
-        factory.addConnectionListener(connectionListener());
 
         // This will disable connectionFactories auto recovery and use Spring AMQP auto recovery
         connectionFactory.setAutomaticRecoveryEnabled(false);
@@ -182,28 +174,6 @@ public class RmqHandler {
         return container;
     }
 
-
-    @Bean
-    ConnectionListener connectionListener() {
-        if (connectionListener != null)
-            return  connectionListener;
-
-        connectionListener = new ConnectionListener() {
-            @Override public void onCreate(Connection connection) {
-                log.debug("Connection listener was created");
-                isMessageBusRunning = true;
-            }
-
-            @Override public void onClose(Connection connection) {
-                log.debug("Shutting down connection to message bus.");
-                isMessageBusRunning = false;
-            }
-        };
-
-        return connectionListener;
-    }
-
-
     public String getQueueName() {
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
@@ -231,7 +201,6 @@ public class RmqHandler {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                     log.info("Received confirm with result : {}", ack);
-                    log.error(cause);
                 }
             });
         }

@@ -26,10 +26,9 @@ import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -61,7 +61,24 @@ public class ObjectHandlerTest {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     private RulesObject rulesObject;
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";

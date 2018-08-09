@@ -27,9 +27,11 @@ import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +51,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -123,7 +126,24 @@ public class SubscriptionHandlerTest {
     @Mock
     private QueryResponse queryResponse;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     private static void setUpEmbeddedMongo() throws JSONException {
         try {

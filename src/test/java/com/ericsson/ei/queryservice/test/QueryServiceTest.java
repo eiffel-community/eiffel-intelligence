@@ -22,8 +22,10 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.MongoClient;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +74,24 @@ public class QueryServiceTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String missedNotificationPath = "src/test/resources/MissedNotification.json";

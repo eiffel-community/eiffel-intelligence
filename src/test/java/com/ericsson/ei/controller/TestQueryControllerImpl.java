@@ -17,16 +17,19 @@
 package com.ericsson.ei.controller;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.MongoClientInitializer;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.mongodb.MongoClient;
 import org.apache.qpid.util.FileUtils;
 import org.json.JSONArray;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,8 +37,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SocketUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -46,10 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class, 
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = {App.class})
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
@@ -62,11 +62,27 @@ public class TestQueryControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    private static MongoClient mongoClient;
+
     @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+    public static void setUpMongoClient() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void init() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
     }
 
     @Before

@@ -20,9 +20,12 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.IRuleCheckService;
+import com.mongodb.MongoClient;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -41,6 +44,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
@@ -69,7 +73,24 @@ public class TestRulesRestAPI {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     @Test
     public void testJmesPathRestApi() throws Exception {

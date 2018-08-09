@@ -24,9 +24,11 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -73,7 +76,24 @@ public class SubscriptionServiceTest {
     @MockBean
     private SecurityContext securityContext;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     private ObjectMapper mapper = new ObjectMapper();
     private static JSONArray jsonArray = null;

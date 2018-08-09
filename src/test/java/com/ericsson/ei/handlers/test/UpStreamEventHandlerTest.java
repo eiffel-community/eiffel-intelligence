@@ -8,6 +8,9 @@ import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +36,24 @@ public class UpStreamEventHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {

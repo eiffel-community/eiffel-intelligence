@@ -19,7 +19,10 @@ package com.ericsson.ei.mongoDBHandler.test;
 import com.ericsson.ei.App;
 import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.mongodb.MongoClient;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,24 @@ public class MongoDBHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUp() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @PostConstruct
+    public void initMongoClient() {
+        mongoDBHandler.setMongoClient(mongoClient);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     private String dataBaseName = "EventStorageDBbbb";
     private String collectionName = "SampleEvents";

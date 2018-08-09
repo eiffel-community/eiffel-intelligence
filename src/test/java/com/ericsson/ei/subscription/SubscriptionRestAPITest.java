@@ -79,7 +79,6 @@ public class SubscriptionRestAPITest {
     public static void setMongoDB() throws IOException, JSONException {
         String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
-
         String readFileToStringMulti = FileUtils.readFileToString(new File(SUBSCRIPTION_MULTIPLE), "UTF-8");
         jsonArrayMulti = new JSONArray(readFileToStringMulti);
     }

@@ -19,6 +19,9 @@ package com.ericsson.ei.rmqhandler;
 import com.ericsson.ei.App;
 import com.ericsson.ei.MongoClientInitializer;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.mongodb.MongoClient;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -56,12 +59,25 @@ public class RmqHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    private MongoClientInitializer clientInitializer = new MongoClientInitializer();
+    private static MongoClient mongoClient;
+
+    @BeforeClass
+    public static void setUpMongoClient() {
+        mongoClient = MongoClientInitializer.borrow();
+        String port = "" + mongoClient.getAddress().getPort();
+        System.setProperty("spring.data.mongodb.port", port);
+    }
+
+    @AfterClass
+    public static void close() {
+        MongoClientInitializer.returnMongoClient(mongoClient);
+    }
 
     @PostConstruct
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         initProperties();
+        mongoDBHandler.setMongoClient(mongoClient);
     }
 
     public void initProperties() {

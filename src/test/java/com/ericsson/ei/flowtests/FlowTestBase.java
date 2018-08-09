@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
+import org.junit.After;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
@@ -85,10 +86,16 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
         waitlist.setMongoDbHandler(mongoDBHandler);
+    }
 
+    @After
+    public void teardown() {
+        mongoDBHandler.setMongoClient(null);
+        getFlowTestConfigs().tearDown();
+        cleanFlowTestConfigs();
     }
 
     protected FlowTestConfigs getFlowTestConfigs() {
@@ -166,9 +173,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-
-        getFlowTestConfigs().tearDown();
-        cleanFlowTestConfigs();
     }
 
     /**

@@ -2,7 +2,6 @@
 package com.ericsson.ei.controller;
 
 import javax.validation.Valid;
-import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +40,12 @@ public interface RuleCheckController {
         @Valid
         @RequestBody
         RuleCheckBody ruleCheckBody);
+
+    /**
+     * This call for the current status of test rule entry point, we get status as output
+     * 
+     */
+    @RequestMapping(value = "/TestRulePageEnabled", method = RequestMethod.GET)
+    public ResponseEntity<?> getTestRulePageEnabled();
 
 }

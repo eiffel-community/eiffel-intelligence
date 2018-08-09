@@ -24,38 +24,44 @@ public class EventManager {
     }
 
     /**
-     * Send Eiffel Events to the waitlist queue. Takes a path to a JSON file
-     * containing events and uses getEventNamesToSend to get specific events from
-     * that file. getEventNamesToSend needs to be overridden.
+     * Send Eiffel Events to the waitlist queue.
      *
      * @param eiffelEventsJsonPath
      *            JSON file containing Eiffel Events
-     * @return list of eiffel event IDs
-     * @throws InterruptedException
+     * @param eventNames
+     *            list of event names
      * @throws IOException
      */
-    public void sendEiffelEvents(String eiffelEventsJsonPath, List<String> eventNamesToSend) throws IOException {
-        List<String> eventNames = eventNamesToSend;
+    public void sendEiffelEvents(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             rmqHandler.publishObjectToWaitlistQueue(eventJson.toString());
         }
     }
-    
+
     /**
-     * Send Eiffel Events to the waitlist queue. Takes a Json String containing
-     * a single event.
+     * Send Eiffel Event to the waitlist queue. Takes a Json String containing a
+     * single event.
      * 
      * @param eiffelEventJson
      */
     public void sendEiffelEvent(String eiffelEventJson) {
         rmqHandler.publishObjectToWaitlistQueue(eiffelEventJson);
     }
-    
-    public List<String> getEventsIdList(String eiffelEventsJsonPath, List<String> eventNamesToSend) throws IOException {
-        List<String> eventsIdList = new ArrayList<>();;
-        List<String> eventNames = eventNamesToSend;
+
+    /**
+     * Get list of IDs.
+     *
+     * @param eiffelEventsJsonPath
+     *            JSON file containing Eiffel Events
+     * @param eventNames
+     *            list of event names
+     * @return list of event IDs
+     * @throws IOException
+     */
+    public List<String> getEventsIdList(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
+        List<String> eventsIdList = new ArrayList<>();
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);

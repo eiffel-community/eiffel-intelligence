@@ -20,14 +20,13 @@ import org.springframework.http.ResponseEntity;
 
 import javax.annotation.PostConstruct;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class SubscriptionContentSteps extends FunctionalTestBase {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
 
     @LocalServerPort
     private int applicationPort;
@@ -64,7 +63,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @When("^I create subscription request with \"(.*)\"$")
     public void create_subscription_request(String validSubscriptionFile) {
-        postRequest.setParams(validSubscriptionFile);
+        postRequest.setBody(new File(validSubscriptionFile));
         response = postRequest.build();
     }
 
@@ -91,7 +90,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @When("^I create a duplicate subscription with \"(.*)\"$")
     public void create_duplicate_subscription_with(String validSubscriptionFile) {
-        postRequest.setParams(validSubscriptionFile);
+        postRequest.setBody(new File(validSubscriptionFile));
         response = postRequest.build();
     }
 
@@ -127,7 +126,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @When("^I create an invalid subscription with \"(.*)\"$")
     public void create_invalid_subscription_with(String invalidSubscriptionFile) {
-        postRequest.setParams(invalidSubscriptionFile);
+        postRequest.setBody(new File(invalidSubscriptionFile));
         response = postRequest.build();
     }
 

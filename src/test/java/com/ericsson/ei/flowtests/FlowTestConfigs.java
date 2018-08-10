@@ -24,7 +24,7 @@ public class FlowTestConfigs {
     private MongodForTestsFactory testsFactory;
     private ConnectionFactory cf;
 
-    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FlowTestConfigs.class);
 
     @Getter
     private Connection conn;

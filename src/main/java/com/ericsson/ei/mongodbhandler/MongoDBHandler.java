@@ -220,8 +220,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the delete documents from collection using the a
-     * condition
+     * This method is used for the delete documents from collection using a condition
      *
      * @param dataBaseName
      * @param collectionName

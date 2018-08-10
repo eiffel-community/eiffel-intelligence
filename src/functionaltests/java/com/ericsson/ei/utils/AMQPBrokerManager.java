@@ -6,7 +6,7 @@ import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
 
 public class AMQPBrokerManager {
-    public Boolean isRunning = false;
+    public boolean isRunning = false;
 
     private final Broker broker = new Broker();
     private String path;

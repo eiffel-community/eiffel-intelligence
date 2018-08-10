@@ -17,11 +17,11 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 public class TestConfigs {
 
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
     private MongoClient mongoClient = null;
 
-    protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerPool = new HashMap<Integer, AMQPBrokerManager>();
+    protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerPool = new HashMap<>();
 
     AMQPBrokerManager createAmqpBroker() throws Exception {
         // Generates a random port for amqpBroker and starts up a new broker

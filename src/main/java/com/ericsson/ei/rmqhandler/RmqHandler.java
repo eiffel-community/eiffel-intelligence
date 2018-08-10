@@ -208,7 +208,7 @@ public class RmqHandler {
     }
 
     public void publishObjectToWaitlistQueue(String message) {
-        log.info("Publishing message to message bus...");
+        log.debug("Publishing message to message bus...");
         rabbitTemplate.convertAndSend(message);
     }
 
@@ -218,8 +218,8 @@ public class RmqHandler {
             container.destroy();
             factory.destroy();
         } catch (Exception e) {
-            log.info("Exception occured while closing connections");
-            log.info(e.getMessage(), e);
+            log.error("Exception occured while closing connections");
+            log.error(e.getMessage(), e);
         }
     }
 

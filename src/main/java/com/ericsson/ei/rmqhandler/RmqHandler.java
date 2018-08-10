@@ -22,7 +22,9 @@ import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.*;
+//import org.springframework.amqp.rabbit.connection.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -108,24 +110,24 @@ public class RmqHandler {
     private int maxThreads;
 
     private RabbitTemplate rabbitTemplate;
-    private CachingConnectionFactory factory;
+    private CachingConnectionFactory cachingConnectionFactory;
     private SimpleMessageListenerContainer container;
     private SimpleMessageListenerContainer waitlistContainer;
 
 
     @Bean ConnectionFactory connectionFactory() {
-        com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
-        connectionFactory.setHost(host);
-        connectionFactory.setPort(port);
+        com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = new com.rabbitmq.client.ConnectionFactory();
+        rabbitConnectionFactory.setHost(host);
+        rabbitConnectionFactory.setPort(port);
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
-            connectionFactory.setUsername(user);
-            connectionFactory.setPassword(password);
+            rabbitConnectionFactory.setUsername(user);
+            rabbitConnectionFactory.setPassword(password);
         }
 
         if (tlsVersion != null && !tlsVersion.isEmpty()) {
             try {
                 log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
-                connectionFactory.useSslProtocol(tlsVersion);
+                rabbitConnectionFactory.useSslProtocol(tlsVersion);
             } catch (KeyManagementException e) {
                 log.error("Failed to set SSL/TLS version.");
                 log.error(e.getMessage(), e);
@@ -135,14 +137,14 @@ public class RmqHandler {
             }
         }
 
-        factory = new CachingConnectionFactory(connectionFactory);
-        factory.setPublisherConfirms(true);
-        factory.setPublisherReturns(true);
+        cachingConnectionFactory = new CachingConnectionFactory(rabbitConnectionFactory);
+        cachingConnectionFactory.setPublisherConfirms(true);
+        cachingConnectionFactory.setPublisherReturns(true);
 
         // This will disable connectionFactories auto recovery and use Spring AMQP auto recovery
-        connectionFactory.setAutomaticRecoveryEnabled(false);
+        rabbitConnectionFactory.setAutomaticRecoveryEnabled(false);
 
-        return factory;
+        return cachingConnectionFactory;
     }
 
     @Bean
@@ -161,11 +163,11 @@ public class RmqHandler {
     }
 
     @Bean
-    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory factory, EventHandler eventHandler) {
+    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory, EventHandler eventHandler) {
         String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(factory);
+        container.setConnectionFactory(springConnectionFactory);
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
@@ -187,8 +189,8 @@ public class RmqHandler {
     @Bean
     public RabbitTemplate rabbitMqTemplate() {
         if (rabbitTemplate == null) {
-            if (factory != null) {
-                rabbitTemplate = new RabbitTemplate(factory);
+            if (cachingConnectionFactory != null) {
+                rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
             } else {
                 rabbitTemplate = new RabbitTemplate(connectionFactory());
             }
@@ -215,9 +217,9 @@ public class RmqHandler {
         try {
             waitlistContainer.destroy();
             container.destroy();
-            factory.destroy();
+            cachingConnectionFactory.destroy();
         } catch (Exception e) {
-            log.error("Exception occured while closing connections");
+            log.error("Exception occurred while closing connections");
             log.error(e.getMessage(), e);
         }
     }

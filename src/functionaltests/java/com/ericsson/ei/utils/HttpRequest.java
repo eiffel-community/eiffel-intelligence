@@ -2,7 +2,6 @@ package com.ericsson.ei.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +59,8 @@ public abstract class HttpRequest {
 
         setBody(fileContent);
     }
-    
-    public ResponseEntity<String> makeRequest(HttpRequestBase request) {
+
+    public ResponseEntity<String> doRequest(HttpRequestBase request) {
         if (body != null) {
             ((HttpEntityEnclosingRequestBase) request).setEntity(body);
         }
@@ -72,6 +71,6 @@ public abstract class HttpRequest {
         }
         return restApi.getResponse(request);
     }
-    
+
     public abstract ResponseEntity<String> build();
 }

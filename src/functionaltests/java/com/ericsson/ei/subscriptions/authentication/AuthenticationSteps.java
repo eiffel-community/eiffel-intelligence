@@ -2,7 +2,6 @@ package com.ericsson.ei.subscriptions.authentication;
 
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpDeleteRequest;
 import com.ericsson.ei.utils.HttpGetRequest;
 import com.ericsson.ei.utils.HttpPostRequest;
 import com.ericsson.ei.utils.HttpRequest;
@@ -23,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,11 +37,10 @@ public class AuthenticationSteps extends FunctionalTestBase {
     private HttpRequest httpRequest;
     private ResponseEntity<String> response;
 
-    @Before
+    @Before("@RESTWithCredentials,@RESTWithSession")
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpGetRequest();
-        httpRequest.setUrl("http://localhost:").setPort(applicationPort)
-                .setEndpoint("/auth/logout");
+        httpRequest.setUrl("http://localhost:").setPort(applicationPort).setEndpoint("/auth/logout");
         String auth = "gauss:password";
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
         httpRequest.setHeaders("Authorization", "Basic " + encodedAuth);

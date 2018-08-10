@@ -9,6 +9,6 @@ public class HttpGetRequest extends HttpRequest {
      * Build together a httpGet object
      */
     public ResponseEntity<String> build() {
-        return makeRequest(new HttpGet(url + port + endpoint));
+        return doRequest(new HttpGet(url + port + endpoint));
     }
 }

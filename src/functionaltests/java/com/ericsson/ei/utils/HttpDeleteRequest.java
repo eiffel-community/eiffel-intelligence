@@ -9,6 +9,6 @@ public class HttpDeleteRequest extends HttpRequest {
      * Build together a httpDelete object
      */
     public ResponseEntity<String> build() {
-        return makeRequest(new HttpDelete(url + port + endpoint));
+        return doRequest(new HttpDelete(url + port + endpoint));
     }
 }

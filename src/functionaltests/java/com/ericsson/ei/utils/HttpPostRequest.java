@@ -9,6 +9,6 @@ public class HttpPostRequest extends HttpRequest {
      * Build together a httpPost object
      */
     public ResponseEntity<String> build() {
-        return makeRequest(new HttpPost(url + port + endpoint));
+        return doRequest(new HttpPost(url + port + endpoint));
     }
 }

@@ -18,6 +18,7 @@
 #Sample Feature Definition Template
 Feature: Test Authentication
 
+  @RESTWithoutCredentials
   Scenario: Call an REST API without credentials
     Given LDAP is activated
     When a POST request is prepared for REST API "/subscriptions"
@@ -25,6 +26,7 @@ Feature: Test Authentication
     Then response code 401 is received
     And subscription is not created
 
+  @RESTWithCredentials
   Scenario: Call an REST API with credentials
     Given LDAP is activated
     When a POST request is prepared for REST API "/subscriptions"
@@ -32,7 +34,8 @@ Feature: Test Authentication
     And request is sent
     Then response code 200 is received
     And subscription is created
-    
+
+  @RESTWithSession
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
     When a GET request is prepared for REST API "/auth/login"

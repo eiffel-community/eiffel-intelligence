@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         LOGGER.debug("Sending eiffel events");
         int waitListSize = 0;
         List<String> eventNames = getEventNamesToSend();
-        long maxTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30000);
+        long maxTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
 
         while (waitListSize != 4 && maxTime > System.currentTimeMillis()) {
             eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);

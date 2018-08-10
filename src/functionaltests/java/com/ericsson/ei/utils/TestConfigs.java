@@ -40,7 +40,8 @@ public class TestConfigs {
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
         amqpBroker.startBroker();
 
-        amqpBrokerPool.put(port, amqpBroker); // add new amqp broker to pool
+        // add new amqp broker to pool
+        amqpBrokerPool.put(port, amqpBroker);
 
         return amqpBroker;
     }

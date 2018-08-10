@@ -113,8 +113,7 @@ public class RmqHandler {
     private SimpleMessageListenerContainer waitlistContainer;
 
 
-    @Bean
-    ConnectionFactory connectionFactory() {
+    @Bean ConnectionFactory connectionFactory() {
         com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);

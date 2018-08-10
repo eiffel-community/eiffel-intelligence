@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 

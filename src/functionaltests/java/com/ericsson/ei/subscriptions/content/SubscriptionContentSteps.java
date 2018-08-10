@@ -32,7 +32,6 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     private ResponseEntity response;
     private ObjectMapper mapper = new ObjectMapper();
 
-
     @PostConstruct
     private void setUp() {
         getRequest = new HttpRequest(HttpMethod.GET);
@@ -42,11 +41,8 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         deleteRequest.setPort(applicationPort).setUrl("http://localhost:").setEndpoint("/subscriptions");
 
         postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setPort(applicationPort)
-                .setUrl("http://localhost:")
-                .setEndpoint("/subscriptions")
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json");
+        postRequest.setPort(applicationPort).setUrl("http://localhost:").setEndpoint("/subscriptions")
+                .setHeaders("content-type", "application/json").setHeaders("Accept", "application/json");
     }
 
     // SCENARIO 1
@@ -99,7 +95,8 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     public void is_not_duplicated(String name) throws Throwable {
         getRequest.setEndpoint("/subscriptions/" + name);
         response = getRequest.performRequest();
-        GetSubscriptionResponse getSubscriptionResponse = mapper.readValue(response.getBody().toString(), GetSubscriptionResponse.class);
+        GetSubscriptionResponse getSubscriptionResponse = mapper.readValue(response.getBody().toString(),
+                GetSubscriptionResponse.class);
         assertEquals(1, getSubscriptionResponse.getFoundSubscriptions().size());
     }
 

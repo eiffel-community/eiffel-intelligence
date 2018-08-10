@@ -24,10 +24,10 @@ import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
 public class HttpRequest {
-    
+
     private HttpRequestBase request;
-    private SubscriptionRestAPI restApi = SubscriptionRestAPI.getInstance();
-    
+    private HttpExecutor executor = HttpExecutor.getInstance();
+
     public enum HttpMethod {
         GET, POST, DELETE
     }
@@ -42,7 +42,7 @@ public class HttpRequest {
     @Setter
     protected String endpoint;
     @Getter
-    protected Map<String, String> params = new HashMap<>(); 
+    protected Map<String, String> params = new HashMap<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -64,11 +64,11 @@ public class HttpRequest {
         request.addHeader(key, value);
         return this;
     }
-    
+
     public HttpRequest setParam(String key, String value) {
         params.put(key, value);
         return this;
-    } 
+    }
 
     public HttpRequest setBody(String body) {
         ((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(body, "UTF-8"));
@@ -88,11 +88,11 @@ public class HttpRequest {
     public ResponseEntity<String> performRequest() throws URISyntaxException {
         URIBuilder builder = new URIBuilder(url + port + endpoint);
         if (!params.isEmpty()) {
-            for(Map.Entry<String, String> entry: params.entrySet()) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
                 builder.addParameter(entry.getKey(), entry.getValue());
             }
         }
         request.setURI(builder.build());
-        return restApi.getResponse(request);
+        return executor.executeRequest(request);
     }
 }

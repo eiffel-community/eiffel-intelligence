@@ -14,19 +14,19 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 
 
-public class SubscriptionRestAPI {
+public class HttpExecutor {
 
-    private static SubscriptionRestAPI instance;
+    private static HttpExecutor instance;
     private CloseableHttpClient client = HttpClientBuilder.create().build();
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRestAPI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpExecutor.class);
 
-    private SubscriptionRestAPI() {
+    private HttpExecutor() {
         
     }
     
-    public static SubscriptionRestAPI getInstance() {
+    public static HttpExecutor getInstance() {
         if(instance == null) {
-            instance = new SubscriptionRestAPI();
+            instance = new HttpExecutor();
         }
         
         return instance;
@@ -38,7 +38,7 @@ public class SubscriptionRestAPI {
      * @return ResponseEntity
      *      containing the json content of the http response and status code from request
      * */
-    public ResponseEntity<String> getResponse(HttpRequestBase request) {
+    public ResponseEntity<String> executeRequest(HttpRequestBase request) {
         int statusCode = HttpStatus.PROCESSING.value();
         String jsonContent = "";
 

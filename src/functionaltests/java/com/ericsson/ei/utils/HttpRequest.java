@@ -86,7 +86,7 @@ public class HttpRequest {
     }
 
     public ResponseEntity<String> performRequest() throws URISyntaxException {
-        URIBuilder builder = new URIBuilder(url + port + endpoint);
+        URIBuilder builder = new URIBuilder("http://" + url + ":" + port + endpoint);
         if (!params.isEmpty()) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 builder.addParameter(entry.getKey(), entry.getValue());

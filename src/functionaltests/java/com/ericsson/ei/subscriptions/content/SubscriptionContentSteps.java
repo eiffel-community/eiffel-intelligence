@@ -26,6 +26,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @LocalServerPort
     private int applicationPort;
+    private String hostName = getHostName();
     private HttpRequest getRequest;
     private HttpRequest postRequest;
     private HttpRequest deleteRequest;
@@ -35,13 +36,13 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     @PostConstruct
     private void setUp() {
         getRequest = new HttpRequest(HttpMethod.GET);
-        getRequest.setPort(applicationPort).setUrl("http://localhost:").setEndpoint("/subscriptions");
+        getRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
 
         deleteRequest = new HttpRequest(HttpMethod.DELETE);
-        deleteRequest.setPort(applicationPort).setUrl("http://localhost:").setEndpoint("/subscriptions");
+        deleteRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
 
         postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setPort(applicationPort).setUrl("http://localhost:").setEndpoint("/subscriptions")
+        postRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions")
                 .setHeaders("content-type", "application/json").setHeaders("Accept", "application/json");
     }
 

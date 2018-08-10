@@ -16,9 +16,21 @@ import java.io.IOException;
 
 public class SubscriptionRestAPI {
 
+    private static SubscriptionRestAPI instance;
     private CloseableHttpClient client = HttpClientBuilder.create().build();
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRestAPI.class);
 
+    private SubscriptionRestAPI() {
+        
+    }
+    
+    public static SubscriptionRestAPI getInstance() {
+        if(instance == null) {
+            instance = new SubscriptionRestAPI();
+        }
+        
+        return instance;
+    }
     /**
      * Handle the response from a HTTP request
      * @param request
@@ -31,7 +43,9 @@ public class SubscriptionRestAPI {
         String jsonContent = "";
 
         try(CloseableHttpResponse httpResponse = client.execute(request)) {
-            jsonContent = StringUtils.defaultIfBlank(EntityUtils.toString(httpResponse.getEntity(), "utf-8"), "");
+            if(httpResponse.getEntity() != null) {
+                jsonContent = StringUtils.defaultIfBlank(EntityUtils.toString(httpResponse.getEntity(), "utf-8"), "");
+            }
             statusCode = httpResponse.getStatusLine().getStatusCode();
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);

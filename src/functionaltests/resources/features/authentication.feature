@@ -23,7 +23,7 @@ Feature: Test Authentication
     When a POST request is prepared for REST API "/subscriptions"
     And request is sent
     Then response code 401 is received
-    And subscription with name "Subscription_Test" is not created
+    And subscription is not created
 
   Scenario: Call an REST API with credentials
     Given LDAP is activated
@@ -31,5 +31,17 @@ Feature: Test Authentication
     And username "gauss" and password "password" is used as credentials
     And request is sent
     Then response code 200 is received
-    And subscription with name "Subscription_Test" is created
+    And subscription is created
     
+  Scenario: Call an REST API with session credentials
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 401 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 200 is received

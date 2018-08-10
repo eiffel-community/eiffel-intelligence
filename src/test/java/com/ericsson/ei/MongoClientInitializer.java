@@ -20,10 +20,6 @@ public class MongoClientInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientInitializer.class);
     private static List<MongoClient> mongoClients = new LinkedList<>();
 
-    static {
-        IntStream.range(0, 5).forEachOrdered(i -> mongoClients.add(createConn()));
-    }
-
     private static MongoClient createConn() {
         MongoClient mongoClient = null;
         try {
@@ -35,8 +31,13 @@ public class MongoClientInitializer {
         return mongoClient;
     }
 
-    public static MongoClient borrow() {
-        MongoClient mongoClient = mongoClients.get(1);
+    public synchronized static MongoClient borrow() {
+        MongoClient mongoClient;
+        if (mongoClients.size() == 0) {
+            mongoClient = createConn();
+            mongoClients.add(mongoClient);
+        }
+        mongoClient = mongoClients.get(0);
         mongoClients.remove(mongoClient);
         return mongoClient;
     }
@@ -47,6 +48,6 @@ public class MongoClientInitializer {
 
     @PreDestroy
     public void shutdown() {
-        IntStream.range(0, 5).mapToObj(i -> mongoClients.get(i)).forEachOrdered(Mongo::close);
+        IntStream.range(0, mongoClients.size() - 1).mapToObj(i -> mongoClients.get(i)).forEachOrdered(Mongo::close);
     }
 }

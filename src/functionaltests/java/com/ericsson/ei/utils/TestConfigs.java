@@ -1,10 +1,7 @@
 package com.ericsson.ei.utils;
 
-import com.mongodb.MongoClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
@@ -17,24 +14,12 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 public class TestConfigs {
 
     private static AMQPBrokerManager amqpBroker;
     private static ConnectionFactory cf;
     private Connection conn;
-    private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
-
-    static {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
@@ -61,16 +46,6 @@ public class TestConfigs {
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
     }
 
-    void mongoClient() {
-        try {
-            String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("spring.data.mongodb.port", port);
-            LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
     void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.enabled", "true");
@@ -92,11 +67,6 @@ public class TestConfigs {
             // the connection is closed we just receive the
             // exception and go on
         }
-
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
     }
 
     public void createExchange(final String exchangeName, final String queueName) {

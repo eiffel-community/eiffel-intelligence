@@ -1,7 +1,10 @@
 package com.ericsson.ei.subscriptions.content;
 
+import com.ericsson.ei.MongoClientInitializer;
+import com.ericsson.ei.utils.TestContextInitializer;
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
+import org.junit.AfterClass;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
@@ -10,4 +13,8 @@ import org.junit.runner.RunWith;
         "html:target/cucumber-reports/TestSubscriptionContentRunner"})
 public class TestSubscriptionContentRunner {
 
+    @AfterClass
+    public static void returnMongoClient() {
+        MongoClientInitializer.returnMongoClient(TestContextInitializer.getMongoClient());
+    }
 }

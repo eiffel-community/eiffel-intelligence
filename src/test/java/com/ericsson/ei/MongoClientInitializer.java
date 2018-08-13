@@ -2,6 +2,7 @@ package com.ericsson.ei;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import java.util.stream.IntStream;
 public class MongoClientInitializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientInitializer.class);
+    private static final String DB_NAME = "eiffel_intelligence";
+    private static final String MISSED_NOTIFICATION = "MissedNotification";
     private static List<MongoClient> mongoClients = new LinkedList<>();
 
     private static MongoClient createConn() {
@@ -43,6 +46,10 @@ public class MongoClientInitializer {
     }
 
     public static void returnMongoClient(MongoClient client) {
+        MongoDatabase mongoDatabase = client.getDatabase(DB_NAME);
+        mongoDatabase.drop();
+        mongoDatabase = client.getDatabase(MISSED_NOTIFICATION);
+        mongoDatabase.drop();
         mongoClients.add(client);
     }
 

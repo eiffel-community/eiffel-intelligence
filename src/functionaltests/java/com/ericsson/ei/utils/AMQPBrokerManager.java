@@ -33,8 +33,4 @@ public class AMQPBrokerManager {
         broker.shutdown();
         isRunning = false;
     }
-
-    public String getPort() {
-        return this.port;
-    }
 }

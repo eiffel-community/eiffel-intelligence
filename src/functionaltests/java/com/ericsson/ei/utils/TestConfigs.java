@@ -5,6 +5,7 @@ import com.mongodb.MongoClient;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
@@ -21,7 +22,7 @@ public class TestConfigs {
 
     private MongoClient mongoClient = null;
 
-    protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerMap = new HashMap<>();
+    protected static Map<Integer, AMQPBrokerManager> amqpBrokerMap = new HashMap<>();
 
     AMQPBrokerManager createAmqpBroker() throws Exception {
         // Generates a random port for amqpBroker and starts up a new broker

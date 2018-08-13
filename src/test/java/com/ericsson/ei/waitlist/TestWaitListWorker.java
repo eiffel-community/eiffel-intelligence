@@ -164,7 +164,7 @@ public class TestWaitListWorker {
     // assertTrue(waitListStorageHandler.dropDocumentFromWaitList(condition));
     // } catch (Exception e) {
     // assertFalse(true);
-    // System.out.println("error occured while deleting document from
+    // System.out.println("error occurred while deleting document from
     // waitlist");
     // }
     // }

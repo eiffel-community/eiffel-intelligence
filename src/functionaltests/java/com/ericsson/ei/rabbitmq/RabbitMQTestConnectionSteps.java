@@ -33,7 +33,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
     private AMQPBrokerManager amqpBroker;
 
-    public String encoolvariabel = "Yo";
     @Given("^We are connected to message bus$")
     public void connect_to_message_bus() {
         amqpBroker = TestContextInitializer.getBroker(Integer.parseInt(rabbitMQPort));
@@ -75,7 +74,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         amqpBroker.stopBroker();
         TestContextInitializer.removeBroker(Integer.parseInt(rabbitMQPort));
     }
-
 
     /**
      * This method collects all the event names of events we will send to the message bus.

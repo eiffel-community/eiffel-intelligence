@@ -3,6 +3,7 @@ package com.ericsson.ei.files;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,14 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     private int applicationPort;
     private String hostName = getHostName();
 
-    
+
     @Given("^Eiffel Intelligence instance is up and running$")
     public void eiffel_intelligence_instance_is_up_and_running() throws Exception {
         LOGGER.debug("Checking if Eiffel Intelligence instance is up and running.");
-        httpRequest.setHost(hostName).setPort(applicationPort).
-            setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString()).
-            setEndpoint("/subscriptions");
+        httpRequest.setHost(hostName)
+            .setPort(applicationPort)
+            .setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
+            .setEndpoint("/subscriptions");
         response = httpRequest.performRequest();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
@@ -56,8 +58,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         LOGGER.debug("Listing all availble files that can be download via RestApi.");
         String expectedSubscriptionsValue =  "/download/subscriptionsTemplate";
 
-        httpRequest.setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString()).
-        setEndpoint("/download");
+        httpRequest.setEndpoint("/download");
         response = httpRequest.performRequest();
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -72,8 +73,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_subscription_template_file() throws Exception {
         String expectedSubscriptionTemplateContent = FileUtils.readFileToString(new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString()).
-        setEndpoint("/download/subscriptionsTemplate");
+        httpRequest.setEndpoint("/download/subscriptionsTemplate");
         response = httpRequest.performRequest();
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -88,8 +88,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_rules_template_file() throws Exception {
         String expectedRulesTemplateContent = FileUtils.readFileToString(new File(RULES_TEMPLATE_FILEPATH), "UTF-8");
         
-        httpRequest.setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString()).
-        setEndpoint("/download/rulesTemplate");
+        httpRequest.setEndpoint("/download/rulesTemplate");
         response = httpRequest.performRequest();
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -104,8 +103,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_event_template_file() throws Exception {
         String expectedEventsTemplateContent = FileUtils.readFileToString(new File(EVENTS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString()).
-        setEndpoint("/download/eventsTemplate");
+        httpRequest.setEndpoint("/download/eventsTemplate");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

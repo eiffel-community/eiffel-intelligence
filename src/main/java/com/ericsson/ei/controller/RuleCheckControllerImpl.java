@@ -26,6 +26,8 @@ import com.ericsson.ei.services.IRuleCheckService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.Setter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +72,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
     @Autowired
     private IRuleCheckService ruleCheckService;
-
+    
+    @Setter
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
 

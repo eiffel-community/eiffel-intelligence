@@ -58,7 +58,7 @@ public class RuleCheckSteps extends FunctionalTestBase {
     public void make_a_POST_request_to_the_REST_API_with_request_parameter(String endpoint, String requestParam) throws Throwable {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
-                .setUrl(hostName)
+                .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
                 .setEndpoint(endpoint)
@@ -76,7 +76,7 @@ public class RuleCheckSteps extends FunctionalTestBase {
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
-                .setUrl(hostName)
+                .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
                 .setEndpoint(endpoint)

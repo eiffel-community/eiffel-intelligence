@@ -3,7 +3,6 @@ package com.ericsson.ei.files;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +48,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
             .setPort(applicationPort)
             .setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
             .setEndpoint("/subscriptions");
+
         response = httpRequest.performRequest();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
     }

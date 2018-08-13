@@ -134,7 +134,12 @@ public class TestRulesRestAPI {
     @Test
     public void testGetTestRulePageEnabledAPI() throws Exception {
         String responseBody = new JSONObject().put("status", false).toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/rules/rule-check/TestRulePageEnabled").accept(MediaType.APPLICATION_JSON_VALUE))
+        String responseBody_StatusTrue = new JSONObject().put("status", false).toString();
+        mockMvc.perform(MockMvcRequestBuilders.get("/rules/rule-check/testRulePageEnabled").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
+        System.setProperty("testaggregated.enabled", "true");        
+        mockMvc.perform(MockMvcRequestBuilders.get("/rules/rule-check/testRulePageEnabled").accept(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk()).andExpect(content().string(responseBody_StatusTrue)).andReturn();
+        System.setProperty("testaggregated.enabled", "false");
     }
 }

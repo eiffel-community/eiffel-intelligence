@@ -74,11 +74,11 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
-    @Then("^the waitlist will try to resent the events at given time interval$")
-    public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {
+    @Then("^the waitlist will try to resend the events at given time interval$")
+    public void the_waitlist_will_try_to_resend_the_events_at_given_time_interval() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
-        List<String> resentEvents = new ArrayList<String>();
-        List<String> lines = new ArrayList<String>(Files.readAllLines(tempLogFile.toPath()));
+        List<String> resentEvents = new ArrayList<>();
+        List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
 
         for (String line : lines) {
             Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT\\] id:([a-zA-Z\\d-]+)");

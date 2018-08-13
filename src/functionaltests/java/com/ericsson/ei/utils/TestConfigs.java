@@ -75,24 +75,6 @@ public class TestConfigs {
         System.setProperty("ldap.password", password);
         System.setProperty("ldap.user.filter", "uid={0}");
     }
-    
-    public void tearDown() {
-        if (amqpBroker != null) {
-            amqpBroker.stopBroker();
-        }
-        try {
-            conn.close();
-        } catch (Exception e) {
-            // We try to close the connection but if
-            // the connection is closed we just receive the
-            // exception and go on
-        }
-
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
-    }
 
     public void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);

@@ -17,7 +17,6 @@ import com.ericsson.ei.App;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,5 +50,10 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Override
     public void afterTestClass(TestContext testContext) throws Exception {
         // After running tests.
+    }
+
+    public String getHostName() {
+        // Temporary method, implementation will come later
+        return "localhost";
     }
 }

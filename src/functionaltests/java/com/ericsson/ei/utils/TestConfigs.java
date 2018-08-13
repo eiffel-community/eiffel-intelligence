@@ -46,7 +46,7 @@ public class TestConfigs {
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
     }
 
-    void setAuthorization() {
+    public void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.enabled", "true");
         System.setProperty("ldap.url", "ldap://ldap.forumsys.com:389/dc=example,dc=com");
@@ -54,19 +54,6 @@ public class TestConfigs {
         System.setProperty("ldap.username", "cn=read-only-admin,dc=example,dc=com");
         System.setProperty("ldap.password", password);
         System.setProperty("ldap.user.filter", "uid={0}");
-    }
-
-    public void tearDown() {
-        if (amqpBroker != null) {
-            amqpBroker.stopBroker();
-        }
-        try {
-            conn.close();
-        } catch (Exception e) {
-            // We try to close the connection but if
-            // the connection is closed we just receive the
-            // exception and go on
-        }
     }
 
     public void createExchange(final String exchangeName, final String queueName) {

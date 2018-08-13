@@ -218,7 +218,7 @@ public class RmqHandler {
             container.destroy();
             factory.destroy();
         } catch (Exception e) {
-            log.info("exception occured while closing connections");
+            log.info("exception occurred while closing connections");
             log.info(e.getMessage(), e);
         }
     }

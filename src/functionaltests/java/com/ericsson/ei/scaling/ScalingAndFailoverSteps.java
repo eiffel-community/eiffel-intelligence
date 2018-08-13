@@ -1,10 +1,5 @@
 package com.ericsson.ei.scaling;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -22,13 +17,20 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import com.ericsson.ei.App;
+import com.ericsson.ei.utils.FunctionalTestBase;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 @Ignore
 @AutoConfigureMockMvc

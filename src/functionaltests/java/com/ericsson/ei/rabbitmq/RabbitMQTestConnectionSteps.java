@@ -4,10 +4,10 @@ import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.TestContextInitializer;
 
-import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +33,10 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
     private AMQPBrokerManager amqpBroker;
 
+    public String encoolvariabel = "Yo";
     @Given("^We are connected to message bus$")
     public void connect_to_message_bus() {
-        amqpBroker = TestContextInitializer.getBrokerFromPool(Integer.parseInt(rabbitMQPort));
+        amqpBroker = TestContextInitializer.getBroker(Integer.parseInt(rabbitMQPort));
         assertEquals("Expected message bus to be up",
                 true, amqpBroker.isRunning);
     }
@@ -69,12 +69,11 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         assertEquals(4, waitListSize);
     }
 
-
-    @After
-    public void afterScenario() throws IOException {
+    @AfterClass
+    public void tearDown() throws IOException {
         LOGGER.debug("Shutting down AMQP broker after tests");
         amqpBroker.stopBroker();
-        TestContextInitializer.removeBrokerFromPool(Integer.parseInt(rabbitMQPort));
+        TestContextInitializer.removeBroker(Integer.parseInt(rabbitMQPort));
     }
 
 

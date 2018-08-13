@@ -21,7 +21,7 @@ public class TestConfigs {
 
     private MongoClient mongoClient = null;
 
-    protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerPool = new HashMap<>();
+    protected static HashMap<Integer, AMQPBrokerManager> amqpBrokerMap = new HashMap<>();
 
     AMQPBrokerManager createAmqpBroker() throws Exception {
         // Generates a random port for amqpBroker and starts up a new broker
@@ -41,7 +41,7 @@ public class TestConfigs {
         amqpBroker.startBroker();
 
         // add new amqp broker to pool
-        amqpBrokerPool.put(port, amqpBroker);
+        amqpBrokerMap.put(port, amqpBroker);
 
         return amqpBroker;
     }
@@ -68,11 +68,13 @@ public class TestConfigs {
         System.setProperty("ldap.user.filter", "uid={0}");
     }
 
-    public static AMQPBrokerManager getBrokerFromPool(int port) {
-        return amqpBrokerPool.get(port);
+    public static AMQPBrokerManager getBroker(int port) {
+        return amqpBrokerMap.get(port);
     }
 
-    public static void removeBrokerFromPool(int port) {
-        amqpBrokerPool.remove(port);
+    public static void removeBroker(int port) {
+        AMQPBrokerManager broker = amqpBrokerMap.get(port);
+        broker.stopBroker();
+        amqpBrokerMap.remove(port);
     }
 }

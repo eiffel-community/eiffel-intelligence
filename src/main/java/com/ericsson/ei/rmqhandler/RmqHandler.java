@@ -16,9 +16,6 @@
 */
 package com.ericsson.ei.rmqhandler;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -115,37 +112,34 @@ public class RmqHandler {
     private SimpleMessageListenerContainer waitlistContainer;
 
 
-    @Bean ConnectionFactory connectionFactory() {
-        com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = new com.rabbitmq.client.ConnectionFactory();
-        rabbitConnectionFactory.setHost(host);
-        rabbitConnectionFactory.setPort(port);
+    @Bean
+    ConnectionFactory connectionFactory() {
+        cachingConnectionFactory = new CachingConnectionFactory(host, port);
+
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
-            rabbitConnectionFactory.setUsername(user);
-            rabbitConnectionFactory.setPassword(password);
+            cachingConnectionFactory.setUsername(user);
+            cachingConnectionFactory.setPassword(password);
         }
 
         if (tlsVersion != null && !tlsVersion.isEmpty()) {
             try {
-                log.info("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
-                rabbitConnectionFactory.useSslProtocol(tlsVersion);
-            } catch (KeyManagementException e) {
-                log.error("Failed to set SSL/TLS version.");
-                log.error(e.getMessage(), e);
-            } catch (NoSuchAlgorithmException e) {
+                log.debug("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
+                cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(tlsVersion);
+            } catch (Exception e) {
                 log.error("Failed to set SSL/TLS version.");
                 log.error(e.getMessage(), e);
             }
         }
 
-        cachingConnectionFactory = new CachingConnectionFactory(rabbitConnectionFactory);
         cachingConnectionFactory.setPublisherConfirms(true);
         cachingConnectionFactory.setPublisherReturns(true);
 
         // This will disable connectionFactories auto recovery and use Spring AMQP auto recovery
-        rabbitConnectionFactory.setAutomaticRecoveryEnabled(false);
+        cachingConnectionFactory.getRabbitConnectionFactory().setAutomaticRecoveryEnabled(false);
 
         return cachingConnectionFactory;
     }
+
 
     @Bean
     Queue queue() {

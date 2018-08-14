@@ -99,8 +99,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String entryPoint = "/queryAggregatedObject";
         final String documentId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         LOGGER.debug("Got AggregateObject actual DocumentId after querying MongoDB: " + documentId);
-        HttpRequest postRequest = new HttpRequest(HttpMethod.GET);
-        response = postRequest.setPort(applicationPort)
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
@@ -134,8 +134,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String expectedResponse = "{\"responseEntity\":\"[]\"}";
 
         LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: " + invalidDocumentId);
-        HttpRequest postRequest = new HttpRequest(HttpMethod.GET);
-        response = postRequest.setPort(applicationPort)
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
@@ -162,8 +162,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + queryAggrObj);
 
-        HttpRequest postRequest = new HttpRequest(HttpMethod.GET);
-        response = postRequest.setPort(applicationPort)
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
@@ -196,8 +196,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
 
-        HttpRequest postRequest = new HttpRequest(HttpMethod.GET);
-        response = postRequest.setPort(applicationPort)
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")
@@ -233,8 +233,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         LOGGER.debug("Trying to query /queryMissedNotifications RestApi with subscriptionName: " + subscriptionName);
 
-        HttpRequest postRequest = new HttpRequest(HttpMethod.GET);
-        response = postRequest.setPort(applicationPort)
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .setHeaders("content-type", "application/json")
                 .setHeaders("Accept", "application/json")

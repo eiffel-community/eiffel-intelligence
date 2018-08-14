@@ -7,11 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -29,7 +25,7 @@ public class HttpRequest {
     private HttpExecutor executor = HttpExecutor.getInstance();
 
     public enum HttpMethod {
-        GET, POST, DELETE
+        GET, POST, DELETE, PUT
     }
 
     @Getter
@@ -56,6 +52,9 @@ public class HttpRequest {
             break;
         case DELETE:
             request = new HttpDelete();
+            break;
+        case PUT:
+            request = new HttpPut();
             break;
         }
     }

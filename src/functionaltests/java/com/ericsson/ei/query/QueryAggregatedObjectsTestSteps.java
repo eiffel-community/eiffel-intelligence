@@ -102,10 +102,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("ID", documentId)
+                .addParam("ID", documentId)
                 .performRequest();
 
         LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + response.getStatusCodeValue() +
@@ -137,10 +137,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("ID", invalidDocumentId)
+                .addParam("ID", invalidDocumentId)
                 .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -165,10 +165,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("request", queryAggrObj)
+                .addParam("request", queryAggrObj)
                 .performRequest();
 
         LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +
@@ -199,10 +199,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("request", queryAggrObj)
+                .addParam("request", queryAggrObj)
                 .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -236,10 +236,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("SubscriptionName", subscriptionName)
+                .addParam("SubscriptionName", subscriptionName)
                 .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -275,10 +275,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setParam("SubscriptionName", subscriptionName)
+                .addParam("SubscriptionName", subscriptionName)
                 .performRequest();
 
         String responseAsString = response.getBody().toString();

@@ -44,7 +44,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
         postRequest = new HttpRequest(HttpMethod.POST);
         postRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions")
-                .setHeaders("content-type", "application/json").setHeaders("Accept", "application/json");
+                .addHeader("content-type", "application/json").addHeader("Accept", "application/json");
     }
 
     // SCENARIO 1

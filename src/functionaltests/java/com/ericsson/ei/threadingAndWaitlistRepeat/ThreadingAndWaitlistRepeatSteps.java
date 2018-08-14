@@ -51,10 +51,6 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         System.setOut(new PrintStream(tempLogFile));
     }
 
-    @After("@ThreadingAndWaitlistRepeatScenario")
-    public void afterScenario() throws IOException {
-    }
-
     @Given("^that eiffel events are sent$")
     public void that_eiffel_events_are_sent() throws Throwable {
         List<String> eventNamesToSend = getEventNamesToSend();

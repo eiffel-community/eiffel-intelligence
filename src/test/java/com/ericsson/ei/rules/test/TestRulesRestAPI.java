@@ -148,7 +148,7 @@ public class TestRulesRestAPI {
         ruleCheckControllerImpl.setTestEnable(true);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(responseEntity.getBody().toString(), responseBody);
+        assertEquals(responseBody, responseEntity.getBody().toString());
 
     }
 
@@ -159,6 +159,6 @@ public class TestRulesRestAPI {
         ruleCheckControllerImpl.setTestEnable(false);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(responseEntity.getBody().toString(), responseBody);
+        assertEquals(responseBody, responseEntity.getBody().toString());
     }
 }

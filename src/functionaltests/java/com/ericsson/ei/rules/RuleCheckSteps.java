@@ -104,5 +104,20 @@ public class RuleCheckSteps extends FunctionalTestBase {
             assertEquals(expectedObject, responseObject, true);
         }
     }
+    
+    @Then("^get request from REST API \"([^\"]*)\" return response code of (\\d+) and status as \"([^\"]*)\"$")
+    public void get_request_from_REST_API_return_response_code_of_and_status_as(String endpoint, int statusCode, String status) throws Throwable {
+        String responseBody = new JSONObject().put("status", Boolean.valueOf(status)).toString();
+        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        ResponseEntity<String> apiResponse = getRequest.setPort(applicationPort)
+                .setHost(hostName)
+                .setHeaders("content-type", "application/json")
+                .setHeaders("Accept", "application/json")
+                .setEndpoint(endpoint)
+                .performRequest();
+        
+        assertEquals(statusCode, apiResponse.getStatusCodeValue());
+        assertEquals(responseBody, apiResponse.getBody());
+    }
 
 }

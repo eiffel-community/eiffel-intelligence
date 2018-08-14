@@ -58,10 +58,10 @@ public class ProcessAggregatedObject {
         ObjectMapper mapper = new ObjectMapper();
         String query = "{\"aggregatedObject.id\": \"" + id + "\"}";
         
-        LOGGER.debug("The condition is : " + query.toString());
+        LOGGER.debug("The condition is : " + query);
         JsonNode jsonCondition = null;
         try {
-            jsonCondition = mapper.readTree(query.toString());
+            jsonCondition = mapper.readTree(query);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

@@ -36,6 +36,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     @PostConstruct
     private void setUp() {
         getRequest = new HttpRequest(HttpMethod.GET);
+
         getRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
 
         deleteRequest = new HttpRequest(HttpMethod.DELETE);

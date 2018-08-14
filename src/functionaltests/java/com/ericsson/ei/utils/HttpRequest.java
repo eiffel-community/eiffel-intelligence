@@ -38,6 +38,7 @@ public class HttpRequest {
     @Getter
     @Setter
     protected String host;
+
     @Getter
     @Setter
     protected String endpoint;
@@ -86,7 +87,9 @@ public class HttpRequest {
     }
 
     public ResponseEntity<String> performRequest() throws URISyntaxException {
+
         URIBuilder builder = new URIBuilder("http://" + host + ":" + port + endpoint);
+
         if (!params.isEmpty()) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 builder.addParameter(entry.getKey(), entry.getValue());

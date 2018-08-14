@@ -6,10 +6,10 @@ import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -22,12 +22,9 @@ import org.json.JSONObject;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.http.ResponseEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-@AutoConfigureMockMvc
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
+
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggragatedObject.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
@@ -65,8 +62,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Value("${subscription.collection.repeatFlagHandlerName}")
     private String repeatFlagHandlerCollection;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private int applicationPort;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -116,12 +113,15 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     }
 
     @Then("^I make a DELETE request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
-    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
-            String subscriptionEndPoint) throws Exception {
-        MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders.delete(subscriptionEndPoint + name).accept(MediaType.APPLICATION_JSON))
-                .andReturn();
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name, String subscriptionEndPoint) throws Exception {
+        HttpRequest deleteRequest = new HttpRequest(HttpRequest.HttpMethod.DELETE);
+        ResponseEntity response = deleteRequest.setHost(getHostName())
+                .setPort(applicationPort)
+                .setHeaders("content-type", "application/json")
+                .setHeaders("Accept", "application/json")
+                .setEndpoint(subscriptionEndPoint + name)
+                .performRequest();
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
     @Then("^Check in MongoDB RepeatFlagHandler collection that the subscription has been removed$")
@@ -154,9 +154,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     /**
      * Process list of documents which gotten from RepeatFlagHandler collection
-     * 
-     * @param resultRepeatFlagHandler
-     *            list from RepeatFlagHandler collection
+     *
+     * @param resultRepeatFlagHandler list from RepeatFlagHandler collection
      * @param index
      * @return value of aggregatedObjectId
      */
@@ -169,7 +168,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     /**
      * Adding subscription to RepeatFlagHandler collection
-     * 
+     *
      * @param subscriptionStrValue
      * @param subscriptionObject
      * @throws IOException

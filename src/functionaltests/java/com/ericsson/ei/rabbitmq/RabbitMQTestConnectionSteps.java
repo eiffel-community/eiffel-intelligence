@@ -7,14 +7,11 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.TestPropertySource;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 
 @Ignore
-@TestPropertySource(properties = {"logging.level.com.ericsson.ei.rabbitmq=DEBUG"})
 public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
     @Value("${rabbitmq.port}")
@@ -66,13 +62,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
             waitListSize = dbManager.waitListSize();
         }
         assertEquals(4, waitListSize);
-    }
-
-    @AfterClass
-    public void tearDown() throws IOException {
-        LOGGER.debug("Shutting down AMQP broker after tests");
-        amqpBroker.stopBroker();
-        TestContextInitializer.removeBroker(Integer.parseInt(rabbitMQPort));
     }
 
     /**

@@ -73,8 +73,8 @@ public class TestConfigs {
         return amqpBrokerMap.get(port);
     }
 
-    public static void removeBroker(int port) {
-        AMQPBrokerManager broker = amqpBrokerMap.get(port);
+    public static void removeBroker(String port) {
+        AMQPBrokerManager broker = amqpBrokerMap.get(Integer.parseInt(port));
         broker.stopBroker();
         amqpBrokerMap.remove(port);
     }

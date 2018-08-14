@@ -7,6 +7,6 @@ public class BaseRunner {
     @AfterClass()
     public static void shutdownAmqpBroker() {
         String rabbitMQPort = System.getProperty("rabbitmq.port");
-        TestContextInitializer.removeBroker(Integer.parseInt(rabbitMQPort));
+        TestContextInitializer.removeBroker(rabbitMQPort);
     }
 }

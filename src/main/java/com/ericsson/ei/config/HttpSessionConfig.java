@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 @EnableMongoHttpSession()
 public class HttpSessionConfig {
@@ -28,5 +29,9 @@ public class HttpSessionConfig {
     public static String getCurrentUser() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
-
+    
+    @Bean
+    public HttpSessionIdResolver httpSessionIdResolver() {
+        return new HeaderAndCookieHttpSessionIdResolver(); 
+    }
 }

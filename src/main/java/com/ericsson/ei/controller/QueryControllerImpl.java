@@ -57,19 +57,4 @@ public class QueryControllerImpl implements QueryController {
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @Override
-    @CrossOrigin
-    @ApiOperation(value = "")
-    public ResponseEntity<?> getQuery(@RequestParam(value = "request") final String request) {
-        try {
-            JSONArray result = processQueryParams.filterQueryParam(request);
-            LOGGER.debug("Final Output : " + result.toString());
-            return new ResponseEntity<>(result.toString(), HttpStatus.OK);
-        } catch (Exception e) {
-            String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

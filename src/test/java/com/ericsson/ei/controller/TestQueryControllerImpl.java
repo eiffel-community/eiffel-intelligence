@@ -40,20 +40,16 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class, 
+        App.class,
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
-    private static final String REQUEST = "testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
     private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static String input;
 
@@ -62,7 +58,7 @@ public class TestQueryControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -80,18 +76,6 @@ public class TestQueryControllerImpl {
         when(unitUnderTest.filterFormParam(any(JsonNode.class))).thenReturn(inputObj);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/query")
                 .param("request", QUERY))
-                .andReturn();
-        assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
-    }
-
-    @Test
-    public void filterQueryParamTest() throws Exception {
-        JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterQueryParam(anyString())).thenReturn(inputObj);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/query")
-                .param("request", REQUEST))
-                .andExpect(status().isOk())
-                .andDo(print())
                 .andReturn();
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
     }

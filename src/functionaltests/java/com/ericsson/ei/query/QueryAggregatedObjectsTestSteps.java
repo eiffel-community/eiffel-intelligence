@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -16,11 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -38,10 +37,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
-
     private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocument.json";
     private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
-
+    private static final String QUERY_1_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject1.json";
+    private static final String QUERY_2_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject2.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -154,49 +153,58 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 expectedResponse, responseAsString);
     }
 
-    @And("^Perform valid freestyle query on created Aggregated object$")
-    public void perform_valid_freestyle_query_on_created_aggregated_object() throws Throwable {
+    @Then("^Perform several valid freestyle queries on created Aggregated objects$")
+    public void perform_several_valid_freestyle_queries_on_created_Aggregated_objects() throws Throwable {
+
         final String expectedAggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         final String entryPoint = "/query";
-        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + expectedAggrId + "\", \"aggregatedObject.gav.groupId\" : \"com.mycompany.myproduct\"}}";
 
-        LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + queryAggrObj);
+        String query1 = FileUtils.readFileToString(new File(QUERY_1_FILE_NAME), "UTF-8");
+        String query2 = FileUtils.readFileToString(new File(QUERY_2_FILE_NAME), "UTF-8");
 
-        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setPort(applicationPort)
-                .setHost(hostName)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setEndpoint(entryPoint)
-                .addParam("request", queryAggrObj)
-                .performRequest();
+        List<String> queries = new ArrayList<>();
+        queries.add(query1);
+        queries.add(query2);
 
-        LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +
-                           "\nResponse: " + response.getBody().toString());
+        for(String query: queries) {
+            LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
 
-        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
-        JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).get("aggregatedObject").toString(), JsonNode.class);
+            HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+            response = postRequest.setPort(applicationPort)
+                    .setHost(hostName)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .setEndpoint(entryPoint)
+                    .addParam("request", query)
+                    .performRequest();
 
-        String actualAggrObjId = aggrObjResponse.get("id").asText();
-        LOGGER.debug("AggregatedObject id from Response: " + actualAggrObjId);
+            LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +
+                               "\nResponse: " + response.getBody().toString());
+
+            JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+            JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).get("aggregatedObject").toString(), JsonNode.class);
+
+            String actualAggrObjId = aggrObjResponse.get("id").asText();
+            LOGGER.debug("AggregatedObject id from Response: " + actualAggrObjId);
 
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
-        assertEquals("Failed to compare actual Aggregated Object Id:\n" + actualAggrObjId
-                + "\nwith expected Aggregated Object Id:\n" + expectedAggrId,
-                expectedAggrId, actualAggrObjId);
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+            assertEquals("Failed to compare actual Aggregated Object Id:\n" + actualAggrObjId
+                    + "\nwith expected Aggregated Object Id:\n" + expectedAggrId,
+                    expectedAggrId, actualAggrObjId);
+        }
     }
 
     @And("^Perform an invalid freesyle query on Aggregated object$")
     public void perform_invalid_freestyle_query_on_created_aggregated_object() throws Throwable {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
         final String entryPoint = "/query";
-        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }}";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }, \"options\": \"\"}";
         final String expectedResponse = "[]";
 
         LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
 
-        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
+        HttpRequest getRequest = new HttpRequest(HttpMethod.POST);
         response = getRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .addHeader("content-type", "application/json")

@@ -56,10 +56,8 @@ public class ProcessQueryParams {
     public JSONArray filterFormParam(JsonNode request) {
         JsonNode criteria = request.get("criteria");
         JsonNode options = request.get("options");
-        LOGGER.debug("The criteria is : " + criteria.toString());
-        LOGGER.debug("The options is : " + options.toString());
         JSONArray resultAggregatedObject;
-        if (options.toString().equals("{}") || options.isNull()) {
+        if (options == null || options.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";

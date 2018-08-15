@@ -32,7 +32,7 @@ import cucumber.api.java.en.Then;
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
-    private static final String LOGFILE = "src/functionaltests/resources/logfile.txt";
+    private File tempLogFile;
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
 
     @Value("${threads.corePoolSize}")
@@ -46,14 +46,9 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Before("@ThreadingAndWaitlistRepeatScenario")
     public void beforeScenario() throws IOException {
-        File logfile = new File(LOGFILE);
-        logfile.createNewFile();
-        System.setOut(new PrintStream(logfile));
-    }
-
-    @After("@ThreadingAndWaitlistRepeatScenario")
-    public void afterScenario() throws IOException {
-        Files.deleteIfExists(Paths.get(LOGFILE));
+        tempLogFile = File.createTempFile("logfile", ".tmp");
+        tempLogFile.deleteOnExit(); 
+        System.setOut(new PrintStream(tempLogFile));
     }
 
     @Given("^that eiffel events are sent$")
@@ -75,11 +70,11 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
-    @Then("^the waitlist will try to resent the events at given time interval$")
-    public void the_waitlist_will_try_to_resent_the_events_at_given_time_interval() throws Throwable {
+    @Then("^the waitlist will try to resend the events at given time interval$")
+    public void the_waitlist_will_try_to_resend_the_events_at_given_time_interval() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
-        List<String> resentEvents = new ArrayList<String>();
-        List<String> lines = new ArrayList<String>(Files.readAllLines(Paths.get(LOGFILE)));
+        List<String> resentEvents = new ArrayList<>();
+        List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
 
         for (String line : lines) {
             Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT\\] id:([a-zA-Z\\d-]+)");

@@ -17,6 +17,8 @@
 package com.ericsson.ei.rules.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
 
@@ -37,6 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -45,13 +48,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.controller.RuleCheckControllerImpl;
 import com.ericsson.ei.services.IRuleCheckService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class, 
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class, EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+})
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
@@ -70,7 +72,7 @@ public class TestRulesRestAPI {
 
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
-    
+
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -113,8 +115,10 @@ public class TestRulesRestAPI {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        String body = "{\"listRulesJson\":" + extractionRules_test.toString() + ",\"listEventsJson\":" + jsonInput.toString() + "}";
-        Mockito.when(ruleCheckService.prepareAggregatedObject(Mockito.any(JSONArray.class), Mockito.any(JSONArray.class)))
+        String body = "{\"listRulesJson\":" + extractionRules_test.toString() + ",\"listEventsJson\":"
+                + jsonInput.toString() + "}";
+        Mockito.when(
+                ruleCheckService.prepareAggregatedObject(Mockito.any(JSONArray.class), Mockito.any(JSONArray.class)))
                 .thenReturn(aggregatedResult);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check/aggregation")
                 .accept(MediaType.ALL).content(body).contentType(MediaType.APPLICATION_JSON);
@@ -127,7 +131,34 @@ public class TestRulesRestAPI {
         } else {
             assertEquals(HttpStatus.SERVICE_UNAVAILABLE.value(), result.getResponse().getStatus());
         }
+    }
+
+    @Test
+    public void testGetTestRulePageEnabledAPI_setPropertyDefult() throws Exception {
+        String responseBody = new JSONObject().put("status", false).toString();
+        mockMvc.perform(MockMvcRequestBuilders.get("/rules/rule-check/testRulePageEnabled")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+                .andExpect(content().string(responseBody)).andReturn();
+    }
+
+    @Test
+    public void testGetTestRulePageEnabledAPI_setPropertyTrue() throws Exception {
+        String responseBody = new JSONObject().put("status", true).toString();
+        RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
+        ruleCheckControllerImpl.setTestEnable(true);
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(responseBody, responseEntity.getBody().toString());
 
     }
 
+    @Test
+    public void testGetTestRulePageEnabledAPI_setPropertyFalse() throws Exception {
+        String responseBody = new JSONObject().put("status", false).toString();
+        RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
+        ruleCheckControllerImpl.setTestEnable(false);
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(responseBody, responseEntity.getBody().toString());
+    }
 }

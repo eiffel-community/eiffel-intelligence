@@ -17,13 +17,17 @@
 package com.ericsson.ei.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.ericsson.ei.controller.model.RuleCheckBody;
+import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.services.IRuleCheckService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.Setter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,17 +72,17 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
     @Autowired
     private IRuleCheckService ruleCheckService;
-
+    
+    @Setter
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
 
     /**
-     * This method interacts with JmesPathInterface class method runRuleOnEvent
-     * to evaluate a rule on JSON object.
+     * This method interacts with JmesPathInterface class method runRuleOnEvent to
+     * evaluate a rule on JSON object.
      * 
      * @param rule-
-     *            takes a String as a rule that need to be evaluated on JSON
-     *            content
+     *            takes a String as a rule that need to be evaluated on JSON content
      * @param jsonContent-
      *            takes JSON object as a String
      * @return a String object
@@ -87,8 +91,9 @@ public class RuleCheckControllerImpl implements RuleCheckController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To execute rule on JSON", response = String.class)
-    public ResponseEntity<?> updateRulesRuleCheck(@ApiParam(value = "JMESPath rule", required = true) @RequestParam String rule,
-                                                  @ApiParam(value = "JSON object", required = true) @RequestBody String jsonContent) {
+    public ResponseEntity<?> updateRulesRuleCheck(
+            @ApiParam(value = "JMESPath rule", required = true) @RequestParam String rule,
+            @ApiParam(value = "JSON object", required = true) @RequestBody String jsonContent) {
         try {
             JSONObject jsonObj = new JSONObject(jsonContent);
             String res = jmesPathInterface.runRuleOnEvent(rule, jsonObj.toString()).toString();
@@ -104,11 +109,12 @@ public class RuleCheckControllerImpl implements RuleCheckController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Return the aggregated object(s)", response = String.class)
-    public ResponseEntity<?> updateAggregation(@ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true)
-                                                   @RequestBody RuleCheckBody body) {
+    public ResponseEntity<?> updateAggregation(
+            @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RuleCheckBody body) {
         if (testEnable) {
             try {
-                String aggregatedObject = ruleCheckService.prepareAggregatedObject(new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
+                String aggregatedObject = ruleCheckService.prepareAggregatedObject(
+                        new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
@@ -123,11 +129,24 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             }
         } else {
             String errorMessage = "Test Rules functionality is disabled in backend server. "
-                + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
-                + "to enable this functionality. This should normally only be enabled in backend test servers.";
+                    + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
+                    + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
             return new ResponseEntity<>(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "To get Rules Check Srvice enabled status", response = String.class)
+    public ResponseEntity<?> getTestRulePageEnabled() {
+        LOGGER.debug("Getting Enabling Status of Rules Check Service");
+        try {
+            return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
+        } catch (Exception e) {
+            String errorMessage = "Failed to get Status. Error message:\n" + e.getMessage();
+            LOGGER.error(errorMessage, e);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

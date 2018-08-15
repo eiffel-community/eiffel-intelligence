@@ -36,3 +36,13 @@
             200:
               body:
                 application/string:
+           
+      /testRulePageEnabled:
+        get:
+          description: This call for the current status of test rule entry point, we get status as output
+          displayName: findTestRuleServiceStatus
+          responses:
+            200:
+              body:
+                application/string:
+                   example: "status: false"

@@ -59,11 +59,11 @@ public class RuleCheckSteps extends FunctionalTestBase {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(endpoint)
                 .setBody(events)
-                .setParam(requestParam, rules)
+                .addParam(requestParam, rules)
                 .performRequest();
     }
 
@@ -77,8 +77,8 @@ public class RuleCheckSteps extends FunctionalTestBase {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(endpoint)
                 .setBody(requestBody)
                 .performRequest();

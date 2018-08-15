@@ -41,9 +41,10 @@ public class AuthenticationSteps extends FunctionalTestBase {
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth/logout");
+
         String auth = "gauss:password";
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
-        httpRequest.setHeaders("Authorization", "Basic " + encodedAuth);
+        httpRequest.addHeader("Authorization", "Basic " + encodedAuth);
         httpRequest.performRequest();
     }
 
@@ -52,6 +53,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         String expectedContent = new JSONObject().put("security", true).toString();
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth");
+
         response = httpRequest.performRequest();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedContent, response.getBody().toString());
@@ -64,11 +66,12 @@ public class AuthenticationSteps extends FunctionalTestBase {
             String requestBody = FileUtils.readFileToString(new File(SUBSCRIPTION), "UTF-8");
             httpRequest = new HttpRequest(HttpMethod.POST);
             httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint)
-                    .setHeaders("Content-type", "application/json").setBody(requestBody);
+                    .addHeader("Content-type", "application/json").setBody(requestBody);
             break;
         case "GET":
             httpRequest = new HttpRequest(HttpMethod.GET);
             httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint);
+
             break;
         }
     }
@@ -77,7 +80,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     public void with_credentials(String username, String password) throws Throwable {
         String auth = username + ":" + password;
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
-        httpRequest.setHeaders("Authorization", "Basic " + encodedAuth);
+        httpRequest.addHeader("Authorization", "Basic " + encodedAuth);
     }
 
     @When("^request is sent$")
@@ -94,6 +97,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     public void subscription_with_name_created(String check) throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions/" + SUBSCRIPTION_NAME);
+
         response = httpRequest.performRequest();
         GetSubscriptionResponse subscription = new ObjectMapper().readValue(response.getBody().toString(),
                 GetSubscriptionResponse.class);

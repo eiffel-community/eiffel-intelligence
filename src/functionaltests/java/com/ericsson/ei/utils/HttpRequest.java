@@ -7,11 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -29,7 +25,7 @@ public class HttpRequest {
     private HttpExecutor executor = HttpExecutor.getInstance();
 
     public enum HttpMethod {
-        GET, POST, DELETE
+        GET, POST, DELETE, PUT
     }
 
     @Getter
@@ -38,15 +34,18 @@ public class HttpRequest {
     @Getter
     @Setter
     protected String host;
+
     @Getter
     @Setter
     protected String endpoint;
     @Getter
-    protected Map<String, String> params = new HashMap<>();
+    protected Map<String, String> params;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
     public HttpRequest(HttpMethod method) {
+        params = new HashMap<>();
+        
         switch (method) {
         case POST:
             request = new HttpPost();
@@ -57,24 +56,71 @@ public class HttpRequest {
         case DELETE:
             request = new HttpDelete();
             break;
+        case PUT:
+            request = new HttpPut();
+            break;
         }
     }
+    
+    /*
+     * Function that clean parameters field only.
+     */
+    public void cleanParams() {
+        params.clear();
+    }
+    
+    /*
+     * Function that resets the HTTP Request object so it can be reused.
+     * 
+     */
+    public void resetHttpRequestObject() {
+        this.cleanParams();
+        request.reset();
+    }
 
-    public HttpRequest setHeaders(String key, String value) {
+    /*
+     * Function for adding headers to the http request.
+     * 
+     * @param key , the key of the header
+     * @param value, the value of the header
+     * 
+     * @return HTTPRequest
+     */
+    public HttpRequest addHeader(String key, String value) {
         request.addHeader(key, value);
         return this;
     }
 
-    public HttpRequest setParam(String key, String value) {
+    /*
+     * Function for adding parameters to the http request.
+     * 
+     * @param key , the key of the parameter
+     * @param value, the value of the parameter
+     * 
+     * @return HTTPRequest
+     */
+    public HttpRequest addParam(String key, String value) {
         params.put(key, value);
         return this;
     }
 
+    /*
+     * Function that set the body of the http request.
+     * 
+     * @param body , the body to be set in the http request.
+     * 
+     * @return HTTPRequest
+     */
     public HttpRequest setBody(String body) {
         ((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(body, "UTF-8"));
         return this;
     }
 
+    /*
+     * Function that set the body of the http request.
+     * 
+     * @param body , the file with body content to be set in the http request.
+     */
     public void setBody(File file) {
         String fileContent = "";
         try {
@@ -85,8 +131,15 @@ public class HttpRequest {
         setBody(fileContent);
     }
 
+    /*
+     * Function that execute http request.
+     * 
+     * @return ResponseEntity<String> , the response of the performed http request.
+     */
     public ResponseEntity<String> performRequest() throws URISyntaxException {
+
         URIBuilder builder = new URIBuilder("http://" + host + ":" + port + endpoint);
+
         if (!params.isEmpty()) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 builder.addParameter(entry.getKey(), entry.getValue());

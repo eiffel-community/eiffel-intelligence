@@ -1,21 +1,16 @@
 package com.ericsson.ei.utils;
 
 import com.mongodb.MongoClient;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -23,17 +18,17 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 public class TestConfigs {
 
-    private static AMQPBrokerManager amqpBroker;
-    private static ConnectionFactory cf;
-    private Connection conn;
-    private MongodForTestsFactory testsFactory;
+    private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
+
     private MongoClient mongoClient = null;
 
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(TestConfigs.class);
+    protected static Map<Integer, AMQPBrokerManager> amqpBrokerMap = new HashMap<>();
 
-    public void amqpBroker() throws Exception {
+    AMQPBrokerManager createAmqpBroker() throws Exception {
+        // Generates a random port for amqpBroker and starts up a new broker
         int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("rabbitmq.port", "" + port);
+
+        System.setProperty("rabbitmq.port", Integer.toString(port));
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
@@ -41,22 +36,20 @@ public class TestConfigs {
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        amqpBroker.startBroker();
-        cf = new ConnectionFactory();
-        cf.setUsername("guest");
-        cf.setPassword("guest");
+        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), Integer.toString(port));
 
-        cf.setPort(port);
-        cf.setHandshakeTimeout(600000);
-        cf.setConnectionTimeout(600000);
-        conn = cf.newConnection();
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
+        amqpBroker.startBroker();
+
+        // add new amqp broker to pool
+        amqpBrokerMap.put(port, amqpBroker);
+
+        return amqpBroker;
     }
 
-    public void mongoClient() throws IOException {
+    void startUpMongoClient() throws IOException {
         try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
@@ -66,7 +59,7 @@ public class TestConfigs {
         }
     }
 
-    public void setAuthorization() {
+    void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.enabled", "true");
         System.setProperty("ldap.url", "ldap://ldap.forumsys.com:389/dc=example,dc=com");
@@ -76,14 +69,13 @@ public class TestConfigs {
         System.setProperty("ldap.user.filter", "uid={0}");
     }
 
-    public void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
-        RabbitAdmin admin = new RabbitAdmin(ccf);
-        Queue queue = new Queue(queueName, false);
-        admin.declareQueue(queue);
-        final TopicExchange exchange = new TopicExchange(exchangeName);
-        admin.declareExchange(exchange);
-        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
-        ccf.destroy();
+    public static AMQPBrokerManager getBroker(int port) {
+        return amqpBrokerMap.get(port);
+    }
+
+    public static void removeBroker(String port) {
+        AMQPBrokerManager broker = amqpBrokerMap.get(Integer.parseInt(port));
+        broker.stopBroker();
+        amqpBrokerMap.remove(port);
     }
 }

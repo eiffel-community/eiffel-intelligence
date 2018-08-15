@@ -46,7 +46,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         LOGGER.debug("Checking if Eiffel Intelligence instance is up and running.");
         httpRequest.setHost(hostName)
             .setPort(applicationPort)
-            .setHeaders("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
+            .addHeader("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
             .setEndpoint("/subscriptions");
 
         response = httpRequest.performRequest();

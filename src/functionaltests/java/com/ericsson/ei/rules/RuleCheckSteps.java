@@ -111,8 +111,8 @@ public class RuleCheckSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         ResponseEntity<String> apiResponse = getRequest.setPort(applicationPort)
                 .setHost(hostName)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(endpoint)
                 .performRequest();
         

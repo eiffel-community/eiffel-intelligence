@@ -4,11 +4,9 @@ import com.ericsson.ei.controller.RuleCheckController;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
@@ -70,9 +70,9 @@ public class RuleCheckSteps extends FunctionalTestBase {
     @When("^make a POST request to the REST API \"([^\"]*)\"$")
     public void make_a_POST_request_to_the_REST_API(String endpoint) throws Throwable {
         String requestBody = new JSONObject()
-            .put("listRulesJson", new JSONArray(rules))
-            .put("listEventsJson", new JSONArray(events))
-            .toString();
+                .put("listRulesJson", new JSONArray(rules))
+                .put("listEventsJson", new JSONArray(events))
+                .toString();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
@@ -104,7 +104,7 @@ public class RuleCheckSteps extends FunctionalTestBase {
             assertEquals(expectedObject, responseObject, true);
         }
     }
-    
+
     @Then("^get request from REST API \"([^\"]*)\" return response code of (\\d+) and status as \"([^\"]*)\"$")
     public void get_request_from_REST_API_return_response_code_of_and_status_as(String endpoint, int statusCode, String status) throws Throwable {
         String responseBody = new JSONObject().put("status", Boolean.valueOf(status)).toString();
@@ -115,7 +115,7 @@ public class RuleCheckSteps extends FunctionalTestBase {
                 .addHeader("Accept", "application/json")
                 .setEndpoint(endpoint)
                 .performRequest();
-        
+
         assertEquals(statusCode, apiResponse.getStatusCodeValue());
         assertEquals(responseBody, apiResponse.getBody());
     }

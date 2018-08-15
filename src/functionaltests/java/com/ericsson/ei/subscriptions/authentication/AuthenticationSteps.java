@@ -2,6 +2,7 @@ package com.ericsson.ei.subscriptions.authentication;
 
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpExecutor;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.ei.utils.TestLDAPInitializer;
@@ -30,14 +31,16 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     private static final String SUBSCRIPTION = "src/functionaltests/resources/subscription_single.json";
     private static final String SUBSCRIPTION_NAME = "Subscription_Test";
+    private static final String X_AUTH_TOKEN = "X-Auth-Token";
 
     @LocalServerPort
     private int applicationPort;
     private String hostName = getHostName();
     private HttpRequest httpRequest;
     private ResponseEntity<String> response;
+    private String token;
 
-    @Before("@RESTWithCredentials,@RESTWithSession")
+    @Before("@RESTWithCredentials,@RESTWithSessionCookie")
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/auth/logout");
@@ -45,6 +48,11 @@ public class AuthenticationSteps extends FunctionalTestBase {
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
         httpRequest.setHeaders("Authorization", "Basic " + encodedAuth);
         httpRequest.performRequest();
+    }
+
+    @Before("@RESTWithTokenId")
+    public void beforeScenarioSecond() {
+        client_is_replaced();
     }
 
     @Given("^LDAP is activated$")
@@ -57,7 +65,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         assertEquals(expectedContent, response.getBody().toString());
     }
 
-    @When("^a (\\w+) request is prepared for REST API \"(.*)\"")
+    @When("^a (\\w+) request is prepared for REST API \"(.*)\"$")
     public void request_to_rest_api(String method, String endpoint) throws Throwable {
         switch (method) {
         case "POST":
@@ -85,7 +93,12 @@ public class AuthenticationSteps extends FunctionalTestBase {
         response = httpRequest.performRequest();
     }
 
-    @Then("^response code (\\d+) is received")
+    @When("^authentication token is attached$")
+    public void auth_token_attached() throws Throwable {
+        httpRequest.setHeaders(X_AUTH_TOKEN, token);
+    }
+
+    @Then("^response code (\\d+) is received$")
     public void get_response_code(int statusCode) throws Throwable {
         assertEquals(HttpStatus.valueOf(statusCode), response.getStatusCode());
     }
@@ -106,5 +119,15 @@ public class AuthenticationSteps extends FunctionalTestBase {
             assertEquals(true, subscription.getNotFoundSubscriptions().isEmpty());
             assertEquals(SUBSCRIPTION_NAME, subscription.getFoundSubscriptions().get(0).getSubscriptionName());
         }
+    }
+
+    @Then("^authentication token is saved$")
+    public void auth_token_saved() {
+        token = response.getHeaders().getFirst(X_AUTH_TOKEN);
+    }
+
+    @Then("^client is replaced$")
+    public void client_is_replaced() {
+        HttpExecutor.getInstance().recreateHttpClient();
     }
 }

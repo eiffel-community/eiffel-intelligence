@@ -1,4 +1,4 @@
-#Author: valentin.tyhonov@ericsson.com
+#Author: valentin.tyhonov@ericsson.com, christoffer.cortes.sjowall@ericsson.com
 #Keywords Summary :
 #Feature: List of scenarios.
 #Scenario: Business rule through list of steps with arguments.
@@ -35,7 +35,7 @@ Feature: Test Authentication
     Then response code 200 is received
     And subscription is created
 
-  @RESTWithSession
+  @RESTWithSessionCookie
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
     When a GET request is prepared for REST API "/auth/login"
@@ -46,5 +46,22 @@ Feature: Test Authentication
     And request is sent
     Then response code 200 is received
     When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 200 is received
+
+  @RESTWithTokenId
+  Scenario: Call an REST API with session credentials
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 401 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    And authentication token is saved
+    And client is replaced
+    When a GET request is prepared for REST API "/auth/login"
+    And authentication token is attached
     And request is sent
     Then response code 200 is received

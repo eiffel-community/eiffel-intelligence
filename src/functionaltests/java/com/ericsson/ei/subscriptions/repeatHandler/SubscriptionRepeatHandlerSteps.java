@@ -117,8 +117,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         HttpRequest deleteRequest = new HttpRequest(HttpRequest.HttpMethod.DELETE);
         ResponseEntity response = deleteRequest.setHost(getHostName())
                 .setPort(applicationPort)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setEndpoint(subscriptionEndPoint + name)
                 .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());

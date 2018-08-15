@@ -149,5 +149,37 @@
         ]
       }
     ]
+  },
+  {
+    "subscriptionName": "Subscription_Row_Body",
+    "userName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.row.body}",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@)}]}"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
+        ]
+
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
   }
 ]

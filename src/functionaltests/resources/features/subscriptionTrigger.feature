@@ -26,4 +26,4 @@ Feature: Subscription trigger test
     When I send Eiffel events
     And Wait for EI to aggregate objects and trigger subscriptions
     Then Mail subscriptions were triggered 
-    And Rest subscriptions were triggered 
+    And Rest subscriptions were triggered

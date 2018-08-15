@@ -47,8 +47,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         response = postRequest.setHost(hostName)
                 .setPort(port)
                 .setEndpoint(endpoint)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setBody(subscriptions.toString())
                 .performRequest();
     }
@@ -61,7 +61,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         response = getRequest.setHost(hostName)
                 .setPort(port)
                 .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                .setHeaders("Accept", "application/json")
+                .addHeader("Accept", "application/json")
                 .performRequest();
     }
 
@@ -73,7 +73,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         response = deleteRequest.setHost(hostName)
                 .setPort(port)
                 .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                .setHeaders("Accept", "application/json")
+                .addHeader("Accept", "application/json")
                 .performRequest();
     }
 
@@ -85,8 +85,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         response = putRequest.setHost(hostName)
                 .setPort(port)
                 .setEndpoint(endpoint)
-                .setHeaders("content-type", "application/json")
-                .setHeaders("Accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
                 .setBody(subscriptions.toString())
                 .performRequest();
     }
@@ -123,7 +123,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         response = getRequest.setHost(hostName)
                 .setPort(port)
                 .setEndpoint(endpoint)
-                .setHeaders("Accept", "application/json")
+                .addHeader("Accept", "application/json")
                 .performRequest();
         retrievedSubscriptions = new JSONArray(response.getBody().toString());
         assertEquals(subscriptionsNumber, retrievedSubscriptions.length());

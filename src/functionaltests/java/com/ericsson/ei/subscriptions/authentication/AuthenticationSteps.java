@@ -98,7 +98,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @When("^authentication token is attached$")
     public void auth_token_attached() throws Throwable {
-        httpRequest.setHeaders(X_AUTH_TOKEN, token);
+        httpRequest.addHeader(X_AUTH_TOKEN, token);
     }
 
     @Then("^response code (\\d+) is received$")

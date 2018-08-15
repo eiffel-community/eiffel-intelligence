@@ -168,7 +168,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Assemble subscription names in a list.
-     * 
+     *
      * @param jsonDataAsString
      *            JSON string containing subscriptions
      * @throws Throwable
@@ -182,7 +182,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * POST subscriptions to endpoint.
-     * 
+     *
      * @param jsonDataAsString
      *            JSON string containing subscriptions
      * @param endPoint
@@ -202,7 +202,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Verify that subscriptions were successfully posted.
-     * 
+     *
      * @param endPoint
      *            endpoint to use in GET
      * @throws Exception
@@ -223,7 +223,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Checks that an enpoint got at least the number of calls as expected.
-     * 
+     *
      * @param endpoints
      *            List of endpoints to check.
      * @param expectedCalls
@@ -251,7 +251,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Verify that request made to endpoint contains the correct information.
-     * 
+     *
      * @param endpoint
      *            endpoint to check
      * @return true if verification was successful, false otherwise
@@ -298,7 +298,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Setup and start SMTP mock server.
-     * 
+     *
      * @throws IOException
      */
     private void setupSMTPServer() throws IOException {
@@ -322,7 +322,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     /**
      * Replaces tags in the subscription JSON string with valid information.
-     * 
+     *
      * @param text
      *            JSON string containing replaceable tags
      * @return Processed content

@@ -16,7 +16,6 @@ package com.ericsson.ei.queryservice;
 import com.ericsson.ei.controller.QueryControllerImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ import java.io.IOException;
 @Component
 public class ProcessQueryParams {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
@@ -54,13 +53,11 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    public JSONArray filterFormParam(JsonNode request) throws IOException {
+    public JSONArray filterFormParam(JsonNode request) {
         JsonNode criteria = request.get("criteria");
         JsonNode options = request.get("options");
-        LOGGER.debug("The criteria is : " + criteria.toString());
-        LOGGER.debug("The options is : " + options.toString());
         JSONArray resultAggregatedObject;
-        if (options.toString().equals("{}") || options.isNull()) {
+        if (options == null || options.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
         } else {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
@@ -80,11 +77,10 @@ public class ProcessQueryParams {
     public JSONArray filterQueryParam(String request) {
         LOGGER.debug("The query string is : " + request);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode criteriasJsonNode = null;
+        JsonNode criteriasJsonNode;
         try {
             criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Failed to parse FreeStyle query critera field from request:\n" + request);
             return new JSONArray();
         }
@@ -95,6 +91,6 @@ public class ProcessQueryParams {
     @PostConstruct
     public void print() {
         LOGGER.debug("Aggregation Database : " + databaseName
-            + "\nAggregation Collection is : " + aggregationCollectionName);
+                + "\nAggregation Collection is : " + aggregationCollectionName);
     }
 }

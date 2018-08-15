@@ -42,4 +42,11 @@ public interface RuleCheckController {
         @RequestBody
         RuleCheckBody ruleCheckBody);
 
+    /**
+     * This call for the current status of test rule entry point, we get status as output
+     * 
+     */
+    @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)
+    public ResponseEntity<?> getTestRulePageEnabled();
+
 }

@@ -24,6 +24,6 @@ Feature: Subscription trigger test
   	Given that eiffel events are sent  	
 	Then waitlist should not be empty
 	And no event is aggregated
-	And the waitlist will try to resent the events at given time interval
+	And the waitlist will try to resend the events at given time interval
 	And correct amount of threads should be spawned
 	And after the time to live has ended, the waitlist should be empty

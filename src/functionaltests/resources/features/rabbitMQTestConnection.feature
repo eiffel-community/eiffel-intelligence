@@ -1,7 +1,7 @@
 
 Feature: RabbitMQConnection
 
-  Scenario: Testing to reconnect to Message Bus
+  Scenario: Testing to automatically reconnect to Message Bus
     Given We are connected to message bus
     When Message bus goes down
     And Message bus is restarted

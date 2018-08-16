@@ -275,7 +275,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("Setting up endpoints on host '" + getHostName() + "' and port '" + port + "'.");
         mockClient = new MockServerClient(getHostName(), port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH).withHeader("Authorization", "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"))
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH)
+                .withHeader("Authorization", "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
                 .respond(response().withStatusCode(201));

@@ -318,7 +318,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      */
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
-        text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getPort()));
+        text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getLocalPort()));
         text = text.replaceAll("\\$\\{rest\\.row.body\\}", REST_ENDPOINT_ROW_BODY);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\}", REST_ENDPOINT);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\}", REST_ENDPOINT_AUTH);

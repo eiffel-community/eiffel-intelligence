@@ -55,6 +55,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         client_is_replaced();
     }
 
+
     @Given("^LDAP is activated$")
     public void ldap_is_activated() throws Throwable {
         String expectedContent = new JSONObject().put("security", true).toString();
@@ -77,7 +78,6 @@ public class AuthenticationSteps extends FunctionalTestBase {
         case "GET":
             httpRequest = new HttpRequest(HttpMethod.GET);
             httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint);
-
             break;
         }
     }
@@ -132,4 +132,5 @@ public class AuthenticationSteps extends FunctionalTestBase {
     public void client_is_replaced() {
         HttpExecutor.getInstance().recreateHttpClient();
     }
+
 }

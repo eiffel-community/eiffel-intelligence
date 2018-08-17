@@ -1,0 +1,76 @@
+#################################################################################################
+#
+# Copyright 2018 Ericsson AB.
+# For a full list of individual contributors, please see the commit history.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+##################################################################################################
+# Eiffel Sandbox 
+#
+# run:         docker-compose up         
+# stop:        docker-compose stop
+# stop/remove: docker-compose down --volumes
+#
+# Cleanup/Remove (if needed):
+#     Dangling Volumes:   docker volume rm `docker volume ls -q -f dangling=true`            
+#     Unused Images:      docker images -q | xargs docker rmi
+#     Stopped containers: docker rm `docker ps -a -q` 
+#
+# Maintainer: michael.frick@ericsson.com
+##################################################################################################
+version: "2.1"
+services:
+  mymongodb-mongodb:
+    restart: always
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    healthcheck: 
+        test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
+        interval: 30s
+        timeout: 10s
+        retries: 5        
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - mymongodb-mongodb:27017
+
+  myrabbitmq-rabbitmq:
+    restart: always
+    image: rabbitmq:3.6.2-management
+    expose:
+      - "15672"
+      - "5672"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+        test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - myrabbitmq-rabbitmq:5672
+              - myrabbitmq-rabbitmq:15672
+    environment:
+      - RABBITMQ_DEFAULT_PASS=myuser
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_VHOST=/
+
+networks:
+  eiffel_2.0_1:

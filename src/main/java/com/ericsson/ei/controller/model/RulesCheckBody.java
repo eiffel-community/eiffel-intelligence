@@ -1,7 +1,9 @@
 
 package com.ericsson.ei.controller.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -15,36 +17,36 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "rule",
-    "event"
+    "listRulesJson",
+    "listEventsJson"
 })
-public class RuleCheckBody {
+public class RulesCheckBody {
 
-    @JsonProperty("rule")
-    private Rule rule;
-    @JsonProperty("event")
-    private Event event;
+    @JsonProperty("listRulesJson")
+    private List<Object> listRulesJson = new ArrayList<Object>();
+    @JsonProperty("listEventsJson")
+    private List<Object> listEventsJson = new ArrayList<Object>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("rule")
-    public Rule getRule() {
-        return rule;
+    @JsonProperty("listRulesJson")
+    public List<Object> getListRulesJson() {
+        return listRulesJson;
     }
 
-    @JsonProperty("rule")
-    public void setRule(Rule rule) {
-        this.rule = rule;
+    @JsonProperty("listRulesJson")
+    public void setListRulesJson(List<Object> listRulesJson) {
+        this.listRulesJson = listRulesJson;
     }
 
-    @JsonProperty("event")
-    public Event getEvent() {
-        return event;
+    @JsonProperty("listEventsJson")
+    public List<Object> getListEventsJson() {
+        return listEventsJson;
     }
 
-    @JsonProperty("event")
-    public void setEvent(Event event) {
-        this.event = event;
+    @JsonProperty("listEventsJson")
+    public void setListEventsJson(List<Object> listEventsJson) {
+        this.listEventsJson = listEventsJson;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class RuleCheckBody {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(rule).append(event).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(listRulesJson).append(listEventsJson).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -72,11 +74,11 @@ public class RuleCheckBody {
         if (other == this) {
             return true;
         }
-        if ((other instanceof RuleCheckBody) == false) {
+        if ((other instanceof RulesCheckBody) == false) {
             return false;
         }
-        RuleCheckBody rhs = ((RuleCheckBody) other);
-        return new EqualsBuilder().append(rule, rhs.rule).append(event, rhs.event).append(additionalProperties, rhs.additionalProperties).isEquals();
+        RulesCheckBody rhs = ((RulesCheckBody) other);
+        return new EqualsBuilder().append(listRulesJson, rhs.listRulesJson).append(listEventsJson, rhs.listEventsJson).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

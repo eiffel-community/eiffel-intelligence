@@ -129,7 +129,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         JsonNode node = eventManager.getJSONFromString(response.getBody());
         int size = node.get("foundSubscriptions").size();
         String notFound = node.get("notFoundSubscriptions").get(0).asText();
-        assertEquals(0, size);
+        assertEquals("Subscription was found, should be empty",0, size);
         assertEquals(name, notFound);
     }
     // Scenario:4 ends ==================================================================

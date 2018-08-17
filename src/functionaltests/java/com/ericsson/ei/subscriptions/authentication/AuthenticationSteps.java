@@ -44,6 +44,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth/logout");
+
         String auth = "gauss:password";
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
         httpRequest.addHeader("Authorization", "Basic " + encodedAuth);
@@ -61,6 +62,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         String expectedContent = new JSONObject().put("security", true).toString();
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth");
+
         response = httpRequest.performRequest();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedContent, response.getBody().toString());
@@ -78,6 +80,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         case "GET":
             httpRequest = new HttpRequest(HttpMethod.GET);
             httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint);
+
             break;
         }
     }

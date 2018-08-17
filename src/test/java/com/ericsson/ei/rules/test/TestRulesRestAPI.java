@@ -89,8 +89,16 @@ public class TestRulesRestAPI {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check").accept(MediaType.ALL)
-                .param("rule", extractionRules_test).content(jsonInput).contentType(MediaType.APPLICATION_JSON);
+
+        String requestBody = new JSONObject()
+                .put("rule", new JSONObject(extractionRules_test))
+                .put("event", new JSONObject(jsonInput))
+                .toString();
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check")
+                .accept(MediaType.ALL)
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String resultStr = result.getResponse().getContentAsString();
         JSONObject obj = new JSONObject(resultStr);

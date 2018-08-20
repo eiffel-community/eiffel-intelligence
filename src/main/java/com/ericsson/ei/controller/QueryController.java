@@ -19,15 +19,6 @@ public interface QueryController {
 
 
     /**
-     * The REST GET method is used to query Aggregated Objects with the criterias requested, which are present as query parameters in the request URL.
-     * 
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getQuery(
-        @RequestParam
-        String request);
-
-    /**
      * The REST POST method is used to query Aggregated Objects with the criterias requested, which are present in the request body of the request URL.
      * 
      */

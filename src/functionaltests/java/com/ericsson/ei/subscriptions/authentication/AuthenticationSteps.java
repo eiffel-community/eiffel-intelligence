@@ -60,6 +60,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         String expectedContent = new JSONObject().put("security", true).toString();
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth");
+
         response = httpRequest.performRequest();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedContent, response.getBody().toString());
@@ -77,7 +78,6 @@ public class AuthenticationSteps extends FunctionalTestBase {
         case "GET":
             httpRequest = new HttpRequest(HttpMethod.GET);
             httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint);
-
             break;
         }
     }

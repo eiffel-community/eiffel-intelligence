@@ -36,6 +36,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     @PostConstruct
     private void setUp() {
         getRequest = new HttpRequest(HttpMethod.GET);
+<<<<<<< 61dc2c9407c962ac15f7c80454115fb69dbb7a43
 
         getRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
 
@@ -45,6 +46,16 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         postRequest = new HttpRequest(HttpMethod.POST);
         postRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions")
                 .addHeader("content-type", "application/json").addHeader("Accept", "application/json");
+=======
+        getRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
+
+        deleteRequest = new HttpRequest(HttpMethod.DELETE);
+        deleteRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
+
+        postRequest = new HttpRequest(HttpMethod.POST);
+        postRequest.setUrl(hostName).setPort(applicationPort).setEndpoint("/subscriptions")
+                .setHeaders("content-type", "application/json").setHeaders("Accept", "application/json");
+>>>>>>> Improve authentication functional tests (#145)
     }
 
     // SCENARIO 1

@@ -41,6 +41,7 @@ public class HttpRequest {
     @Getter
     protected Map<String, String> params;
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
     public HttpRequest(HttpMethod method) {

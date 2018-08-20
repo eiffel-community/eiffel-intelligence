@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
-import org.mockserver.client.server.MockServerClient;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
 import org.mockserver.model.HttpResponse;

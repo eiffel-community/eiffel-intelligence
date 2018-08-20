@@ -2,10 +2,11 @@
   "criteria": {
     "$or": [
       {
-        "aggregatedObject.id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+        "aggregatedObject.testCaseExecutions.outcome.id":"TC5"
       }, {
-        "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
+        "aggregatedObject.testCaseExecutions.outcome.id":"TC6"
       }
-    ]
+    ],
+    "aggregatedObject.gav.groupId":"com.mycompany.myproduct"
   }
 }

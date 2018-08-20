@@ -8,6 +8,6 @@
     }
   },
   "options": {
-    "aggregatedObject.id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+    "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
   }
 }

@@ -175,7 +175,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                     .addHeader("content-type", "application/json")
                     .addHeader("Accept", "application/json")
                     .setEndpoint(entryPoint)
-                    .addParam("request", query)
+                    .setBody(query)
                     .performRequest();
 
             LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +
@@ -210,7 +210,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .addHeader("content-type", "application/json")
                 .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .addParam("request", queryAggrObj)
+                .setBody(queryAggrObj)
                 .performRequest();
 
         String responseAsString = response.getBody().toString();

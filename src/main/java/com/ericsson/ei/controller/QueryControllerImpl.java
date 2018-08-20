@@ -16,11 +16,12 @@
 */
 package com.ericsson.ei.controller;
 
+import com.ericsson.ei.controller.model.QueryBody;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * This class represents the REST end-points for the query service. It can take
@@ -47,9 +48,15 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<?> updateQuery(@RequestParam(value = "request") String request) {
+    public ResponseEntity<?> updateQuery(@RequestBody final QueryBody body) {
         try {
-            JSONArray result = processQueryParams.filterFormParam(new ObjectMapper().readTree(request));
+            JSONObject criteria = new JSONObject(body.getCriteria().getAdditionalProperties());
+            JSONObject options = null;
+            if (body.getOptions() != null) {
+                options = new JSONObject(body.getOptions().getAdditionalProperties());
+            }
+
+            JSONArray result = processQueryParams.filterFormParam(criteria, options);
             return new ResponseEntity<>(result.toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();

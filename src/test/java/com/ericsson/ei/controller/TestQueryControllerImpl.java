@@ -18,9 +18,10 @@ package com.ericsson.ei.controller;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.databind.JsonNode;
+
 import org.apache.qpid.util.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,9 +31,11 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoCo
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 
@@ -72,11 +75,17 @@ public class TestQueryControllerImpl {
 
     @Test
     public void filterFormParamTest() throws Exception {
+
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterFormParam(any(JsonNode.class))).thenReturn(inputObj);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/query")
-                .param("request", QUERY))
-                .andReturn();
+        when(unitUnderTest.filterFormParam(any(JSONObject.class), any(JSONObject.class))).thenReturn(inputObj);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
+                .accept(MediaType.ALL)
+                .content(QUERY)
+                .contentType(MediaType.APPLICATION_JSON);
+
+         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
     }
 }

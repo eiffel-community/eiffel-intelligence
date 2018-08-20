@@ -1,6 +1,5 @@
 package com.ericsson.ei.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -28,7 +27,7 @@ public final class HttpExecutor {
     }
     
     public static HttpExecutor getInstance() {
-        if (instance == null) {
+        if(instance == null) {
             instance = new HttpExecutor();
         }
         
@@ -63,8 +62,8 @@ public final class HttpExecutor {
         String jsonContent = "";
         Header[] headers = null;
 
-        try (CloseableHttpResponse httpResponse = client.execute(request)) {
-            if (httpResponse.getEntity() != null) {
+        try(CloseableHttpResponse httpResponse = client.execute(request)) {
+            if(httpResponse.getEntity() != null) {
                 jsonContent = EntityUtils.toString(httpResponse.getEntity(), "utf-8");
             }
             statusCode = httpResponse.getStatusLine().getStatusCode();
@@ -72,7 +71,7 @@ public final class HttpExecutor {
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-
+        
         MultiValueMap<String, String> headersMap = new LinkedMultiValueMap<String, String>();
         for (Header header : headers) {
             headersMap.add(header.getName(), header.getValue());

@@ -46,7 +46,7 @@ public class HttpRequest {
 
     public HttpRequest(HttpMethod method) {
         params = new HashMap<>();
-        
+
         switch (method) {
         case POST:
             request = new HttpPost();

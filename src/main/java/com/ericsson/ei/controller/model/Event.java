@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -15,37 +14,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "rule",
-    "event"
-})
-public class RuleCheckBody {
 
-    @JsonProperty("rule")
-    private Rule rule;
-    @JsonProperty("event")
-    private Event event;
+})
+public class Event {
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("rule")
-    public Rule getRule() {
-        return rule;
-    }
-
-    @JsonProperty("rule")
-    public void setRule(Rule rule) {
-        this.rule = rule;
-    }
-
-    @JsonProperty("event")
-    public Event getEvent() {
-        return event;
-    }
-
-    @JsonProperty("event")
-    public void setEvent(Event event) {
-        this.event = event;
-    }
 
     @Override
     public String toString() {
@@ -64,7 +38,7 @@ public class RuleCheckBody {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(rule).append(event).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -72,11 +46,11 @@ public class RuleCheckBody {
         if (other == this) {
             return true;
         }
-        if ((other instanceof RuleCheckBody) == false) {
+        if ((other instanceof Event) == false) {
             return false;
         }
-        RuleCheckBody rhs = ((RuleCheckBody) other);
-        return new EqualsBuilder().append(rule, rhs.rule).append(event, rhs.event).append(additionalProperties, rhs.additionalProperties).isEquals();
+        Event rhs = ((Event) other);
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

@@ -54,16 +54,20 @@ public class RuleCheckSteps extends FunctionalTestBase {
         events = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventsFileName), "UTF-8");
     }
 
-    @When("^make a POST request to the REST API \"([^\"]*)\" with request parameter \"([^\"]*)\"$")
-    public void make_a_POST_request_to_the_REST_API_with_request_parameter(String endpoint, String requestParam) throws Throwable {
+    @When("^make a POST request to the REST API \"([^\"]*)\" with a single rule")
+    public void make_a_POST_request_to_the_REST_API_with_request_parameter(String endpoint) throws Throwable {
+        String requestBody = new JSONObject()
+                .put("rule", new JSONObject(rules))
+                .put("event", new JSONObject(events))
+                .toString();
+
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
                 .setHost(hostName)
                 .addHeader("content-type", "application/json")
                 .addHeader("Accept", "application/json")
                 .setEndpoint(endpoint)
-                .setBody(events)
-                .addParam(requestParam, rules)
+                .setBody(requestBody)
                 .performRequest();
     }
 

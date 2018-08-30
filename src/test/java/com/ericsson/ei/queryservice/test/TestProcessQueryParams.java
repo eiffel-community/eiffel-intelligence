@@ -3,12 +3,12 @@ package com.ericsson.ei.queryservice.test;
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.qpid.util.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +37,6 @@ public class TestProcessQueryParams {
     private static final String REQUEST = "{\"criteria\":{\"testCaseExecutions.testCase.verdict\":\"PASSED\"}}";
     private static final String QUERY_WITH_CRITERIA_AND_OPTIONS = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static final String QUERY_WITH_CRITERIA = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }}";
-    private static final String QUERY_WITH_WRONG_FORMAT = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\" }";
     private static final String DATA_BASE_NAME = "eiffel_intelligence";
     private static final String AGGREGATION_COLLECTION_NAME = "aggregated_objects";
     private static JSONArray expected;
@@ -58,32 +58,42 @@ public class TestProcessQueryParams {
 
     @Test
     public void testFilterFormParam() throws IOException {
-        JsonNode criteria = mapper.readTree(QUERY_WITH_CRITERIA_AND_OPTIONS).get("criteria");
-        JsonNode options = mapper.readTree(QUERY_WITH_CRITERIA_AND_OPTIONS).get("options");
-        String request = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-        when(processAggregatedObject.processQueryAggregatedObject(request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-        JSONArray result = processQueryParams.filterFormParam(new ObjectMapper().readTree(QUERY_WITH_CRITERIA_AND_OPTIONS));
-        assertEquals(expected, result);
+        try {
+            JSONObject query = new JSONObject(QUERY_WITH_CRITERIA_AND_OPTIONS);
+            JSONObject criteria = (JSONObject) query.get("criteria");
+            JSONObject options = (JSONObject) query.get("options");
+
+            String request = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
+            when(processAggregatedObject.processQueryAggregatedObject(
+                    request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+            JSONArray result = processQueryParams.filterFormParam(criteria, options);
+            assertEquals(expected, result);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     public void testFilterFormParamWithOnlyCriteria() throws IOException {
-        JsonNode criteria = mapper.readTree(QUERY_WITH_CRITERIA).get("criteria");
-        when(processAggregatedObject.processQueryAggregatedObject(criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-        JSONArray result = processQueryParams.filterFormParam(new ObjectMapper().readTree(QUERY_WITH_CRITERIA));
-        assertEquals(expected, result);
-    }
+        try {
+            JSONObject queryBody = new JSONObject(QUERY_WITH_CRITERIA);
+            JSONObject criteria = (JSONObject) queryBody.get("criteria");
+            JSONObject options = null;
 
-    @Test(expected = JsonEOFException.class)
-    public void testFilterFormParamWithWrongFormat() throws IOException {
-        JSONArray result = processQueryParams.filterFormParam(new ObjectMapper().readTree(QUERY_WITH_WRONG_FORMAT));
-        assertEquals(expected, result);
+            when(processAggregatedObject.processQueryAggregatedObject(
+                    criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+            JSONArray result = processQueryParams.filterFormParam(criteria, options);
+            assertEquals(expected, result);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     public void testFilterQueryParam() throws IOException {
         JsonNode criteria = mapper.readValue(REQUEST, JsonNode.class).get("criteria");
-        when(processAggregatedObject.processQueryAggregatedObject(criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+        when(processAggregatedObject.processQueryAggregatedObject(
+                criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
         JSONArray result = processQueryParams.filterQueryParam(REQUEST);
         assertEquals(expected, result);
     }

@@ -1,10 +1,12 @@
 
 package com.ericsson.ei.controller;
 
+import javax.validation.Valid;
+import com.ericsson.ei.controller.model.QueryBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -24,7 +26,8 @@ public interface QueryController {
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> updateQuery(
-        @RequestParam
-        String request);
+        @Valid
+        @RequestBody
+        QueryBody queryBody);
 
 }

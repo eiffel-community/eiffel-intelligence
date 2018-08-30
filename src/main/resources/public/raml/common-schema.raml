@@ -213,3 +213,18 @@ ruleCheckBody: |
           },
        "type":"object"
     }
+queryBody: |
+    {
+       "$schema":"http://json-schema.org/draft-04/schema#",
+       "javaType":"com.ericsson.ei.controller.model.QueryBody",
+       "properties":{
+             "criteria":{
+                "type":"object"
+             },
+             "options":{
+                "type":"object",
+                "required":"false"
+             }
+          },
+       "type":"object"
+    }

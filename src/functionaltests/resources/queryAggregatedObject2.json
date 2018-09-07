@@ -1,6 +1,6 @@
 {
   "criteria": {
-    "aggregatedObject.testCaseExecutions": {
+    "object.testCaseExecutions": {
       "$elemMatch": {
         "outcome.conclusion": "SUCCESSFUL",
         "outcome.id": "TC5"
@@ -8,6 +8,6 @@
     }
   },
   "options": {
-    "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
+    "object.gav.groupId": "com.mycompany.myproduct"
   }
 }

@@ -72,10 +72,6 @@ public class ObjectHandler {
     @Getter
     @Value("${aggregated.collection.ttlValue}")
     private String ttlValue;
-    
-    @Value("${aggregated.object.name}")
-    private String objectName;
-    
 
     public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
@@ -165,7 +161,7 @@ public class ObjectHandler {
 
             JsonNode jsonNode = mapper.readValue(jsonNodeNew.toString(), JsonNode.class);
             ObjectNode objNode = (ObjectNode) jsonNode;
-            objNode.set(objectName, mapper.readTree(object));
+            objNode.set("aggregatedObject", mapper.readTree(object));
 
             return jsonNode;
         } catch (Exception e) {
@@ -178,7 +174,7 @@ public class ObjectHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
-            JsonNode objectDoc = documentJson.get(objectName);
+            JsonNode objectDoc = documentJson.get("aggregatedObject");
             return objectDoc;
         } catch (Exception e) {
             log.error(e.getMessage(), e);

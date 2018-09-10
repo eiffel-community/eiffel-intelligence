@@ -48,8 +48,8 @@ public class ProcessQueryParams {
     @Value("${aggregated.object.name}")
     private String objectName;
     
-    @Value("${user.object.name}")
-    private String userObjectName;
+    @Value("${search.query.prefix}")
+    private String searchQueryPrefix;
 
 
     @Autowired
@@ -113,6 +113,6 @@ public class ProcessQueryParams {
      * @return String text after object name replaced with the name configured in the properties file
      */
     public String editObjectNameInQueryParam(JSONObject txtObject) {
-        return Pattern.compile("("+ userObjectName + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");    	
+        return Pattern.compile("("+ searchQueryPrefix + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");    	
     }    
 }

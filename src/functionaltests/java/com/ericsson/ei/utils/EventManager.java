@@ -33,6 +33,7 @@ public class EventManager {
      * @throws IOException
      */
     public void sendEiffelEvents(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
+
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
@@ -43,6 +44,7 @@ public class EventManager {
     /**
      * Send Eiffel Event to the waitlist queue. Takes a Json String containing a
      * single event.
+
      * 
      * @param eiffelEventJson
      */
@@ -72,6 +74,7 @@ public class EventManager {
 
     /**
      * Converts a JSON file into a tree model.
+
      *
      * @param filePath
      *            path to JSON file
@@ -92,6 +95,7 @@ public class EventManager {
      */
     public JsonNode getJSONFromString(String document) throws IOException {
         return new ObjectMapper().readTree(document);
+
     }
 
 }

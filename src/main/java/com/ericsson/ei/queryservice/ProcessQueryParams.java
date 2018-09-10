@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is responsible to fetch the criterias from both the query
@@ -42,6 +44,13 @@ public class ProcessQueryParams {
 
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
+    
+    @Value("${aggregated.object.name}")
+    private String objectName;
+    
+    @Value("${search.query.prefix}")
+    private String searchQueryPrefix;
+
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -54,13 +63,17 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    public JSONArray filterFormParam(JSONObject criteria, JSONObject options) {
+    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj) {
         JSONArray resultAggregatedObject;
-        if (options == null || options.toString().equals("{}")) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
+        String criteria = editObjectNameInQueryParam(criteriaObj);
+        
+        
+        if (optionsObj == null || optionsObj.toString().equals("{}")) {
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
-            LOGGER.debug("The options is : " + options.toString());
-            String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
+        	String options = editObjectNameInQueryParam(optionsObj); 
+            LOGGER.debug("The options is : " + options);
+            String result = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
         LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
@@ -93,4 +106,13 @@ public class ProcessQueryParams {
         LOGGER.debug("Aggregation Database : " + databaseName
                 + "\nAggregation Collection is : " + aggregationCollectionName);
     }
+    
+    /**
+     * This method takes takes the tesxt as input and replaces all the instances of "object" with the object name in the properties file and return the edited text.
+     * @param  txtObject JSONObject
+     * @return String text after object name replaced with the name configured in the properties file
+     */
+    public String editObjectNameInQueryParam(JSONObject txtObject) {
+        return Pattern.compile("("+ searchQueryPrefix + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");    	
+    }    
 }

@@ -1,5 +1,5 @@
 [{
-    "subscriptionName" : "Subscription1",
+    "subscriptionName" : "Subscription1__Only_numbers_letters_and_underscore_are_allowed",
     "userName" : "ABC",
     "repeat" : false,
     "created" : 1523473956269,

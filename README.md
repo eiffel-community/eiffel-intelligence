@@ -22,7 +22,7 @@
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence
-Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation. Detailed documentation is provided in [the repository wiki](./wiki).
+Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation. Detailed documentation is provided in [the repository wiki](../../wiki).
 
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).

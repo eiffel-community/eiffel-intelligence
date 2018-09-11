@@ -17,8 +17,8 @@
 
 <img src="./images/eiffel-intelligence-logo.png" alt="Eiffel Intelligence" width="350"/>
 
-[![Build Status](https://travis-ci.org/eiffel-intelligence/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-intelligence)
-[![Coverage Status](https://coveralls.io/repos/github/eiffel-intelligence/eiffel-intelligence/badge.svg?branch=master)](https://coveralls.io/github/eiffel-intelligence/eiffel-intelligence?branch=master)
+[![Build Status](https://travis-ci.org/eiffel-community/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-intelligence)
+[![Coverage Status](https://coveralls.io/repos/github/eiffel-community/eiffel-intelligence/badge.svg?branch=master)](https://coveralls.io/github/eiffel-community/eiffel-intelligence?branch=master)
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence

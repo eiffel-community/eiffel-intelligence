@@ -52,4 +52,9 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     public void afterTestClass(TestContext testContext) throws Exception {
         // After running tests.
     }
+
+    public String getHostName() {
+        // Temporary method, implementation will come later
+        return "localhost";
+    }
 }

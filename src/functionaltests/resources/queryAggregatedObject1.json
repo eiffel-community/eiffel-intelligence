@@ -1,0 +1,12 @@
+{
+  "criteria": {
+    "$or": [
+      {
+        "object.testCaseExecutions.outcome.id":"TC5"
+      }, {
+        "object.testCaseExecutions.outcome.id":"TC6"
+      }
+    ],
+    "object.gav.groupId":"com.mycompany.myproduct"
+  }
+}

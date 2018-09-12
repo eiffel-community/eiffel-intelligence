@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.14</version>
     <packaging>war</packaging>
 
     <parent>
@@ -241,13 +241,13 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>5.3.0</version>
+            <version>5.4.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-client-java</artifactId>
-            <version>5.3.0</version>
+            <version>5.4.1</version>
         </dependency>
 
         <!-- Cucumber -->

@@ -1,13 +1,9 @@
 
 package com.ericsson.ei.controller;
 
-import javax.validation.Valid;
-import com.ericsson.ei.controller.model.RuleCheckBody;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -27,10 +23,9 @@ public interface RuleCheckController {
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> updateRulesRuleCheck(
-        @RequestParam
-        String rule,
-        @RequestParam
-        String jsonContent);
+        @javax.validation.Valid
+        @org.springframework.web.bind.annotation.RequestBody
+        RuleCheckBody ruleCheckBody);
 
     /**
      * This call for run the jmespath rule objects on the Json array of objects, we get aggregation Object as output
@@ -38,8 +33,15 @@ public interface RuleCheckController {
      */
     @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
     public ResponseEntity<?> updateAggregation(
-        @Valid
-        @RequestBody
-        RuleCheckBody ruleCheckBody);
+        @javax.validation.Valid
+        @org.springframework.web.bind.annotation.RequestBody
+        RulesCheckBody rulesCheckBody);
+
+    /**
+     * This call for the current status of test rule entry point, we get status as output
+     * 
+     */
+    @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)
+    public ResponseEntity<?> getTestRulePageEnabled();
 
 }

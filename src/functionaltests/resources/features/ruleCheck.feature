@@ -22,7 +22,7 @@ Feature: Test Rules Checker
   @tag1
   Scenario: Execute JMESPath rule on JSON object
     Given file with JMESPath rules "/ExtractionRule.txt" and file with events "/EiffelArtifactCreatedEvent.json"
-    When make a POST request to the REST API "/rules/rule-check" with request parameter "rule"
+    When make a POST request to the REST API "/rules/rule-check" with a single rule
     Then get response code of 200
     And get content "/ExtractedContent.json"
 
@@ -47,3 +47,10 @@ Feature: Test Rules Checker
     And file with JMESPath rules "/AggregateListRules.json" and file with events "/AggregateListEvents.json"
     When make a POST request to the REST API "/rules/rule-check/aggregation"
     Then get response code of 503
+
+  #@tag5
+  Scenario: Check status of test rule page using REST API
+    When rules checking is enabled
+    Then get request from REST API "/rules/rule-check/testRulePageEnabled" return response code of 200 and status as "true"
+    When rules checking is not enabled
+    Then get request from REST API "/rules/rule-check/testRulePageEnabled" return response code of 200 and status as "false"

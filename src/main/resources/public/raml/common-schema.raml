@@ -185,16 +185,45 @@ stringServiceResponse: |
        },
        "type":"object"
     }
-ruleCheckBody: |
+rulesCheckBody: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
-       "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
+       "javaType":"com.ericsson.ei.controller.model.RulesCheckBody",
           "properties":{
              "listRulesJson":{
                 "type":"array"
              },
              "listEventsJson":{
                 "type":"array"
+             }
+          },
+       "type":"object"
+    }
+ruleCheckBody: |
+    {
+       "$schema":"http://json-schema.org/draft-04/schema#",
+       "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
+          "properties":{
+             "rule":{
+                "type":"object"
+             },
+             "event":{
+                "type":"object"
+             }
+          },
+       "type":"object"
+    }
+queryBody: |
+    {
+       "$schema":"http://json-schema.org/draft-04/schema#",
+       "javaType":"com.ericsson.ei.controller.model.QueryBody",
+       "properties":{
+             "criteria":{
+                "type":"object"
+             },
+             "options":{
+                "type":"object",
+                "required":"false"
              }
           },
        "type":"object"

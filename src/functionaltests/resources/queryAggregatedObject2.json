@@ -1,0 +1,13 @@
+{
+  "criteria": {
+    "object.testCaseExecutions": {
+      "$elemMatch": {
+        "outcome.conclusion": "SUCCESSFUL",
+        "outcome.id": "TC5"
+      }
+    }
+  },
+  "options": {
+    "object.gav.groupId": "com.mycompany.myproduct"
+  }
+}

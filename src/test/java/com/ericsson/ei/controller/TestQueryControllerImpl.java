@@ -18,9 +18,10 @@ package com.ericsson.ei.controller;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.databind.JsonNode;
+
 import org.apache.qpid.util.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,9 +31,11 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoCo
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 
@@ -40,20 +43,16 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class, 
+        App.class,
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
-    private static final String REQUEST = "testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
     private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static String input;
 
@@ -62,7 +61,7 @@ public class TestQueryControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -76,23 +75,17 @@ public class TestQueryControllerImpl {
 
     @Test
     public void filterFormParamTest() throws Exception {
-        JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterFormParam(any(JsonNode.class))).thenReturn(inputObj);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/query")
-                .param("request", QUERY))
-                .andReturn();
-        assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
-    }
 
-    @Test
-    public void filterQueryParamTest() throws Exception {
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterQueryParam(anyString())).thenReturn(inputObj);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/query")
-                .param("request", REQUEST))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
+        when(unitUnderTest.filterFormParam(any(JSONObject.class), any(JSONObject.class))).thenReturn(inputObj);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
+                .accept(MediaType.ALL)
+                .content(QUERY)
+                .contentType(MediaType.APPLICATION_JSON);
+
+         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
     }
 }

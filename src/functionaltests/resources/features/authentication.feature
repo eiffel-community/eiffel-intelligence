@@ -1,4 +1,4 @@
-#Author: valentin.tyhonov@ericsson.com
+#Author: valentin.tyhonov@ericsson.com, christoffer.cortes.sjowall@ericsson.com
 #Keywords Summary :
 #Feature: List of scenarios.
 #Scenario: Business rule through list of steps with arguments.
@@ -18,12 +18,50 @@
 #Sample Feature Definition Template
 Feature: Test Authentication
 
+  @RESTWithoutCredentials
   Scenario: Call an REST API without credentials
     Given LDAP is activated
-    When make a POST request to the subscription REST API "/subscriptions" without credentials
-    Then get response code of 401 and subscription with name "Subscription_Test" is not created
+    When a POST request is prepared for REST API "/subscriptions"
+    And request is sent
+    Then response code 401 is received
+    And subscription is not created
 
+  @RESTWithCredentials
   Scenario: Call an REST API with credentials
     Given LDAP is activated
-    When make a POST request to the subscription REST API "/subscriptions" with username "gauss" and password "password"
-    Then get response code of 200 and subscription with name "Subscription_Test" is created
+    When a POST request is prepared for REST API "/subscriptions"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    And subscription is created
+
+  @RESTWithSessionCookie
+  Scenario: Call an REST API with session credentials
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 401 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 200 is received
+
+  @RESTWithTokenId
+  Scenario: Call an REST API with session credentials
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And request is sent
+    Then response code 401 is received
+    When a GET request is prepared for REST API "/auth/login"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    And authentication token is saved
+    And client is replaced
+    When a GET request is prepared for REST API "/auth/login"
+    And authentication token is attached
+    And request is sent
+    Then response code 200 is received

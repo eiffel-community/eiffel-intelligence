@@ -13,8 +13,11 @@
     "requirements": [
       {
         "conditions": [         
-          {
+          {            
             "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
+          },
+          {
+            "jmespath": "(length(testCaseExecutions[?(outcome.id == 'TC5' && outcome.conclusion == 'SUCCESSFUL')]) > `0`)"
           }
         ],
         "type": "ARTIFACT_1"

@@ -220,17 +220,21 @@ public class SubscriptionHandlerTest {
     public void runRequirementSubscriptionOnObjectTest() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode subscriptionJson = null;
+        JsonNode aggregatedDocument = null;
         ArrayNode requirementNode;
         Iterator<JsonNode> requirementIterator = null;
         try {
             subscriptionJson = mapper.readTree(artifactRequirementSubscriptionData);
+            aggregatedDocument = mapper.readTree(aggregatedInternalObject);
             requirementNode = (ArrayNode) subscriptionJson.get("requirements");
             requirementIterator = requirementNode.elements();
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedInternalObject, requirementIterator,
-                subscriptionJson, "someID");
+        JsonNode aggregatedObject = aggregatedDocument.get("aggregatedObject");
+        String aggregationStr = aggregatedObject.toString();
+        boolean output = runSubscription.runSubscriptionOnObject(aggregationStr, requirementIterator, subscriptionJson,
+                "someID");
         assertTrue(output);
     }
 

@@ -1,0 +1,25 @@
+{
+    "created": "2017-07-26",
+    "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+    "notificationType": "REST_POST",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "repeat": false,
+    "requirements": [
+      {
+        "conditions": [         
+          {
+            "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
+          }
+        ],
+        "type": "ARTIFACT_1"
+      }
+    ],
+    "subscriptionName": "artifactRequirementSubscription",
+    "userName": "ABC"
+  }

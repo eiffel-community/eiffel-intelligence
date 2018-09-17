@@ -63,8 +63,9 @@ public class IncompletePathContainsFunction extends BaseFunction {
                         lastPosition = 0;
                     }
                 }
-                // all path parts found and in right order
+                
                 if (lastPosition > 0)
+                    // all path parts found and in right order
                     return runtime.createBoolean(true);
             }
         }

@@ -122,6 +122,21 @@ public class TestJmesPathInterface {
     }
 
     @Test
+    public void testIncompletePathContainsFunctionSeveralMembers() {
+        String jsonInput = null;
+        JsonNode expectedResult = null;
+        try {
+            jsonInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
+            expectedResult = JsonNodeFactory.instance.booleanNode(true);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        String processRule = "incomplete_path_contains(@, 'fileInformation.extension','jar')";
+        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
     public void testLiteral() {
         JsonNode literalJson;
         try {

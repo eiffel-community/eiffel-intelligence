@@ -62,16 +62,16 @@ public class IncompletePathContainsFunction extends BaseFunction {
             if (entryValue != null && entryValueString.equals(pathValue)) {
                 int index = 0;
                 for (String pathPart : pathParts) {
+                    int position = entryKey.indexOf(pathPart, lastPosition);
                     if (index > 0) {
                         // a path part should be followed by a dot in
                         // the entry key
-                        String subString = entryKey.substring(lastPosition, lastPosition + 1);
+                        String subString = entryKey.substring(position - 1, position);
                         if (!subString.equals(".")) {
                             lastPosition = -1;
                             break;
                         }
                     }
-                    int position = entryKey.indexOf(pathPart, lastPosition);
                     if (position > lastPosition) {
                         lastPosition = position + pathPart.length();
                     } else {

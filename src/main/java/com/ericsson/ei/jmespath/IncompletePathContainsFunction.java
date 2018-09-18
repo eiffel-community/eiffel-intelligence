@@ -45,29 +45,47 @@ public class IncompletePathContainsFunction extends BaseFunction {
         String pathKey = pathPair[0];
         String[] pathParts = pathKey.split("\\.");
 
+        boolean result = objectContainsIncompletePathWithValue(object, pathParts, pathValue);
+
+        return runtime.createBoolean(result);
+    }
+
+    private boolean objectContainsIncompletePathWithValue(String object, String[] pathParts, String pathValue) {
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(object);
 
+        int lastPosition = -1;
         for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
             String entryKey = entry.getKey();
             Object entryValue = entry.getValue();
-            int lastPosition = 0;
-            if (entryValue != null && entryValue.equals(pathValue)) {
+            String entryValueString = entry.getValue().toString();
+
+            if (entryValue != null && entryValueString.equals(pathValue)) {
+                int index = 0;
                 for (String pathPart : pathParts) {
+                    if (index > 0) {
+                        // a path part should be followed by a dot in
+                        // the entry key
+                        String subString = entryKey.substring(lastPosition, lastPosition + 1);
+                        if (!subString.equals(".")) {
+                            lastPosition = -1;
+                            break;
+                        }
+                    }
                     int position = entryKey.indexOf(pathPart, lastPosition);
                     if (position > lastPosition) {
-                        lastPosition = position;
+                        lastPosition = position + pathPart.length();
                     } else {
                         // reset to start no complete sequence valid
-                        lastPosition = 0;
+                        lastPosition = -1;
                     }
+                    index++;
                 }
                 // all path parts found and in right order
-                if (lastPosition > 0)
-                    return runtime.createBoolean(true);
+                if (lastPosition >= 0)
+                    return true;
             }
         }
 
-        return runtime.createBoolean(false);
+        return false;
     }
-
 }

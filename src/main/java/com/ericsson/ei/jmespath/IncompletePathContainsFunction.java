@@ -58,7 +58,10 @@ public class IncompletePathContainsFunction extends BaseFunction {
         for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
             String entryKey = entry.getKey();
             Object entryValue = entry.getValue();
-            String entryValueString = entry.getValue().toString();
+            String entryValueString = "";
+            if (entryValue != null) {
+                entryValueString = entryValue.toString();
+            }
 
             if (entryValue != null && entryValueString.equals(pathValue)) {
                 int index = 0;

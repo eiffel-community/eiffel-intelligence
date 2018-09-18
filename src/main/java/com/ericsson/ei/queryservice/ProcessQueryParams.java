@@ -83,28 +83,27 @@ public class ProcessQueryParams {
      * This method takes array of aggregated objects and a filterKey. It returns a JSONArray where each element has a key (object Id)
      * and a list of filtered values.
      *
-     * @param request
+     * @param resultAggregatedObjectArray,filterKey
      * @return JSONArray
      * @throws IOException
      */
     private JSONArray filterResult(JSONArray resultAggregatedObjectArray, JsonNode filterKey) {
-        JSONArray tempArray = new JSONArray();
+        JSONArray resultArray = new JSONArray();
         JmesPathInterface unitUnderTest = new JmesPathInterface();
         String searchPath = filterKey.get("key").textValue();
-        String processRule = "{values:" + searchPath + "}";
+        String processRule = "incomplete_path_filter(@, '" + searchPath + "')";
         for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
             try {
                 String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
-                String str = resultAggregatedObjectArray.get(i).toString();
-                JsonNode node = unitUnderTest.runRuleOnEvent(processRule, str);
-                JSONObject json = new JSONObject();
-                json.put(objectId, node.get("values").textValue());
-                tempArray.put(json);
+                JsonNode filteredData = unitUnderTest.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());
+                JSONObject tempJson = new JSONObject();
+                tempJson.put(objectId, filteredData.get(searchPath).textValue());
+                resultArray.put(tempJson);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        return tempArray;
+        return resultArray;
     }
 
     /**

@@ -11,3 +11,4 @@ Feature: QueryAggregatedObjectsTestSteps
     And Perform an invalid freesyle query on Aggregated object
     And Perform a query for missed notification
     And Check missed notification has been returned
+    And Perform a query on created Aggregated object with filter

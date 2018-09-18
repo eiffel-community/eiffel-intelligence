@@ -14,9 +14,14 @@
 package com.ericsson.ei.queryservice;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
+import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +61,7 @@ public class ProcessQueryParams {
     public JSONArray filterFormParam(JsonNode request) {
         JsonNode criteria = request.get("criteria");
         JsonNode options = request.get("options");
+        JsonNode filterKey = request.get("filterKey");
         JSONArray resultAggregatedObject;
         if (options == null || options.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria.toString(), databaseName, aggregationCollectionName);
@@ -64,13 +70,45 @@ public class ProcessQueryParams {
             String result = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
-        LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+        if (filterKey == null || filterKey.toString().equals("{}")) {
+            LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+        } else {
+            resultAggregatedObject = filterResult(resultAggregatedObject, filterKey);
+            LOGGER.debug("Filtered values from resultAggregatedObject : " + resultAggregatedObject.toString());
+        }
         return resultAggregatedObject;
     }
 
     /**
-     * This method takes the parameters from the REST GET request query. If the
-     * Aggregated Object matches the condition, then it is returned.
+     * This method takes array of aggregated objects and a filterKey. It returns a JSONArray where each element has a key (object Id)
+     * and a list of filtered values.
+     *
+     * @param request
+     * @return JSONArray
+     * @throws IOException
+     */
+    private JSONArray filterResult(JSONArray resultAggregatedObjectArray, JsonNode filterKey) {
+        JSONArray tempArray = new JSONArray();
+        JmesPathInterface unitUnderTest = new JmesPathInterface();
+        String searchPath = filterKey.get("key").textValue();
+        String processRule = "{values:" + searchPath + "}";
+        for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
+            try {
+                String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
+                String str = resultAggregatedObjectArray.get(i).toString();
+                JsonNode node = unitUnderTest.runRuleOnEvent(processRule, str);
+                JSONObject json = new JSONObject();
+                json.put(objectId, node.get("values").textValue());
+                tempArray.put(json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return tempArray;
+    }
+
+    /**
+     * This method takes the parameters from the REST GET request query. If the Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray

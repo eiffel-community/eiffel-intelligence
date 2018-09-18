@@ -41,6 +41,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
     private static final String QUERY_1_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject1.json";
     private static final String QUERY_2_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject2.json";
+    private static final String QUERY_3_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject3.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -298,6 +299,34 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         assertEquals("Diffences between actual Missed Notification response:\n" + responseAsString
                 + "\nand expected  Missed Notification response:\n" + expectedResponse,
                 expectedResponse, responseAsString);
+    }
+
+    @And("^Perform a query on created Aggregated object with filter$")
+    public void perform_valid_query_and_filter_on_aggregated_object() throws Throwable {
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}]";
+        final String entryPoint = "/query";
+
+        String query1 = FileUtils.readFileToString(new File(QUERY_3_FILE_NAME), "UTF-8");
+
+        List<String> queries = new ArrayList<>();
+        queries.add(query1);
+
+        for (String query : queries) {
+            LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
+            HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+            response = postRequest.setPort(applicationPort).setHost(hostName).addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json").setEndpoint(entryPoint).addParam("request", query).performRequest();
+
+            LOGGER.debug(
+                    "Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: " + response.getBody().toString());
+
+            String responseAsString = response.getBody().toString();
+            int reponseStatusCode = response.getStatusCodeValue();
+
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponse,
+                    expectedResponse, responseAsString);
+        }
     }
 
     /**

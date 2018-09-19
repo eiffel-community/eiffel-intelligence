@@ -51,7 +51,11 @@ public class IncompletePathFilterFunction extends BaseFunction {
 
         for (Entry<String, Object> e : flattJson.entrySet()) {
             if (e.getKey().endsWith(key)) {
-                resultArray.add(e.getValue().toString());
+                if(e.getValue() == null) {
+                    resultArray.add("null");
+                }else {
+                    resultArray.add(e.getValue().toString());
+                }
             }
         }
 

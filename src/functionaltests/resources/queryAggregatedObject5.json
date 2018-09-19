@@ -1,0 +1,10 @@
+{
+  "criteria": {
+     "aggregatedObject.gav.groupId":"com.mycompany.myproduct",
+     "aggregatedObject.gav.artifactId":"sub-system",
+     "aggregatedObject.gav.version":"1.1.0"
+	},
+  "filterKey": {
+    "key" : "svnIdentifier"
+  }
+}

@@ -37,12 +37,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
-    private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocument.json";
+    private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
     private static final String QUERY_1_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject1.json";
     private static final String QUERY_2_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject2.json";
     private static final String QUERY_3_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject3.json";
     private static final String QUERY_4_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject4.json";
+    private static final String QUERY_5_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject5.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -337,13 +338,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Perform a query and filter with part of path$")
     public void perform__query_and_filter_with_part_of_path() throws Throwable {
-        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[1481875944272, 1481875891763, 1481875921763]\"}]";
+        String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[2000, 5005, 1481875988767, 1481875944272, 1481875891763, 1481875921763, 1481875921843]\"}]";
+        final String expectedResponse2 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[null]\"}]";
         final String entryPoint = "/query";
 
         String query1 = FileUtils.readFileToString(new File(QUERY_4_FILE_NAME), "UTF-8");
+        String query2 = FileUtils.readFileToString(new File(QUERY_5_FILE_NAME), "UTF-8");
 
         List<String> queries = new ArrayList<>();
         queries.add(query1);
+        queries.add(query2);
 
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
@@ -365,6 +369,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
             assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponse,
                     expectedResponse, responseAsString);
+
+            expectedResponse = expectedResponse2;
         }
     }
 

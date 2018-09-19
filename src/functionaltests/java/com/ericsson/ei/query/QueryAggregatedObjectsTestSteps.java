@@ -315,8 +315,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-            response = postRequest.setPort(applicationPort).setHost(hostName).addHeader("content-type", "application/json")
-                    .addHeader("Accept", "application/json").setEndpoint(entryPoint).addParam("request", query).performRequest();
+            response = postRequest.setPort(applicationPort)
+                    .setHost(hostName)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .setEndpoint(entryPoint)
+                    .setBody(query)
+                    .performRequest();
 
             LOGGER.debug(
                     "Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: " + response.getBody().toString());
@@ -343,8 +348,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-            response = postRequest.setPort(applicationPort).setHost(hostName).addHeader("content-type", "application/json")
-                    .addHeader("Accept", "application/json").setEndpoint(entryPoint).addParam("request", query).performRequest();
+            response = postRequest.setPort(applicationPort)
+                    .setHost(hostName)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .setEndpoint(entryPoint)
+                    .setBody(query)
+                    .performRequest();
 
             LOGGER.debug(
                     "Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: " + response.getBody().toString());

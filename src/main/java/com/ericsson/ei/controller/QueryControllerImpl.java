@@ -52,11 +52,15 @@ public class QueryControllerImpl implements QueryController {
         try {
             JSONObject criteria = new JSONObject(body.getCriteria().getAdditionalProperties());
             JSONObject options = null;
+            JSONObject filterKey = new JSONObject();
             if (body.getOptions() != null) {
                 options = new JSONObject(body.getOptions().getAdditionalProperties());
             }
+            if (body.getFilterKey() != null) {
+                filterKey = new JSONObject(body.getFilterKey().getAdditionalProperties());
+            }
 
-            JSONArray result = processQueryParams.filterFormParam(criteria, options);
+            JSONArray result = processQueryParams.filterFormParam(criteria, options, filterKey);
             return new ResponseEntity<>(result.toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();

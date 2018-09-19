@@ -16,7 +16,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "criteria",
-    "options"
+    "options",
+    "filterKey"
 })
 public class QueryBody {
 
@@ -24,6 +25,8 @@ public class QueryBody {
     private Criteria criteria;
     @JsonProperty("options")
     private Options options;
+    @JsonProperty("filterKey")
+    private FilterKey filterKey;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -47,6 +50,16 @@ public class QueryBody {
         this.options = options;
     }
 
+    @JsonProperty("filterKey")
+    public FilterKey getFilterKey() {
+        return filterKey;
+    }
+
+    @JsonProperty("filterKey")
+    public void setFilterKey(FilterKey filterKey) {
+        this.filterKey = filterKey;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -64,7 +77,7 @@ public class QueryBody {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(criteria).append(options).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(criteria).append(options).append(filterKey).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -76,7 +89,7 @@ public class QueryBody {
             return false;
         }
         QueryBody rhs = ((QueryBody) other);
-        return new EqualsBuilder().append(criteria, rhs.criteria).append(options, rhs.options).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(criteria, rhs.criteria).append(options, rhs.options).append(filterKey, rhs.filterKey).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

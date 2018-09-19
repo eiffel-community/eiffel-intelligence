@@ -80,7 +80,7 @@ public class ProcessQueryParams {
             String result = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
-        if (filterKey.toString().equals("{}")) {
+        if (filterKey == null || filterKey.toString().equals("{}")) {
             LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         } else {
             resultAggregatedObject = filterResult(resultAggregatedObject, filterKey);

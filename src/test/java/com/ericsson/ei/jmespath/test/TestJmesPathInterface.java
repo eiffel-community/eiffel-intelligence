@@ -121,16 +121,16 @@ public class TestJmesPathInterface {
     public void testFilterObjectWithPartialPath() {
         unitUnderTest = new JmesPathInterface();
         String jsonInput = null;
-        JsonNode expectedResult = null;
+        String expectedResult = null;
         try {
             jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
-            expectedResult = mapper.readTree("{\"time\":\"[1481875944272, 1481875891763, 1481875921763]\"}");
+            expectedResult = "[1481875944272, 1481875891763, 1481875921763]";
         } catch (Exception e) {
             e.printStackTrace();
         }
         String processRule = "incomplete_path_filter(@, 'time')";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result, expectedResult);
+        assertEquals(result.asText(), expectedResult);
     }
 }

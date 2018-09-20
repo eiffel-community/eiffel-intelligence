@@ -99,24 +99,21 @@ public class ProcessQueryParams {
      */
     private JSONArray filterResult(JSONArray resultAggregatedObjectArray, JSONObject filterKey) {
         JSONArray resultArray = new JSONArray();
-        JmesPathInterface unitUnderTest = new JmesPathInterface();
+        JmesPathInterface jmesPathInterface = new JmesPathInterface();
         String searchPath = null;
         try {
             searchPath = filterKey.get("key").toString();
-        } catch (JSONException e1) {
-            e1.printStackTrace();
-        }
-        String processRule = "incomplete_path_filter(@, '" + searchPath + "')";
-        for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
-            try {
+            String processRule = "incomplete_path_filter(@, '" + searchPath + "')";
+            for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
                 String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
-                JsonNode filteredData = unitUnderTest.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());
+                JsonNode filteredData = jmesPathInterface.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());
                 JSONObject tempJson = new JSONObject();
                 tempJson.put(objectId, filteredData.get(searchPath).textValue());
                 resultArray.put(tempJson);
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } catch (JSONException e) {
+            LOGGER.error("Failed to filter an object\n: " + e.getMessage());
+            e.printStackTrace();
         }
         return resultArray;
     }

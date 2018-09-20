@@ -49,12 +49,12 @@ public class IncompletePathFilterFunction extends BaseFunction {
         Map<String, Object> flattJson = JsonFlattener.flattenAsMap(object);
         ArrayList<String> resultArray = new ArrayList<String>();
 
-        for (Entry<String, Object> e : flattJson.entrySet()) {
-            if (e.getKey().endsWith(key)) {
-                if(e.getValue() == null) {
+        for (Entry<String, Object> setElement : flattJson.entrySet()) {
+            if (setElement.getKey().endsWith(key)) {
+                if(setElement.getValue() == null) {
                     resultArray.add("null");
                 }else {
-                    resultArray.add(e.getValue().toString());
+                    resultArray.add(setElement.getValue().toString());
                 }
             }
         }

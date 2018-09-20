@@ -1,8 +1,7 @@
 package com.ericsson.ei.jmespath;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,23 +37,38 @@ public class IncompletePathFilterFunction extends BaseFunction {
         String object = runtime.toString(value1);
         String key = runtime.toString(value2);
 
-        Map<T, T> result = new HashMap<>();
-        T resValues = runtime.createString(filterObjectWithIncompletePath(object, key).toString());
-        result.put(value2, resValues);
-        return runtime.createObject(result);
-
+        T result = runtime.createString(filterObjectWithIncompletePath(object, key).toString());
+        return result;
     }
 
     private ArrayList<String> filterObjectWithIncompletePath(String object, String key) {
         Map<String, Object> flattJson = JsonFlattener.flattenAsMap(object);
         ArrayList<String> resultArray = new ArrayList<String>();
-
+        List<String> keyParts = Arrays.asList(key.split("\\."));
         for (Entry<String, Object> setElement : flattJson.entrySet()) {
-            if (setElement.getKey().endsWith(key)) {
-                if(setElement.getValue() == null) {
-                    resultArray.add("null");
-                }else {
-                    resultArray.add(setElement.getValue().toString());
+
+            String elementKey = setElement.getKey();
+            List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
+            int index = 0;
+            int lastPartIndex = keyParts.size() - 1;
+            String ending = keyParts.get(lastPartIndex);
+            if (elementKey.endsWith(ending)) {
+                for (int i = 0; i < keyParts.size(); i++) {
+                    String keyPart = keyParts.get(i);
+                    int tempIndex = elementKeyParts.indexOf(keyPart);
+
+                    if (index != -1 && tempIndex >= index) {
+                        index = tempIndex;
+                        if (index == elementKeyParts.indexOf(ending)) {
+                            if (setElement.getValue() == null) {
+                                resultArray.add("null");
+                            } else {
+                                resultArray.add(setElement.getValue().toString());
+                            }
+                        }
+                    } else {
+                        index = -1;
+                    }
                 }
             }
         }

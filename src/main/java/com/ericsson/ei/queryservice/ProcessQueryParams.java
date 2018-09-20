@@ -108,7 +108,7 @@ public class ProcessQueryParams {
                 String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
                 JsonNode filteredData = jmesPathInterface.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());
                 JSONObject tempJson = new JSONObject();
-                tempJson.put(objectId, filteredData.get(searchPath).textValue());
+                tempJson.put(objectId, filteredData.textValue());
                 resultArray.put(tempJson);
             }
         } catch (JSONException e) {

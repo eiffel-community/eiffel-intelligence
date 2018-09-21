@@ -39,9 +39,9 @@ public class IncompletePathFilterFunction extends BaseFunction {
 
         T result = null;
         ArrayList<String> arrayResult = filterObjectWithIncompletePath(object, key);
-        if(arrayResult.isEmpty() || arrayResult == null) {
+        if (arrayResult.isEmpty() || arrayResult == null) {
             result = runtime.createString(null);
-        } else if(arrayResult.size() == 1) {
+        } else if (arrayResult.size() == 1) {
             result = runtime.createString(arrayResult.get(0));
         } else {
             result = runtime.createString(arrayResult.toString());
@@ -66,9 +66,17 @@ public class IncompletePathFilterFunction extends BaseFunction {
                     String keyPart = keyParts.get(i);
 
                     int tempIndex = -1;
-                    for(int j = 0; j < elementKeyParts.size(); j++) {
-                        if(elementKeyParts.get(j).contains(keyPart)) {
-                            tempIndex = j;
+                    for (int j = 0; j < elementKeyParts.size(); j++) {
+
+                        if (keyPart.contains("[")) {
+                            if (elementKeyParts.get(j).equals(keyPart)) {
+                                tempIndex = j;
+                            }
+                        } else {
+                            String elementPartWithoutBracket = Arrays.asList(elementKeyParts.get(j).split("\\[")).get(0);
+                            if (elementPartWithoutBracket.equals(keyPart)) {
+                                tempIndex = j;
+                            }
                         }
                     }
 

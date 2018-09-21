@@ -44,6 +44,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final String QUERY_3_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject3.json";
     private static final String QUERY_4_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject4.json";
     private static final String QUERY_5_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject5.json";
+    private static final String QUERY_6_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject6.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -338,17 +339,26 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Perform a query and filter with part of path$")
     public void perform__query_and_filter_with_part_of_path() throws Throwable {
-        String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[2000, 5005, 1481875988767, 1481875944272, 1481875891763, 1481875921763, 1481875921843]\"}]";
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[2000, 5005, 1481875988767, 1481875944272, 1481875891763, 1481875921763, 1481875921843]\"}]";
         final String expectedResponse2 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"null\"}]";
+        final String expectedResponse3 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"[33d05e6f-9bd9-4138-83b6-e20cc74680a3, 33d05e6f-9bd9-4138-83b6-e20cc74681b5]\"}]";
         final String entryPoint = "/query";
+
+        List<String> expectedResponses = new ArrayList<String>();
+        expectedResponses.add(expectedResponse);
+        expectedResponses.add(expectedResponse2);
+        expectedResponses.add(expectedResponse3);
 
         String query1 = FileUtils.readFileToString(new File(QUERY_4_FILE_NAME), "UTF-8");
         String query2 = FileUtils.readFileToString(new File(QUERY_5_FILE_NAME), "UTF-8");
+        String query3 = FileUtils.readFileToString(new File(QUERY_6_FILE_NAME), "UTF-8");
 
         List<String> queries = new ArrayList<>();
         queries.add(query1);
         queries.add(query2);
+        queries.add(query3);
 
+        int pos = 0;
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
@@ -367,10 +377,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             int reponseStatusCode = response.getStatusCodeValue();
 
             assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
-            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponse,
-                    expectedResponse, responseAsString);
+            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponses.get(pos),
+                    expectedResponses.get(pos), responseAsString);
 
-            expectedResponse = expectedResponse2;
+            pos++;
         }
     }
 

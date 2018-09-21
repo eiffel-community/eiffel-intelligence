@@ -10,7 +10,5 @@
   "options": {
     "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
   },
-  "filterKey": {
-    "key" : "time"
-  }
+  "filter" : "incomplete_path_filter(@, 'time')"
 }

@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
-    private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
+    private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"},  \"filterKey\" : \"id\" }";
     private static String input;
 
     @MockBean
@@ -77,7 +77,7 @@ public class TestQueryControllerImpl {
     public void filterFormParamTest() throws Exception {
 
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterFormParam(any(JSONObject.class), any(JSONObject.class), any(JSONObject.class))).thenReturn(inputObj);
+        when(unitUnderTest.filterFormParam(any(JSONObject.class), any(JSONObject.class), any(String.class))).thenReturn(inputObj);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
                 .accept(MediaType.ALL)

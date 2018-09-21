@@ -10,7 +10,5 @@
   "options": {
     "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
   },
-  "filterKey": {
-    "key" : "aggregatedObject.publications[0].eventId"
-  }
+  "filter" : "incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')"
 }

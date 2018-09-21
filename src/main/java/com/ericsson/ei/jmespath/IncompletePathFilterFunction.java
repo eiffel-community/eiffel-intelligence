@@ -37,7 +37,16 @@ public class IncompletePathFilterFunction extends BaseFunction {
         String object = runtime.toString(value1);
         String key = runtime.toString(value2);
 
-        T result = runtime.createString(filterObjectWithIncompletePath(object, key).toString());
+        T result = null;
+        ArrayList<String> arrayResult = filterObjectWithIncompletePath(object, key);
+        if(arrayResult.isEmpty() || arrayResult == null) {
+            result = runtime.createString(null);
+        } else if(arrayResult.size() == 1) {
+            result = runtime.createString(arrayResult.get(0));
+        } else {
+            result = runtime.createString(arrayResult.toString());
+        }
+
         return result;
     }
 
@@ -46,7 +55,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
         ArrayList<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
         for (Entry<String, Object> setElement : flattJson.entrySet()) {
-
+            //System.out.println("set element : " + setElement);
             String elementKey = setElement.getKey();
             List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
             int index = 0;
@@ -55,7 +64,13 @@ public class IncompletePathFilterFunction extends BaseFunction {
             if (elementKey.endsWith(ending)) {
                 for (int i = 0; i < keyParts.size(); i++) {
                     String keyPart = keyParts.get(i);
-                    int tempIndex = elementKeyParts.indexOf(keyPart);
+
+                    int tempIndex = -1;
+                    for(int j = 0; j < elementKeyParts.size(); j++) {
+                        if(elementKeyParts.get(j).contains(keyPart)) {
+                            tempIndex = j;
+                        }
+                    }
 
                     if (index != -1 && tempIndex >= index) {
                         index = tempIndex;

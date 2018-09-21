@@ -67,7 +67,7 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, JSONObject filterKey) {
+    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filterKey) {
         JSONArray resultAggregatedObject;
         String criteria = editObjectNameInQueryParam(criteriaObj);
         
@@ -80,7 +80,7 @@ public class ProcessQueryParams {
             String result = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
         }
-        if (filterKey == null || filterKey.toString().equals("{}")) {
+        if (filterKey == null || filterKey.equals("")) {
             LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         } else {
             resultAggregatedObject = filterResult(resultAggregatedObject, filterKey);
@@ -97,13 +97,11 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    private JSONArray filterResult(JSONArray resultAggregatedObjectArray, JSONObject filterKey) {
+    private JSONArray filterResult(JSONArray resultAggregatedObjectArray, String filterKey) {
         JSONArray resultArray = new JSONArray();
         JmesPathInterface jmesPathInterface = new JmesPathInterface();
-        String searchPath = null;
         try {
-            searchPath = filterKey.get("key").toString();
-            String processRule = "incomplete_path_filter(@, '" + searchPath + "')";
+            String processRule = filterKey;
             for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
                 String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
                 JsonNode filteredData = jmesPathInterface.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());

@@ -25,9 +25,9 @@ public class IncompletePathFilterFunction extends BaseFunction {
      * 
      * @see io.burt.jmespath.function.BaseFunction#callFunction(io.burt.jmespath.Adapter, java.util.List)
      * 
-     * This takes JSON object and a key. The key can contain the whole path or only a part of it.
-     * It search through the whole object after the values that have same key and returns a Map that
-     * contains a key and a list of all found values.
+     * This takes JSON object and a key. The key can contain the whole path, parts of path, or only a simple key.
+     * It search through the whole object after the values that have same key and returns a Map that contains
+     * a key and a list of all found values.
      */
     @Override
     protected <T> T callFunction(Adapter<T> runtime, List<FunctionArgument<T>> arguments) {
@@ -55,7 +55,6 @@ public class IncompletePathFilterFunction extends BaseFunction {
         ArrayList<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
         for (Entry<String, Object> setElement : flattJson.entrySet()) {
-            //System.out.println("set element : " + setElement);
             String elementKey = setElement.getKey();
             List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
             int index = 0;

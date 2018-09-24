@@ -125,7 +125,7 @@ public class TestJmesPathInterface {
         try {
             jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
             ObjectMapper mapper = new ObjectMapper();
-            expectedResult = "[1481875944272, 1481875891763, 1481875921763]";
+            expectedResult = "[1481875891763, 1481875944272, 1481875921763]";
         } catch (Exception e) {
             e.printStackTrace();
         }

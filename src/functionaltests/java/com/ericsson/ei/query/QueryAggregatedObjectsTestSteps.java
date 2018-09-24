@@ -339,7 +339,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Perform a query and filter with part of path$")
     public void perform__query_and_filter_with_part_of_path() throws Throwable {
-        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[2000, 5005, 1481875988767, 1481875944272, 1481875891763, 1481875921763, 1481875921843]\\\"\"}]";
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\\\"\"}]";
         final String expectedResponse2 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"null\\\"\"}]";
         final String expectedResponse3 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[33d05e6f-9bd9-4138-83b6-e20cc74680a3, 33d05e6f-9bd9-4138-83b6-e20cc74681b5]\\\"\"}]";
         final String entryPoint = "/query";

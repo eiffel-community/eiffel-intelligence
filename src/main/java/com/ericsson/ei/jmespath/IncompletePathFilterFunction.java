@@ -2,11 +2,20 @@ package com.ericsson.ei.jmespath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.github.wnameless.json.flattener.JsonFlattener;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.skyscreamer.jsonassert.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ericsson.ei.controller.QueryControllerImpl;
 
 import io.burt.jmespath.Adapter;
 import io.burt.jmespath.JmesPathType;
@@ -19,6 +28,8 @@ public class IncompletePathFilterFunction extends BaseFunction {
     public IncompletePathFilterFunction() {
         super(ArgumentConstraints.listOf(ArgumentConstraints.typeOf(JmesPathType.OBJECT), ArgumentConstraints.typeOf(JmesPathType.STRING)));
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
 
     /*
      * (non-Javadoc)
@@ -56,15 +67,15 @@ public class IncompletePathFilterFunction extends BaseFunction {
      * Flatten an object and creates a list with the parts of search key. Returns array that contains filtered values.
      */
     private ArrayList<String> filterObjectWithIncompletePath(String object, String key) {
-        Map<String, Object> flattJson = JsonFlattener.flattenAsMap(object);
+        Map<String, Object> flattJson = flatten(object);
         ArrayList<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
-        looptThroughAllPaths(resultArray, flattJson, keyParts);
+        loopThroughAllPaths(resultArray, flattJson, keyParts);
 
         return resultArray;
     }
 
-    private void looptThroughAllPaths(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
+    private void loopThroughAllPaths(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
         for (Entry<String, Object> elementOfSet : flattJson.entrySet()) {
             filterPathsThatContainSearchKey(resultArray, elementOfSet, keyParts);
         }
@@ -156,4 +167,48 @@ public class IncompletePathFilterFunction extends BaseFunction {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * Flatten object and creates all possible key combinations (In correct order) with values.
+     * Ex. a = {b.c.d}; a.b = {c.d}, etc.
+     */
+    private Map<String, Object> flatten(String object) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        try {
+
+            addKeys("", result, object);
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to flatten an object\n: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * Iterate through an object and adds, its keys combinations together with values, to a map.
+     */
+    private void addKeys(String prevKey, Map<String, Object> result, String object) {
+        try {
+            JSONObject json = (JSONObject) JSONParser.parseJSON(object);
+            Iterator<?> iter = json.keys();
+            while (iter.hasNext()) {
+                String key = iter.next().toString();
+                result.put(prevKey + key, json.get(key));
+                if (json.get(key) instanceof JSONObject) {
+                    addKeys(prevKey + key + ".", result, json.get(key).toString());
+                } else if (json.get(key) instanceof JSONArray) {
+                    for (int i = 0; i < ((JSONArray) json.get(key)).length(); i++) {
+                        addKeys(prevKey + key + "[" + i + "].", result, ((JSONArray) json.get(key)).get(i).toString());
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            LOGGER.error("Failed to add key\n: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

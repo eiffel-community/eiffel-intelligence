@@ -39,7 +39,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
 
         T result = null;
         ArrayList<String> arrayResult = filterObjectWithIncompletePath(object, key);
-        if (arrayResult.isEmpty() || arrayResult == null) {
+        if (arrayResult == null || arrayResult.isEmpty()) {
             result = runtime.createString(null);
         } else if (arrayResult.size() == 1) {
             result = runtime.createString(arrayResult.get(0));
@@ -50,53 +50,110 @@ public class IncompletePathFilterFunction extends BaseFunction {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * Flatten an object and creates a list with the parts of search key. Returns array that contains filtered values.
+     */
     private ArrayList<String> filterObjectWithIncompletePath(String object, String key) {
         Map<String, Object> flattJson = JsonFlattener.flattenAsMap(object);
         ArrayList<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
-        for (Entry<String, Object> setElement : flattJson.entrySet()) {
-            String elementKey = setElement.getKey();
-            List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
-            int index = 0;
-            int lastPartIndex = keyParts.size() - 1;
-            String ending = keyParts.get(lastPartIndex);
-            if (elementKey.endsWith(ending)) {
-                for (int i = 0; i < keyParts.size(); i++) {
-                    String keyPart = keyParts.get(i);
-
-                    int tempIndex = -1;
-                    for (int j = 0; j < elementKeyParts.size(); j++) {
-
-                        if (keyPart.contains("[")) {
-                            if (elementKeyParts.get(j).equals(keyPart)) {
-                                tempIndex = j;
-                            }
-                        } else {
-                            String elementPartWithoutBracket = Arrays.asList(elementKeyParts.get(j).split("\\[")).get(0);
-                            if (elementPartWithoutBracket.equals(keyPart)) {
-                                tempIndex = j;
-                            }
-                        }
-                    }
-
-                    if (index != -1 && tempIndex >= index) {
-                        index = tempIndex;
-                        if (index == elementKeyParts.indexOf(ending)) {
-                            if (setElement.getValue() == null) {
-                                resultArray.add("null");
-                            } else {
-                                resultArray.add(setElement.getValue().toString());
-                            }
-                        }
-                    } else {
-                        index = -1;
-                    }
-                }
-            }
-        }
+        looptThroughAllPaths(resultArray, flattJson, keyParts);
 
         return resultArray;
+    }
 
+    private void looptThroughAllPaths(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
+        for (Entry<String, Object> elementOfSet : flattJson.entrySet()) {
+            filterPathsThatContainSearchKey(resultArray, elementOfSet, keyParts);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * To minimize the amount of tested paths, an if statement checks if the current path ends with required key. Loop loops through the list with
+     * parts of search key. Returns array that contains filtered values.
+     */
+    private void filterPathsThatContainSearchKey(ArrayList<String> resultArray, Entry<String, Object> elementOfSet, List<String> keyParts) {
+        String elementKey = elementOfSet.getKey();
+        List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
+        int index = 0;
+        int lastPartIndex = keyParts.size() - 1;
+        String ending = keyParts.get(lastPartIndex);
+        if (elementKey.endsWith(ending)) {
+            for (int i = 0; i < keyParts.size(); i++) {
+                String keyPart = keyParts.get(i);
+                int tempIndex = -1;
+
+                tempIndex = checkIfArray(elementKeyParts, keyPart, tempIndex);
+                index = checkIfCorrectOrder(index, tempIndex, elementKeyParts, ending, elementOfSet, resultArray);
+            }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * It needs to be checked if the part of search key is a key for the array or not. And if user wants to search in all array's elements or only one
+     * specific.
+     */
+    private int checkIfArray(List<String> elementKeyParts, String keyPart, int tempIndex) {
+        for (int j = 0; j < elementKeyParts.size(); j++) {
+
+            if (keyPart.contains("[")) {
+                tempIndex = getIndexIfEqual(elementKeyParts.get(j), keyPart, j, tempIndex);
+            } else {
+                String elementPartWithoutBracket = Arrays.asList(elementKeyParts.get(j).split("\\[")).get(0);
+                tempIndex = getIndexIfEqual(elementPartWithoutBracket, keyPart, j, tempIndex);
+            }
+        }
+        return tempIndex;
+    }
+
+    private int getIndexIfEqual(String elementPart, String keyPart, int currentIndex, int tempIndex) {
+        if (elementPart.equals(keyPart)) {
+            return currentIndex;
+        }
+        return tempIndex;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * Checks if index is higher then -1 and if tempIndex for the current part of search key is higher then the index of the previous part. If the
+     * order is incorrect, index is set to -1.
+     */
+    private int checkIfCorrectOrder(int index, int tempIndex, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
+                                    ArrayList<String> resultArray) {
+        if (index != -1 && tempIndex >= index) {
+            index = tempIndex;
+            checkIfEndOfPath(index, elementKeyParts, ending, elementOfSet, resultArray);
+        } else {
+            index = -1;
+        }
+        return index;
+    }
+
+    private void checkIfEndOfPath(int index, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
+                                  ArrayList<String> resultArray) {
+        if (index == elementKeyParts.indexOf(ending)) {
+            updateResultArray(elementOfSet, resultArray);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * If value is null, it creates a string with null as text and adds it to resultArray, in other case it adds value.
+     */
+    private void updateResultArray(Entry<String, Object> elementOfSet, ArrayList<String> resultArray) {
+        if (elementOfSet.getValue() == null) {
+            resultArray.add("null");
+        } else {
+            resultArray.add(elementOfSet.getValue().toString());
+        }
     }
 
 }

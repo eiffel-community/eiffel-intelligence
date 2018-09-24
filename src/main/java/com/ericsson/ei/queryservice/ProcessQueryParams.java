@@ -67,7 +67,7 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filterKey) {
+    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
         String criteria = editObjectNameInQueryParam(criteriaObj);
         
@@ -75,16 +75,30 @@ public class ProcessQueryParams {
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
-        	String options = editObjectNameInQueryParam(optionsObj); 
+            String options = editObjectNameInQueryParam(optionsObj);
             LOGGER.debug("The options is : " + options);
-            String result = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
+            String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
-        if (filterKey == null || filterKey.equals("")) {
+        resultAggregatedObject = checkFilterCondition(filter, resultAggregatedObject);
+
+        return resultAggregatedObject;
+    }
+
+    /**
+     * This method checks if filter condition exists.
+     *
+     * @param filterKey, resultAggregatedObjectArray
+     * @return JSONArray
+     * @throws IOException
+     */
+    private JSONArray checkFilterCondition(String filter, JSONArray resultAggregatedObject) {
+        if (filter == null || filter.equals("")) {
             LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         } else {
-            resultAggregatedObject = filterResult(resultAggregatedObject, filterKey);
-            LOGGER.debug("Filtered values from resultAggregatedObject : " + resultAggregatedObject.toString());
+            JSONArray tempResult = filterResult(filter, resultAggregatedObject);
+            LOGGER.debug("Filtered values from resultAggregatedObject : " + tempResult.toString());
+            return tempResult;
         }
         return resultAggregatedObject;
     }
@@ -93,18 +107,17 @@ public class ProcessQueryParams {
      * This method takes array of aggregated objects and a filterKey. It returns a JSONArray where each element has a key (object Id)
      * and a list of filtered values.
      *
-     * @param resultAggregatedObjectArray,filterKey
+     * @param filterKey, resultAggregatedObjectArray
      * @return JSONArray
      * @throws IOException
      */
-    private JSONArray filterResult(JSONArray resultAggregatedObjectArray, String filterKey) {
+    private JSONArray filterResult(String filter, JSONArray resultAggregatedObjectArray) {
         JSONArray resultArray = new JSONArray();
         JmesPathInterface jmesPathInterface = new JmesPathInterface();
         try {
-            String processRule = filterKey;
             for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
                 String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
-                JsonNode filteredData = jmesPathInterface.runRuleOnEvent(processRule, resultAggregatedObjectArray.get(i).toString());
+                JsonNode filteredData = jmesPathInterface.runRuleOnEvent(filter, resultAggregatedObjectArray.get(i).toString());
                 JSONObject tempJson = new JSONObject();
                 tempJson.put(objectId, filteredData);
                 resultArray.put(tempJson);

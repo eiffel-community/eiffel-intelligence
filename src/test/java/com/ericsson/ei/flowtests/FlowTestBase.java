@@ -209,14 +209,14 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         return table.count();
     }
 
-    private void waitForEventsToBeProcessed(int eventsCount) {
+    protected void waitForEventsToBeProcessed(int eventsCount) {
         // wait for all events to be processed
         long processedEvents = 0;
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
-                TimeUnit.MILLISECONDS.sleep(3000);
+                TimeUnit.MILLISECONDS.sleep(10000);
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage(), e);
             }

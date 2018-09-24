@@ -23,6 +23,17 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.rabbitmq.client.Channel;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,18 +57,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.client.MongoCollection;
-import com.rabbitmq.client.Channel;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
@@ -92,7 +91,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     private String database;
     @Value("${event_object_map.collection.name}")
     private String event_map;
-    
+
     @Before
     public void before() throws IOException {
         MockitoAnnotations.initMocks(this);
@@ -194,17 +193,6 @@ public class TrafficGeneratedTest extends FlowTestBase {
         eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
 
         return eventNames;
-    }
-
-    private void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
-        // wait for all events to be processed
-        long processedEvents = 0;
-        MongoCollection eventMap = getFlowTestConfigs().getMongoClient().getDatabase(database).getCollection(event_map);
-        while (processedEvents < eventsCount) {
-            processedEvents = eventMap.count();
-        }
-        LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-        TimeUnit.MILLISECONDS.sleep(2000);
     }
 
     private void checkResult() throws IOException, JSONException {

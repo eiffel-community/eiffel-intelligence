@@ -96,9 +96,9 @@ public class ProcessQueryParams {
         if (filter == null || filter.equals("")) {
             LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
         } else {
-            JSONArray tempResult = filterResult(filter, resultAggregatedObject);
-            LOGGER.debug("Filtered values from resultAggregatedObject : " + tempResult.toString());
-            return tempResult;
+            JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
+            LOGGER.debug("Filtered values from resultAggregatedObject : " + filteredResults.toString());
+            return filteredResults;
         }
         return resultAggregatedObject;
     }

@@ -70,12 +70,12 @@ public class IncompletePathFilterFunction extends BaseFunction {
         Map<String, Object> flattJson = flatten(object);
         ArrayList<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
-        loopThroughAllPaths(resultArray, flattJson, keyParts);
+        updateResultArray(resultArray, flattJson, keyParts);
 
         return resultArray;
     }
 
-    private void loopThroughAllPaths(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
+    private void updateResultArray(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
         for (Entry<String, Object> elementOfSet : flattJson.entrySet()) {
             filterPathsThatContainSearchKey(resultArray, elementOfSet, keyParts);
         }
@@ -150,7 +150,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
     private void checkIfEndOfPath(int index, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
                                   ArrayList<String> resultArray) {
         if (index == elementKeyParts.indexOf(ending)) {
-            updateResultArray(elementOfSet, resultArray);
+            addValueToResultArray(elementOfSet, resultArray);
         }
     }
 
@@ -159,7 +159,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
      *
      * If value is null, it creates a string with null as text and adds it to resultArray, in other case it adds value.
      */
-    private void updateResultArray(Entry<String, Object> elementOfSet, ArrayList<String> resultArray) {
+    private void addValueToResultArray(Entry<String, Object> elementOfSet, ArrayList<String> resultArray) {
         if (elementOfSet.getValue() == null) {
             resultArray.add("null");
         } else {

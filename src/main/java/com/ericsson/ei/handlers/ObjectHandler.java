@@ -16,6 +16,15 @@
 */
 package com.ericsson.ei.handlers;
 
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.util.JSON;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -87,10 +87,7 @@ public class ObjectHandler {
         }
 
         boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
-        if (result)
-            eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-
-        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+        postInsertActions(aggregatedObject, rulesObject, event, id, result);
         return result;
     }
 
@@ -99,9 +96,9 @@ public class ObjectHandler {
     }
 
     /**
-     * This method uses previously locked in database aggregatedObject (lock was set
-     * in lockDocument method) and modifies this document with the new values and
-     * removes the lock in one query
+     * This method uses previously locked in database aggregatedObject (lock was
+     * set in lockDocument method) and modifies this document with the new
+     * values and removes the lock in one query
      * 
      * @param aggregatedObject
      *            String to insert in database
@@ -124,11 +121,16 @@ public class ObjectHandler {
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
         boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
-        if (result) {
+        postInsertActions(aggregatedObject, rulesObject, event, id, result);
+        return result;
+    }
+
+    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id,
+            boolean performActions) {
+        if (performActions) {
             eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
             subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
         }
-        return result;
     }
 
     public boolean updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
@@ -188,7 +190,8 @@ public class ObjectHandler {
 
     /**
      * Locks the document in database to achieve pessimistic locking. Method
-     * findAndModify is used to optimize the quantity of requests towards database.
+     * findAndModify is used to optimize the quantity of requests towards
+     * database.
      * 
      * @param id
      *            String to search

@@ -49,13 +49,13 @@ public class IncompletePathFilterFunction extends BaseFunction {
         String key = runtime.toString(value2);
 
         T result = null;
-        ArrayList<String> arrayResult = filterObjectWithIncompletePath(object, key);
-        if (arrayResult == null || arrayResult.isEmpty()) {
+        List<String> resultArray = filterObjectWithIncompletePath(object, key);
+        if (resultArray == null || resultArray.isEmpty()) {
             result = runtime.createString(null);
-        } else if (arrayResult.size() == 1) {
-            result = runtime.createString(arrayResult.get(0));
+        } else if (resultArray.size() == 1) {
+            result = runtime.createString(resultArray.get(0));
         } else {
-            result = runtime.createString(arrayResult.toString());
+            result = runtime.createString(resultArray.toString());
         }
 
         return result;
@@ -66,19 +66,20 @@ public class IncompletePathFilterFunction extends BaseFunction {
      *
      * Flatten an object and creates a list with the parts of search key. Returns array that contains filtered values.
      */
-    private ArrayList<String> filterObjectWithIncompletePath(String object, String key) {
+    private List<String> filterObjectWithIncompletePath(String object, String key) {
         Map<String, Object> flattJson = flatten(object);
-        ArrayList<String> resultArray = new ArrayList<String>();
+        List<String> resultArray = new ArrayList<String>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
-        updateResultArray(resultArray, flattJson, keyParts);
+        resultArray = updateResultArray(resultArray, flattJson, keyParts);
 
         return resultArray;
     }
 
-    private void updateResultArray(ArrayList<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
+    private List<String> updateResultArray(List<String> resultArray, Map<String, Object> flattJson, List<String> keyParts) {
         for (Entry<String, Object> elementOfSet : flattJson.entrySet()) {
-            filterPathsThatContainSearchKey(resultArray, elementOfSet, keyParts);
+            resultArray = filterPathsThatContainSearchKey(resultArray, elementOfSet, keyParts);
         }
+        return resultArray;
     }
 
     /*
@@ -87,7 +88,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
      * To minimize the amount of tested paths, an if statement checks if the current path ends with required key. Loop loops through the list with
      * parts of search key. Returns array that contains filtered values.
      */
-    private void filterPathsThatContainSearchKey(ArrayList<String> resultArray, Entry<String, Object> elementOfSet, List<String> keyParts) {
+    private List<String> filterPathsThatContainSearchKey(List<String> resultArray, Entry<String, Object> elementOfSet, List<String> keyParts) {
         String elementKey = elementOfSet.getKey();
         List<String> elementKeyParts = Arrays.asList(elementKey.split("\\."));
         int index = 0;
@@ -97,11 +98,17 @@ public class IncompletePathFilterFunction extends BaseFunction {
             for (int i = 0; i < keyParts.size(); i++) {
                 String keyPart = keyParts.get(i);
                 int tempIndex = -1;
-
                 tempIndex = checkIfArray(elementKeyParts, keyPart, tempIndex);
-                index = checkIfCorrectOrder(index, tempIndex, elementKeyParts, ending, elementOfSet, resultArray);
+
+                if (checkIfCorrectOrder(index, tempIndex)) {
+                    index = tempIndex;
+                    resultArray = updateResultIfEndOfPath(index, elementKeyParts, ending, elementOfSet, resultArray);
+                } else {
+                    index = -1;
+                }
             }
         }
+        return resultArray;
     }
 
     /*
@@ -133,25 +140,21 @@ public class IncompletePathFilterFunction extends BaseFunction {
     /*
      * (non-Javadoc)
      *
-     * Checks if index is higher then -1 and if tempIndex for the current part of search key is higher then the index of the previous part. If the
-     * order is incorrect, index is set to -1.
+     * Checks if index is higher then -1 and if tempIndex for the current part of search key is higher then the index of the previous part.
      */
-    private int checkIfCorrectOrder(int index, int tempIndex, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
-                                    ArrayList<String> resultArray) {
+    private boolean checkIfCorrectOrder(int index, int tempIndex) {
         if (index != -1 && tempIndex >= index) {
-            index = tempIndex;
-            checkIfEndOfPath(index, elementKeyParts, ending, elementOfSet, resultArray);
-        } else {
-            index = -1;
+            return true;
         }
-        return index;
+        return false;
     }
 
-    private void checkIfEndOfPath(int index, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
-                                  ArrayList<String> resultArray) {
+    private List<String> updateResultIfEndOfPath(int index, List<String> elementKeyParts, String ending, Entry<String, Object> elementOfSet,
+                                  List<String> resultArray) {
         if (index == elementKeyParts.indexOf(ending)) {
-            addValueToResultArray(elementOfSet, resultArray);
+            resultArray = addValueToResultArray(elementOfSet, resultArray);
         }
+        return resultArray;
     }
 
     /*
@@ -159,12 +162,13 @@ public class IncompletePathFilterFunction extends BaseFunction {
      *
      * If value is null, it creates a string with null as text and adds it to resultArray, in other case it adds value.
      */
-    private void addValueToResultArray(Entry<String, Object> elementOfSet, ArrayList<String> resultArray) {
+    private List<String> addValueToResultArray(Entry<String, Object> elementOfSet, List<String> resultArray) {
         if (elementOfSet.getValue() == null) {
             resultArray.add("null");
         } else {
             resultArray.add(elementOfSet.getValue().toString());
         }
+        return resultArray;
     }
 
     /*
@@ -176,9 +180,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
     private Map<String, Object> flatten(String object) {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
-
-            addKeys("", result, object);
-
+            result = addKeys("", result, object);
         } catch (Exception e) {
             LOGGER.error("Failed to flatten an object\n: " + e.getMessage());
             e.printStackTrace();
@@ -191,7 +193,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
      *
      * Iterate through an object and adds, its keys combinations together with values, to a map.
      */
-    private void addKeys(String prevKey, Map<String, Object> result, String object) {
+    private Map<String, Object> addKeys(String prevKey, Map<String, Object> result, String object) {
         try {
             JSONObject json = (JSONObject) JSONParser.parseJSON(object);
             Iterator<?> iter = json.keys();
@@ -199,10 +201,10 @@ public class IncompletePathFilterFunction extends BaseFunction {
                 String key = iter.next().toString();
                 result.put(prevKey + key, json.get(key));
                 if (json.get(key) instanceof JSONObject) {
-                    addKeys(prevKey + key + ".", result, json.get(key).toString());
+                    result = addKeys(prevKey + key + ".", result, json.get(key).toString());
                 } else if (json.get(key) instanceof JSONArray) {
                     for (int i = 0; i < ((JSONArray) json.get(key)).length(); i++) {
-                        addKeys(prevKey + key + "[" + i + "].", result, ((JSONArray) json.get(key)).get(i).toString());
+                        result = addKeys(prevKey + key + "[" + i + "].", result, ((JSONArray) json.get(key)).get(i).toString());
                     }
                 }
             }
@@ -210,5 +212,6 @@ public class IncompletePathFilterFunction extends BaseFunction {
             LOGGER.error("Failed to add key\n: " + e.getMessage());
             e.printStackTrace();
         }
+        return result;
     }
 }

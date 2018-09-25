@@ -19,6 +19,7 @@ package com.ericsson.ei.jmespath.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -42,93 +43,72 @@ public class TestJmesPathInterface {
     static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
 
     @Test
-    public void testRunRuleOnEvent() {
+    public void testRunRuleOnEvent() throws IOException {
         unitUnderTest = new JmesPathInterface();
         String jsonInput = null;
         String jsonOutput = null;
         String extractionRulesTest = null;
         JsonNode output = null;
 
-        try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
-            extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
-            ObjectMapper objectmapper = new ObjectMapper();
-            output = objectmapper.readTree(jsonOutput);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        jsonInput = FileUtils.readFileToString(new File(inputFilePath));
+        jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+        extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
+        ObjectMapper objectmapper = new ObjectMapper();
+        output = objectmapper.readTree(jsonOutput);
 
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(result, output);
     }
 
     @Test
-    public void testDiffFunction() {
+    public void testDiffFunction() throws IOException {
         unitUnderTest = new JmesPathInterface();
         String jsonInput = null;
         JsonNode expectedResult = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+        ObjectMapper mapper = new ObjectMapper();
+        expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result, expectedResult);
     }
 
     @Test
-    public void testLiteral() {
+    public void testLiteral() throws IOException {
         unitUnderTest = new JmesPathInterface();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode literalJson;
-        try {
-            literalJson = mapper.readTree("{}");
-            JsonNode input = mapper.readTree("{\"id\":\"test\"}");
-            ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
-            String ruleString = literalJson.toString();
-            ruleString = "`" + ruleString + "`";
-            unitUnderTest.runRuleOnEvent(ruleString, input.toString());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        literalJson = mapper.readTree("{}");
+        JsonNode input = mapper.readTree("{\"id\":\"test\"}");
+        ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
+        String ruleString = literalJson.toString();
+        ruleString = "`" + ruleString + "`";
+        unitUnderTest.runRuleOnEvent(ruleString, input.toString());
 
         //        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
     }
 
     @Test
-    public void testAggregatedObject() {
+    public void testAggregatedObject() throws IOException {
         unitUnderTest = new JmesPathInterface();
         String jsonInput = null;
         JsonNode expectedResult = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String processRule = "{eventId : aggregatedObject.publications[0].eventId}";
+        jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+        ObjectMapper mapper = new ObjectMapper();
+        expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
+        String processRule = "{eventId : incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result, expectedResult);
     }
 
     @Test
-    public void testFilterObjectWithPartialPath() {
+    public void testFilterObjectWithPartialPath() throws IOException {
         unitUnderTest = new JmesPathInterface();
         String jsonInput = null;
         String expectedResult = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
-            ObjectMapper mapper = new ObjectMapper();
-            expectedResult = "[1481875891763, 1481875944272, 1481875921763]";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+        ObjectMapper mapper = new ObjectMapper();
+        expectedResult = "[1481875891763, 1481875944272, 1481875921763]";
         String processRule = "incomplete_path_filter(@, 'time')";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result.asText(), expectedResult);

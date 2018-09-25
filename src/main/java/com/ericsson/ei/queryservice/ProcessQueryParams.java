@@ -94,7 +94,7 @@ public class ProcessQueryParams {
      */
     private JSONArray checkFilterCondition(String filter, JSONArray resultAggregatedObject) {
         if (filter == null || filter.equals("")) {
-            LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+            LOGGER.debug("No filter conditions provided. ResultAggregatedObject : " + resultAggregatedObject.toString());
         } else {
             JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
             LOGGER.debug("Filtered values from resultAggregatedObject : " + filteredResults.toString());

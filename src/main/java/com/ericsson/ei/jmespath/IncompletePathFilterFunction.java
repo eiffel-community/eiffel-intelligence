@@ -68,7 +68,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
      */
     private List<String> filterObjectWithIncompletePath(String object, String key) {
         Map<String, Object> flattJson = flatten(object);
-        List<String> resultArray = new ArrayList<String>();
+        List<String> resultArray = new ArrayList<>();
         List<String> keyParts = Arrays.asList(key.split("\\."));
         resultArray = updateResultArray(resultArray, flattJson, keyParts);
 
@@ -178,7 +178,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
      * Ex. a = {b.c.d}; a.b = {c.d}, etc.
      */
     private Map<String, Object> flatten(String object) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         try {
             result = addKeys("", result, object);
         } catch (Exception e) {

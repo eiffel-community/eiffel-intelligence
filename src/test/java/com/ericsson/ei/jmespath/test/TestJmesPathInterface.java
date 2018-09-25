@@ -38,8 +38,6 @@ public class TestJmesPathInterface {
     private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
     private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-    private final String aggregatedObjectFilePath = "src/test/resources/AggregatedDocument.json";
-
     static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
 
     @Test
@@ -88,29 +86,4 @@ public class TestJmesPathInterface {
         //        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
     }
 
-    @Test
-    public void testAggregatedObject() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        JsonNode expectedResult = null;
-        jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
-        ObjectMapper mapper = new ObjectMapper();
-        expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
-        String processRule = "{eventId : incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')}";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result, expectedResult);
-    }
-
-    @Test
-    public void testFilterObjectWithPartialPath() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        String expectedResult = null;
-        jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
-        ObjectMapper mapper = new ObjectMapper();
-        expectedResult = "[1481875891763, 1481875944272, 1481875921763]";
-        String processRule = "incomplete_path_filter(@, 'time')";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result.asText(), expectedResult);
-    }
 }

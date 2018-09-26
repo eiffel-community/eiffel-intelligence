@@ -109,7 +109,6 @@ public class SubscriptionHandlerTest {
     private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
     private static String subscriptionPathForEmail = "src/test/resources/SubscriptionForMail.json";
     private static String subscriptionRepeatFlagTrueData;
-    // private static String subscriptionDataEmail;
     private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
     private static String subscriptionForMapNotification;
 
@@ -118,9 +117,6 @@ public class SubscriptionHandlerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    // @Autowired
-    // private ProcessMissedNotification processMissedNotification;
 
     @MockBean
     private SpringRestTemplate springRestTemplate;
@@ -150,8 +146,6 @@ public class SubscriptionHandlerTest {
         subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
         subscriptionDataForAuthorization = FileUtils.readFileToString(new File(subscriptionPathForAuthorization),
                 "UTF-8");
-        // subscriptionDataEmail = FileUtils.readFileToString(new
-        // File(subscriptionPathForEmail), "UTF-8");
         subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath),
                 "UTF-8");
 

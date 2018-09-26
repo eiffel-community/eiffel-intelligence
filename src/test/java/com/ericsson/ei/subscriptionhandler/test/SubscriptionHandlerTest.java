@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.MongoClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -96,6 +95,7 @@ public class SubscriptionHandlerTest {
     private static MongoClient mongoClient = null;
     private static final String formKey = "Authorization";
     private static final String formValue = "Basic XX0=";
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private RunSubscription runSubscription;
@@ -107,7 +107,6 @@ public class SubscriptionHandlerTest {
     private JmesPathInterface jmespath;
 
     private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
-    private static String subscriptionPathForEmail = "src/test/resources/SubscriptionForMail.json";
     private static String subscriptionRepeatFlagTrueData;
     private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
     private static String subscriptionForMapNotification;
@@ -181,14 +180,9 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void runSubscriptionOnObjectTest() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        ArrayNode requirementNode;
-        Iterator<JsonNode> requirementIterator = null;
-
-        subscriptionJson = mapper.readTree(subscriptionData);
-        requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        requirementIterator = requirementNode.elements();
+        JsonNode subscriptionJson = mapper.readTree(subscriptionData);
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
 
         boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
@@ -197,16 +191,10 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void runRequirementSubscriptionOnObjectTest() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        JsonNode aggregatedDocument = null;
-        ArrayNode requirementNode;
-        Iterator<JsonNode> requirementIterator = null;
-
-        subscriptionJson = mapper.readTree(artifactRequirementSubscriptionData);
-        aggregatedDocument = mapper.readTree(aggregatedInternalObject);
-        requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        requirementIterator = requirementNode.elements();
+        JsonNode subscriptionJson = mapper.readTree(artifactRequirementSubscriptionData);
+        JsonNode aggregatedDocument = mapper.readTree(aggregatedInternalObject);
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
         JsonNode aggregatedObject = aggregatedDocument.get("aggregatedObject");
         String aggregationStr = aggregatedObject.toString();
         boolean output = runSubscription.runSubscriptionOnObject(aggregationStr, requirementIterator, subscriptionJson,
@@ -216,17 +204,14 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagFalseTest() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        ArrayNode requirementNode;
-        Iterator<JsonNode> requirementIterator = null;
-        subscriptionJson = mapper.readTree(subscriptionData);
-        requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        requirementIterator = requirementNode.elements();
+        JsonNode subscriptionJson = mapper.readTree(subscriptionData);
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
+        Iterator<JsonNode> requirementIterator2 = requirementNode.elements();
 
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
-        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
                 subscriptionJson, "someID");
         assertTrue(output1);
         assertFalse(output2);
@@ -234,17 +219,10 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void runSubscriptionOnObjectRepeatFlagTrueTest() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode subscriptionJson = null;
-        ArrayNode requirementNode;
-        ArrayNode requirementNode2;
-        Iterator<JsonNode> requirementIterator = null;
-        Iterator<JsonNode> requirementIterator2 = null;
-        subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
-        requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        requirementNode2 = (ArrayNode) subscriptionJson.get("requirements");
-        requirementIterator = requirementNode.elements();
-        requirementIterator2 = requirementNode2.elements();
+        JsonNode subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
+        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+        Iterator<JsonNode> requirementIterator = requirementNode.elements();
+        Iterator<JsonNode> requirementIterator2 = requirementNode.elements();
 
         boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
                 subscriptionJson, "someID");
@@ -256,7 +234,7 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void missedNotificationTest() throws Exception {
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dbName, collectionName);
         Iterator itr = outputDoc.iterator();
         String data = itr.next().toString();
@@ -273,7 +251,7 @@ public class SubscriptionHandlerTest {
     @Test
     public void missedNotificationWithTTLTest() throws Exception {
         System.out.println(subscriptionData);
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         // Time to live lower than 60 seconds will not have any effect since
         // removal runs every 60 seconds
         Thread.sleep(65000);
@@ -294,7 +272,7 @@ public class SubscriptionHandlerTest {
     public void testRestPostTrigger() throws Exception {
         when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType)).thenReturn(statusOk);
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headerContentMediaType);
     }
@@ -304,7 +282,7 @@ public class SubscriptionHandlerTest {
         when(springRestTemplate.postDataMultiValue(urlAuthorization,
                 mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey,
                 formValue)).thenReturn(statusOk);
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionDataForAuthorization));
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
                 mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey,
                 formValue);
@@ -322,7 +300,7 @@ public class SubscriptionHandlerTest {
     public void testQueryMissedNotificationEndPoint() throws Exception {
         String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(regex, "");
         JSONObject input = new JSONObject(aggregatedObject);
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         MvcResult result = mockMvc
                 .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
                 .andReturn();
@@ -334,16 +312,16 @@ public class SubscriptionHandlerTest {
     @Test
     public void testMapNotificationMessage() throws Exception {
         MultiValueMap<String, String> actual = invokeMethod(subscription, "mapNotificationMessage",
-                aggregatedObjectMapNotification, new ObjectMapper().readTree(subscriptionForMapNotification));
+                aggregatedObjectMapNotification, mapper.readTree(subscriptionForMapNotification));
         MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
         expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
         assertEquals(expected, actual);
     }
 
-    private MultiValueMap<String, String> mapNotificationMessage(String data) throws IOException {
+    private MultiValueMap<String, String> mapNotificationMessage(String data) throws Exception {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 
-        ArrayNode arrNode = (ArrayNode) new ObjectMapper().readTree(data).get("notificationMessageKeyValues");
+        ArrayNode arrNode = (ArrayNode) mapper.readTree(data).get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
                 if (!objNode.get("formkey").toString().replaceAll(regex, "").equals("Authorization")) {

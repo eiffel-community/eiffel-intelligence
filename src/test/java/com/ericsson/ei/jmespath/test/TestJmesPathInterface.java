@@ -26,48 +26,49 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestJmesPathInterface {
     private JmesPathInterface unitUnderTest = new JmesPathInterface();
     ObjectMapper mapper = new ObjectMapper();
-    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-    private final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
-    private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
-    private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
+    private static final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private static final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
+    private static final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
+    private static final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-    @Test
-    public void testRunRuleOnEvent() throws Exception {
-        String jsonInput = null;
-        String jsonOutput = null;
-        String extractionRulesTest = null;
-        JsonNode output = null;
+    private static String jsonInput;
+    private static String jsonOutput;
+    private static String extractionRulesTest;
+    private static String jsonDiffInput;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
         jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
         jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
         extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
-        output = mapper.readTree(jsonOutput);
+        jsonDiffInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
+    }
 
+    @Test
+    public void testRunRuleOnEvent() throws Exception {
+        JsonNode output = mapper.readTree(jsonOutput);
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(output, result);
     }
 
     @Test
     public void testDiffFunction() throws Exception {
-        String jsonInput = null;
-        JsonNode expectedResult = null;
-        jsonInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
-        expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
+        JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
 
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
+        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonDiffInput);
         assertEquals(expectedResult, result);
     }
 
     @Test
     public void testLiteral() throws Exception {
-        JsonNode literalJson;
-
-        literalJson = mapper.readTree("{}");
+        JsonNode literalJson = mapper.readTree("{}");
         JsonNode input = mapper.readTree("{\"id\":\"test\"}");
         ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
         String ruleString = literalJson.toString();

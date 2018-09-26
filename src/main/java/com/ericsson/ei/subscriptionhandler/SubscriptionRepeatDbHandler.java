@@ -75,7 +75,7 @@ public class SubscriptionRepeatDbHandler {
                 + " aggrId matched list");
 
         if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.info("Subscription: " + subscriptionId + " and AggrObjId, " + aggrObjId
+            LOGGER.debug("Subscription: " + subscriptionId + " and AggrObjId, " + aggrObjId
                     + " has already been matched." + "No need to register the subscription match.");
             return;
         }
@@ -165,7 +165,7 @@ public class SubscriptionRepeatDbHandler {
                     }
                     String idStr = listAggrObjIds.get(requirementId);
                     if (idStr.equals(aggrObjId)) {
-                        LOGGER.info("Subscription has matched aggrObjId already: " + aggrObjId);
+                        LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
                         return true;
                     }
                 } catch (Exception e) {
@@ -174,7 +174,7 @@ public class SubscriptionRepeatDbHandler {
                 }
             }
         }
-        LOGGER.info("AggrObjId not found for SubscriptionId in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.");
+        LOGGER.debug("AggrObjId not found for SubscriptionId in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.");
         return false;
     }
 

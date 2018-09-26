@@ -35,13 +35,13 @@ public class IncompletePathContainsFunction extends BaseFunction {
      */
     @Override
     protected <T> T callFunction(Adapter<T> runtime, List<FunctionArgument<T>> arguments) {
-        T value1 = arguments.get(0).value();
-        T value2 = arguments.get(1).value();
-        T value3 = arguments.get(2).value();
+        T objectArgument = arguments.get(0).value();
+        T pathArgument = arguments.get(1).value();
+        T pathValueArgument = arguments.get(2).value();
 
-        String object = runtime.toString(value1);
-        String path = runtime.toString(value2);
-        String pathValue = runtime.toString(value3);
+        String object = runtime.toString(objectArgument);
+        String path = runtime.toString(pathArgument);
+        String pathValue = runtime.toString(pathValueArgument);
         String[] pathPair = path.split(":");
         String pathKey = pathPair[0];
         String[] pathParts = pathKey.split("\\.");
@@ -54,42 +54,52 @@ public class IncompletePathContainsFunction extends BaseFunction {
     private boolean objectContainsIncompletePathWithValue(String object, String[] pathParts, String pathValue) {
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(object);
 
-        int lastPosition = -1;
         for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
             String entryKey = entry.getKey();
             Object entryValue = entry.getValue();
             String entryValueString = "";
             if (entryValue != null) {
                 entryValueString = entryValue.toString();
-            }
 
-            if (entryValue != null && entryValueString.equals(pathValue)) {
-                int index = 0;
-                for (String pathPart : pathParts) {
-                    int position = entryKey.indexOf(pathPart, lastPosition);
-                    if (index > 0) {
-                        // a path part should be followed by a dot in
-                        // the entry key
-                        String subString = entryKey.substring(position - 1, position);
-                        if (!subString.equals(".")) {
-                            lastPosition = -1;
-                            break;
-                        }
-                    }
-                    if (position > lastPosition) {
-                        lastPosition = position + pathPart.length();
-                    } else {
-                        // reset to start no complete sequence valid
-                        lastPosition = -1;
-                    }
-                    index++;
+                if (entryValueString.equals(pathValue)) {
+                    int lastPosition = getValidKeySequencePosition(pathParts, entryKey);
+                    // all path parts found and in right order
+                    if (lastPosition >= 0)
+                        return true;
                 }
-                // all path parts found and in right order
-                if (lastPosition >= 0)
-                    return true;
             }
         }
 
         return false;
+    }
+
+    private int getLastKeyPosition(int lastPosition, int position, String pathPart) {
+        if (position > lastPosition) {
+            return position + pathPart.length();
+        } else {
+            // reset to start no complete sequence valid
+            return -1;
+        }
+    }
+
+    private int getValidKeySequencePosition(String[] pathParts, String entryKey) {
+        int index = 0;
+        int lastPosition = -1;
+        for (String pathPart : pathParts) {
+            int position = entryKey.indexOf(pathPart, lastPosition);
+            if (index > 0) {
+                // a path part should be followed by a dot in
+                // the entry key
+                String subString = entryKey.substring(position - 1, position);
+                if (!subString.equals(".")) {
+                    lastPosition = -1;
+                    break;
+                }
+            }
+
+            lastPosition = getLastKeyPosition(lastPosition, position, pathPart);
+            index++;
+        }
+        return lastPosition;
     }
 }

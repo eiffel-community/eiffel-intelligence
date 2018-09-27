@@ -147,35 +147,43 @@ public class SubscriptionRepeatDbHandler {
             if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
                 LOGGER.debug("SubscriptionId \"", subscriptionId,
                         "\" , exist in document. Checking if AggrObjId has matched earlier.");
-                List<String> listAggrObjIds = null;
+
                 LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n"
                         + jNode.get("requirements").get(new Integer(requirementId).toString()));
-                try {
-                    ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
-                    });
-                    JsonNode ids = jNode.get("requirements").get("" + requirementId);
-                    if (ids == null)
-                        return false;
-                    listAggrObjIds = reader.readValue(ids);
 
-                    if (requirementId > (listAggrObjIds.size() - 1)) {
-                        LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
-                                + "\nhas not matched any AggregatedObject yet. No need to do anymore check.");
-                        return false;
-                    }
-                    String idStr = listAggrObjIds.get(requirementId);
-                    if (idStr.equals(aggrObjId)) {
-                        LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
-                        return true;
-                    }
-                } catch (Exception e) {
-                    LOGGER.error(e.getMessage());
-                    e.printStackTrace();
-                }
+                boolean triggered = checkRequirementIdTriggered(jNode, requirementId, aggrObjId);
+
+                if (!triggered)
+                    LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
+                            + "\nhas not matched any AggregatedObject.");
             }
         }
-        LOGGER.debug("AggrObjId not found for SubscriptionId in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.");
+        LOGGER.debug("AggrObjId: " + aggrObjId + "not found for SubscriptionId: " + subscriptionId
+                + "in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.");
         return false;
     }
 
+    private boolean checkRequirementIdTriggered(JsonNode jNode, int requirementId, String aggrObjId) {
+        try {
+            ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
+            });
+            JsonNode ids = jNode.get("requirements").get("" + requirementId);
+            if (ids == null)
+                return false;
+            List<String> listAggrObjIds = reader.readValue(ids);
+
+            if (requirementId > (listAggrObjIds.size() - 1)) {
+                return false;
+            }
+            String idStr = listAggrObjIds.get(requirementId);
+            if (idStr.equals(aggrObjId)) {
+                LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

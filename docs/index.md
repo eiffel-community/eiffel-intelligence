@@ -9,6 +9,8 @@ Eiffel intelligence uses subscriptions to notify interested parties when several
 
 [Under the hood](under_hood.md)
 
+[Under the hood](under_hood.md)
+
 [Rules](rules.md)
 
 [Subscriptions](subscriptions.md)

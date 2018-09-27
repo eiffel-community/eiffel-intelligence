@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -29,13 +30,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestIncompleteJmesPathFilter {
-    private JmesPathInterface unitUnderTest;
-    private final String aggregatedObjectFilePath = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
+    private JmesPathInterface unitUnderTest = new JmesPathInterface();;
+    private static final String aggregatedObjectFilePath = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
+
+    private static String jsonInput = "";
+
+    @BeforeClass
+    public static void beforClass() throws Exception {
+        jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+    }
 
     @Test
-    public void testFilterObjectWithWholePath() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+    public void testFilterObjectWithWholePath() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
         String processRule = "{eventId : incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')}";
@@ -44,9 +50,7 @@ public class TestIncompleteJmesPathFilter {
     }
 
     @Test
-    public void testFilterObjectWithPartialPath() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+    public void testFilterObjectWithPartialPath() throws Exception {
         String expectedResult = "{\"eventId\":\"[33d05e6f-9bd9-4138-83b6-e20cc74680a3, 33d05e6f-9bd9-4138-83b6-e20cc74681b5]\"}";
         String processRule = "{eventId : incomplete_path_filter(@, 'publications.eventId')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
@@ -54,9 +58,7 @@ public class TestIncompleteJmesPathFilter {
     }
 
     @Test
-    public void testFilterObjectWithKey() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+    public void testFilterObjectWithKey() throws Exception {
         String expectedResult = "\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\"";
         String processRule = "incomplete_path_filter(@, 'time')";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
@@ -64,9 +66,7 @@ public class TestIncompleteJmesPathFilter {
     }
 
     @Test
-    public void testFilterObjectWithManyKeys() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+    public void testFilterObjectWithManyKeys() throws Exception {
         String expectedResult = "{\"time\":\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\",\"svnIdentifier\":\"null\"}";
         String processRule = "{time : incomplete_path_filter(@, 'time'), svnIdentifier : incomplete_path_filter(@, 'svnIdentifier')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);

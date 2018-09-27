@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,41 +33,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestJmesPathInterface {
-    private JmesPathInterface unitUnderTest;
-    private final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
-    private final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
-    private final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
-    private final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
+    private JmesPathInterface unitUnderTest = new JmesPathInterface();;
+    private static final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
+    private static final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
+    private static final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
+    private static final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestJmesPathInterface.class);
+    private static String jsonInput = "";
+    private static String extractionRulesTest = "";
+    private static String jsonOutput = "";
+    private static String jsonInputDiff = "";
+
+    @BeforeClass
+    public static void beforClass() throws Exception {
+        jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
+        jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
+        extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
+        jsonInputDiff = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
+    }
 
     @Test
-    public void testRunRuleOnEvent() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-        String jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
-        String extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
+    public void testRunRuleOnEvent() throws Exception {
         ObjectMapper objectmapper = new ObjectMapper();
         JsonNode output = objectmapper.readTree(jsonOutput);
-
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(result, output);
     }
 
     @Test
-    public void testDiffFunction() throws IOException {
-        unitUnderTest = new JmesPathInterface();
-        String jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+    public void testDiffFunction() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
+        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInputDiff);
         assertEquals(result, expectedResult);
     }
 
     @Test
-    public void testLiteral() throws IOException {
-        unitUnderTest = new JmesPathInterface();
+    public void testLiteral() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode literalJson = mapper.readTree("{}");
         JsonNode input = mapper.readTree("{\"id\":\"test\"}");
@@ -74,8 +78,6 @@ public class TestJmesPathInterface {
         String ruleString = literalJson.toString();
         ruleString = "`" + ruleString + "`";
         unitUnderTest.runRuleOnEvent(ruleString, input.toString());
-
-        //        String literal = "{\"eventId\":"`"fb6ef1hd-25fh-4dh7-b9vd-87688e65de47"`"}";
     }
 
 }

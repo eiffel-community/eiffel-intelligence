@@ -43,16 +43,11 @@ public class TestJmesPathInterface {
     @Test
     public void testRunRuleOnEvent() throws IOException {
         unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        String jsonOutput = null;
-        String extractionRulesTest = null;
-        JsonNode output = null;
-
-        jsonInput = FileUtils.readFileToString(new File(inputFilePath));
-        jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
-        extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
+        String jsonInput = FileUtils.readFileToString(new File(inputFilePath));
+        String jsonOutput = FileUtils.readFileToString(new File(outputFilePath));
+        String extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath));
         ObjectMapper objectmapper = new ObjectMapper();
-        output = objectmapper.readTree(jsonOutput);
+        JsonNode output = objectmapper.readTree(jsonOutput);
 
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(result, output);
@@ -61,11 +56,9 @@ public class TestJmesPathInterface {
     @Test
     public void testDiffFunction() throws IOException {
         unitUnderTest = new JmesPathInterface();
-        String jsonInput = null;
-        JsonNode expectedResult = null;
-        jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
+        String jsonInput = FileUtils.readFileToString(new File(inputDiffpath));
         ObjectMapper mapper = new ObjectMapper();
-        expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
+        JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result, expectedResult);
@@ -75,8 +68,7 @@ public class TestJmesPathInterface {
     public void testLiteral() throws IOException {
         unitUnderTest = new JmesPathInterface();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode literalJson;
-        literalJson = mapper.readTree("{}");
+        JsonNode literalJson = mapper.readTree("{}");
         JsonNode input = mapper.readTree("{\"id\":\"test\"}");
         ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
         String ruleString = literalJson.toString();

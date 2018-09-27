@@ -136,26 +136,27 @@ public class SubscriptionRepeatDbHandler {
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
         List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName, subscriptionQuery);
         if (objArray != null && !objArray.isEmpty()) {
-            JsonNode jNode = null;
             LOGGER.debug("Making AggrObjId checks on SubscriptionId document: " + objArray.get(0));
             try {
-                jNode = mapper.readTree(objArray.get(0));
+                JsonNode jNode = mapper.readTree(objArray.get(0));
+                if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
+                    LOGGER.debug("SubscriptionId \"", subscriptionId,
+                            "\" , exist in document. Checking if AggrObjId has matched earlier.");
+
+                    LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n"
+                            + jNode.get("requirements").get(new Integer(requirementId).toString()));
+
+                    boolean triggered = checkRequirementIdTriggered(jNode, requirementId, aggrObjId);
+
+                    if (!triggered)
+                        LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
+                                + "\nhas not matched any AggregatedObject.");
+
+                    return triggered;
+                }
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
                 e.printStackTrace();
-            }
-            if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
-                LOGGER.debug("SubscriptionId \"", subscriptionId,
-                        "\" , exist in document. Checking if AggrObjId has matched earlier.");
-
-                LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n"
-                        + jNode.get("requirements").get(new Integer(requirementId).toString()));
-
-                boolean triggered = checkRequirementIdTriggered(jNode, requirementId, aggrObjId);
-
-                if (!triggered)
-                    LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
-                            + "\nhas not matched any AggregatedObject.");
             }
         }
         LOGGER.debug("AggrObjId: " + aggrObjId + "not found for SubscriptionId: " + subscriptionId
@@ -163,27 +164,24 @@ public class SubscriptionRepeatDbHandler {
         return false;
     }
 
-    private boolean checkRequirementIdTriggered(JsonNode jNode, int requirementId, String aggrObjId) {
-        try {
-            ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
-            });
-            JsonNode ids = jNode.get("requirements").get("" + requirementId);
-            if (ids == null)
-                return false;
-            List<String> listAggrObjIds = reader.readValue(ids);
+    private boolean checkRequirementIdTriggered(JsonNode jNode, int requirementId, String aggrObjId) throws Exception {
+        ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
+        });
+        JsonNode ids = jNode.get("requirements").get("" + requirementId);
+        if (ids == null)
+            return false;
+        List<String> listAggrObjIds = reader.readValue(ids);
 
-            if (requirementId > (listAggrObjIds.size() - 1)) {
-                return false;
-            }
-            String idStr = listAggrObjIds.get(requirementId);
-            if (idStr.equals(aggrObjId)) {
-                LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
-                return true;
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
+        if (requirementId > (listAggrObjIds.size() - 1)) {
+            return false;
         }
+
+        String idStr = listAggrObjIds.get(requirementId);
+        if (idStr.equals(aggrObjId)) {
+            LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
+            return true;
+        }
+
         return false;
     }
 }

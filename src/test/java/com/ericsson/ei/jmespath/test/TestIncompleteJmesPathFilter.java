@@ -72,4 +72,15 @@ public class TestIncompleteJmesPathFilter {
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result.toString(), expectedResult);
     }
+
+    @Test
+    public void testFilterObjectAndReturnValueGroups() throws Exception {
+        String expectedResult = "{\"gav\":\"[{\\\"groupId\\\":\\\"com.mycompany.myproduct\\\",\\\"artifactId\\\":\\\"sub-system\\\",\\\"version\\\":\\\"1.1.0\\\"}, "
+                + "{\\\"groupId\\\":\\\"com.internalcompany.internalproduct\\\",\\\"artifactId\\\":\\\"internal-system\\\",\\\"version\\\":\\\"1.99.0\\\"}, "
+                + "{\\\"groupId\\\":\\\"com.othercompany.otherproduct\\\",\\\"artifactId\\\":\\\"other-system\\\",\\\"version\\\":\\\"1.33.0\\\"}, "
+                + "{\\\"groupId\\\":\\\"com.othercompany.secondproduct\\\",\\\"artifactId\\\":\\\"other-system\\\",\\\"version\\\":\\\"1.33.0\\\"}]\"}";
+        String processRule = "{gav : incomplete_path_filter(@, 'gav')}";
+        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
+        assertEquals(result.toString(), expectedResult);
+    }
 }

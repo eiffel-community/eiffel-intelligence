@@ -43,26 +43,26 @@ public class TestJmesPathInterface {
     private static String extractionRulesTest = "";
     private static String jsonOutput = "";
     private static String jsonInputDiff = "";
+    private static ObjectMapper mapper;
 
     @BeforeClass
-    public static void beforClass() throws Exception {
+    public static void beforeClass() throws Exception {
         jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
         jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
         extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
         jsonInputDiff = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
+        mapper = new ObjectMapper();
     }
 
     @Test
     public void testRunRuleOnEvent() throws Exception {
-        ObjectMapper objectmapper = new ObjectMapper();
-        JsonNode output = objectmapper.readTree(jsonOutput);
+        JsonNode output = mapper.readTree(jsonOutput);
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
         assertEquals(result, output);
     }
 
     @Test
     public void testDiffFunction() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInputDiff);
@@ -71,7 +71,6 @@ public class TestJmesPathInterface {
 
     @Test
     public void testLiteral() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode literalJson = mapper.readTree("{}");
         JsonNode input = mapper.readTree("{\"id\":\"test\"}");
         ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");

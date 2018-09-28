@@ -34,15 +34,16 @@ public class TestIncompleteJmesPathFilter {
     private static final String aggregatedObjectFilePath = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
 
     private static String jsonInput = "";
+    private static ObjectMapper mapper;
 
     @BeforeClass
-    public static void beforClass() throws Exception {
+    public static void beforeClass() throws Exception {
         jsonInput = FileUtils.readFileToString(new File(aggregatedObjectFilePath), "UTF-8");
+        mapper = new ObjectMapper();
     }
 
     @Test
     public void testFilterObjectWithWholePath() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
         String processRule = "{eventId : incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);

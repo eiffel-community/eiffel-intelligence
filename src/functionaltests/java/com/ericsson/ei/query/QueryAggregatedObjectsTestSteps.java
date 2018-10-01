@@ -162,14 +162,12 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         String query1 = FileUtils.readFileToString(new File(QUERY_1_FILE_NAME), "UTF-8");
         String query2 = FileUtils.readFileToString(new File(QUERY_2_FILE_NAME), "UTF-8");
-        String query3 = FileUtils.readFileToString(new File(QUERY_3_FILE_NAME), "UTF-8");
-        String query4 = FileUtils.readFileToString(new File(QUERY_7_FILE_NAME), "UTF-8");
+        String query3 = FileUtils.readFileToString(new File(QUERY_7_FILE_NAME), "UTF-8");
 
         List<String> queries = new ArrayList<>();
         queries.add(query1);
         queries.add(query2);
         queries.add(query3);
-        queries.add(query4);
 
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);

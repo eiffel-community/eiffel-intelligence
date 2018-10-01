@@ -13,3 +13,8 @@ Feature: QueryAggregatedObjectsTestSteps
     And Check missed notification has been returned
     And Perform a query on created Aggregated object with filter
     And Perform a query and filter with part of path
+
+  Scenario: Test QueryConfidenceLevelModified
+    Given Aggregated object is created
+    Then perform query to retrieve and filter out confidence level information
+

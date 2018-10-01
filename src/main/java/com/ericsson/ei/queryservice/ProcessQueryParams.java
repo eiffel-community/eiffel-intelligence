@@ -14,9 +14,13 @@
 package com.ericsson.ei.queryservice;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
+import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +67,7 @@ public class ProcessQueryParams {
      * @return JSONArray
      * @throws IOException
      */
-    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj) {
+    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
         String criteria = editObjectNameInQueryParam(criteriaObj);
         
@@ -71,18 +75,62 @@ public class ProcessQueryParams {
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
-        	String options = editObjectNameInQueryParam(optionsObj); 
+            String options = editObjectNameInQueryParam(optionsObj);
             LOGGER.debug("The options is : " + options);
-            String result = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(result, databaseName, aggregationCollectionName);
+            String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
+            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
-        LOGGER.debug("resultAggregatedObject : " + resultAggregatedObject.toString());
+        resultAggregatedObject = checkFilterCondition(filter, resultAggregatedObject);
+
         return resultAggregatedObject;
     }
 
     /**
-     * This method takes the parameters from the REST GET request query. If the
-     * Aggregated Object matches the condition, then it is returned.
+     * This method checks if filter condition exists.
+     *
+     * @param filterKey, resultAggregatedObjectArray
+     * @return JSONArray
+     * @throws IOException
+     */
+    private JSONArray checkFilterCondition(String filter, JSONArray resultAggregatedObject) {
+        if (filter == null || filter.equals("")) {
+            LOGGER.debug("No filter conditions provided. ResultAggregatedObject : " + resultAggregatedObject.toString());
+        } else {
+            JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
+            LOGGER.debug("Filtered values from resultAggregatedObject : " + filteredResults.toString());
+            return filteredResults;
+        }
+        return resultAggregatedObject;
+    }
+
+    /**
+     * This method takes array of aggregated objects and a filterKey. It returns a JSONArray where each element has a key (object Id)
+     * and a list of filtered values.
+     *
+     * @param filterKey, resultAggregatedObjectArray
+     * @return JSONArray
+     * @throws IOException
+     */
+    private JSONArray filterResult(String filter, JSONArray resultAggregatedObjectArray) {
+        JSONArray resultArray = new JSONArray();
+        JmesPathInterface jmesPathInterface = new JmesPathInterface();
+        try {
+            for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
+                String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
+                JsonNode filteredData = jmesPathInterface.runRuleOnEvent(filter, resultAggregatedObjectArray.get(i).toString());
+                JSONObject tempJson = new JSONObject();
+                tempJson.put(objectId, filteredData);
+                resultArray.put(tempJson);
+            }
+        } catch (JSONException e) {
+            LOGGER.error("Failed to filter an object\n: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return resultArray;
+    }
+
+    /**
+     * This method takes the parameters from the REST GET request query. If the Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray

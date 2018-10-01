@@ -170,7 +170,7 @@ public class ObjectHandler {
 
 			BasicDBObject document = new BasicDBObject();
 			document.put("_id", id);
-			document.put("AggregatedObject", BasicDBObject.parse(object));
+			document.put("aggregatedObject", BasicDBObject.parse(object));
 
 			if (getTtl() > 0) {
 				document.put("Time", date);

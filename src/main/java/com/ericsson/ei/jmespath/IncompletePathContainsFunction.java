@@ -32,6 +32,9 @@ public class IncompletePathContainsFunction extends BaseFunction {
      * both elements of the incomplete path are contained in the example paths.
      * 
      * But the value should also match.
+     * 
+     * Returns true if there is at least one path that contains the elements of
+     * the partial path and given value.
      */
     @Override
     protected <T> T callFunction(Adapter<T> runtime, List<FunctionArgument<T>> arguments) {

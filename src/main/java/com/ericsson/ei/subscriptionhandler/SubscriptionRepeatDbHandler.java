@@ -54,15 +54,28 @@ public class SubscriptionRepeatDbHandler {
     @Value("${subscription.collection.repeatFlagHandlerName}")
     public String collectionName;
 
-    /*
-     * RepeatFlagHandling structure in MongoDb: { "_id" :
-     * ObjectId("5ac62b4ea4f87e29e8cc5915"), "subscriptionId" : "subsA", //
-     * RequirementId corresponds to a Requirement List of matched Aggregated
-     * Objects Ids. <RequirementId> <AggrObjIds> "requirements" : {"0" : [
-     * "11112", "72324", "72364", "72233", "71233" ], "1" : [ "11112", "72324",
-     * "72364", "72233", "71233" ] } }
-     * 
-     */
+    // RepeatFlagHandling structure in MongoDb:
+    // {
+    //    "_id" : ObjectId("5ac62b4ea4f87e29e8cc5915"),
+    //    "subscriptionId" : "subsA",
+    //               RequirementId corresponds to a Requirement List of matched Aggregated Objects Ids.
+    //                <RequirementId>   <AggrObjIds>
+    //    "requirements" : {"0" : [      
+    //                                "11112", 
+    //                                "72324", 
+    //                                "72364", 
+    //                                "72233", 
+    //                                "71233"
+    //                           ],
+    //                     "1" : [ 
+    //                                "11112", 
+    //                                "72324", 
+    //                                "72364", 
+    //                                "72233", 
+    //                                "71233"   
+    //                           ]
+    //                    }
+    // }
 
     /*
      * Function that stores the matched aggregatedObjectId to the database.

@@ -37,10 +37,14 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
-    private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocument.json";
+    private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
     private static final String QUERY_1_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject1.json";
     private static final String QUERY_2_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject2.json";
+    private static final String QUERY_3_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject3.json";
+    private static final String QUERY_4_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject4.json";
+    private static final String QUERY_5_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject5.json";
+    private static final String QUERY_6_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject6.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -298,6 +302,86 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         assertEquals("Diffences between actual Missed Notification response:\n" + responseAsString
                 + "\nand expected  Missed Notification response:\n" + expectedResponse,
                 expectedResponse, responseAsString);
+    }
+
+    @And("^Perform a query on created Aggregated object with filter$")
+    public void perform_valid_query_and_filter_on_aggregated_object() throws Throwable {
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\\\"\"}]";
+        final String entryPoint = "/query";
+
+        String query1 = FileUtils.readFileToString(new File(QUERY_3_FILE_NAME), "UTF-8");
+
+        List<String> queries = new ArrayList<>();
+        queries.add(query1);
+
+        for (String query : queries) {
+            LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
+            HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+            response = postRequest.setPort(applicationPort)
+                    .setHost(hostName)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .setEndpoint(entryPoint)
+                    .setBody(query)
+                    .performRequest();
+
+            LOGGER.debug(
+                    "Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: " + response.getBody().toString());
+
+            String responseAsString = response.getBody().toString();
+            int reponseStatusCode = response.getStatusCodeValue();
+
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponse,
+                    expectedResponse, responseAsString);
+        }
+    }
+
+    @And("^Perform a query and filter with part of path$")
+    public void perform__query_and_filter_with_part_of_path() throws Throwable {
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\\\"\"}]";
+        final String expectedResponse2 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"null\\\"\"}]";
+        final String expectedResponse3 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[33d05e6f-9bd9-4138-83b6-e20cc74680a3, 33d05e6f-9bd9-4138-83b6-e20cc74681b5]\\\"\"}]";
+        final String entryPoint = "/query";
+
+        List<String> expectedResponses = new ArrayList<String>();
+        expectedResponses.add(expectedResponse);
+        expectedResponses.add(expectedResponse2);
+        expectedResponses.add(expectedResponse3);
+
+        String query1 = FileUtils.readFileToString(new File(QUERY_4_FILE_NAME), "UTF-8");
+        String query2 = FileUtils.readFileToString(new File(QUERY_5_FILE_NAME), "UTF-8");
+        String query3 = FileUtils.readFileToString(new File(QUERY_6_FILE_NAME), "UTF-8");
+
+        List<String> queries = new ArrayList<>();
+        queries.add(query1);
+        queries.add(query2);
+        queries.add(query3);
+
+        int pos = 0;
+        for (String query : queries) {
+            LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
+            HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+            response = postRequest.setPort(applicationPort)
+                    .setHost(hostName)
+                    .addHeader("content-type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .setEndpoint(entryPoint)
+                    .setBody(query)
+                    .performRequest();
+
+            LOGGER.debug(
+                    "Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: " + response.getBody().toString());
+
+            String responseAsString = response.getBody().toString();
+            int reponseStatusCode = response.getStatusCodeValue();
+
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n" + expectedResponses.get(pos),
+                    expectedResponses.get(pos), responseAsString);
+
+            pos++;
+        }
     }
 
     /**

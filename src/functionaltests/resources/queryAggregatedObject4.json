@@ -1,0 +1,14 @@
+{
+  "criteria": {
+    "aggregatedObject.testCaseExecutions": {
+      "$elemMatch": {
+        "outcome.conclusion": "SUCCESSFUL",
+        "outcome.id": "TC5"
+      }
+    }
+  },
+  "options": {
+    "aggregatedObject.gav.groupId": "com.mycompany.myproduct"
+  },
+  "filter" : "incomplete_path_filter(@, 'time')"
+}

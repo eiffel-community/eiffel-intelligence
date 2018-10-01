@@ -18,6 +18,7 @@ package com.ericsson.ei.handlers;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,117 +46,120 @@ import lombok.Setter;
 @Component
 public class ObjectHandler {
 
-	static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
-	@Getter
-	@Setter
-	@Value("${aggregated.collection.name}")
-	private String collectionName;
+    static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 
-	@Getter
-	@Setter
-	@Value("${spring.data.mongodb.database}")
-	private String databaseName;
+    @Getter
+    @Setter
+    @Value("${aggregated.collection.name}")
+    private String collectionName;
 
-	@Setter
-	@Autowired
-	private MongoDBHandler mongoDbHandler;
+    @Getter
+    @Setter
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;
 
-	@Setter
-	@Autowired
-	private JmesPathInterface jmespathInterface;
+    @Setter
+    @Autowired
+    private MongoDBHandler mongoDbHandler;
 
-	@Setter
-	@Autowired
-	private EventToObjectMapHandler eventToObjectMap;
+    @Setter
+    @Autowired
+    private JmesPathInterface jmespathInterface;
 
-	@Setter
-	@Autowired
-	private SubscriptionHandler subscriptionHandler;
+    @Setter
+    @Autowired
+    private EventToObjectMapHandler eventToObjectMap;
 
-	@Getter
-	@Value("${aggregated.collection.ttlValue}")
-	private String ttlValue;
+    @Setter
+    @Autowired
+    private SubscriptionHandler subscriptionHandler;
 
-	public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
-		if (id == null) {
-			String idRules = rulesObject.getIdRule();
-			JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
-			id = idNode.textValue();
-		}
-		BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
-		log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+    @Getter
+    @Value("${aggregated.collection.ttlValue}")
+    private String ttlValue;
 
-		if (getTtl() > 0) {
-			mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
-		}
+    public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+        if (id == null) {
+            String idRules = rulesObject.getIdRule();
+            JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
+            id = idNode.textValue();
+        }
+        BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
+        log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
 
-		boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
-		if (result)
-			eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+        if (getTtl() > 0) {
+            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+        }
 
-		subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
-		return result;
-	}
+        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
+        postInsertActions(aggregatedObject, rulesObject, event, id, result);
+        return result;
+    }
 
-	public boolean insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
-		return insertObject(aggregatedObject.toString(), rulesObject, event, id);
-	}
+    public boolean insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
+        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    }
 
-	/**
-	 * This method uses previously locked in database aggregatedObject (lock was set
-	 * in lockDocument method) and modifies this document with the new values and
-	 * removes the lock in one query
-	 * 
-	 * @param aggregatedObject
-	 *            String to insert in database
-	 * @param rulesObject
-	 *            used for fetching id
-	 * @param event
-	 *            String to fetch id if it was not specified
-	 * @param id
-	 *            String
-	 * @return true if operation succeed
-	 */
-	public boolean updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
-		if (id == null) {
-			String idRules = rulesObject.getIdRule();
-			JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
-			id = idNode.textValue();
-		}
-		log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject + "\nEvent:\n" + event);
-		BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
-		String condition = "{\"_id\" : \"" + id + "\"}";
-		String documentStr = document.toString();
-		boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
-		if (result) {
-			eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-			subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
-		}
-		return result;
-	}
+    /**
+     * This method uses previously locked in database aggregatedObject (lock was
+     * set in lockDocument method) and modifies this document with the new
+     * values and removes the lock in one query
+     * 
+     * @param aggregatedObject
+     *            String to insert in database
+     * @param rulesObject
+     *            used for fetching id
+     * @param event
+     *            String to fetch id if it was not specified
+     * @param id
+     *            String
+     * @return true if operation succeed
+     */
+    public boolean updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+        if (id == null) {
+            String idRules = rulesObject.getIdRule();
+            JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
+            id = idNode.textValue();
+        }
+        log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject + "\nEvent:\n" + event);
+        BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
+        String condition = "{\"_id\" : \"" + id + "\"}";
+        String documentStr = document.toString();
+        boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        postInsertActions(aggregatedObject, rulesObject, event, id, result);
+        return result;
+    }
 
-	public boolean updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
-		return updateObject(aggregatedObject.toString(), rulesObject, event, id);
-	}
+    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id,
+            boolean performActions) {
+        if (performActions) {
+            eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+            subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+        }
+    }
 
-	public List<String> findObjectsByCondition(String condition) {
-		return mongoDbHandler.find(databaseName, collectionName, condition);
-	}
+    public boolean updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
+        return updateObject(aggregatedObject.toString(), rulesObject, event, id);
+    }
 
-	public String findObjectById(String id) {
-		String condition = "{\"_id\" : \"" + id + "\"}";
-		String document = findObjectsByCondition(condition).get(0);
-		return document;
-	}
+    public List<String> findObjectsByCondition(String condition) {
+        return mongoDbHandler.find(databaseName, collectionName, condition);
+    }
 
-	public List<String> findObjectsByIds(List<String> ids) {
-		List<String> objects = new ArrayList<>();
-		for (String id : ids) {
-			objects.add(findObjectById(id));
-		}
-		return objects;
-	}
+    public String findObjectById(String id) {
+        String condition = "{\"_id\" : \"" + id + "\"}";
+        String document = findObjectsByCondition(condition).get(0);
+        return document;
+    }
+
+    public List<String> findObjectsByIds(List<String> ids) {
+        List<String> objects = new ArrayList<>();
+        for (String id : ids) {
+            objects.add(findObjectById(id));
+        }
+        return objects;
+    }
 
 	public BasicDBObject prepareDocumentForInsertion(String id, String object) {
 		try {
@@ -178,66 +182,67 @@ public class ObjectHandler {
 		return null;
 	}
 
-	public JsonNode getAggregatedObject(String dbDocument) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
-			JsonNode objectDoc = documentJson.get("aggregatedObject");
-			return objectDoc;
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return null;
-	}
+    public JsonNode getAggregatedObject(String dbDocument) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
+            JsonNode objectDoc = documentJson.get("aggregatedObject");
+            return objectDoc;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
 
-	public String extractObjectId(JsonNode aggregatedDbObject) {
-		return aggregatedDbObject.get("_id").textValue();
-	}
+    public String extractObjectId(JsonNode aggregatedDbObject) {
+        return aggregatedDbObject.get("_id").textValue();
+    }
 
-	/**
-	 * Locks the document in database to achieve pessimistic locking. Method
-	 * findAndModify is used to optimize the quantity of requests towards database.
-	 * 
-	 * @param id
-	 *            String to search
-	 * @return String aggregated document
-	 */
-	public String lockDocument(String id) {
-		boolean documentLocked = true;
-		String conditionId = "{\"_id\" : \"" + id + "\"}";
-		String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
-		String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
-		ObjectMapper mapper = new ObjectMapper();
-		while (documentLocked == true) {
-			try {
-				JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
-				JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
-				((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
-				Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(),
-						documentJson.toString());
-				if (result != null) {
-					log.debug("DB locked by " + Thread.currentThread().getId() + " thread");
-					documentLocked = false;
-					return JSON.serialize(result);
-				}
-				// To Remove
-				log.debug("Waiting by " + Thread.currentThread().getId() + " thread");
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-		return null;
-	}
+    /**
+     * Locks the document in database to achieve pessimistic locking. Method
+     * findAndModify is used to optimize the quantity of requests towards
+     * database.
+     * 
+     * @param id
+     *            String to search
+     * @return String aggregated document
+     */
+    public String lockDocument(String id) {
+        boolean documentLocked = true;
+        String conditionId = "{\"_id\" : \"" + id + "\"}";
+        String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
+        String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
+        ObjectMapper mapper = new ObjectMapper();
+        while (documentLocked == true) {
+            try {
+                JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
+                JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
+                ((ObjectNode) queryCondition).set("$or", mapper.readValue(conditionLock, JsonNode.class));
+                Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(),
+                        documentJson.toString());
+                if (result != null) {
+                    log.debug("DB locked by " + Thread.currentThread().getId() + " thread");
+                    documentLocked = false;
+                    return JSON.serialize(result);
+                }
+                // To Remove
+                log.debug("Waiting by " + Thread.currentThread().getId() + " thread");
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return null;
+    }
 
-	public int getTtl() {
-		int ttl = 0;
-		if (ttlValue != null && !ttlValue.isEmpty()) {
-			try {
-				ttl = Integer.parseInt(ttlValue);
-			} catch (NumberFormatException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-		return ttl;
-	}
+    public int getTtl() {
+        int ttl = 0;
+        if (ttlValue != null && !ttlValue.isEmpty()) {
+            try {
+                ttl = Integer.parseInt(ttlValue);
+            } catch (NumberFormatException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return ttl;
+    }
 }

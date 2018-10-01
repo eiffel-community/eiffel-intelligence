@@ -221,7 +221,7 @@ public class InformSubscription {
         document.put("subscriptionName", subscriptionName);
         document.put("notificationMeta", notificationMeta);
         document.put("Time", date);
-        document.put("AggregatedObject", JSON.parse(aggregatedObject));
+        document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
         return document.toString();
     }
 

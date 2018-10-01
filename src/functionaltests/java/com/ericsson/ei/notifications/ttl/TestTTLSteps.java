@@ -3,7 +3,9 @@ package com.ericsson.ei.notifications.ttl;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.InformSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -24,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
@@ -33,6 +37,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,198 +47,286 @@ import static org.mockserver.model.HttpRequest.request;
 
 @Ignore
 @TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1" })
+		"notification.failAttempt:1" })
 @ContextConfiguration(initializers = TestContextInitializer.class)
 public class TestTTLSteps extends FunctionalTestBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
-    private static final String BASE_URL = "localhost";
-    private static final String ENDPOINT = "/missed_notification";
-    private static final String SUBSCRIPTION_NAME = "Subscription_1";
-    private static final String AGGREGATED_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
+	private static final String BASE_URL = "localhost";
+	private static final String ENDPOINT = "/missed_notification";
+	private static final String SUBSCRIPTION_NAME = "Subscription_1";
+	private static final String AGGREGATED_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+	private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";
 
-    private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/SubscriptionObject.json";
+	@LocalServerPort
+	private int applicationPort;
+	private String hostName = getHostName();
+	private HttpRequest httpRequest;
+	private ResponseEntity<String> response;
 
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedObject.json";
+	private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/SubscriptionObject.json";
 
-    private static final String MISSED_NOTIFICATION_FILE_PATH = "src/test/resources/MissedNotification.json";
+	private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedObject.json";
 
-    private static JsonNode subscriptionObject;
+	private static final String MISSED_NOTIFICATION_FILE_PATH = "src/test/resources/MissedNotification.json";
 
-    private MockServerClient mockServerClient;
-    private ClientAndServer clientAndServer;
+	private static final String SUBSCRIPTION_FILE_PATH_CREATION = "src/functionaltests/resources/subscription_single_ttlTest.json";
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDatabase;
+	private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollection;
+	private static JsonNode subscriptionObject;
 
-    @Value("${spring.data.mongodb.database}")
-    private String dataBase;
+	private MockServerClient mockServerClient;
+	private ClientAndServer clientAndServer;
 
-    @Value("${aggregated.collection.name}")
-    private String collection;
+	@Value("${missedNotificationDataBaseName}")
+	private String missedNotificationDatabase;
 
-    @Autowired
-    private MongoDBHandler mongoDBHandler;
+	@Value("${missedNotificationCollectionName}")
+	private String missedNotificationCollection;
 
-    @Autowired
-    private InformSubscription informSubscription;
+	@Value("${spring.data.mongodb.database}")
+	private String dataBase;
 
-    @Before("@TestNotificationRetries")
-    public void beforeScenario() {
-        setUpMockServer();
-    }
+	@Value("${aggregated.collection.name}")
+	private String collection;
 
-    @After("@TestNotificationRetries")
-    public void afterScenario() throws IOException {
-        LOGGER.debug("Shutting down mock servers.");
-        mockServerClient.close();
-        clientAndServer.stop();
-    }
+	@Autowired
+	private MongoDBHandler mongoDBHandler;
 
-    // START TEST SCENARIOS
+	@Autowired
+	private InformSubscription informSubscription;
 
-    @Given("^Missed notification is created in database with index \"([A-Za-z0-9_]+)\"$")
-    public void missed_notification_is_created_in_database(String indexName) throws IOException, ParseException {
+	@Before("@TestNotificationRetries")
+	public void beforeScenario() {
+		setUpMockServer();
+	}
 
-        LOGGER.debug("Starting scenario @TestTTL");
-        JsonNode missedNotification = eventManager.getJSONFromFile(MISSED_NOTIFICATION_FILE_PATH);
-        BasicDBObject missedNotificationDocument = prepareDocumentWithIndex(missedNotification, indexName);
+	@After("@TestNotificationRetries")
+	public void afterScenario() throws IOException {
+		LOGGER.debug("Shutting down mock servers.");
+		mockServerClient.close();
+		clientAndServer.stop();
+	}
 
-        // setting 1 second TTL on index in db
-        mongoDBHandler.createTTLIndex(missedNotificationDatabase, missedNotificationCollection, indexName, 1);
-        Boolean isInserted = mongoDBHandler.insertDocument(missedNotificationDatabase, missedNotificationCollection,
-                missedNotificationDocument.toString());
-        assertEquals("Failed to create missed notification in database", true, isInserted);
+	// START TEST SCENARIOS
 
-        // verifying that document exists in mongodb
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
-        List<String> result = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+	@Given("^Missed notification is created in database with index \"([A-Za-z0-9_]+)\"$")
+	public void missed_notification_is_created_in_database(String indexName) throws IOException, ParseException {
 
-        assertEquals(1, result.size());
-        assertEquals("Could not find a missed notification matching the condition: " + condition,
-                "\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
-    }
+		LOGGER.debug("Starting scenario @TestTTL");
+		JsonNode missedNotification = eventManager.getJSONFromFile(MISSED_NOTIFICATION_FILE_PATH);
+		BasicDBObject missedNotificationDocument = prepareDocumentWithIndex(missedNotification, indexName);
 
-    @Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
-    public void aggregated_object_is_created_in_database(String indexName) throws IOException, ParseException {
+		// setting 1 second TTL on index in db
+		mongoDBHandler.createTTLIndex(missedNotificationDatabase, missedNotificationCollection, indexName, 1);
+		Boolean isInserted = mongoDBHandler.insertDocument(missedNotificationDatabase, missedNotificationCollection,
+				missedNotificationDocument.toString());
+		assertEquals("Failed to create missed notification in database", true, isInserted);
 
-        JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
-        BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
+		// verifying that document exists in mongodb
+		String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
+		List<String> result = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
 
-        // setting 1 second TTL on index in db
-        mongoDBHandler.createTTLIndex(dataBase, collection, indexName, 1);
-        Boolean isInserted = mongoDBHandler.insertDocument(dataBase, collection, aggregatedDocument.toString());
-        assertEquals("Failed to create aggregated object in database", true, isInserted);
+		assertEquals(1, result.size());
+		assertEquals("Could not find a missed notification matching the condition: " + condition,
+				"\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
+	}
 
-        // verifying that document exists in mongodb
-        String condition = "{\"id\" : \"" + AGGREGATED_ID + "\"}";
-        List<String> result = mongoDBHandler.find(dataBase, collection, condition);
-        assertEquals(1, result.size());
-        assertEquals("Could not find an aggregated object matching the condition: " + condition,
-                "\"" + AGGREGATED_ID + "\"", dbManager.getValueFromQuery(result, "id", 0));
-    }
+	@Given("^Aggregated object is created in database with index \"([A-Za-z0-9_]+)\"$")
+	public void aggregated_object_is_created_in_database(String indexName) throws IOException, ParseException {
 
-    @Then("^\"([^\"]*)\" document has been deleted from \"([A-Za-z0-9_]+)\" database$")
-    public void document_has_been_deleted_from_database(String collection, String database)
-            throws InterruptedException {
+		JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+		BasicDBObject aggregatedDocument = prepareDocumentWithIndex(aggregatedObject, indexName);
 
-        LOGGER.debug("Checking " + collection + " in " + database);
-        long maxTime = System.currentTimeMillis() + 60000;
-        List<String> result = null;
+		// setting 1 second TTL on index in db
+		mongoDBHandler.createTTLIndex(dataBase, collection, indexName, 1);
+		Boolean isInserted = mongoDBHandler.insertDocument(dataBase, collection, aggregatedDocument.toString());
+		assertEquals("Failed to create aggregated object in database", true, isInserted);
 
-        while (System.currentTimeMillis() < maxTime) {
-            result = mongoDBHandler.getAllDocuments(database, collection);
+		// verifying that document exists in mongodb
+		String condition = "{\"id\" : \"" + AGGREGATED_ID + "\"}";
+		List<String> result = mongoDBHandler.find(dataBase, collection, condition);
+		assertEquals(1, result.size());
+		assertEquals("Could not find an aggregated object matching the condition: " + condition,
+				"\"" + AGGREGATED_ID + "\"", dbManager.getValueFromQuery(result, "id", 0));
+	}
 
-            if (result.isEmpty()) {
-                break;
-            }
-            TimeUnit.SECONDS.sleep(2);
-        }
-        assertEquals("Database is not empty.", true, result.isEmpty());
-    }
+	@Then("^\"([^\"]*)\" document has been deleted from \"([A-Za-z0-9_]+)\" database$")
+	public void document_has_been_deleted_from_database(String collection, String database)
+			throws InterruptedException {
 
-    // SCENARIO @TestNotificationRetries
+		LOGGER.debug("Checking " + collection + " in " + database);
+		long maxTime = System.currentTimeMillis() + 60000;
+		List<String> result = null;
 
-    @Given("^Subscription is created$")
-    public void create_subscription_object() throws IOException, JSONException {
+		while (System.currentTimeMillis() < maxTime) {
+			result = mongoDBHandler.getAllDocuments(database, collection);
 
-        LOGGER.debug("Starting scenario @TestNotificationRetries.");
-        mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
+			if (result.isEmpty()) {
+				break;
+			}
+			TimeUnit.SECONDS.sleep(2);
+		}
+		assertEquals("Database is not empty.", true, result.isEmpty());
+	}
 
-        String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
+	// SCENARIO @TestNotificationRetries
 
-        // replace with port of running mock server
-        subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
+	@Given("^Subscription is created$")
+	public void create_subscription_object() throws IOException, JSONException {
 
-        subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
-        assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
-    }
+		LOGGER.debug("Starting scenario @TestNotificationRetries.");
+		mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
 
-    @When("^I want to inform subscriber$")
-    public void inform_subscriber() throws IOException {
-        JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
-        informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
-    }
+		String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
-    @Then("^Verify that request has been retried")
-    public void verify_request_has_been_made() throws JSONException {
+		// replace with port of running mock server
+		subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
 
-        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
-        JSONArray requests = new JSONArray(retrievedRequests);
+		subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
+		assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
+	}
 
-        // received requests include number of retries
-        assertEquals(2, requests.length());
-    }
+	@When("^I want to inform subscriber$")
+	public void inform_subscriber() throws IOException {
+		JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+		informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
+	}
 
-    @Then("^Check missed notification is in database$")
-    public void check_missed_notification_is_in_database() {
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
-        List<String> result = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+	@Then("^Verify that request has been retried")
+	public void verify_request_has_been_made() throws JSONException {
 
-        assertEquals(1, result.size());
-        assertEquals("Could not find a missed notification matching the condition: " + condition,
-                "\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
-    }
+		String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
+		JSONArray requests = new JSONArray(retrievedRequests);
 
-    /**
-     * Setting up mock server to receive calls on one endpoint and respond with 500
-     * to trigger retries of POST request
-     */
-    private void setUpMockServer() {
+		// received requests include number of retries
+		assertEquals(2, requests.length());
+	}
 
-        int port = SocketUtils.findAvailableTcpPort();
-        clientAndServer = ClientAndServer.startClientAndServer(port);
-        LOGGER.debug("Setting up mockServerClient with port " + port);
-        mockServerClient = new MockServerClient(BASE_URL, port);
+	@Then("^Check missed notification is in database$")
+	public void check_missed_notification_is_in_database() {
+		String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
+		List<String> result = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
 
-        // set up expectations on mock server to get calls on this endpoint
-        mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
-                .respond(HttpResponse.response().withStatusCode(500));
-    }
+		assertEquals(1, result.size());
+		assertEquals("Could not find a missed notification matching the condition: " + condition,
+				"\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
+	}
+	
+	@Given("^A subscription is created  at the end point \"([^\"]*)\" with non-existent notification meta$")
+	public void a_subscription_is_created_at_the_end_point_with_non_existent_notification_meta(String endPoint)
+			throws Throwable {
+		String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH_CREATION), "UTF-8");
+		JSONArray jsonArr = new JSONArray(readFileToString);
+		httpRequest = new HttpRequest(HttpMethod.POST);
+		httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
+				.addHeader("content-type", "application/json").addHeader("Accept", "application/json")
+				.setBody(jsonArr.toString());
+		response = httpRequest.performRequest();
+	}
 
-    /**
-     * Add a field of date-type to be used as index in database
-     *
-     * @param fileContent
-     *            File containing JSON string
-     * @param fieldName
-     *            The name of the field to be inserted
-     * @return A new BasicDBObject document
-     * @throws ParseException
-     */
-    private BasicDBObject prepareDocumentWithIndex(JsonNode fileContent, String fieldName) throws ParseException {
+	@Given("^I send an Eiffel event and consequently aggregated object and thereafter missed notification is created$")
+	public void i_send_an_Eiffel_event_and_consequently_aggregated_object_and_thereafter_missed_notification_is_created()
+			throws Throwable {
+		LOGGER.debug("Sending an Eiffel event");
+		List<String> eventNamesToSend = getEventNamesToSend();
+		eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
+		List<String> missingEventIds = dbManager
+				.verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+		assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+				missingEventIds.size());
+		LOGGER.debug("Eiffel event is sent");
 
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String time = dateFormat.format(date);
-        date = dateFormat.parse(time);
+		// verify that aggregated object is created and present in db
+		LOGGER.debug("Checking presence of aggregated Object");
+		List<String> allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+		assertEquals(1, allObjects.size());
 
-        BasicDBObject document = new BasicDBObject();
-        document = document.parse(fileContent.toString());
-        document.put(fieldName, date);
+		// verifying that missed notification is created and present in db
+		String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+		long maxTime = System.currentTimeMillis() + 3000;
+		List<String> notificationExit = null;
+		LOGGER.debug("Checking presence of missnotification in db");
+		while (System.currentTimeMillis() < maxTime) {
+			notificationExit = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+			if (!notificationExit.isEmpty()) {
+				break;
+			}
+		}
+		assertEquals(1, notificationExit.size());
+	}
 
-        return document;
-    }
+	@Then("^Based on ttl Notification document has been deleted from the database$")
+	public void based_on_ttl_Notification_document_has_been_deleted_from_the_database() throws Throwable {
+		long maxTime = System.currentTimeMillis() + 60000;
+		List<String> notificationExit = null;
+		String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+		LOGGER.debug("Checking deletion of notification document in db");
+		while (System.currentTimeMillis() < maxTime) {
+			notificationExit = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+
+			if (notificationExit.isEmpty()) {
+				break;
+			}
+		}
+		assertEquals(0, notificationExit.size());
+	}
+
+	@Then("^Aggregated_object document has been deleted from the database$")
+	public void aggregated_object_document_has_been_deleted_from_the_database() throws Throwable {
+		LOGGER.debug("Checking delition of aggregated object in db");
+		long maxTime = System.currentTimeMillis() + 60000;
+		List<String> allObjects = null;
+		allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+		assertEquals("Database is not empty.", true, allObjects.isEmpty());
+	}
+
+	/**
+	 * Setting up mock server to receive calls on one endpoint and respond with 500
+	 * to trigger retries of POST request
+	 */
+	private void setUpMockServer() {
+
+		int port = SocketUtils.findAvailableTcpPort();
+		clientAndServer = ClientAndServer.startClientAndServer(port);
+		LOGGER.debug("Setting up mockServerClient with port " + port);
+		mockServerClient = new MockServerClient(BASE_URL, port);
+
+		// set up expectations on mock server to get calls on this endpoint
+		mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
+				.respond(HttpResponse.response().withStatusCode(500));
+	}
+
+	/**
+	 * Add a field of date-type to be used as index in database
+	 *
+	 * @param fileContent
+	 *            File containing JSON string
+	 * @param fieldName
+	 *            The name of the field to be inserted
+	 * @return A new BasicDBObject document
+	 * @throws ParseException
+	 */
+	private BasicDBObject prepareDocumentWithIndex(JsonNode fileContent, String fieldName) throws ParseException {
+
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		String time = dateFormat.format(date);
+		date = dateFormat.parse(time);
+
+		BasicDBObject document = new BasicDBObject();
+		document = document.parse(fileContent.toString());
+		document.put(fieldName, date);
+
+		return document;
+	}	
+
+	/**
+	 * Events used in the aggregation.
+	 */
+	protected List<String> getEventNamesToSend() {
+		List<String> eventNames = new ArrayList<>();
+		eventNames.add("event_EiffelArtifactCreatedEvent_3");
+		return eventNames;
+	}
 }

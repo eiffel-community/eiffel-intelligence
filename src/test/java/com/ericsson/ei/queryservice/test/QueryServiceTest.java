@@ -23,6 +23,7 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
 import java.io.File;
@@ -122,7 +123,7 @@ public class QueryServiceTest {
                 .insertOne(missedDocument);
         LOG.debug("Document Inserted in missed Notification Database");
 
-        JsonNode preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
+        BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)

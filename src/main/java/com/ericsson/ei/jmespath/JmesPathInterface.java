@@ -43,6 +43,7 @@ public class JmesPathInterface {
         FunctionRegistry defaultFunctions = FunctionRegistry.defaultRegistry();
         FunctionRegistry customFunctions = defaultFunctions.extend(new DiffFunction());
         customFunctions = customFunctions.extend(new IncompletePathContainsFunction());
+        customFunctions = customFunctions.extend(new IncompletePathFilterFunction());
         jmespath = new JacksonRuntime(customFunctions);
     }
 

@@ -32,22 +32,23 @@ import org.junit.Test;
 public class TestJmesPathInterface {
     private JmesPathInterface unitUnderTest = new JmesPathInterface();
     ObjectMapper mapper = new ObjectMapper();
+
     private static final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private static final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
     private static final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
     private static final String extractionRuleFilePath = "src/test/resources/ExtractionRule.txt";
 
-    private static String jsonInput;
-    private static String jsonOutput;
-    private static String extractionRulesTest;
-    private static String jsonDiffInput;
+    private static String jsonInput = "";
+    private static String extractionRulesTest = "";
+    private static String jsonOutput = "";
+    private static String jsonInputDiff = "";
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
         jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
         extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
-        jsonDiffInput = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
+        jsonInputDiff = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
     }
 
     @Test
@@ -60,10 +61,10 @@ public class TestJmesPathInterface {
     @Test
     public void testDiffFunction() throws Exception {
         JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
-
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
-        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonDiffInput);
-        assertEquals(expectedResult, result);
+        JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInputDiff);
+
+        assertEquals(result, expectedResult);
     }
 
     @Test
@@ -73,7 +74,6 @@ public class TestJmesPathInterface {
         ((ObjectNode) literalJson).put("eventId", "b6ef1hd-25fh-4dh7-b9vd-87688e65de47");
         String ruleString = literalJson.toString();
         ruleString = "`" + ruleString + "`";
-        JsonNode expectedResult = unitUnderTest.runRuleOnEvent(ruleString, input.toString());
-        assertEquals(expectedResult, literalJson);
+        unitUnderTest.runRuleOnEvent(ruleString, input.toString());
     }
 }

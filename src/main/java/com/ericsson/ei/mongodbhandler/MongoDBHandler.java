@@ -318,7 +318,7 @@ public class MongoDBHandler {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
-
+    
     public void dropCollection(String dataBaseName, String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
         MongoCollection<Document> mongoCollection = db.getCollection(collectionName);

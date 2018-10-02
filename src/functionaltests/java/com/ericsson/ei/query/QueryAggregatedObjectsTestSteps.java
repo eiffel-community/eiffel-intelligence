@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,6 +47,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final String QUERY_4_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject4.json";
     private static final String QUERY_5_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject5.json";
     private static final String QUERY_6_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject6.json";
+    private static final String QUERY_7_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject7.json";
+
 
     @LocalServerPort
     private int applicationPort;
@@ -70,9 +74,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private String missedNotificationObj;
 
     private ObjectMapper objMapper;
-
+    
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
+        objMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 
         try {
             aggrObj = FileUtils.readFileToString(new File(AGGREGATED_OBJ_JSON_PATH), "UTF-8");
@@ -83,11 +88,19 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             e.printStackTrace();
         }
     }
-
+    
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
-        LOGGER.debug("Creating aggregated object in MongoDb");
-        assertEquals(true, createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj));
+        List<String> aggregatedObject = mongoDBHandler.find(
+                eiDatabaseName, aggrCollectionName, "{\"aggregatedObject.id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}"
+        );
+        
+        boolean aggregatedObjectExists = aggregatedObject.size() > 0;
+        if (!aggregatedObjectExists) {
+            aggregatedObjectExists = createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
+        }
+        
+        assertEquals(true, aggregatedObjectExists);
     }
 
     @Given("^Missed Notification object is created$")
@@ -384,6 +397,40 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         }
     }
 
+    @Then("^perform query to retrieve and filter out confidence level information$")
+    public void perform_query_to_retrieve_and_filter_out_confidence_level_information() throws Throwable {
+        final String aggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+        final String entryPoint = "/query";
+
+        String query = FileUtils.readFileToString(new File(QUERY_7_FILE_NAME), "UTF-8");
+
+        LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
+        
+        JsonNode queryJson = objMapper.readValue(query, JsonNode.class);
+        String formatedQuery = queryJson.toString();
+
+        HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+        response = postRequest.setPort(applicationPort)
+                .setHost(hostName)
+                .addHeader("content-type", "application/json")
+                .addHeader("Accept", "application/json")
+                .setEndpoint(entryPoint)
+                .setBody(formatedQuery)
+                .performRequest();
+
+        LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +
+                           "\nResponse: " + response.getBody().toString());     
+        
+        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+        JsonNode aggrObjResponse = objMapper.readTree(jsonNodeResult.get(0).get(aggrId).asText());
+
+        JsonNode confidenceLevels = aggrObjResponse.get("confidenceLevels").get(1);
+
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+        assertEquals("Failed to retrieve the latest confidence level.","readyForDelivery", confidenceLevels.get("name").asText());
+        assertEquals("Failed to retrieve the latest confidence level.","SUCCESS", confidenceLevels.get("value").asText());
+    }
+    
     /**
      * Method that creates a document in MongoDb database.
      *
@@ -400,5 +447,4 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                      + "\nDocument to be inserted\n: " + objToBeInserted);
         return mongoDBHandler.insertDocument(databaseName, collectionName, objToBeInserted);
     }
-
 }

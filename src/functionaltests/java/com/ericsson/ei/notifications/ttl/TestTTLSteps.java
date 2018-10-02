@@ -95,8 +95,6 @@ public class TestTTLSteps extends FunctionalTestBase {
 		clientAndServer.stop();
 	}
 
-	// START TEST SCENARIOS
-	// SCENARIO @TestNotificationRetries
 
 	@Given("^Subscription is created$")
 	public void create_subscription_object() throws IOException, JSONException {

@@ -171,10 +171,9 @@ public class ObjectHandler {
 				document.put("Time", DateUtils.getDate());
 			} catch (ParseException e) {
 				log.error(e.getMessage(), e);
-			}
-			return document;
+			}			
 		}
-		return null;
+		return document;
 	}
 
 	public JsonNode getAggregatedObject(String dbDocument) {

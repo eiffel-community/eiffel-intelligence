@@ -76,6 +76,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
+    private boolean aggregatedObjectIsCreated = false;
+    
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
         objMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
@@ -98,8 +100,12 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
-        LOGGER.debug("Creating aggregated object in MongoDb");
-        assertEquals(true, createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj));
+        if (aggregatedObjectIsCreated == false) {
+            LOGGER.debug("Creating aggregated object in MongoDb");
+            aggregatedObjectIsCreated = createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
+        }
+        
+        assertEquals(true, aggregatedObjectIsCreated);
     }
 
     @Given("^Missed Notification object is created$")

@@ -10,7 +10,11 @@ import org.slf4j.LoggerFactory;
 
 
 public class DateUtils {
-
+	/**
+	   * This method creates the date object with 
+	   * the current date for appending in the document
+	   * object before inserting it into mongoDB.
+	   */
 	public static Date getDate() throws ParseException {
 		Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
 		Date date = new Date();

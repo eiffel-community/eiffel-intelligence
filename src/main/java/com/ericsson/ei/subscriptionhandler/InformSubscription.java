@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
+import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,6 +41,7 @@ import javax.mail.MessagingException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -209,18 +211,14 @@ public class InformSubscription {
      * @return String
      */
     private String prepareMissedNotification(String aggregatedObject, String subscriptionName, String notificationMeta) {
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String time = dateFormat.format(date);
-        try {
-            date = dateFormat.parse(time);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);
         document.put("notificationMeta", notificationMeta);
-        document.put("Time", date);
+        try {
+			document.put("Time", DateUtils.getDate());
+		} catch (ParseException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
         document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
         return document.toString();
     }

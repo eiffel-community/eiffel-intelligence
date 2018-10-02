@@ -318,11 +318,6 @@ public class MongoDBHandler {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
-
-    public void createCollection(String dataBaseName, String collectionName) {
-        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        db.createCollection(collectionName);
-    }
     
     public void dropCollection(String dataBaseName, String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);

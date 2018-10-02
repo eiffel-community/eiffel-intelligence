@@ -398,7 +398,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Then("^perform query to retrieve and filter out confidence level information$")
     public void perform_query_to_retrieve_and_filter_out_confidence_level_information() throws Throwable {
-    	final String aggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+        final String aggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
         final String entryPoint = "/query";
 
         String query = FileUtils.readFileToString(new File(QUERY_7_FILE_NAME), "UTF-8");
@@ -428,7 +428,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
         assertEquals("Failed to retrieve the latest confidence level.","readyForDelivery", confidenceLevels.get("name").asText());
         assertEquals("Failed to retrieve the latest confidence level.","SUCCESS", confidenceLevels.get("value").asText());
-        
     }
     
     /**

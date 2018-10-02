@@ -74,8 +74,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private String missedNotificationObj;
 
     private ObjectMapper objMapper;
-
-    private boolean aggregatedObjectIsCreated = false;
     
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
@@ -93,12 +91,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
-        if (aggregatedObjectIsCreated == false) {
-            LOGGER.debug("Creating aggregated object in MongoDb");
-            aggregatedObjectIsCreated = createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
+        List<String> aggregatedObject = mongoDBHandler.find(
+                eiDatabaseName, aggrCollectionName, "{\"aggregatedObject.id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}"
+        );
+        
+        boolean aggregatedObjectExists = aggregatedObject.size() > 0;
+        if (!aggregatedObjectExists) {
+            aggregatedObjectExists = createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
         }
         
-        assertEquals(true, aggregatedObjectIsCreated);
+        assertEquals(true, aggregatedObjectExists);
     }
 
     @Given("^Missed Notification object is created$")

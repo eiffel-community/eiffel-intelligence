@@ -91,12 +91,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             e.printStackTrace();
         }
     }
-
-    @Before
-    public void beforeScenario() throws IOException {
-    	LOGGER.debug("Dropping collection in MongoDb.\nCollection: " + aggrCollectionName);
-    	mongoDBHandler.dropCollection(eiDatabaseName, aggrCollectionName);
-    }
     
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {

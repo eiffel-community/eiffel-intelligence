@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
@@ -75,5 +76,26 @@ public class TestJmesPathInterface {
         String ruleString = literalJson.toString();
         ruleString = "`" + ruleString + "`";
         unitUnderTest.runRuleOnEvent(ruleString, input.toString());
+    }
+
+    @Test
+    public void testJsonNodeEmpty() throws Exception {
+        JsonNode literalJson = mapper.readTree("[[],[\"int\",\"3\"]]");
+        int actualSize = literalJson.size();
+        Iterator<String> fields = literalJson.fieldNames();
+
+        JsonNode literalJson1 = mapper.readTree("[[[], []]]");
+        int actualSize1 = literalJson1.size();
+        Iterator<String> fields1 = literalJson1.fieldNames();
+
+        JsonNode literalJson2 = mapper.readTree("[[{}]]");
+        int actualSize2 = literalJson2.size();
+        Iterator<String> fields2 = literalJson2.fieldNames();
+
+        JsonNode literalJson3 = mapper.readTree("[]");
+        int actualSize3 = literalJson3.size();
+        Iterator<String> fields3 = literalJson3.fieldNames();
+
+        int wait = 0;
     }
 }

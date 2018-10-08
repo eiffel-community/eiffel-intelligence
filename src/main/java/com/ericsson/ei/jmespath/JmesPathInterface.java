@@ -52,9 +52,9 @@ public class JmesPathInterface {
         if (input == null) {
             input = "";
         }
-
-        JsonNode result = null;
+        
         ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode result = objectMapper.createObjectNode();
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
             event = objectMapper.readValue(input, JsonNode.class);

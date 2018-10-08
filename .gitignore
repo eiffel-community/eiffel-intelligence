@@ -14,6 +14,7 @@
 # Maven
 log/
 target/
+bin/
 
 # Others
 derby.log

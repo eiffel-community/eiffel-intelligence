@@ -16,19 +16,17 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.util.HashMap;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
@@ -50,9 +48,9 @@ public class RunSubscription {
     private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
 
     /**
-     * This method matches every condition specified in the subscription Object
-     * and if all conditions are matched then only the aggregatedObject is
-     * eligible for notification via e-mail or REST POST.
+     * This method matches every condition specified in the subscription Object and
+     * if all conditions are matched then only the aggregatedObject is eligible for
+     * notification via e-mail or REST POST.
      *
      * (AND between conditions in requirements, "OR" between requirements with
      * conditions)
@@ -107,12 +105,14 @@ public class RunSubscription {
             while (conditionIterator.hasNext()) {
                 String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
                 JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
-                boolean resultNotEqualsToNull = !result.toString().equals("null");
-                boolean resultNotEqualsToFalse = !result.toString().equals("false");
-                boolean resultNotEmpty = !result.toString().equals("[]");
-                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fullfullment:" 
-                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull 
-                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse 
+                String resultString = result.toString();
+                resultString = destringify(resultString);
+                boolean resultNotEqualsToNull = !resultString.equals("null");
+                boolean resultNotEqualsToFalse = !resultString.equals("false");
+                boolean resultNotEmpty = !resultString.equals("");
+                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fullfullment:"
+                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull
+                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse
                         + "' '\nResult not empty' is '" + resultNotEmpty + "'");
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
@@ -139,5 +139,14 @@ public class RunSubscription {
         LOGGER.info("The final value of conditionFulfilled is : " + conditionFulfilled);
 
         return conditionFulfilled;
+    }
+
+    public static String destringify(String str) {
+        str = str.replaceAll("\"", "");
+        str = str.replaceAll("\\{", "");
+        str = str.replaceAll("\\}", "");
+        str = str.replaceAll("\\]", "");
+        str = str.replaceAll("\\[", "");
+        return str;
     }
 }

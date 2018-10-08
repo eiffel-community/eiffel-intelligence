@@ -1,5 +1,11 @@
 {
     "criteria": {   
+         "object.testCaseExecutions": {
+             "$elemMatch": {
+                 "outcome.conclusion": "SUCCESSFUL",
+                 "outcome.id": "TC5"
+             }
+         },
          "$where" : "function() {
              var searchKey = 'id';
              var value = 'JIRA-1234';        
@@ -19,6 +25,5 @@
                  return false;
              }   
          }"     
-    },
-    "filter": "{id: aggregatedObject.id, artifactGav:aggregatedObject.gav, confidenceLevels:aggregatedObject.confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
+    }
 }

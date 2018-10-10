@@ -131,8 +131,8 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
-       log.debug(" mergeRules are : " + mergeRule);
-       log.debug(" originObject is : " + originObject);
+        log.debug(" mergeRules are : " + mergeRule);
+        log.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.getString(0);
@@ -208,6 +208,8 @@ public class MergePrepare {
 
     public String getMergePath(String originObject, String mergeRule, boolean skipPathSearch) {
         String mergePath = "";
+        if (mergeRule == null || mergeRule.isEmpty())
+            return mergePath;
         String stringObject = "";
         String stringRule = "";
         JSONObject objectJSONObject = null;
@@ -344,8 +346,8 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in
-     * the path before doing the check.
+     * This method can not be generalized since it removes the last element in the
+     * path before doing the check.
      * 
      * @param originObject
      * @param path
@@ -362,8 +364,8 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in
-     * the path before doing the check.
+     * This method can not be generalized since it removes the last element in the
+     * path before doing the check.
      * 
      * @param originObject
      * @param path

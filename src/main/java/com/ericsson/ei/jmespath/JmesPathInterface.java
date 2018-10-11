@@ -18,6 +18,7 @@ package com.ericsson.ei.jmespath;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +53,9 @@ public class JmesPathInterface {
         if (input == null) {
             input = "";
         }
-        
+
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode result = objectMapper.createObjectNode();
+        JsonNode result = JsonNodeFactory.instance.nullNode();
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
             event = objectMapper.readValue(input, JsonNode.class);

@@ -48,18 +48,21 @@ public class JmesPathInterface {
         jmespath = new JacksonRuntime(customFunctions);
     }
 
-    public JsonNode runRuleOnEvent(String rule, String input) {
-        JsonNode event = null;
-        if (input == null) {
-            input = "";
+    public JsonNode runRuleOnEvent(String rule, String event) {
+        JsonNode result = JsonNodeFactory.instance.nullNode();
+        String inputs[] = { rule, event };
+        for (String input : inputs) {
+            if (input == null || input == "") {
+                return result;
+            }
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode result = JsonNodeFactory.instance.nullNode();
+
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
-            event = objectMapper.readValue(input, JsonNode.class);
-            result = expression.search(event);
+            JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
+            result = expression.search(eventJson);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

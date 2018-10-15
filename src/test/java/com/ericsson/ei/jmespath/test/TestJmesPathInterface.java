@@ -98,4 +98,13 @@ public class TestJmesPathInterface {
 
         int wait = 0;
     }
+
+    @Test
+    public void testEmptyInputs() throws Exception {
+        JsonNode result1 = unitUnderTest.runRuleOnEvent("", "");
+        JsonNode result2 = unitUnderTest.runRuleOnEvent("", "{\"test\" :\"test\"}");
+        JsonNode result3 = unitUnderTest.runRuleOnEvent("{\"test\" :\"test\"}", "");
+
+        boolean wait = true;
+    }
 }

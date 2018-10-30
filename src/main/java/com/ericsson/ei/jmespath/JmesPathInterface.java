@@ -18,6 +18,7 @@ package com.ericsson.ei.jmespath;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,22 +43,26 @@ public class JmesPathInterface {
     public JmesPathInterface() {
         FunctionRegistry defaultFunctions = FunctionRegistry.defaultRegistry();
         FunctionRegistry customFunctions = defaultFunctions.extend(new DiffFunction());
+        customFunctions = customFunctions.extend(new IncompletePathContainsFunction());
         customFunctions = customFunctions.extend(new IncompletePathFilterFunction());
         jmespath = new JacksonRuntime(customFunctions);
     }
 
-    public JsonNode runRuleOnEvent(String rule, String input) {
-        JsonNode event = null;
-        if (input == null) {
-            input = "";
+    public JsonNode runRuleOnEvent(String rule, String event) {
+        JsonNode result = JsonNodeFactory.instance.nullNode();
+        String inputs[] = { rule, event };
+        for (String input : inputs) {
+            if (input == null || input == "") {
+                return result;
+            }
         }
 
-        JsonNode result = null;
         ObjectMapper objectMapper = new ObjectMapper();
+
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
-            event = objectMapper.readValue(input, JsonNode.class);
-            result = expression.search(event);
+            JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
+            result = expression.search(eventJson);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
         }

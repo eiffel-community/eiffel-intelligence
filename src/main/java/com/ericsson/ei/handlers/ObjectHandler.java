@@ -16,9 +16,17 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +55,7 @@ import lombok.Setter;
 public class ObjectHandler {
 
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
+    static Logger log = LoggerFactory.getLogger(ObjectHandler.class);
 
     @Getter
     @Setter
@@ -102,10 +110,10 @@ public class ObjectHandler {
     }
 
     /**
-     * This method uses previously locked in database aggregatedObject (lock was
-     * set in lockDocument method) and modifies this document with the new
-     * values and removes the lock in one query
-     * 
+     * This method uses previously locked in database aggregatedObject (lock was set
+     * in lockDocument method) and modifies this document with the new values and
+     * removes the lock in one query
+     *
      * @param aggregatedObject
      *            String to insert in database
      * @param rulesObject
@@ -149,38 +157,37 @@ public class ObjectHandler {
 
     public String findObjectById(String id) {
         String condition = "{\"_id\" : \"" + id + "\"}";
-        String document = findObjectsByCondition(condition).get(0);
+        String document = "";
+        List<String> documents = findObjectsByCondition(condition);
+        if (!documents.isEmpty())
+            document = documents.get(0);
         return document;
     }
 
     public List<String> findObjectsByIds(List<String> ids) {
         List<String> objects = new ArrayList<>();
         for (String id : ids) {
-            objects.add(findObjectById(id));
+            String object = findObjectById(id);
+            if (object != null && !object.isEmpty())
+                objects.add(object);
         }
         return objects;
     }
 
-	public BasicDBObject prepareDocumentForInsertion(String id, String object) {
-		try {
-			Date date = new Date();
-			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			String time = dateFormat.format(date);
-			date = dateFormat.parse(time);
+    public BasicDBObject prepareDocumentForInsertion(String id, String object) {
+        BasicDBObject document = new BasicDBObject();
+        document.put("_id", id);
+        document.put("aggregatedObject", BasicDBObject.parse(object));
 
-			BasicDBObject document = new BasicDBObject();
-			document.put("_id", id);
-			document.put("AggregatedObject", BasicDBObject.parse(object));
-
-			if (getTtl() > 0) {
-				document.put("Time", date);
-			}
-			return document;
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return null;
-	}
+        if (getTtl() > 0) {
+            try {
+                document.put("Time", DateUtils.getDate());
+            } catch (ParseException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return document;
+    }
 
     public JsonNode getAggregatedObject(String dbDocument) {
         ObjectMapper mapper = new ObjectMapper();
@@ -200,9 +207,8 @@ public class ObjectHandler {
 
     /**
      * Locks the document in database to achieve pessimistic locking. Method
-     * findAndModify is used to optimize the quantity of requests towards
-     * database.
-     * 
+     * findAndModify is used to optimize the quantity of requests towards database.
+     *
      * @param id
      *            String to search
      * @return String aggregated document

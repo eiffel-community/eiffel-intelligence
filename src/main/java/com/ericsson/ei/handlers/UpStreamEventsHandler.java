@@ -55,7 +55,7 @@ public class UpStreamEventsHandler {
      * Run history extraction rules on all upstream events.
      *
      * @param aggregatedObjectId
-     *            the aggregated object id
+     *                               the aggregated object id
      */
     public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) {
 
@@ -98,26 +98,29 @@ public class UpStreamEventsHandler {
      * </pre>
      *
      * @param jsonArray
-     *            the array to traverse
+     *                                   the array to traverse
      * @param aggregatedObjectId
-     *            the id of the aggregated object
+     *                                   the id of the aggregated object
      * @param pathInAggregatedObject
-     *            the current path in the aggregated object
+     *                                   the current path in the aggregated object
      */
     private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId,
             final String pathInAggregatedObject) {
 
-        final JsonNode parent = jsonArray.get(0);
-        JsonNode parentId = parent.at("/meta/id");
         String np = pathInAggregatedObject;
-        if (!aggregatedObjectId.equals(parentId.textValue())) {
-            // parent event is not the same as the starting event so we can
-            // start collecting history
-            RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
+        final JsonNode parent = jsonArray.get(0);
+        if (parent != null) {
+            JsonNode parentId = parent.at("/meta/id");
+            if (!aggregatedObjectId.equals(parentId.textValue())) {
+                // parent event is not the same as the starting event so we can
+                // start collecting history
+                RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
 
-            np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
-                    pathInAggregatedObject);
+                np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
+                        pathInAggregatedObject);
+            }
         }
+
         String prevNp = null;
         for (int i = 1; i < jsonArray.size(); i++) {
             if (jsonArray.get(i).isObject()) {

@@ -13,27 +13,14 @@
 */
 package com.ericsson.ei.mongodbhandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mongodb.*;
-import lombok.Setter;
-import springfox.documentation.spring.web.json.Json;
-
-import org.apache.commons.lang3.StringUtils;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.stereotype.Component;
-
-import com.mongodb.client.ListIndexesIterable;
+import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCommandException;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoWriteException;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;

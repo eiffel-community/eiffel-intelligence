@@ -18,22 +18,22 @@ package com.ericsson.ei.jmespath.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.File;
+import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class TestJmesPathInterface {
-    private JmesPathInterface unitUnderTest = new JmesPathInterface();;
+    private JmesPathInterface unitUnderTest = new JmesPathInterface();
+    ObjectMapper mapper = new ObjectMapper();
+
     private static final String inputFilePath = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private static final String outputFilePath = "src/test/resources/JmesPathInterfaceOutput.json";
     private static final String inputDiffpath = "src/test/resources/DiffFunctionInput.json";
@@ -43,7 +43,6 @@ public class TestJmesPathInterface {
     private static String extractionRulesTest = "";
     private static String jsonOutput = "";
     private static String jsonInputDiff = "";
-    private static ObjectMapper mapper;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -51,14 +50,13 @@ public class TestJmesPathInterface {
         jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
         extractionRulesTest = FileUtils.readFileToString(new File(extractionRuleFilePath), "UTF-8");
         jsonInputDiff = FileUtils.readFileToString(new File(inputDiffpath), "UTF-8");
-        mapper = new ObjectMapper();
     }
 
     @Test
     public void testRunRuleOnEvent() throws Exception {
         JsonNode output = mapper.readTree(jsonOutput);
         JsonNode result = unitUnderTest.runRuleOnEvent(extractionRulesTest, jsonInput);
-        assertEquals(result, output);
+        assertEquals(output, result);
     }
 
     @Test
@@ -66,6 +64,7 @@ public class TestJmesPathInterface {
         JsonNode expectedResult = mapper.readTree("{\"testCaseExecutions\":[{\"testCaseDuration\":6.67}]}");
         String processRule = "{testCaseExecutions :[{testCaseDuration : diff(testCaseExecutions[0].testCaseFinishedTime, testCaseExecutions[0].testCaseStartedTime)}]}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInputDiff);
+
         assertEquals(result, expectedResult);
     }
 
@@ -79,4 +78,33 @@ public class TestJmesPathInterface {
         unitUnderTest.runRuleOnEvent(ruleString, input.toString());
     }
 
+    @Test
+    public void testJsonNodeEmpty() throws Exception {
+        JsonNode literalJson = mapper.readTree("[[],[\"int\",\"3\"]]");
+        int actualSize = literalJson.size();
+        Iterator<String> fields = literalJson.fieldNames();
+
+        JsonNode literalJson1 = mapper.readTree("[[[], []]]");
+        int actualSize1 = literalJson1.size();
+        Iterator<String> fields1 = literalJson1.fieldNames();
+
+        JsonNode literalJson2 = mapper.readTree("[[{}]]");
+        int actualSize2 = literalJson2.size();
+        Iterator<String> fields2 = literalJson2.fieldNames();
+
+        JsonNode literalJson3 = mapper.readTree("[]");
+        int actualSize3 = literalJson3.size();
+        Iterator<String> fields3 = literalJson3.fieldNames();
+
+        int wait = 0;
+    }
+
+    @Test
+    public void testEmptyInputs() throws Exception {
+        JsonNode result1 = unitUnderTest.runRuleOnEvent("", "");
+        JsonNode result2 = unitUnderTest.runRuleOnEvent("", "{\"test\" :\"test\"}");
+        JsonNode result3 = unitUnderTest.runRuleOnEvent("{\"test\" :\"test\"}", "");
+
+        boolean wait = true;
+    }
 }

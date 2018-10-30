@@ -19,6 +19,8 @@ import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.jsonmerge.MergePrepare;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
 import org.slf4j.Logger;
@@ -57,11 +59,13 @@ public class HistoryExtractionHandler {
     public String runHistoryExtraction(String aggregatedObjectId, RulesObject rules, String event,
             String pathInAggregatedObject) {
         JsonNode objectToMerge = extractContent(rules, event);
-        if (objectToMerge == null) {
+        if (objectToMerge instanceof NullNode) {
             return pathInAggregatedObject;
         }
 
         JsonNode ruleJson = getHistoryPathRule(rules, event);
+        if (ruleJson instanceof NullNode)
+            return pathInAggregatedObject;
         String ruleString = ruleJson.toString();
 
         // if we need to add append to an array then array_path will not be
@@ -151,7 +155,10 @@ public class HistoryExtractionHandler {
      */
     private JsonNode getHistoryPathRule(RulesObject rulesObject, String event) {
         String rule = rulesObject.getHistoryPathRules();
-        return jmesPathInterface.runRuleOnEvent(rule, event);
+        if (rule != null)
+            return jmesPathInterface.runRuleOnEvent(rule, event);
+
+        return JsonNodeFactory.instance.nullNode();
     }
 
 }

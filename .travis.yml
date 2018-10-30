@@ -1,8 +1,4 @@
 sudo: required
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
 
 language: java
 

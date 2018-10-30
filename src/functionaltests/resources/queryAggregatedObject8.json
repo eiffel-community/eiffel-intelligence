@@ -1,0 +1,29 @@
+{
+    "criteria": {   
+         "object.testCaseExecutions": {
+             "$elemMatch": {
+                 "outcome.conclusion": "SUCCESSFUL",
+                 "outcome.id": "TC5"
+             }
+         },
+         "$where" : "function() {
+             var searchKey = 'id';
+             var value = 'JIRA-1234';        
+             return searchInObj(obj);
+             function searchInObj(obj){                            
+                 for (var k in obj){           
+                     if (obj[k] == value && k == searchKey) {                     
+                         return true;                        
+                     }
+          
+                     if (isObject(obj[k]) && obj[k] !== null) {              
+                         if (searchInObj(obj[k])) {
+                             return true;
+                         }
+                     }          
+                 }                         
+                 return false;
+             }   
+         }"     
+    }
+}

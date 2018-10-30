@@ -1,0 +1,29 @@
+{
+    "created": "2017-07-26",
+    "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+    "notificationType": "REST_POST",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "repeat": false,
+    "requirements": [
+      {
+        "description" : "A subscription that will notify when an artifact for given issue id, has passed a certain test successfully",
+        "conditions": [         
+          {            
+            "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
+          },
+          {
+            "jmespath": "(length(testCaseExecutions[?(outcome.id == 'TC5' && outcome.conclusion == 'SUCCESSFUL')]) > `0`)"
+          }
+        ],
+        "type": "ARTIFACT_1"
+      }
+    ],
+    "subscriptionName": "artifactRequirementSubscription",
+    "userName": "ABC"
+  }

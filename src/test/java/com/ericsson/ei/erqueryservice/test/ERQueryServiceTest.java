@@ -77,7 +77,7 @@ public class ERQueryServiceTest {
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("spring.data.mongodb.port", "" + port);
-        System.setProperty("er.url", "http://localhost:8080/search/");
+        System.setProperty("er.url", "http://localhost:8080/eventrepository/search/");
     }
 
     @Before public void setUp() throws Exception {
@@ -115,7 +115,7 @@ public class ERQueryServiceTest {
     public String buildUri() {
         String uri = "";
 //        example uri
-//        http://localhost:8080/search/01?limit=85&levels=2&tree=true
+//        http://localhost:8080/eventrepository/search/01?limit=85&levels=2&tree=true
         uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree=" + isTree;
         return uri;
     }

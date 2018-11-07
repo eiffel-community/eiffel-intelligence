@@ -2,6 +2,7 @@
 @tag
 Feature: QueryAggregatedObjectsTestSteps
 
+  @QueryAggregatedObjectsTestSteps
   Scenario: Test QueryAggregatedObjectsTestSteps
     Given Aggregated object is created
     And Missed Notification object is created
@@ -14,6 +15,7 @@ Feature: QueryAggregatedObjectsTestSteps
     And Perform a query on created Aggregated object with filter
     And Perform a query and filter with part of path
 
+  @QueryConfidenceLevelModified
   Scenario: Test QueryConfidenceLevelModified
     Given Aggregated object is created
     Then perform query to retrieve and filter out confidence level information

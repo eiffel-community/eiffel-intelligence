@@ -1,14 +1,18 @@
 package com.ericsson.ei.subscriptions.trigger;
 
-import com.dumbster.smtp.SimpleSmtpServer;
-import com.dumbster.smtp.SmtpMessage;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,18 +30,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.util.SocketUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import com.dumbster.smtp.SimpleSmtpServer;
+import com.dumbster.smtp.SmtpMessage;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 @Ignore
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
@@ -276,7 +278,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         mockClient = new MockServerClient(getHostName(), port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH)
-                .withHeader("Authorization", "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"))
+                .withHeader("Authorization", "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk"))
                 .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
                 .respond(response().withStatusCode(201));

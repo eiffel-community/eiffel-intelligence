@@ -25,5 +25,5 @@
       }
     ],
     "subscriptionName": "artifactRequirementSubscription",
-    "userName": "ABC"
+    "ldapUserName": "ABC"
   }

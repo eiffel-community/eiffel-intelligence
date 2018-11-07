@@ -20,13 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ericsson.ei.config.HttpSessionConfig;
+import org.bson.Document;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -41,7 +43,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
-    private static final String USER_NAME = "{'userName':'%s'}";
+    private static final String USER_NAME = "{'ldapUserName':'%s'}";
 
     private static final String AND = "{$and:[%s]}";
 
@@ -74,7 +76,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
-        // empty userName means that result of query should not depend from
+        // empty ldapUserName means that result of query should not depend from
         // userName
         String query = generateQuery(subscriptionName, "");
 
@@ -109,13 +111,13 @@ public class SubscriptionService implements ISubscriptionService {
     @Override
     public boolean modifySubscription(Subscription subscription, String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
-        boolean result = false;
+        Document result = null;
         try {
-            String StringSubscription = mapper.writeValueAsString(subscription);
-            String userName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-            String query = generateQuery(subscriptionName, userName);
-            result = subscriptionRepository.modifySubscription(query, StringSubscription);
-            if (result) {
+            String stringSubscription = mapper.writeValueAsString(subscription);
+            String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+            String query = generateQuery(subscriptionName, ldapUserName);
+            result = subscriptionRepository.modifySubscription(query, stringSubscription);
+            if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOG.error("Failed to clean subscription \"" + subscriptionName
@@ -123,17 +125,17 @@ public class SubscriptionService implements ISubscriptionService {
                 }
             }
 
-        } catch (JsonProcessingException e) {
+        } catch (JSONException | JsonProcessingException e) {
             LOG.error(e.getMessage(), e);
             return false;
         }
-        return result;
+        return true;
     }
 
     @Override
     public boolean deleteSubscription(String subscriptionName) {
-        String userName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-        String query = generateQuery(subscriptionName, userName);
+        String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String query = generateQuery(subscriptionName, ldapUserName);
         boolean result = subscriptionRepository.deleteSubscription(query);
 
         if (result) {
@@ -178,18 +180,18 @@ public class SubscriptionService implements ISubscriptionService {
 
     /**
      * This method generate query for mongoDB
-     * 
+     *
      * @param subscriptionName-
      *            subscription name
-     * @param userName-
+     * @param ldapUserName-
      *            name of the current user
      * @return a String object
      */
 
-    private String generateQuery(String subscriptionName, String userName) {
+    private String generateQuery(String subscriptionName, String ldapUserName) {
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (!userName.isEmpty()) {
-            String queryUser = String.format(USER_NAME, userName);
+        if (!ldapUserName.isEmpty()) {
+            String queryUser = String.format(USER_NAME, ldapUserName);
             String queryTemp = query + "," + queryUser;
             query = String.format(AND, queryTemp);
         }

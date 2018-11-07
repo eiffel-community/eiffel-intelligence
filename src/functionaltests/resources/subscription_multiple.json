@@ -1,7 +1,7 @@
 [
   {
     "subscriptionName": "Subscription_Mail",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "MAIL",
@@ -32,7 +32,7 @@
   },
   {
     "subscriptionName": "Subscription_Rest_Params_in_Head",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
@@ -63,7 +63,10 @@
   },
   {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Head",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
+    "userName": "myUserName",
+    "password": "myPassword",
+    "authenticationType": "BASIC_AUTH",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
@@ -74,10 +77,6 @@
       {
         "formkey" : "json",
         "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
-      },
-      {
-        "formkey" : "Authorization",
-        "formvalue" : "Basic TXkgbW90aGVyIGhhcyAyIGNhdHMgYW5kIHRoZXkgYXJlIGNyYXp5"
       }
     ],
 
@@ -101,7 +100,7 @@
   },
   {
     "subscriptionName": "Subscription_Rest_Params_in_Url",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
@@ -126,7 +125,7 @@
   },
   {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Url",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
@@ -152,7 +151,7 @@
   },
   {
     "subscriptionName": "Subscription_Row_Body",
-    "userName": "DEF",
+    "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",

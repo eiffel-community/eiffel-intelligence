@@ -154,12 +154,12 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .performRequest();
 
         String responseAsString = response.getBody().toString();
-        int reponseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + reponseStatusCode + "\nResponse: "
+        int responseStatusCode = response.getStatusCodeValue();
+        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
-        assertEquals("Diffences between actual Aggregated Object:\n" + responseAsString
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+        assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
                 + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
     }
 
@@ -181,11 +181,11 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         for (String query : queries) {
             LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
             JsonNode queryJson = objMapper.readValue(query, JsonNode.class);
-            String formatedQuery = queryJson.toString();
+            String formattedQuery = queryJson.toString();
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
             response = postRequest.setPort(applicationPort).setHost(hostName)
                     .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                    .setEndpoint(entryPoint).setBody(formatedQuery).performRequest();
+                    .setEndpoint(entryPoint).setBody(formattedQuery).performRequest();
 
             LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: "
                     + response.getBody().toString());
@@ -205,7 +205,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         }
     }
 
-    @And("^Perform an invalid freesyle query on Aggregated object$")
+    @And("^Perform an invalid freestyle query on Aggregated object$")
     public void perform_invalid_freestyle_query_on_created_aggregated_object() throws Throwable {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
         final String entryPoint = "/query";
@@ -219,12 +219,12 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .addHeader("Accept", "application/json").setEndpoint(entryPoint).setBody(queryAggrObj).performRequest();
 
         String responseAsString = response.getBody().toString();
-        int reponseStatusCode = response.getStatusCodeValue();
+        int responseStatusCode = response.getStatusCodeValue();
         LOGGER.debug(
-                "Response of /query RestApi, Status Code: " + reponseStatusCode + "\nResponse: " + responseAsString);
+                "Response of /query RestApi, Status Code: " + responseStatusCode + "\nResponse: " + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
-        assertEquals("Diffences between actual Aggregated Object:\n" + responseAsString
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+        assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
                 + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
     }
 
@@ -251,8 +251,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .addParam("SubscriptionName", subscriptionName).performRequest();
 
         String responseAsString = response.getBody().toString();
-        int reponseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + reponseStatusCode + "\nResponse: "
+        int responseStatusCode = response.getStatusCodeValue();
+        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
@@ -265,7 +265,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         String actualTestCaseStartedEventId = responseEntityFormattedJsonNode.get("testCaseExecutions")
                 .get("testCaseStartedEventId").asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
-        assertEquals("Diffences between actual Missed Notification response TestCaseStartedEventId:\n"
+        assertEquals("Differences between actual Missed Notification response TestCaseStartedEventId:\n"
                 + actualTestCaseStartedEventId
                 + "\nand expected  Missed Notification response TestCaseStartedEventId:\n"
                 + expectedTestCaseStartedEventId, expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
@@ -287,13 +287,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .addParam("SubscriptionName", subscriptionName).performRequest();
 
         String responseAsString = response.getBody().toString();
-        int reponseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + reponseStatusCode + "\nResponse: "
+        int responseStatusCode = response.getStatusCodeValue();
+        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
         assertEquals(
-                "Diffences between actual Missed Notification response:\n" + responseAsString
+                "Differences between actual Missed Notification response:\n" + responseAsString
                         + "\nand expected  Missed Notification response:\n" + expectedResponse,
                 expectedResponse, responseAsString);
     }
@@ -324,9 +324,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                             + response.getBody().toString());
 
             String responseAsString = response.getBody().toString();
-            int reponseStatusCode = response.getStatusCodeValue();
+            int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
             assertEquals(
                     "Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
                             + expectedResponse,
@@ -372,9 +372,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                             + response.getBody().toString());
 
             String responseAsString = response.getBody().toString();
-            int reponseStatusCode = response.getStatusCodeValue();
+            int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(reponseStatusCode));
+            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
             assertEquals(
                     "Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
                             + expectedResponses.get(pos),
@@ -394,7 +394,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Freestyle querying for the AggregatedObject with criteria: " + query);
 
         JsonNode queryJson = objMapper.readValue(query, JsonNode.class);
-        String formatedQuery = queryJson.toString();
+        String formattedQuery = queryJson.toString();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
@@ -402,7 +402,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 .addHeader("content-type", "application/json")
                 .addHeader("Accept", "application/json")
                 .setEndpoint(entryPoint)
-                .setBody(formatedQuery)
+                .setBody(formattedQuery)
                 .performRequest();
 
         LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() +

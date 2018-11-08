@@ -312,11 +312,11 @@
             }
         },
         "data": {
-            "svnIdentifier": {
+            "gitIdentifier": {
                 "revision": 42,
                 "directory": "trunk",
                 "repoName": "Mainline",
-                "repoUri": "svn://repohost/mainline"
+                "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
             },
             "submitter": {
                 "name": "Jane Doe",

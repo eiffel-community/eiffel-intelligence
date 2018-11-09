@@ -1,0 +1,76 @@
+<project name="Eiffel Intelligence">
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>true</topBarEnabled>
+            <topBarIcon>
+                <name>Eiffel Intelligence</name>
+                <href>/</href>
+            </topBarIcon>
+            <navBarStyle>navbar-inverse</navBarStyle> <!-- black design on top navbar-->
+            <sideBarEnabled>true</sideBarEnabled>
+            <!-- To enable wider side bar, sum of span must be 12 -->
+            <leftColumnClass>span3</leftColumnClass>
+            <bodyColumnClass>span9</bodyColumnClass>
+            <breadcrumbDivider>-</breadcrumbDivider>
+        </fluidoSkin>
+    </custom>
+
+    <bannerLeft>
+        <name>Eiffel Intelligence</name>
+    </bannerLeft>
+
+    <!-- skin config here -->
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.5</version>
+    </skin>
+
+    <publishDate position="right" />
+    <version position="right" />
+
+    <poweredBy/>
+
+    <body>
+        <head/>
+        <breadcrumbs>
+            <item name="Home" href="index.html" />
+        </breadcrumbs>
+
+        <menu name="Overview">
+            <item name="Home" href="index.html" />
+            <item name="Configuration" href="Configuration.html" />
+            <item name="Running Eiffel Intelligence" href="Running-Eiffel-Intelligence.html" />
+            <item collapse="true" name="REST API" href="REST-API.html">
+                <item name="Query" href="Query.html" />
+                <item name="Running rules on objects" href="Running-rules-on-objects.html" />
+                <item name="Authentication" href="Authentication.html" />
+                <item name="Subscriptions" href="Subscription-API.html" />
+                <item name="Download files" href="Download-Files.html" />
+            </item>
+            <item collapse="true" name="Subscriptions" href="Subscriptions.html">
+                <item name="REST POST notification" href="REST-POST-notification.html" />
+                <item name="Email notification" href="Email-notification.html" />
+            </item>
+            <item collapse="true" name ="Rules" href="Rules.html">
+                <item name="Merge Resolver Rules" href="MergeResolverRules.html" />
+                <item name="History Rules" href="History-rules.html" />
+            </item>
+            <item name="TestRules User Guide" href="TestRulesUserGuide.html" />
+            <item collapse="true" name="Step-by-step aggregation" href="Step-by-Step-Aggregation.html">
+                <item name="EiffelArtifactCreatedEvent aggregation" href="ArtifactCreatedEvent-aggregation.html" />
+                <item name="EiffelTestCaseTriggeredEvent aggregation" href="EiffelTestCaseTriggeredEvent-Aggregation.html" />
+                <item name="EiffelTestCaseStartedEvent aggregation" href="EiffelTestCaseStartedEvent-aggregation.html" />
+                <item name="EiffelTestCaseFinishedEvent aggregation" href="EiffelTestCaseFinishedEvent-aggregation.html" />
+                <item name="EiffelArtifactPublishedEvent aggregation" href="EiffelArtifactPublishedEvent-Aggregation.html" />
+                <item name="EiffelConfidenceLevelModifiedEvent" href="EiffelConfidenceLevelModifiedEvent-Aggregation.html" />
+                <item name="Step-by-step subscription notification" href="Step-by-Step-Subscription-Notification.html" />
+            </item>
+            <item name="Known limitations" href="Known-limitations.html" />
+        </menu>
+
+        <footer/>
+
+    </body>
+
+</project>

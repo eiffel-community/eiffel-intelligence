@@ -1,6 +1,9 @@
 {
         "subscriptionName": "Subscription_1",
-        "userName" : "DEF",
+        "ldapUserName" : "DEF",
+        "userName": "testUserName",
+        "password": "testPassword",
+        "authenticationType": "BASIC_AUTH",
         "repeat": false,
         "created": "data-time",
         "notificationType": "REST_POST",
@@ -10,10 +13,6 @@
           {
             "formkey" : "json",
             "formvalue" : "{parameter: [{ name: 'parameter', value : 'parameterValue' }]}"
-          },
-          {
-            "formkey" : "Authorization",
-            "formvalue" : "Basic XX0="
           }
         ],
 

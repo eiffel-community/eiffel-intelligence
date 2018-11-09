@@ -16,14 +16,16 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.handlers.DateUtils;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import lombok.Getter;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -36,16 +38,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.ericsson.ei.handlers.DateUtils;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.BasicDBObject;
+
+import lombok.Getter;
 
 /**
  * This class represents the REST POST notification mechanism and the alternate
@@ -249,20 +249,30 @@ public class InformSubscription {
 	private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
 		MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 		ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
-		if (arrNode.isArray()) {
-			for (final JsonNode objNode : arrNode) {
-				if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
-					key = "Authorization";
-					val = objNode.get("formvalue").toString().replaceAll(REGEX, "");
-				} else {
-					mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-							.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-							.toString().replaceAll(REGEX, ""));
-				}
-			}
-		}
-		return mapNotificationMessage;
-	}
+
+        if(subscriptionJson.has("authenticationType")) {
+            String authType = subscriptionJson.get("authenticationType").asText();
+
+            if(authType.equals("BASIC_AUTH")) {
+                String username = subscriptionJson.get("userName").asText();
+                String password = subscriptionJson.get("password").asText();
+                String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
+                key = "Authorization";
+                val = "Basic " + encoding;
+
+            }
+        }
+
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                    .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                    .toString().replaceAll(REGEX, ""));
+            }
+        }
+        return mapNotificationMessage;
+    }
 
 	/**
 	 * This method is responsible to display the configurable application properties

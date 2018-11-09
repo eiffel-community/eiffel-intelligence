@@ -142,7 +142,8 @@
                             }
                         ]
                     },
-                    {
+                    [
+                     {
                         "meta": {
                             "type": "EiffelSourceChangeCreatedEvent",
                             "version": "1.0.0",
@@ -170,7 +171,8 @@
                             ]
                         },
                         "links": []
-                    }
+                     }
+                    ]
                 ]
             ]
         ],

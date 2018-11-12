@@ -41,7 +41,7 @@
                                        "email":"jane.doe@company.com"
                                     },
                                     "SCSEventId":"3ce9df6e-cd45-4320-ae66-945f038caa1b",
-                                    "svnIdentifier":null,
+                                    "gitIdentifier":null,
                                     "sourceCreations":[
                                        {
                                           "SCCEventId":"ac085e24-ac4c-41be-912d-08c7afd32285",

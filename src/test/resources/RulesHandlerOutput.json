@@ -9,7 +9,7 @@
    "ExtractionRules":"",
    "ArrayMergeOptions":"",
    "HistoryIdentifyRules":"",
-   "HistoryExtractionRules":"{SCCEventId: meta.id, author:data.author, issues:data.issues}",
+   "HistoryExtractionRules":"{SCCEventId: meta.id, gitIdentifier:data.gitIdentifier, author:data.author, issues:data.issues}",
    "HistoryPathRules":"{sourceCreations: [{SCCEventId: meta.id}]}",
    "ProcessRules":null,
    "ProcessFunction":null

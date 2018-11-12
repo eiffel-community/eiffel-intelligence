@@ -19,7 +19,6 @@ package com.ericsson.ei.jmespath.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
@@ -68,8 +67,8 @@ public class TestIncompleteJmesPathFilter {
 
     @Test
     public void testFilterObjectWithManyKeys() throws Exception {
-        String expectedResult = "{\"time\":\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\",\"svnIdentifier\":\"null\"}";
-        String processRule = "{time : incomplete_path_filter(@, 'time'), svnIdentifier : incomplete_path_filter(@, 'svnIdentifier')}";
+        String expectedResult = "{\"time\":\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\",\"gitIdentifier\":\"null\"}";
+        String processRule = "{time : incomplete_path_filter(@, 'time'), gitIdentifier : incomplete_path_filter(@, 'gitIdentifier')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result.toString(), expectedResult);
     }

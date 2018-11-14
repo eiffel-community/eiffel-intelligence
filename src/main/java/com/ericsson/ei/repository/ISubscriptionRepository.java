@@ -18,18 +18,21 @@ package com.ericsson.ei.repository;
 
 import java.util.ArrayList;
 
+import org.bson.Document;
+import org.json.JSONException;
+
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 
 public interface ISubscriptionRepository {
-    
+
     ArrayList<String> getSubscription(String name);
-    
-    boolean modifySubscription(String stringSubscription, String subscriptionName);
-    
+
+    Document modifySubscription(String stringSubscription, String subscriptionName) throws JSONException;
+
     boolean deleteSubscription(String name);
-    
+
     boolean addSubscription(String subscription);
-    
+
     MongoDBHandler getMongoDbHandler();
-    
+
 }

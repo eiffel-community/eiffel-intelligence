@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggragatedObject.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerOneMatch.json";
@@ -77,7 +77,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Autowired
     private RunSubscription runSubscription;
 
-    @Before("@SubscriptionRepeatHandler")
+    @Before("@SubscriptionRepeatTrue, @SubscriptionRepeatFalse")
     public void beforeScenario() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName,
                 eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));

@@ -16,15 +16,15 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.config.HttpSessionConfig;
-import com.ericsson.ei.controller.model.GetSubscriptionResponse;
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.controller.model.SubscriptionResponse;
-import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +36,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.Instant;
-import java.util.*;
+import com.ericsson.ei.config.HttpSessionConfig;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
+import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.controller.model.SubscriptionResponse;
+import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.services.ISubscriptionService;
+import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
@@ -73,7 +81,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 subscriptionValidator.validateSubscription(subscription);
 
                 if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
-                    subscription.setUserName(user);
+                    subscription.setLdapUserName(user);
                     subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.addSubscription(subscription);
                     LOG.debug("Subscription is created successfully: " + subscriptionName);
@@ -101,7 +109,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         subscriptionNamesList.forEach(subscriptionName -> {
             try {
                 LOG.debug("Subscription fetching has been started: " + subscriptionName);
-                foundSubscriptionList.add(subscriptionService.getSubscription(subscriptionName));
+
+                //Make sure the password is not sent outside this service.
+                Subscription subscription = subscriptionService.getSubscription(subscriptionName);
+                subscription.setPassword("");
+                foundSubscriptionList.add(subscription);
                 LOG.debug("Subscription is fetched: " + subscriptionName);
             } catch (SubscriptionNotFoundException e) {
                 LOG.error("Subscription is not found: " + subscriptionName);
@@ -132,7 +144,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 subscriptionValidator.validateSubscription(subscription);
 
                 if (subscriptionService.doSubscriptionExist(subscriptionName)) {
-                    subscription.setUserName(user);
+                    subscription.setLdapUserName(user);
                     subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.modifySubscription(subscription, subscriptionName);
                     LOG.debug("Subscription updating is completed: " + subscriptionName);
@@ -174,7 +186,13 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Subscriptions fetching all has been started");
         try {
-            return new ResponseEntity<>(subscriptionService.getSubscriptions(), HttpStatus.OK);
+          //Make sure the password is not sent outside this service.
+            List<Subscription> subscriptions = subscriptionService.getSubscriptions();
+            for(Subscription subscription: subscriptions) {
+                subscription.setPassword("");
+            }
+
+            return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.info(e.getMessage(), e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);

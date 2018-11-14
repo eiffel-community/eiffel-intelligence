@@ -1,5 +1,17 @@
 package com.ericsson.ei.subscriptions.bulk;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Ignore;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
+
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -9,17 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Ignore;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
-
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
 @TestPropertySource(properties = {"logging.level.com.ericsson.ei.subscriptions.bulk=DEBUG"})
@@ -138,7 +139,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
                     retrievedSubscriptions.getJSONObject(i).get("notificationType"));
             assertEquals(subscriptions.getJSONObject(i).get("notificationMeta"),
                     retrievedSubscriptions.getJSONObject(i).get("notificationMeta"));
-            assertEquals(true, retrievedSubscriptions.getJSONObject(i).has("userName"));
+            assertEquals(true, retrievedSubscriptions.getJSONObject(i).has("ldapUserName"));
         }
     }
 }

@@ -20,6 +20,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -248,20 +249,30 @@ public class InformSubscription {
 	private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
 		MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 		ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
-		if (arrNode.isArray()) {
-			for (final JsonNode objNode : arrNode) {
-				if (objNode.get("formkey").toString().replaceAll(REGEX, "").equals("Authorization")) {
-					key = "Authorization";
-					val = objNode.get("formvalue").toString().replaceAll(REGEX, "");
-				} else {
-					mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-							.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-							.toString().replaceAll(REGEX, ""));
-				}
-			}
-		}
-		return mapNotificationMessage;
-	}
+
+        if(subscriptionJson.has("authenticationType")) {
+            String authType = subscriptionJson.get("authenticationType").asText();
+
+            if(authType.equals("BASIC_AUTH")) {
+                String username = subscriptionJson.get("userName").asText();
+                String password = subscriptionJson.get("password").asText();
+                String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
+                key = "Authorization";
+                val = "Basic " + encoding;
+
+            }
+        }
+
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                    .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                    .toString().replaceAll(REGEX, ""));
+            }
+        }
+        return mapNotificationMessage;
+    }
 
 	/**
 	 * This method is responsible to display the configurable application properties

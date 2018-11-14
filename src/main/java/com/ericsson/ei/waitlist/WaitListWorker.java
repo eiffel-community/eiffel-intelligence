@@ -16,15 +16,9 @@
 */
 package com.ericsson.ei.waitlist;
 
-import com.ericsson.ei.handlers.EventToObjectMapHandler;
-import com.ericsson.ei.handlers.MatchIdRulesHandler;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Collection;
+import java.util.List;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +29,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.List;
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.handlers.MatchIdRulesHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class WaitListWorker {
@@ -66,33 +66,43 @@ public class WaitListWorker {
     }
 
     @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
-    public void run() throws JSONException {
-        RulesObject rulesObject;
-        List<String> documents = waitListStorageHandler.getWaitList();
-        for (String document : documents) {
-            JSONObject eventObject = new JSONObject(document);
-            if (eventToObjectMapHandler.isEventInEventObjectMap(eventObject.getString("_id"))) {
-                waitListStorageHandler.dropDocumentFromWaitList(document);
-            } else {
-                String event = eventObject.getString("Event");
-                rulesObject = rulesHandler.getRulesForEvent(event);
-                String idRule = rulesObject.getIdentifyRules();
+    public void run(){
+    	RulesObject rulesObject;
+    	List<String> documents = waitListStorageHandler.getWaitList();
+    	for (String document : documents) {
+    		try {
+    			ObjectMapper objectMapper = new ObjectMapper();
+    			JsonNode eventJson = objectMapper.readTree(document);
+    			String id = eventJson.get("_id").asText();
+    			if (eventToObjectMapHandler.isEventInEventObjectMap(id)) {
+    				waitListStorageHandler.dropDocumentFromWaitList(document);
+    			} else {
+    				JsonNode event = eventJson.get("Event");
+    				String eventStr = event.asText();
+    				rulesObject = rulesHandler.getRulesForEvent(eventStr);
+    				String idRule = rulesObject.getIdentifyRules();
 
-                if (idRule != null && !idRule.isEmpty()) {
-                    JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-                    if (ids.isArray()) {
-                        LOGGER.debug("[EIFFEL EVENT RESENT] id:" + eventObject.getString("_id") + " time:"
-                                + eventObject.getString("Time"));
-                        for (final JsonNode idJsonObj : ids) {
-                            Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
-                                    idJsonObj.textValue());
-                            if (!objects.isEmpty()) {
-                                rmqHandler.publishObjectToWaitlistQueue(event);
-                            }
-                        }
-                    }
-                }
-            }
+    				if (idRule != null && !idRule.isEmpty()) {
+    					JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, eventStr);
+    					if (ids.isArray()) {
+    						JsonNode idNode = eventJson.get("_id");
+    						JsonNode timeNode = eventJson.get("Time");
+    						LOGGER.debug("[EIFFEL EVENT RESENT] id:" + idNode.textValue() + " time:"
+    								+ timeNode);
+    						for (final JsonNode idJsonObj : ids) {
+    							Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
+    									idJsonObj.textValue());
+    							if (!objects.isEmpty()) {
+    								rmqHandler.publishObjectToWaitlistQueue(eventStr);
+    							}
+    						}
+    					}
+    				}
+    			}
+    		} catch (Exception e) {
+    			LOGGER.error("Exception occured while trying to resend event: " + document);
+    			e.printStackTrace();
+    		}
         }
     }
 }

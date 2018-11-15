@@ -16,8 +16,13 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.exception.SubscriptionValidationException;
-import lombok.Getter;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +31,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.util.HashSet;
-import java.util.Set;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+
+import lombok.Getter;
 
 /**
  * This class represents the mechanism to send e-mail notification to the
@@ -42,7 +45,7 @@ import java.util.Set;
 @Component
 public class SendMail {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SendMail.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
 
     @Getter
     @Value("${email.sender}")
@@ -68,7 +71,7 @@ public class SendMail {
      * @param receiver
      * @param mapNotificationMessage
      */
-    public void sendMail(String receiver, String mapNotificationMessage) throws MessagingException {
+    public void sendMail(String receiver, String mapNotificationMessage, String emailSubject) throws MessagingException {
         Set<String> extEmails = new HashSet<>();
         try {
             extEmails = extractEmails(receiver);
@@ -76,12 +79,13 @@ public class SendMail {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
+
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         String[] to = extEmails.toArray(new String[0]);
         try {
             helper.setFrom(sender);
-            helper.setSubject(subject);
+            helper.setSubject(getSubject(subject, emailSubject));
             helper.setText(mapNotificationMessage);
             helper.setTo(to);
         } catch (MessagingException e) {
@@ -105,6 +109,10 @@ public class SendMail {
             emailAdd.add(add);
         }
         return emailAdd;
+    }
+
+    public String getSubject(String subject, String emailSubject) {
+    	return (emailSubject.isEmpty()) ? subject : emailSubject;
     }
 
     @PostConstruct

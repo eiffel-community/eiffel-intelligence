@@ -135,8 +135,17 @@ public class MergePrepare {
         log.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
-            String firstRule = ruleJSONArray.getString(0);
-            String secondRule = ruleJSONArray.getString(1);
+            String firstRule = "";
+            String secondRule = "";
+            try {
+            	firstRule = ruleJSONArray.getString(0);
+            	secondRule = ruleJSONArray.getString(1);
+            } catch (Exception e) {
+            	log.error("Getting strings from RuleJSONArray failed: " + ruleJSONArray);
+            	log.error("First rule is: " + ruleJSONArray.get(0));
+            	log.error("Second rule is: " + ruleJSONArray.get(1));
+            	log.error(e.getMessage(), e);
+            }
             String firstPath = getMergePath(originObject, firstRule, false);
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 

@@ -441,6 +441,11 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
+        	log.error("addMissingLevels failed for arguments:");
+        	log.error("originObject was : " + originObject);
+        	log.error("objectTomerge was: " + objectToMerge);
+        	log.error("mergeRule was: " + mergeRule);
+        	log.error("mergePath was: " + mergePath);
             log.error(e.getMessage(), e);
         }
         return newObject.toString();

@@ -64,7 +64,7 @@ public class MergePrepare {
         } catch (JSONException e) {
             try {
                 JSONArray ruleJSONArray = new JSONArray(mergeRule);
-                return getValueFromRule(ruleJSONArray.getString(1));
+                return getValueFromRule(ruleJSONArray.get(1).toString());
             } catch (Exception ne) {
                 log.info(ne.getMessage(), ne);
             }
@@ -136,16 +136,9 @@ public class MergePrepare {
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = "";
-            String secondRule = "";
-            try {
-            	firstRule = ruleJSONArray.getString(0);
-            	secondRule = ruleJSONArray.getString(1);
-            } catch (Exception e) {
-            	log.error("Getting strings from RuleJSONArray failed: " + ruleJSONArray);
-            	log.error("First rule is: " + ruleJSONArray.get(0) + " of class " + ruleJSONArray.get(0).getClass());
-            	log.error("Second rule is: " + ruleJSONArray.get(1) + " of class " + ruleJSONArray.get(1).getClass());
-            	log.error(e.getMessage(), e);
-            }
+            String secondRule = "";            
+            firstRule = ruleJSONArray.get(0).toString();
+            secondRule = ruleJSONArray.get(1).toString();
             String firstPath = getMergePath(originObject, firstRule, false);
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 
@@ -471,7 +464,7 @@ public class MergePrepare {
             JSONObject originJSONObject = new JSONObject(originObject);
             Object valueForKey = null;
             for (int i = 0; i < mergePathIndex; i++) {
-                String key = mergePathArray.getString(i);
+                String key = mergePathArray.get(i).toString();
                 if (valueForKey == null && originJSONObject.has(key)) {
                     valueForKey = originJSONObject.get(key);
                 } else {

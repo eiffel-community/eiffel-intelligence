@@ -142,8 +142,8 @@ public class MergePrepare {
             	secondRule = ruleJSONArray.getString(1);
             } catch (Exception e) {
             	log.error("Getting strings from RuleJSONArray failed: " + ruleJSONArray);
-            	log.error("First rule is: " + ruleJSONArray.get(0));
-            	log.error("Second rule is: " + ruleJSONArray.get(1));
+            	log.error("First rule is: " + ruleJSONArray.get(0) + " of class " + ruleJSONArray.get(0).getClass());
+            	log.error("Second rule is: " + ruleJSONArray.get(1) + " of class " + ruleJSONArray.get(1).getClass());
             	log.error(e.getMessage(), e);
             }
             String firstPath = getMergePath(originObject, firstRule, false);

@@ -21,19 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +48,19 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscriptionhandler.SendMail;
+import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
@@ -94,7 +94,7 @@ public class SubscriptionHandlerTest {
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
     private static final String formKey = "Authorization";
-    private static final String formValue = "Basic XX0=";
+    private static final String formValue = "Basic dGVzdFVzZXJOYW1lOnRlc3RQYXNzd29yZA==";
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired

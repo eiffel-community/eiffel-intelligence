@@ -125,7 +125,7 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "{SCCEventId: meta.id, author:data.author, issues:data.issues}",
+    "HistoryExtractionRules": "{SCCEventId: meta.id, gitIdentifier:data.gitIdentifier, author:data.author, issues:data.issues}",
     "HistoryPathRules": "{sourceCreations: [{SCCEventId: meta.id}]}",
     "ProcessRules":null,
     "ProcessFunction" : null
@@ -141,7 +141,7 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
-    "HistoryExtractionRules": "{SCSEventId: meta.id,svnIdentifier:data.svnIdentifier, submitter:data.submitter}",
+    "HistoryExtractionRules": "{SCSEventId: meta.id,gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
     "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
     "ProcessRules":null,
     "ProcessFunction" : null

@@ -1,6 +1,6 @@
 {
   "subscriptionName": "Subscription_1",
-  "userName" : "DEF",
+  "ldapUserName" : "DEF",
   "repeat": false,
   "created": "data-time",
   "notificationType": "MAIL",

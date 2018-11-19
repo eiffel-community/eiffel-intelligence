@@ -85,7 +85,7 @@ public class SendMail {
         String[] to = extEmails.toArray(new String[0]);
         try {
             helper.setFrom(sender);
-            helper.setSubject(getSubject(subject, emailSubject));
+            helper.setSubject(getSubject(emailSubject));
             helper.setText(mapNotificationMessage);
             helper.setTo(to);
         } catch (MessagingException e) {
@@ -111,7 +111,7 @@ public class SendMail {
         return emailAdd;
     }
 
-    public String getSubject(String subject, String emailSubject) {
+    public String getSubject(String emailSubject) {
     	return (emailSubject.isEmpty()) ? subject : emailSubject;
     }
 

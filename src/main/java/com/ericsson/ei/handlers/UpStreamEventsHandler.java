@@ -14,17 +14,17 @@
 
 package com.ericsson.ei.handlers;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.rules.RulesHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The Class UpStreamEventsHandler.
@@ -86,13 +86,13 @@ public class UpStreamEventsHandler {
     /**
      * Traverses the tree from ER. The tree is defined as an array of either an
      * event or a list of events. E.g:
-     * 
+     *
      * <pre>
      *      [A, [B, C, [D, E]], [F, [N, [G, H]]], [I, [J, [K, L, [M]]]]]
      * </pre>
-     * 
+     *
      * Where the corresponding tree looks like this:
-     * 
+     *
      * <pre>
      * A -> B -> C -> D -> E -> F -> N -> G -> H -> I -> J -> K -> L -> M
      * </pre>
@@ -116,8 +116,9 @@ public class UpStreamEventsHandler {
                 // start collecting history
                 RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
 
-                np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
-                        pathInAggregatedObject);
+                if (rules != null) {
+                    np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(), pathInAggregatedObject);
+                }
             }
         }
 
@@ -126,8 +127,10 @@ public class UpStreamEventsHandler {
             if (jsonArray.get(i).isObject()) {
                 String event = jsonArray.get(i).toString();
                 RulesObject rules = rulesHandler.getRulesForEvent(event);
-                prevNp = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, event,
-                        pathInAggregatedObject);
+
+                if (rules != null) {
+                    np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, event, pathInAggregatedObject);
+                }
             } else {
                 // if we have prevNp then we should use that because it is the
                 // "parent" of the list we are now going to

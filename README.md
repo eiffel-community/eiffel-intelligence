@@ -35,3 +35,42 @@ To get involved, please see [Code of Conduct](./CODE_OF_CONDUCT.md) and [contrib
 This repository forms part of the Eiffel Community. Eiffel is a protocol for technology agnostic machine-to-machine communication in continuous integration and delivery pipelines, aimed at securing scalability, flexibility and traceability. Eiffel is based on the concept of decentralized real time messaging, both to drive the continuous integration and delivery system and to document it.
 
 Visit [Eiffel Community](https://eiffel-community.github.io) to get started and get involved.
+
+# Documentation
+
+[**Configuration**](./wiki/Configuration.md)
+
+[**Running Eiffel Intelligence**](./wiki/Running-Eiffel-Intelligence.md)
+
+[**REST API**](./wiki/REST-API.md)
+
+1. [**Query aggregated objects**](./wiki/Query.md)
+2. [**Running rules on objects**](./wiki/Running-rules-on-objects.md)
+3. [**Authentication**](./wiki/Authentication.md)
+4. [**Subscriptions**](./wiki/Subscription-API.md)
+5. [**Download files**](./wiki/Download-Files.md)
+
+[**Rules**](./wiki/Rules.md)
+1. [**MergeResolverRules**](./wiki/MergeResolverRules.md)
+2. [**History Rules**](./wiki/History-rules.md)
+
+[**Test Rules User Guide**](./wiki/TestRulesUserGuide.md)
+
+[**Subscriptions**](./wiki/Subscriptions.md)
+
+1. [**REST POST notification**](./wiki/REST-POST-notification.md)
+2. [**Email notification**](./wiki/Email-notification.md)
+
+[**Known limitations**](./wiki/Known-limitations.md)
+
+[**Step by Step Aggregation**](./wiki/Step-By-Step-Aggregation.md)
+
+1. [**ArtifactCreatedEvent Aggregation**](./wiki/ArtifactCreatedEvent-aggregation.md)
+2. [**EiffelTestCaseTriggeredEvent Aggregation**](./wiki/EiffelTestCaseTriggeredEvent-Aggregation.md)
+3. [**EiffleTestCaseStartedEvent Aggregation**](./wiki/EiffleTestCaseStartedEvent-aggregation.md)
+4. [**EiffleTestCaseFinishedEvent Aggregation**](./wiki/EiffleTestCaseFinishedEvent-aggregation.md)
+5. [**EiffelArtifactPublishedEvent Aggregation**](./wiki/EiffelArtifactPublishedEvent-Aggregation.md)
+6. [**EiffelConfidenceLevelModifiedEvent Aggregation**](./wiki/EiffelConfidenceLevelModifiedEvent-Aggregation.md)
+
+[**Step by Step Subscription Notification**](./wiki/Step-by-Step-Subscription-Notification.md)
+

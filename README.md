@@ -63,7 +63,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 
 [**Known limitations**](./wiki/Known-limitations.md)
 
-[**Step by Step Aggregation**](./wiki/Step-By-Step-Aggregation.md)
+[**Step by Step Aggregation**](./wiki/Step-by-Step-Aggregation.md)
 
 1. [**ArtifactCreatedEvent Aggregation**](./wiki/ArtifactCreatedEvent-aggregation.md)
 2. [**EiffelTestCaseTriggeredEvent Aggregation**](./wiki/EiffelTestCaseTriggeredEvent-Aggregation.md)

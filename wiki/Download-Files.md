@@ -36,7 +36,7 @@ Curl command
 
     curl -X GET -H "Content-type: application/json" http://<host>:8090/download/rulesTemplate
 
-## Download rules template file
+## Download events template file
 
     GET /download/eventsTemplate
 Curl command

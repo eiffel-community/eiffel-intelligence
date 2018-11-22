@@ -24,8 +24,6 @@
 # Eiffel Intelligence
 Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation. 
 
-## Detailed documentation is provided in [the repository wiki](../../wiki).
-
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
 
@@ -35,3 +33,62 @@ To get involved, please see [Code of Conduct](./CODE_OF_CONDUCT.md) and [contrib
 This repository forms part of the Eiffel Community. Eiffel is a protocol for technology agnostic machine-to-machine communication in continuous integration and delivery pipelines, aimed at securing scalability, flexibility and traceability. Eiffel is based on the concept of decentralized real time messaging, both to drive the continuous integration and delivery system and to document it.
 
 Visit [Eiffel Community](https://eiffel-community.github.io) to get started and get involved.
+
+# Documentation
+
+1. [**Configuration**](./wiki/Configuration.md)
+1. [**Running Eiffel Intelligence**](./wiki/Running-Eiffel-Intelligence.md)
+    - [**Prerequisites**](./wiki/Running-Eiffel-Intelligence.md#Prerequisites)
+1. [**REST API**](./wiki/REST-API.md)
+    - [**Query aggregated objects**](./wiki/Query.md)
+        - [**Perform query on created aggregated object**](./wiki/Query.md#Perform-query-on-created-aggregated-object)
+        - [**Perform freestyle query on created aggregated object**](./wiki/Query.md#Perform-freestyle-query-on-created-aggregated-object)
+        - [**Query an aggregated object and filter it with specific key**](./wiki/Query.md#Query-an-aggregated-object-and-filter-it-with-specific-key)
+        - [**Query missed notifications**](./wiki/Query.md#Query-missed-notifications)
+    - [**Running rules on objects**](./wiki/Running-rules-on-objects.md)
+        - [**Test JMESPath expression on given Event**](./wiki/Running-rules-on-objects.md#Test-JMESPath-expression-on-given-Event)
+        - [**Test a list of rule sets on given list of events**](./wiki/Running-rules-on-objects.md#Test-a-list-of-rule-sets-on-given-list-of-events) 
+    - [**Authentication**](./wiki/Authentication.md)
+        - [**Check if security is enabled**](./wiki/Authentication.md#Check-if-security-is-enabled)
+        - [**Login point that returns the name of current user**](./wiki/Authentication.md#Login-point-that-returns-the-name-of-current-user)
+        - [**Delete session of current user**](./wiki/Authentication.md#Delete-session-of-current-user)
+        - [**Check if backend is running**](./wiki/Authentication.md#Check-if-backend-is-running)
+    - [**Subscriptions**](./wiki/Subscription-API.md)
+        - [**Create subscriptions**](./wiki/Subscription-API.md#Create-subscriptions)
+        - [**Get subscriptions for the given names**](./wiki/Subscription-API.md#Get-subscriptions-for-the-given-names)
+        - [**Update subscriptions**](./wiki/Subscription-API.md#Update-subscriptions)
+        - [**Delete subscriptions for the given names**](./wiki/Subscription-API.md#Delete-subscriptions-for-the-given-names)
+        - [**Get all subscriptions**](./wiki/Subscription-API.md#Get-all-subscriptions)
+    - [**Download files**](./wiki/Download-Files.md)
+        - [**List available files**](./wiki/Download-Files.md#List-available-files)
+        - [**Download subscription template file**](./wiki/Download-Files.md#Download-subscription-template-file)
+        - [**Download rules template file**](./wiki/Download-Files.md#Download-rules-template-file)
+        - [**Download events template file**](./wiki/Download-Files.md#Download-events-template-file)
+1. [**Rules**](./wiki/Rules.md)
+    - [**Introduction**](./wiki/Rules.md#Introduction)
+    - [**Rule set up**](./wiki/Rules.md#Rule-set-up)
+    - [**Existing rules files**](./wiki/Rules.md#Existing-rules-files)
+    - [**MergeResolverRules**](./wiki/MergeResolverRules.md)
+        - [**Example 1**](./wiki/MergeResolverRules.md#Example-1)   
+        - [**Example 2 - array aggregations**](./wiki/MergeResolverRules.md#Example-2---array-aggregations)  
+    - [**History Rules**](./wiki/History-rules.md)
+1. [**Test Rules User Guide**](./wiki/TestRulesUserGuide.md)
+    - [**Rule testing mechanism via "Test Rules" GUI interface**](./wiki/TestRulesUserGuide.md#Rule-testing-mechanism-via-Test-Rules-GUI-interface)
+    - [**Introduction**](./wiki/TestRulesUserGuide.md#Introduction)
+    - [**Aggregated object**](./wiki/TestRulesUserGuide.md#Aggregated-object)
+    - [**Rule set up**](./wiki/TestRulesUserGuide.md#Rule-set-up)
+    - [**The most common operation you would do**](./wiki/TestRulesUserGuide.md#The-most-common-operation-you-would-do)
+1. [**Subscriptions**](./wiki/Subscriptions.md)
+    - [**REST POST notification**](./wiki/REST-POST-notification.md)
+    - [**Email notification**](./wiki/Email-notification.md)
+1. [**Known limitations**](./wiki/Known-limitations.md)
+1. [**Step by Step Aggregation**](./wiki/Step-by-Step-Aggregation.md)
+    - [**ArtifactCreatedEvent Aggregation**](./wiki/ArtifactCreatedEvent-aggregation.md)
+    - [**EiffelTestCaseTriggeredEvent Aggregation**](./wiki/EiffelTestCaseTriggeredEvent-Aggregation.md)
+    - [**EiffleTestCaseStartedEvent Aggregation**](./wiki/EiffleTestCaseStartedEvent-aggregation.md)
+    - [**EiffleTestCaseFinishedEvent Aggregation**](./wiki/EiffleTestCaseFinishedEvent-aggregation.md)
+    - [**EiffelArtifactPublishedEvent Aggregation**](./wiki/EiffelArtifactPublishedEvent-Aggregation.md)
+    - [**EiffelConfidenceLevelModifiedEvent Aggregation**](./wiki/EiffelConfidenceLevelModifiedEvent-Aggregation.md)
+1. [**Step by Step Subscription Notification**](./wiki/Step-by-Step-Subscription-Notification.md)
+
+

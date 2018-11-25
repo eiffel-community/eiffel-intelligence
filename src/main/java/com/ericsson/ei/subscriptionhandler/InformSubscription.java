@@ -105,6 +105,8 @@ public class InformSubscription {
 		String notificationType = getSubscriptionField("notificationType", subscriptionJson);
 		String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
 
+		String subject = getSubscriptionField("emailSubject", subscriptionJson);
+
 		MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(aggregatedObject,
 				subscriptionJson);
 
@@ -157,7 +159,7 @@ public class InformSubscription {
 		} else if (notificationType.trim().equals("MAIL")) {
 			LOGGER.debug("Notification through EMAIL");
 			try {
-				sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)));
+				sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
 			} catch (MessagingException e) {
 				e.printStackTrace();
 				LOGGER.error(e.getMessage());
@@ -234,8 +236,13 @@ public class InformSubscription {
 	 * @return field value
 	 */
 	private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
-		String value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
-		LOGGER.debug("Extracted field name and value from subscription json:" + fieldName + " : " + value);
+		String value;
+		if (subscriptionJson.get(fieldName) != null) {
+			value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
+			LOGGER.debug("Extracted field name and value from subscription json:" + fieldName + " : " + value);
+		} else {
+			value = "";
+		}
 		return value;
 	}
 
@@ -250,29 +257,29 @@ public class InformSubscription {
 		MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
 		ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
-        if(subscriptionJson.has("authenticationType")) {
-            String authType = subscriptionJson.get("authenticationType").asText();
+		if (subscriptionJson.has("authenticationType")) {
+			String authType = subscriptionJson.get("authenticationType").asText();
 
-            if(authType.equals("BASIC_AUTH")) {
-                String username = subscriptionJson.get("userName").asText();
-                String password = subscriptionJson.get("password").asText();
-                String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+			if (authType.equals("BASIC_AUTH")) {
+				String username = subscriptionJson.get("userName").asText();
+				String password = subscriptionJson.get("password").asText();
+				String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
-                key = "Authorization";
-                val = "Basic " + encoding;
+				key = "Authorization";
+				val = "Basic " + encoding;
 
-            }
-        }
+			}
+		}
 
-        if (arrNode.isArray()) {
-            for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-                    .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-                    .toString().replaceAll(REGEX, ""));
-            }
-        }
-        return mapNotificationMessage;
-    }
+		if (arrNode.isArray()) {
+			for (final JsonNode objNode : arrNode) {
+				mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+						.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+						.toString().replaceAll(REGEX, ""));
+			}
+		}
+		return mapNotificationMessage;
+	}
 
 	/**
 	 * This method is responsible to display the configurable application properties

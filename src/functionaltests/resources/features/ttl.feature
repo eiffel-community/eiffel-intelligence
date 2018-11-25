@@ -16,3 +16,4 @@ Feature: TestTTL
     And I send an Eiffel event and consequently aggregated object and thereafter missed notification is created
     Then the Notification document should be deleted from the database according to ttl value
     And the Aggregated Object document should be deleted from the database according to ttl value 
+

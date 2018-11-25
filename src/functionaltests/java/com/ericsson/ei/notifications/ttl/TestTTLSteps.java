@@ -1,18 +1,13 @@
 package com.ericsson.ei.notifications.ttl;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.ericsson.ei.utils.TestContextInitializer;
-import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import static org.junit.Assert.assertEquals;
+import static org.mockserver.model.HttpRequest.request;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,12 +25,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.mockserver.model.HttpRequest.request;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
+import com.ericsson.ei.utils.TestContextInitializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
@@ -46,6 +49,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 	private static final String BASE_URL = "localhost";
 	private static final String ENDPOINT = "/missed_notification";
 	private static final String SUBSCRIPTION_NAME = "Subscription_1";
+
 	private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";
 
 	@LocalServerPort
@@ -179,6 +183,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 		}
 		assertEquals(1, notificationExit.size());
 	}
+
 
 	@Then("^the Notification document should be deleted from the database according to ttl value$")
 	public void the_Notification_document_should_be_deleted_from_the_database_according_to_ttl_value()

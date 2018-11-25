@@ -28,6 +28,7 @@ import com.mongodb.util.JSON;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -37,13 +38,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Component
 public class ObjectHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ObjectHandler.class);
+
+    static Logger log = LoggerFactory.getLogger(ObjectHandler.class);
 
     @Getter
     @Setter
@@ -101,7 +113,7 @@ public class ObjectHandler {
      * This method uses previously locked in database aggregatedObject (lock was set
      * in lockDocument method) and modifies this document with the new values and
      * removes the lock in one query
-     * 
+     *
      * @param aggregatedObject
      *            String to insert in database
      * @param rulesObject
@@ -196,7 +208,7 @@ public class ObjectHandler {
     /**
      * Locks the document in database to achieve pessimistic locking. Method
      * findAndModify is used to optimize the quantity of requests towards database.
-     * 
+     *
      * @param id
      *            String to search
      * @return String aggregated document

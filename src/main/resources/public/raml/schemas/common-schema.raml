@@ -1,4 +1,137 @@
-subscription: |
+types:
+  information: |
+      {
+        "$schema":"http://json-schema.org/draft-04/schema#",
+        "javaType":"com.ericsson.ei.controller.model.ParseInstanceInfo",
+        "applicationName" : {
+            "type":"string"
+          },
+        "version" :{
+            "type":"string"
+          },
+          "rabbitmq" :{
+              "queueDurable" :{
+                  "type":"boolean"
+              },
+              "host" : {
+                  "type":"string"
+              },
+              "exchangeName" :{
+                  "type":"string"
+              },
+              "port" : {
+                  "type":"integer"
+              },
+              "tlsVer" : {
+                  "type":"string"
+              },
+              "domainId" : {
+                  "type":"string"
+              },
+              "componentName" : {
+                  "type":"string"
+              },
+              "waitlistSufix" : {
+                  "type":"string"
+              },
+              "bindingKey" : {
+                  "type":"string"
+              },
+              "consumerName" : {
+                  "type":"string"
+              },
+              "queueName" : {
+                  "type":"string"
+              },
+              "waitlistQueueName" : {
+                  "type":"string"
+              },
+            "type":"array"
+          },
+          "mongodb" :{
+              "host" : {
+                  "type":"string"
+              },
+              "port" : {
+                  "type":"integer"
+              },
+           "type":"array"
+          },
+          "threads" :{
+              "corePoolSize" :{
+                  "type":"integer"
+              },
+              "queueCapacity" : {
+                  "type":"integer"
+              },
+              "maxPoolSize" : {
+                  "type":"integer"
+              },
+            "type":"array"
+          },
+          "email" :{
+              "sender" :{
+                  "type":"string"
+              },
+              "subject" : {
+                  "type":"string"
+              },
+            "type":"array"
+          },
+          "waitList" :{
+              "collectionName" : {
+                  "type":"string"
+              },
+              "databaseName" : {
+                  "type":"string"
+              },
+            "ttlValue" : {
+                "type":"integer"
+            },
+            "waitList" : {
+                "type":"array"
+            },
+            "type":"array"
+          },
+          "objectHandler" : {
+              "collectionName" : {
+                  "type":"string"
+              },
+              "databaseName" : {
+                  "type":"string"
+              },
+            "type":"object"
+          },
+          "subscriptionHandler" : {
+              "subscriptionCollectionName" : {
+                  "type":"string"
+              },
+              "subscriptionDataBaseName" : {
+                  "type":"string"
+              },
+            "type":"object"
+          },
+          "informSubscription" : {
+              "failAttempt" : {
+                  "type":"integer"
+              },
+              "missedNotificationCollectionName" : {
+                  "type":"string"
+              },
+              "missedNotificationDataBaseName" : {
+                  "type":"string"
+              },
+              "ttlValue" : {
+                  "type":"integer"
+              },
+            "type":"array"
+          },
+          "erUrl" : {
+              "type":"string"
+          },
+        "type":"object"
+      }
+      subscription: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.Subscription",
@@ -9,7 +142,7 @@ subscription: |
              "type":"string"
           },
           "created":{
-             "type":"long"
+             "type":"number"
           },
           "notificationMeta":{
              "type":"string"
@@ -71,7 +204,7 @@ subscription: |
        },
        "type":"object"
     }
-subscriptionList: |
+    subscriptionList: |
     {
        "type": "array",
        "items": {
@@ -84,7 +217,7 @@ subscriptionList: |
              "type":"string"
           },
           "created":{
-             "type":"long"
+             "type":"number"
           },
           "notificationMeta":{
              "type":"string"
@@ -147,7 +280,7 @@ subscriptionList: |
        "type":"object"
     }
     }
-subscriptionResponse: |
+    subscriptionResponse: |
     {
        "type": "array",
        "items": {
@@ -166,8 +299,8 @@ subscriptionResponse: |
           "type":"object"
        }
     }
-getSubscriptionResponse: |
-    {
+    getSubscriptionResponse: |
+      {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.GetSubscriptionResponse",
           "properties":{
@@ -186,7 +319,7 @@ getSubscriptionResponse: |
           },
        "type":"object"
     }
-stringServiceResponse: |
+    stringServiceResponse: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.QueryResponse",
@@ -197,7 +330,7 @@ stringServiceResponse: |
        },
        "type":"object"
     }
-rulesCheckBody: |
+    rulesCheckBody: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.RulesCheckBody",
@@ -211,7 +344,7 @@ rulesCheckBody: |
           },
        "type":"object"
     }
-ruleCheckBody: |
+    ruleCheckBody: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.RuleCheckBody",
@@ -224,8 +357,7 @@ ruleCheckBody: |
              }
           },
        "type":"object"
-    }
-queryBody: |
+    }queryBody: |
     {
        "$schema":"http://json-schema.org/draft-04/schema#",
        "javaType":"com.ericsson.ei.controller.model.QueryBody",

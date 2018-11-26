@@ -3,6 +3,7 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,12 +23,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class QueryBody {
 
     @JsonProperty("criteria")
+    @Valid
     private Criteria criteria;
     @JsonProperty("options")
+    @Valid
     private Options options;
     @JsonProperty("filter")
     private String filter;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("criteria")
@@ -60,11 +64,6 @@ public class QueryBody {
         this.filter = filter;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -76,8 +75,13 @@ public class QueryBody {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("criteria", criteria).append("options", options).append("filter", filter).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(criteria).append(options).append(filter).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(options).append(filter).append(additionalProperties).append(criteria).toHashCode();
     }
 
     @Override
@@ -89,7 +93,7 @@ public class QueryBody {
             return false;
         }
         QueryBody rhs = ((QueryBody) other);
-        return new EqualsBuilder().append(criteria, rhs.criteria).append(options, rhs.options).append(filter, rhs.filter).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(options, rhs.options).append(filter, rhs.filter).append(additionalProperties, rhs.additionalProperties).append(criteria, rhs.criteria).isEquals();
     }
 
 }

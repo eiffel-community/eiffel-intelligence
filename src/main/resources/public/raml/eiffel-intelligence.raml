@@ -1,38 +1,46 @@
-#%RAML 0.8
-  schemas:
-    - !include common-schema.raml
-    - !include info_instance-schema.raml
-  resourceTypes:
-  - standard:
-      get?:
-        responses:          
-          400:
-            description: |
-              The request sent to the server contains data which is not as expected e.g. incorrect Subscription Name
-          404:
-            description: |
-              The requested resource was not found                     
-      put?:
-        responses:          
-          404:
-            description: |
-              The requested resource on which the modification is being attempted was not found              
-      delete?:
-        responses:          
-          404:
-            description: | 
-              The requested resource to delete was not found 
- 
-  title: Subscriptions Services and EI Query Services
-  version: ${project.version}
-  mediaType: application/json
-  baseUri: /
-  /subscriptions: !include subscription.raml
-  /query: !include query.raml
-  /queryAggregatedObject: !include query-aggregated_object.raml
-  /queryMissedNotifications: !include query-missed_notifications.raml
-  /jmespathrule: !include jmespath.raml
-  /download: !include template.raml
-  /rules: !include rules.raml
-  /auth: !include auth.raml
-  /information: !include instance_info.raml
+#%RAML 1.0
+types:
+  subscription: !include schemas/sub.schema
+  subscriptionList: !include schemas/subList.schema
+  subscriptionResponse: !include schemas/subRes.schema
+  getSubscriptionResponse: !include schemas/getSubRes.schema
+  queryBody: !include schemas/qb.schema
+  stringServiceResponse: !include schemas/ssr.schema
+  ruleCheckBody: !include schemas/rcbody.schema
+  rulesCheckBody: !include schemas/rulesCB.schema
+
+
+
+resourceTypes:
+ standard:
+    get?:
+      responses:
+        400:
+          description: |
+            The request sent to the server contains data which is not as expected e.g. incorrect Subscription Name
+        404:
+          description: |
+            The requested resource was not found
+    put?:
+      responses:
+        404:
+          description: |
+            The requested resource on which the modification is being attempted was not found
+    delete?:
+      responses:
+        404:
+          description: |
+            The requested resource to delete was not found
+
+title: Subscriptions Services and EI Query Services
+version: 1
+mediaType: application/json
+baseUri: /
+/subscriptions: !include resourceTypes/subscription.raml
+/query: !include resourceTypes/query.raml
+/queryAggregatedObject: !include resourceTypes/query-aggregated_object.raml
+/queryMissedNotifications: !include resourceTypes/query-missed_notifications.raml
+/download: !include resourceTypes/template.raml
+/rules: !include resourceTypes/rules.raml
+/auth: !include resourceTypes/auth.raml
+/information: !include resourceTypes/instance_info.raml

@@ -1,0 +1,18 @@
+{
+   "$schema":"http://json-schema.org/draft-04/schema#",
+   "javaType":"com.ericsson.ei.controller.model.QueryBody",
+   "properties":{
+         "criteria":{
+            "type":"object"
+         },
+         "options":{
+            "type":"object",
+            "required":"false"
+         },
+         "filter":{
+            "type":"string",
+            "required":"false"
+         }
+      },
+   "type":"object"
+}

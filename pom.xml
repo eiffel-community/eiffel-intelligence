@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.16</version>
+    <version>2.0.4</version>
     <packaging>war</packaging>
 
     <parent>
@@ -16,9 +16,10 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <plugin-version>[]0.10.11)</plugin-version>
+        <plugin-version>0.2.4</plugin-version>
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
+        <rule>com.phoenixnap.oss.ramlapisync.generation.rules.Spring4ControllerInterfaceRule</rule>
         <base-package>com.ericsson.ei.controller</base-package>
     </properties>
 
@@ -287,14 +288,14 @@
                     <baseUri>/</baseUri>
                     <seperateMethodsByContentType>false</seperateMethodsByContentType>
                     <useJackson1xCompatibility>false</useJackson1xCompatibility>
-                    <rule>com.phoenixnap.oss.ramlapisync.generation.rules.Spring4ControllerInterfaceRule</rule>
+                    <rule>com.phoenixnap.oss.ramlplugin.raml2code.rules.Spring4ControllerStubRule</rule>
                     <generationConfig>
                         <useCommonsLang3>true</useCommonsLang3>
                     </generationConfig>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>generate-springmvc-controllers</id>
+                        <id>generate-springmvc-endpoints</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-springmvc-endpoints</goal>

@@ -109,6 +109,18 @@ Examples of criterias:
 ```
 NOTE: It should be noted that "object" is a key word.  It is replaced dynamically in the code, and is configured in the application.properties file. e.g.,In string "object.testCaseExecutions.outcome.id", substring "object" is a key word.
 
+## Example of freestyle query that returns all aggregated objects
+By using a query that contains only empty "criteria" it is possible to return all aggregated objects from the database. The aggregated objects will be returned from specific collection (which name is defined by property aggregated.collection.name) that is stored in specific database (which name is defined by property spring.data.mongodb.database). All properties can be found in [application's properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties).
+
+Example:
+``` javascript
+
+{
+  "criteria": {}
+}
+
+```
+
 ## Query an aggregated object and filter it with specific key
 It is possible to filter the object and return only values with specific key or path. To do this, it is required to add filter condition to the json body. The parameter of filter condition is a JMESPath expression, you can read more about that [here](http://jmespath.org/tutorial.html#pipe-expressions). 
 

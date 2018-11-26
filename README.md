@@ -43,6 +43,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Query aggregated objects**](./wiki/Query.md)
         - [**Perform query on created aggregated object**](./wiki/Query.md#Perform-query-on-created-aggregated-object)
         - [**Perform freestyle query on created aggregated object**](./wiki/Query.md#Perform-freestyle-query-on-created-aggregated-object)
+        - [**Example of freestyle query that returns all aggregated objects**](./wiki/Query.md#Example-of-freestyle-query-that-returns-all-aggregated-objects)
         - [**Query an aggregated object and filter it with specific key**](./wiki/Query.md#Query-an-aggregated-object-and-filter-it-with-specific-key)
         - [**Query missed notifications**](./wiki/Query.md#Query-missed-notifications)
     - [**Running rules on objects**](./wiki/Running-rules-on-objects.md)

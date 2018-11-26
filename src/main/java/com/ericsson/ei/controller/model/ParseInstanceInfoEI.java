@@ -36,7 +36,7 @@ import java.util.List;
  */
 @Component
 public class ParseInstanceInfoEI {
-	
+
     @Getter
     @Value("${spring.application.name}")
     private String applicationName;
@@ -44,7 +44,11 @@ public class ParseInstanceInfoEI {
     @Getter
     @Value("${build.version}")
     private String version;
-    
+
+    @Getter
+    @Value("${rules.path}")
+    private String rulesPath;
+
     @Getter
     @Value("${testaggregated.enabled:false}")
     private String testRulesEnabled;
@@ -64,7 +68,7 @@ public class ParseInstanceInfoEI {
     @Getter
     @Autowired
     private List<SendMail> email;
-    
+
     @Getter
     @Autowired
     private List<MailServerValues> mailServerValues;
@@ -72,7 +76,7 @@ public class ParseInstanceInfoEI {
     @Getter
     @Autowired
     private LdapValues ldap;
- 
+
     @Getter
     @Autowired
     private List<WaitListStorageHandler> waitList;
@@ -92,10 +96,10 @@ public class ParseInstanceInfoEI {
     @Getter
     @Autowired
     private ERQueryService erUrl;
-   
+
     public ParseInstanceInfoEI(){
     }
-    
+
     @Component
     private class MailServerValues {
         @Getter
@@ -118,7 +122,7 @@ public class ParseInstanceInfoEI {
         @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
         private String startTls;
     }
-    
+
     @Component
     private class MongoDbValues {
         @Getter
@@ -133,7 +137,7 @@ public class ParseInstanceInfoEI {
         @Value("${spring.data.mongodb.database}")
         private String database;
     }
-    
+
     @Component
     private class LdapValues {
         @Getter
@@ -147,17 +151,15 @@ public class ParseInstanceInfoEI {
         @Getter
         @Value("${ldap.base.dn}")
         private String baseDn;
-        
+
         @Getter
         @Value("${ldap.user.filter}")
         private String filter;
-        
+
         @Getter
         @Value("${ldap.username}")
         private String username;
     }
-
-
 
     @Component
     private class ThreadsValue {

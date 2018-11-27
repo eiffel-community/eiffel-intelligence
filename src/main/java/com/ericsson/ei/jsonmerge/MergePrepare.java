@@ -135,10 +135,8 @@ public class MergePrepare {
         log.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
-            String firstRule = "";
-            String secondRule = "";            
-            firstRule = ruleJSONArray.get(0).toString();
-            secondRule = ruleJSONArray.get(1).toString();
+            String firstRule = ruleJSONArray.get(0).toString();
+            String secondRule = ruleJSONArray.get(1).toString();
             String firstPath = getMergePath(originObject, firstRule, false);
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 
@@ -443,12 +441,12 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-        	log.error("addMissingLevels failed for arguments:");
-        	log.error("originObject was : " + originObject);
-        	log.error("objectTomerge was: " + objectToMerge);
-        	log.error("mergeRule was: " + mergeRule);
-        	log.error("mergePath was: " + mergePath);
-            log.error(e.getMessage(), e);
+        	String msg = "addMissingLevels failed for arguments:\n";
+        	msg += "originObject was : " + originObject + "\n";
+        	msg += "objectTomerge was: " + objectToMerge + "\n";
+        	msg += "mergeRule was: " + mergeRule + "\n";
+        	msg += "mergePath was: " + mergePath + "\n";
+            log.error(msg, e);
         }
         return newObject.toString();
     }

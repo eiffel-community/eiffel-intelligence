@@ -16,7 +16,9 @@
 */
 package com.ericsson.ei.controller;
 
-import io.swagger.annotations.Api;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -26,15 +28,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.io.IOException;
-import java.io.InputStream;
+import io.swagger.annotations.Api;
 
 @Component
 @CrossOrigin
 @Api(value = "Get Templates", description = "REST endpoints for getting templates")
 public class DownloadControllerImpl implements DownloadController {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DownloadControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadControllerImpl.class);
 
     @Override
     public ResponseEntity<?> getDownload() {
@@ -52,7 +53,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
-    public ResponseEntity<?> getSubscriptionsTemplate() {
+    public ResponseEntity<?> getDownloadSubscriptionsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
@@ -67,7 +68,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
-    public ResponseEntity<?> getRulesTemplate() {
+    public ResponseEntity<?> getDownloadRulesTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
@@ -82,7 +83,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
-    public ResponseEntity<?> getEventsTemplate() {
+    public ResponseEntity<?> getDownloadEventsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);

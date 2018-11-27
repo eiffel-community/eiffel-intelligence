@@ -1,18 +1,16 @@
 #%RAML 1.0
-types:
+schemas:
   subscription: !include schemas/sub.schema
-  subscriptionList: !include schemas/subList.schema
-  subscriptionResponse: !include schemas/subRes.schema
-  getSubscriptionResponse: !include schemas/getSubRes.schema
-  queryBody: !include schemas/qb.schema
-  stringServiceResponse: !include schemas/ssr.schema
-  ruleCheckBody: !include schemas/rcbody.schema
-  rulesCheckBody: !include schemas/rulesCB.schema
-
-
-
+  subscriptionList: !include schemas/sub_list.schema
+  subscriptionResponse: !include schemas/sub_response.schema
+  getSubscriptionResponse: !include schemas/get_sub_response.schema
+  queryBody: !include schemas/query_body.schema
+  stringServiceResponse: !include schemas/string_service_response.schema
+  ruleCheckBody: !include schemas/rule_check_body.schema
+  rulesCheckBody: !include schemas/rules_check_body.schema  
+  
 resourceTypes:
- standard:
+  standard:
     get?:
       responses:
         400:
@@ -30,7 +28,7 @@ resourceTypes:
       responses:
         404:
           description: |
-            The requested resource to delete was not found
+            The requested resource to delete was not found            
 
 title: Subscriptions Services and EI Query Services
 version: 1

@@ -16,10 +16,6 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryBody;
-import com.ericsson.ei.queryservice.ProcessQueryParams;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,6 +27,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.ericsson.ei.controller.model.QueryBody;
+import com.ericsson.ei.queryservice.ProcessQueryParams;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * This class represents the REST end-points for the query service. It can take
  * both query parameters and form parameters as criterias.
@@ -40,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Api(value = "query", description = "REST endpoints for the freestyle query service")
 public class QueryControllerImpl implements QueryController {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
 
     @Autowired
     private ProcessQueryParams processQueryParams;
@@ -48,7 +50,7 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "")
-    public ResponseEntity<?> updateQuery(@RequestBody final QueryBody body) {
+    public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
         try {
             JSONObject criteria = new JSONObject(body.getCriteria().getAdditionalProperties());
             JSONObject options = null;

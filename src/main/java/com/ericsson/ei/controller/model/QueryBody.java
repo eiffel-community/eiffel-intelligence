@@ -4,6 +4,7 @@ package com.ericsson.ei.controller.model;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,8 +23,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 })
 public class QueryBody {
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
     @JsonProperty("criteria")
     @Valid
+    @NotNull
     private Criteria criteria;
     @JsonProperty("options")
     @Valid
@@ -34,11 +41,21 @@ public class QueryBody {
     @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
     @JsonProperty("criteria")
     public Criteria getCriteria() {
         return criteria;
     }
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
     @JsonProperty("criteria")
     public void setCriteria(Criteria criteria) {
         this.criteria = criteria;

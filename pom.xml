@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>2.0.4</version>
+    <version>0.0.17</version>
     <packaging>war</packaging>
 
     <parent>
@@ -16,10 +16,10 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <plugin-version>0.2.4</plugin-version>
+        <plugin-version>2.0.4</plugin-version>
         <output-relative-path>src/main/java</output-relative-path>
-        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
-        <rule>com.phoenixnap.oss.ramlapisync.generation.rules.Spring4ControllerInterfaceRule</rule>
+        <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
+        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>                
         <base-package>com.ericsson.ei.controller</base-package>
     </properties>
 
@@ -276,10 +276,10 @@
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
-                
+                <version>${plugin-version}</version>
                 <configuration>
                     <!-- path to raml file -->
-                    <ramlPath>${raml-path}</ramlPath>
+                    <ramlPath>${raml-path}</ramlPath>                    
                     <!-- output of generated code -->
                     <outputRelativePath>${output-relative-path}</outputRelativePath>
                     <addTimestampFolder>false</addTimestampFolder>
@@ -288,14 +288,15 @@
                     <baseUri>/</baseUri>
                     <seperateMethodsByContentType>false</seperateMethodsByContentType>
                     <useJackson1xCompatibility>false</useJackson1xCompatibility>
-                    <rule>com.phoenixnap.oss.ramlplugin.raml2code.rules.Spring4ControllerStubRule</rule>
+                    <rule>com.phoenixnap.oss.ramlplugin.raml2code.rules.Spring4ControllerInterfaceRule</rule>
+                    <methodsNamingLogic>RESOURCES</methodsNamingLogic>
                     <generationConfig>
                         <useCommonsLang3>true</useCommonsLang3>
                     </generationConfig>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>generate-springmvc-endpoints</id>
+                        <id>generate-springmvc-controllers</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-springmvc-endpoints</goal>

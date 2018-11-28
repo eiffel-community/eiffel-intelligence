@@ -82,7 +82,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
                 if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);
-                    subscription.setCreated((float) Instant.now().toEpochMilli());
+                    subscription.setCreated(Instant.now().toEpochMilli());
                     subscriptionService.addSubscription(subscription);
                     LOG.debug("Subscription is created successfully: " + subscriptionName);
                 } else {

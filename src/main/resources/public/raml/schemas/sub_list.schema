@@ -10,7 +10,7 @@
          "type":"string"
       },
       "created":{
-         "type":"number"
+         "type":"long"
       },
       "notificationMeta":{
          "type":"string"

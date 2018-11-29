@@ -64,6 +64,7 @@
     "authenticationType" : "NO_AUTH",
     "created" : 1542802953782,
     "notificationMeta" : "mymail@company.com",
+    "emailSubject" : "My Email Subject",
     "notificationType" : "MAIL",
     "restPostBodyMediaType" : "",
     "notificationMessageKeyValues" : [

@@ -16,13 +16,6 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.github.wnameless.json.flattener.JsonFlattener;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -35,6 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.github.wnameless.json.flattener.JsonFlattener;
 
 import lombok.Setter;
 
@@ -441,11 +441,11 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-        	String msg = "addMissingLevels failed for arguments:\n";
-        	msg += "originObject was : " + originObject + "\n";
-        	msg += "objectTomerge was: " + objectToMerge + "\n";
-        	msg += "mergeRule was: " + mergeRule + "\n";
-        	msg += "mergePath was: " + mergePath + "\n";
+            String msg = "addMissingLevels failed for arguments:\n";
+            msg += "originObject was : " + originObject + "\n";
+            msg += "objectTomerge was: " + objectToMerge + "\n";
+            msg += "mergeRule was: " + mergeRule + "\n";
+            msg += "mergePath was: " + mergePath + "\n";
             log.error(msg, e);
         }
         return newObject.toString();

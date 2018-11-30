@@ -16,13 +16,13 @@
  */
 package com.ericsson.ei.jmespath;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.burt.jmespath.Expression;
 import io.burt.jmespath.JmesPath;
@@ -65,8 +65,8 @@ public class JmesPathInterface {
             result = expression.search(eventJson);
         } catch (Exception e) {
             String msg = "runRuleOnEvent failed for given arguments:\n";
-        	msg += "rule was: " + rule + "\n";
-        	msg += "event was: " + event + "\n";
+            msg += "rule was: " + rule + "\n";
+            msg += "event was: " + event + "\n";
             log.error(msg, e);
         }
 

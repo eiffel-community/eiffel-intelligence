@@ -1,9 +1,5 @@
 package com.ericsson.ei.flowtests;
 
-import com.mongodb.MongoClient;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -15,6 +11,10 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
+
+import com.mongodb.MongoClient;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
@@ -48,7 +48,7 @@ public class FlowTestConfigs {
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
-
+        LOGGER.info("setting up message buss");
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
@@ -68,7 +68,7 @@ public class FlowTestConfigs {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();  
+            String port = "" + mongoClient.getAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

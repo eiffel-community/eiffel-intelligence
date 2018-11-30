@@ -83,7 +83,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
 
-    @Value("${systemTest:true}")
+    @Value("${systemTest:false}")
     protected boolean systemTest;
 
     @Override

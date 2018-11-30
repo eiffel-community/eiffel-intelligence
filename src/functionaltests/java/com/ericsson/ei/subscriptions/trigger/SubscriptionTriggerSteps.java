@@ -256,7 +256,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         JSONArray jsonArray = new JSONArray(restBodyData);
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            String requestBody = jsonArray.getString(i);
+            String requestBody = jsonArray.get(i).toString();
             if (requestBody.contains("TC5")) {
                 tc5++;
             }

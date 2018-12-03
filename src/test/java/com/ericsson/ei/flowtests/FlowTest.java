@@ -97,7 +97,6 @@ public class FlowTest extends FlowTestBase {
                     rabbitMqTemplate.convertAndSend(eventStr);
                 }
             }
-            boolean wait = true;
         }
     }
 

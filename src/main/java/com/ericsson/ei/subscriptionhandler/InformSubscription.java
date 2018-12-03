@@ -253,16 +253,16 @@ public class InformSubscription {
 	 * @param subscriptionJson
 	 * @return
 	 */
-	private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
-		MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-		ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+    private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
-		if (subscriptionJson.has("authenticationType")) {
-			String authType = subscriptionJson.get("authenticationType").asText();
+        if (subscriptionJson.has("authenticationType")) {
+            String authType = subscriptionJson.get("authenticationType").asText();
 
-			if (authType.equals("BASIC_AUTH")) {
-		        boolean userNameFieldExists = subscriptionJson.has("userName") && subscriptionJson.get("userName") != null;
-		        boolean passwordFieldExists = subscriptionJson.has("password") && subscriptionJson.get("password") != null;
+            if (authType.equals("BASIC_AUTH")) {
+                boolean userNameFieldExists = subscriptionJson.has("userName") && subscriptionJson.get("userName") != null;
+                boolean passwordFieldExists = subscriptionJson.has("password") && subscriptionJson.get("password") != null;
 
                 if (userNameFieldExists && passwordFieldExists) {
                     String username = subscriptionJson.get("userName").asText();
@@ -277,15 +277,15 @@ public class InformSubscription {
             }
         }
 
-		if (arrNode.isArray()) {
-			for (final JsonNode objNode : arrNode) {
-				mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-						.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-						.toString().replaceAll(REGEX, ""));
-			}
-		}
-		return mapNotificationMessage;
-	}
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
+            }
+        }
+        return mapNotificationMessage;
+    }
 
 	/**
 	 * This method is responsible to display the configurable application properties

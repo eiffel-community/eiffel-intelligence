@@ -261,15 +261,21 @@ public class InformSubscription {
 			String authType = subscriptionJson.get("authenticationType").asText();
 
 			if (authType.equals("BASIC_AUTH")) {
-				String username = subscriptionJson.get("userName").asText();
-				String password = subscriptionJson.get("password").asText();
-				String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+		        boolean userNameFieldExists = subscriptionJson.has("userName") && subscriptionJson.get("userName") != null;
+		        boolean passwordFieldExists = subscriptionJson.has("password") && subscriptionJson.get("password") != null;
 
-				key = "Authorization";
-				val = "Basic " + encoding;
+                if (userNameFieldExists && passwordFieldExists) {
+                    String username = subscriptionJson.get("userName").asText();
+                    String password = subscriptionJson.get("password").asText();
+                    String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
-			}
-		}
+                    key = "Authorization";
+                    val = "Basic " + encoding;
+                } else {
+                    LOGGER.error("userName/password field in subscription is missing. Make sure all subscriptions are up to date and has all required fields.");
+                }
+            }
+        }
 
 		if (arrNode.isArray()) {
 			for (final JsonNode objNode : arrNode) {

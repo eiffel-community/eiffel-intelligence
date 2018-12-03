@@ -16,13 +16,6 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.github.wnameless.json.flattener.JsonFlattener;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -35,6 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.github.wnameless.json.flattener.JsonFlattener;
 
 import lombok.Setter;
 
@@ -64,7 +64,7 @@ public class MergePrepare {
         } catch (JSONException e) {
             try {
                 JSONArray ruleJSONArray = new JSONArray(mergeRule);
-                return getValueFromRule(ruleJSONArray.getString(1));
+                return getValueFromRule(ruleJSONArray.get(1).toString());
             } catch (Exception ne) {
                 log.info(ne.getMessage(), ne);
             }
@@ -135,8 +135,8 @@ public class MergePrepare {
         log.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
-            String firstRule = ruleJSONArray.getString(0);
-            String secondRule = ruleJSONArray.getString(1);
+            String firstRule = ruleJSONArray.get(0).toString();
+            String secondRule = ruleJSONArray.get(1).toString();
             String firstPath = getMergePath(originObject, firstRule, false);
             String firstPathTrimmed = trimLastInPath(firstPath, ".");
 
@@ -441,7 +441,12 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            String msg = "addMissingLevels failed for arguments:\n";
+            msg += "originObject was : " + originObject + "\n";
+            msg += "objectTomerge was: " + objectToMerge + "\n";
+            msg += "mergeRule was: " + mergeRule + "\n";
+            msg += "mergePath was: " + mergePath + "\n";
+            log.error(msg, e);
         }
         return newObject.toString();
     }
@@ -457,7 +462,7 @@ public class MergePrepare {
             JSONObject originJSONObject = new JSONObject(originObject);
             Object valueForKey = null;
             for (int i = 0; i < mergePathIndex; i++) {
-                String key = mergePathArray.getString(i);
+                String key = mergePathArray.get(i).toString();
                 if (valueForKey == null && originJSONObject.has(key)) {
                     valueForKey = originJSONObject.get(key);
                 } else {

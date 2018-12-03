@@ -105,7 +105,8 @@ public class TestRulesRestAPI {
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("e90daae3-bf3f-4b0a-b899-67834fd5ebd0", obj.getString("id"));
-        assertEquals("1484061386383", obj.getString("time"));
+        long timeV = 1484061386383L;
+        assertEquals(timeV, obj.getLong("time"));
 
     }
 

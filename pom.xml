@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <plugin-version>2.0.4</plugin-version>
+        <springmvc-raml-version>2.0.4</springmvc-raml-version>
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
         <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>                
@@ -276,7 +276,7 @@
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
-                <version>${plugin-version}</version>
+                <version>${springmvc-raml-version}</version>
                 <configuration>
                     <!-- path to raml file -->
                     <ramlPath>${raml-path}</ramlPath>                    

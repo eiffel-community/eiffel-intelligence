@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.17</version>
+    <version>0.0.18</version>
     <packaging>war</packaging>
 
     <parent>

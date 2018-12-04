@@ -103,6 +103,10 @@ which could be added to the root of aggregated object or to the inner structure 
 
 **History Rules** are used if you need to aggregate data from existing events linked upstream by received event. They are explained [**here**](./History-rules.md)
 
-## Existing rules files
+## Mapping rules files to aggregated objects
 
 Currently existing rules files in Eiffel Intelligence can be found [**here.**](https://github.com/Ericsson/eiffel-intelligence/tree/master/src/main/resources)
+
+[**Artifact Rules**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/ArtifactRules_new.json) will result in an [**Artifact object**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregatedDocumentInternalCompositionLatest.json) based on following [**events**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/test_events.json) from message bus and following historical [**events**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/upStreamInput.json) from event repository.
+
+[**Source Change Rules**]() will result in [**Source Change Object**]() based on following [**events**]() from message bus

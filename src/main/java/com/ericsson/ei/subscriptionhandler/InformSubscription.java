@@ -253,33 +253,39 @@ public class InformSubscription {
 	 * @param subscriptionJson
 	 * @return
 	 */
-	private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
-		MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-		ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
+    private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
+        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
+        ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
-		if (subscriptionJson.has("authenticationType")) {
-			String authType = subscriptionJson.get("authenticationType").asText();
+        if (subscriptionJson.has("authenticationType")) {
+            String authType = subscriptionJson.get("authenticationType").asText();
 
-			if (authType.equals("BASIC_AUTH")) {
-				String username = subscriptionJson.get("userName").asText();
-				String password = subscriptionJson.get("password").asText();
-				String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+            if (authType.equals("BASIC_AUTH")) {
+                boolean userNameFieldExists = subscriptionJson.has("userName") && subscriptionJson.get("userName") != null;
+                boolean passwordFieldExists = subscriptionJson.has("password") && subscriptionJson.get("password") != null;
 
-				key = "Authorization";
-				val = "Basic " + encoding;
+                if (userNameFieldExists && passwordFieldExists) {
+                    String username = subscriptionJson.get("userName").asText();
+                    String password = subscriptionJson.get("password").asText();
+                    String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
-			}
-		}
+                    key = "Authorization";
+                    val = "Basic " + encoding;
+                } else {
+                    LOGGER.error("userName/password field in subscription is missing. Make sure all subscriptions are up to date and has all required fields.");
+                }
+            }
+        }
 
-		if (arrNode.isArray()) {
-			for (final JsonNode objNode : arrNode) {
-				mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-						.runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-						.toString().replaceAll(REGEX, ""));
-			}
-		}
-		return mapNotificationMessage;
-	}
+        if (arrNode.isArray()) {
+            for (final JsonNode objNode : arrNode) {
+                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
+                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
+                        .toString().replaceAll(REGEX, ""));
+            }
+        }
+        return mapNotificationMessage;
+    }
 
 	/**
 	 * This method is responsible to display the configurable application properties

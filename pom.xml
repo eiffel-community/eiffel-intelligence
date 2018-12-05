@@ -19,8 +19,11 @@
         <springmvc-raml-version>2.0.4</springmvc-raml-version>
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
-        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>                
-        <base-package>com.ericsson.ei.controller</base-package>
+        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
+        <base-package>com.ericsson.ei.controller</base-package>        
+        <skipTests>false</skipTests>
+        <skipITs>${skipTests}</skipITs>
+        <skipUnitTests>${skipTests}</skipUnitTests>
     </properties>
 
     <repositories>
@@ -351,7 +354,8 @@
                 <version>2.20</version>
                 <configuration>
                     <forkCount>2C</forkCount>
-                    <reuseForks>false</reuseForks>
+                    <reuseForks>false</reuseForks>                  
+                    <skipTests>${skipUnitTests}</skipTests>
                     <excludes>
                         <exclude>${someModule.test.excludes}</exclude>
                     </excludes>
@@ -360,6 +364,40 @@
                     </includes>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-failsafe-plugin</artifactId>
+                  <version>3.0.0-M1</version>
+                  <executions>
+                      <execution>
+                          <id>integration-test</id>
+                          <goals>
+                              <goal>integration-test</goal>
+                              <goal>verify</goal>
+                          </goals>
+                          <phase>integration-test</phase>
+                          <configuration>
+                              <skipTests>${skipTests}</skipTests>
+                              <skipITs>${skipITs}</skipITs>
+                              <systemPropertyVariables>
+                                  <systemTest>true</systemTest>
+                                  <er.url>http://localhost:8080/eventrepository/search/</er.url>
+                              </systemPropertyVariables>
+                              <excludes>
+                                  <exclude>**/test/*</exclude>
+                                  <exclude>**/functionaltests/*</exclude>
+                              </excludes>
+                              <includes>
+                                  <include>**/FlowTest.class</include>
+                              </includes>
+                              <additionalClasspathElements>
+                                  <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                              </additionalClasspathElements>
+                          </configuration>
+                      </execution>
+                  </executions>
+              </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

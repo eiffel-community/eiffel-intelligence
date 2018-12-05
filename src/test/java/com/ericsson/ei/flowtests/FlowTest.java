@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,7 @@ import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,6 +57,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
+    private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
     private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
@@ -66,19 +69,35 @@ public class FlowTest extends FlowTestBase {
     @Mock
     private ERQueryService erQueryService;
 
+    @Autowired
+    private RabbitTemplate rabbitMqTemplate;
+
     @Before
     public void before() throws IOException {
-        MockitoAnnotations.initMocks(this);
-        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
         ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
-        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        if (!systemTest) {
+            final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+            MockitoAnnotations.initMocks(this);
+            upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+
+            ObjectNode objectNode = objectMapper.createObjectNode();
+            JsonNode upstreamJson = objectMapper.readTree(upStreamResult);
+            objectNode.set("upstreamLinkObjects", upstreamJson);
+            objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+
+            when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                    anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+        } else {
+            final URL upStreamInput = this.getClass().getClassLoader().getResource(UPSTREAM_INPUT_FILE);
+            ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
+            if (upstreamJson != null) {
+                for (JsonNode event : upstreamJson) {
+                    String eventStr = event.toString();
+                    rabbitMqTemplate.convertAndSend(eventStr);
+                }
+            }
+        }
     }
 
     @Override

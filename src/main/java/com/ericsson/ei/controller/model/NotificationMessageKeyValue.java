@@ -3,6 +3,7 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,6 +26,7 @@ public class NotificationMessageKeyValue {
     @JsonProperty("formvalue")
     private String formvalue;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("formkey")
@@ -47,11 +49,6 @@ public class NotificationMessageKeyValue {
         this.formvalue = formvalue;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -63,8 +60,13 @@ public class NotificationMessageKeyValue {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("formkey", formkey).append("formvalue", formvalue).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(formkey).append(formvalue).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(additionalProperties).append(formkey).append(formvalue).toHashCode();
     }
 
     @Override
@@ -76,7 +78,7 @@ public class NotificationMessageKeyValue {
             return false;
         }
         NotificationMessageKeyValue rhs = ((NotificationMessageKeyValue) other);
-        return new EqualsBuilder().append(formkey, rhs.formkey).append(formvalue, rhs.formvalue).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).append(formkey, rhs.formkey).append(formvalue, rhs.formvalue).isEquals();
     }
 
 }

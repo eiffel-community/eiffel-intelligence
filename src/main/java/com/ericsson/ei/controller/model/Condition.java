@@ -3,6 +3,7 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,6 +23,7 @@ public class Condition {
     @JsonProperty("jmespath")
     private String jmespath;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("jmespath")
@@ -34,11 +36,6 @@ public class Condition {
         this.jmespath = jmespath;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -47,6 +44,11 @@ public class Condition {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("jmespath", jmespath).append("additionalProperties", additionalProperties).toString();
     }
 
     @Override

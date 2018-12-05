@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,8 +23,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class Requirement {
 
     @JsonProperty("conditions")
+    @Valid
     private List<Condition> conditions = new ArrayList<Condition>();
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("conditions")
@@ -36,11 +39,6 @@ public class Requirement {
         this.conditions = conditions;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -49,6 +47,11 @@ public class Requirement {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("conditions", conditions).append("additionalProperties", additionalProperties).toString();
     }
 
     @Override

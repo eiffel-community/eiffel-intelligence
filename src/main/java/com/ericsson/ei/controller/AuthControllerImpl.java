@@ -16,8 +16,6 @@
 */
 package com.ericsson.ei.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +26,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * Endpoints /auth/login and /auth/checkStatus should be secured in case LDAP is enabled
  * Endpoint /auth should be not secured
@@ -37,7 +38,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Api(value = "Auth", description = "REST endpoints for authentication and authorization")
 public class AuthControllerImpl implements AuthController {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(AuthControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthControllerImpl.class);
 
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
@@ -58,7 +59,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To get login of current user", response = String.class)
-    public ResponseEntity<?> getLogin() {
+    public ResponseEntity<?> getAuthLogin() {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
@@ -72,7 +73,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check backend status", response = String.class)
-    public ResponseEntity<?> getCheckStatus() {
+    public ResponseEntity<?> getAuthCheckStatus() {
         try {
             return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {

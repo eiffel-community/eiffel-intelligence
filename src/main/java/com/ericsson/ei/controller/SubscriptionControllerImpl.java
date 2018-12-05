@@ -100,7 +100,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionNames) {
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(@PathVariable String subscriptionNames) {
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
@@ -145,7 +145,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
                 if (subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);
-                    subscription.setCreated(Instant.now().toEpochMilli());
+                    subscription.setCreated((float) Instant.now().toEpochMilli());
                     subscriptionService.modifySubscription(subscription, subscriptionName);
                     LOG.debug("Subscription updating is completed: " + subscriptionName);
                 } else {
@@ -163,7 +163,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionNames) {
+    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(@PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));

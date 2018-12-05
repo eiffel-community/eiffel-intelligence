@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,10 +44,12 @@ public class Subscription {
     @JsonProperty("restPostBodyMediaType")
     private String restPostBodyMediaType;
     @JsonProperty("notificationMessageKeyValues")
+    @Valid
     private List<NotificationMessageKeyValue> notificationMessageKeyValues = new ArrayList<NotificationMessageKeyValue>();
     @JsonProperty("repeat")
     private Boolean repeat;
     @JsonProperty("requirements")
+    @Valid
     private List<Requirement> requirements = new ArrayList<Requirement>();
     @JsonProperty("subscriptionName")
     private String subscriptionName;
@@ -57,6 +60,7 @@ public class Subscription {
     @JsonProperty("ldapUserName")
     private String ldapUserName;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("aggregationtype")
@@ -179,11 +183,6 @@ public class Subscription {
         this.ldapUserName = ldapUserName;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -195,8 +194,13 @@ public class Subscription {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("aggregationtype", aggregationtype).append("created", created).append("notificationMeta", notificationMeta).append("notificationType", notificationType).append("restPostBodyMediaType", restPostBodyMediaType).append("notificationMessageKeyValues", notificationMessageKeyValues).append("repeat", repeat).append("requirements", requirements).append("subscriptionName", subscriptionName).append("userName", userName).append("password", password).append("ldapUserName", ldapUserName).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(aggregationtype).append(created).append(notificationMeta).append(notificationType).append(restPostBodyMediaType).append(notificationMessageKeyValues).append(repeat).append(requirements).append(subscriptionName).append(userName).append(password).append(ldapUserName).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(requirements).append(created).append(restPostBodyMediaType).append(notificationType).append(userName).append(aggregationtype).append(notificationMessageKeyValues).append(password).append(repeat).append(subscriptionName).append(notificationMeta).append(additionalProperties).append(ldapUserName).toHashCode();
     }
 
     @Override
@@ -208,7 +212,7 @@ public class Subscription {
             return false;
         }
         Subscription rhs = ((Subscription) other);
-        return new EqualsBuilder().append(aggregationtype, rhs.aggregationtype).append(created, rhs.created).append(notificationMeta, rhs.notificationMeta).append(notificationType, rhs.notificationType).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(repeat, rhs.repeat).append(requirements, rhs.requirements).append(subscriptionName, rhs.subscriptionName).append(userName, rhs.userName).append(password, rhs.password).append(ldapUserName, rhs.ldapUserName).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(requirements, rhs.requirements).append(created, rhs.created).append(restPostBodyMediaType, rhs.restPostBodyMediaType).append(notificationType, rhs.notificationType).append(userName, rhs.userName).append(aggregationtype, rhs.aggregationtype).append(notificationMessageKeyValues, rhs.notificationMessageKeyValues).append(password, rhs.password).append(repeat, rhs.repeat).append(subscriptionName, rhs.subscriptionName).append(notificationMeta, rhs.notificationMeta).append(additionalProperties, rhs.additionalProperties).append(ldapUserName, rhs.ldapUserName).isEquals();
     }
 
 }

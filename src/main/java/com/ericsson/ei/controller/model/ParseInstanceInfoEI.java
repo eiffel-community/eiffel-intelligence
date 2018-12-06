@@ -24,11 +24,20 @@ import com.ericsson.ei.subscriptionhandler.SendMail;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
+
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
@@ -36,14 +45,19 @@ import java.util.List;
  */
 @Component
 public class ParseInstanceInfoEI {
+    @Getter
+    @Value("${build.version.name::#{null}}")
+    private String EnterpriseVersionName;
 
     @Getter
-    @Value("${spring.application.name}")
-    private String applicationName;
+    @Value("${build.version:#{null}}")
+    private String EnterpriseVersion;
 
     @Getter
-    @Value("${build.version}")
     private String version;
+
+    @Getter
+    private String applicationName;
 
     @Getter
     @Value("${rules.path}")
@@ -97,7 +111,17 @@ public class ParseInstanceInfoEI {
     @Autowired
     private ERQueryService erUrl;
 
-    public ParseInstanceInfoEI(){
+    @PostConstruct
+    public void init() throws IOException, XmlPullParserException {
+        getDataFromPom();
+    }
+
+    private void getDataFromPom() throws FileNotFoundException, IOException, XmlPullParserException {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model;
+        model = reader.read(new FileReader("pom.xml"));
+        applicationName = model.getArtifactId();
+        version = model.getVersion();
     }
 
     @Component

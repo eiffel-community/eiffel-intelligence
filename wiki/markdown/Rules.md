@@ -147,7 +147,7 @@ of aggregated object depending on **_MergeResolverRules_**.
 
 **MergeResolverRules** - This is a JSON object describing the entire path or 
 parts of the path to where the extracted content will be stored. More detailed 
-explanation can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/MergeResolverRules.md)
+explanation can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/MergeResolverRules.md)
 
 **ProcessRules** - This rule is used to append (_only additions or modifications, 
 no deletions, of existing content at time rule is applied_) new key value pairs 
@@ -157,7 +157,7 @@ then you can create one more value for the computed duration so that other
 systems do not need to compute it.
 
 **History Rules** are used if you need to aggregate data from existing events 
-linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/History-rules.md)
+linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/History-rules.md)
 
 ## Existing rules files
 

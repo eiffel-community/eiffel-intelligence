@@ -25,9 +25,6 @@ import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
@@ -112,16 +110,11 @@ public class ParseInstanceInfoEI {
     private ERQueryService erUrl;
 
     @PostConstruct
-    public void init() throws IOException, XmlPullParserException {
-        getDataFromPom();
-    }
-
-    private void getDataFromPom() throws FileNotFoundException, IOException, XmlPullParserException {
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model;
-        model = reader.read(new FileReader("pom.xml"));
-        applicationName = model.getArtifactId();
-        version = model.getVersion();
+    public void init() throws IOException {
+        Properties properties = new Properties();
+        properties.load(ParseInstanceInfoEI.class.getResourceAsStream("/default-application.properties"));
+        version = properties.getProperty("version");
+        applicationName = properties.getProperty("artifactId");
     }
 
     @Component

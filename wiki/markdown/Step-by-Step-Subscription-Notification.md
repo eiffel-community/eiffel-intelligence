@@ -7,8 +7,8 @@ sent to the subscriber as specified in that subscription. For further explanatio
 consider the following example:
 Suppose a subscription is created (as shown below) by a user and then that is 
 stored in the subscription database.
-More detail about subscription and its fields can be found [here](./Subscription-AP.mdI) 
-and [here](./Add-Subscription.md).
+More detail about subscription and its fields can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/Subscription-API.md) 
+and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/Add-Subscription.md).
 
     {
         "created": "2017-07-26",

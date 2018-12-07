@@ -151,13 +151,13 @@ next step is to query the database for all the upstream linked objects for this
 event. Then each of the linked object is processed individually. For each 
 object, its rule object field “HistoryExtractionRules” is used to extract 
 contents from it and merge with the aggregated object. More about the 
-“HistoryExtractionRules” can be found [here](./Rules.md). Finally, the modified 
+“HistoryExtractionRules” can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/Rules.md). Finally, the modified 
 aggregated object is updated in the database.
 
 On the other hand, If the event is linked to aggregated object(s) then each of 
 the aggregated object is processed together with this event. The contents of 
 the event to be merged into the aggregated object are extracted and added to 
 the aggregated object using “MergeResolverRules”. More about 
-“MergeResolverRules” can be found [here](./Rules.md). Next, “ProcessRules” 
+“MergeResolverRules” can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/Rules.md). Next, “ProcessRules” 
 (if exist) are applied on the aggregated object and the resulting modified 
 aggregated object is updated in the database.

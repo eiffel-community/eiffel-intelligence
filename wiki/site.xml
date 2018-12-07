@@ -56,7 +56,6 @@
                 <item name="Merge Resolver Rules" href="MergeResolverRules.html" />
                 <item name="History Rules" href="History-rules.html" />
             </item>
-            <item name="TestRules User Guide" href="TestRulesUserGuide.html" />
             <item collapse="true" name="Step-by-step aggregation" href="Step-by-Step-Aggregation.html">
                 <item name="EiffelArtifactCreatedEvent aggregation" href="ArtifactCreatedEvent-aggregation.html" />
                 <item name="EiffelTestCaseTriggeredEvent aggregation" href="EiffelTestCaseTriggeredEvent-Aggregation.html" />

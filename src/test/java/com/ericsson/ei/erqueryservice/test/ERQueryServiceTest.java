@@ -16,11 +16,13 @@
 */
 package com.ericsson.ei.erqueryservice.test;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.erqueryservice.SearchParameters;
-import com.fasterxml.jackson.databind.JsonNode;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.BDDMockito.given;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,16 +49,15 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.BDDMockito.given;
+import com.ericsson.ei.App;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.erqueryservice.SearchParameters;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class, 
+        App.class,
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 public class ERQueryServiceTest {
@@ -72,7 +73,7 @@ public class ERQueryServiceTest {
     private int limitParam = 85;
     private int levels = 2;
     private boolean isTree = true;
-    
+
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -84,33 +85,32 @@ public class ERQueryServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
-//    @Test
-//    public void testErQueryUpstream() {
-//        erQueryService.setRest(rest);
-//        searchOption = SearchOption.UP_STREAM;
-//        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-//                            Mockito.any(Class.class)))
-//            .willAnswer(
-//                returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-//                                   Mockito.any(Class.class)));
-//        ResponseEntity<JsonNode> result =
-//            erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
-//        System.out.println(result);
-//    }
-//
-//    Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
-//            Class responseType) {
-//        return invocation -> {
-//            URI arg0 = invocation.getArgument(0);
-//            String expectedUri = buildUri();
-//            assertEquals(expectedUri, arg0.toString());
-//            HttpEntity arg2 = invocation.getArgument(2);
-//            SearchParameters body = (SearchParameters) arg2.getBody();
-//            assertBody(body);
-//            boolean firstStop = true;
-//            return new ResponseEntity(HttpStatus.OK);
-//        };
-//    }
+	@Test
+	public void testErQueryUpstream() {
+		erQueryService.setRest(rest);
+		searchOption = SearchOption.UP_STREAM;
+		given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
+				Mockito.any(Class.class)))
+						.willAnswer(returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
+								Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
+		ResponseEntity<JsonNode> result = erQueryService.getEventStreamDataById(eventId, searchOption, limitParam,
+				levels, isTree);
+		System.out.println(result);
+	}
+
+	Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
+			Class responseType) {
+		return invocation -> {
+			URI arg0 = invocation.getArgument(0);
+			String expectedUri = buildUri();
+			assertEquals(expectedUri, arg0.toString());
+			HttpEntity arg2 = invocation.getArgument(2);
+			SearchParameters body = (SearchParameters) arg2.getBody();
+			assertBody(body);
+			boolean firstStop = true;
+			return new ResponseEntity(HttpStatus.OK);
+		};
+	}
 
     public String buildUri() {
         String uri = "";

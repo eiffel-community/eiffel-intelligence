@@ -66,5 +66,5 @@
              "type":"string"
           }
        },       
-       "required": ["notificationMeta", "notificationType","restPostBodyMediaType", "subscriptionName", "requirements", "ldapUserName"]
+       "required": ["notificationMeta", "notificationType","restPostBodyMediaType", "subscriptionName", "requirements"]
  }

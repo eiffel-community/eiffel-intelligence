@@ -457,14 +457,14 @@ public class SubscriptionValidatorTest {
 
 	@Test
 	public void validateSubscriptionWithSchemaTest() throws Exception {
-		subscriptionValid.setLdapUserName("myName");
+		subscriptionValid.setSubscriptionName("myName");
 		try {
 			invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
 		} catch (SubscriptionValidationException e) {
 			assertTrue(false);
 		}
 
-		subscriptionValid.setLdapUserName(null);
+		subscriptionValid.setSubscriptionName(null);
 		try {
 			invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
 		} catch (SubscriptionValidationException e) {

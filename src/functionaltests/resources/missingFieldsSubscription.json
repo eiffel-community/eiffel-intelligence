@@ -2,7 +2,6 @@
   {
     "subscriptionName": "mySubscription",
     "userName" : "DEF",
-    "ldapUserName" : "userLdap",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",

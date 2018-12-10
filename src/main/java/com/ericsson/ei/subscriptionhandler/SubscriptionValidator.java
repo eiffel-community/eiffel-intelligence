@@ -16,22 +16,30 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.exception.SubscriptionValidationException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+
+import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
+import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SubscriptionValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionValidator.class);
-
+	private static final String SCHEMA_FILE_PATH = "/subscription_schema.json";
     /**
      * Validation of parameters values in subscriptions objects. Throws
      * SubscriptionValidationException if validation of a parameter fails due to
@@ -41,7 +49,7 @@ public class SubscriptionValidator {
      */
     public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
         LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
-        this.validateSubscriptionName(subscription.getSubscriptionName());
+		this.validateSubscriptionName(subscription.getSubscriptionName());
         this.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(),
                 subscription.getRestPostBodyMediaType());
         this.validateNotificationMeta(subscription.getNotificationMeta());
@@ -165,4 +173,28 @@ public class SubscriptionValidator {
             throw new SubscriptionValidationException("Wrong email address: " + email);
         }
     }
+
+	public void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
+		LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
+
+		ObjectMapper mapper = new ObjectMapper();
+		String subscriptionJson = null;
+		try {
+			subscriptionJson = mapper.writeValueAsString(subscription);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			LOGGER.error("Failed to create object to json" + "\nError message: " + e.getMessage(), e);
+		}
+		JSONObject jsonSubscriptionObj = new JSONObject(subscriptionJson);
+		JSONObject jsonSchemaObj = new JSONObject(
+				new JSONTokener(this.getClass().getResourceAsStream(SCHEMA_FILE_PATH)));
+		// JSONObject jsonSchema = new JSONObject(new JSONTokener(file));
+		Schema schema = SchemaLoader.load(jsonSchemaObj);
+		try {
+			schema.validate(jsonSubscriptionObj);
+		} catch (ValidationException e) {
+			throw new SubscriptionValidationException("Schema validation fails" + e.getMessage());
+		}
+	}
+
 }

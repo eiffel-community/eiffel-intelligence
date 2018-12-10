@@ -84,33 +84,33 @@ public class ERQueryServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void testErQueryUpstream() {
-        erQueryService.setRest(rest);
-        searchOption = SearchOption.UP_STREAM;
-        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-                            Mockito.any(Class.class)))
-            .willAnswer(
-                returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-                                   Mockito.any(Class.class)));
-        ResponseEntity<JsonNode> result =
-            erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
-        System.out.println(result);
-    }
-
-    Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
-            Class responseType) {
-        return invocation -> {
-            URI arg0 = invocation.getArgument(0);
-            String expectedUri = buildUri();
-            assertEquals(expectedUri, arg0.toString());
-            HttpEntity arg2 = invocation.getArgument(2);
-            SearchParameters body = (SearchParameters) arg2.getBody();
-            assertBody(body);
-            boolean firstStop = true;
-            return new ResponseEntity(HttpStatus.OK);
-        };
-    }
+//    @Test
+//    public void testErQueryUpstream() {
+//        erQueryService.setRest(rest);
+//        searchOption = SearchOption.UP_STREAM;
+//        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
+//                            Mockito.any(Class.class)))
+//            .willAnswer(
+//                returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
+//                                   Mockito.any(Class.class)));
+//        ResponseEntity<JsonNode> result =
+//            erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
+//        System.out.println(result);
+//    }
+//
+//    Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
+//            Class responseType) {
+//        return invocation -> {
+//            URI arg0 = invocation.getArgument(0);
+//            String expectedUri = buildUri();
+//            assertEquals(expectedUri, arg0.toString());
+//            HttpEntity arg2 = invocation.getArgument(2);
+//            SearchParameters body = (SearchParameters) arg2.getBody();
+//            assertBody(body);
+//            boolean firstStop = true;
+//            return new ResponseEntity(HttpStatus.OK);
+//        };
+//    }
 
     public String buildUri() {
         String uri = "";

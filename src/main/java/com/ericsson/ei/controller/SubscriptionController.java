@@ -3,6 +3,7 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,20 +34,20 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<List<String>> createSubscription(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> createSubscription(
         @Valid
         @RequestBody
-        List<String> string);
+        List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
      * Modify existing Subscriptions.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity<List<String>> updateSubscriptions(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> updateSubscriptions(
         @Valid
         @RequestBody
-        List<String> string);
+        List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
      * Returns the subscriptions for the given subscription names.
@@ -55,15 +56,15 @@ public interface SubscriptionController {
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
     public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(
         @PathVariable
-        java.lang.String subscriptionNames);
+        String subscriptionNames);
 
     /**
      * Removes the subscriptions from the database for the given subscription names.
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
-    public ResponseEntity<List<String>> deleteSubscriptionById(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionById(
         @PathVariable
-        java.lang.String subscriptionNames);
+        String subscriptionNames);
 
 }

@@ -1,0 +1,70 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"definitions": {},
+	"properties": {
+		"created": {
+			"type": "long"
+		},
+		"notificationMeta": {
+			"type": "string"
+		},
+		"notificationType": {
+			"type": "string"
+		},
+		"emailSubject": {
+		"type": "string"
+		},
+		"restPostBodyMediaType": {
+		"type": "string"
+		},
+		"notificationMessageKeyValues": {
+			"items": {
+				"properties": {
+					"formkey": {
+						"type": "string"
+					},
+					"formvalue": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"type": "array"
+		},
+		"repeat": {
+			"type": "boolean"
+		},
+		"requirements": {
+			"items": {
+				"properties": {
+					"conditions": {
+						"items": {
+							"properties": {
+								"jmespath": {
+									"type": "string"
+								}
+							},
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object"
+			},
+			"type": "array"
+		},
+		"subscriptionName": {
+			"type": "string"
+		},
+		"userName": {
+			"type": "string"
+		},
+		"password": {
+			"type": "string"
+		},
+		"ldapUserName": {
+			"type": "string"
+		}
+	},
+	"type": "object"
+}

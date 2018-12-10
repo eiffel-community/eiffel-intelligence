@@ -57,7 +57,7 @@ import com.ericsson.ei.services.IRuleCheckService;
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesRestAPI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesRestAPI.class);
     private static final String INPUT_FILE_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private static final String EXTRACTION_RULE_FILE_PATH = "src/test/resources/ExtractionRule.txt";
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
@@ -155,7 +155,7 @@ public class TestRulesRestAPI {
         String responseBody = new JSONObject().put("status", true).toString();
         RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
         ruleCheckControllerImpl.setTestEnable(true);
-        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());
 
@@ -166,7 +166,7 @@ public class TestRulesRestAPI {
         String responseBody = new JSONObject().put("status", false).toString();
         RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
         ruleCheckControllerImpl.setTestEnable(false);
-        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getTestRulePageEnabled();
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());
     }

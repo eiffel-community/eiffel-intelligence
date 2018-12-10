@@ -2,22 +2,27 @@
 package com.ericsson.ei.controller;
 
 import java.util.List;
+
 import javax.validation.Valid;
-import com.ericsson.ei.controller.model.GetSubscriptionResponse;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
+
 
 /**
  * Provides interaction with Subscription resource
- * (Generated with springmvc-raml-parser v.0.10.11)
+ * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
 @RestController
+@Validated
 @RequestMapping(value = "/subscriptions", produces = "application/json")
 public interface SubscriptionController {
 
@@ -54,7 +59,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 
@@ -63,7 +68,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionById(
+    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 

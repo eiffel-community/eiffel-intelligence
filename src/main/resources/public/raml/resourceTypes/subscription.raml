@@ -4,12 +4,12 @@
     get:
       description: Fetches all subscriptions as list.
       responses:
-        200:        
+        200:
           body:
             application/json:
-              
+
     post:
-      description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique. 
+      description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique.
       body:
         application/json:
           schema: subscriptionList
@@ -19,17 +19,17 @@
             application/json:
               schema: subscriptionResponse
 
-    put:      
+    put:
       description: Modify existing Subscriptions.
       body:
         application/json:
           schema: subscriptionList
       responses:
-        200:        
+        200:
           body:
             application/json:
               schema: subscriptionResponse
-                
+
     /{subscriptionNames}:
       uriParameters:
         subscriptionNames:
@@ -37,7 +37,7 @@
           description: The names of the Subscriptions separated by comma.
           required: true
           type: string
-      
+
       get:
         description: Returns the subscriptions for the given subscription names.
         responses:
@@ -51,7 +51,7 @@
       delete:
         description: Removes the subscriptions from the database for the given subscription names.
         responses:
-          200:        
+          200:
             body:
               application/json:
                 schema: subscriptionResponse

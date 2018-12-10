@@ -44,12 +44,8 @@ import javax.annotation.PostConstruct;
 @Component
 public class ParseInstanceInfoEI {
     @Getter
-    @Value("${build.version.name::#{null}}")
-    private String EnterpriseVersionName;
-
-    @Getter
     @Value("${build.version:#{null}}")
-    private String EnterpriseVersion;
+    private String applicationPropertiesVersion;
 
     @Getter
     private String version;

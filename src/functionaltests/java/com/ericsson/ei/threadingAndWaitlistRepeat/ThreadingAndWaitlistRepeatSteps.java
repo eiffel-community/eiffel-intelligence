@@ -1,7 +1,5 @@
 package com.ericsson.ei.threadingAndWaitlistRepeat;
 
-import com.ericsson.ei.utils.FunctionalTestBase;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -9,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +18,8 @@ import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
-import cucumber.api.java.After;
+import com.ericsson.ei.utils.FunctionalTestBase;
+
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

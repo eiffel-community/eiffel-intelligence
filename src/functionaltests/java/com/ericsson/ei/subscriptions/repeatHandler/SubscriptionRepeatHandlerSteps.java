@@ -1,21 +1,14 @@
 package com.ericsson.ei.subscriptions.repeatHandler;
 
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import gherkin.deps.com.google.gson.JsonObject;
-import gherkin.deps.com.google.gson.JsonParser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,14 +19,23 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.services.ISubscriptionService;
+import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import gherkin.deps.com.google.gson.JsonObject;
+import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {

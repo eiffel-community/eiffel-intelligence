@@ -37,7 +37,7 @@ services:
     expose:
       - "27017"
     ports:
-      - "27017:27017"
+      - "${MONGODB_PORT}:27017"
     healthcheck: 
         test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
         interval: 30s
@@ -55,8 +55,8 @@ services:
       - "15672"
       - "5672"
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${RABBITMQ_WEB_PORT}:15672"
+      - "${RABBITMQ_AMQP_PORT}:5672"
     healthcheck:
         test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
         interval: 30s
@@ -77,7 +77,7 @@ services:
     expose:
       - "8080"
     ports:
-      - "8084:8080"
+      - "${EIFFEL_ER_PORT}:8080"
     depends_on:
       - rabbitmq
       - mongodb
@@ -128,7 +128,7 @@ services:
     expose:
       - "8080"
     ports:
-      - "8081:8080"
+      - "${JENKINS_PORT}:8080"
     depends_on:
       - rabbitmq
       - mongodb
@@ -150,8 +150,8 @@ services:
      - "1025"
      - "8025"
     ports:
-     - "1025:1025"
-     - "8025:8025"
+     - "${MAIL_SMTP_PORT}:1025"
+     - "${MAIL_WEB_PORT}:8025"
     depends_on:
       - mongodb
     environment:

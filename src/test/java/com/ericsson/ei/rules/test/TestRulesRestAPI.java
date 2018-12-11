@@ -142,8 +142,13 @@ public class TestRulesRestAPI {
         }
     }
 
+    /**
+     * TestRulePageEnabled should always be false when pushed to Github.
+     *
+     * @throws Exception
+     */
     @Test
-    public void testGetTestRulePageEnabledAPI_setPropertyDefult() throws Exception {
+    public void testGetTestRulePageEnabledAPI_ensurePropertyFalse() throws Exception {
         String responseBody = new JSONObject().put("status", false).toString();
         mockMvc.perform(MockMvcRequestBuilders.get("/rules/rule-check/testRulePageEnabled")
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())

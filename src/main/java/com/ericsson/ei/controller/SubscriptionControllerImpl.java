@@ -42,7 +42,6 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.SchemaValidator;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
 
 import io.swagger.annotations.Api;
@@ -66,9 +65,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
 
-	private SchemaValidator schemaValidator = new SchemaValidator();
-
-    private Map<String, String> errorMap;
+	private Map<String, String> errorMap;
 
     @Override
     @CrossOrigin

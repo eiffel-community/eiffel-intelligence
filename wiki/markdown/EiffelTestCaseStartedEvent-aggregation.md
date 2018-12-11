@@ -1,6 +1,7 @@
 # EiffelTestCaseStartedEvent Aggregation
 
-Suppose that the test has started and as a result an EiffleTestCaseStarted event is received as follow: 
+Suppose that the test has started and as a result an EiffelTestCaseStarted 
+event is received as follow: 
 
     {   
         "links":[   
@@ -113,7 +114,8 @@ Following aggregated object is extracted by using the identify rules:
         } 
     ] 
 
-Process begins to extract content from the event, as specified in the extraction rule, and put in the aggregated object. 
+Process begins to extract content from the event, as specified in the 
+extraction rule, and put in the aggregated object. 
 
 Extraction rule: 
 
@@ -198,6 +200,5 @@ Finally, after merging the content, the merged object looks like this:
 
 Next step is to extract the process rules apply on the aggregated object: 
 
-In this case, since there are no process rules are provided so this step is skipped. 
-
- 
+In this case, since there are no process rules are provided so this step is 
+skipped.

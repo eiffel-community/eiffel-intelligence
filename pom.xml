@@ -20,11 +20,29 @@
         <output-relative-path>src/main/java</output-relative-path>
         <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
         <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
-        <base-package>com.ericsson.ei.controller</base-package>        
+        <base-package>com.ericsson.ei.controller</base-package>
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUnitTests>${skipTests}</skipUnitTests>
     </properties>
+
+    <!-- Reporting Plugins -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8</version>
+                <reportSets><!-- only generating index, no other reports -->
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <repositories>
         <repository>
@@ -156,7 +174,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
-        </dependency>      
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
@@ -284,7 +302,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -292,7 +310,7 @@
                 <version>${springmvc-raml-version}</version>
                 <configuration>
                     <!-- path to raml file -->
-                    <ramlPath>${raml-path}</ramlPath>                    
+                    <ramlPath>${raml-path}</ramlPath>
                     <!-- output of generated code -->
                     <outputRelativePath>${output-relative-path}</outputRelativePath>
                     <addTimestampFolder>false</addTimestampFolder>
@@ -358,7 +376,7 @@
                 <version>2.20</version>
                 <configuration>
                     <forkCount>2C</forkCount>
-                    <reuseForks>false</reuseForks>                  
+                    <reuseForks>false</reuseForks>
                     <skipTests>${skipUnitTests}</skipTests>
                     <excludes>
                         <exclude>${someModule.test.excludes}</exclude>
@@ -368,7 +386,7 @@
                     </includes>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-failsafe-plugin</artifactId>
@@ -409,6 +427,25 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <!-- This is where site.xml is located -->
+                    <siteDirectory>${basedir}/wiki</siteDirectory>
+                    <!-- Github pages only generates documentation from docs directory -->
+                    <outputDirectory>${basedir}/docs</outputDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.8</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
         </plugins>

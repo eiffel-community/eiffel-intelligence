@@ -1,6 +1,7 @@
 # EiffelArtifactPublishedEvent Aggregation
 
-Consider an artifact has been published and EiffelTestCaseStarted event is generated as follow: 
+Consider an artifact has been published and EiffelTestCaseStarted event is 
+generated as follow: 
 
     {   
         "links":[   
@@ -230,7 +231,8 @@ Following aggregated object is extracted by using the identify rules:
         } 
     } 
 
-Process begins to extract content from the event as specified in the extraction rule and puts it in the aggregated object. 
+Process begins to extract content from the event as specified in the extraction 
+rule and puts it in the aggregated object. 
 
 Extraction rule: 
 
@@ -455,7 +457,6 @@ Finally, after merging the content, the merged object looks like this:
         ] 
     } 
 
-  
 
 Next step is to extract the process rules apply on the aggregated object: 
 

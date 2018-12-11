@@ -1,6 +1,8 @@
 # EiffelTestCaseTriggeredEvent Aggregation
 
-When the start event ArtifactCreatedEvent has been aggregated we assume that it has triggered a test case and an EiffelTestCaseTriggeredEvent is received that looks like below. 
+When the start event ArtifactCreatedEvent has been aggregated we assume that it 
+has triggered a test case and an EiffelTestCaseTriggeredEvent is received that 
+looks like below. 
 
     { 
       "data": { 
@@ -70,11 +72,12 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"] 
 
-But there is no object with such id in the database and aggregatedObject returns empty. Event is added to wait list. There it waits until the object with requested id appears in database. 
+But there is no object with such id in the database and aggregatedObject 
+returns empty. Event is added to wait list. There it waits until the object 
+with requested id appears in database. 
 
-Under a time a second EiffelTestCaseTriggeredEvent is received and it looks like below: 
-
- 
+Under a time a second EiffelTestCaseTriggeredEvent is received and it looks 
+like below: 
 
     { 
       "data": { 
@@ -139,9 +142,12 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"] 
 
-It is the same id, as previously and the object with that id is still not in the database. aggregatedObject returns empty and event is added to wait list. There, it waits until the object with requested id appears in the database. 
+It is the same id, as previously and the object with that id is still not in 
+the database. aggregatedObject returns empty and event is added to wait list. 
+There, it waits until the object with requested id appears in the database. 
 
-Object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" appears but is modified before one of the above events are taken from the wait list. 
+Object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" appears but is modified 
+before one of the above events are taken from the wait list. 
 
 The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below: 
 
@@ -189,7 +195,8 @@ The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
         } 
       } 
      
-First event with id "6d3df0e0-404d-46ee-ab4f-3118457148f4" is aggregated. The required content is extracted from the event as specified in the rule:  
+First event with id "6d3df0e0-404d-46ee-ab4f-3118457148f4" is aggregated. The 
+required content is extracted from the event as specified in the rule:  
 
     "ExtractionRules": "{ testCaseTriggeredEventId:meta.id, testCaseTriggeredTime:meta.time, outcome:data.testCase }" 
 
@@ -197,7 +204,8 @@ And is put in to the object in the way as it is specified in this rule:
 
     "MergeResolverRules": "[ {NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: meta.id }]} ]" 
 
-JSON object with requested data will be put into array and stored in aggregated object with key “testsKeysExecutions”. Data in correct format will look like: 
+JSON object with requested data will be put into array and stored in aggregated 
+object with key “testsKeysExecutions”. Data in correct format will look like: 
 
     "testCaseExecutions": [ 
 
@@ -269,7 +277,8 @@ And the result object will look like below:
       } 
     } 
      
-Then the second event with id "6d3df0e0-404d-46ee-ab4f-3118457148f5" is taken from wait list and it is aggregated. 
+Then the second event with id "6d3df0e0-404d-46ee-ab4f-3118457148f5" is taken 
+from wait list and it is aggregated. 
 
 The required content is extracted from the event as specified in the rule:  
 
@@ -288,7 +297,9 @@ Data in correct format will look like:
         "outcome": null 
       } 
 
-But because the object already contains a key “testCaseExecutions” that contains an array. The JSON object with data will be added to existing array. New “testCaseExecutions“ array will look like: 
+But because the object already contains a key “testCaseExecutions” that contains 
+an array. The JSON object with data will be added to existing array. New 
+“testCaseExecutions“ array will look like: 
 
     "testCaseExecutions": [ 
           { 

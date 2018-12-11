@@ -1,8 +1,9 @@
 # EiffelTestCaseFinishedEvent Aggregation
 
-Eiffel Test Case Finished Event  
 
-Suppose that and artifact has been build, published and uploaded and all tests in a test case has finished and as a result an EiffleTestCaseFinished event is received as follow:  
+Suppose that and artifact has been build, published and uploaded and all tests 
+in a test case has finished and as a result an EiffelTestCaseFinished event is 
+received as follow:  
 
     { 
        "links":[ 
@@ -107,7 +108,8 @@ Following aggregated object is extracted by using the identify rules:
       } 
     } 
 
-The event EiffelTestCaseFinishedEvent is aggregated. The required content is extracted from the event as specified in the rule: 
+The event EiffelTestCaseFinishedEvent is aggregated. The required content is 
+extracted from the event as specified in the rule: 
 
     "ExtractionRules":"{ testCaseFinishedEventId:meta.id,    testCaseFinishedTime:meta.time, outcome:data.outcome}" 
 
@@ -119,9 +121,13 @@ Here we also have some processRules:
 
     "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}", 
 
-The processRules in this case makes a calculation where id calculates the difference from testCasestartedTime and testCaseFinishedTime this calculated time is the time it took for the test case to execute and is put in a key called testCaseDuration. 
+The processRules in this case makes a calculation where id calculates the 
+difference from testCasestartedTime and testCaseFinishedTime this calculated 
+time is the time it took for the test case to execute and is put in a key 
+called testCaseDuration. 
 
-JSON object with requested data will be put into array and stored in aggregated object with key “testsKeysExecutions”. Data in correct format will look like: 
+JSON object with requested data will be put into array and stored in aggregated 
+object with key “testsKeysExecutions”. Data in correct format will look like: 
 
     { 
       "testCaseStartedTime":1481875925916, 
@@ -135,7 +141,8 @@ JSON object with requested data will be put into array and stored in aggregated 
       } 
     } 
 
-Finally, you will be able to find the fully aggregated object that may contain information about one or several executed test cases: 
+Finally, you will be able to find the fully aggregated object that may contain 
+information about one or several executed test cases: 
 
     { 
       "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", 
@@ -316,4 +323,3 @@ Finally, you will be able to find the fully aggregated object that may contain i
         ] 
       } 
     } 
-  

@@ -99,7 +99,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -111,7 +110,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -152,7 +150,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -170,7 +167,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -188,7 +184,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -211,7 +206,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -320,7 +314,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -331,7 +324,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -371,7 +363,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -399,7 +390,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -411,7 +401,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -441,7 +430,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test

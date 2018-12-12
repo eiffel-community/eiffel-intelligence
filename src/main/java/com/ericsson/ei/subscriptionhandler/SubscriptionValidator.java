@@ -48,16 +48,17 @@ public class SubscriptionValidator {
      *
      * @param subscription
      */
-    public void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
+    public static void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
         LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
-        this.validateSubscriptionName(subscription.getSubscriptionName());
-        this.validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(),
+        validateSubscriptionName(subscription.getSubscriptionName());
+        validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(),
                 subscription.getRestPostBodyMediaType());
-        this.validateNotificationMeta(subscription.getNotificationMeta());
-        this.validateNotificationType(subscription.getNotificationType());
+        validateNotificationMeta(subscription.getNotificationMeta());
+        validateNotificationType(subscription.getNotificationType());
         if (subscription.getNotificationType().equals("REST_POST")) {
-            this.RestPostMediaType(subscription.getRestPostBodyMediaType());
+            RestPostMediaType(subscription.getRestPostBodyMediaType());
         }
+        validateWithSchema(subscription);
         LOGGER.debug("Validating of subscription " + subscription.getSubscriptionName() + " finished successfully.");
     }
 
@@ -68,7 +69,7 @@ public class SubscriptionValidator {
      *
      * @param subscriptionName
      */
-    private void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
+    private static void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
         String regex = "^[A-Za-z0-9_]+$";
         if (subscriptionName == null) {
             throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
@@ -86,7 +87,7 @@ public class SubscriptionValidator {
      * @param restPostBodyMediaType
      */
 
-    private void validateNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessage,
+    private static void validateNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessage,
             String restPostBodyMediaType) throws SubscriptionValidationException {
         for (NotificationMessageKeyValue item : notificationMessage) {
             String testKey = item.getFormkey();
@@ -123,7 +124,7 @@ public class SubscriptionValidator {
      *
      * @param notificationMeta
      */
-    private void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
+    private static void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
         String regex = ".*[\\s].*";
         if (notificationMeta == null) {
             throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
@@ -139,7 +140,7 @@ public class SubscriptionValidator {
      *
      * @param notificationType
      */
-    private void validateNotificationType(String notificationType) throws SubscriptionValidationException {
+    private static void validateNotificationType(String notificationType) throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
         if (notificationType == null) {
@@ -150,7 +151,7 @@ public class SubscriptionValidator {
         }
     }
 
-    private void RestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
+    private static void RestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
         String regexApplication_JSON = "[\\s]*application/json[\\\\s]*";
         String regexApplicationFormUrlEncoded = "[\\s]*application/x-www-form-urlencoded[\\\\s]*";
         if (restPostMediaType == null) {
@@ -167,7 +168,7 @@ public class SubscriptionValidator {
      *
      * @param email
      */
-    public void validateEmail(String email) throws SubscriptionValidationException {
+    public static void validateEmail(String email) throws SubscriptionValidationException {
         final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
                 Pattern.CASE_INSENSITIVE);
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
@@ -176,27 +177,31 @@ public class SubscriptionValidator {
         }
     }
 
-    public void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
+    public static void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
         LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
-
-        ObjectMapper mapper = new ObjectMapper();
-        String subscriptionJson = null;
-        try {
-            subscriptionJson = mapper.writeValueAsString(subscription);
-        } catch (JsonProcessingException e) {
-            LOGGER.error("Failed to create object to json" + "\nError message: " + e.getMessage(), e);
-            throw new SubscriptionValidationException(
-                    "Failed to create object to json" + "\nError message: " + e.getMessage());
-        }
+        String subscriptionJson = objectToJson(subscription);
         JSONObject jsonSubscriptionObj = new JSONObject(subscriptionJson);
         JSONObject jsonSchemaObj = new JSONObject(
-                new JSONTokener(this.getClass().getResourceAsStream(SCHEMA_FILE_PATH)));
+                new JSONTokener(SubscriptionValidator.class.getResourceAsStream(SCHEMA_FILE_PATH)));
         Schema schema = SchemaLoader.load(jsonSchemaObj);
         try {
             schema.validate(jsonSubscriptionObj);
         } catch (ValidationException e) {
             throw new SubscriptionValidationException("Schema validation fails" + e.getMessage());
         }
+    }
+
+    public static String objectToJson(Subscription subObject) throws SubscriptionValidationException {
+        ObjectMapper mapper = new ObjectMapper();
+        String subJson = null;
+        try {
+            subJson = mapper.writeValueAsString(subObject);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Failed to create object to json" + "\nError message: " + e.getMessage(), e);
+            throw new SubscriptionValidationException(
+                    "Failed to create object to json" + "\nError message: " + e.getMessage());
+        }
+        return subJson;
     }
 
 }

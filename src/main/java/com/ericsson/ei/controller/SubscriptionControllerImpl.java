@@ -65,7 +65,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
 
-	private Map<String, String> errorMap;
+    private Map<String, String> errorMap;
 
     @Override
     @CrossOrigin
@@ -79,7 +79,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             try {
                 LOG.debug("Subscription creation has been started: " + subscriptionName);
                 subscriptionValidator.validateSubscription(subscription);
-				subscriptionValidator.validateWithSchema(subscription);
 
                 if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);

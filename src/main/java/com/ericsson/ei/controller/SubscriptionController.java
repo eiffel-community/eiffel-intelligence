@@ -2,8 +2,9 @@
 package com.ericsson.ei.controller;
 
 import java.util.List;
+
 import javax.validation.Valid;
-import com.ericsson.ei.controller.model.GetSubscriptionResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 
 
 /**

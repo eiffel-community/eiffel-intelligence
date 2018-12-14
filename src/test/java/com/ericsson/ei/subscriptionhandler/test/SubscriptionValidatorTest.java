@@ -16,6 +16,13 @@
 */
 package com.ericsson.ei.subscriptionhandler.test;
 
+import static org.junit.Assert.assertTrue;
+import static org.powermock.reflect.Whitebox.invokeMethod;
+
+import org.junit.Test;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.controller.model.Condition;
 import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
@@ -23,13 +30,6 @@ import com.ericsson.ei.controller.model.Requirement;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
-import org.junit.Test;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.junit.Assert.assertTrue;
-import static org.powermock.reflect.Whitebox.invokeMethod;
 
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 public class SubscriptionValidatorTest {
@@ -40,7 +40,6 @@ public class SubscriptionValidatorTest {
 
     public SubscriptionValidatorTest() {
         subscriptionValidator = new SubscriptionValidator();
-
 
         // subscriptionValidator -------------------------
         subscriptionValid = new Subscription();
@@ -88,9 +87,8 @@ public class SubscriptionValidatorTest {
     }
 
     /**
-     * Validator unit tests for SubscriptionName parameter in Subscription.
-     * Valid "SubscriptionName" values:
-     * - All letters and numbers: [A-Za-z0-9_].
+     * Validator unit tests for SubscriptionName parameter in Subscription. Valid
+     * "SubscriptionName" values: - All letters and numbers: [A-Za-z0-9_].
      */
     @Test
     public void validateSubscriptionNameValidNameTest() throws Exception {
@@ -101,7 +99,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -113,7 +110,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -148,12 +144,12 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormvalue("@");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -161,15 +157,16 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -177,15 +174,16 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("json");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -193,19 +191,21 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("json");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
         notificationMessageKeyValue2.setFormkey("json2");
-        notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue2.setFormvalue(
+                "{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -216,7 +216,8 @@ public class SubscriptionValidatorTest {
         notificationMessageKeyValue.setFormvalue("kalle.kalle@domain.com");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), "");
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), "");
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -229,10 +230,12 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("mykey");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -245,10 +248,12 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -261,14 +266,17 @@ public class SubscriptionValidatorTest {
         Subscription subscription = new Subscription();
         NotificationMessageKeyValue notificationMessageKeyValue = new NotificationMessageKeyValue();
         notificationMessageKeyValue.setFormkey("json");
-        notificationMessageKeyValue.setFormvalue("{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue.setFormvalue(
+                "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
         notificationMessageKeyValue2.setFormkey("");
-        notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue2.setFormvalue(
+                "{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -285,10 +293,12 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         NotificationMessageKeyValue notificationMessageKeyValue2 = new NotificationMessageKeyValue();
         notificationMessageKeyValue2.setFormkey("json");
-        notificationMessageKeyValue2.setFormvalue("{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
+        notificationMessageKeyValue2.setFormvalue(
+                "{parameter2: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}");
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues", subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
+                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -304,7 +314,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -315,13 +324,13 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
     public void validateRestPostMediaTypeInvalidMessageTest() throws Exception {
         try {
-            invokeMethod(subscriptionValidator, "RestPostMediaType", MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
+            invokeMethod(subscriptionValidator, "RestPostMediaType",
+                    MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -341,9 +350,8 @@ public class SubscriptionValidatorTest {
     }
 
     /**
-     * Validator unit tests for NotificationMeta parameter in Subscription.
-     * Valid "NotificationMeta" value:
-     * - "http://127.0.0.1:3000/ei/test_subscription_rest"
+     * Validator unit tests for NotificationMeta parameter in Subscription. Valid
+     * "NotificationMeta" value: - "http://127.0.0.1:3000/ei/test_subscription_rest"
      * - "kalle.kalle@domain.com"
      */
     @Test
@@ -355,7 +363,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -371,8 +378,8 @@ public class SubscriptionValidatorTest {
     }
 
     /**
-     * Validator unit tests for NotificationType parameter in Subscription.
-     * Valid "NotificationType" value: true or false
+     * Validator unit tests for NotificationType parameter in Subscription. Valid
+     * "NotificationType" value: true or false
      */
     @Test
     public void validateNotificationTypeValidTypeMAILTest() throws Exception {
@@ -383,7 +390,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -395,7 +401,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -410,35 +415,51 @@ public class SubscriptionValidatorTest {
         assertTrue(false);
     }
 
-	
-	// TODO: Validator Unit tests for Jmepath syntax validator needs to be implemented here.
-	
-	
-	/**
-	 * Unit tests for testing a whole  Subscription Json object.
-	 * Valid Result: true or false
-	 */
-	@Test
-	public void validateFullSubscriptionWithValidSubscriptionParameters() {
-		try {
-			subscriptionValidator.validateSubscription(subscriptionValid);
-		}
-		catch (SubscriptionValidationException e) {
-			assertTrue(e.getMessage(), false);
-			return;
-		}
-		assertTrue(true);
-	}
-	
-	@Test
-	public void validateFullSubscriptionWithInvalidSubscriptionParameters() {
-		try {
-			subscriptionValidator.validateSubscription(subscriptionInvalid);
-		}
-		catch (SubscriptionValidationException e) {
-			assertTrue(true);
-			return;
-		}
-		assertTrue(false);
-	}
+    // TODO: Validator Unit tests for Jmepath syntax validator needs to be
+    // implemented here.
+
+    /**
+     * Unit tests for testing a whole Subscription Json object. Valid Result: true
+     * or false
+     */
+    @Test
+    public void validateFullSubscriptionWithValidSubscriptionParameters() {
+        try {
+            subscriptionValidator.validateSubscription(subscriptionValid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(e.getMessage(), false);
+            return;
+        }
+    }
+
+    @Test
+    public void validateFullSubscriptionWithInvalidSubscriptionParameters() {
+        try {
+            subscriptionValidator.validateSubscription(subscriptionInvalid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(true);
+            return;
+        }
+        assertTrue(false);
+    }
+
+    @Test
+    public void validateSubscriptionWithSchemaTest() throws Exception {
+        subscriptionValid.setSubscriptionName("myName");
+        try {
+            invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(false);
+        }
+
+        subscriptionValid.setSubscriptionName(null);
+        try {
+            invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(true);
+            return;
+        }
+        assertTrue(false);
+
+    }
 }

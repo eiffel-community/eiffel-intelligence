@@ -23,7 +23,7 @@
         <base-package>com.ericsson.ei.controller</base-package>
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
-        <skipUnitTests>${skipTests}</skipUnitTests>
+        <skipUTs>${skipTests}</skipUTs>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -314,6 +314,7 @@
 	            </excludes>
 	        </resource>
         </resources>
+               
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -380,8 +381,12 @@
                         </goals>
                         <configuration>
                             <sources>
+                                <source>src/test/java</source>
+                                <source>src/test/resources</source>
                                 <source>src/functionaltests/java</source>
                                 <source>src/functionaltests/resources</source>
+                                <source>src/integrationtests/java</source>
+                                <source>src/integrationtests/resources</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -393,10 +398,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
                 <configuration>
+                    <skipTests>${skipUTs}</skipTests>
                     <forkCount>2C</forkCount>
                     <reuseForks>false</reuseForks>
-                    <skipTests>${skipUnitTests}</skipTests>
                     <excludes>
+                        <exclude>**/*IT.java</exclude>
                         <exclude>${someModule.test.excludes}</exclude>
                     </excludes>
                     <includes>

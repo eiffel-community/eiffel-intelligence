@@ -1,0 +1,29 @@
+[
+  {
+    "notificationMeta" : "some.cool.email@ericsson.com",
+    "notificationType" : "MAIL",
+    "restPostBodyMediaType" : "",
+    "notificationMessageKeyValues" : [ 
+        {
+            "formkey" : "",
+            "formvalue" : "'jmespath body'"
+        }
+    ],
+    "repeat" : false,
+    "requirements" : [ 
+        {
+            "conditions" : [ 
+                {
+                    "jmespath" : "id=='1100572b-c3j4-441e-abc9-b62f48080011'"
+                }
+            ]
+        }
+    ],
+    "subscriptionName" : "subscription1",
+    "ldapUserName" : "",
+    "notificationMessageKeyValuesAuth" : [],
+    "authenticationType" : "NO_AUTH",
+    "emailSubject" : "email-subject",
+    "aggregationtype" : "eiffel-intelligence"
+  }
+]

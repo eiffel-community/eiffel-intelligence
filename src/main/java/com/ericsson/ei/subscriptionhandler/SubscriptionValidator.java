@@ -21,11 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
-import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -33,8 +28,15 @@ import org.springframework.http.MediaType;
 import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.report.ListReportProvider;
+import com.github.fge.jsonschema.core.report.LogLevel;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jsonschema.main.JsonSchemaFactoryBuilder;
 
 public class SubscriptionValidator {
 
@@ -179,29 +181,31 @@ public class SubscriptionValidator {
 
     public static void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
         LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
-        String subscriptionJson = objectToJson(subscription);
-        JSONObject jsonSubscriptionObj = new JSONObject(subscriptionJson);
-        JSONObject jsonSchemaObj = new JSONObject(
-                new JSONTokener(SubscriptionValidator.class.getResourceAsStream(SCHEMA_FILE_PATH)));
-        Schema schema = SchemaLoader.load(jsonSchemaObj);
         try {
-            schema.validate(jsonSubscriptionObj);
-        } catch (ValidationException e) {
+            JsonNode subscriptionJson = objectToJson(subscription);
+            JsonNode schemaObj = JsonLoader.fromResource(SCHEMA_FILE_PATH);
+            JsonSchemaFactoryBuilder schemaFactoryBuilder = JsonSchemaFactory.newBuilder();
+            schemaFactoryBuilder.setReportProvider(new ListReportProvider(LogLevel.INFO, LogLevel.ERROR));
+            final JsonSchemaFactory factory = schemaFactoryBuilder.freeze();
+            final JsonSchema schema = factory.getJsonSchema(schemaObj);
+            ProcessingReport report = schema.validate(subscriptionJson);
+            boolean waitreport = true;
+        } catch (Exception e) {
             throw new SubscriptionValidationException("Schema validation fails" + e.getMessage());
         }
     }
 
-    public static String objectToJson(Subscription subObject) throws SubscriptionValidationException {
+    public static JsonNode objectToJson(Subscription subObject) throws SubscriptionValidationException {
         ObjectMapper mapper = new ObjectMapper();
-        String subJson = null;
+        JsonNode jsonSubscriptionObj1;
         try {
-            subJson = mapper.writeValueAsString(subObject);
-        } catch (JsonProcessingException e) {
+            jsonSubscriptionObj1 = mapper.valueToTree(subObject);
+        } catch (Exception e) {
             LOGGER.error("Failed to create object to json" + "\nError message: " + e.getMessage(), e);
             throw new SubscriptionValidationException(
                     "Failed to create object to json" + "\nError message: " + e.getMessage());
         }
-        return subJson;
+        return jsonSubscriptionObj1;
     }
 
 }

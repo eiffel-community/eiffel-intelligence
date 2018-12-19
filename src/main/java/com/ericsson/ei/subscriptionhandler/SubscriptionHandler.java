@@ -13,13 +13,10 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.Iterator;
-import java.util.List;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This class is responsible to take a aggregatedObject and match it with all
@@ -68,8 +70,8 @@ public class SubscriptionHandler {
 
     /**
      * The method takes a aggregatedObject as argument and fetches all the
-     * subscriber from the database in order to match the subscription
-     * conditions in a separate thread.
+     * subscriber from the database in order to match the subscription conditions in
+     * a separate thread.
      *
      * @param aggregatedObject
      */
@@ -93,27 +95,27 @@ public class SubscriptionHandler {
      * @param id
      */
     private void extractConditions(String aggregatedObject, String subscriptionData, String id) {
-        JsonNode subscriptionJson = null;
         try {
-            subscriptionJson = new ObjectMapper().readTree(subscriptionData);
+            JsonNode subscriptionJson = new ObjectMapper().readTree(subscriptionData);
             LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            JsonNode aggregatedJson = new ObjectMapper().readTree(aggregatedObject);
-            LOGGER.debug("AggregatedJson : " + aggregatedJson.toString());
+            LOGGER.debug("Aggregated Object : " + aggregatedObject);
+            ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
+            LOGGER.debug("Requirements : " + requirementNode.toString());
+            Iterator<JsonNode> requirementIterator = requirementNode.elements();
+            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, id)) {
+                LOGGER.debug("The subscription conditions match for the aggregatedObject");
+                informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
+            }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        LOGGER.debug("Requirements : " + requirementNode.toString());
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, id)) {
-            LOGGER.debug("The subscription conditions match for the aggregatedObject");
-            informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
+            String msg = "Subscription: " + subscriptionData + "failed for ";
+            msg += "aggregated object: " + aggregatedObject;
+            LOGGER.error(msg, e);
         }
     }
 
     /**
-     * This method is responsible for displaying configurable application
-     * parameters like Subscription database name and collection name, etc.
+     * This method is responsible for displaying configurable application parameters
+     * like Subscription database name and collection name, etc.
      */
     @PostConstruct
     public void print() {

@@ -99,6 +99,42 @@
     ]
   },
   {
+    "subscriptionName": "Subscription_Rest_One_Missing_Auth_Params_in_Head",
+    "ldapUserName": "DEF",
+    "userName": "myUserName",
+    "authenticationType": "BASIC_AUTH",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "urlParams": true,
+    "notificationMessageKeyValues" : [
+      {
+        "formkey" : "json",
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
+      }
+    ],
+
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
+        ]
+
+      },
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
+        ]
+      }
+    ]
+  },
+  {
     "subscriptionName": "Subscription_Rest_Params_in_Url",
     "ldapUserName": "DEF",
     "repeat": false,

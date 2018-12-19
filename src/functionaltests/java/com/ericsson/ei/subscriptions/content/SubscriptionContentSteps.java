@@ -1,5 +1,16 @@
 package com.ericsson.ei.subscriptions.content;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import javax.annotation.PostConstruct;
+
+import org.junit.Ignore;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -10,16 +21,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.junit.Ignore;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import javax.annotation.PostConstruct;
-
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class SubscriptionContentSteps extends FunctionalTestBase {
@@ -139,5 +140,19 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("[]", response.getBody().toString());
     }
+
+	// SCENARIO 4
+
+	@When("^I try to create subscription request with missing required fields\"([^\"]*)\"$")
+	public void i_try_to_create_subscription_request_with_missing_required_fields(String missingFieldSubscriptionFile)
+			throws Throwable {
+		postRequest.setBody(new File(missingFieldSubscriptionFile));
+		response = postRequest.performRequest();
+	}
+
+	@Then("^The subscription with missing field is rejected$")
+	public void the_subscription_with_missing_field_is_rejected() throws Throwable {
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
+	}
 
 }

@@ -2,12 +2,10 @@
   {
     "subscriptionName": "mySubscription",
     "userName" : "DEF",
-    "ldapUserName" : "userLdap",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
     "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
-    "restPostBodyMediaType": "application/json",
     "notificationMessageKeyValues" : [
       {
         "formkey" : "",

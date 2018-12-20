@@ -4,17 +4,26 @@
 |------|---------------------|
 |POST |/rules/rule-check|
 |POST | /rules/rule-check/aggregation|
+|GET | /rules/rule-check/testRulePageEnabled |
 
-Before deploying a new instance of Eiffel Intelligence it is good to test the 
-desired rules that they give the desired outcome. Therefore it is possible to 
-test the rules on a test instance of Eiffel Intelligence. This means that this 
-instance needs to be dedicated to only testing rules and it can be one per 
-company, organization or department. The property controlling this feature 
+
+Before deploying a new instance of Eiffel Intelligence it is good to test the
+desired rules that they give the desired outcome. Therefore it is possible to
+test the rules on a test instance of Eiffel Intelligence. This means that this
+instance needs to be dedicated to only testing rules and it can be one per
+company, organization or department. The property controlling this feature
 should be set to true:
 
     testaggregated.enabled: true
 
-In this way every user testing will get its own test space that will be removed 
+## Check if testRules are enabled on the selected instance
+
+Using this arbitrary endpoint one can use check if testRules are enabled in this EI instance.
+
+    curl -X GET http://<host>:8090/rules/rule-check/testRulePageEnabled
+
+
+In this way every user testing will get its own test space that will be removed
 after feedback to the user.
 
 A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/Ericsson/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
@@ -29,10 +38,10 @@ This endpoint allows to test the result of a JMESPath expression of an event.
 
     {
       "rule": <JMESPATH Expression>,
-      "event" <Eiffel Event>: 
+      "event" <Eiffel Event>:
     }
-    
-Examples of this endpoint using curl  
+
+Examples of this endpoint using curl
 
     curl -X POST -H "Content-type:application/json" --data @body.json http://localhost:8090/rules/rule-check
 
@@ -122,22 +131,22 @@ will give
 
 
 ## Test a list of rule sets on given list of events
-This end point is to test a complete aggregation using rule sets for every 
-event you need to be aggregated. And a list of events. The result is the 
-aggregated object containing the desired information from the events as you 
+This end point is to test a complete aggregation using rule sets for every
+event you need to be aggregated. And a list of events. The result is the
+aggregated object containing the desired information from the events as you
 have specified in the rules.
 
     POST /rules/rule-check/aggregation
 
 
-**Body (application/json)**  
- 
-    {  
-       "listEventsJson": <Eiffel Events>,  
-       "listRulesJson":  <Rules>  
-    }  
+**Body (application/json)**
 
-Examples of this endpoint using curl  
+    {
+       "listEventsJson": <Eiffel Events>,
+       "listRulesJson":  <Rules>
+    }
+
+Examples of this endpoint using curl
 
     curl -X POST -H "Content-type: application/json"  --data @body.json  http://localhost:8090/rules/rule-check/aggregation
 

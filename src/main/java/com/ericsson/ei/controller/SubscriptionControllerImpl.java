@@ -57,6 +57,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final String SUBSCRIPTION_NOT_FOUND = "Subscription is not found";
     private static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists";
+    private static final String INVALID_USER = "Invalid user! You must be logged in as the creater to a subscription modify it.";
 
     @Value("${ldap.enabled}")
     private boolean authenticate;
@@ -181,7 +182,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 }
             } catch (NotOwnerException e) {
                 LOG.error("Unauthorized, wrong username: " + subscriptionName);
-                errorMap.put(subscriptionName, e.getMessage());
+                errorMap.put(subscriptionName, INVALID_USER);
             }
         });
         return getResponse();

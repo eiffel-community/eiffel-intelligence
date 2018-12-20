@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +62,7 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 @SpringBootTest(classes = { App.class })
 public class SubscriptionServiceTest {
 
-    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
     private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
@@ -185,7 +186,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetAllSubscriptions() {
+    public void testGetAllSubscriptions() throws NotOwnerException {
         List<Subscription> subscriptions;
         try {
             // Insert Subscription
@@ -202,7 +203,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetSubscriptionsByName() {
+    public void testGetSubscriptionsByName() throws NotOwnerException {
         Subscription subscription;
         try {
             // Insert Subscription
@@ -219,7 +220,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDoSubscriptionExist() {
+    public void testDoSubscriptionExist() throws NotOwnerException {
         boolean doSubscriptionExist;
         try {
             // Insert Subscription
@@ -236,7 +237,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByName() {
+    public void testDeleteSubscriptionsByName() throws NotOwnerException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -255,7 +256,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() {
+    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() throws NotOwnerException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -342,7 +343,7 @@ public class SubscriptionServiceTest {
         subscriptionService.getSubscription("Subscription_Test1238586455");
     }
 
-    private void deleteSubscriptionsByName(String subscriptionName) {
+    private void deleteSubscriptionsByName(String subscriptionName) throws NotOwnerException {
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");

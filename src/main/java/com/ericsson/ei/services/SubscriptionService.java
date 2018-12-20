@@ -17,6 +17,7 @@
 package com.ericsson.ei.services;
 
 import java.io.IOException;
+import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class SubscriptionService implements ISubscriptionService {
     private String repeatFlagHandlerCollection;
 
     @Value("${ldap.enabled}")
-    private boolean authenticate;
+    private boolean ldapEnabled;
 
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
@@ -114,7 +115,7 @@ public class SubscriptionService implements ISubscriptionService {
         Document result = null;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+            String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
             String query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
@@ -133,19 +134,25 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public boolean deleteSubscription(String subscriptionName) {
-        String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-        String query = generateQuery(subscriptionName, ldapUserName);
-        boolean result = subscriptionRepository.deleteSubscription(query);
+    public boolean deleteSubscription(String subscriptionName) throws NotOwnerException {
+        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+        String deleteQuery = generateQuery(subscriptionName, ldapUserName);
+        String fetchQuery = generateQuery(subscriptionName, "");
 
-        if (result) {
+        boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
+        if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOG.error("Failed to clean subscription \"" + subscriptionName
                         + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             }
+        } else if (doSubscriptionExist(subscriptionName)) {
+            LOG.error("Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName");
+            throw new NotOwnerException();
         }
-        return result;
+
+        return deleteResult;
     }
 
     @Override

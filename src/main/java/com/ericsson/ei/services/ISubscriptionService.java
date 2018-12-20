@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.services;
 
+import java.security.acl.NotOwnerException;
 import java.util.List;
 
 import com.ericsson.ei.controller.model.Subscription;
@@ -24,21 +25,21 @@ import com.ericsson.ei.exception.SubscriptionNotFoundException;
 public interface ISubscriptionService {
 
     /**
-     * 
+     *
      * @param subscription
      * @return
      */
     boolean addSubscription(Subscription subscription);
 
     /**
-     * 
+     *
      * @return
      * @throws SubscriptionNotFoundException
      */
     List<Subscription> getSubscriptions() throws SubscriptionNotFoundException;
 
     /**
-     * 
+     *
      * @param subscriptionName
      * @return
      * @throws SubscriptionNotFoundException
@@ -46,7 +47,7 @@ public interface ISubscriptionService {
     Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException;
 
     /**
-     * 
+     *
      * @param subscription
      * @param subscriptionName
      * @return
@@ -54,17 +55,18 @@ public interface ISubscriptionService {
     boolean modifySubscription(Subscription subscription, String subscriptionName);
 
     /**
-     * 
+     *
      * @param subscriptionName
      * @return
+     * @throws NotOwnerException
      * @throws SubscriptionNotFoundException
      */
-    boolean deleteSubscription(String subscriptionName);
+    boolean deleteSubscription(String subscriptionName) throws NotOwnerException;
 
     /**
      * doSubscriptionExist method checks the is there any Subscription By
      * Subscription Name
-     * 
+     *
      * @param subscriptionName
      * @return true when Subscription available with same name. Otherwise
      *         returns false.

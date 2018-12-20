@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.controller;
 
+import java.security.acl.NotOwnerException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,11 +171,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
         subscriptionNamesList.forEach(subscriptionName -> {
             LOG.debug("Subscription deleting has been started: " + subscriptionName);
-            if (subscriptionService.deleteSubscription(subscriptionName)) {
-                LOG.debug("Subscription is deleted successfully: " + subscriptionName);
-            } else {
-                LOG.error("Subscription to delete is not found: " + subscriptionName);
-                errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+
+            try {
+                if (subscriptionService.deleteSubscription(subscriptionName)) {
+                    LOG.debug("Subscription is deleted successfully: " + subscriptionName);
+                } else {
+                    LOG.error("Subscription to delete is not found: " + subscriptionName);
+                    errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+                }
+            } catch (NotOwnerException e) {
+                LOG.error("Unauthorized, wrong username: " + subscriptionName);
+                errorMap.put(subscriptionName, e.getMessage());
             }
         });
         return getResponse();

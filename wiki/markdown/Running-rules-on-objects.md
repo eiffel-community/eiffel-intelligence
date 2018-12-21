@@ -11,7 +11,8 @@ Before deploying a new instance of Eiffel Intelligence it is good to test the
 desired rules that they give the desired outcome. Therefore it is possible to
 test the rules on a test instance of Eiffel Intelligence. This means that this
 instance needs to be dedicated to only testing rules and it can be one per
-company, organization or department. The property controlling this feature
+company, organization or department. In this way every user testing will get its own
+test space that will be removed after feedback to the user. The property controlling this feature
 should be set to true:
 
     testaggregated.enabled: true
@@ -24,8 +25,7 @@ Using this arbitrary endpoint one can use check if testRules are enabled in this
 
     curl -X GET http://<host>:8090/rules/rule-check/testRulePageEnabled
 
-In this way every user testing will get its own test space that will be removed
-after feedback to the user.
+
 
 ## Test JMESPath expression on given Event
 

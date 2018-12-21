@@ -7,12 +7,22 @@
 |GET   |/auth/logout     |no            |
 |GET   |/auth/checkStatus|yes           |
 
-Authentication is not a requirement but can be turned on and off in the 
+Authentication is not a requirement but can be turned on and off in the
 application properties file with the '_ldap.enabled_' property.
+
+If Eiffel Intelligence has LDAP enabled it is possible to limit access
+to subscriptions. If **user A** creates a subscription then **user B**
+can not edit or delete that subscription. It is not possible to change
+ownership of a subscription once it is made. when LDAP is activated any
+guest users, i.e. not logged in, can only **view** but not edit or delete
+the subscriptions.
+
+When Eiffel Intelligence is configured without LDAP the subscriptions are
+available to anyone to view, edit and delete.
 
 ## Check if security is enabled
 
-Returns the json variable '_security_' that is set to either true or false 
+Returns the json variable '_security_' that is set to either true or false
 
     GET /auth
 
@@ -26,10 +36,10 @@ Example of response body
 
 ## Login point that returns the name of current user
 
-Upon the first time valid credentials are used the response will contain an 
-'X-Auth-Token' header that must be saved and attached to any following calls to 
-endpoints that require authentication. If the same client connection is used 
-then session cookie is used to authenticate and 'X-Auth-Token' would not be 
+Upon the first time valid credentials are used the response will contain an
+'X-Auth-Token' header that must be saved and attached to any following calls to
+endpoints that require authentication. If the same client connection is used
+then session cookie is used to authenticate and 'X-Auth-Token' would not be
 needed in that case.
 
     GET /auth/login
@@ -41,7 +51,7 @@ Curl command
 Example of full response
 
 
-    < HTTP/1.1 200 
+    < HTTP/1.1 200
     < X-Content-Type-Options: nosniff
     < X-XSS-Protection: 1; mode=block
     < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -53,15 +63,15 @@ Example of full response
     < Content-Type: application/json;charset=UTF-8
     < Content-Length: 16
     < Date: Wed, 15 Aug 2018 10:58:23 GMT
-    < 
+    <
     * Connection #0 to host localhost left intact
     {"user":"myuser"}
 
 
 ## Delete session of current user
 
-Removes the current session bound to the client. If 'X-Auth-Token' is used to 
-authenticate then the same token needs to be attached when calling the logout 
+Removes the current session bound to the client. If 'X-Auth-Token' is used to
+authenticate then the same token needs to be attached when calling the logout
 endpoint.
 
     GET /auth/logout

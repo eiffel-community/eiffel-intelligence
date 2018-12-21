@@ -16,17 +16,16 @@ should be set to true:
 
     testaggregated.enabled: true
 
+A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/Ericsson/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
+
 ## Check if testRules are enabled on the selected instance
 
 Using this arbitrary endpoint one can use check if testRules are enabled in this EI instance.
 
     curl -X GET http://<host>:8090/rules/rule-check/testRulePageEnabled
 
-
 In this way every user testing will get its own test space that will be removed
 after feedback to the user.
-
-A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/Ericsson/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
 
 ## Test JMESPath expression on given Event
 

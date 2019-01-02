@@ -85,5 +85,4 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**EiffelArtifactPublishedEvent Aggregation**](wiki/markdown/EiffelArtifactPublishedEvent-Aggregation.md)
     - [**EiffelConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/EiffelConfidenceLevelModifiedEvent-Aggregation.md)
 1. [**Step by Step Subscription Notification**](wiki/markdown/Step-by-Step-Subscription-Notification.md)
-
-
+1. [**Docker**](wiki/markdown/docker.md)

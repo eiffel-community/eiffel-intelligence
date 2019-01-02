@@ -35,10 +35,10 @@ To run the produced docker image on the local Docker host, execute this command:
 
 `docker run -p 8034:8091 --expose 8091 -e server.port=8091 -e logging.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG eiffel-intelligence-backend:0.1`
 
-# Some info of all flags to this command: 
+# Some info of all flags to this command
 
 
-## Eiffel Intelligence Spring Properties:
+## Eiffel Intelligence Spring Properties
 
 
 <B>"-e server.port=8091"</B> - Is the Spring property setting for Eiffel-Intelligence applications web port.
@@ -54,7 +54,7 @@ It is possible to set all Spring available properties via docker envrionment "-e
 [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 
 
-## Docker flags:
+## Docker flags
 
 
 <B>"--expose 8091"</B> - this Docker flag tells that containers internal port shall be exposed to outside of the Docker Host. This flag do not set which port that should be allocated outside Docker Host on the actual server/machine.

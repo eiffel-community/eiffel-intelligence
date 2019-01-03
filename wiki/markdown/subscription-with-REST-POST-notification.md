@@ -5,7 +5,7 @@ for each field.
 
 _**OBS! Comments are only for documentation purposes and a subscription should
 not contain them. The subscription will be rejected at this moment if it
-contains comments.**_
+contains comments like below.**_
 
 _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel-intelligence/tree/master/src/main/resources/templates).**_
 

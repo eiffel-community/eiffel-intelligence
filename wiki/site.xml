@@ -65,6 +65,7 @@
                 <item name="EiffelConfidenceLevelModifiedEvent" href="EiffelConfidenceLevelModifiedEvent-Aggregation.html" />
                 <item name="Step-by-step subscription notification" href="Step-by-Step-Subscription-Notification.html" />
             </item>
+            <item name="Docker" href="docker.html" />
             <item name="Known limitations" href="Known-limitations.html" />
         </menu>
 

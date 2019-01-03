@@ -13,7 +13,7 @@ application properties file with the '_ldap.enabled_' property.
 If Eiffel Intelligence has LDAP enabled it is possible to limit access
 to subscriptions. If **user A** creates a subscription then **user B**
 can not edit or delete that subscription. It is not possible to change
-ownership of a subscription once it is made. when LDAP is activated any
+ownership of a subscription once it is made. When LDAP is activated any
 guest users, i.e. not logged in, can only **view** but not edit or delete
 the subscriptions.
 

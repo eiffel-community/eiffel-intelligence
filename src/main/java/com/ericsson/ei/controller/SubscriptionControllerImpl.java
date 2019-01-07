@@ -57,7 +57,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final String SUBSCRIPTION_NOT_FOUND = "Subscription is not found";
     private static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists";
-    private static final String INVALID_USER = "Invalid user! You must be logged in as the creater to a subscription modify it.";
+    private static final String INVALID_USER = "Unauthorized! You must be logged in as the creator of a subscription to modify it.";
 
     @Value("${ldap.enabled}")
     private boolean ldapEnabled;

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -186,7 +186,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetAllSubscriptions() throws NotOwnerException {
+    public void testGetAllSubscriptions() throws AccessException {
         List<Subscription> subscriptions;
         try {
             // Insert Subscription
@@ -203,7 +203,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetSubscriptionsByName() throws NotOwnerException {
+    public void testGetSubscriptionsByName() throws AccessException {
         Subscription subscription;
         try {
             // Insert Subscription
@@ -220,7 +220,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDoSubscriptionExist() throws NotOwnerException {
+    public void testDoSubscriptionExist() throws AccessException {
         boolean doSubscriptionExist;
         try {
             // Insert Subscription
@@ -237,7 +237,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByName() throws NotOwnerException {
+    public void testDeleteSubscriptionsByName() throws AccessException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -256,7 +256,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() throws NotOwnerException {
+    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() throws AccessException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -343,7 +343,7 @@ public class SubscriptionServiceTest {
         subscriptionService.getSubscription("Subscription_Test1238586455");
     }
 
-    private void deleteSubscriptionsByName(String subscriptionName) throws NotOwnerException {
+    private void deleteSubscriptionsByName(String subscriptionName) throws AccessException {
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");

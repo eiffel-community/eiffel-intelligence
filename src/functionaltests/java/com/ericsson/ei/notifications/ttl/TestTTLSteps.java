@@ -175,33 +175,22 @@ public class TestTTLSteps extends FunctionalTestBase {
     @When("^Missed notification is created$")
     public void a_missed_notification_is_created() throws Throwable {
         // verifying that missed notification is created and present in db
+        int expectedSize = 1;
         String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
-        long maxTime = System.currentTimeMillis() + MAX_WAIT_TIME;
-        List<String> notificationExit = null;
+
         LOGGER.debug("Checking presence of missnotification in db");
-        while (System.currentTimeMillis() < maxTime) {
-            notificationExit = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
-            if (!notificationExit.isEmpty()) {
-                break;
-            }
-        }
-        assertEquals(1, notificationExit.size());
+        int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
+        assertEquals(expectedSize, notificationExistSize);
     }
 
     @Then("^Notification document should be deleted from the database$")
     public void the_Notification_document_should_be_deleted_from_the_database() throws Throwable {
-        long maxTime = System.currentTimeMillis() + MAX_WAIT_TIME;
-        List<String> notificationExit = null;
+        int expectedSize = 0;
         String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
         LOGGER.debug("Checking deletion of notification document in db");
-        while (System.currentTimeMillis() < maxTime) {
-            notificationExit = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
 
-            if (notificationExit.isEmpty()) {
-                break;
-            }
-        }
-        assertEquals(0, notificationExit.size());
+        int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
+        assertEquals(expectedSize, notificationExistSize);
     }
 
     @Then("^Aggregated Object document should be deleted from the database$")
@@ -234,5 +223,19 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         return eventNames;
+    }
+
+    private int getNotificationForExpectedSize(int expectedSize, String condition) {
+        long maxTime = System.currentTimeMillis() + MAX_WAIT_TIME;
+        List<String> notificationExist = null;
+
+        while (System.currentTimeMillis() < maxTime) {
+            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+
+            if (notificationExist.size() == expectedSize) {
+                return notificationExist.size();
+            }
+        }
+        return notificationExist.size();
     }
 }

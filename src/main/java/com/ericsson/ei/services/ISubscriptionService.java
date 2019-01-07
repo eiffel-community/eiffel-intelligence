@@ -16,8 +16,9 @@
 */
 package com.ericsson.ei.services;
 
-import java.security.acl.NotOwnerException;
 import java.util.List;
+
+import org.springframework.expression.AccessException;
 
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
@@ -58,10 +59,9 @@ public interface ISubscriptionService {
      *
      * @param subscriptionName
      * @return
-     * @throws NotOwnerException
-     * @throws SubscriptionNotFoundException
+     * @throws AccessException
      */
-    boolean deleteSubscription(String subscriptionName) throws NotOwnerException;
+    boolean deleteSubscription(String subscriptionName) throws AccessException;
 
     /**
      * doSubscriptionExist method checks the is there any Subscription By

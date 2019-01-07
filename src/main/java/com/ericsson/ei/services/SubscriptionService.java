@@ -17,7 +17,6 @@
 package com.ericsson.ei.services;
 
 import java.io.IOException;
-import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.config.HttpSessionConfig;
@@ -134,10 +134,9 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public boolean deleteSubscription(String subscriptionName) throws NotOwnerException {
+    public boolean deleteSubscription(String subscriptionName) throws AccessException {
         String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
         String deleteQuery = generateQuery(subscriptionName, ldapUserName);
-        String fetchQuery = generateQuery(subscriptionName, "");
 
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
@@ -147,9 +146,9 @@ public class SubscriptionService implements ISubscriptionService {
                         + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             }
         } else if (doSubscriptionExist(subscriptionName)) {
-            LOG.error("Failed to delete subscription \"" + subscriptionName
-                    + "\" invalid ldapUserName");
-            throw new NotOwnerException();
+            String message = "Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName";
+            throw new AccessException(message);
         }
 
         return deleteResult;

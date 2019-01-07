@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.controller;
 
-import java.security.acl.NotOwnerException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -60,7 +60,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     private static final String INVALID_USER = "Invalid user! You must be logged in as the creater to a subscription modify it.";
 
     @Value("${ldap.enabled}")
-    private boolean authenticate;
+    private boolean ldapEnabled;
 
     @Autowired
     private ISubscriptionService subscriptionService;
@@ -74,7 +74,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Creates the subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -137,7 +137,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Updates the existing subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -180,8 +180,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     LOG.error("Subscription to delete is not found: " + subscriptionName);
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
-            } catch (NotOwnerException e) {
-                LOG.error("Unauthorized, wrong username: " + subscriptionName);
+            } catch (AccessException e) {
+                LOG.error("Error: " + e.getMessage());
                 errorMap.put(subscriptionName, INVALID_USER);
             }
         });

@@ -59,7 +59,7 @@ public class JenkinsManager {
      * @return
      * @throws IOException
      */
-    public String getXmlJobData(String token, String script) throws IOException {
+    public String getXmlJobData(String token, String script) {
         String jobData = getStringFromFile(JENKINS_JOB_TEMPLATE_FILE_PATH);
 
         if (token == null) {
@@ -84,8 +84,7 @@ public class JenkinsManager {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    public boolean createJob(String jobName, String jobXmlData)
-            throws URISyntaxException, ClientProtocolException, IOException {
+    public boolean createJob(String jobName, String jobXmlData) throws URISyntaxException {
         HttpRequest httpRequest = new HttpRequest(HttpMethod.POST);
         boolean success = false;
 

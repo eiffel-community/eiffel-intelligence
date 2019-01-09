@@ -59,7 +59,7 @@ public class JenkinsManager {
      * @return
      * @throws IOException
      */
-    public String getXmlJobData(String token, String script) {
+    public String getXmlJobData(String token, String script) throws IOException {
         String jobData = getStringFromFile(JENKINS_JOB_TEMPLATE_FILE_PATH);
 
         if (token == null) {

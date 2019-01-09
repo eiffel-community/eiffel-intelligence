@@ -60,6 +60,7 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
 
 
     private long startTime;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${server.port}")
     int port;
@@ -78,7 +79,6 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
         startTime = System.currentTimeMillis();
 
         URL subscriptionsInput = new File(SUBSCRIPTIONS_PATH).toURI().toURL();
-        ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode subscriptionsJson = (ArrayNode) objectMapper.readTree(subscriptionsInput);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.POST);
@@ -94,7 +94,6 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
 
     @When("^eiffel events are sent$")
     public void eiffel_events_are_sent() throws Throwable  {
-        ObjectMapper objectMapper = new ObjectMapper();
 
         final URL upStreamInput = new File(UPSTREAM_INPUT_FILE).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
@@ -161,7 +160,6 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
         ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME, "messages");
         String mailString = allMails.get(0);
 
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readTree(mailString);
+        return objectMapper.readTree(mailString);
     }
 }

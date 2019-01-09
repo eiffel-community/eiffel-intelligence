@@ -16,6 +16,7 @@ package util;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +42,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-/**
- * @author eedleri
- *
- */
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
@@ -86,10 +82,11 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropDatabase(MAILHOG_DATABASE_NAME);
     }
 
-    // setFirstEventWaitTime: variable to set the wait time after publishing the
-    // first event. So any thread looking for the events don't do it before
-    // actually
-    // populating events in the database
+    /*
+     * setFirstEventWaitTime: variable to set the wait time after publishing the
+     * first event. So any thread looking for the events don't do it before
+     * actually populating events in the database
+    */
     private int firstEventWaitTime = 0;
 
     public void setFirstEventWaitTime(int value) {
@@ -107,7 +104,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return 0;
     }
 
-    protected void sendEventsAndConfirm() {
+    protected void sendEventsAndConfirm() throws InterruptedException {
         try {
             rulesHandler.setRulePath(getRulesFilePath());
 
@@ -122,12 +119,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
                 rmqHandler.publishObjectToWaitlistQueue(event);
                 if (!alreadyExecuted) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        LOGGER.error(e.getMessage(), e);
-                    }
+                    TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     alreadyExecuted = true;
                 }
             }
@@ -176,30 +168,28 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return table.count();
     }
 
-    protected void waitForEventsToBeProcessed(int eventsCount) {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
         long processedEvents = 0;
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            try {
-                TimeUnit.MILLISECONDS.sleep(10000);
-            } catch (InterruptedException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+            TimeUnit.MILLISECONDS.sleep(10000);
         }
     }
 
-    private void checkResult(final Map<String, JsonNode> checkData) {
-        checkData.forEach((id, expectedJSON) -> {
-            try {
-                String document = objectHandler.findObjectById(id);
-                JsonNode actualJSON = objectMapper.readTree(document);
-                LOGGER.info("Complete aggregated object: " + actualJSON);
-                JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
-            } catch (IOException | JSONException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        });
+    private void checkResult(final Map<String, JsonNode> checkData) throws IOException {
+        Iterator iterator = checkData.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry)iterator.next();
+            String id = (String) pair.getKey();
+            JsonNode expectedJSON = (JsonNode) pair.getValue();
+
+            String document = objectHandler.findObjectById(id);
+            JsonNode actualJSON = objectMapper.readTree(document);
+            LOGGER.info("Complete aggregated object: " + actualJSON);
+            JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
+        }
     }
 }

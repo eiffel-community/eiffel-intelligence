@@ -14,14 +14,13 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -29,13 +28,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -55,18 +54,15 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
-    private static final String SUBSCRIPTIONS_PATH = "src/integrationtests/resources/subscriptionsForArtifactTest.json";
-    private static final String host = "localhost";
+    private static final String SUBSCRIPTIONS_PATH = "src/integrationtests/resources/subscriptionsTemplate.json";
+    private static final String HOST = "localhost";
 
 
     private long startTime;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${server.port}")
+    @LocalServerPort
     int port;
-
-    @Mock
-    private ERQueryService erQueryService;
 
     @Autowired
     private RabbitTemplate rabbitMqTemplate;
@@ -80,15 +76,24 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
 
         URL subscriptionsInput = new File(SUBSCRIPTIONS_PATH).toURI().toURL();
         ArrayNode subscriptionsJson = (ArrayNode) objectMapper.readTree(subscriptionsInput);
+        subscriptionsJson = setSubscriptionFields(subscriptionsJson);
 
-        HttpRequest getRequest = new HttpRequest(HttpMethod.POST);
-        ResponseEntity response = getRequest.setHost(host)
+        HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
+        ResponseEntity response = postRequest.setHost(HOST)
                 .setPort(port)
                 .setEndpoint("/subscriptions")
                 .addHeader("Content-type", "application/json")
                 .setBody(subscriptionsJson.toString())
                 .performRequest();
         assertEquals(200, response.getStatusCodeValue());
+    }
+
+
+    private ArrayNode setSubscriptionFields(ArrayNode subscriptionJson) {
+        ObjectNode requirement = ((ObjectNode) subscriptionJson.get(0).get("requirements").get(0).get("conditions").get(0));
+        requirement.put("jmespath", "id=='1100572b-c3j4-441e-abc9-b62f48080011'");
+
+        return subscriptionJson;
     }
 
 

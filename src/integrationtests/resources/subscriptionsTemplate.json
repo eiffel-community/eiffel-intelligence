@@ -14,7 +14,7 @@
         {
             "conditions" : [ 
                 {
-                    "jmespath" : "id=='1100572b-c3j4-441e-abc9-b62f48080011'"
+                    "jmespath" : ""
                 }
             ]
         }

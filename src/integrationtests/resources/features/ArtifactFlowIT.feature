@@ -16,7 +16,7 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
-Feature: Test integration flow test
+Feature: Artifact flow
 
   Scenario: Send eiffel events and make sure EI is triggering on REST-POST/mail subscriptions
     Given subscriptions are uploaded

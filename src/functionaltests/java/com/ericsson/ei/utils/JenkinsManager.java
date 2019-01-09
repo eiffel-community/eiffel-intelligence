@@ -22,7 +22,7 @@ public class JenkinsManager {
 
     private static final String JENKINS_JOB_TEMPLATE_FILE_PATH = String.join(File.separator, "src", "functionaltests",
             "resources", "jenkinsJobTemplate.xml");
-    private static final String DEFAULT_TOKEN = "test";
+    private static final String DEFAULT_JOB_TOKEN = "test";
     private static final String DEFAULT_SCRIPT = "echo &quot;Test&quot;";
     private static final String DEFAULT_JOB_NAME = "test_job";
 
@@ -36,7 +36,7 @@ public class JenkinsManager {
      * @param host
      * @param port
      * @param username
-     * @param password
+     * @param password   **  Jenkins password or API-token
      * @throws UnsupportedEncodingException
      * @throws URISyntaxException
      */
@@ -51,25 +51,25 @@ public class JenkinsManager {
     }
 
     /**
-     * Takes a token and script and returns XML data for jenkins with token and
+     * Takes a token and script and returns XML data for jenkins with job_token and
      * script added.
      *
-     * @param token
+     * @param job_token
      * @param script
      * @return
      * @throws IOException
      */
-    public String getXmlJobData(String token, String script) throws IOException {
+    public String getXmlJobData(String job_token, String script) throws IOException {
         String jobData = getStringFromFile(JENKINS_JOB_TEMPLATE_FILE_PATH);
 
-        if (token == null) {
-            token = DEFAULT_TOKEN;
+        if (job_token == null) {
+            job_token = DEFAULT_JOB_TOKEN;
         }
         if (script == null) {
             script = DEFAULT_SCRIPT;
         }
 
-        jobData = stringReplaceText(jobData, token, script);
+        jobData = stringReplaceText(jobData, job_token, script);
         return jobData;
     }
 
@@ -107,21 +107,21 @@ public class JenkinsManager {
      *
      * @throws URISyntaxException
      */
-    public boolean triggerJob(String jobName, String token) throws URISyntaxException {
+    public boolean triggerJob(String jobName, String job_token) throws URISyntaxException {
         HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
         boolean success = false;
 
         if (jobName == null) {
             jobName = DEFAULT_JOB_NAME;
         }
-        if (token == null) {
-            token = DEFAULT_TOKEN;
+        if (job_token == null) {
+            job_token = DEFAULT_JOB_TOKEN;
         }
 
         String endpoint = "/job/" + jobName + "/build";
 
         httpRequest.setHost(host).setPort(port).addHeader("Authorization", "Basic " + encoding)
-                .addHeader("Content-type", MediaType.APPLICATION_JSON_VALUE).addParam("token", token)
+                .addHeader("Content-type", MediaType.APPLICATION_JSON_VALUE).addParam("token", job_token)
                 .setEndpoint(endpoint);
 
         ResponseEntity<String> response = httpRequest.performRequest();
@@ -138,7 +138,7 @@ public class JenkinsManager {
      * @throws URISyntaxException
      */
     public boolean jobHasBeenTriggered(String jobName) throws URISyntaxException {
-        boolean triggered = false;
+        boolean isTriggered = false;
         HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
         if (jobName == null) {
             jobName = DEFAULT_JOB_NAME;
@@ -151,8 +151,8 @@ public class JenkinsManager {
                 .setEndpoint(endpoint);
 
         ResponseEntity<String> response = httpRequest.performRequest();
-        triggered = response.getStatusCode() == HttpStatus.OK;
-        return triggered;
+        isTriggered = response.getStatusCode() == HttpStatus.OK;
+        return isTriggered;
     }
 
     /**
@@ -165,7 +165,7 @@ public class JenkinsManager {
      * @throws URISyntaxException
      */
     public boolean deleteJob(String jobName) throws URISyntaxException {
-        boolean deleted = false;
+        boolean isDeleted = false;
         HttpRequest httpRequest = new HttpRequest(HttpMethod.POST);
         if (jobName == null) {
             jobName = DEFAULT_JOB_NAME;
@@ -178,8 +178,8 @@ public class JenkinsManager {
                 .setEndpoint(endpoint);
 
         ResponseEntity<String> response = httpRequest.performRequest();
-        deleted = response.getStatusCode() == HttpStatus.FOUND;
-        return deleted;
+        isDeleted = response.getStatusCode() == HttpStatus.FOUND;
+        return isDeleted;
     }
 
     /**

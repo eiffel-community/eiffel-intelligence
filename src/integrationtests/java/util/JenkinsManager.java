@@ -70,7 +70,7 @@ public class JenkinsManager {
             script = DEFAULT_SCRIPT;
         }
 
-        jobData = stringReplaceText(jobData, job_token, script);
+        jobData = injectScriptAndTokenIntoXmlString(jobData, job_token, script);
         return jobData;
     }
 
@@ -183,12 +183,6 @@ public class JenkinsManager {
         return isDeleted;
     }
 
-    /**
-     * Gets the jenkins crumb if any
-     *
-     * @return
-     * @throws URISyntaxException
-     */
     private String getCrumb() throws URISyntaxException {
         String crumb = "";
         HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
@@ -210,18 +204,10 @@ public class JenkinsManager {
         return new String(Files.readAllBytes(Paths.get(filepath)), StandardCharsets.UTF_8);
     }
 
-    /**
-     * Replaces tags in string with valid information.
-     *
-     * @param text
-     * @param token
-     * @param script
-     * @return
-     */
-    private String stringReplaceText(String text, String token, String script) {
-        text = text.replaceAll("\\$\\{shell\\.script\\}", script);
-        text = text.replaceAll("\\$\\{auth\\.token\\}", token);
-        return text;
+    private String injectScriptAndTokenIntoXmlString(String xmlString, String token, String script) {
+        xmlString = xmlString.replaceAll("\\$\\{shell\\.script\\}", script);
+        xmlString = xmlString.replaceAll("\\$\\{auth\\.token\\}", token);
+        return xmlString;
     }
 
 }

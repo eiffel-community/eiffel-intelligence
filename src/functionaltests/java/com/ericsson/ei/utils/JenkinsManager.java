@@ -31,6 +31,15 @@ public class JenkinsManager {
     private String encoding;
     private String crumb;
 
+    /**
+     * Constructor, takes jenkins host, port, username and password.
+     * @param host
+     * @param port
+     * @param username
+     * @param password
+     * @throws UnsupportedEncodingException
+     * @throws URISyntaxException
+     */
     public JenkinsManager(String host, int port, String username, String password)
             throws UnsupportedEncodingException, URISyntaxException {
         String authString = String.join(":", username, password);
@@ -117,7 +126,7 @@ public class JenkinsManager {
                 .setEndpoint(endpoint);
 
         ResponseEntity<String> response = httpRequest.performRequest();
-        success = response.getStatusCode() == HttpStatus.OK;
+        success = response.getStatusCode() == HttpStatus.CREATED;
         return success;
     }
 

@@ -1,4 +1,4 @@
-package com.ericsson.ei.utils;
+package util;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 
 public class JenkinsManager {

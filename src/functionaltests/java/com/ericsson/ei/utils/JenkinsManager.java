@@ -130,7 +130,7 @@ public class JenkinsManager {
     }
 
     /**
-     * This function recieves a jenkins job name and returns weather the job has
+     * This function recieves a jenkins job name and returns whether the job has
      * been triggered at least once
      *
      * @param jobName

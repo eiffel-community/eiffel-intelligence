@@ -21,7 +21,7 @@ import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 
 public class JenkinsManager {
 
-    private static final String JENKINS_JOB_TEMPLATE_FILE_PATH = String.join(File.separator, "src", "functionaltests",
+    private static final String JENKINS_JOB_TEMPLATE_FILE_PATH = String.join(File.separator, "src", "integrationtests",
             "resources", "jenkinsJobTemplate.xml");
     private static final String DEFAULT_JOB_TOKEN = "test";
     private static final String DEFAULT_SCRIPT = "echo &quot;Test&quot;";

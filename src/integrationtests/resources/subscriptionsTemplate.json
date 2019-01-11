@@ -1,0 +1,29 @@
+[
+  {
+    "notificationMeta" : "some.cool.email@ericsson.com",
+    "notificationType" : "MAIL",
+    "restPostBodyMediaType" : "",
+    "notificationMessageKeyValues" : [ 
+        {
+            "formkey" : "",
+            "formvalue" : "'jmespath body'"
+        }
+    ],
+    "repeat" : false,
+    "requirements" : [ 
+        {
+            "conditions" : [ 
+                {
+                    "jmespath" : ""
+                }
+            ]
+        }
+    ],
+    "subscriptionName" : "subscription1",
+    "ldapUserName" : "",
+    "notificationMessageKeyValuesAuth" : [],
+    "authenticationType" : "NO_AUTH",
+    "emailSubject" : "email-subject",
+    "aggregationtype" : "eiffel-intelligence"
+  }
+]

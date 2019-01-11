@@ -56,7 +56,7 @@ public class SubscriptionHandler {
     private String subscriptionDataBaseName;
 
     @Autowired
-    private InformSubscription informSubscription;
+    private InformSubscriber informSubscription;
 
     @Setter
     @Autowired

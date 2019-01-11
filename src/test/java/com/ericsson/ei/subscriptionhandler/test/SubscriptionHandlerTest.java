@@ -53,7 +53,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.InformSubscriber;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
 import com.ericsson.ei.subscriptionhandler.SendMail;
 import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
@@ -112,7 +112,7 @@ public class SubscriptionHandlerTest {
     private static String subscriptionForMapNotification;
 
     @Autowired
-    private InformSubscription subscription;
+    private InformSubscriber subscription;
 
     @Autowired
     private MockMvc mockMvc;

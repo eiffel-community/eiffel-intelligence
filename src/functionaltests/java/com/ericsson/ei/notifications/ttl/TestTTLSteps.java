@@ -26,7 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -85,7 +85,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    private InformSubscription informSubscription;
+    private InformSubscriber informSubscription;
 
     @Before("@TestNotificationRetries")
     public void beforeScenario() {

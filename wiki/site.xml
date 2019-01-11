@@ -49,8 +49,8 @@
                 <item name="Download files" href="Download-Files.html" />
             </item>
             <item collapse="true" name="Subscriptions" href="Subscriptions.html">
-                <item name="REST POST notification" href="REST-POST-notification.html" />
-                <item name="Email notification" href="Email-notification.html" />
+                <item name="Subscription with REST POST notification" href="subscription-with-REST-POST-notification.html" />
+                <item name="Subscription with Email notification" href="subscription-with-email-notification.html" />
             </item>
             <item collapse="true" name ="Rules" href="Rules.html">
                 <item name="Merge Resolver Rules" href="MergeResolverRules.html" />
@@ -65,6 +65,7 @@
                 <item name="EiffelConfidenceLevelModifiedEvent" href="EiffelConfidenceLevelModifiedEvent-Aggregation.html" />
                 <item name="Step-by-step subscription notification" href="Step-by-Step-Subscription-Notification.html" />
             </item>
+            <item name="Docker" href="docker.html" />
             <item name="Known limitations" href="Known-limitations.html" />
         </menu>
 

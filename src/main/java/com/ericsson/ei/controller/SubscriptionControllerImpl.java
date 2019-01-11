@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -56,9 +57,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final String SUBSCRIPTION_NOT_FOUND = "Subscription is not found";
     private static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists";
+    private static final String INVALID_USER = "Unauthorized! You must be logged in as the creator of a subscription to modify it.";
 
     @Value("${ldap.enabled}")
-    private boolean authenticate;
+    private boolean ldapEnabled;
 
     @Autowired
     private ISubscriptionService subscriptionService;
@@ -72,7 +74,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Creates the subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -136,7 +138,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Updates the existing subscriptions")
     public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -171,11 +173,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
         subscriptionNamesList.forEach(subscriptionName -> {
             LOG.debug("Subscription deleting has been started: " + subscriptionName);
-            if (subscriptionService.deleteSubscription(subscriptionName)) {
-                LOG.debug("Subscription is deleted successfully: " + subscriptionName);
-            } else {
-                LOG.error("Subscription to delete is not found: " + subscriptionName);
-                errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+
+            try {
+                if (subscriptionService.deleteSubscription(subscriptionName)) {
+                    LOG.debug("Subscription is deleted successfully: " + subscriptionName);
+                } else {
+                    LOG.error("Subscription to delete is not found: " + subscriptionName);
+                    errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+                }
+            } catch (AccessException e) {
+                LOG.error("Error: " + e.getMessage());
+                errorMap.put(subscriptionName, INVALID_USER);
             }
         });
         return getResponse();

@@ -50,10 +50,6 @@ public class App extends SpringBootServletInitializer {
             System.setProperty("logging.level.root", args[0]);
             System.setProperty("logging.level.org.springframework.web", args[0]);
             System.setProperty("logging.level.com.ericsson.ei", args[0]);
-        } else {
-            System.setProperty("logging.level.root", "OFF");
-            System.setProperty("logging.level.org.springframework.web", "OFF");
-            System.setProperty("logging.level.com.ericsson.ei", "OFF");
         }
 
         ConfigurableBeanFactory beanFactory = new DefaultListableBeanFactory();

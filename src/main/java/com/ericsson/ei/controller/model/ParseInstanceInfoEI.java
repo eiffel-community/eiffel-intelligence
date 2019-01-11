@@ -24,11 +24,18 @@ import com.ericsson.ei.subscriptionhandler.SendMail;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
@@ -36,14 +43,15 @@ import java.util.List;
  */
 @Component
 public class ParseInstanceInfoEI {
+    @Getter
+    @Value("${build.version:#{null}}")
+    private String applicationPropertiesVersion;
 
     @Getter
-    @Value("${spring.application.name}")
-    private String applicationName;
-
-    @Getter
-    @Value("${build.version}")
     private String version;
+
+    @Getter
+    private String applicationName;
 
     @Getter
     @Value("${rules.path}")
@@ -97,7 +105,12 @@ public class ParseInstanceInfoEI {
     @Autowired
     private ERQueryService erUrl;
 
-    public ParseInstanceInfoEI(){
+    @PostConstruct
+    public void init() throws IOException {
+        Properties properties = new Properties();
+        properties.load(ParseInstanceInfoEI.class.getResourceAsStream("/default-application.properties"));
+        version = properties.getProperty("version");
+        applicationName = properties.getProperty("artifactId");
     }
 
     @Component

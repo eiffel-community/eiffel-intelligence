@@ -30,6 +30,7 @@ import com.ericsson.ei.controller.model.Requirement;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 public class SubscriptionValidatorTest {
@@ -99,7 +100,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -111,7 +111,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -152,7 +151,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -170,7 +168,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -188,7 +185,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -211,7 +207,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -320,7 +315,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -331,7 +325,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -371,7 +364,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -399,7 +391,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -411,7 +402,6 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
-        assertTrue(true);
     }
 
     @Test
@@ -420,7 +410,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationType", notificationType);
         } catch (SubscriptionValidationException e) {
-            assertTrue(true);
             return;
         }
         assertTrue(false);
@@ -449,7 +438,6 @@ public class SubscriptionValidatorTest {
         try {
             subscriptionValidator.validateSubscription(subscriptionInvalid);
         } catch (SubscriptionValidationException e) {
-            assertTrue(true);
             return;
         }
         assertTrue(false);
@@ -457,21 +445,26 @@ public class SubscriptionValidatorTest {
 
     @Test
     public void validateSubscriptionWithSchemaTest() throws Exception {
-        subscriptionValid.setSubscriptionName("myName");
+
         try {
             invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
         } catch (SubscriptionValidationException e) {
             assertTrue(false);
         }
+    }
 
-        subscriptionValid.setSubscriptionName(null);
+    @Test
+    public void validateSubscriptionWithoutName() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Subscription subscriptionValidCopy = objectMapper.readValue(objectMapper.writeValueAsString(subscriptionValid),
+                Subscription.class);
+
+        subscriptionValidCopy.setSubscriptionName(null);
         try {
-            invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
+            invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValidCopy);
         } catch (SubscriptionValidationException e) {
-            assertTrue(true);
             return;
         }
         assertTrue(false);
-
     }
 }

@@ -22,7 +22,7 @@
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence
-Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation. 
+Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation.
 
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
@@ -48,7 +48,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
         - [**Query missed notifications**](wiki/markdown/Query.md#Query-missed-notifications)
     - [**Running rules on objects**](wiki/markdown/Running-rules-on-objects.md)
         - [**Test JMESPath expression on given Event**](wiki/markdown/Running-rules-on-objects.md#Test-JMESPath-expression-on-given-Event)
-        - [**Test a list of rule sets on given list of events**](wiki/markdown/Running-rules-on-objects.md#Test-a-list-of-rule-sets-on-given-list-of-events) 
+        - [**Test a list of rule sets on given list of events**](wiki/markdown/Running-rules-on-objects.md#Test-a-list-of-rule-sets-on-given-list-of-events)
     - [**Authentication**](wiki/markdown/Authentication.md)
         - [**Check if security is enabled**](wiki/markdown/Authentication.md#Check-if-security-is-enabled)
         - [**Login point that returns the name of current user**](wiki/markdown/Authentication.md#Login-point-that-returns-the-name-of-current-user)
@@ -70,12 +70,12 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Rule set up**](wiki/markdown/Rules.md#Rule-set-up)
     - [**Existing rules files**](wiki/markdown/Rules.md#Existing-rules-files)
     - [**MergeResolverRules**](wiki/markdown/MergeResolverRules.md)
-        - [**Example 1**](wiki/markdown/MergeResolverRules.md#Example-1)   
-        - [**Example 2 - array aggregations**](wiki/markdown/MergeResolverRules.md#Example-2---array-aggregations)  
+        - [**Example 1**](wiki/markdown/MergeResolverRules.md#Example-1)
+        - [**Example 2 - array aggregations**](wiki/markdown/MergeResolverRules.md#Example-2---array-aggregations)
     - [**History Rules**](wiki/markdown/History-rules.md)
 1. [**Subscriptions**](wiki/markdown/Subscriptions.md)
-    - [**REST POST notification**](wiki/markdown/REST-POST-notification.md)
-    - [**Email notification**](wiki/markdown/Email-notification.md)
+    - [**REST POST notification**](wiki/markdown/subscription-with-REST-POST-notification.md)
+    - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
 1. [**Known limitations**](wiki/markdown/Known-limitations.md)
 1. [**Step by Step Aggregation**](wiki/markdown/Step-by-Step-Aggregation.md)
     - [**ArtifactCreatedEvent Aggregation**](wiki/markdown/ArtifactCreatedEvent-aggregation.md)
@@ -85,5 +85,4 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**EiffelArtifactPublishedEvent Aggregation**](wiki/markdown/EiffelArtifactPublishedEvent-Aggregation.md)
     - [**EiffelConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/EiffelConfidenceLevelModifiedEvent-Aggregation.md)
 1. [**Step by Step Subscription Notification**](wiki/markdown/Step-by-Step-Subscription-Notification.md)
-
-
+1. [**Docker**](wiki/markdown/docker.md)

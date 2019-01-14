@@ -45,19 +45,21 @@ public class SpringRestTemplate {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST With
-     * raw body and form parameters.
+     * This method is responsible to notify the subscriber through REST POST
+     * With raw body and form parameters.
      *
      * @param notificationMeta
      * @param mapNotificationMessage
      * @param headers
      * @return integer
      */
-    public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers) {
+    public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
+            HttpHeaders headers) {
         ResponseEntity<JsonNode> response;
 
         try {
-            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED);
+            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
+                    .equals(MediaType.APPLICATION_FORM_URLENCODED);
             if (isApplicationXWwwFormUrlEncoded) {
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
@@ -68,8 +70,8 @@ public class SpringRestTemplate {
             }
 
         } catch (HttpClientErrorException e) {
-            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: "
-                    + notificationMeta + "\n " + e.getMessage());
+            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta
+                    + "\n " + e.getMessage());
             return false;
         } catch (HttpServerErrorException e) {
             LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: "
@@ -81,7 +83,8 @@ public class SpringRestTemplate {
         }
 
         HttpStatus status = response.getStatusCode();
-        boolean httpStatusSuccess = status == HttpStatus.OK || status == HttpStatus.ACCEPTED || status == HttpStatus.CREATED;
+        boolean httpStatusSuccess = status == HttpStatus.OK || status == HttpStatus.ACCEPTED
+                || status == HttpStatus.CREATED;
 
         JsonNode body = response.getBody();
         if (httpStatusSuccess) {
@@ -89,7 +92,16 @@ public class SpringRestTemplate {
         } else {
             LOGGER.debug("POST call failed with status code [" + status + "] and Body: " + body);
         }
-
         return httpStatusSuccess;
+    }
+
+    public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
+            return response;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

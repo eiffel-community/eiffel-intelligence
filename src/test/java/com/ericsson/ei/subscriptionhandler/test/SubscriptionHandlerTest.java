@@ -37,11 +37,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -80,7 +83,11 @@ public class SubscriptionHandlerTest {
     private static final String collectionName = "Notification";
     private static final String regex = "^\"|\"$";
     private static final String missedNotificationUrl = "/queryMissedNotifications";
-    private static final int statusOk = 200;
+    private static final boolean statusOk = true;
+
+    private static HttpHeaders headersWithAuth = new HttpHeaders();
+    private static HttpHeaders headersWithoutAuth = new HttpHeaders();
+    private static ResponseEntity responseObject;
     private static String aggregatedObject;
     private static String aggregatedInternalObject;
     private static String aggregatedObjectMapNotification;
@@ -88,9 +95,7 @@ public class SubscriptionHandlerTest {
     private static String artifactRequirementSubscriptionData;
     private static String subscriptionDataForAuthorization;
     private static String url;
-    private static String headerContentMediaType;
     private static String urlAuthorization;
-    private static String headerContentMediaTypeAuthorization;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
     private static final String formKey = "Authorization";
@@ -149,11 +154,13 @@ public class SubscriptionHandlerTest {
                 "UTF-8");
 
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "");
-        headerContentMediaType = new JSONObject(subscriptionData).getString("restPostBodyMediaType");
         urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta")
                 .replaceAll(regex, "");
-        headerContentMediaTypeAuthorization = new JSONObject(subscriptionDataForAuthorization)
-                .getString("restPostBodyMediaType");
+
+        headersWithAuth.add("Content-Type", "application/x-www-form-urlencoded");
+        headersWithAuth.add("Authorization", "Basic dGVzdFVzZXJOYW1lOnRlc3RQYXNzd29yZA==");
+        headersWithoutAuth.add("Content-Type", "application/json");
+        responseObject = createResponseEntity("\"crumb\":\"1234567890\"", HttpStatus.ACCEPTED);
     }
 
     @BeforeClass
@@ -248,17 +255,21 @@ public class SubscriptionHandlerTest {
         assertEquals(expectedOutput, output);
     }
 
-    @Test
-    public void missedNotificationWithTTLTest() throws Exception {
-        System.out.println(subscriptionData);
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        // Time to live lower than 60 seconds will not have any effect since
-        // removal runs every 60 seconds
-        Thread.sleep(65000);
-        List<String> allDocs = mongoDBHandler.getAllDocuments(dbName, collectionName);
-        System.out.println(allDocs.toString());
-        assertTrue(allDocs.isEmpty());
-    }
+    /**
+     * Note this test has been commented away since it is not a unittest if it makes use of
+     * external components, this test is also performed in a functional test.
+     * @throws Exception
+     */
+//    @Test
+//    public void missedNotificationWithTTLTest() throws Exception {
+//        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
+//        // Time to live lower than 60 seconds will not have any effect since
+//        // removal runs every 60 seconds
+//        Thread.sleep(65000);
+//        List<String> allDocs = mongoDBHandler.getAllDocuments(dbName, collectionName);
+//        System.out.println(allDocs.toString());
+//        assertTrue(allDocs.isEmpty());
+//    }
 
     @Test
     public void sendMailTest() throws Exception {
@@ -270,29 +281,26 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws Exception {
-        when(springRestTemplate.postDataMultiValue(url, mapNotificationMessage(subscriptionData),
-                headerContentMediaType)).thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(statusOk);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
-                headerContentMediaType);
+        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headersWithoutAuth);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws Exception {
-        when(springRestTemplate.postDataMultiValue(urlAuthorization,
-                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey,
-                formValue)).thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(statusOk);
+        when(springRestTemplate.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
-                mapNotificationMessage(subscriptionDataForAuthorization), headerContentMediaTypeAuthorization, formKey,
-                formValue);
+                mapNotificationMessage(subscriptionDataForAuthorization), headersWithAuth);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws Exception {
         subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
-                headerContentMediaType);
+                headersWithoutAuth);
         assertFalse(mongoDBHandler.getAllDocuments(dbName, collectionName).isEmpty());
     }
 
@@ -333,5 +341,9 @@ public class SubscriptionHandlerTest {
             }
         }
         return mapNotificationMessage;
+    }
+
+    private static ResponseEntity<String> createResponseEntity (String body, HttpStatus httpStatus) {
+        return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
     }
 }

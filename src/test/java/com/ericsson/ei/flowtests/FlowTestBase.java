@@ -147,7 +147,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
      * Override this if you have more events that will be registered to event to
      * object map but it is not visible in the test. For example from upstream or
      * downstream from event repository
-     * 
+     *
      * @return
      */
     protected int extraEventsCount() {
@@ -221,7 +221,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     /**
      * @return map, where key - _id of expected aggregated object value - expected
      *         aggregated object
-     * 
+     *
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 
@@ -245,12 +245,14 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     protected void waitForEventsToBeProcessed(int eventsCount) {
         // wait for all events to be processed
+        long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
-        while (processedEvents < eventsCount) {
+        while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            System.out.println("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
-                TimeUnit.MILLISECONDS.sleep(10000);
+                TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage(), e);
             }

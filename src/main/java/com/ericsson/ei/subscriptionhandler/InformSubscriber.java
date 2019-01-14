@@ -229,8 +229,7 @@ public class InformSubscriber {
         headers.setContentType(MediaType.APPLICATION_JSON);
         ResponseEntity<JsonNode> response = restTemplate.makeGetRequest(url.toString(), headers);
 
-        int statusCode = response.getStatusCodeValue();
-        if (response == null || statusCode != HttpStatus.OK.value()) {
+        if (response == null || response.getStatusCodeValue() != HttpStatus.OK.value()) {
             LOGGER.debug("No jenkins crumb found, most likely not jenkins or jenkins with crumb disabled");
             return null;
         }

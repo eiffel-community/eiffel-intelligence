@@ -177,30 +177,57 @@ public class InformSubscriber {
         // Adding authentication if any
         String authType = getSubscriptionField("authenticationType", subscriptionJson);
         if (authType.equals("BASIC_AUTH")) {
-            String username = getSubscriptionField("userName", subscriptionJson);
-            String password = getSubscriptionField("password", subscriptionJson);
-
-            if (!username.equals("") && !password.equals("")) {
-                String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-                headers.add("Authorization", "Basic " + encoding);
-                LOGGER.debug("Successfully added header for 'Authorization'");
-
-                // Adding jenkins crumb if any
-                JsonNode JenkinsJsonCrumbData = fetchJenkinsCrumbIfAny(encoding, notificationMeta);
-                if (JenkinsJsonCrumbData != null) {
-                    String crumbKey = JenkinsJsonCrumbData.get("crumbRequestField").asText();
-                    String crumbValue = JenkinsJsonCrumbData.get("crumb").asText();
-                    headers.add(crumbKey, crumbValue);
-                    LOGGER.debug("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
-                }
-
-            } else {
-                LOGGER.error(
-                        "userName/password field in subscription is missing. Make sure both are provided for BASIC_AUTH.");
-            }
+            headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
         }
 
         return headers;
+    }
+
+    /**
+     * This function adds the authentication details to the headers.
+     *
+     * @param headers
+     * @param notificationMeta
+     * @param subscriptionJson
+     * @return
+     */
+    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) {
+        String username = getSubscriptionField("userName", subscriptionJson);
+        String password = getSubscriptionField("password", subscriptionJson);
+
+        if (!username.equals("") && !password.equals("")) {
+            String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+            headers.add("Authorization", "Basic " + encoding);
+            LOGGER.debug("Successfully added header for 'Authorization'");
+
+            // Adding jenkins crumb if any
+            headers = addJenkinsCrumbData(headers, encoding, notificationMeta);
+
+        } else {
+            LOGGER.error(
+                    "userName/password field in subscription is missing. Make sure both are provided for BASIC_AUTH.");
+        }
+        return headers;
+    }
+
+    /**
+     * This function adds crumb to the headers if applicable.
+     *
+     * @param headers
+     * @param encoding
+     * @param notificationMeta
+     * @return
+     */
+    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta) {
+        JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumbIfAny(encoding, notificationMeta);
+        if (jenkinsJsonCrumbData != null) {
+            String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
+            String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
+            headers.add(crumbKey, crumbValue);
+            LOGGER.debug("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
+        }
+        return headers;
+
     }
 
     /**

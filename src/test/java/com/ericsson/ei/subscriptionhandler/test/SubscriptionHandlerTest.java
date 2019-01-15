@@ -24,7 +24,6 @@ import static org.powermock.reflect.Whitebox.invokeMethod;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -87,7 +86,6 @@ public class SubscriptionHandlerTest {
 
     private static HttpHeaders headersWithAuth = new HttpHeaders();
     private static HttpHeaders headersWithoutAuth = new HttpHeaders();
-    private static ResponseEntity responseObject;
     private static String aggregatedObject;
     private static String aggregatedInternalObject;
     private static String aggregatedObjectMapNotification;
@@ -98,8 +96,6 @@ public class SubscriptionHandlerTest {
     private static String urlAuthorization;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-    private static final String formKey = "Authorization";
-    private static final String formValue = "Basic dGVzdFVzZXJOYW1lOnRlc3RQYXNzd29yZA==";
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
@@ -160,7 +156,6 @@ public class SubscriptionHandlerTest {
         headersWithAuth.add("Content-Type", "application/x-www-form-urlencoded");
         headersWithAuth.add("Authorization", "Basic dGVzdFVzZXJOYW1lOnRlc3RQYXNzd29yZA==");
         headersWithoutAuth.add("Content-Type", "application/json");
-        responseObject = createResponseEntity("\"crumb\":\"1234567890\"", HttpStatus.ACCEPTED);
     }
 
     @BeforeClass
@@ -243,7 +238,7 @@ public class SubscriptionHandlerTest {
     public void missedNotificationTest() throws Exception {
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dbName, collectionName);
-        Iterator itr = outputDoc.iterator();
+        Iterator<String> itr = outputDoc.iterator();
         String data = itr.next().toString();
         JsonNode jsonResult = null;
         JsonNode expectedOutput = null;
@@ -254,22 +249,6 @@ public class SubscriptionHandlerTest {
         JsonNode output = jsonResult.get("AggregatedObject");
         assertEquals(expectedOutput, output);
     }
-
-    /**
-     * Note this test has been commented away since it is not a unittest if it makes use of
-     * external components, this test is also performed in a functional test.
-     * @throws Exception
-     */
-//    @Test
-//    public void missedNotificationWithTTLTest() throws Exception {
-//        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-//        // Time to live lower than 60 seconds will not have any effect since
-//        // removal runs every 60 seconds
-//        Thread.sleep(65000);
-//        List<String> allDocs = mongoDBHandler.getAllDocuments(dbName, collectionName);
-//        System.out.println(allDocs.toString());
-//        assertTrue(allDocs.isEmpty());
-//    }
 
     @Test
     public void sendMailTest() throws Exception {

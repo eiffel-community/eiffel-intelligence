@@ -56,7 +56,7 @@ public class SubscriptionHandler {
     private String subscriptionDataBaseName;
 
     @Autowired
-    private InformSubscriber informSubscription;
+    private InformSubscriber informSubscriber;
 
     @Setter
     @Autowired
@@ -104,7 +104,7 @@ public class SubscriptionHandler {
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
             if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, id)) {
                 LOGGER.debug("The subscription conditions match for the aggregatedObject");
-                informSubscription.informSubscriber(aggregatedObject, subscriptionJson);
+                informSubscriber.informSubscriber(aggregatedObject, subscriptionJson);
             }
         } catch (Exception e) {
             String msg = "Subscription: " + subscriptionData + "failed for ";

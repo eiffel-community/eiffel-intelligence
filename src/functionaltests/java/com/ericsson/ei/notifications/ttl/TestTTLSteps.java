@@ -85,7 +85,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    private InformSubscriber informSubscription;
+    private InformSubscriber informSubscriber;
 
     @Before("@TestNotificationRetries")
     public void beforeScenario() {
@@ -117,7 +117,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @When("^I want to inform subscriber$")
     public void inform_subscriber() throws IOException {
         JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
-        informSubscription.informSubscriber(aggregatedObject.toString(), subscriptionObject);
+        informSubscriber.informSubscriber(aggregatedObject.toString(), subscriptionObject);
     }
 
     @Then("^Verify that request has been retried")

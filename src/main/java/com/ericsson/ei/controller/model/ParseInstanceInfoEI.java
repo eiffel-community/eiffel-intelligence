@@ -99,7 +99,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private InformSubscriber informSubscription;
+    private InformSubscriber informSubscriber;
 
     @Getter
     @Autowired

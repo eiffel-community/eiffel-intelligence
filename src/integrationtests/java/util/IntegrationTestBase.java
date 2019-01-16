@@ -75,9 +75,23 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     }
 
     private void cleanDatabases() {
+        String aggregatedCollectionName = System.getProperty("aggregated.collection.name");
+        String watlistCollectionName = System.getProperty("waitlist.collection.name");
+        String subscriptionCollectionName = System.getProperty("subscription.collection.name");
+        String eventObjectMapCollectionName = System.getProperty("event_object_map.collection.name");
+        String subscriptionCollectionRepatFlagHandlerName = System.getProperty("subscription.collection.repeatFlagHandlerName");
+        String missedNotificationCollectionName = System.getProperty("missedNotificationCollectionName");
+        String sessionsCollectionName = System.getProperty("sessions.collection.name");
+
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, watlistCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, eventObjectMapCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionRepatFlagHandlerName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, missedNotificationCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, sessionsCollectionName);
+
         mongoDBHandler.dropDatabase(EIFFEL_DATABASE_NAME);
-        mongoDBHandler.dropDatabase(EIFFEL_INTELLIGENCE_DATABASE_NAME);
-        mongoDBHandler.dropDatabase(MAILHOG_DATABASE_NAME);
     }
 
     /*
@@ -104,8 +118,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     protected void sendEventsAndConfirm() throws InterruptedException {
         try {
-            rulesHandler.setRulePath(getRulesFilePath());
-
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();

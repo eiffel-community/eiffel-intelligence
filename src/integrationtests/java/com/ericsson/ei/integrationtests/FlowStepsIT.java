@@ -44,13 +44,14 @@ import util.JenkinsManager;
 
 @Ignore
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 public class FlowStepsIT extends IntegrationTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowStepsIT.class);
     private static final String SUBSCRIPTIONS_TEMPLATE_PATH = "src/integrationtests/resources/subscriptionsTemplate.json";
 
+    private String jenkins_job_name;
     private String rulesFilePath;
     private String eventsFilePath;
     private String aggregatedObjectFilePath;
@@ -110,11 +111,13 @@ public class FlowStepsIT extends IntegrationTestBase {
         assertEquals(200, response.getStatusCodeValue());
     }
 
-    @Given("^jenkins is set up with a job$")
-    public void jenkins_is_set_up_with_a_job() throws Throwable {
+    @Given("^jenkins is set up with a job \"([^\"]*)\"$")
+   public void jenkins_is_set_up_with_a_job(String jenkins_job_name) throws Throwable {
         jenkinsManager = new JenkinsManager(JENKINS_HOST, JENKINS_PORT, JENKINS_USERNAME, JENKINS_PASSWORD);
         String xmlJobData = jenkinsManager.getXmlJobData("123", "");
-        jenkinsManager.createJob("triggerjob", xmlJobData);
+        jenkinsManager.createJob(jenkins_job_name, xmlJobData);
+
+        this.jenkins_job_name = jenkins_job_name;
     }
 
     @Given("^the rules \"([^\"]*)\"$")
@@ -166,12 +169,13 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @Then("^the jenkins job should have been triggered\\.$")
     public void the_jenkins_job_should_have_been_triggered() throws Throwable {
-        assertEquals(true, jenkinsManager.jobHasBeenTriggered("triggerjob"));
+        assertEquals(true, jenkinsManager.jobHasBeenTriggered(this.jenkins_job_name));
+        jenkinsManager.deleteJob(this.jenkins_job_name);
     }
 
     @Then("^mongodb should contain mail\\.$")
     public void mongodb_should_contain_mails() throws Throwable {
-        JsonNode newestMailJson = getMailFromDatabase();
+        JsonNode newestMailJson = getNewestMailFromDatabase();
         String createdDate = newestMailJson.get("created").get("$date").asText();
 
         long createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
@@ -201,11 +205,16 @@ public class FlowStepsIT extends IntegrationTestBase {
         return extraEventsCount;
     }
 
-    private JsonNode getMailFromDatabase() throws IOException {
+    private JsonNode getNewestMailFromDatabase() throws Exception {
         ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME, "messages");
-        String mailString = allMails.get(0);
 
-        return objectMapper.readTree(mailString);
+        if(allMails.size() > 0) {
+            String mailString = allMails.get(allMails.size() - 1);
+            return objectMapper.readTree(mailString);
+
+        } else {
+            throw new Exception("No mails found.");
+        }
     }
 
     private ArrayNode setSubscriptionRestPostFieldsWithJmesPath(ArrayNode subscriptionJson, String JmesPath) {
@@ -216,7 +225,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         subscriptionJsonObject.put("authenticationType", "BASIC_AUTH");
         subscriptionJsonObject.put("restPostBodyMediaType", "application/x-www-form-urlencoded");
         subscriptionJsonObject.put("notificationType", "REST_POST");
-        subscriptionJsonObject.put("notificationMeta", "http://" + JENKINS_HOST + ":" + JENKINS_PORT + "/job/triggerjob/build?token='123'");
+        subscriptionJsonObject.put("notificationMeta", "http://" + JENKINS_HOST + ":" + JENKINS_PORT + "/job/" + this.jenkins_job_name +"/build?token='123'");
 
         ObjectNode requirement = ((ObjectNode) subscriptionJsonObject.get("requirements").get(0).get("conditions").get(0));
         requirement.put("jmespath", JmesPath);

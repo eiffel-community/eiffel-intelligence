@@ -1,5 +1,5 @@
 {
-   "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+   "_id":"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
    "aggregatedObject":{
       "fileInformation":[
          {
@@ -19,7 +19,7 @@
       "internalComposition":{
          "compositions":[
             {
-               "eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+               "eventId":"ab6ef12d-25fb-4d77-b9fd-87688e66de47",
                "name":"My composition",
                "time":2000,
                "artifacts":[
@@ -33,14 +33,14 @@
                      "internalComposition":{
                         "compositions":[
                            {
-                              "eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                              "eventId":"ab6ef12d-25fb-4d77-b9fd-87688e66da4j",
                               "sourceChanges":[
                                  {
                                     "submitter":{
                                        "name":"Jane Doe",
                                        "email":"jane.doe@company.com"
                                     },
-                                    "SCSEventId":"3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                                    "SCSEventId":"ace9df6e-cd45-4320-ae66-945f038caa1b",
                                     "gitIdentifier":null,
                                     "sourceCreations":[
                                        {
@@ -56,7 +56,7 @@
                                           ],
                                           "sourceCreations":[
                                        {
-                                          "SCCEventId":"552ad6a4-c522-47e2-9195-0481930979e4",
+                                          "SCCEventId":"a52ad6a4-c522-47e2-9195-0481930979e4",
                                           "author":null,
                                           "issues":[
                                              {
@@ -78,7 +78,7 @@
                            }
                         ]
                      },
-                     "id":"1100572b-c3j4-441e-abc9-b62f48080011",
+                     "id":"a100572b-c3j4-441e-abc9-b62f48080011",
                      "gav":{
                         "groupId":"com.othercompany.otherproduct",
                         "artifactId":"other-system",
@@ -92,7 +92,7 @@
                            "classifier":"debug"
                         }
                      ],
-                     "id":"4400572b-c3j4-441e-abc9-b62f48080033",
+                     "id":"a400572b-c3j4-441e-abc9-b62f48080033",
                      "gav":{
                         "groupId":"com.internalcompany.internalproduct",
                         "artifactId":"internal-system",
@@ -106,12 +106,12 @@
       "testCaseExecutions":[
          {
             "testCaseStartedTime":1481875925916,
-            "testCaseFinishedEventId":"cb9d64b0-a6e9-4419-8b5d-a650c27c1111",
-            "testCaseStartedEventId":"cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
+            "testCaseFinishedEventId":"ab9d64b0-a6e9-4419-8b5d-a650c27c1111",
+            "testCaseStartedEventId":"ab9d64b0-a6e9-4419-8b5d-a650c27c59ca",
             "testCaseFinishedTime":1481875935919,
             "testCaseTriggeredTime":1490777327230,
             "testCaseDuration":10003,
-            "testCaseTriggeredEventId":"6d3df0e0-404d-46ee-ab4f-3118457148f4",
+            "testCaseTriggeredEventId":"ad3df0e0-404d-46ee-ab4f-3118457148f4",
             "outcome":{
                "conclusion":"SUCCESSFUL",
                "verdict":"PASSED",
@@ -122,12 +122,12 @@
          },
          {
             "testCaseStartedTime":1481875925918,
-            "testCaseFinishedEventId":"17b20d3a-23a6-41c6-8da0-a87a240b4c2f",
-            "testCaseStartedEventId":"e06defd8-fcf0-4e08-bf32-43bbc06cf655",
+            "testCaseFinishedEventId":"a7b20d3a-23a6-41c6-8da0-a87a240b4c2f",
+            "testCaseStartedEventId":"a06defd8-fcf0-4e08-bf32-43bbc06cf655",
             "testCaseFinishedTime":1481875938919,
             "testCaseTriggeredTime":1490777357289,
             "testCaseDuration":13001,
-            "testCaseTriggeredEventId":"6d3df0e0-404d-46ee-ab4f-3118457148f5",
+            "testCaseTriggeredEventId":"ad3df0e0-404d-46ee-ab4f-3118457148f5",
             "outcome":{
                "conclusion":"SUCCESSFUL",
                "verdict":"PASSED",
@@ -139,20 +139,20 @@
       ],
       "confidenceLevels":[
          {
-            "eventId":"f37d59a3-069e-4f4c-8cc5-a52e73501a76",
+            "eventId":"a37d59a3-069e-4f4c-8cc5-a52e73501a76",
             "name":"performance",
             "time":1481875988767,
             "value":"SUCCESS"
          },
          {
-            "eventId":"f37d59a3-069e-4f4c-8cc5-a52e73501a75",
+            "eventId":"a37d59a3-069e-4f4c-8cc5-a52e73501a75",
             "name":"readyForDelivery",
             "time":1481875944272,
             "value":"SUCCESS"
          }
       ],
       "TemplateName":"ARTIFACT_1",
-      "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+      "id":"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
       "time":1481875891763,
       "type":"EiffelArtifactCreatedEvent",
       "gav":{
@@ -168,7 +168,7 @@
                   "classifier":"debug"
                }
             ],
-            "id":"1100572b-c3b4-461e-abc9-b62f48087011",
+            "id":"a100572b-c3b4-461e-abc9-b62f48087011",
             "gav":{
                "groupId":"com.othercompany.secondproduct",
                "artifactId":"other-system",
@@ -178,7 +178,7 @@
       ],
       "publications":[
          {
-            "eventId":"33d05e6f-9bd9-4138-83b6-e20cc74680a3",
+            "eventId":"a3d05e6f-9bd9-4138-83b6-e20cc74680a3",
             "locations":[
                {
                   "type":"PLAIN",
@@ -188,7 +188,7 @@
             "time":1481875921763
          },
          {
-            "eventId":"33d05e6f-9bd9-4138-83b6-e20cc74681b5",
+            "eventId":"a3d05e6f-9bd9-4138-83b6-e20cc74681b5",
             "locations":[
                {
                   "type":"ARTIFACTORY",

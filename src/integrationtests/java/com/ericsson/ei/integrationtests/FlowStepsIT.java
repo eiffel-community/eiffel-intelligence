@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -71,12 +70,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Value( "${jenkins.password:admin}")
     private String JENKINS_PASSWORD;
 
-    @Value( "${ei.host:localhost}")
-    private String EIHhost;
-
-    @LocalServerPort
-    int port;
-
     JenkinsManager jenkinsManager;
 
     @Given("^that \"([^\"]*)\" subscription with jmespath \"([^\"]*)\" is uploaded$")
@@ -93,7 +86,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         }
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        ResponseEntity response = postRequest.setHost(EIHhost)
+        ResponseEntity response = postRequest.setHost(eiHost)
                 .setPort(port)
                 .setEndpoint("/subscriptions")
                 .addHeader("Content-type", "application/json")

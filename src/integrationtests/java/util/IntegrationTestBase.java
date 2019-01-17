@@ -15,6 +15,7 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,10 +33,13 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
@@ -48,12 +52,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
     @Autowired
     protected MongoDBHandler mongoDBHandler;
+    @Value( "${ei.host:localhost}")
+    protected String eiHost;
+    @LocalServerPort
+    protected int port;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
     private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
-
-    @Autowired
-    public ObjectHandler objectHandler;
 
     @Value("${spring.data.mongodb.database}")
     private String database;
@@ -74,6 +79,21 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
 
+    @Value("${aggregated.collection.name}")
+    private String aggregatedCollectionName;
+    @Value("${waitlist.collection.name}")
+    private String waitlistCollectionName;
+    @Value("${subscription.collection.name}")
+    private String subscriptionCollectionName;
+    @Value("${event_object_map.collection.name}")
+    private String eventObjectMapCollectionName;
+    @Value("${subscription.collection.repeatFlagHandlerName}")
+    private String subscriptionCollectionRepatFlagHandlerName;
+    @Value("${missedNotificationCollectionName}")
+    private String missedNotificationCollectionName;
+    @Value("${sessions.collection.name}")
+    private String sessionsCollectionName;
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -82,15 +102,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         rabbitTemplate = createRabbitMqTemplate();
     }
 
-    private void cleanDatabases() {
-        String aggregatedCollectionName = System.getProperty("aggregated.collection.name");
-        String waitlistCollectionName = System.getProperty("waitlist.collection.name");
-        String subscriptionCollectionName = System.getProperty("subscription.collection.name");
-        String eventObjectMapCollectionName = System.getProperty("event_object_map.collection.name");
-        String subscriptionCollectionRepatFlagHandlerName = System.getProperty("subscription.collection.repeatFlagHandlerName");
-        String missedNotificationCollectionName = System.getProperty("missedNotificationCollectionName");
-        String sessionsCollectionName = System.getProperty("sessions.collection.name");
-
+    private void cleanDatabases(){
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, waitlistCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
@@ -127,8 +139,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      *
      * @return
      * @throws InterruptedException
+     * @throws URISyntaxException
      */
-    protected void sendEventsAndConfirm() throws InterruptedException {
+    protected void sendEventsAndConfirm() throws InterruptedException, URISyntaxException {
         try {
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
@@ -219,7 +232,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return table.count();
     }
 
-    private void checkResult(final Map<String, JsonNode> checkData) throws IOException {
+    private void checkResult(final Map<String, JsonNode> checkData) throws IOException, URISyntaxException {
         Iterator iterator = checkData.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -227,9 +240,21 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             JsonNode expectedJSON = (JsonNode) pair.getValue();
 
-            String document = objectHandler.findObjectById(id);
-            JsonNode actualJSON = objectMapper.readTree(document);
-            LOGGER.info("Complete aggregated object: " + actualJSON);
+            HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
+            boolean success = false;
+            String endpoint = "/queryAggregatedObject";
+
+            httpRequest.setHost(eiHost)
+                .setPort(port)
+                .addHeader("Content-type", "application/json")
+                .addParam("ID", id)
+                .setEndpoint(endpoint);
+
+            ResponseEntity<String> response = httpRequest.performRequest();
+            JsonNode body = objectMapper.readTree(response.getBody());
+            //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
+            JsonNode responseEntity = objectMapper.readTree(body.get("responseEntity").asText());
+            JsonNode actualJSON = responseEntity.get(0);
             JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
         }
     }
@@ -244,7 +269,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         RabbitTemplate rabbitTemplate = new RabbitTemplate(cf);
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setRoutingKey(bindingKey);
-        rabbitTemplate.setQueue(consumerName);
         return rabbitTemplate;
     }
 }

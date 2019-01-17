@@ -16,10 +16,8 @@
 */
 package com.ericsson.ei.jsonmerge;
 
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Iterator;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
 public class MergeHandler {
@@ -154,23 +155,20 @@ public class MergeHandler {
             while (preparedJsonKeys.hasNext()) {
                 String preparedJsonKey = preparedJsonKeys.next();
                 if (aggregatedJsonObject.has(preparedJsonKey)) {
-                    Class valueClass = aggregatedJsonObject.get(preparedJsonKey).getClass();
-                    if (valueClass.equals(JSONObject.class)) {
-                        updateJsonObject((JSONObject) aggregatedJsonObject.get(preparedJsonKey),
-                                (JSONObject) preparedJsonObject.get(preparedJsonKey));
-                        // final JSONObject o1 = getAsT(aggregatedJsonObject,
-                        // preparedJsonKey, JSONObject.class);
-                        // final JSONObject o2 = getAsT(preparedJsonObject,
-                        // preparedJsonKey, JSONObject.class);
-                        // updateJsonObject(o1, o2);
-                    } else if (valueClass.equals(JSONArray.class)) {
-                        updateJsonObject((JSONArray) aggregatedJsonObject.get(preparedJsonKey),
-                                (JSONArray) preparedJsonObject.get(preparedJsonKey));
-                        // final JSONArray a1 = getAsT(aggregatedJsonObject,
-                        // preparedJsonKey, JSONArray.class);
-                        // final JSONArray a2 = getAsT(preparedJsonObject,
-                        // preparedJsonKey, JSONArray.class);
-                        // updateJsonObject(a1, a2);
+                    final Object eFromAgg = aggregatedJsonObject.get(preparedJsonKey);
+                    final Object eFromPrep = preparedJsonObject.get(preparedJsonKey);
+                    if (eFromAgg instanceof JSONObject) {
+                        JSONObject objectFromAggregation = (JSONObject) (eFromAgg.equals(null) ? new JSONObject()
+                                : eFromAgg);
+                        JSONObject objectFromPreparation = (JSONObject) (eFromPrep.equals(null) ? new JSONObject()
+                                : eFromPrep);
+                        updateJsonObject(objectFromAggregation, objectFromPreparation);
+                    } else if (eFromAgg instanceof JSONArray) {
+                        JSONArray objectFromAggregation = (JSONArray) (eFromAgg.equals(null) ? new JSONObject()
+                                : eFromAgg);
+                        JSONArray objectFromPreparation = (JSONArray) (eFromPrep.equals(null) ? new JSONObject()
+                                : eFromPrep);
+                        updateJsonObject(objectFromAggregation, objectFromPreparation);
                     } else {
                         aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                     }
@@ -179,7 +177,9 @@ public class MergeHandler {
                 }
             }
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            String msg = "Exception: updateJsonObject failled for aggregatedJsonObject : " + aggregatedJsonObject
+                    + "and preparedJsonObject: " + preparedJsonObject;
+            log.error(msg, e);
         }
     }
 
@@ -192,33 +192,36 @@ public class MergeHandler {
                 final Object eFromAgg = aggregatedJsonObject.get(i);
                 final Object eFromPrep = preparedJsonObject.get(i);
                 if (eFromAgg instanceof JSONObject) {
-                    updateJsonObject((JSONObject) (eFromAgg.equals(null) ? new JSONObject() : eFromAgg),
-                            (JSONObject) (eFromPrep.equals(null) ? new JSONObject() : eFromPrep));
+                    JSONObject objectFromAggregation = (JSONObject) (eFromAgg.equals(null) ? new JSONObject()
+                            : eFromAgg);
+                    JSONObject objectFromPreparation = (JSONObject) (eFromPrep.equals(null) ? new JSONObject()
+                            : eFromPrep);
+                    updateJsonObject(objectFromAggregation, objectFromPreparation);
 
                 } else if (eFromAgg instanceof JSONArray) {
-
-                    updateJsonObject((JSONArray) (eFromAgg.equals(null) ? new JSONArray() : eFromAgg),
-                            (JSONArray) (eFromPrep.equals(null) ? new JSONArray() : eFromPrep));
+                    JSONArray objectFromAggregation = (JSONArray) (eFromAgg.equals(null) ? new JSONArray() : eFromAgg);
+                    JSONArray objectFromPreparation = (JSONArray) (eFromPrep.equals(null) ? new JSONArray()
+                            : eFromPrep);
+                    updateJsonObject(objectFromAggregation, objectFromPreparation);
                 } else {
                     // TODO: wtf is this?
                     Object element = aggregatedJsonObject.get(i);
                     element = preparedJsonObject.get(i);
                 }
             } catch (JSONException e) {
-                log.info(e.getMessage(), e);
+                String msg = "Exception: updateJsonObject failled for aggregatedJsonObject : " + aggregatedJsonObject
+                        + "and preparedJsonObject: " + preparedJsonObject;
+                log.error(msg, e);
             }
         }
     }
 
     /**
      *
-     * @param jsonObject
-     *            the object in which the key should be gotten from.
+     * @param jsonObject the object in which the key should be gotten from.
      * @param key
-     * @param clazz
-     *            the type we expect the key to be
-     * @param <T>
-     *            the type
+     * @param clazz      the type we expect the key to be
+     * @param            <T> the type
      * @return an object of type T if found in jsonObject, null otherwise.
      * @throws JSONException
      */
@@ -236,8 +239,7 @@ public class MergeHandler {
      * This method set lock property in document in database and returns the
      * aggregated document which will be further modified.
      * 
-     * @param id
-     *            String to search in database and lock this document.
+     * @param id String to search in database and lock this document.
      */
     public String getAggregatedObject(String id, boolean withLock) {
         try {

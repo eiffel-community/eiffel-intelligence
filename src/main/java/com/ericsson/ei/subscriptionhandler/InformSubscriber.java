@@ -115,28 +115,14 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            boolean success = false;
-
-            if (notificationMeta.contains("?")) {
-                LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
-                try {
-                    notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
-                    LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
-                } catch (URISyntaxException e) {
-                    LOGGER.error("Failed to reformat url reason: " + e.getMessage());
-                }
-            }
+            //prepare notification meta
+            notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
 
             // Prepare request headers
-            HttpHeaders headers = new HttpHeaders();
-            headers = prepareHeaders(headers, notificationMeta, subscriptionJson);
+            HttpHeaders headers = prepareHeaders(notificationMeta, subscriptionJson);
 
-            int restCallTries = 0;
-            do {
-                restCallTries++;
-                success = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-                LOGGER.debug("After trying for " + restCallTries + " time(s), the result is : " + success);
-            } while (!success && restCallTries <= failAttempt);
+            // Make rest call(s)
+            boolean success = makeRestCalls(notificationMeta, mapNotificationMessage, headers);
 
             if (!success) {
                 saveMissedNotificationToDB(aggregatedObject, subscriptionName, notificationMeta);
@@ -152,7 +138,20 @@ public class InformSubscriber {
                 LOGGER.error(e.getMessage());
             }
         }
+    }
 
+    private boolean makeRestCalls(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
+            HttpHeaders headers) {
+        boolean success = false;
+        int restCallTries = 0;
+
+        do {
+            restCallTries++;
+            success = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
+            LOGGER.debug("After trying for " + restCallTries + " time(s), the result is : " + success);
+        } while (!success && restCallTries <= failAttempt);
+
+        return success;
     }
 
     /**
@@ -164,8 +163,9 @@ public class InformSubscriber {
      * @param subscriptionJson
      * @return
      */
-    private HttpHeaders prepareHeaders(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) {
-        // Setting Content Type
+    private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson) {
+        HttpHeaders headers = new HttpHeaders();
+
         String headerContentMediaType = getSubscriptionField("restPostBodyMediaType", subscriptionJson);
         headers.setContentType(MediaType.valueOf(headerContentMediaType));
         LOGGER.debug("Successfully added header: "
@@ -272,33 +272,42 @@ public class InformSubscriber {
      * @return String
      * @throws URISyntaxException
      */
-    private String replaceParamsValuesWithAggregatedData(String aggregatedObject, String notificationMeta)
-            throws URISyntaxException {
-        String baseUrl = extractBaseUrl(notificationMeta);
-        String contextPath = extractContextPath(notificationMeta);
-
-        List<NameValuePair> params = null;
-        try {
-            params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
-        } catch (Exception e) {
-            LOGGER.error("Failed to parse url parameters from '" + notificationMeta + "'.\nException message: "
-                    + e.getMessage(), e);
+    private String replaceParamsValuesWithAggregatedData(String aggregatedObject, String notificationMeta) {
+        if (!notificationMeta.contains("?")) {
+            return notificationMeta;
         }
 
+        LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
+        try {
+            String baseUrl = extractBaseUrl(notificationMeta);
+            String contextPath = extractContextPath(notificationMeta);
+
+            List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, notificationMeta);
+            String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
+
+            notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
+            LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
+
+            return notificationMeta;
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed to reformat url reason: " + e.getMessage());
+            return notificationMeta;
+        }
+    }
+
+    private List<NameValuePair> processJmespathParameters(String aggregatedObject, String notificationMeta) throws URISyntaxException {
+        List<NameValuePair> params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
         List<NameValuePair> processedParams = new ArrayList<>();
+
         for (NameValuePair param : params) {
             String name = param.getName(), value = param.getValue();
             LOGGER.debug("Input parameter key and value: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
-                    "");
+            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX, "");
 
             processedParams.add(new BasicNameValuePair(name, value));
             LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
         }
-        String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
-
-        notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
-        return notificationMeta;
+        return processedParams;
     }
 
     /**

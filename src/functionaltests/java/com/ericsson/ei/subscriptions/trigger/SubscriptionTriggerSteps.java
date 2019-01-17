@@ -94,9 +94,12 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Given("^The REST API \"([^\"]*)\" is up and running$")
     public void the_REST_API_is_up_and_running(String endPoint) throws Exception {
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
-        response = getRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(endPoint).performRequest();
+        response = getRequest.setHost(getHostName())
+                             .setPort(applicationPort)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(endPoint)
+                             .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
@@ -114,8 +117,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager
-                .verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+        List<String> missingEventIds = dbManager.verifyEventsInDB(
+                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
@@ -182,9 +185,13 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      */
     private void postSubscriptions(String jsonDataAsString, String endPoint) throws Exception {
         HttpRequest postRequest = new HttpRequest(HttpRequest.HttpMethod.POST);
-        response = postRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(endPoint).setBody(jsonDataAsString).performRequest();
+        response = postRequest.setHost(getHostName())
+                              .setPort(applicationPort)
+                              .addHeader("content-type", "application/json")
+                              .addHeader("Accept", "application/json")
+                              .setEndpoint(endPoint)
+                              .setBody(jsonDataAsString)
+                              .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
@@ -196,9 +203,12 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      */
     private void validateSubscriptionsSuccessfullyAdded(String endPoint) throws Exception {
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
-        response = getRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(endPoint).performRequest();
+        response = getRequest.setHost(getHostName())
+                             .setPort(applicationPort)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(endPoint)
+                             .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         LOGGER.debug("Checking that response contains all subscriptions");
         for (String subscriptionName : subscriptionNames) {
@@ -270,14 +280,16 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("Setting up endpoints on host '" + getHostName() + "' and port '" + port + "'.");
         mockClient = new MockServerClient(getHostName(), port);
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH).withHeader("Authorization",
-                "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk")).respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST")
+                                 .withPath(REST_ENDPOINT_AUTH)
+                                 .withHeader("Authorization", "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk"))
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_ROW_BODY))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
     }
 
     /**
@@ -296,7 +308,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
                 // connected, go on
                 connected = true;
             } catch (BindException e) {
-                // address already in use. Try again!
+                String msg = "Failed to start SMTP server. address already in use. Try again!";
+                LOGGER.debug(msg, e);
             }
         }
     }

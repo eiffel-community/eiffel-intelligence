@@ -155,19 +155,19 @@ public class MergeHandler {
             while (preparedJsonKeys.hasNext()) {
                 String preparedJsonKey = preparedJsonKeys.next();
                 if (aggregatedJsonObject.has(preparedJsonKey)) {
-                    final Object eFromAgg = aggregatedJsonObject.get(preparedJsonKey);
-                    final Object eFromPrep = preparedJsonObject.get(preparedJsonKey);
-                    if (eFromAgg instanceof JSONObject) {
-                        JSONObject objectFromAggregation = (JSONObject) (eFromAgg.equals(null) ? new JSONObject()
-                                : eFromAgg);
-                        JSONObject objectFromPreparation = (JSONObject) (eFromPrep.equals(null) ? new JSONObject()
-                                : eFromPrep);
+                    final Object aggregatedObj = aggregatedJsonObject.get(preparedJsonKey);
+                    final Object preparedObj = preparedJsonObject.get(preparedJsonKey);
+                    if (aggregatedObj instanceof JSONObject) {
+                        JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null) ? new JSONObject()
+                                : aggregatedObj);
+                        JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null) ? new JSONObject()
+                                : preparedObj);
                         updateJsonObject(objectFromAggregation, objectFromPreparation);
-                    } else if (eFromAgg instanceof JSONArray) {
-                        JSONArray objectFromAggregation = (JSONArray) (eFromAgg.equals(null) ? new JSONObject()
-                                : eFromAgg);
-                        JSONArray objectFromPreparation = (JSONArray) (eFromPrep.equals(null) ? new JSONObject()
-                                : eFromPrep);
+                    } else if (aggregatedObj instanceof JSONArray) {
+                        JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null) ? new JSONObject()
+                                : aggregatedObj);
+                        JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null) ? new JSONObject()
+                                : preparedObj);
                         updateJsonObject(objectFromAggregation, objectFromPreparation);
                     } else {
                         aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
@@ -189,19 +189,20 @@ public class MergeHandler {
         }
         for (int i = 0; i < preparedJsonObject.length(); i++) {
             try {
-                final Object eFromAgg = aggregatedJsonObject.get(i);
-                final Object eFromPrep = preparedJsonObject.get(i);
-                if (eFromAgg instanceof JSONObject) {
-                    JSONObject objectFromAggregation = (JSONObject) (eFromAgg.equals(null) ? new JSONObject()
-                            : eFromAgg);
-                    JSONObject objectFromPreparation = (JSONObject) (eFromPrep.equals(null) ? new JSONObject()
-                            : eFromPrep);
+                final Object aggregatedObj = aggregatedJsonObject.get(i);
+                final Object preparedObj = preparedJsonObject.get(i);
+                if (aggregatedObj instanceof JSONObject) {
+                    JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null) ? new JSONObject()
+                            : aggregatedObj);
+                    JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null) ? new JSONObject()
+                            : preparedObj);
                     updateJsonObject(objectFromAggregation, objectFromPreparation);
 
-                } else if (eFromAgg instanceof JSONArray) {
-                    JSONArray objectFromAggregation = (JSONArray) (eFromAgg.equals(null) ? new JSONArray() : eFromAgg);
-                    JSONArray objectFromPreparation = (JSONArray) (eFromPrep.equals(null) ? new JSONArray()
-                            : eFromPrep);
+                } else if (aggregatedObj instanceof JSONArray) {
+                    JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null) ? new JSONArray()
+                            : aggregatedObj);
+                    JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null) ? new JSONArray()
+                            : preparedObj);
                     updateJsonObject(objectFromAggregation, objectFromPreparation);
                 } else {
                     // TODO: wtf is this?

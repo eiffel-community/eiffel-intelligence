@@ -84,10 +84,10 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     public void beforeScenario() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName,
                 eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
-        subscriptionStrWithOneMatch = FileUtils
-                .readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
-        subscriptionStrWithTwoMatch = FileUtils
-                .readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
+        subscriptionStrWithOneMatch = FileUtils.readFileToString(
+                new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
+        subscriptionStrWithTwoMatch = FileUtils.readFileToString(
+                new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "UTF-8");
         subscriptionWithOneMatch = new JSONObject(subscriptionStrWithOneMatch);
         subscriptionWithTwoMatch = new JSONObject(subscriptionStrWithTwoMatch);
@@ -119,9 +119,12 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
             String subscriptionEndPoint) throws Exception {
         HttpRequest deleteRequest = new HttpRequest(HttpRequest.HttpMethod.DELETE);
-        ResponseEntity response = deleteRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(subscriptionEndPoint + name).performRequest();
+        ResponseEntity response = deleteRequest.setHost(getHostName())
+                                               .setPort(applicationPort)
+                                               .addHeader("content-type", "application/json")
+                                               .addHeader("Accept", "application/json")
+                                               .setEndpoint(subscriptionEndPoint + name)
+                                               .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 

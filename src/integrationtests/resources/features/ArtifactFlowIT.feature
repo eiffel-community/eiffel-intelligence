@@ -20,8 +20,8 @@ Feature: Artifact flow Integrationtest
    Scenario: Send eiffel events for artifact flow and make sure EI is triggering on mail subscriptions
     Given that "mail" subscription with jmespath "id=='aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" is uploaded
     And the rules "src/test/resources/ArtifactRules_new.json"
-    And the events "src/integrationtests/resources/ArtifactFlowTestEvents.json"
-    And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
+    And the events "src/test/resources/ArtifactFlowTestEvents.json"
+    And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     And the expected aggregated object ID is "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
     And the upstream input "src/test/resources/upStreamInput.json"
     When the upstream input events are sent

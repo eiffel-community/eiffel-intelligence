@@ -2,6 +2,7 @@ package com.ericsson.ei.integrationtests;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import org.springframework.test.context.TestPropertySource;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
@@ -11,7 +12,6 @@ import cucumber.api.junit.Cucumber;
         "com.ericsson.ei.integrationtests" }, plugin = { "pretty",
                 "html:target/cucumber-reports/ArtifactFlowRunnerIT"})
 public class ArtifactFlowRunnerIT {
-
     @BeforeClass
     public static void before() {
         System.setProperty("aggregated.collection.name", "aggregated_objects_artifact_flow");

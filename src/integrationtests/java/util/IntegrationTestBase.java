@@ -28,14 +28,14 @@ import org.apache.commons.io.FileUtils;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
@@ -44,39 +44,47 @@ import com.mongodb.client.MongoDatabase;
 
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+    protected RabbitTemplate rabbitTemplate;
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
-    private static final String EIFFEL_DATABASE_NAME = "eiffel";
-    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
-
     @Autowired
-    private RmqHandler rmqHandler;
+    protected MongoDBHandler mongoDBHandler;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     @Autowired
     public ObjectHandler objectHandler;
 
-    @Autowired
-    private RulesHandler rulesHandler;
-
-    @Autowired
-    private MongoDBHandler mongoDBHandler;
-
     @Value("${spring.data.mongodb.database}")
     private String database;
-
     @Value("${event_object_map.collection.name}")
     private String event_map;
+    @Value("${rabbitmq.host}")
+    private String rabbitMqHost;
+    @Value("${rabbitmq.port}")
+    private int rabbitMqPort;
+    @Value("${rabbitmq.user}")
+    private String rabbitMqUsername;
+    @Value("${rabbitmq.password}")
+    private String rabbitMqPassword;
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+    @Value("${rabbitmq.binding.key}")
+    private String bindingKey;
+    @Value("${rabbitmq.consumerName}")
+    private String consumerName;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
         cleanDatabases();
+        rabbitTemplate = createRabbitMqTemplate();
     }
 
     private void cleanDatabases() {
         String aggregatedCollectionName = System.getProperty("aggregated.collection.name");
-        String watlistCollectionName = System.getProperty("waitlist.collection.name");
+        String waitlistCollectionName = System.getProperty("waitlist.collection.name");
         String subscriptionCollectionName = System.getProperty("subscription.collection.name");
         String eventObjectMapCollectionName = System.getProperty("event_object_map.collection.name");
         String subscriptionCollectionRepatFlagHandlerName = System.getProperty("subscription.collection.repeatFlagHandlerName");
@@ -84,14 +92,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         String sessionsCollectionName = System.getProperty("sessions.collection.name");
 
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, watlistCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, waitlistCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, eventObjectMapCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionRepatFlagHandlerName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, missedNotificationCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, sessionsCollectionName);
-
-        mongoDBHandler.dropDatabase(EIFFEL_DATABASE_NAME);
     }
 
     /*
@@ -116,6 +122,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return 0;
     }
 
+    /**
+     * Send events and confirms that all was processed
+     *
+     * @return
+     * @throws InterruptedException
+     */
     protected void sendEventsAndConfirm() throws InterruptedException {
         try {
             List<String> eventNames = getEventNamesToSend();
@@ -127,7 +139,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                 JsonNode eventJson = parsedJSON.get(eventName);
                 String event = eventJson.toString();
 
-                rmqHandler.publishObjectToWaitlistQueue(event);
+                rabbitTemplate.convertAndSend(event);
                 if (!alreadyExecuted) {
                     TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     alreadyExecuted = true;
@@ -182,15 +194,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return objectMapper.readTree(expectedDocument);
     }
 
-    // count documents that were processed
-    private long countProcessedEvents(String database, String collection) {
-        MongoClient mongoClient = null;
-        mongoClient = mongoDBHandler.getMongoClient();
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection table = db.getCollection(collection);
-        return table.count();
-    }
-
+    /**
+     * Wait for certain amount of events to be processed.
+     * @param eventsCount - An int which indicated how many events that should be processed.
+     * @return
+     * @throws InterruptedException
+     */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
         long processedEvents = 0;
@@ -199,6 +208,15 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
         }
+    }
+
+    // count documents that were processed
+    private long countProcessedEvents(String database, String collection) {
+        MongoClient mongoClient = null;
+        mongoClient = mongoDBHandler.getMongoClient();
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection table = db.getCollection(collection);
+        return table.count();
     }
 
     private void checkResult(final Map<String, JsonNode> checkData) throws IOException {
@@ -214,5 +232,19 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             LOGGER.info("Complete aggregated object: " + actualJSON);
             JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
         }
+    }
+
+    private RabbitTemplate createRabbitMqTemplate() {
+        CachingConnectionFactory cf = new CachingConnectionFactory();
+        cf.setHost(rabbitMqHost);
+        cf.setPort(rabbitMqPort);
+        cf.setUsername(rabbitMqUsername);
+        cf.setPassword(rabbitMqPassword);
+
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(cf);
+        rabbitTemplate.setExchange(exchangeName);
+        rabbitTemplate.setRoutingKey(bindingKey);
+        rabbitTemplate.setQueue(consumerName);
+        return rabbitTemplate;
     }
 }

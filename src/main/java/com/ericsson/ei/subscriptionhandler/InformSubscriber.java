@@ -131,15 +131,12 @@ public class InformSubscriber {
             HttpHeaders headers = new HttpHeaders();
             headers = prepareHeaders(headers, notificationMeta, subscriptionJson);
 
-            success = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-
-            for (int i = 0; i < failAttempt; i++) {
-                if (success) {
-                    break;
-                }
+            int restCallTries = 0;
+            do {
+                restCallTries++;
                 success = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-                LOGGER.debug("After retrying for " + (i + 1) + " times, the result is : " + success);
-            }
+                LOGGER.debug("After trying for " + restCallTries + " time(s), the result is : " + success);
+            } while (!success && restCallTries <= failAttempt);
 
             if (!success) {
                 saveMissedNotificationToDB(aggregatedObject, subscriptionName, notificationMeta);
@@ -174,11 +171,7 @@ public class InformSubscriber {
         LOGGER.debug("Successfully added header: "
                 + String.format("'%s':'%s'", "restPostBodyMediaType", headerContentMediaType));
 
-        // Adding authentication if any
-        String authType = getSubscriptionField("authenticationType", subscriptionJson);
-        if (authType.equals("BASIC_AUTH")) {
-            headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
-        }
+        headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
 
         return headers;
     }
@@ -192,6 +185,11 @@ public class InformSubscriber {
      * @return
      */
     private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) {
+        String authType = getSubscriptionField("authenticationType", subscriptionJson);
+        if (!authType.equals("BASIC_AUTH")) {
+            return headers;
+        }
+
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
 

@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
@@ -112,6 +114,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
         </dependency>
@@ -130,11 +137,6 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-mongodb</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
         <dependency>
@@ -165,8 +167,9 @@
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <artifactId>mockito-core</artifactId>
+            <version>2.9.0</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -193,6 +196,7 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
         </dependency>
 
         <dependency>
@@ -232,7 +236,7 @@
         <dependency>
             <groupId>org.jongo</groupId>
             <artifactId>jongo</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
         </dependency>
 
         <!-- Embedded -->
@@ -270,26 +274,26 @@
 
         <!-- Cucumber -->
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-spring</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/com.github.java-json-tools/json-schema-validator -->
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
@@ -297,36 +301,38 @@
             <version>2.2.8</version>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <filtering>true</filtering>
-	            <includes>
-	                <include>**/default-application.properties</include>
-	            </includes>
-	        </resource>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <filtering>false</filtering>
-	            <excludes>
-	                <exclude>**/default-application.properties</exclude>
-	            </excludes>
-	        </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/default-application.properties</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/default-application.properties</exclude>
+                </excludes>
+            </resource>
         </resources>
-               
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
-                <version>${springmvc-raml-version}</version>
+                <version>2.0.4</version>
                 <configuration>
                     <!-- path to raml file -->
                     <ramlPath>${raml-path}</ramlPath>
@@ -359,6 +365,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -399,7 +406,7 @@
                 <version>2.20</version>
                 <configuration>
                     <skipTests>${skipUTs}</skipTests>
-                    <forkCount>2C</forkCount>
+                    <forkCount>2.5C</forkCount>
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
@@ -412,42 +419,43 @@
             </plugin>
 
             <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-failsafe-plugin</artifactId>
-                  <version>3.0.0-M1</version>
-                  <executions>
-                      <execution>
-                          <id>integration-test</id>
-                          <goals>
-                              <goal>integration-test</goal>
-                              <goal>verify</goal>
-                          </goals>
-                          <phase>integration-test</phase>
-                          <configuration>
-                              <skipTests>${skipTests}</skipTests>
-                              <skipITs>${skipITs}</skipITs>
-                              <systemPropertyVariables>
-                                  <systemTest>true</systemTest>
-                                  <er.url>http://localhost:8080/eventrepository/search/</er.url>
-                              </systemPropertyVariables>
-                              <excludes>
-                                  <exclude>**/test/*</exclude>
-                                  <exclude>**/functionaltests/*</exclude>
-                              </excludes>
-                              <includes>
-                                  <include>**/FlowTest.class</include>
-                              </includes>
-                              <additionalClasspathElements>
-                                  <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                              </additionalClasspathElements>
-                          </configuration>
-                      </execution>
-                  </executions>
-              </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <skipTests>${skipTests}</skipTests>
+                            <skipITs>${skipITs}</skipITs>
+                            <systemPropertyVariables>
+                                <systemTest>true</systemTest>
+                                <er.url>http://localhost:8080/eventrepository/search/</er.url>
+                            </systemPropertyVariables>
+                            <excludes>
+                                <exclude>**/test/*</exclude>
+                                <exclude>**/functionaltests/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/FlowTest.class</include>
+                            </includes>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -471,7 +479,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
         </plugins>
     </build>
 </project>

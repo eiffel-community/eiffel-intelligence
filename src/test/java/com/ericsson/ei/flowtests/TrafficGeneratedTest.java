@@ -23,17 +23,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.rabbitmq.client.Channel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -58,6 +48,18 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.rules.RulesHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.rabbitmq.client.Channel;
+
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
 @SpringBootTest
@@ -146,13 +148,12 @@ public class TrafficGeneratedTest extends FlowTestBase {
     }
 
     /**
-     * This method loops through every package of events and changes their ids
-     * and targets to unique value. Ids of events that are located in the same
-     * package are related. Events are sent to RabbitMQ queue. Deterministic
-     * traffic is used.
+     * This method loops through every package of events and changes their ids and
+     * targets to unique value. Ids of events that are located in the same package
+     * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
+     * used.
      * 
-     * @param eventNames
-     *            list of events to be sent.
+     * @param eventNames list of events to be sent.
      * @return list of ready to send events.
      */
     private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {

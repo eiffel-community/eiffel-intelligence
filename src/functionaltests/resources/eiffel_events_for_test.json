@@ -638,7 +638,7 @@
   "event_EiffelTestCaseFinishedEvent_3": {
     "links": [
     {
-      "target": "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
+      "target": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
       "type": "TEST_CASE_EXECUTION"
     }
     ],

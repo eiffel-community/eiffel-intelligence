@@ -441,6 +441,7 @@
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                         <exclude>${someModule.test.excludes}</exclude>
+                        <exclude>**/integrationtests/*</exclude>
                     </excludes>
                     <includes>
                         <include>${someModule.test.includes}</include>
@@ -471,9 +472,6 @@
                                 <exclude>**/test/*</exclude>
                                 <exclude>**/functionaltests/*</exclude>
                             </excludes>
-                            <includes>
-                                <include>**/FlowTest.class</include>
-                            </includes>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
                             </additionalClasspathElements>

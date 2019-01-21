@@ -14,8 +14,7 @@
     "HistoryIdentifyRules":"links | [?type=='COMPOSITION'].target",
     "HistoryExtractionRules":"{id : meta.id, gav : data.gav, fileInformation : data.fileInformation}",
     "HistoryPathRules": "{artifacts: [{id: meta.id}]}",
-    "ProcessRules" : null,
-    "ProcessFunction" : null
+    "ProcessRules" : null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -29,8 +28,7 @@
     "MergeResolverRules": "[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -45,8 +43,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -61,8 +58,7 @@
     "ArrayOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -71,14 +67,13 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "links | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules" : "{ testCaseStartedEventId:meta.id, testCaseStartedTime:meta.time, outcome:data.testCase }",
+    "MatchIdRules": { "$and": [{"aggregatedObject.testCaseExecutions.testCaseTriggeredEventId": "%IdentifyRules%"}]},
+    "ExtractionRules" : "{testCaseStartedEventId:meta.id, testCaseStartedTime:meta.time, outcome:data.testCase }",
     "MergeResolverRules": "[{NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }] }]",
     "ArrayOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -87,14 +82,13 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "links | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": { "$and": [{"aggregatedObject.testCaseExecutions.testCaseStartedEventId": "%IdentifyRules%"}]},
+    "MatchIdRules": { "$and": [{"aggregatedObject.testCaseExecutions.testCaseTriggeredEventId": "%IdentifyRules%"},{"aggregatedObject.testCaseExecutions.testCaseStartedEventId":{"$exists":"true"}}]},
     "ExtractionRules" : "{ testCaseFinishedEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}",
-    "MergeResolverRules" : "{\"testCaseStartedEventId\":%IdentifyRules%}",
+    "MergeResolverRules" : "{\"testCaseTriggeredEventId\":%IdentifyRules%}",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": "{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}",
-    "ProcessFunction" : "difference"
+    "ProcessRules": "{testCaseDuration : diff(testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}"
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -111,8 +105,7 @@
     "DownstreamMergeRules": "{\"eventId\":%IdentifyRules%}",
     "HistoryExtractionRules": "{eventId: meta.id, time: meta.time,  name: data.name}",
     "HistoryPathRules": "{internalComposition:{compositions: [{eventId: meta.id}]}}",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -127,8 +120,7 @@
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "{SCCEventId: meta.id, gitIdentifier:data.gitIdentifier, author:data.author, issues:data.issues}",
     "HistoryPathRules": "{sourceCreations: [{SCCEventId: meta.id}]}",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   },
   {
     "TemplateName":"ARTIFACT_1",
@@ -143,7 +135,6 @@
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
     "HistoryExtractionRules": "{SCSEventId: meta.id,gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
     "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
-    "ProcessRules":null,
-    "ProcessFunction" : null
+    "ProcessRules":null
   }
 ]

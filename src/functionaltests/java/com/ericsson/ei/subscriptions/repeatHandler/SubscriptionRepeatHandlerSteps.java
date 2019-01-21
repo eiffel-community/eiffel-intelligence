@@ -41,6 +41,7 @@ import gherkin.deps.com.google.gson.JsonParser;
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";
+    private static final String AGGREGATED_OBJECT_FINAL_FILE_PATH = "src/functionaltests/resources/aggregatedObjectFinal.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerOneMatch.json";
@@ -83,10 +84,10 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     public void beforeScenario() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName,
                 eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
-        subscriptionStrWithOneMatch = FileUtils
-                .readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
-        subscriptionStrWithTwoMatch = FileUtils
-                .readFileToString(new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
+        subscriptionStrWithOneMatch = FileUtils.readFileToString(
+                new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
+        subscriptionStrWithTwoMatch = FileUtils.readFileToString(
+                new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH), "UTF-8");
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "UTF-8");
         subscriptionWithOneMatch = new JSONObject(subscriptionStrWithOneMatch);
         subscriptionWithTwoMatch = new JSONObject(subscriptionStrWithTwoMatch);
@@ -115,25 +116,26 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     }
 
     @Then("^I make a DELETE request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
-    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name, String subscriptionEndPoint) throws Exception {
+    public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
+            String subscriptionEndPoint) throws Exception {
         HttpRequest deleteRequest = new HttpRequest(HttpRequest.HttpMethod.DELETE);
         ResponseEntity response = deleteRequest.setHost(getHostName())
-                .setPort(applicationPort)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setEndpoint(subscriptionEndPoint + name)
-                .performRequest();
+                                               .setPort(applicationPort)
+                                               .addHeader("content-type", "application/json")
+                                               .addHeader("Accept", "application/json")
+                                               .setEndpoint(subscriptionEndPoint + name)
+                                               .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
     @Then("^Check in MongoDB RepeatFlagHandler collection that the subscription has been removed$")
     public void check_in_MongoDB_RepeatFlagHandler_collections_that_the_subscription_has_been_removed()
-            throws IOException {
+            throws IOException, InterruptedException {
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
         assertEquals("[]", resultRepeatFlagHandler.toString());
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName,
-                eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
+                eventManager.getJSONFromFile(AGGREGATED_OBJECT_FINAL_FILE_PATH).toString()));
     }
 
     @When("^In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId at least two times$")

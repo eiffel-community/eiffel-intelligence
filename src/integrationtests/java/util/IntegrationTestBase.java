@@ -15,7 +15,6 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.ericsson.ei.flowtests.FlowTestConfigs;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
@@ -69,14 +67,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
-
     @PostConstruct
     public void init() {
         cleanDatabases();
     }
 
-    private void cleanDatabases(){
+    private void cleanDatabases() {
         mongoDBHandler.dropDatabase(EIFFEL_DATABASE_NAME);
         mongoDBHandler.dropDatabase(EIFFEL_INTELLIGENCE_DATABASE_NAME);
         mongoDBHandler.dropDatabase(MAILHOG_DATABASE_NAME);
@@ -84,9 +80,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the
-     * first event. So any thread looking for the events don't do it before
-     * actually populating events in the database
-    */
+     * first event. So any thread looking for the events don't do it before actually
+     * populating events in the database
+     */
     private int firstEventWaitTime = 0;
 
     public void setFirstEventWaitTime(int value) {
@@ -174,7 +170,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         while (processedEvents < eventsCount) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            TimeUnit.MILLISECONDS.sleep(10000);
+            TimeUnit.MILLISECONDS.sleep(1000);
         }
     }
 
@@ -182,7 +178,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         Iterator iterator = checkData.entrySet().iterator();
 
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)iterator.next();
+            Map.Entry pair = (Map.Entry) iterator.next();
             String id = (String) pair.getKey();
             JsonNode expectedJSON = (JsonNode) pair.getValue();
 

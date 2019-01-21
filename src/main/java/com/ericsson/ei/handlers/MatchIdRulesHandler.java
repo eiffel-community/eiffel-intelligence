@@ -29,17 +29,10 @@ public class MatchIdRulesHandler {
     @Autowired
     private ObjectHandler objHandler;
 
-    @Autowired
-    private EventToObjectMapHandler eventToObjectMapHandler;
-
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
         String fetchQuery = replaceIdInRules(matchIdString, id);
         List<String> objects = objHandler.findObjectsByCondition(fetchQuery);
-        if (objects.isEmpty()) {
-            List<String> objectIds = eventToObjectMapHandler.getObjectsForEventId(id);
-            objects = objHandler.findObjectsByIds(objectIds);
-        }
         return objects;
     }
 
@@ -48,8 +41,9 @@ public class MatchIdRulesHandler {
             return matchIdString.replace("%IdentifyRules%", id);
         } else if (matchIdString.contains("%IdentifyRules_objid%")) {
             return matchIdString.replace("%IdentifyRules_objid%", id);
-        } else
+        } else {
             return null;
+        }
     }
 
 }

@@ -155,7 +155,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     @Test
-    public void flowTest() {
+    public void flowTest() throws InterruptedException {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = null;
@@ -243,7 +243,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         return table.count();
     }
 
-    protected void waitForEventsToBeProcessed(int eventsCount) {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
         long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
@@ -256,6 +256,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+        TimeUnit.MILLISECONDS.sleep(5000);
     }
 
     private void checkResult(final Map<String, JsonNode> checkData) {

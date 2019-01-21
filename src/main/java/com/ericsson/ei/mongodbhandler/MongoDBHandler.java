@@ -84,8 +84,7 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            json String
+     * @param input          json String
      * @return
      */
     public boolean insertDocument(String dataBaseName, String collectionName, String input) {
@@ -139,8 +138,7 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            string json
+     * @param condition      string json
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
@@ -178,10 +176,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a json string
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a json string
+     * @param updateInput    is updated document without lock
      * @return
      */
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -209,10 +205,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a condition for update documents
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a condition for update documents
+     * @param updateInput    is updated document without lock
      * @return
      */
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -235,13 +229,12 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the delete documents from collection using the a
+     * This method is used for the delete documents from collection using a
      * condition
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            string json
+     * @param condition      string json
      * @return
      */
     public boolean dropDocument(String dataBaseName, String collectionName, String condition) {
@@ -271,10 +264,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param fieldName
-     *            for index creation field
-     * @param ttlValue
-     *            seconds
+     * @param fieldName      for index creation field
+     * @param ttlValue       seconds
      */
     public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -309,10 +300,8 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a collection.
      *
-     * @param dataBaseName
-     *            to know which database to drop a collection from
-     * @param collectionName
-     *            to know which collection to drop
+     * @param dataBaseName   to know which database to drop a collection from
+     * @param collectionName to know which collection to drop
      */
     public void dropCollection(String dataBaseName, String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
@@ -323,8 +312,7 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a database. For example after testing.
      *
-     * @param dataBaseName
-     *            to know which database to remove
+     * @param dataBaseName to know which database to remove
      */
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);

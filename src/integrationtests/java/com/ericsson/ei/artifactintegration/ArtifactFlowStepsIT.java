@@ -1,4 +1,4 @@
-package com.ericsson.ei.artifactintegrationtests;
+package com.ericsson.ei.artifactintegration;
 
 import static org.junit.Assert.assertEquals;
 

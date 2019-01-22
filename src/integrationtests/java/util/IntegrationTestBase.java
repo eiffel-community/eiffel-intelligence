@@ -138,10 +138,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * Send events and confirms that all was processed
      *
      * @return
-     * @throws InterruptedException
-     * @throws URISyntaxException
+     * @throws Exception
      */
-    protected void sendEventsAndConfirm() throws InterruptedException, URISyntaxException {
+    protected void sendEventsAndConfirm() throws Exception {
         try {
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
@@ -223,7 +222,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         }
     }
 
-    // count documents that were processed
+    /**
+     * Counts documents that were processed
+     * @param database - A string with the database to use
+     * @param collection - A string with the collection to use
+     * @return amount of processed events
+     */
     private long countProcessedEvents(String database, String collection) {
         MongoClient mongoClient = null;
         mongoClient = mongoDBHandler.getMongoClient();
@@ -232,31 +236,72 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return table.count();
     }
 
-    private void checkResult(final Map<String, JsonNode> checkData) throws IOException, URISyntaxException {
-        Iterator iterator = checkData.entrySet().iterator();
+    /**
+     * Retrieves the result from EI and checks if it equals the expected data
+     * @param expectedData - A Map<String, JsonNode> which contains the expected data
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void checkResult(final Map<String, JsonNode> expectedData) throws IOException, URISyntaxException, InterruptedException {
+        Iterator iterator = expectedData.entrySet().iterator();
 
-        while (iterator.hasNext()) {
+        JsonNode expectedJSON = null;
+        JsonNode actualJSON = null;
+
+        boolean foundMatch = false;
+        while (!foundMatch && iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
             String id = (String) pair.getKey();
-            JsonNode expectedJSON = (JsonNode) pair.getValue();
+            expectedJSON = (JsonNode) pair.getValue();
 
-            HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
-            boolean success = false;
-            String endpoint = "/queryAggregatedObject";
+            long stopTime = System.currentTimeMillis() + 30000;
+            while(!foundMatch && stopTime > System.currentTimeMillis()) {
+                actualJSON = queryAggregatedObject(id);
 
-            httpRequest.setHost(eiHost)
-                .setPort(port)
-                .addHeader("Content-type", "application/json")
-                .addParam("ID", id)
-                .setEndpoint(endpoint);
-
-            ResponseEntity<String> response = httpRequest.performRequest();
-            JsonNode body = objectMapper.readTree(response.getBody());
-            //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
-            JsonNode responseEntity = objectMapper.readTree(body.get("responseEntity").asText());
-            JsonNode actualJSON = responseEntity.get(0);
-            JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
+                /*
+                 * This is a workaround for expectedJSON.equals(acutalJSON) as that does not
+                 * work with strict equalization
+                 */
+                try {
+                    JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
+                    foundMatch = true;
+                } catch (AssertionError e) {
+                    TimeUnit.SECONDS.sleep(1);
+                }
+            }
         }
+
+        JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
+    }
+
+    /**
+     * Retrieves the aggregatedObject from EI by querying
+     * @param id - A string which contains the id used in the query
+     * @return the responseEntity within the body.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    private JsonNode queryAggregatedObject(String id) throws URISyntaxException, IOException{
+        HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
+        String endpoint = "/queryAggregatedObject";
+
+        httpRequest.setHost(eiHost)
+            .setPort(port)
+            .addHeader("Content-type", "application/json")
+            .addParam("ID", id)
+            .setEndpoint(endpoint);
+
+        JsonNode actualJSON = null;
+
+        //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
+        ResponseEntity<String> response = httpRequest.performRequest();
+        JsonNode body =  objectMapper.readTree(response.getBody());
+        JsonNode responseEntity = objectMapper.readTree(body.get("responseEntity").asText());
+        actualJSON = responseEntity.get(0);
+
+        return actualJSON;
     }
 
     private RabbitTemplate createRabbitMqTemplate() {

@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -121,7 +122,6 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @Given("^the expected aggregated object ID is \"([^\"]*)\"$")
     public void the_expected_aggregated_object_ID_is(String aggregatedObjectID) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
         this.aggregatedObjectID = aggregatedObjectID;
     }
 
@@ -153,16 +153,36 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @Then("^the jenkins job should have been triggered\\.$")
     public void the_jenkins_job_should_have_been_triggered() throws Throwable {
-        assertEquals(true, jenkinsManager.jobHasBeenTriggered(this.jenkins_job_name));
+        long stopTime = System.currentTimeMillis() + 30000;
+        Boolean jobHasBeenTriggered = false;
+        while(jobHasBeenTriggered == false && stopTime > System.currentTimeMillis()) {
+            jobHasBeenTriggered = jenkinsManager.jobHasBeenTriggered(this.jenkins_job_name);
+
+            if(!jobHasBeenTriggered) {
+                TimeUnit.SECONDS.sleep(1);
+            }
+        }
+
+        assertEquals(true, jobHasBeenTriggered);
         jenkinsManager.deleteJob(this.jenkins_job_name);
     }
 
     @Then("^mongodb should contain mail\\.$")
     public void mongodb_should_contain_mails() throws Throwable {
-        JsonNode newestMailJson = getNewestMailFromDatabase();
-        String createdDate = newestMailJson.get("created").get("$date").asText();
+        long stopTime = System.currentTimeMillis() + 30000;
+        Boolean mailHasBeenDelivered = false;
+        long createdDateInMillis = 0;
 
-        long createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
+        while(mailHasBeenDelivered == false && stopTime > System.currentTimeMillis()) {
+            JsonNode newestMailJson = getNewestMailFromDatabase();
+            String createdDate = newestMailJson.get("created").get("$date").asText();
+
+            createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
+            mailHasBeenDelivered = createdDateInMillis >= startTime;
+            if (!mailHasBeenDelivered) {
+                TimeUnit.SECONDS.sleep(1);
+            }
+        }
         assert(createdDateInMillis >= startTime): "Mail was not triggered. createdDateInMillis is less than startTime.";
     }
 
@@ -201,7 +221,13 @@ public class FlowStepsIT extends IntegrationTestBase {
         }
     }
 
-    private ArrayNode setSubscriptionRestPostFieldsWithJmesPath(ArrayNode subscriptionJson, String JmesPath) {
+    /**
+     * Sets the subscription template with necessary fields for a REST/POST subscription
+     * @param subscriptionJson - An arraynode with the subscription that should be updated
+     * @param JmesPath - A jmesPath expression with the required condition for the subscription to be triggered
+     * @return an arraynode with the updated subscription
+     */
+    private ArrayNode setSubscriptionRestPostFieldsWithJmesPath(ArrayNode subscriptionJson, String jmesPath) {
         ObjectNode subscriptionJsonObject = ((ObjectNode) subscriptionJson.get(0));
 
         subscriptionJsonObject.put("userName", JENKINS_USERNAME);
@@ -212,7 +238,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         subscriptionJsonObject.put("notificationMeta", "http://" + JENKINS_HOST + ":" + JENKINS_PORT + "/job/" + this.jenkins_job_name +"/build?token='123'");
 
         ObjectNode requirement = ((ObjectNode) subscriptionJsonObject.get("requirements").get(0).get("conditions").get(0));
-        requirement.put("jmespath", JmesPath);
+        requirement.put("jmespath", jmesPath);
 
         ObjectNode notificationMessageKeyValue = ((ObjectNode) subscriptionJsonObject.get("notificationMessageKeyValues").get(0));
         notificationMessageKeyValue.put("formkey", "test");
@@ -220,6 +246,12 @@ public class FlowStepsIT extends IntegrationTestBase {
         return subscriptionJson;
     }
 
+    /**
+     * Sets the subscription template with necessary fields for a MAIL subscription
+     * @param subscriptionJson - An arraynode with the subscription that should be updated
+     * @param JmesPath - A jmesPath expression with the required condition for the subscription to be triggered
+     * @return an arraynode with the updated subscription
+     */
     private ArrayNode setSubscriptionMailFieldsWithJmesPath(ArrayNode subscriptionJson, String JmpesPath) {
         ObjectNode subscriptionJsonObject = ((ObjectNode) subscriptionJson.get(0));
         subscriptionJsonObject.put("restPostBodyMediaType", "application/json");

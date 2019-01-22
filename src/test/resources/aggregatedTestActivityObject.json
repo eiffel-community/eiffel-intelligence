@@ -116,7 +116,7 @@
     "time": 1234567890,
     "type": "EiffelActivityTriggeredEvent",
     "version": "1.0.0",
-    "id": "e46ef12d-25gb-4d7y-b9fd-8763re66de47",
+    "activity_triggered_event_id": "e46ef12d-25gb-4d7y-b9fd-8763re66de47",
     "activity_started_event_id": "e46e01ud-25gb-4d7y-b9f6-836fre6yde47",
     "activity_finished_event_id": "e46t01uh-29gs-4d7y-b9v6-83kfqe6y4e47",
     "outcome": {

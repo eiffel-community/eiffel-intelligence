@@ -23,6 +23,6 @@ Feature: Test execution flow integrationtest
     And the resulting aggregated object "src/test/resources/aggregatedTestActivityObject.json";
     And the expected aggregated object ID is "e46ef12d-25gb-4d7y-b9fd-8763re66de47"
     And jenkins is set up with a job "test-execution-job"
-    And that "REST/POST" subscription with jmespath "id=='e46ef12d-25gb-4d7y-b9fd-8763re66de47'" is uploaded
+    And that "REST/POST" subscription with jmespath "activity_triggered_event_id=='e46ef12d-25gb-4d7y-b9fd-8763re66de47'" is uploaded
     When the eiffel events are sent
     Then the jenkins job should have been triggered.

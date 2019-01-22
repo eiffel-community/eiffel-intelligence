@@ -119,7 +119,7 @@
     "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
     "MatchIdRules": { "$and": [{"aggregatedObject.test_suite.test_case.test_case_triggered_event_id": "%IdentifyRules%"},{"aggregatedObject.test_suite.test_case.test_case_started_event_id":{"$exists":"true"}}]},
     "ExtractionRules": "{test_case_finished_event_id: meta.id, ongoing : `\"false\"`, verdict : data.outcome.verdict, conclusion : data.outcome.conclusion, metrics : data.outcome.metrics, description : data.outcome.description}",
-    "MergeResolverRules": "[{NONEPATH:NONE}, {test_suite: [{ test_case : [{ test_case_started_event_id: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]} ]}]",
+    "MergeResolverRules": "[{NONEPATH:NONE}, {test_suite: [{ test_case : [{ test_case_triggered_event_id: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]} ]}]",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",

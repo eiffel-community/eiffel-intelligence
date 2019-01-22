@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
@@ -10,20 +12,24 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+        <version>2.0.8.RELEASE</version>
         <relativePath /> <!-- .. lookup parent from repository -->
     </parent>
 
     <properties>
         <java.version>1.8</java.version>
-        <springmvc-raml-version>2.0.4</springmvc-raml-version>
-        <output-relative-path>src/main/java</output-relative-path>
-        <raml-path>src/main/resources/public/raml/instance_info.raml</raml-path>
-        <raml-path>src/main/resources/public/raml/eiffel-intelligence.raml</raml-path>
-        <base-package>com.ericsson.ei.controller</base-package>
+        <springmvcRamlVersion>2.0.4</springmvcRamlVersion>
+        <outputRelativePath>src/main/java</outputRelativePath>
+        <ramlPath>src/main/resources/public/raml/eiffel-intelligence.raml</ramlPath>
+        <basePackage>com.ericsson.ei.controller</basePackage>
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
+        <springBootVersion>${project.parent.version}</springBootVersion>
+        <springLdapVersion>2.3.2.RELEASE</springLdapVersion>
+        <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
+        <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
+        <forkCountTests>2.5C</forkCountTests>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -32,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.8</version>
+                <version>3.0.0</version>
                 <reportSets><!-- only generating index, no other reports -->
                     <reportSet>
                         <reports>
@@ -60,16 +66,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>${springBootVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${springBootVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springBootVersion}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -81,21 +90,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <version>${springBootVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
+            <version>${springBootVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
+            <version>${springBootVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${springBootVersion}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -108,39 +121,45 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
+            <version>${springBootVersion}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.ldap</groupId>
-            <artifactId>spring-ldap-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-ldap</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-mongodb</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <version>${springBootVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-mongodb</artifactId>
+            <version>${springSessionVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ldap</groupId>
+            <artifactId>spring-ldap-core</artifactId>
+            <version>${springLdapVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+            <version>${springSecurityVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${springSecurityVersion}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
@@ -165,8 +184,9 @@
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <artifactId>mockito-core</artifactId>
+            <version>2.9.0</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -193,12 +213,25 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.9</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
         </dependency>
 
         <dependency>
@@ -232,7 +265,7 @@
         <dependency>
             <groupId>org.jongo</groupId>
             <artifactId>jongo</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
         </dependency>
 
         <!-- Embedded -->
@@ -270,26 +303,26 @@
 
         <!-- Cucumber -->
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-spring</artifactId>
-            <version>1.2.5</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/com.github.java-json-tools/json-schema-validator -->
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
@@ -297,44 +330,47 @@
             <version>2.2.8</version>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <filtering>true</filtering>
-	            <includes>
-	                <include>**/default-application.properties</include>
-	            </includes>
-	        </resource>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <filtering>false</filtering>
-	            <excludes>
-	                <exclude>**/default-application.properties</exclude>
-	            </excludes>
-	        </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/default-application.properties</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/default-application.properties</exclude>
+                </excludes>
+            </resource>
         </resources>
-               
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${springBootVersion}</version>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
                 <artifactId>springmvc-raml-plugin</artifactId>
-                <version>${springmvc-raml-version}</version>
+                <version>${springmvcRamlVersion}</version>
                 <configuration>
                     <!-- path to raml file -->
-                    <ramlPath>${raml-path}</ramlPath>
+                    <ramlPath>${ramlPath}</ramlPath>
                     <!-- output of generated code -->
-                    <outputRelativePath>${output-relative-path}</outputRelativePath>
+                    <outputRelativePath>${outputRelativePath}</outputRelativePath>
                     <addTimestampFolder>false</addTimestampFolder>
                     <!-- package for generated sources -->
-                    <basePackage>${base-package}</basePackage>
+                    <basePackage>${basePackage}</basePackage>
                     <baseUri>/</baseUri>
                     <seperateMethodsByContentType>false</seperateMethodsByContentType>
                     <useJackson1xCompatibility>false</useJackson1xCompatibility>
@@ -359,6 +395,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -368,7 +405,7 @@
                         <configuration>
                             <sources>
                                 <!-- where to find the generated sources -->
-                                <source>${output-relative-path}</source>
+                                <source>${outputRelativePath}</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -396,10 +433,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20</version>
+                <version>2.22.0</version>
                 <configuration>
                     <skipTests>${skipUTs}</skipTests>
-                    <forkCount>2C</forkCount>
+                    <forkCountTests>${forkCountTests}</forkCountTests>
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
@@ -413,39 +450,40 @@
             </plugin>
 
             <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-failsafe-plugin</artifactId>
-                  <version>3.0.0-M1</version>
-                  <executions>
-                      <execution>
-                          <id>integration-test</id>
-                          <goals>
-                              <goal>integration-test</goal>
-                              <goal>verify</goal>
-                          </goals>
-                          <phase>integration-test</phase>
-                          <configuration>
-                              <skipTests>${skipTests}</skipTests>
-                              <skipITs>${skipITs}</skipITs>
-                              <systemPropertyVariables>
-                                  <systemTest>true</systemTest>
-                                  <er.url>http://localhost:8080/eventrepository/search/</er.url>
-                              </systemPropertyVariables>
-                              <excludes>
-                                  <exclude>**/test/*</exclude>
-                                  <exclude>**/functionaltests/*</exclude>
-                              </excludes>
-                              <additionalClasspathElements>
-                                  <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                              </additionalClasspathElements>
-                          </configuration>
-                      </execution>
-                  </executions>
-              </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <skipTests>${skipTests}</skipTests>
+                            <skipITs>${skipITs}</skipITs>
+                            <systemPropertyVariables>
+                                <systemTest>true</systemTest>
+                                <er.url>http://localhost:8080/eventrepository/search/</er.url>
+                            </systemPropertyVariables>
+                            <excludes>
+                                <exclude>**/test/*</exclude>
+                                <exclude>**/functionaltests/*</exclude>
+                            </excludes>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -458,7 +496,8 @@
                 <configuration>
                     <!-- This is where site.xml is located -->
                     <siteDirectory>${basedir}/wiki</siteDirectory>
-                    <!-- Github pages only generates documentation from docs directory -->
+                    <!-- Github pages only generates documentation from docs 
+                        directory -->
                     <outputDirectory>${basedir}/docs</outputDirectory>
                 </configuration>
                 <dependencies>
@@ -469,7 +508,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
         </plugins>
     </build>
 </project>

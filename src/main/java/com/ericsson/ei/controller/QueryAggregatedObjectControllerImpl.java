@@ -13,8 +13,8 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
@@ -34,7 +35,7 @@ import java.util.List;
 @CrossOrigin
 public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
 
-    private static Logger LOGGER = (Logger) LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -46,6 +47,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      * @param id
      * @return ResponseEntity
      */
+    @Override
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         QueryResponse queryResponse = new QueryResponse();
         try {

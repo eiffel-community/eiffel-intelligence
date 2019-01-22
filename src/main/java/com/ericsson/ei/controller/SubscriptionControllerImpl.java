@@ -72,7 +72,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<List<SubscriptionResponse>> createSubscription(
+            @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -92,7 +93,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_ALREADY_EXISTS);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
+                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage(),
+                        e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -112,7 +114,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             try {
                 LOG.debug("Subscription fetching has been started: " + subscriptionName);
 
-                //Make sure the password is not sent outside this service.
+                // Make sure the password is not sent outside this service.
                 Subscription subscription = subscriptionService.getSubscription(subscriptionName);
                 subscription.setPassword("");
                 foundSubscriptionList.add(subscription);
@@ -135,7 +137,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Updates the existing subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(
+            @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -155,7 +158,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
+                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage(),
+                        e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -165,7 +169,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(@PathVariable String subscriptionNames) {
+    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(
+            @PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
@@ -194,9 +199,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Subscriptions fetching all has been started");
         try {
-          //Make sure the password is not sent outside this service.
+            // Make sure the password is not sent outside this service.
             List<Subscription> subscriptions = subscriptionService.getSubscriptions();
-            for(Subscription subscription: subscriptions) {
+            for (Subscription subscription : subscriptions) {
                 subscription.setPassword("");
             }
 

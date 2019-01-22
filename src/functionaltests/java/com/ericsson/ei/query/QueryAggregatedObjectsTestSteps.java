@@ -2,14 +2,6 @@ package com.ericsson.ei.query;
 
 import static org.junit.Assert.assertEquals;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +17,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -90,7 +90,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void aggregated_object_is_created() throws Throwable {
         List<String> aggregatedObject = mongoDBHandler.find(
                 eiDatabaseName, aggrCollectionName,
-                "{\"aggregatedObject.id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}");
+                "{\"_id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}");
 
         boolean aggregatedObjectExists = aggregatedObject.size() > 0;
         if (!aggregatedObjectExists) {

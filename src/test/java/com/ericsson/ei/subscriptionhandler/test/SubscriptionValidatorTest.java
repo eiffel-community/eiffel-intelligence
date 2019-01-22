@@ -430,6 +430,7 @@ public class SubscriptionValidatorTest {
             assertTrue(e.getMessage(), false);
             return;
         }
+        assertTrue(true);
     }
 
     @Test
@@ -444,6 +445,7 @@ public class SubscriptionValidatorTest {
 
     @Test
     public void validateSubscriptionWithSchemaTest() throws Exception {
+
         try {
             invokeMethod(subscriptionValidator, "validateWithSchema", subscriptionValid);
         } catch (SubscriptionValidationException e) {

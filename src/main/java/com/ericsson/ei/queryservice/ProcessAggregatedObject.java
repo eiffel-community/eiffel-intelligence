@@ -13,9 +13,12 @@
 */
 package com.ericsson.ei.queryservice;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,10 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -36,7 +38,7 @@ import java.util.List;
 @Component
 public class ProcessAggregatedObject {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessAggregatedObject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessAggregatedObject.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
@@ -56,8 +58,8 @@ public class ProcessAggregatedObject {
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
-        String query = "{\"aggregatedObject.id\": \"" + id + "\"}";
-        
+        String query = "{\"_id\": \"" + id + "\"}";
+
         LOGGER.debug("The condition is : " + query);
         JsonNode jsonCondition = null;
         try {
@@ -70,11 +72,11 @@ public class ProcessAggregatedObject {
                 jsonCondition.toString());
         return response;
     }
-    
+
     /**
      * The method is responsible to extract the aggregated data on the basis of
      * the ID from the aggregatedObject.
-     * 
+     *
      * @param templateName
      * @return ArrayList
      */
@@ -83,10 +85,10 @@ public class ProcessAggregatedObject {
         LOGGER.debug("The Json condition is : " + condition);
         return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
     }
-    
+
     /**
      * The method is responsible for the delete the aggregated object using template name suffix
-     * 
+     *
      * @param templateName
      * @return boolean
      */

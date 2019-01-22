@@ -207,5 +207,4 @@ public class SubscriptionValidator {
         }
         return jsonSubscriptionObj1;
     }
-
 }

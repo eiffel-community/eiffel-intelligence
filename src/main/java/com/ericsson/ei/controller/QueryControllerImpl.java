@@ -51,6 +51,8 @@ public class QueryControllerImpl implements QueryController {
     @CrossOrigin
     @ApiOperation(value = "")
     public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
+        String emptyResponseContent = "[]";
+        HttpStatus httpStatus;
         try {
             JSONObject criteria = new JSONObject(body.getCriteria().getAdditionalProperties());
             JSONObject options = null;
@@ -63,7 +65,12 @@ public class QueryControllerImpl implements QueryController {
             }
 
             JSONArray result = processQueryParams.filterFormParam(criteria, options, filter);
-            return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+            if(!result.toString().equalsIgnoreCase(emptyResponseContent)) {
+                httpStatus = HttpStatus.OK;
+            } else {
+                httpStatus = HttpStatus.NO_CONTENT;
+            }
+            return new ResponseEntity<>(result.toString(), httpStatus);
         } catch (Exception e) {
             String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);

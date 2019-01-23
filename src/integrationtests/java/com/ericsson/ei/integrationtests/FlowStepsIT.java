@@ -47,6 +47,7 @@ import util.JenkinsManager;
 public class FlowStepsIT extends IntegrationTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowStepsIT.class);
     private static final String SUBSCRIPTIONS_TEMPLATE_PATH = "src/integrationtests/resources/subscriptionsTemplate.json";
+    private static final String JENKINS_TOKEN = "123";
 
     private String jenkins_job_name;
     private String rulesFilePath;
@@ -99,7 +100,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Given("^jenkins is set up with a job \"([^\"]*)\"$")
    public void jenkins_is_set_up_with_a_job(String jenkins_job_name) throws Throwable {
         jenkinsManager = new JenkinsManager(JENKINS_HOST, JENKINS_PORT, JENKINS_USERNAME, JENKINS_PASSWORD);
-        String xmlJobData = jenkinsManager.getXmlJobData("123", "");
+        String xmlJobData = jenkinsManager.getXmlJobData(JENKINS_TOKEN, "");
         jenkinsManager.createJob(jenkins_job_name, xmlJobData);
 
         this.jenkins_job_name = jenkins_job_name;
@@ -235,7 +236,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         subscriptionJsonObject.put("authenticationType", "BASIC_AUTH");
         subscriptionJsonObject.put("restPostBodyMediaType", "application/x-www-form-urlencoded");
         subscriptionJsonObject.put("notificationType", "REST_POST");
-        subscriptionJsonObject.put("notificationMeta", "http://" + JENKINS_HOST + ":" + JENKINS_PORT + "/job/" + this.jenkins_job_name +"/build?token='123'");
+        subscriptionJsonObject.put("notificationMeta", "http://" + JENKINS_HOST + ":" + JENKINS_PORT + "/job/" + this.jenkins_job_name +"/build?token='" + JENKINS_TOKEN + "'");
 
         ObjectNode requirement = ((ObjectNode) subscriptionJsonObject.get("requirements").get(0).get("conditions").get(0));
         requirement.put("jmespath", jmesPath);

@@ -451,37 +451,36 @@
             </plugin>
 
             <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-failsafe-plugin</artifactId>
-                  <version>2.22.0</version>
-                  <executions>
-                      <execution>
-                          <id>integration-test</id>
-                          <goals>
-                              <goal>integration-test</goal>
-                              <goal>verify</goal>
-                          </goals>
-                          <phase>integration-test</phase>                          
-                      </execution>
-                  </executions>
-                  <configuration>
-                              <forkCount>3</forkCount>
-                              <reuseForks>false</reuseForks>
-                              <skipTests>${skipTests}</skipTests>
-                              <skipITs>${skipITs}</skipITs>
-                              <systemPropertyVariables>
-                                  <systemTest>true</systemTest>
-                                  <er.url>http://localhost:8080/eventrepository/search/</er.url>
-                              </systemPropertyVariables>
-                              <excludes>
-                                  <exclude>**/test/*</exclude>
-                                  <exclude>**/functionaltests/*</exclude>
-                              </excludes>
-
-                              <additionalClasspathElements>
-                                  <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                              </additionalClasspathElements>
-                          </configuration>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-failsafe-plugin</artifactId>
+                 <version>2.22.0</version>
+                 <executions>
+                     <execution>
+                         <id>integration-test</id>
+                         <goals>
+                             <goal>integration-test</goal>
+                             <goal>verify</goal>
+                         </goals>
+                         <phase>integration-test</phase>                          
+                     </execution>
+                 </executions>
+                 <configuration>
+	                 <forkCount>3</forkCount>
+	                 <reuseForks>false</reuseForks>
+	                 <skipTests>${skipTests}</skipTests>
+	                 <skipITs>${skipITs}</skipITs>
+	                 <systemPropertyVariables>
+	                     <systemTest>true</systemTest>
+	                     <er.url>http://localhost:8080/eventrepository/search/</er.url>
+	                 </systemPropertyVariables>
+	                 <excludes>
+	                     <exclude>**/test/*</exclude>
+	                     <exclude>**/functionaltests/*</exclude>
+	                 </excludes>
+	                  <additionalClasspathElements>
+	                     <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+	                 </additionalClasspathElements>
+	             </configuration>
               </plugin>
 
             <plugin>

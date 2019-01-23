@@ -16,19 +16,20 @@
 */
 package com.ericsson.ei.flowtests;
 
-import com.ericsson.ei.App;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.ericsson.ei.App;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTestTestExecution.class })
@@ -38,7 +39,7 @@ public class FlowTestTestExecution extends FlowTestBase {
     private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";
-    private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";
+    private static final String AGGREGATED_OBJECT_ID = "e46ef12d-25gb-4d7y-b9fd-8763re66de47";
 
     @Override
     String getRulesFilePath() {

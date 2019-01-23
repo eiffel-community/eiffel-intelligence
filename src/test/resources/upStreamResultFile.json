@@ -4,7 +4,7 @@
             "type": "EiffelCompositionDefinedEvent",
             "version": "1.0.0",
             "time": 2000,
-            "id": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+            "id": "ab6ef12d-25fb-4d77-b9fd-87688e66de47",
             "source": {
                 "domainId": "example.domain"
             }
@@ -15,7 +15,7 @@
         "links": [
             {
                 "type": "ELEMENT",
-                "target": "3ce9df6e-cd45-4320-ae66-945f038caa1b"
+                "target": "ace9df6e-cd45-4320-ae66-945f038caa1b"
             }
         ]
     },
@@ -27,12 +27,12 @@
                     "domainId": "example.domain"
                 },
                 "type": "EiffelArtifactCreatedEvent",
-                "id": "1100572b-c3j4-441e-abc9-b62f48080011",
+                "id": "a100572b-c3j4-441e-abc9-b62f48080011",
                 "version": "1.0.0"
             },
             "links": [
                 {
-                    "target": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                    "target": "ab6ef12d-25fb-4d77-b9fd-87688e66da4j",
                     "type": "COMPOSITION"
                 }
             ],
@@ -66,7 +66,7 @@
                     "type": "EiffelCompositionDefinedEvent",
                     "version": "1.0.0",
                     "time": 5005,
-                    "id": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                    "id": "ab6ef12d-25fb-4d77-b9fd-87688e66da4j",
                     "source": {
                         "domainId": "example.domain"
                     }
@@ -77,7 +77,7 @@
                 "links": [
                     {
                         "type": "ELEMENT",
-                        "target": "4400572b-c3j4-441e-abc9-b62f48080033"
+                        "target": "a400572b-c3j4-441e-abc9-b62f48080033"
                     }
                 ]
             },
@@ -87,7 +87,7 @@
                         "type": "EiffelSourceChangeSubmittedEvent",
                         "version": "1.0.0",
                         "time": 202000,
-                        "id": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                        "id": "ace9df6e-cd45-4320-ae66-945f038caa1b",
                         "source": {
                             "domainId": "example.domain"
                         }
@@ -122,7 +122,7 @@
                         },
                         "data": {
                             "gitIdentifier": {
-                                "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                "commitId": "ad090b60a4aedc5161da9c035a49b14a319829b4",
                                 "branch": "myBranch",
                                 "repoName": "myPrivateRepo",
                                 "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
@@ -138,7 +138,7 @@
                         "links": [
                             {
                                 "type": "PREVIOUS_VERSION",
-                                "target": "552ad6a4-c522-47e2-9195-0481930979e4"
+                                "target": "a52ad6a4-c522-47e2-9195-0481930979e4"
                             }
                         ]
                     },
@@ -148,14 +148,14 @@
                             "type": "EiffelSourceChangeCreatedEvent",
                             "version": "1.0.0",
                             "time": 101000,
-                            "id": "552ad6a4-c522-47e2-9195-0481930979e4",
+                            "id": "a52ad6a4-c522-47e2-9195-0481930979e4",
                             "source": {
                                 "domainId": "example.domain"
                             }
                         },
                         "data": {
                             "gitIdentifier": {
-                                "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                "commitId": "ad090b60a4aedc5161da9c035a49b14a319829b4",
                                 "branch": "myBranch",
                                 "repoName": "myPrivateRepo",
                                 "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
@@ -183,7 +183,7 @@
                     "domainId": "example.domain"
                 },
                 "type": "EiffelArtifactCreatedEvent",
-                "id": "4400572b-c3j4-441e-abc9-b62f48080033",
+                "id": "a400572b-c3j4-441e-abc9-b62f48080033",
                 "version": "1.0.0"
             },
             "links": [],
@@ -219,12 +219,12 @@
                     "domainId": "example.domain"
                 },
                 "type": "EiffelArtifactCreatedEvent",
-                "id": "1100572b-c3b4-461e-abc9-b62f48087011",
+                "id": "a100572b-c3b4-461e-abc9-b62f48087011",
                 "version": "1.0.0"
             },
             "links": [
                 {
-                    "target": "fb6ea12d-25fb-4d77-b9fd-87638e66da4j",
+                    "target": "ab6ea12d-25fb-4d77-b9fd-87638e66da4j",
                     "type": "COMPOSITION"
                 }
             ],

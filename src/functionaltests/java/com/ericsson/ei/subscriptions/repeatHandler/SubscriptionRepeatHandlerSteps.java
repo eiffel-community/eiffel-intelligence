@@ -134,8 +134,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
         assertEquals("[]", resultRepeatFlagHandler.toString());
-        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName,
-                eventManager.getJSONFromFile(AGGREGATED_OBJECT_FINAL_FILE_PATH).toString()));
+        String condition = "{\"_id\": \"" + AGGREGATED_OBJECT_ID + "\"}";
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
     }
 
     @When("^In MongoDb RepeatFlagHandler collection the subscription has matched the AggrObjectId at least two times$")

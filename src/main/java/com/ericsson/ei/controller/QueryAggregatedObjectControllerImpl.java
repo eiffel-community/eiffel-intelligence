@@ -48,11 +48,18 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         QueryResponse queryResponse = new QueryResponse();
+        String emptyResponseContent = "[]";
+        HttpStatus httpStatus;
         try {
             List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
             queryResponse.setResponseEntity(response.toString());
             LOGGER.debug("The response is: " + response.toString());
-            return new ResponseEntity<>(queryResponse, HttpStatus.OK);
+            if(!queryResponse.getResponseEntity().equalsIgnoreCase(emptyResponseContent)) {
+                httpStatus = HttpStatus.OK;
+            } else {
+                httpStatus = HttpStatus.NO_CONTENT;
+            }
+            return new ResponseEntity<>(queryResponse, httpStatus);
         } catch (Exception e) {
             String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID "
                 + id + ". Error message:\n" + e.getMessage();

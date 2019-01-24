@@ -24,7 +24,7 @@ This will produce a war file in the "target" folder.
 2. Build the Docker image with the war file that was produced from previous step: 
 
 
-`docker build -f src/main/docker/Dockerfile -t eiffel-intelligence-backend:0.1 .` 
+`docker build -t eiffel-intelligence:0.0.19 --build-arg URL=./target/eiffel-intelligence-0.0.19.war -f src/main/docker/Dockerfile .` 
 
 
 Now docker image has build with tag "eiffel-intelligence-backend:0.1"

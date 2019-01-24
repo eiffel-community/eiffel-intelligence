@@ -3,7 +3,6 @@ MAINTAINER Eiffel-Community
 
 ARG URL
 RUN echo echo Bulding Eiffel-Intelligence image based on artifact url: ${URL}
-EXPOSE 8091 8778 9779
 
 # Create image with existing war file. User need to execute 'mvn package -DskipTest' before 'docker build'
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps/ROOT"]

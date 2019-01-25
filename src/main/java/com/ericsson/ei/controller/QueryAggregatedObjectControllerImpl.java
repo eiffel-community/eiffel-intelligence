@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
@@ -49,17 +52,26 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     @Override
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+        ObjectMapper mapper = new ObjectMapper();
+        QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();
         try {
             List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
-            queryResponse.setResponseEntity(response.toString());
+            JsonNode responseJson = null;
+            if (!response.isEmpty()) {
+                responseJson = mapper.readTree(response.get(0));
+            } else {
+                responseJson = mapper.createObjectNode();
+            }
+            queryResponseEntity.setAdditionalProperty("objectDocument", responseJson);
+            queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is: " + response.toString());
             return new ResponseEntity<>(queryResponse, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID "
-                + id + ". Error message:\n" + e.getMessage();
+            String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID " + id
+                    + ". Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            queryResponse.setResponseEntity(errorMessage);
+            queryResponse.setAdditionalProperty("errorMessage", errorMessage);
             return new ResponseEntity<>(queryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

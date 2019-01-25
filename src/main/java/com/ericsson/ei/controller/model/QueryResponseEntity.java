@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -16,26 +15,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "queryResponseEntity"
-})
-public class QueryResponse {
 
-    @JsonProperty("queryResponseEntity")
-    @Valid
-    private QueryResponseEntity queryResponseEntity;
+})
+public class QueryResponseEntity {
+
     @JsonIgnore
     @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("queryResponseEntity")
-    public QueryResponseEntity getQueryResponseEntity() {
-        return queryResponseEntity;
-    }
-
-    @JsonProperty("queryResponseEntity")
-    public void setQueryResponseEntity(QueryResponseEntity queryResponseEntity) {
-        this.queryResponseEntity = queryResponseEntity;
-    }
 
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
@@ -49,12 +35,12 @@ public class QueryResponse {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("queryResponseEntity", queryResponseEntity).append("additionalProperties", additionalProperties).toString();
+        return new ToStringBuilder(this).append("additionalProperties", additionalProperties).toString();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(queryResponseEntity).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -62,11 +48,11 @@ public class QueryResponse {
         if (other == this) {
             return true;
         }
-        if ((other instanceof QueryResponse) == false) {
+        if ((other instanceof QueryResponseEntity) == false) {
             return false;
         }
-        QueryResponse rhs = ((QueryResponse) other);
-        return new EqualsBuilder().append(queryResponseEntity, rhs.queryResponseEntity).append(additionalProperties, rhs.additionalProperties).isEquals();
+        QueryResponseEntity rhs = ((QueryResponseEntity) other);
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

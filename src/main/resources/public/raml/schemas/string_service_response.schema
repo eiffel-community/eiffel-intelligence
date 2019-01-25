@@ -2,8 +2,8 @@
      "$schema":"http://json-schema.org/draft-04/schema#",
      "javaType":"com.ericsson.ei.controller.model.QueryResponse",
      "properties":{
-        "responseEntity":{
-           "type":"string"
+        "queryResponseEntity":{
+           "type":"object"
         }
      },
      "type":"object"

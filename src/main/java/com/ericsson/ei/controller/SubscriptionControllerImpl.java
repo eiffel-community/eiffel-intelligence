@@ -118,9 +118,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 Subscription subscription = subscriptionService.getSubscription(subscriptionName);
                 subscription.setPassword("");
                 foundSubscriptionList.add(subscription);
-                LOG.debug("Subscription is fetched: " + subscriptionName);
+                LOG.debug("Subscription could not be fetched: " + subscriptionName);
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription is not found: " + subscriptionName);
+                LOG.error("Subscription not found: " + subscriptionName);
                 notFoundSubscriptionList.add(subscriptionName);
             } catch (Exception e) {
                 LOG.error("Failed to fetch subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
@@ -207,7 +207,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.info(e.getMessage(), e);
+            LOG.info(e.getMessage());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to fetch all subscriptions. Error message:\n" + e.getMessage();

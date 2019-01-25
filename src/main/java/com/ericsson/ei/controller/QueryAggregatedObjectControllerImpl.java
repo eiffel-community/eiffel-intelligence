@@ -30,6 +30,7 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
  * on the basis of the ID from the aggregatedObject.
@@ -55,18 +56,28 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();
+        String emptyResponseContent = "[]";
+        HttpStatus httpStatus;
         try {
             List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
             JsonNode responseJson = null;
             if (!response.isEmpty()) {
                 responseJson = mapper.readTree(response.get(0));
+                httpStatus = HttpStatus.OK;
             } else {
                 responseJson = mapper.createObjectNode();
+                httpStatus = HttpStatus.NO_CONTENT;
             }
             queryResponseEntity.setAdditionalProperty("objectDocument", responseJson);
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is: " + response.toString());
-            return new ResponseEntity<>(queryResponse, HttpStatus.OK);
+            // if(!queryResponse.getResponseEntity().equalsIgnoreCase(emptyResponseContent))
+            // {
+            // httpStatus = HttpStatus.OK;
+            // } else {
+            // httpStatus = HttpStatus.NO_CONTENT;
+            // }
+            return new ResponseEntity<>(queryResponse, httpStatus);
         } catch (Exception e) {
             String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID " + id
                     + ". Error message:\n" + e.getMessage();

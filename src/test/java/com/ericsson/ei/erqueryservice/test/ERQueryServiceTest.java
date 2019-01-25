@@ -94,7 +94,6 @@ public class ERQueryServiceTest {
                                 Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
         ResponseEntity<JsonNode> result = erQueryService.getEventStreamDataById(eventId, searchOption, limitParam,
                 levels, isTree);
-        System.out.println(result);
     }
 
     Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,

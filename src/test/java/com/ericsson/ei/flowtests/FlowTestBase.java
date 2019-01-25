@@ -147,7 +147,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
      * Override this if you have more events that will be registered to event to
      * object map but it is not visible in the test. For example from upstream or
      * downstream from event repository
-     * 
+     *
      * @return
      */
     protected int extraEventsCount() {
@@ -155,7 +155,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     @Test
-    public void flowTest() {
+    public void flowTest() throws InterruptedException {
         try {
             String queueName = rmqHandler.getQueueName();
             Channel channel = null;
@@ -221,7 +221,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     /**
      * @return map, where key - _id of expected aggregated object value - expected
      *         aggregated object
-     * 
+     *
      */
     abstract Map<String, JsonNode> getCheckData() throws IOException;
 
@@ -243,18 +243,20 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         return table.count();
     }
 
-    protected void waitForEventsToBeProcessed(int eventsCount) {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
+        long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
-        while (processedEvents < eventsCount) {
+        while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
-                TimeUnit.MILLISECONDS.sleep(10000);
+                TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+        TimeUnit.MILLISECONDS.sleep(5000);
     }
 
     private void checkResult(final Map<String, JsonNode> checkData) {

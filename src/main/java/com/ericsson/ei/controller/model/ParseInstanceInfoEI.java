@@ -19,7 +19,7 @@ package com.ericsson.ei.controller.model;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscription;
+import com.ericsson.ei.subscriptionhandler.InformSubscriber;
 import com.ericsson.ei.subscriptionhandler.SendMail;
 import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
@@ -99,7 +99,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private InformSubscription informSubscription;
+    private InformSubscriber informSubscriber;
 
     @Getter
     @Autowired

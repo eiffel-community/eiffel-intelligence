@@ -11,6 +11,5 @@
    "HistoryIdentifyRules":"",
    "HistoryExtractionRules":"{SCCEventId: meta.id, gitIdentifier:data.gitIdentifier, author:data.author, issues:data.issues}",
    "HistoryPathRules":"{sourceCreations: [{SCCEventId: meta.id}]}",
-   "ProcessRules":null,
-   "ProcessFunction":null
+   "ProcessRules":null
 }

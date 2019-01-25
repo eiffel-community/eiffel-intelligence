@@ -138,7 +138,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void perform_invalid_query_on_created_aggregated_object() throws Throwable {
         final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         final String entryPoint = "/queryAggregatedObject";
-        final String expectedResponse = "{\"queryResponseEntity\":{\"objectDocument\":{}}}";
+        // final String expectedResponse =
+        // "{\"queryResponseEntity\":{\"objectDocument\":{}}}";
+        final String expectedResponse = "";
 
         LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: "
                 + invalidDocumentId);

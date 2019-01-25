@@ -5,7 +5,7 @@ docker build -t eiffel-intelligence:0.0.19 --build-arg URL=https://jitpack.io/co
 
 
 B: Build Eiffel-Intelligence based on local Eiffel-Intelligence source code changes
-1. Build Eiffel-Intelligence service artiface:
+1. Build Eiffel-Intelligence service artifact:
 cd (git root dir)
 mvn package -DskipTests
 

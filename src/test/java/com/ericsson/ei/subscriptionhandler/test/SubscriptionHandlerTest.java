@@ -292,7 +292,7 @@ public class SubscriptionHandlerTest {
                 .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
-        assertEquals("{\"responseEntity\":\"[" + input.toString().replace("\\", "") + "]\"}", response);
+        assertEquals("{\"queryResponseEntity\":" + input.toString().replace("\\", "") + "}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 

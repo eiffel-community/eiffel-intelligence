@@ -293,7 +293,7 @@ public class SubscriptionHandlerTest {
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
         assertEquals(
-                "{\"queryResponseEntity\":{\"missedNotification\":" + input.toString() + "}",
+                "{\"queryResponseEntity\":{\"missedNotification\":" + input.toString() + "}}",
                 response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }

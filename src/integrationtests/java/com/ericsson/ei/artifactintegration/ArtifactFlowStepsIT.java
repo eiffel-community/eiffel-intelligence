@@ -50,7 +50,7 @@ public class ArtifactFlowStepsIT extends IntegrationTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactFlowStepsIT.class);
 
     private static final String UPSTREAM_INPUT_FILE = "src/test/resources/upStreamInput.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";

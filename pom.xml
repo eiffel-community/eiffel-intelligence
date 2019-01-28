@@ -437,6 +437,7 @@
                 <configuration>
                     <skipTests>${skipUTs}</skipTests>
                     <forkCountTests>${forkCountTests}</forkCountTests>
+                    <forkCount>${forkCountTests}</forkCount>
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/*IT.java</exclude>

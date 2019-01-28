@@ -16,27 +16,15 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URI;
-
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.net.URLDecoder;
 import java.text.ParseException;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
@@ -55,14 +43,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
 
 import lombok.Getter;
@@ -131,7 +117,7 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            //prepare notification meta
+            // prepare notification meta
             notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
 
             // Prepare request headers
@@ -286,7 +272,6 @@ public class InformSubscriber {
      * @param aggregatedObject
      * @param notificationMeta
      * @return String
-     * @throws URISyntaxException
      */
     private String replaceParamsValuesWithAggregatedData(String aggregatedObject, String notificationMeta) {
         if (!notificationMeta.contains("?")) {
@@ -298,7 +283,8 @@ public class InformSubscriber {
             String baseUrl = extractBaseUrl(notificationMeta);
             String contextPath = extractContextPath(notificationMeta);
             List<NameValuePair> params = extractUrlParameters(notificationMeta);
-            LOGGER.debug("Notification meta in parts:\nBase Url: {}\nContext Path: {}\nURL Parameters: {} ", baseUrl, contextPath, params);
+            LOGGER.debug("Notification meta in parts:\nBase Url: {}\nContext Path: {}\nURL Parameters: {} ", baseUrl,
+                    contextPath, params);
 
             List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, params);
             LOGGER.debug("JMESPATH processed parameters :\n{}", processedParams);
@@ -315,13 +301,14 @@ public class InformSubscriber {
     }
 
     /**
-     * Extract the query from the notificationMeta and returns them as a list of KeyValuePair
+     * Extract the query from the notificationMeta and returns them as a list of
+     * KeyValuePair
+     *
      * @param notificationMeta
      * @return
      * @throws MalformedURLException
-     * @throws UnsupportedEncodingException
      */
-    private List<NameValuePair> extractUrlParameters(String notificationMeta) throws MalformedURLException, UnsupportedEncodingException {
+    private List<NameValuePair> extractUrlParameters(String notificationMeta) throws MalformedURLException {
         URL url = new URL(notificationMeta);
         String query = url.getQuery();
         List<NameValuePair> params = splitQuery(query);
@@ -329,15 +316,14 @@ public class InformSubscriber {
     }
 
     /**
-     * Splits a query string into one pair for each key and value.
-     * Loops said pairs and extracts the key and value as KeyValuePair.
-     * Adds KeyValuePair to list.
+     * Splits a query string into one pair for each key and value. Loops said
+     * pairs and extracts the key and value as KeyValuePair. Adds KeyValuePair
+     * to list.
      *
      * @param query
      * @return List<KeyValuePair>
-     * @throws UnsupportedEncodingException
      */
-    public List<NameValuePair> splitQuery(String query) throws UnsupportedEncodingException {
+    public List<NameValuePair> splitQuery(String query) {
         List<NameValuePair> queryMap = new ArrayList<>();
         String[] pairs = query.split("&");
 
@@ -349,16 +335,15 @@ public class InformSubscriber {
         }
 
         return queryMap;
-      }
+    }
 
     /**
      * Extracts and decodes the key and value from a set of parameters
      *
      * @param pair
      * @return KeyValuePair
-     * @throws UnsupportedEncodingException
      */
-    private NameValuePair extractKeyAndValue(String pair) throws UnsupportedEncodingException {
+    private NameValuePair extractKeyAndValue(String pair) {
         int firstIndexOfEqualsSign = pair.indexOf("=");
         String key = "";
         String value = "";
@@ -366,7 +351,7 @@ public class InformSubscriber {
         if (firstIndexOfEqualsSign > 0) {
             key = pair.substring(0, firstIndexOfEqualsSign);
             value = pair.substring(firstIndexOfEqualsSign + 1);
-        } else if (pair.length() > firstIndexOfEqualsSign + 1 ) {
+        } else if (pair.length() > firstIndexOfEqualsSign + 1) {
             key = "";
             value = pair.substring(firstIndexOfEqualsSign + 1);
         } else {
@@ -377,14 +362,16 @@ public class InformSubscriber {
     }
 
     /**
-     * Runs JMESPATH rules on values in a list of KeyValuePair and replaces the value with extracted data
+     * Runs JMESPATH rules on values in a list of KeyValuePair and replaces the
+     * value with extracted data
      *
      * @param aggregatedObject
      * @param params
      * @return List<NameValuePair>
      * @throws UnsupportedEncodingException
      */
-    private List<NameValuePair> processJmespathParameters(String aggregatedObject, List<NameValuePair> params) throws UnsupportedEncodingException {
+    private List<NameValuePair> processJmespathParameters(String aggregatedObject, List<NameValuePair> params)
+            throws UnsupportedEncodingException {
         List<NameValuePair> processedParams = new ArrayList<>();
 
         for (NameValuePair param : params) {
@@ -392,7 +379,8 @@ public class InformSubscriber {
             String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
             LOGGER.debug("Input parameter key and value: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX, "");
+            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
+                    "");
 
             LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
             processedParams.add(new BasicNameValuePair(name, value));

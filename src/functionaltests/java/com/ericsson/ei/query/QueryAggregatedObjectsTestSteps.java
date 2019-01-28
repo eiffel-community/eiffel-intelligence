@@ -121,7 +121,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 + "\nResponse: " + response.getBody().toString());
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
-        JsonNode responseEntityNode = jsonNodeResult.get("queryResponseEntity").get("objectDocument");
+        JsonNode responseEntityNode = jsonNodeResult.get("queryResponseEntity");
 
         String actualTestCaseFinishedEventId = responseEntityNode.get("aggregatedObject").get("testCaseExecutions")
                 .get(0).get("testCaseFinishedEventId").asText();

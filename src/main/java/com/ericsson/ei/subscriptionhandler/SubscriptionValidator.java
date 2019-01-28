@@ -66,8 +66,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of subscriptionName parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param subscriptionName
      */
@@ -82,8 +82,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of NotificationMessageKeyValues parameters (key/values) Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationMessage
      * @param restPostBodyMediaType
@@ -121,13 +121,14 @@ public class SubscriptionValidator {
 
     /**
      * Validation of notificationMeta parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationMeta
      * @param notificationType
      */
-    private static void validateNotificationMeta(String notificationMeta, String notificationType) throws SubscriptionValidationException {
+    private static void validateNotificationMeta(String notificationMeta, String notificationType)
+            throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         if (notificationMeta == null) {
             throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
@@ -137,15 +138,17 @@ public class SubscriptionValidator {
             String regexEmailCheck = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$";
             boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
             if (isInvalidEmailAddress) {
-                throw new SubscriptionValidationException("Wrong format of NotificationMeta on the selected type: " + notificationMeta);
+                throw new SubscriptionValidationException(
+                        "Wrong format of NotificationMeta on the selected type.\nNotification meta: " + notificationMeta
+                                + "\nNotification Type: " + notificationType);
             }
         }
     }
 
     /**
      * Validation of notificationType parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationType
      */

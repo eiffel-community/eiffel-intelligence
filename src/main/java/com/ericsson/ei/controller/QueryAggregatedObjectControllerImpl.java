@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -56,18 +55,14 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();
-        HttpStatus httpStatus;
+        HttpStatus httpStatus = HttpStatus.NO_CONTENT;
         try {
             List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
-            JsonNode responseJson = null;
             if (!response.isEmpty()) {
-                responseJson = mapper.readTree(response.get(0));
+                queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
                 httpStatus = HttpStatus.OK;
-            } else {
-                responseJson = mapper.createObjectNode();
-                httpStatus = HttpStatus.NO_CONTENT;
             }
-            queryResponseEntity.setAdditionalProperty("objectDocument", responseJson);
+
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is: " + response.toString());
             return new ResponseEntity<>(queryResponse, httpStatus);

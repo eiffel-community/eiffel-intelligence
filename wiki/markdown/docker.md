@@ -67,12 +67,12 @@ It is possible to set all Spring available properties via docker envrionment "-e
 When Eiffel-Intelligence container is running on your local Docker host, Eiffel-Intelligence should be reachable with address "localhost:8070/\<Rest End-Point\>" or "\<docker host ip\>:8070/\<Rest End-Point\>"
 
 
-Another option to configure Eiffel-Intelligence is with a provided application properties file, which can be made in two ways:
-1. Put application.properties file in Tomcat Catalina config folder and run Eiffe-Intelligence:
+Another option to configure Eiffel-Intelligence is to provide the application properties file into the container, which can be made in two ways:
+1. Put application.properties file in Tomcat Catalina config folder in container and run Eiffe-Intelligence:
 
 `docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties eiffel-intelligence:0.0.19`
 
-2. Put application.properties file in a different folder in container and tell EI where the application.properties is located:
+2. Put application.properties file in a different folder in container and tell EI where the application.properties is located in the container:
 
 `docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties eiffel-intelligence:0.0.19`
 

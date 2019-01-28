@@ -55,8 +55,8 @@ public class SubscriptionValidator {
         validateSubscriptionName(subscription.getSubscriptionName());
         validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(),
                 subscription.getRestPostBodyMediaType());
-        validateNotificationMeta(subscription.getNotificationMeta());
         validateNotificationType(subscription.getNotificationType());
+        validateNotificationMeta(subscription.getNotificationMeta(), subscription.getNotificationType());
         if (subscription.getNotificationType().equals("REST_POST")) {
             RestPostMediaType(subscription.getRestPostBodyMediaType());
         }
@@ -125,13 +125,20 @@ public class SubscriptionValidator {
      * wrong format of parameter.
      *
      * @param notificationMeta
+     * @param notificationType
      */
-    private static void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
-        String regex = ".*[\\s].*";
+    private static void validateNotificationMeta(String notificationMeta, String notificationType) throws SubscriptionValidationException {
+        String regexMail = "[\\s]*MAIL[\\\\s]*";
         if (notificationMeta == null) {
             throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
-        } else if (Pattern.matches(regex, notificationMeta)) {
-            throw new SubscriptionValidationException("Wrong format of NotificationMeta: " + notificationMeta);
+        }
+
+        if (Pattern.matches(regexMail, notificationType)) {
+            String regexEmailCheck = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$";
+            boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
+            if (isInvalidEmailAddress) {
+                throw new SubscriptionValidationException("Wrong format of NotificationMeta on the selected type: " + notificationMeta);
+            }
         }
     }
 

@@ -4,7 +4,7 @@
         "repeat": false,
         "created": "data-time",
         "notificationType": "REST_POST",
-        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+        "notificationMeta": "http://127.0.0.1:3000/ei/buildParam?token='test_token'",
         "restPostBodyMediaType": "application/json",
         "notificationMessageKeyValues" : [
           {

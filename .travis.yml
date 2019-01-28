@@ -29,7 +29,6 @@ script:
 before_deploy:
   - rm -rf docs
   - mvn site -B
-  - mvn clean -B
 
 deploy:
   skip_cleanup: true

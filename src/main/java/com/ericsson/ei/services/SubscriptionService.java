@@ -161,7 +161,7 @@ public class SubscriptionService implements ISubscriptionService {
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
-            throw new SubscriptionNotFoundException("Empty Subscription in repository");
+            throw new SubscriptionNotFoundException("No Subscriptions found");
         }
         for (String input : list) {
             Subscription subscription;

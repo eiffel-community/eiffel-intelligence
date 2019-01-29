@@ -92,7 +92,6 @@ public class SubscriptionHandlerTest {
     private static String aggregatedInternalObject;
     private static String aggregatedObjectMapNotification;
     private static String subscriptionData;
-    private static JSONObject subscriptionDataJson;
     private static String artifactRequirementSubscriptionData;
     private static String subscriptionDataForAuthorization;
     private static String url;
@@ -153,7 +152,6 @@ public class SubscriptionHandlerTest {
                 "UTF-8");
 
         subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
-        subscriptionDataJson = new JSONObject(subscriptionData);
         url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "").replaceAll("'", "");
         urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta")
                 .replaceAll(regex, "");
@@ -265,6 +263,7 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws Exception {
+        JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
         when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
 
         String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
@@ -284,6 +283,38 @@ public class SubscriptionHandlerTest {
         // Verify that rest entry was called with the correct url and extracted data
         verify(springRestTemplate, times(1)).postDataMultiValue(
                 urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
+                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
+    }
+
+    /**
+     * application/x-www-form-urlencoded test
+     * @throws Exception
+     */
+    @Test
+    public void testRestPostFormUrlEncodedTrigger() throws Exception {
+        JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
+
+        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
+        String mediaType = "application/x-www-form-urlencoded";
+        String formKey = "json";
+        String formValue = "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}";
+
+        // Updata subscription data to use and notify subscriber
+        subscriptionDataJson.put("restPostBodyMediaType", mediaType);
+        subscriptionDataJson.getJSONArray("notificationMessageKeyValues").getJSONObject(0).put("formkey", formKey);
+        subscriptionDataJson.getJSONArray("notificationMessageKeyValues").getJSONObject(0).put("formvalue", formValue);
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
+
+        // Remove ' from url since JMESPATH does this
+        //urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
+
+        // Create expected extraction
+        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
+
+        // Verify that rest entry was called with the correct url and extracted data
+        verify(springRestTemplate, times(1)).postDataMultiValue(
+                url + URLEncoder.encode(expectedExtraction, "UTF8"),
                 mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 

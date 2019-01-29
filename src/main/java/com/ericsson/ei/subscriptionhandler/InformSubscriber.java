@@ -469,7 +469,7 @@ public class InformSubscriber {
         String value;
         if (subscriptionJson.get(fieldName) != null) {
             value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
-            LOGGER.debug("Extracted field name and value from subscription json:" + fieldName + " : " + value);
+            LOGGER.debug("Extracted value [{}] from subscription field [{}].", value, fieldName);
         } else {
             value = "";
         }

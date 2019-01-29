@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -29,6 +30,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -90,6 +92,7 @@ public class SubscriptionHandlerTest {
     private static String aggregatedInternalObject;
     private static String aggregatedObjectMapNotification;
     private static String subscriptionData;
+    private static JSONObject subscriptionDataJson;
     private static String artifactRequirementSubscriptionData;
     private static String subscriptionDataForAuthorization;
     private static String url;
@@ -140,7 +143,7 @@ public class SubscriptionHandlerTest {
         aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
         aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification),
                 "UTF-8");
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+
         artifactRequirementSubscriptionData = FileUtils.readFileToString(new File(artifactRequirementSubscriptionPath),
                 "UTF-8");
         subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
@@ -149,7 +152,9 @@ public class SubscriptionHandlerTest {
         subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath),
                 "UTF-8");
 
-        url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "");
+        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+        subscriptionDataJson = new JSONObject(subscriptionData);
+        url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "").replaceAll("'", "");
         urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta")
                 .replaceAll(regex, "");
 
@@ -260,15 +265,31 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(statusOk);
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headersWithoutAuth);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
+
+        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
+        String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
+        String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
+
+        // Notify subscriber using url with jmes path
+        subscriptionDataJson.put("notificationMeta", urlWithJmesPath);
+        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
+
+        // Remove ' from url since JMESPATH does this
+        urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
+
+        // Create expected extraction
+        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
+
+        // Verify that rest entry was called with the correct url and extracted data
+        verify(springRestTemplate, times(1)).postDataMultiValue(
+                urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
+                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
         when(springRestTemplate.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
@@ -322,7 +343,7 @@ public class SubscriptionHandlerTest {
         return mapNotificationMessage;
     }
 
-    private static ResponseEntity<String> createResponseEntity (String body, HttpStatus httpStatus) {
+    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
         return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
     }
 }

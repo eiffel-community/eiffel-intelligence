@@ -55,8 +55,8 @@ public class SubscriptionValidator {
         validateSubscriptionName(subscription.getSubscriptionName());
         validateNotificationMessageKeyValues(subscription.getNotificationMessageKeyValues(),
                 subscription.getRestPostBodyMediaType());
-        validateNotificationMeta(subscription.getNotificationMeta());
         validateNotificationType(subscription.getNotificationType());
+        validateNotificationMeta(subscription.getNotificationMeta(), subscription.getNotificationType());
         if (subscription.getNotificationType().equals("REST_POST")) {
             RestPostMediaType(subscription.getRestPostBodyMediaType());
         }
@@ -66,8 +66,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of subscriptionName parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param subscriptionName
      */
@@ -82,8 +82,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of NotificationMessageKeyValues parameters (key/values) Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationMessage
      * @param restPostBodyMediaType
@@ -121,24 +121,34 @@ public class SubscriptionValidator {
 
     /**
      * Validation of notificationMeta parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationMeta
+     * @param notificationType
      */
-    private static void validateNotificationMeta(String notificationMeta) throws SubscriptionValidationException {
-        String regex = ".*[\\s].*";
-        if (notificationMeta == null) {
+    private static void validateNotificationMeta(String notificationMeta, String notificationType)
+            throws SubscriptionValidationException {
+        String regexMail = "[\\s]*MAIL[\\\\s]*";
+        if (notificationMeta == null || notificationMeta.isEmpty()) {
             throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
-        } else if (Pattern.matches(regex, notificationMeta)) {
-            throw new SubscriptionValidationException("Wrong format of NotificationMeta: " + notificationMeta);
+        }
+
+        if (Pattern.matches(regexMail, notificationType)) {
+            String regexEmailCheck = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$";
+            boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
+            if (isInvalidEmailAddress) {
+                throw new SubscriptionValidationException(
+                        "Notification type is set to [MAIL] but the given notificatioMeta is not a valid e-mail ["
+                                + notificationMeta + "]");
+            }
         }
     }
 
     /**
      * Validation of notificationType parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due to
-     * wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due
+     * to wrong format of parameter.
      *
      * @param notificationType
      */

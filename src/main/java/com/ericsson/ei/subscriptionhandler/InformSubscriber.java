@@ -16,9 +16,11 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -115,7 +117,7 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            //prepare notification meta
+            // prepare notification meta
             notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
 
             // Prepare request headers
@@ -237,11 +239,11 @@ public class InformSubscriber {
      * @return
      */
     private JsonNode fetchJenkinsCrumbIfAny(String encoding, String notificationMeta) {
-        URI url;
+        URL url;
         try {
             String baseUrl = extractBaseUrl(notificationMeta);
-            url = new URI(baseUrl + JENKINS_CRUMB_ENDPOINT);
-        } catch (URISyntaxException e) {
+            url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
+        } catch (MalformedURLException e) {
             LOGGER.error("Error! Failed to format url to collect jenkins crumb");
             return null;
         }
@@ -270,42 +272,114 @@ public class InformSubscriber {
      * @param aggregatedObject
      * @param notificationMeta
      * @return String
-     * @throws URISyntaxException
      */
     private String replaceParamsValuesWithAggregatedData(String aggregatedObject, String notificationMeta) {
         if (!notificationMeta.contains("?")) {
             return notificationMeta;
         }
-
         LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
+
         try {
             String baseUrl = extractBaseUrl(notificationMeta);
             String contextPath = extractContextPath(notificationMeta);
+            List<NameValuePair> params = extractUrlParameters(notificationMeta);
+            LOGGER.debug("Notification meta in parts:\nBase Url: {}\nContext Path: {}\nURL Parameters: {} ", baseUrl,
+                    contextPath, params);
 
-            List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, notificationMeta);
+            List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, params);
+            LOGGER.debug("JMESPATH processed parameters :\n{}", processedParams);
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
             notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
             LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
 
             return notificationMeta;
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed to reformat url reason: " + e.getMessage());
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
+            LOGGER.error("Failed to extract parameters: " + e.getMessage());
             return notificationMeta;
         }
     }
 
-    private List<NameValuePair> processJmespathParameters(String aggregatedObject, String notificationMeta) throws URISyntaxException {
-        List<NameValuePair> params = URLEncodedUtils.parse(new URI(notificationMeta), Charset.forName("UTF-8"));
+    /**
+     * Extract the query from the notificationMeta and returns them as a list of
+     * KeyValuePair
+     *
+     * @param notificationMeta
+     * @return
+     * @throws MalformedURLException
+     */
+    private List<NameValuePair> extractUrlParameters(String notificationMeta) throws MalformedURLException {
+        URL url = new URL(notificationMeta);
+        String query = url.getQuery();
+        List<NameValuePair> params = splitQuery(query);
+        return params;
+    }
+
+    /**
+     * Splits a query string into one pair for each key and value. Loops said
+     * pairs and extracts the key and value as KeyValuePair. Adds KeyValuePair
+     * to list.
+     *
+     * @param query
+     * @return List<KeyValuePair>
+     */
+    public List<NameValuePair> splitQuery(String query) {
+        List<NameValuePair> queryMap = new ArrayList<>();
+        String[] pairs = query.split("&");
+
+        for (String pair : pairs) {
+            NameValuePair nameValuePair = extractKeyAndValue(pair);
+            queryMap.add(nameValuePair);
+        }
+
+        return queryMap;
+    }
+
+    /**
+     * Extracts and decodes the key and value from a set of parameters
+     *
+     * @param pair
+     * @return KeyValuePair
+     */
+    private NameValuePair extractKeyAndValue(String pair) {
+        int firstIndexOfEqualsSign = pair.indexOf("=");
+        String key = "";
+        String value = "";
+
+        if (firstIndexOfEqualsSign > 0) {
+            key = pair.substring(0, firstIndexOfEqualsSign);
+        }
+
+        if (pair.length() > firstIndexOfEqualsSign + 1) {
+            value = pair.substring(firstIndexOfEqualsSign + 1);
+        }
+
+        return new BasicNameValuePair(key, value);
+    }
+
+    /**
+     * Runs JMESPATH rules on values in a list of KeyValuePair and replaces the
+     * value with extracted data
+     *
+     * @param aggregatedObject
+     * @param params
+     * @return List<NameValuePair>
+     * @throws UnsupportedEncodingException
+     */
+    private List<NameValuePair> processJmespathParameters(String aggregatedObject, List<NameValuePair> params)
+            throws UnsupportedEncodingException {
         List<NameValuePair> processedParams = new ArrayList<>();
 
         for (NameValuePair param : params) {
-            String name = param.getName(), value = param.getValue();
-            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX, "");
+            String name = URLDecoder.decode(param.getName(), "UTF-8");
+            String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
-            processedParams.add(new BasicNameValuePair(name, value));
+            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
+            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
+                    "");
+
             LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
+            processedParams.add(new BasicNameValuePair(name, value));
         }
         return processedParams;
     }
@@ -316,11 +390,12 @@ public class InformSubscriber {
      *
      * @param notificationMeta
      * @return
+     * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    private String extractBaseUrl(String notificationMeta) throws URISyntaxException {
-        URI url = new URI(notificationMeta);
-        String protocol = url.getScheme();
+    private String extractBaseUrl(String notificationMeta) throws MalformedURLException {
+        URL url = new URL(notificationMeta);
+        String protocol = url.getProtocol();
         String authority = url.getAuthority();
         return String.format("%s://%s", protocol, authority);
     }
@@ -330,10 +405,11 @@ public class InformSubscriber {
      *
      * @param notificationMeta
      * @return
+     * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    private String extractContextPath(String notificationMeta) throws URISyntaxException {
-        URI url = new URI(notificationMeta);
+    private String extractContextPath(String notificationMeta) throws MalformedURLException {
+        URL url = new URL(notificationMeta);
         String contextPath = url.getPath();
         return contextPath;
     }

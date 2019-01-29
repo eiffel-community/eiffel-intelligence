@@ -130,7 +130,7 @@ public class SubscriptionValidator {
     private static void validateNotificationMeta(String notificationMeta, String notificationType)
             throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
-        if (notificationMeta == null) {
+        if (notificationMeta == null || notificationMeta.isEmpty()) {
             throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
         }
 

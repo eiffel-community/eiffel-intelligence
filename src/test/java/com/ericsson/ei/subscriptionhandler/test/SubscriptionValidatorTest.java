@@ -356,10 +356,11 @@ public class SubscriptionValidatorTest {
      * - "kalle.kalle@domain.com"
      */
     @Test
-    public void validateNotificationMetaValidMetaTest() throws Exception {
+    public void validateNotificationMetaValidMailMetaTest() throws Exception {
         String notificationMeta = "kalle.kalle@domain.com";
+        String notificationType = "MAIL";
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta);
+            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -367,10 +368,11 @@ public class SubscriptionValidatorTest {
     }
 
     @Test
-    public void validateNotificationMetaInvalidMetaTest() throws Exception {
+    public void validateNotificationMetaInvalidMailMetaTest() throws Exception {
         String notificationMeta = "kalle.kall  e@domain.com";
+        String notificationType = "MAIL";
         try {
-            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta);
+            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), true);
             return;
@@ -378,6 +380,30 @@ public class SubscriptionValidatorTest {
         assertTrue(false);
     }
 
+    @Test
+    public void validateNotificationMetaInvalidMetaTest() throws Exception {
+        String notificationMeta = "";
+        String notificationType = "REST_POST";
+        try {
+            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(e.getMessage(), true);
+            return;
+        }
+        assertTrue(false);
+    }
+
+    @Test
+    public void validateNotificationMetaValidRestPostMetaTest() throws Exception {
+        String notificationMeta = "http://127.0.0.1:3000/ei/test_subscription_rest?json=links[?type=='SUBJECT'].target | [0]";
+        String notificationType = "REST_POST";
+        try {
+            invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
+        } catch (SubscriptionValidationException e) {
+            assertTrue(e.getMessage(), false);
+            return;
+        }
+    }
     /**
      * Validator unit tests for NotificationType parameter in Subscription. Valid
      * "NotificationType" value: true or false

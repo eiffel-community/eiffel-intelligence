@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -58,13 +57,9 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         try {
             List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
-            JsonNode responseJson = null;
             if (!response.isEmpty()) {
-                responseJson = mapper.readTree(response.get(0));
-            } else {
-                responseJson = mapper.createObjectNode();
+                queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
             }
-            queryResponseEntity.setAdditionalProperty("missedNotification", responseJson);
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is : " + response.toString());
             if (processMissedNotification.deleteMissedNotification(subscriptionName)) {

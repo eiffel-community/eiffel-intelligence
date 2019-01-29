@@ -138,8 +138,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void perform_invalid_query_on_created_aggregated_object() throws Throwable {
         final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         final String entryPoint = "/queryAggregatedObject";
-        // final String expectedResponse =
-        // "{\"queryResponseEntity\":{\"objectDocument\":{}}}";
         final String expectedResponse = "";
 
         LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: "
@@ -252,7 +250,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 + "\nResponse: " + responseAsString);
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
-        String actualTestCaseStartedEventId = jsonNodeResult.get("queryResponseEntity").get("missedNotification")
+        String actualTestCaseStartedEventId = jsonNodeResult.get("queryResponseEntity")
                 .get("testCaseExecutions").get(0).get("testCaseStartedEventId").asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
         assertEquals("Differences between actual Missed Notification response TestCaseStartedEventId:\n"
@@ -264,7 +262,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Check missed notification has been returned$")
     public void check_missed_notification_has_been_returned() throws Throwable {
-        final String expectedResponse = "{\"queryResponseEntity\":{\"missedNotification\":{}}}";
+        final String expectedResponse = "{\"queryResponseEntity\":{}}";
         final String subscriptionName = "Subscription_1";
         final String entryPoint = "/queryMissedNotifications";
 

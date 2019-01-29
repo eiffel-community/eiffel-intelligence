@@ -119,7 +119,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -131,7 +130,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateSubscriptionName", subscriptionName);
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -238,7 +236,6 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
                     subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -256,7 +253,6 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
                     subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -279,7 +275,6 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
                     subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -301,7 +296,6 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "validateNotificationMessageKeyValues",
                     subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -333,7 +327,6 @@ public class SubscriptionValidatorTest {
             invokeMethod(subscriptionValidator, "RestPostMediaType",
                     MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -344,7 +337,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "RestPostMediaType", "");
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -374,7 +366,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);
@@ -387,7 +378,6 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(subscriptionValidator, "validateNotificationMeta", notificationMeta, notificationType);
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
         assertTrue(false);

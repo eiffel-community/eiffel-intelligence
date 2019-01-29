@@ -11,6 +11,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,6 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionCRUDSteps.class);
 
     private static final String SUBSCRIPTION_FILE_PATH = "src/functionaltests/resources/subscription_single.json";
-    private static final String SUBSCRIPTION_UPDATED_FILE_PATH = "src/functionaltests/resources/subscription_single_updated.json";
 
     @LocalServerPort
     private int applicationPort;
@@ -49,7 +49,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    @When("^I make a POST request with valid \"([^\"]*)\" to the  subscription REST API \"([^\"]*)\"$")
+    @When("^I make a POST request with valid \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
     public void i_make_a_POST_request_with_valid_to_the_subscription_REST_API(String arg1, String endPoint)
             throws Throwable {
         String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "UTF-8");
@@ -67,7 +67,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     }
     /// Scenario:1 ends ==================================================================
 
-    @When("^I make a GET request with subscription name \"([^\"]*)\" to the  subscription REST API \"([^\"]*)\"$")
+    @When("^I make a GET request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
     public void i_make_a_GET_request_with_subscription_name_to_the_subscription_REST_API(String name, String endPoint)
             throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
@@ -84,33 +84,34 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     }
     // Scenario:2 ends ==================================================================
 
-    @When("^I make a PUT request with modified notificationType as \"([^\"]*)\" to REST API \"([^\"]*)\"$")
-    public void i_make_a_PUT_request_with_modified_notificationType_as_to_REST_API(String notificationType,
+    @When("^I make a PUT request with modified \"([^\"]*)\" as \"([^\"]*)\" to REST API \"([^\"]*)\"$")
+    public void i_make_a_PUT_request_with_modified_notificationType_as_to_REST_API(String key, String value,
             String endPoint) throws Throwable {
-        String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_UPDATED_FILE_PATH), "UTF-8");
+        String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
+        jsonArray.getJSONObject(0).put(key, value);
+
         httpRequest = new HttpRequest(HttpMethod.PUT);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
                 .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
                 .setBody(jsonArray.toString());
         response = httpRequest.performRequest();
-        LOGGER.info("Modified notificationType is:" + notificationType);
     }
 
-    @Then("^I can validate modified notificationType \"([^\"]*)\" with GET request at \"([^\"]*)\"$")
-    public void i_can_validate_modified_notificationType_with_GET_request_at(String notificationType, String endPoint)
+    @Then("^I can validate modified \"([^\"]*)\" \"([^\"]*)\" with GET request at \"([^\"]*)\"$")
+    public void i_can_validate_modified_notificationType_with_GET_request_at(String key, String value, String endPoint)
             throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint);
         response = httpRequest.performRequest();
+
         JsonNode node = eventManager.getJSONFromString(response.getBody());
-        String found = node.get("foundSubscriptions").get(0).toString();
-        Subscription subscription = mapper.readValue(found, Subscription.class);
-        assertEquals(notificationType, subscription.getNotificationType());
+        String foundValue = node.get("foundSubscriptions").get(0).get(key).asText();
+        assertEquals(value, foundValue);
     }
     // Scenario:3 ends ==================================================================
 
-    @When("^I make a DELETE request with subscription name \"([^\"]*)\" to the  subscription REST API \"([^\"]*)\"$")
+    @When("^I make a DELETE request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
     public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
             String endPoint) throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.DELETE);

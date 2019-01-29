@@ -329,9 +329,7 @@ public class InformSubscriber {
 
         for (String pair : pairs) {
             NameValuePair nameValuePair = extractKeyAndValue(pair);
-            if (nameValuePair != null) {
-                queryMap.add(nameValuePair);
-            }
+            queryMap.add(nameValuePair);
         }
 
         return queryMap;
@@ -350,12 +348,10 @@ public class InformSubscriber {
 
         if (firstIndexOfEqualsSign > 0) {
             key = pair.substring(0, firstIndexOfEqualsSign);
+        }
+
+        if (pair.length() > firstIndexOfEqualsSign + 1) {
             value = pair.substring(firstIndexOfEqualsSign + 1);
-        } else if (pair.length() > firstIndexOfEqualsSign + 1) {
-            key = "";
-            value = pair.substring(firstIndexOfEqualsSign + 1);
-        } else {
-            return null;
         }
 
         return new BasicNameValuePair(key, value);

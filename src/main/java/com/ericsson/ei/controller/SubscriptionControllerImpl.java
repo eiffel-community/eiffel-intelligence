@@ -118,9 +118,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 Subscription subscription = subscriptionService.getSubscription(subscriptionName);
                 subscription.setPassword("");
                 foundSubscriptionList.add(subscription);
-                LOG.debug("Subscription is fetched: " + subscriptionName);
+                LOG.debug("Subscription [" + subscriptionName + "] fetched successfully.");
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription is not found: " + subscriptionName);
+                LOG.error("Subscription not found: " + subscriptionName);
                 notFoundSubscriptionList.add(subscriptionName);
             } catch (Exception e) {
                 LOG.error("Failed to fetch subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
@@ -152,9 +152,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     subscription.setLdapUserName(user);
                     subscription.setCreated((float) Instant.now().toEpochMilli());
                     subscriptionService.modifySubscription(subscription, subscriptionName);
-                    LOG.debug("Subscription updating is completed: " + subscriptionName);
+                    LOG.debug("Updating subscription completed: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription to update is not found: " + subscriptionName);
+                    LOG.error("Subscription to update was not found: " + subscriptionName);
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
@@ -180,9 +180,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
             try {
                 if (subscriptionService.deleteSubscription(subscriptionName)) {
-                    LOG.debug("Subscription is deleted successfully: " + subscriptionName);
+                    LOG.debug("Subscription was deleted successfully: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription to delete is not found: " + subscriptionName);
+                    LOG.error("Subscription to delete was not found: " + subscriptionName);
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (AccessException e) {
@@ -197,7 +197,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
     public ResponseEntity<?> getSubscriptions() {
-        LOG.debug("Subscriptions fetching all has been started");
+        LOG.debug("Fetching subscriptions has been initiated");
         try {
             // Make sure the password is not sent outside this service.
             List<Subscription> subscriptions = subscriptionService.getSubscriptions();
@@ -207,10 +207,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.info(e.getMessage(), e);
+            LOG.info(e.getMessage());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to fetch all subscriptions. Error message:\n" + e.getMessage();
+            String errorMessage = "Failed to fetch subscriptions. Error message:\n" + e.getMessage();
             LOG.error(errorMessage, e);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -58,7 +58,7 @@ public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules_new.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/ArtifactFlowTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     private static final String AGGREGATED_OBJECT_ID = "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43";

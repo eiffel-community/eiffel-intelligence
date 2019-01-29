@@ -21,7 +21,7 @@ public class SourceChangeFlowRunnerIT {
         System.setProperty("missedNotificationCollectionName", "missed_notification_source_change_flow");
         System.setProperty("sessions.collection.name", "sessions_source_change_flow");
 
-        System.setProperty("rules.path", "/TestSourceChangeObjectRules.json");
+        System.setProperty("rules.path", "/SourceChangeObjectRules.json");
         System.setProperty("rabbitmq.consumerName", "source_change_queue");
     }
 }

@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SpringBootTest(classes = App.class)
 public class FlowSourceChangeObject extends FlowTestBase {
 
-    private static final String RULES_FILE_PATH = "src/test/resources/TestSourceChangeObjectRules.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/SourceChangeObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_ID = "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";

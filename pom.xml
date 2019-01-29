@@ -438,6 +438,7 @@
                 <configuration>
                     <skipTests>${skipUTs}</skipTests>
                     <forkCountTests>${forkCountTests}</forkCountTests>
+                    <forkCount>${forkCountTests}</forkCount>
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
@@ -510,6 +511,46 @@
                         <version>1.8</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>site</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- plugin requires all resources to exist within 
+                                resources/ directory -->
+                            <!-- but we don't want to break links in documentation -->
+                            <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/wiki/markdown/images</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <!-- We want to remove duplicate/copied resources from site 
+                    generation -->
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/wiki/resources</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
             </plugin>
         </plugins>
     </build>

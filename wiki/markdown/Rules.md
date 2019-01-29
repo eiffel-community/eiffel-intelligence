@@ -158,7 +158,3 @@ systems do not need to compute it.
 
 **History Rules** are used if you need to aggregate data from existing events 
 linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/History-rules.md)
-
-## Existing rules files
-
-Currently existing rules files in Eiffel Intelligence can be found [**here.**](https://github.com/Ericsson/eiffel-intelligence/tree/master/src/main/resources)

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>0.0.19</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
     <parent>
@@ -179,6 +179,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
@@ -451,35 +452,37 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.0</version>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <phase>integration-test</phase>
-                        <configuration>
-                            <skipTests>${skipTests}</skipTests>
-                            <skipITs>${skipITs}</skipITs>
-                            <systemPropertyVariables>
-                                <systemTest>true</systemTest>
-                                <er.url>http://localhost:8080/eventrepository/search/</er.url>
-                            </systemPropertyVariables>
-                            <excludes>
-                                <exclude>**/test/*</exclude>
-                                <exclude>**/functionaltests/*</exclude>
-                            </excludes>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                            </additionalClasspathElements>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-failsafe-plugin</artifactId>
+                 <version>2.22.0</version>
+                 <executions>
+                     <execution>
+                         <id>integration-test</id>
+                         <goals>
+                             <goal>integration-test</goal>
+                             <goal>verify</goal>
+                         </goals>
+                         <phase>integration-test</phase>                          
+                     </execution>
+                 </executions>
+                 <configuration>
+	                 <forkCount>3</forkCount>
+	                 <reuseForks>false</reuseForks>
+	                 <skipTests>${skipTests}</skipTests>
+	                 <skipITs>${skipITs}</skipITs>
+	                 <systemPropertyVariables>
+	                     <systemTest>true</systemTest>
+	                     <er.url>http://localhost:8080/eventrepository/search/</er.url>
+	                 </systemPropertyVariables>
+	                 <excludes>
+	                     <exclude>**/test/*</exclude>
+	                     <exclude>**/functionaltests/*</exclude>
+	                 </excludes>
+	                  <additionalClasspathElements>
+	                     <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+	                 </additionalClasspathElements>
+	             </configuration>
+              </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

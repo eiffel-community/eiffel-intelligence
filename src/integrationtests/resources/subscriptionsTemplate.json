@@ -2,11 +2,12 @@
   {
     "notificationMeta" : "some.cool.email@ericsson.com",
     "notificationType" : "MAIL",
-    "restPostBodyMediaType" : "",
+    "userName": "",
+    "password": "",
     "notificationMessageKeyValues" : [ 
         {
             "formkey" : "",
-            "formvalue" : "'jmespath body'"
+            "formvalue" : "'test'"
         }
     ],
     "repeat" : false,

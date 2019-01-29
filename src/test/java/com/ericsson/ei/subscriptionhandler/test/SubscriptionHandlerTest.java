@@ -265,23 +265,31 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
 
-        String rule = "fileInformation[?extension=='jar'] | [0]";
-        String extraction = jmespath.runRuleOnEvent(rule, aggregatedObject).toString();
-        String urlWithJmespath =  "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
+        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
+        String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
+        String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
 
-        subscriptionDataJson.put("notificationMeta", urlWithJmespath + rule);
+        // Notify subscriber using url with jmes path
+        subscriptionDataJson.put("notificationMeta", urlWithJmesPath);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
-        urlWithJmespath = urlWithJmespath.replaceAll("'", "");
 
-        verify(springRestTemplate, times(1)).postDataMultiValue(urlWithJmespath + URLEncoder.encode(extraction, "UTF8"), mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
+        // Remove ' from url since JMESPATH does this
+        urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
+
+        // Create expected extraction
+        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
+
+        // Verify that rest entry was called with the correct url and extracted data
+        verify(springRestTemplate, times(1)).postDataMultiValue(
+                urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
+                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
         when(springRestTemplate.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
@@ -335,7 +343,7 @@ public class SubscriptionHandlerTest {
         return mapNotificationMessage;
     }
 
-    private static ResponseEntity<String> createResponseEntity (String body, HttpStatus httpStatus) {
+    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
         return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
     }
 }

@@ -139,8 +139,8 @@ public class SubscriptionValidator {
             boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
             if (isInvalidEmailAddress) {
                 throw new SubscriptionValidationException(
-                        "Wrong format of NotificationMeta on the selected type.\nNotification meta: " + notificationMeta
-                                + "\nNotification Type: " + notificationType);
+                        "Notification type is set to [MAIL] but the given notificatioMeta is not a valid e-mail ["
+                                + notificationMeta + "]");
             }
         }
     }

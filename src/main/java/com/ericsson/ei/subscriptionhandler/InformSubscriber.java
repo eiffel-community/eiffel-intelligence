@@ -468,7 +468,7 @@ public class InformSubscriber {
     private String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
         String value;
         if (subscriptionJson.get(fieldName) != null) {
-            value = subscriptionJson.get(fieldName).toString().replaceAll(REGEX, "");
+            value = subscriptionJson.get(fieldName).asText();
             LOGGER.debug("Extracted value [{}] from subscription field [{}].", value, fieldName);
         } else {
             value = "";
@@ -488,12 +488,20 @@ public class InformSubscriber {
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
         if (arrNode.isArray()) {
+            LOGGER.debug("Running jmespath extraction on form values.");
+
             for (final JsonNode objNode : arrNode) {
-                mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(REGEX, ""), jmespath
-                        .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(REGEX, ""), aggregatedObject)
-                        .toString().replaceAll(REGEX, ""));
+                String formKey = objNode.get("formkey").asText();
+                String preJmesPathExractionFormValue = objNode.get("formvalue").asText();
+
+                JsonNode extractedJsonNode = jmespath.runRuleOnEvent(preJmesPathExractionFormValue, aggregatedObject);
+                String postJmesPathExractionFormValue = extractedJsonNode.toString().replaceAll(REGEX, "");
+
+                LOGGER.debug("formValue after running the extraction: [{}] for formKey: [{}]",
+                        postJmesPathExractionFormValue, formKey);
+
+                mapNotificationMessage.add(formKey, postJmesPathExractionFormValue);
             }
-            ;
         }
         return mapNotificationMessage;
     }

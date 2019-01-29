@@ -280,22 +280,27 @@ public class SubscriptionHandlerTest {
         // Create expected extraction
         String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
 
-        // Verify that rest entry was called with the correct url and extracted data
+        // Verify that springRestTemplate was called with the correct url and
+        // extracted data
         verify(springRestTemplate, times(1)).postDataMultiValue(
                 urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
                 mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 
     /**
-     * application/x-www-form-urlencoded test
+     * Test rest post with headers set to application/x-www-form-urlencoded test
+     * containing json data field.
+     *
      * @throws Exception
      */
     @Test
     public void testRestPostFormUrlEncodedTrigger() throws Exception {
         JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
+        HttpHeaders formApplicationHeaders = new HttpHeaders();
+        formApplicationHeaders.add("Content-Type", "application/x-www-form-urlencoded");
+
         when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
 
-        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
         String mediaType = "application/x-www-form-urlencoded";
         String formKey = "json";
         String formValue = "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}";
@@ -306,16 +311,9 @@ public class SubscriptionHandlerTest {
         subscriptionDataJson.getJSONArray("notificationMessageKeyValues").getJSONObject(0).put("formvalue", formValue);
         subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
 
-        // Remove ' from url since JMESPATH does this
-        //urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
-
-        // Create expected extraction
-        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
-
-        // Verify that rest entry was called with the correct url and extracted data
-        verify(springRestTemplate, times(1)).postDataMultiValue(
-                url + URLEncoder.encode(expectedExtraction, "UTF8"),
-                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
+        // Verify that rest entry was called with the correct data
+        verify(springRestTemplate, times(1)).postDataMultiValue(url,
+                mapNotificationMessage(subscriptionDataJson.toString()), formApplicationHeaders);
     }
 
     @Test

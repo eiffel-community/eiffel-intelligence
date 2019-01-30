@@ -68,7 +68,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 1. [**Rules**](wiki/markdown/Rules.md)
     - [**Introduction**](wiki/markdown/Rules.md#Introduction)
     - [**Rule set up**](wiki/markdown/Rules.md#Rule-set-up)
-    - [**Existing rules files**](wiki/markdown/Rules.md#Existing-rules-files)
+    - [**Existing rules files**](wiki/markdown/ExistingRulesFiles.md)
     - [**MergeResolverRules**](wiki/markdown/MergeResolverRules.md)
         - [**Example 1**](wiki/markdown/MergeResolverRules.md#Example-1)
         - [**Example 2 - array aggregations**](wiki/markdown/MergeResolverRules.md#Example-2---array-aggregations)

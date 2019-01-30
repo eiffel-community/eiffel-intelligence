@@ -62,11 +62,11 @@
                "value": "SUCCESS"
             }
          ],
-         "svnIdentifier": {
-            "repoName": "Mainline",
-            "repoUri": "svn://repohost/mainline",
-            "directory": "trunk",
-            "revision": 42
+         "gitIdentifier":{
+            "commitId":"ad090b60a4aedc5161da9c035a49b14a319829b4",
+            "branch":"myBranch",
+            "repoName":"myPrivateRepo",
+            "repoUri":"https://github.com/johndoe/myPrivateRepo.git"
          },
          "time": 1234567890
       },

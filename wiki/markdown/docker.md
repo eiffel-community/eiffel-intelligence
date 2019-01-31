@@ -35,6 +35,9 @@ To run the produced docker image on the local Docker host, execute this command:
 
 `docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.host=eiffel2-mongodb -e spring.data.mongodb.port=27017 eiffel-intelligence:0.0.19`
 
+MongoDB, RabbitMq and other Eiffel-Intelligence required components need to running and configured via these application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
+[application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+
 
 # Some info of all flags to this command
 

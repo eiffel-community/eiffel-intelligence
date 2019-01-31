@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,7 +62,7 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 @SpringBootTest(classes = { App.class })
 public class SubscriptionServiceTest {
 
-    private final static Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionServiceTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SubscriptionServiceTest.class);
 
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
     private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
@@ -185,7 +186,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetAllSubscriptions() {
+    public void testGetAllSubscriptions() throws AccessException {
         List<Subscription> subscriptions;
         try {
             // Insert Subscription
@@ -202,7 +203,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetSubscriptionsByName() {
+    public void testGetSubscriptionsByName() throws AccessException {
         Subscription subscription;
         try {
             // Insert Subscription
@@ -219,7 +220,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDoSubscriptionExist() {
+    public void testDoSubscriptionExist() throws AccessException {
         boolean doSubscriptionExist;
         try {
             // Insert Subscription
@@ -236,7 +237,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByName() {
+    public void testDeleteSubscriptionsByName() throws AccessException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -255,7 +256,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() {
+    public void testDeleteSubscriptionsByNameAndCleanUpOfRepeatHandlerDb() throws AccessException {
         // Insert Subscription
         Subscription subscription2;
         try {
@@ -342,7 +343,7 @@ public class SubscriptionServiceTest {
         subscriptionService.getSubscription("Subscription_Test1238586455");
     }
 
-    private void deleteSubscriptionsByName(String subscriptionName) {
+    private void deleteSubscriptionsByName(String subscriptionName) throws AccessException {
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");

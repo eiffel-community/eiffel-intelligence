@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.config.HttpSessionConfig;
@@ -57,7 +58,7 @@ public class SubscriptionService implements ISubscriptionService {
     private String repeatFlagHandlerCollection;
 
     @Value("${ldap.enabled}")
-    private boolean authenticate;
+    private boolean ldapEnabled;
 
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
@@ -114,7 +115,7 @@ public class SubscriptionService implements ISubscriptionService {
         Document result = null;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+            String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
             String query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
@@ -133,19 +134,24 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public boolean deleteSubscription(String subscriptionName) {
-        String ldapUserName = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
-        String query = generateQuery(subscriptionName, ldapUserName);
-        boolean result = subscriptionRepository.deleteSubscription(query);
+    public boolean deleteSubscription(String subscriptionName) throws AccessException {
+        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+        String deleteQuery = generateQuery(subscriptionName, ldapUserName);
 
-        if (result) {
+        boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
+        if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOG.error("Failed to clean subscription \"" + subscriptionName
                         + "\" matched AggregatedObjIds from RepeatFlagHandler database");
             }
+        } else if (doSubscriptionExist(subscriptionName)) {
+            String message = "Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName";
+            throw new AccessException(message);
         }
-        return result;
+
+        return deleteResult;
     }
 
     @Override
@@ -155,7 +161,7 @@ public class SubscriptionService implements ISubscriptionService {
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         if (list.isEmpty()) {
-            throw new SubscriptionNotFoundException("Empty Subscription in repository");
+            throw new SubscriptionNotFoundException("No Subscriptions found");
         }
         for (String input : list) {
             Subscription subscription;

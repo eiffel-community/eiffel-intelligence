@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -56,9 +57,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final String SUBSCRIPTION_NOT_FOUND = "Subscription is not found";
     private static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists";
+    private static final String INVALID_USER = "Unauthorized! You must be logged in as the creator of a subscription to modify it.";
 
     @Value("${ldap.enabled}")
-    private boolean authenticate;
+    private boolean ldapEnabled;
 
     @Autowired
     private ISubscriptionService subscriptionService;
@@ -70,9 +72,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> createSubscription(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<List<SubscriptionResponse>> createSubscription(
+            @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -90,7 +93,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_ALREADY_EXISTS);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
+                LOG.error("Failed to create subscription " + subscriptionName + "\nError message: " + e.getMessage(),
+                        e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -100,7 +104,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionNames) {
+    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(@PathVariable String subscriptionNames) {
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
@@ -110,13 +114,13 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             try {
                 LOG.debug("Subscription fetching has been started: " + subscriptionName);
 
-                //Make sure the password is not sent outside this service.
+                // Make sure the password is not sent outside this service.
                 Subscription subscription = subscriptionService.getSubscription(subscriptionName);
                 subscription.setPassword("");
                 foundSubscriptionList.add(subscription);
-                LOG.debug("Subscription is fetched: " + subscriptionName);
+                LOG.debug("Subscription [" + subscriptionName + "] fetched successfully.");
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription is not found: " + subscriptionName);
+                LOG.error("Subscription not found: " + subscriptionName);
                 notFoundSubscriptionList.add(subscriptionName);
             } catch (Exception e) {
                 LOG.error("Failed to fetch subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
@@ -133,9 +137,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Updates the existing subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(
+            @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
-        String user = (authenticate) ? HttpSessionConfig.getCurrentUser() : "";
+        String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
             String subscriptionName = subscription.getSubscriptionName();
@@ -145,15 +150,16 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
                 if (subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);
-                    subscription.setCreated(Instant.now().toEpochMilli());
+                    subscription.setCreated((float) Instant.now().toEpochMilli());
                     subscriptionService.modifySubscription(subscription, subscriptionName);
-                    LOG.debug("Subscription updating is completed: " + subscriptionName);
+                    LOG.debug("Updating subscription completed: " + subscriptionName);
                 } else {
-                    LOG.error("Subscription to update is not found: " + subscriptionName);
+                    LOG.error("Subscription to update was not found: " + subscriptionName);
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage(), e);
+                LOG.error("Failed to update subscription " + subscriptionName + "\nError message: " + e.getMessage(),
+                        e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -163,18 +169,25 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionById(@PathVariable String subscriptionNames) {
+    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(
+            @PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
 
         subscriptionNamesList.forEach(subscriptionName -> {
             LOG.debug("Subscription deleting has been started: " + subscriptionName);
-            if (subscriptionService.deleteSubscription(subscriptionName)) {
-                LOG.debug("Subscription is deleted successfully: " + subscriptionName);
-            } else {
-                LOG.error("Subscription to delete is not found: " + subscriptionName);
-                errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+
+            try {
+                if (subscriptionService.deleteSubscription(subscriptionName)) {
+                    LOG.debug("Subscription was deleted successfully: " + subscriptionName);
+                } else {
+                    LOG.error("Subscription to delete was not found: " + subscriptionName);
+                    errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+                }
+            } catch (AccessException e) {
+                LOG.error("Error: " + e.getMessage());
+                errorMap.put(subscriptionName, INVALID_USER);
             }
         });
         return getResponse();
@@ -184,20 +197,20 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Retrieves all the subscriptions")
     public ResponseEntity<?> getSubscriptions() {
-        LOG.debug("Subscriptions fetching all has been started");
+        LOG.debug("Fetching subscriptions has been initiated");
         try {
-          //Make sure the password is not sent outside this service.
+            // Make sure the password is not sent outside this service.
             List<Subscription> subscriptions = subscriptionService.getSubscriptions();
-            for(Subscription subscription: subscriptions) {
+            for (Subscription subscription : subscriptions) {
                 subscription.setPassword("");
             }
 
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.info(e.getMessage(), e);
+            LOG.info(e.getMessage());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to fetch all subscriptions. Error message:\n" + e.getMessage();
+            String errorMessage = "Failed to fetch subscriptions. Error message:\n" + e.getMessage();
             LOG.error(errorMessage, e);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }

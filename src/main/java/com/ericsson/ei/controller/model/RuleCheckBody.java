@@ -3,6 +3,7 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,10 +22,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class RuleCheckBody {
 
     @JsonProperty("rule")
+    @Valid
     private Rule rule;
     @JsonProperty("event")
+    @Valid
     private Event event;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("rule")
@@ -47,11 +51,6 @@ public class RuleCheckBody {
         this.event = event;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -63,8 +62,13 @@ public class RuleCheckBody {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("rule", rule).append("event", event).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(rule).append(event).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(rule).append(additionalProperties).append(event).toHashCode();
     }
 
     @Override
@@ -76,7 +80,7 @@ public class RuleCheckBody {
             return false;
         }
         RuleCheckBody rhs = ((RuleCheckBody) other);
-        return new EqualsBuilder().append(rule, rhs.rule).append(event, rhs.event).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(rule, rhs.rule).append(additionalProperties, rhs.additionalProperties).append(event, rhs.event).isEquals();
     }
 
 }

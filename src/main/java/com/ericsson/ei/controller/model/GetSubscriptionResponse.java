@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,10 +24,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class GetSubscriptionResponse {
 
     @JsonProperty("foundSubscriptions")
+    @Valid
     private List<Subscription> foundSubscriptions = new ArrayList<Subscription>();
     @JsonProperty("notFoundSubscriptions")
+    @Valid
     private List<String> notFoundSubscriptions = new ArrayList<String>();
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("foundSubscriptions")
@@ -49,11 +53,6 @@ public class GetSubscriptionResponse {
         this.notFoundSubscriptions = notFoundSubscriptions;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -65,8 +64,13 @@ public class GetSubscriptionResponse {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("foundSubscriptions", foundSubscriptions).append("notFoundSubscriptions", notFoundSubscriptions).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(foundSubscriptions).append(notFoundSubscriptions).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(notFoundSubscriptions).append(additionalProperties).append(foundSubscriptions).toHashCode();
     }
 
     @Override
@@ -78,7 +82,7 @@ public class GetSubscriptionResponse {
             return false;
         }
         GetSubscriptionResponse rhs = ((GetSubscriptionResponse) other);
-        return new EqualsBuilder().append(foundSubscriptions, rhs.foundSubscriptions).append(notFoundSubscriptions, rhs.notFoundSubscriptions).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(notFoundSubscriptions, rhs.notFoundSubscriptions).append(additionalProperties, rhs.additionalProperties).append(foundSubscriptions, rhs.foundSubscriptions).isEquals();
     }
 
 }

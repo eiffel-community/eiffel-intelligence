@@ -31,13 +31,13 @@
 ##################################################################################################
 version: "2.1"
 services:
-  mymongodb-mongodb:
+  mongodb:
     restart: always
     image: mongo:latest
     expose:
       - "27017"
     ports:
-      - "27017:27017"
+      - "${MONGODB_PORT}:27017"
     healthcheck: 
         test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
         interval: 30s
@@ -46,17 +46,17 @@ services:
     networks:
           eiffel_2.0_1:
             aliases:
-              - mymongodb-mongodb:27017
+              - mongodb
 
-  myrabbitmq-rabbitmq:
+  rabbitmq:
     restart: always
     image: rabbitmq:3.6.2-management
     expose:
       - "15672"
       - "5672"
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${RABBITMQ_WEB_PORT}:15672"
+      - "${RABBITMQ_AMQP_PORT}:5672"
     healthcheck:
         test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
         interval: 30s
@@ -65,12 +65,104 @@ services:
     networks:
           eiffel_2.0_1:
             aliases:
-              - myrabbitmq-rabbitmq:5672
-              - myrabbitmq-rabbitmq:15672
+              - rabbitmq
     environment:
       - RABBITMQ_DEFAULT_PASS=myuser
       - RABBITMQ_DEFAULT_USER=myuser
       - RABBITMQ_DEFAULT_VHOST=/
+
+  eiffel-er:
+    restart: always
+    image: eiffelericsson/eiffel-er:0.0.60
+    expose:
+      - "8080"
+    ports:
+      - "${EIFFEL_ER_PORT}:8080"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - eiffel-er
+    environment:   # Overrides settings in config file in catalina folder. OBS --> skip quotes for rabbitmq.bindingKey value  
+                   # No config file copied to catalina folder in Dockerfile, only uses env vars below ;-)
+                   # /eventrepository removed in contextpath
+       - server.contextPath=/
+       - server.port=8080
+       - rabbitmq.host=rabbitmq
+       - rabbitmq.componentName=eventrepository
+       - rabbitmq.port=5672
+       - rabbitmq.domainId=ei-domain
+       - rabbitmq.durable=true
+       - rabbitmq.user=myuser
+       - rabbitmq.password=myuser
+       - rabbitmq.exchangeName=ei-exchange
+       - rabbitmq.bindingKey=#
+       - rabbitmq.autoDelete=false
+       - rabbitmq.createExchangeIfNotExisting=true
+       - rabbitmq.consumerName=messageConsumer
+       - mongodb.host=mongodb
+       - mongodb.port=27017
+       - mongodb.database=eiffel
+       - mongodb.collection=events
+       - mongodb.user
+       - mongodb.password
+       - mongodb.indexes=meta.id,links.target,links.type,meta.time,data.gav.groupId,data.gav.artifactId
+       - mongodb.externalERs
+       - search.limit=100
+       - search.levels=10
+       - eventrepo2.URL=https://eiffel.lmera.ericsson.se/com.ericsson.duraci/eiffel-erri/index.html
+       - index.staticIndex.indexOn=false
+       - index.staticIndex.filePath=src/main/resources/static_indexes.json
+       - index.dynamicIndex.indexOn=false
+       - index.dynamicIndex.indexCreationDay=SUNDAY
+       - index.dynamicIndex.indexCreationTime=11:50:00
+       - index.dynamicIndex.maxIndexesCount=5
+       - index.dynamicIndex.filePath=src/main/resources/dynamic_indexing.json
+       - index.dynamicIndex.fileUpdatePeriod=30
+
+  jenkins:
+    restart: always
+    image: bitnami/jenkins:2.138.3
+    expose:
+      - "8080"
+    ports:
+      - "${JENKINS_PORT}:8080"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      - JENKINS_USERNAME=admin
+      - JENKINS_PASSWORD=admin
+#     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
+#     - DISABLE_JENKINS_INITIALIZATION=    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
+#     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - jenkins
+
+  mail-server:
+    image: mailhog/mailhog
+    expose:
+     - "1025"
+     - "8025"
+    ports:
+     - "${MAIL_SMTP_PORT}:1025"
+     - "${MAIL_WEB_PORT}:8025"
+    depends_on:
+      - mongodb
+    environment:
+      MH_STORAGE: mongodb
+      MH_MONGO_URI: mongodb:27017
+      MH_MONGO_COLLECTION: messages
+      MH_MONGO_DB: mailhog 
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - mail-server
 
 networks:
   eiffel_2.0_1:

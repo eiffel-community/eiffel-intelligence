@@ -3,6 +3,7 @@ package com.ericsson.ei.controller.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,6 +26,7 @@ public class SubscriptionResponse {
     @JsonProperty("reason")
     private String reason;
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("subscription")
@@ -47,11 +49,6 @@ public class SubscriptionResponse {
         this.reason = reason;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -63,8 +60,13 @@ public class SubscriptionResponse {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("subscription", subscription).append("reason", reason).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(subscription).append(reason).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(reason).append(subscription).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -76,7 +78,7 @@ public class SubscriptionResponse {
             return false;
         }
         SubscriptionResponse rhs = ((SubscriptionResponse) other);
-        return new EqualsBuilder().append(subscription, rhs.subscription).append(reason, rhs.reason).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(reason, rhs.reason).append(subscription, rhs.subscription).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

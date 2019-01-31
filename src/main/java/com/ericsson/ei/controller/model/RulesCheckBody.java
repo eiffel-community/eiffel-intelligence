@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,10 +24,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class RulesCheckBody {
 
     @JsonProperty("listRulesJson")
+    @Valid
     private List<Object> listRulesJson = new ArrayList<Object>();
     @JsonProperty("listEventsJson")
+    @Valid
     private List<Object> listEventsJson = new ArrayList<Object>();
     @JsonIgnore
+    @Valid
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("listRulesJson")
@@ -49,11 +53,6 @@ public class RulesCheckBody {
         this.listEventsJson = listEventsJson;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -65,8 +64,13 @@ public class RulesCheckBody {
     }
 
     @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("listRulesJson", listRulesJson).append("listEventsJson", listEventsJson).append("additionalProperties", additionalProperties).toString();
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(listRulesJson).append(listEventsJson).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(additionalProperties).append(listEventsJson).append(listRulesJson).toHashCode();
     }
 
     @Override
@@ -78,7 +82,7 @@ public class RulesCheckBody {
             return false;
         }
         RulesCheckBody rhs = ((RulesCheckBody) other);
-        return new EqualsBuilder().append(listRulesJson, rhs.listRulesJson).append(listEventsJson, rhs.listEventsJson).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).append(listEventsJson, rhs.listEventsJson).append(listRulesJson, rhs.listRulesJson).isEquals();
     }
 
 }

@@ -1,1 +1,0 @@
-# Rules in Eiffel Intelligence

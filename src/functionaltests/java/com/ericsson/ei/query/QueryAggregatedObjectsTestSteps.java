@@ -2,14 +2,6 @@ package com.ericsson.ei.query;
 
 import static org.junit.Assert.assertEquals;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +17,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -90,7 +90,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void aggregated_object_is_created() throws Throwable {
         List<String> aggregatedObject = mongoDBHandler.find(
                 eiDatabaseName, aggrCollectionName,
-                "{\"aggregatedObject.id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}");
+                "{\"_id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}");
 
         boolean aggregatedObjectExists = aggregatedObject.size() > 0;
         if (!aggregatedObjectExists) {
@@ -132,7 +132,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         String actualTestCaseFinishedEventId = responseEntityFormattedJsonNode.get("aggregatedObject")
                 .get("testCaseExecutions").get(0).get("testCaseFinishedEventId").asText();
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals(
                 "Failed to compare actual Aggregated Object TestCaseFinishedEventId:\n" + actualTestCaseFinishedEventId
                         + "\nwith expected Aggregated Object TestCaseFinishedEventId:\n"
@@ -144,7 +144,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void perform_invalid_query_on_created_aggregated_object() throws Throwable {
         final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         final String entryPoint = "/queryAggregatedObject";
-        final String expectedResponse = "{\"responseEntity\":\"[]\"}";
+        final String expectedResponse = "";
 
         LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: "
                 + invalidDocumentId);
@@ -158,7 +158,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+        assertEquals(HttpStatus.NO_CONTENT.value(), responseStatusCode);
         assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
                 + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
     }
@@ -197,7 +197,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             String actualAggrObjId = aggrObjResponse.get("id").asText();
             LOGGER.debug("AggregatedObject id from Response: " + actualAggrObjId);
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+            assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
             assertEquals(
                     "Failed to compare actual Aggregated Object Id:\n" + actualAggrObjId
                             + "\nwith expected Aggregated Object Id:\n" + expectedAggrId,
@@ -210,7 +210,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
         final String entryPoint = "/query";
         final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }}";
-        final String expectedResponse = "[]";
+        final String expectedResponse = "";
 
         LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
 
@@ -223,7 +223,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug(
                 "Response of /query RestApi, Status Code: " + responseStatusCode + "\nResponse: " + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+        assertEquals(HttpStatus.NO_CONTENT.value(), responseStatusCode);
         assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
                 + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
     }
@@ -264,7 +264,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         String actualTestCaseStartedEventId = responseEntityFormattedJsonNode.get("testCaseExecutions")
                 .get("testCaseStartedEventId").asText();
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("Differences between actual Missed Notification response TestCaseStartedEventId:\n"
                 + actualTestCaseStartedEventId
                 + "\nand expected  Missed Notification response TestCaseStartedEventId:\n"
@@ -291,7 +291,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+        assertEquals(HttpStatus.OK.value(), responseStatusCode);
         assertEquals(
                 "Differences between actual Missed Notification response:\n" + responseAsString
                         + "\nand expected  Missed Notification response:\n" + expectedResponse,
@@ -326,7 +326,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+            assertEquals(HttpStatus.OK.value(), responseStatusCode);
             assertEquals(
                     "Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
                             + expectedResponse,
@@ -374,7 +374,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+            assertEquals(HttpStatus.OK.value(), responseStatusCode);
             assertEquals(
                     "Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
                             + expectedResponses.get(pos),
@@ -413,7 +413,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         JsonNode confidenceLevels = aggrObjResponse.get("confidenceLevels").get(1);
 
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals("Failed to retrieve the latest confidence level.", "readyForDelivery",
                 confidenceLevels.get("name").asText());
         assertEquals("Failed to retrieve the latest confidence level.", "SUCCESS",

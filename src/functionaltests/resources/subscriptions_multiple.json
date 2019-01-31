@@ -1,6 +1,7 @@
 [
   {
     "subscriptionName": "Subscription_Test_1",
+    "ldapUserName": "userLdap1",
     "repeat": false,
     "created": 1523473956269,
     "notificationType": "REST_POST",
@@ -24,6 +25,7 @@
   },
   {
     "subscriptionName": "Subscription_Test_2",
+    "ldapUserName": "userLdap2",
     "repeat": false,
     "created": 1523473956269,
     "notificationType": "REST_POST",
@@ -47,6 +49,7 @@
   },
   {
     "subscriptionName": "Subscription_Test_3",
+    "ldapUserName": "userLdap3",
     "repeat": false,
     "created": 1523473956269,
     "notificationType": "REST_POST",

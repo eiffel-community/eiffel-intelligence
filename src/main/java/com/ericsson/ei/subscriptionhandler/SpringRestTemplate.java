@@ -36,7 +36,7 @@ import org.springframework.web.client.RestOperations;
 @Component
 public class SpringRestTemplate {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SpringRestTemplate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringRestTemplate.class);
 
     private RestOperations rest;
 
@@ -45,29 +45,22 @@ public class SpringRestTemplate {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST With
-     * raw body and form parameters.
+     * This method is responsible to notify the subscriber through REST POST
+     * With raw body and form parameters.
      *
      * @param notificationMeta
      * @param mapNotificationMessage
-     * @param headerContentMediaType
+     * @param headers
      * @return integer
      */
-    public int postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            String headerContentMediaType, String... args) {
+    public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
+            HttpHeaders headers) {
         ResponseEntity<JsonNode> response;
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf(headerContentMediaType));
-            if (headerContentMediaType.equals(MediaType.APPLICATION_FORM_URLENCODED.toString())) { // "application/x-www-form-urlencoded"
-
-                if (args.length != 0) {
-                    String key = args[0];
-                    String val = args[1];
-                    headers.add(key, val);
-                }
-
+            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
+                    .equals(MediaType.APPLICATION_FORM_URLENCODED);
+            if (isApplicationXWwwFormUrlEncoded) {
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {
@@ -75,28 +68,40 @@ public class SpringRestTemplate {
                         headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
+
         } catch (HttpClientErrorException e) {
-            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: "
-                    + notificationMeta + "\n " + e.getMessage());
-            return HttpStatus.BAD_REQUEST.value();
+            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta
+                    + "\n " + e.getMessage());
+            return false;
         } catch (HttpServerErrorException e) {
             LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: "
                     + notificationMeta + "\n " + e.getMessage());
-            return HttpStatus.INTERNAL_SERVER_ERROR.value();
+            return false;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            try {
-                return Integer.parseInt(e.getMessage());
-            } catch (NumberFormatException error) {
-                return HttpStatus.NOT_FOUND.value();
-            }
+            return false;
         }
+
         HttpStatus status = response.getStatusCode();
-        LOGGER.debug("The response code after POST is : " + status);
-        if (status == HttpStatus.OK) {
-            JsonNode restCall = response.getBody();
-            LOGGER.debug("The response Body is : " + restCall);
+        boolean httpStatusSuccess = status == HttpStatus.OK || status == HttpStatus.ACCEPTED
+                || status == HttpStatus.CREATED;
+
+        JsonNode body = response.getBody();
+        if (httpStatusSuccess) {
+            LOGGER.debug("The response status code [" + status + "] and Body: " + body);
+        } else {
+            LOGGER.debug("POST call failed with status code [" + status + "] and Body: " + body);
         }
-        return response.getStatusCode().value();
+        return httpStatusSuccess;
+    }
+
+    public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
+            return response;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

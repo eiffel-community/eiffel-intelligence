@@ -297,9 +297,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         ResponseEntity<String> response = httpRequest.performRequest();
         JsonNode body =  objectMapper.readTree(response.getBody());
         JsonNode responseEntity = body.get("queryResponseEntity");
-        JsonNode actualJSON = responseEntity;
 
-        return actualJSON;
+        return responseEntity;
     }
 
     private RabbitTemplate createRabbitMqTemplate() {

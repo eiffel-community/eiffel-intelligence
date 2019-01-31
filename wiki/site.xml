@@ -43,11 +43,11 @@
                 <item name="Configuration" href="configuration.html" />
                 <item name="Running in Docker" href="docker.html" />
             </item>
-            <item collapse="true" name="Subscriptions" href="subscriptions.html">
+            <item collapse="true" name="Understanding subscriptions" href="subscriptions.html">
                 <item name="Subscription with REST POST notification" href="subscription-with-REST-POST-notification.html" />
                 <item name="Subscription with Email notification" href="subscription-with-email-notification.html" />
             </item>
-            <item collapse="true" name ="Rules" href="rules.html">
+            <item collapse="true" name ="Understanding rules" href="rules.html">
                 <item name="Merge Resolver Rules" href="merge-resolver-rules.html" />
                 <item name="History Rules" href="history-rules.html" />
                 <item name="Existing Rules" href="existing-rules-files.html" />

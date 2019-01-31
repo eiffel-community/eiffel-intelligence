@@ -293,13 +293,11 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             .addParam("ID", id)
             .setEndpoint(endpoint);
 
-        JsonNode actualJSON = null;
-
         //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
         ResponseEntity<String> response = httpRequest.performRequest();
         JsonNode body =  objectMapper.readTree(response.getBody());
         JsonNode responseEntity = body.get("queryResponseEntity");
-        actualJSON = responseEntity;
+        JsonNode actualJSON = responseEntity;
 
         return actualJSON;
     }

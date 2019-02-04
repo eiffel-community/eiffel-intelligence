@@ -55,7 +55,8 @@
             <item collapse="true" name ="Rules" href="Rules.html">
                 <item name="Merge Resolver Rules" href="MergeResolverRules.html" />
                 <item name="History Rules" href="History-rules.html" />
-                <item name="Existing Rules" href="ExistingRulesFiles.html" />
+                <item name="Existing Rules and Diagrams" href="ExistingRulesFiles.html" />
+                <item name="Rules mapped to aggregation" href="MappingRulesToAggregations.html" />
             </item>
             <item collapse="true" name="Step-by-step aggregation" href="Step-by-Step-Aggregation.html">
                 <item name="EiffelArtifactCreatedEvent aggregation" href="ArtifactCreatedEvent-aggregation.html" />

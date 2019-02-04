@@ -533,7 +533,7 @@
                                 <resource>
                                     <directory>${basedir}/wiki/markdown/images</directory>
                                     <includes>
-                                        <include>**/*.png</include>
+                                        <include>*.png</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -542,19 +542,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <!-- We want to remove duplicate/copied resources from site
-                    generation -->
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/wiki/resources</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

@@ -50,8 +50,8 @@ public class ProcessAggregatedObject {
     private MongoDBHandler handler;
 
     /**
-     * The method is responsible to extract the aggregated data on the basis of
-     * the ID from the aggregatedObject.
+     * The method is responsible to extract the aggregated data on the basis of the
+     * ID from the aggregatedObject.
      *
      * @param id
      * @return ArrayList
@@ -74,8 +74,8 @@ public class ProcessAggregatedObject {
     }
 
     /**
-     * The method is responsible to extract the aggregated data on the basis of
-     * the ID from the aggregatedObject.
+     * The method is responsible to extract the aggregated data on the basis of the
+     * ID from the aggregatedObject.
      *
      * @param templateName
      * @return ArrayList
@@ -87,7 +87,8 @@ public class ProcessAggregatedObject {
     }
 
     /**
-     * The method is responsible for the delete the aggregated object using template name suffix
+     * The method is responsible for the delete the aggregated object using template
+     * name suffix
      *
      * @param templateName
      * @return boolean
@@ -99,15 +100,16 @@ public class ProcessAggregatedObject {
     }
 
     /**
-     * This method is responsible for fetching all the aggregatedObjects from
-     * the Aggregation database and return it as JSONArray.
+     * This method is responsible for fetching all the aggregatedObjects from the
+     * Aggregation database and return it as JSONArray.
      *
      * @param request
      * @param AggregationDataBaseName
      * @param AggregationCollectionName
      * @return JSONArray
      */
-    public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName, String AggregationCollectionName) {
+    public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName,
+            String AggregationCollectionName) {
         List<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
         LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.size());
         Iterator<String> allDocumentsItr = allDocuments.iterator();
@@ -127,7 +129,7 @@ public class ProcessAggregatedObject {
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName
-            + "\nThe Aggregated Collection is : " + aggregationCollectionName);
+        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName + "\nThe Aggregated Collection is : "
+                + aggregationCollectionName);
     }
 }

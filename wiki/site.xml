@@ -51,6 +51,7 @@
                 <item name="Merge Resolver Rules" href="merge-resolver-rules.html" />
                 <item name="History Rules" href="history-rules.html" />
                 <item name="Existing Rules" href="existing-rules-files.html" />
+                <item name="Mapping Rules To Aggregations" href="mapping-rules-to-aggregations.html" />
             </item>
             <item collapse="true" name="Step-by-step aggregation" href="step-by-step-aggregation.html">
                 <item name="ArtifactCreatedEvent aggregation" href="artifact-created-event-aggregation.html" />

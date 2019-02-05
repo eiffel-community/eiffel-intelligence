@@ -18,4 +18,4 @@ echo
 echo "Starting Eiffel-Intelligence"
 echo
 
-/eiffel/health-check.sh && catalina.sh run
+catalina.sh run

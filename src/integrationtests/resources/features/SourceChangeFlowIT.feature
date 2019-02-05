@@ -19,7 +19,7 @@
 Feature: Source change flow integrationtest
    Scenario: Send eiffel events for source change flow and make sure EI is triggering on REST-POST subscriptions
     Given the rules "src/test/resources/SourceChangeObjectRules.json"
-    And the events "src/test/resources/TestSourceChangeObject.json"
+    And the events "src/test/resources/TestSourceChangeObjectEvents.json"
     And the upstream input "src/test/resources/UpstreamEventsForSourceChange.json"
     And the resulting aggregated object "src/test/resources/aggregatedSourceChangeObject.json";
     And the expected aggregated object ID is "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"

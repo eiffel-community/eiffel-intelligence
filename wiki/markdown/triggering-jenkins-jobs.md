@@ -2,6 +2,9 @@
 
 There are some important details to know when triggering Jekins jobs with parameters and/or token.
 
+## Using _**token**_
+    Tokens need to be treated as constants so they should be surrounded with single quotes. See examples below.
+
 ## _**buildWithParameters**_ endpoint
    * Jenkins discards the body specified in notificationMessageKeyValues
    * the parameters need to be send in the URL
@@ -128,6 +131,3 @@ There are some important details to know when triggering Jekins jobs with parame
 
         ]
     }
-
-## Using _**token**_
-    Tokens need to be treated as constants so they should be surrounded with single quotes. See examples above.

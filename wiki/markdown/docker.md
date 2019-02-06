@@ -79,3 +79,34 @@ Another option to configure Eiffel-Intelligence is to provide the application pr
 
 `docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties eiffel-intelligence:0.0.19`
 
+
+# Run Docker image with provided docker-compose file
+This docker-compose file includes these components, src/main/docker/docker-compose.yml:
+- MongoDb
+- RabbitMq
+- ER
+- EI-Backend (Using the local EI-Backend Docker image build from previous steps)
+
+If you have used a different image tag when you build the EI Backend docker image,
+then you need to update docker-compose.yml file.
+This line need to changed, in ei_backend service section:
+"image: eiffel-intelligence:0.0.19"
+To:
+"image: \<your image tag\>"
+
+Then run followin docker-compose command to startup all components:
+`docker-compose -f src/main/docker/docker-compose.yml up -d`
+
+It will take some minutes until all components has started. When all components has loaded, you should be able to access EI-Backend Rest-interfaces with address:
+http://localhost:8080/\<EI rest-api endpoint\>
+
+Curl command can be used to make request to EI-Back-end rest-api, example for getting all subscriptions:
+`curl -X GET http://localhost:8080/subscriptions`
+
+It is also possible to access these address in web-browser and get result present in a Json view in web-browser.
+
+To get the logs from the EI-Backend container/services, example of getting logs from ei_backend service:
+`docker-compose -f src/main/docker/docker-compose.yml logs ei_backend`
+
+All service names can be retreived from following command:
+`docker-compose -f src/main/docker/docker-compose.yml config --services`

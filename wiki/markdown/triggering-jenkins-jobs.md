@@ -129,5 +129,5 @@ There are some important details to know when triggering Jekins jobs with parame
         ]
     }
 
-## using token
+## Using _**token**_
     Tokens need to be treated as constants so they should be surrounded with single quotes. See examples above.

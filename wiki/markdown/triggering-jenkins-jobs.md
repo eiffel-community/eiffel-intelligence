@@ -7,10 +7,10 @@ There are some important details to know when triggering Jekins jobs with parame
    * the parameters need to be send in the URL
    * do not specify more parameters than you have in your job. This is a Jenkins security feature to hinder that someone triggers jobs that overwrite job environment variables
       
-      Example below shows a subscription that triggers a parameterized Jenkins job having job token and a parameter object containing the aggregated object. 
-      Observe that we use buildWithParameters and empty notificationMessageKeyValues.
-      
-       {
+    Example below shows a subscription that triggers a parameterized Jenkins job having job token and a parameter object containing the aggregated object. 
+    Observe that we use buildWithParameters and empty notificationMessageKeyValues.
+     
+    {
         "subscriptionName" : "Subscription1",
 
         // the name of the user who created the subscription
@@ -68,9 +68,9 @@ There are some important details to know when triggering Jekins jobs with parame
    * the parameters should be specified in notificationMessageKeyValues. Also here not more parameters than the job is configured with.
    * no job parameters in the URL
     
-      The subscription below triggers the same parameterized Jenkins job but we now use build endpoint and we send the parameter in a json form using REST body.
+    The subscription below triggers the same parameterized Jenkins job but we now use build endpoint and we send the parameter in a json form using REST body.
     
-     {
+    {
         "subscriptionName" : "Subscription1",
 
         // the name of the user who created the subscription

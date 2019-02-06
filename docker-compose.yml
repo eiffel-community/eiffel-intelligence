@@ -112,7 +112,7 @@ services:
        - mongodb.externalERs
        - search.limit=100
        - search.levels=10
-       - eventrepo2.URL=https://eiffel.lmera.ericsson.se/com.ericsson.duraci/eiffel-erri/index.html
+       - eventrepo2.URL=
        - index.staticIndex.indexOn=false
        - index.staticIndex.filePath=src/main/resources/static_indexes.json
        - index.dynamicIndex.indexOn=false

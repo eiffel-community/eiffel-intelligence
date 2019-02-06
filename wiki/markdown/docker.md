@@ -81,7 +81,7 @@ Another option to configure Eiffel-Intelligence is to provide the application pr
 
 
 # Run Docker image with provided docker-compose file
-This docker-compose file includes these components, src/main/docker/docker-compose.yml:
+This docker-compose file includes these components, [docker-compose.yml](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/docker/docker-compose.yml):
 - MongoDb
 - RabbitMq
 - ER
@@ -94,7 +94,7 @@ This line need to changed, in ei_backend service section:
 To:
 "image: \<your image tag\>"
 
-Then run followin docker-compose command to startup all components:
+Then run following docker-compose command to startup all components:
 `docker-compose -f src/main/docker/docker-compose.yml up -d`
 
 It will take some minutes until all components has started. When all components has loaded, you should be able to access EI-Backend Rest-interfaces with address:
@@ -110,3 +110,9 @@ To get the logs from the EI-Backend container/services, example of getting logs 
 
 All service names can be retreived from following command:
 `docker-compose -f src/main/docker/docker-compose.yml config --services`
+
+It is also possible to retrieve the logs by only using "docker logs <container_id or container_name>" command:
+`docker logs \<container_id or container_name\>`
+
+Container id can be retrieved with docker command:
+`docker ps`

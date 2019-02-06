@@ -1,6 +1,6 @@
 #################################################################################################
 #
-# Copyright 2018 Ericsson AB.
+# Copyright 2019 Ericsson AB.
 # For a full list of individual contributors, please see the commit history.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 ##################################################################################################
-# Eiffel Sandbox 
+# docker-compose commands 
 #
 # run:         docker-compose up         
 # stop:        docker-compose stop
@@ -27,7 +27,7 @@
 #     Unused Images:      docker images -q | xargs docker rmi
 #     Stopped containers: docker rm `docker ps -a -q` 
 #
-# Maintainer: michael.frick@ericsson.com
+# Maintainer: Eiffel-Community
 ##################################################################################################
 version: "2.1"
 services:

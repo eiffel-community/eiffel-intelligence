@@ -43,6 +43,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 1. [**Understanding subscriptions**](wiki/markdown/subscriptions.md)
     - [**REST POST notification**](wiki/markdown/subscription-with-REST-POST-notification.md)
     - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
+    - [**Trigger parameterized Jenkins jobs**](wiki/markdown/triggering-jenkins-jobs.md)
 1. [**Understanding rules**](wiki/markdown/rules.md)
     - [**Introduction**](wiki/markdown/rules.md#Introduction)
     - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)

@@ -12,6 +12,10 @@ With the Docker image user can try-out the Eiffel-Intelligence on a Docker Host 
   
   Windows: https://docs.docker.com/docker-for-windows/install/
 
+- Docker Compose
+  
+  Linux and Windows:  https://docs.docker.com/compose/install/
+
 ## Follow these step to build the Docker image.
 
 1. Build the Eiffel-intelligence war file: 

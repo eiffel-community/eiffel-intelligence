@@ -1,6 +1,6 @@
 # Trigger Jenkins
 
-There are some important details to know when triggering Jekins jobs with parameters and/or token.
+There are some important details to know when triggering Jenkins jobs with parameters and/or token.
 
 ## Using _**token**_
     Tokens need to be treated as constants so they should be surrounded with single quotes. See examples below.
@@ -38,7 +38,7 @@ There are some important details to know when triggering Jekins jobs with parame
         "password" : "functionalUserPassword",
 
         // which url to use for the HTTP POST request
-        "notificationMeta" : "http://eiffel-jenkins1:8080/job/ei-artifact-triggered-job/buildWithParameters?token='TOKEN'&object=to_string(@)",
+        "notificationMeta" : "http://eiffel-jenkins1:8080/job/ei-artifact-triggered-job/buildWithParameters?token='TOKEN'&object=id",
 
         // headers for the HTTP request, can be 'application/x-www-form-urlencoded' or 'application/json'
         "restPostBodyMediaType" : "application/json",

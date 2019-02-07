@@ -112,7 +112,7 @@ All service names can be retreived from following command:
 `docker-compose -f src/main/docker/docker-compose.yml config --services`
 
 It is also possible to retrieve the logs by only using "docker logs <container_id or container_name>" command:
-`docker logs \<container_id or container_name\>`
+`docker logs <container_id or container_name>`
 
 Container id can be retrieved with docker command:
 `docker ps`

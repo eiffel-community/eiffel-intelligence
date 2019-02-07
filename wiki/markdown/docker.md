@@ -114,9 +114,9 @@ Curl command can be used to make request to EI-Back-end rest-api, example for ge
 
 `curl -X GET http://localhost:8080/subscriptions`
 
-It is also possible to access these address in web-browser and get result present in a Json view in web-browser.
+It is also possible to access these Rest-Api addresses in web-browser and get result present in a Json view in web-browser.
 
-To get the logs from the EI-Backend container/services, example of getting logs from ei_backend service:
+Following command can be used to get the logs from the EI-Backend container/service:
 
 `docker-compose -f src/main/docker/docker-compose.yml logs ei_backend`
 

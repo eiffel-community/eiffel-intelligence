@@ -93,9 +93,13 @@ This docker-compose file includes these components, [docker-compose.yml](https:/
 
 If you have used a different image tag when you build the EI Backend docker image,
 then you need to update docker-compose.yml file.
+
 This line need to changed, in ei_backend service section:
+
 "image: eiffel-intelligence:0.0.19"
+
 To:
+
 "image: \<your image tag\>"
 
 Then run following docker-compose command to startup all components:

@@ -116,7 +116,7 @@ To get the logs from the EI-Backend container/services, example of getting logs 
 
 `docker-compose -f src/main/docker/docker-compose.yml logs ei_backend`
 
-All service names can be retreived from following command:
+All service names can be retreived with following command:
 
 `docker-compose -f src/main/docker/docker-compose.yml config --services`
 

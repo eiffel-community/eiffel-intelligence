@@ -95,24 +95,31 @@ To:
 "image: \<your image tag\>"
 
 Then run following docker-compose command to startup all components:
+
 `docker-compose -f src/main/docker/docker-compose.yml up -d`
 
 It will take some minutes until all components has started. When all components has loaded, you should be able to access EI-Backend Rest-interfaces with address:
 http://localhost:8080/\<EI rest-api endpoint\>
 
 Curl command can be used to make request to EI-Back-end rest-api, example for getting all subscriptions:
+
+
 `curl -X GET http://localhost:8080/subscriptions`
 
 It is also possible to access these address in web-browser and get result present in a Json view in web-browser.
 
 To get the logs from the EI-Backend container/services, example of getting logs from ei_backend service:
+
 `docker-compose -f src/main/docker/docker-compose.yml logs ei_backend`
 
 All service names can be retreived from following command:
+
 `docker-compose -f src/main/docker/docker-compose.yml config --services`
 
 It is also possible to retrieve the logs by only using "docker logs <container_id or container_name>" command:
+
 `docker logs <container_id or container_name>`
 
 Container id can be retrieved with docker command:
+
 `docker ps`

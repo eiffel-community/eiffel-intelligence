@@ -18,12 +18,14 @@ In this case we use the same instance of Rabbitmq and MongoDb.
   - rabbitmq.consumerName property should be different for each rule set. Otherwise the rabbitmq will split the events in the queue among all the instances listening to that queue
   - MongoDb collection names should also be different for each rule set
   
+  <img src="images/multiple_EI_instances.png">
+</img>
+  
 ### Set up multiple instances with same rule set
 
-This situation may be needed when the events throughput is very high. In this case the same configuration file is copied to the server where the extra instance will be started. 
+This situation may be needed when the events throughput is very high. In this case the same configuration file is copied to the server where the extra instance will be started.   
   
-  
-  Both situations are presented in the picture below.
-  
-<img src="images/multiple_EI_instances.png">
+  <img src="images/multiple_EI_instances_same_rule.png">
 </img>
+  
+

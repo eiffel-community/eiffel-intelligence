@@ -40,7 +40,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     private ResponseEntity<String> response;
     private String token;
 
-    @Before("@RESTWithCredentials,@RESTWithSessionCookie")
+    @Before("@RESTWithCredentials or @RESTWithSessionCookie")
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth/logout");

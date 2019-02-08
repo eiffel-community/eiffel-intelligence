@@ -56,8 +56,9 @@ jobs:
         - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
     - stage: deploy
       name: deployGitHubPages
-      script: skip   # do not run default test scripts
-      install: skip  # do not run default mvn install
+      before_script: skip   # do not run this on deploy
+      script: skip          # do not run default test scripts
+      install: skip         # do not run default mvn install
       deploy:
         provider: pages
         skip_cleanup: true

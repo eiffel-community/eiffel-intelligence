@@ -50,7 +50,7 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.6.2-management
+    image: rabbitmq:3.7.8-debian-9
     expose:
       - "15672"
       - "5672"
@@ -73,7 +73,7 @@ services:
 
   eiffel-er:
     restart: always
-    image: eiffelericsson/eiffel-er:0.0.60
+    image: eiffelericsson/eiffel-er:0.0.67
     expose:
       - "8080"
     ports:

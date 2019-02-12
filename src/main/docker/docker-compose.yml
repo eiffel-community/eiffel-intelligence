@@ -121,6 +121,8 @@ services:
        - index.dynamicIndex.maxIndexesCount=5
        - index.dynamicIndex.filePath=src/main/resources/dynamic_indexing.json
        - index.dynamicIndex.fileUpdatePeriod=30
+       - WAIT_MB_HOSTS=rabbitmq:15672
+       - WAIT_DB_HOSTS=mongodb:27017
 
   ei_backend:
     restart: always

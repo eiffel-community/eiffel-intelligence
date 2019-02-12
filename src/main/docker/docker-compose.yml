@@ -50,7 +50,7 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.6.2-management
+    image: bitnami/rabbitmq:3.7.8-debian-9
     expose:
       - "15672"
       - "5672"
@@ -67,13 +67,13 @@ services:
             aliases:
               - rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_PASS=myuser
-      - RABBITMQ_DEFAULT_USER=myuser
-      - RABBITMQ_DEFAULT_VHOST=/
+      - RABBITMQ_PASSWORD=myuser
+      - RABBITMQ_USERNAME=myuser
+      - RABBITMQ_VHOST=/
 
   eiffel-er:
     restart: always
-    image: eiffelericsson/eiffel-er:0.0.60
+    image: eiffelericsson/eiffel-er:0.0.67
     expose:
       - "8080"
     ports:
@@ -121,6 +121,8 @@ services:
        - index.dynamicIndex.maxIndexesCount=5
        - index.dynamicIndex.filePath=src/main/resources/dynamic_indexing.json
        - index.dynamicIndex.fileUpdatePeriod=30
+       - WAIT_MB_HOSTS=rabbitmq:15672
+       - WAIT_DB_HOSTS=mongodb:27017
 
   ei_backend:
     restart: always

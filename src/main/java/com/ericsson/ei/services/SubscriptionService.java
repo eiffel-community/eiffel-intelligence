@@ -123,8 +123,8 @@ public class SubscriptionService implements ISubscriptionService {
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOG.warn("Subscription  \"" + subscriptionName
                             + "\" matched AggregatedObjIds from RepeatFlagHandler database could not be cleaned during the update of the subscription,\n"
-                    		+ "probably due to subscritpiton has never matched any Aggregated Objects and "
-                            + "no matched aggredgatedObjectsIds has been stored in database for the specific subscription.");
+                    		+ "probably due to subscription has never matched any Aggregated Objects and "
+                            + "no matched aggregatedObjectsIds has been stored in database for the specific subscription.");
                 }
             }
 
@@ -146,8 +146,8 @@ public class SubscriptionService implements ISubscriptionService {
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOG.warn("Subscription  \"" + subscriptionName
                         + "\" matched AggregatedObjIds from RepeatFlagHandler database could not be cleaned during the removal of subscription,\n"
-                		+ "probably due to subscritpiton has never matched any Aggregated Objects and "
-                        + "no matched aggredgatedObjectsIds has been stored in database for the specific subscription.");
+                		+ "probably due to subscription has never matched any Aggregated Objects and "
+                        + "no matched aggregatedObjectsIds has been stored in database for the specific subscription.");
             }
         } else if (doSubscriptionExist(subscriptionName)) {
             String message = "Failed to delete subscription \"" + subscriptionName

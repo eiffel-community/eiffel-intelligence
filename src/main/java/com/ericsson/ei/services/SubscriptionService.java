@@ -121,8 +121,10 @@ public class SubscriptionService implements ISubscriptionService {
             if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                    LOG.error("Failed to clean subscription \"" + subscriptionName
-                            + "\" matched AggregatedObjIds from RepeatFlagHandler database");
+                    LOG.warn("Subscription  \"" + subscriptionName
+                            + "\" matched AggregatedObjIds from RepeatFlagHandler database could not be cleaned during the update of the subscription,\n"
+                    		+ "probably due to subscritpiton has never matched any Aggregated Objects and "
+                            + "no matched aggredgatedObjectsIds has been stored in database for the specific subscription.");
                 }
             }
 

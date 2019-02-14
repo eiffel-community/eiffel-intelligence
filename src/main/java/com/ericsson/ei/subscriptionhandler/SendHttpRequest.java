@@ -29,24 +29,22 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestOperations;
 
 /**
- * This class is responsible to send notification through REST POST to the
- * recipient of the Subscription Object.
+ * This class is responsible to send HTTP requests when handling subscriptions.
  */
-
 @Component
-public class SpringRestTemplate {
+public class SendHttpRequest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpringRestTemplate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequest.class);
 
     private RestOperations rest;
 
-    public SpringRestTemplate(RestTemplateBuilder builder) {
+    public SendHttpRequest(RestTemplateBuilder builder) {
         rest = builder.build();
     }
 
     /**
      * This method is responsible to notify the subscriber through REST POST
-     * With raw body and form parameters.
+     * with raw body and form parameters.
      *
      * @param notificationMeta
      * @param mapNotificationMessage
@@ -95,6 +93,14 @@ public class SpringRestTemplate {
         return httpStatusSuccess;
     }
 
+    /**
+     * This method performs a get request to given url and with given headers,
+     * then returns the result as a ResponseEntity<JsonNode>.
+     *
+     * @param url
+     * @param headers
+     * @return
+     */
     public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
         HttpEntity<String> request = new HttpEntity<>(headers);
         try {

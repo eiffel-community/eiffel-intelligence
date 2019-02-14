@@ -214,8 +214,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
+        long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
-        while (processedEvents < eventsCount) {
+        while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);

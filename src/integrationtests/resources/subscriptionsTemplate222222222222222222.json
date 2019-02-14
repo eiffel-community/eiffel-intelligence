@@ -4,16 +4,16 @@
     "notificationType" : "MAIL",
     "userName": "",
     "password": "",
-    "notificationMessageKeyValues" : [ 
+    "notificationMessageKeyValues" : [
         {
-            "formkey" : "",
-            "formvalue" : "'test'"
+            "formkey" : "json",
+            "formvalue" : "{parameter: [{name:'my_param', value:'123'}, {name:'my_param_2', value:'high'}]}"
         }
     ],
     "repeat" : false,
-    "requirements" : [ 
+    "requirements" : [
         {
-            "conditions" : [ 
+            "conditions" : [
                 {
                     "jmespath" : ""
                 }

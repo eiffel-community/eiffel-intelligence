@@ -89,7 +89,7 @@ public class InformSubscriber {
     private JmesPathInterface jmespath;
 
     @Autowired
-    private SpringRestTemplate restTemplate;
+    private SendHttpRequest restTemplate;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -110,7 +110,10 @@ public class InformSubscriber {
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
 
-        String subject = getSubscriptionField("emailSubject", subscriptionJson);
+        System.out.println("##################");
+        System.out.println("subscriptionName " + subscriptionName);
+        System.out.println("notificationType " + notificationType);
+        System.out.println("notificationMeta " + notificationMeta);
 
         MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(aggregatedObject,
                 subscriptionJson);
@@ -133,6 +136,7 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
+            String subject = getSubscriptionField("emailSubject", subscriptionJson);
             try {
                 sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
             } catch (MessagingException e) {
@@ -283,11 +287,11 @@ public class InformSubscriber {
             String baseUrl = extractBaseUrl(notificationMeta);
             String contextPath = extractContextPath(notificationMeta);
             List<NameValuePair> params = extractUrlParameters(notificationMeta);
-            LOGGER.debug("Notification meta in parts:\nBase Url: {}\nContext Path: {}\nURL Parameters: {} ", baseUrl,
+            LOGGER.debug("Notification meta in parts:\n ## Base Url: {}\n ## Context Path: {}\n ## URL Parameters: {} ", baseUrl,
                     contextPath, params);
 
             List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, params);
-            LOGGER.debug("JMESPATH processed parameters :\n{}", processedParams);
+            LOGGER.debug("JMESPATH processed parameters :\n ## {}", processedParams);
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
             notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);

@@ -36,7 +36,6 @@ import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -49,8 +48,6 @@ import util.IntegrationTestBase;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 public class FlowStepsIT extends IntegrationTestBase {
-    private static final String SUBSCRIPTIONS_TEMPLATE_PATH = "src/integrationtests/resources/subscriptionsTemplate222222222222222222.json";
-    private static final String JENKINS_TOKEN = "123";
 
     private String jenkinsJobName;
     private String jenkinsJobToken;
@@ -83,43 +80,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     private JenkinsXmlData jenkinsXmlData;
     private SubscriptionObject subscriptionObject;
     private JSONObject jobStatusData;
-
-    @Given("^that \"([^\"]*)\" subscription with jmespath \"([^\"]*)\" is uploaded$")
-    public void that_subscription_with_jmespath_is_uploaded(String subscriptionType, String JmesPath)
-            throws URISyntaxException, IOException {
-        startTime = System.currentTimeMillis();
-
-        URL subscriptionsInput = new File(SUBSCRIPTIONS_TEMPLATE_PATH).toURI()
-                                                                      .toURL();
-        ArrayNode subscriptionsJson = (ArrayNode) objectMapper.readTree(subscriptionsInput);
-
-        if (subscriptionType.equals("REST/POST")) {
-            subscriptionsJson = setSubscriptionRestPostFieldsWithJmesPath(subscriptionsJson, JmesPath);
-        } else if (subscriptionType.equals("mail")) {
-            subscriptionsJson = setSubscriptionMailFieldsWithJmesPath(subscriptionsJson, JmesPath);
-        }
-
-        HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        ResponseEntity response = postRequest.setHost(eiHost)
-                                             .setPort(port)
-                                             .setEndpoint("/subscriptions")
-                                             .addHeader("Content-type", "application/json")
-                                             .setBody(subscriptionsJson.toString())
-                                             .performRequest();
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Given("^jenkins is set up with a job \"([^\"]*)\"$")
-    public void jenkins_is_set_up_with_a_job(String jenkins_job_name) throws Throwable {
-        jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort, jenkinsUsername,
-                jenkinsPassword);
-        JenkinsXmlData jenkinsXmlData = new JenkinsXmlData();
-        jenkinsXmlData.addJobToken(JENKINS_TOKEN)
-                      .addBashScript("echo Success");
-        jenkinsManager.forceCreateJob(jenkins_job_name, jenkinsXmlData.getXmlAsString());
-
-        this.jenkinsJobName = jenkins_job_name;
-    }
 
     @Given("^the rules \"([^\"]*)\"$")
     public void the_rules(String rulesFilePath) throws Throwable {
@@ -202,8 +162,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     @When("^the eiffel events are sent$")
     public void eiffel_events_are_sent() throws Throwable {
         super.sendEventsAndConfirm();
-        //System.out.println("Port ::::: " + port);
-        //TimeUnit.SECONDS.sleep(120);
     }
 
     @When("^the upstream input events are sent")
@@ -431,62 +389,5 @@ public class FlowStepsIT extends IntegrationTestBase {
         notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}", this.jenkinsJobName);
         notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}", this.jenkinsJobToken);
         return notificationMeta;
-    }
-
-    /**
-     * Sets the subscription template with necessary fields for a REST/POST subscription
-     *
-     * @param subscriptionJson
-     *            - An arraynode with the subscription that should be updated
-     * @param JmesPath
-     *            - A jmesPath expression with the required condition for the subscription to be triggered
-     * @return an arraynode with the updated subscription
-     */
-    private ArrayNode setSubscriptionRestPostFieldsWithJmesPath(ArrayNode subscriptionJson, String jmesPath) {
-        ObjectNode subscriptionJsonObject = ((ObjectNode) subscriptionJson.get(0));
-
-        subscriptionJsonObject.put("userName", jenkinsUsername);
-        subscriptionJsonObject.put("password", jenkinsPassword);
-        subscriptionJsonObject.put("authenticationType", "BASIC_AUTH");
-        subscriptionJsonObject.put("restPostBodyMediaType", "application/x-www-form-urlencoded");
-        subscriptionJsonObject.put("notificationType", "REST_POST");
-        subscriptionJsonObject.put("notificationMeta", "http://" + jenkinsHost + ":" + jenkinsPort + "/job/"
-                + this.jenkinsJobName + "/build?token='" + JENKINS_TOKEN + "'");
-
-        ObjectNode requirement = ((ObjectNode) subscriptionJsonObject.get("requirements")
-                                                                     .get(0)
-                                                                     .get("conditions")
-                                                                     .get(0));
-        requirement.put("jmespath", jmesPath);
-
-        ObjectNode notificationMessageKeyValue = ((ObjectNode) subscriptionJsonObject.get(
-                "notificationMessageKeyValues")
-                                                                                     .get(0));
-        notificationMessageKeyValue.put("formkey", "json");
-
-        return subscriptionJson;
-    }
-
-    /**
-     * Sets the subscription template with necessary fields for a MAIL subscription
-     *
-     * @param subscriptionJson
-     *            - An arraynode with the subscription that should be updated
-     * @param JmesPath
-     *            - A jmesPath expression with the required condition for the subscription to be triggered
-     * @return an arraynode with the updated subscription
-     */
-    private ArrayNode setSubscriptionMailFieldsWithJmesPath(ArrayNode subscriptionJson, String JmpesPath) {
-        ObjectNode subscriptionJsonObject = ((ObjectNode) subscriptionJson.get(0));
-        subscriptionJsonObject.put("restPostBodyMediaType", "application/json");
-
-        ObjectNode requirement = ((ObjectNode) subscriptionJson.get(0)
-                                                               .get("requirements")
-                                                               .get(0)
-                                                               .get("conditions")
-                                                               .get(0));
-        requirement.put("jmespath", JmpesPath);
-
-        return subscriptionJson;
     }
 }

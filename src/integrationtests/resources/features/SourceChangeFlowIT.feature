@@ -33,7 +33,7 @@ Feature: Source change flow integrationtest
     When job token "test-token-123" is added to jenkins data
     And parameter key "test_key" is added to jenkins data
     And bash script "echo 'param 1 ' $test_key" is added to jenkins data
-    Then jenkins is set up with job name "myTestJobParam"
+    Then jenkins is set up with job name "sourceChangeTestJobParam"
     # Setup subscription
     Given subscription object for "REST/POST" with name "ParameterizedTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/buildWithParameters?token='test-token-123'&test_key=id" is set in subscription
@@ -67,7 +67,7 @@ Feature: Source change flow integrationtest
     And parameter key "test_param_2" is added to jenkins data
     And bash script "echo 'param 1 ' $test_param_1" is added to jenkins data
     And bash script "echo 'param 2 ' $test_param_2" is added to jenkins data
-    Then jenkins is set up with job name "myTestJobBodyJson"
+    Then jenkins is set up with job name "sourceChangeTestJobBodyJson"
     # Setup subscription
     Given subscription object for "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/build?token='test-token-123'" is set in subscription

@@ -33,7 +33,7 @@ Feature: Test execution flow integrationtest
     When job token "test-token-123" is added to jenkins data
     And parameter key "test_key" is added to jenkins data
     And bash script "echo 'test 123'" is added to jenkins data
-    Then jenkins is set up with job name "myTestJobParam"
+    Then jenkins is set up with job name "testExecutionTestJobParam"
     # Setup subscription
     Given subscription object for "REST/POST" with name "ParameterizedTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/buildWithParameters?token='test-token-123'&test_key=activity_triggered_event_id" is set in subscription
@@ -65,7 +65,7 @@ Feature: Test execution flow integrationtest
     And parameter key "test_param_1" is added to jenkins data
     And parameter key "test_param_2" is added to jenkins data
     And bash script "echo 'test 123'" is added to jenkins data
-    Then jenkins is set up with job name "myTestJobBodyJson"
+    Then jenkins is set up with job name "testExecutionTestJobBodyJson"
     # Setup subscription
     Given subscription object for "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/build?token='test-token-123'" is set in subscription

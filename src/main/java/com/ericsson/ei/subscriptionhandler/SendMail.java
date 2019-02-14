@@ -58,8 +58,6 @@ public class SendMail {
 	@Autowired
 	private JavaMailSender emailSender;
 
-	private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
-
 	public void setMailSender(JavaMailSender emailSender) {
 		this.emailSender = emailSender;
 	}
@@ -106,7 +104,7 @@ public class SendMail {
 		Set<String> emailAdd = new HashSet<>();
 		String[] addresses = contents.split(",");
 		for (String add : addresses) {
-			subscriptionValidator.validateEmail(add.trim());
+		    SubscriptionValidator.validateEmail(add.trim());
 			emailAdd.add(add);
 		}
 		return emailAdd;

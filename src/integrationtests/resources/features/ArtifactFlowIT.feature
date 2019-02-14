@@ -26,8 +26,8 @@ Feature: Artifact flow Integrationtest
     Given the rules "src/test/resources/ArtifactRules.json"
     And the events "src/test/resources/ArtifactFlowTestEvents.json"
     And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
+    And the upstream input "src/test/resources/upStreamInput.json"
     Then the expected aggregated object ID is "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
-    Given that "mail" subscription with jmespath "id=='aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" is uploaded
     # Setup subscription
     Given subscription object for "MAIL" with name "MailTestSubscription" is created
     When notification meta "some.cool.email@ericsson.com" is set in subscription
@@ -37,7 +37,6 @@ Feature: Artifact flow Integrationtest
     Then subscription is uploaded
     # Send Events and Check job triggered
     Given all previous steps passed
-    And the upstream input "src/test/resources/upStreamInput.json"
     When the upstream input events are sent
     And the eiffel events are sent
     Then mongodb should contain mail.

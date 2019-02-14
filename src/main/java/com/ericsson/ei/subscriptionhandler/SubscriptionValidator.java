@@ -135,6 +135,11 @@ public class SubscriptionValidator {
         }
 
         if (Pattern.matches(regexMail, notificationType)) {
+            String[] addresses = notificationMeta.split(",");
+            for (String address : addresses) {
+                    validateEmail(address.trim());
+            }
+
             String regexEmailCheck = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$";
             boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
             if (isInvalidEmailAddress) {
@@ -185,7 +190,9 @@ public class SubscriptionValidator {
                 Pattern.CASE_INSENSITIVE);
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         if (!(matcher.matches())) {
-            throw new SubscriptionValidationException("Wrong email address: " + email);
+            throw new SubscriptionValidationException(
+                    "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["
+                            + email + "]");
         }
     }
 

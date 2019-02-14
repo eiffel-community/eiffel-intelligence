@@ -30,8 +30,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Before;

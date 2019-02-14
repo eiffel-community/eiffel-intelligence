@@ -84,7 +84,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input          json String
+     * @param input
+     *            json String
      * @return
      */
     public boolean insertDocument(String dataBaseName, String collectionName, String input) {
@@ -116,15 +117,14 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
-                collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
-                    result.add(JSON.serialize(document));
-                });
+                collection.find(new BasicDBObject())
+                          .forEach((Block<Document>) document -> {
+                              result.add(JSON.serialize(document));
+                          });
                 if (result.size() != 0) {
+                    // This will pass about 10 times/second and most of the times DB will be empty, this is normal, no need to log
                     log.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " fetched No of :" + result.size());
-                } else {
-                    log.debug("getAllDocuments() :: database: " + dataBaseName + "and collection: " + collectionName
-                            + " documents are not found");
                 }
             }
         } catch (Exception e) {
@@ -138,7 +138,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition      string json
+     * @param condition
+     *            string json
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
@@ -150,9 +151,10 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
-                collection.find(BasicDBObject.parse(condition)).forEach((Block<Document>) document -> {
-                    result.add(JSON.serialize(document));
-                });
+                collection.find(BasicDBObject.parse(condition))
+                          .forEach((Block<Document>) document -> {
+                              result.add(JSON.serialize(document));
+                          });
                 if (result.size() != 0) {
                     log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " fetched No of :" + result.size());
@@ -171,13 +173,15 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the lock
-     * in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock in one query. Lock is needed for
+     * multi process execution
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input          is a json string
-     * @param updateInput    is updated document without lock
+     * @param input
+     *            is a json string
+     * @param updateInput
+     *            is updated document without lock
      * @return
      */
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -199,14 +203,15 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the input
-     * condition in one query. Lock is needed for multi process execution. This
-     * method is executed in a loop.
+     * This method is used for lock and return the document that matches the input condition in one query. Lock is
+     * needed for multi process execution. This method is executed in a loop.
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input          is a condition for update documents
-     * @param updateInput    is updated document without lock
+     * @param input
+     *            is a condition for update documents
+     * @param updateInput
+     *            is updated document without lock
      * @return
      */
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -229,12 +234,12 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the delete documents from collection using a
-     * condition
+     * This method is used for the delete documents from collection using a condition
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition      string json
+     * @param condition
+     *            string json
      * @return
      */
     public boolean dropDocument(String dataBaseName, String collectionName, String condition) {
@@ -264,8 +269,10 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param fieldName      for index creation field
-     * @param ttlValue       seconds
+     * @param fieldName
+     *            for index creation field
+     * @param ttlValue
+     *            seconds
      */
     public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -277,7 +284,8 @@ public class MongoDBHandler {
         if (mongoClient == null)
             return null;
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
+        List<String> collectionList = db.listCollectionNames()
+                                        .into(new ArrayList<String>());
         if (!collectionList.contains(collectionName)) {
             log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
@@ -285,7 +293,8 @@ public class MongoDBHandler {
                 db.createCollection(collectionName);
             } catch (MongoCommandException e) {
                 String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
-                if (e.getMessage().contains(message)) {
+                if (e.getMessage()
+                     .contains(message)) {
                     log.warn("A " + message + ".");
                 } else {
                     throw e;
@@ -300,8 +309,10 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a collection.
      *
-     * @param dataBaseName   to know which database to drop a collection from
-     * @param collectionName to know which collection to drop
+     * @param dataBaseName
+     *            to know which database to drop a collection from
+     * @param collectionName
+     *            to know which collection to drop
      */
     public void dropCollection(String dataBaseName, String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
@@ -312,7 +323,8 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a database. For example after testing.
      *
-     * @param dataBaseName to know which database to remove
+     * @param dataBaseName
+     *            to know which database to remove
      */
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);

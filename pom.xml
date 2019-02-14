@@ -234,7 +234,7 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.9</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -364,7 +364,7 @@
                 <version>${springBootVersion}</version>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -468,26 +468,26 @@
                              <goal>integration-test</goal>
                              <goal>verify</goal>
                          </goals>
-                         <phase>integration-test</phase>                          
+                         <phase>integration-test</phase>
                      </execution>
                  </executions>
                  <configuration>
-	                 <forkCount>3</forkCount>
-	                 <reuseForks>false</reuseForks>
-	                 <skipTests>${skipTests}</skipTests>
-	                 <skipITs>${skipITs}</skipITs>
-	                 <systemPropertyVariables>
-	                     <systemTest>true</systemTest>
-	                     <er.url>http://localhost:8080/eventrepository/search/</er.url>
-	                 </systemPropertyVariables>
-	                 <excludes>
-	                     <exclude>**/test/*</exclude>
-	                     <exclude>**/functionaltests/*</exclude>
-	                 </excludes>
-	                  <additionalClasspathElements>
-	                     <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-	                 </additionalClasspathElements>
-	             </configuration>
+                     <forkCount>3</forkCount>
+                     <reuseForks>false</reuseForks>
+                     <skipTests>${skipTests}</skipTests>
+                     <skipITs>${skipITs}</skipITs>
+                     <systemPropertyVariables>
+                         <systemTest>true</systemTest>
+                         <er.url>http://localhost:8080/eventrepository/search/</er.url>
+                     </systemPropertyVariables>
+                     <excludes>
+                         <exclude>**/test/*</exclude>
+                         <exclude>**/functionaltests/*</exclude>
+                     </excludes>
+                      <additionalClasspathElements>
+                         <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                     </additionalClasspathElements>
+                 </configuration>
               </plugin>
 
             <plugin>
@@ -500,13 +500,42 @@
             </plugin>
 
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- site plugin requires all resources to exist within
+                                resources/ directory -->
+                            <!-- but we don't want to break links in documentation -->
+                            <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/wiki/markdown/images</directory>
+                                    <includes>
+                                        <include>*.png</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
                 <configuration>
                     <!-- This is where site.xml is located -->
                     <siteDirectory>${basedir}/wiki</siteDirectory>
-                    <!-- Github pages only generates documentation from docs 
+                    <!-- Github pages only generates documentation from docs
                         directory -->
                     <outputDirectory>${basedir}/docs</outputDirectory>
                 </configuration>
@@ -517,46 +546,6 @@
                         <version>1.8</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
-                        <phase>site</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <!-- plugin requires all resources to exist within 
-                                resources/ directory -->
-                            <!-- but we don't want to break links in documentation -->
-                            <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/wiki/markdown/images</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <!-- We want to remove duplicate/copied resources from site 
-                    generation -->
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/wiki/resources</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
         </plugins>
     </build>

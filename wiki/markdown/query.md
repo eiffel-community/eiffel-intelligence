@@ -18,7 +18,7 @@ Examples of this endpoint using curl
 
 ## Perform freestyle query on created aggregated object
 It is possible to query for documents using freestyle queries. These freestyle
-queries are plain mongoDB queries, you can read more about that [here](https://docs.mongodb.com/manual/tutorial/query-documents/).
+queries are plain Mongo DB queries, you can read more about that [here](https://docs.mongodb.com/manual/tutorial/query-documents/).
 
     POST /query
 

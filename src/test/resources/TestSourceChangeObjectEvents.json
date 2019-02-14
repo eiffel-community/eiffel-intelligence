@@ -10,11 +10,11 @@
       }
     },
     "data": {
-      "svnIdentifier": {
-        "revision": 42,
-        "directory": "trunk",
-        "repoName": "Mainline",
-        "repoUri": "svn://repohost/mainline"
+      "gitIdentifier":{
+        "commitId":"ad090b60a4aedc5161da9c035a49b14a319829b4",
+        "branch":"myBranch",
+        "repoName":"myPrivateRepo",
+        "repoUri":"https://github.com/johndoe/myPrivateRepo.git"
       },
       "submitter": {
         "name": "Jane Doe",

@@ -39,35 +39,38 @@
 
         <menu name="Overview">
             <item name="Home" href="index.html" />
-            <item name="Configuration" href="Configuration.html" />
-            <item name="Running Eiffel Intelligence" href="Running-Eiffel-Intelligence.html" />
-            <item collapse="true" name="REST API" href="REST-API.html">
-                <item name="Query" href="Query.html" />
-                <item name="Running rules on objects" href="Running-rules-on-objects.html" />
-                <item name="Authentication" href="Authentication.html" />
-                <item name="Subscriptions" href="Subscription-API.html" />
-                <item name="Download files" href="Download-Files.html" />
+            <item collapse="true" name="Running Eiffel Intelligence" href="running-eiffel-intelligence.html">
+                <item name="Configuration" href="configuration.html" />
+                <item name="Running in Docker" href="docker.html" />
             </item>
-            <item collapse="true" name="Subscriptions" href="Subscriptions.html">
+            <item collapse="true" name="Understanding subscriptions" href="subscriptions.html">
                 <item name="Subscription with REST POST notification" href="subscription-with-REST-POST-notification.html" />
                 <item name="Subscription with Email notification" href="subscription-with-email-notification.html" />
+                <item name="Trigger parameterized Jenkins jobs" href="triggering-jenkins-jobs.html" />
             </item>
-            <item collapse="true" name ="Rules" href="Rules.html">
-                <item name="Merge Resolver Rules" href="MergeResolverRules.html" />
-                <item name="History Rules" href="History-rules.html" />
-                <item name="Existing Rules" href="ExistingRulesFiles.html" />
+            <item collapse="true" name ="Understanding rules" href="rules.html">
+                <item name="Merge Resolver Rules" href="merge-resolver-rules.html" />
+                <item name="History Rules" href="history-rules.html" />
+                <item name="Existing Rules" href="existing-rules-files.html" />
+                <item name="Mapping Rules To Aggregations" href="mapping-rules-to-aggregations.html" />
             </item>
-            <item collapse="true" name="Step-by-step aggregation" href="Step-by-Step-Aggregation.html">
-                <item name="EiffelArtifactCreatedEvent aggregation" href="ArtifactCreatedEvent-aggregation.html" />
-                <item name="EiffelTestCaseTriggeredEvent aggregation" href="EiffelTestCaseTriggeredEvent-Aggregation.html" />
-                <item name="EiffelTestCaseStartedEvent aggregation" href="EiffelTestCaseStartedEvent-aggregation.html" />
-                <item name="EiffelTestCaseFinishedEvent aggregation" href="EiffelTestCaseFinishedEvent-aggregation.html" />
-                <item name="EiffelArtifactPublishedEvent aggregation" href="EiffelArtifactPublishedEvent-Aggregation.html" />
-                <item name="EiffelConfidenceLevelModifiedEvent" href="EiffelConfidenceLevelModifiedEvent-Aggregation.html" />
-                <item name="Step-by-step subscription notification" href="Step-by-Step-Subscription-Notification.html" />
+            <item collapse="true" name="Step-by-step aggregation" href="step-by-step-aggregation.html">
+                <item name="ArtifactCreatedEvent aggregation" href="artifact-created-event-aggregation.html" />
+                <item name="TestCaseTriggeredEvent aggregation" href="test-case-triggered-event-aggregation.html" />
+                <item name="TestCaseStartedEvent aggregation" href="test-case-started-event-aggregation.html" />
+                <item name="TestCaseFinishedEvent aggregation" href="test-case-finished-event-aggregation.html" />
+                <item name="ArtifactPublishedEvent aggregation" href="artifact-published-event-aggregation.html" />
+                <item name="ConfidenceLevelModifiedEvent" href="confidence-level-modified-event-aggregation.html" />
             </item>
-            <item name="Docker" href="docker.html" />
-            <item name="Known limitations" href="Known-limitations.html" />
+            <item name="Step-by-step Subscription Notification" href="step-by-step-subscription-notification.html" />
+            <item collapse="true" name="REST API" href="REST-API.html">
+                <item name="Query" href="query.html" />
+                <item name="Running rules on objects" href="running-rules-on-objects.html" />
+                <item name="Authentication" href="authentication.html" />
+                <item name="Subscriptions" href="subscription-API.html" />
+                <item name="Download files" href="download-files.html" />
+            </item>
+            <item name="Known limitations" href="known-limitations.html" />
         </menu>
 
         <footer/>

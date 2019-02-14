@@ -294,15 +294,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             .addParam("ID", id)
             .setEndpoint(endpoint);
 
-        JsonNode actualJSON = null;
-
         //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
         ResponseEntity<String> response = httpRequest.performRequest();
         JsonNode body =  objectMapper.readTree(response.getBody());
-        JsonNode responseEntity = objectMapper.readTree(body.get("responseEntity").asText());
-        actualJSON = responseEntity.get(0);
+        JsonNode responseEntity = body.get("queryResponseEntity");
 
-        return actualJSON;
+        return responseEntity;
     }
 
     private RabbitTemplate createRabbitMqTemplate() {

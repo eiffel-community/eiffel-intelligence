@@ -27,7 +27,7 @@ Feature: Artifact flow Integrationtest
     And the events "src/test/resources/ArtifactFlowTestEvents.json"
     And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     Then the expected aggregated object ID is "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
-    #Given that "mail" subscription with jmespath "id=='aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" is uploaded
+    Given that "mail" subscription with jmespath "id=='aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" is uploaded
     # Setup subscription
     Given subscription object for "MAIL" with name "MailTestSubscription" is created
     When notification meta "some.cool.email@ericsson.com" is set in subscription

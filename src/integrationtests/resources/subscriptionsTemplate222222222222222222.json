@@ -6,8 +6,8 @@
     "password": "",
     "notificationMessageKeyValues" : [
         {
-            "formkey" : "json",
-            "formvalue" : "{parameter: [{name:'my_param', value:'123'}, {name:'my_param_2', value:'high'}]}"
+            "formkey" : "",
+            "formvalue" : "Message"
         }
     ],
     "repeat" : false,

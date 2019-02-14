@@ -110,11 +110,6 @@ public class InformSubscriber {
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
 
-        System.out.println("##################");
-        System.out.println("subscriptionName " + subscriptionName);
-        System.out.println("notificationType " + notificationType);
-        System.out.println("notificationMeta " + notificationMeta);
-
         MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(aggregatedObject,
                 subscriptionJson);
 
@@ -138,7 +133,12 @@ public class InformSubscriber {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
             try {
+
+                System.out.println("##################");
+                System.out.println("subscriptionName " + subscriptionName);
                 sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
+                System.out.println("notificationType " + notificationType);
+                System.out.println("notificationMeta " + notificationMeta);
             } catch (MessagingException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());

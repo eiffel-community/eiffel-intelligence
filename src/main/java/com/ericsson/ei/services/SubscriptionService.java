@@ -121,7 +121,7 @@ public class SubscriptionService implements ISubscriptionService {
             if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                    LOG.warn("Subscription  \"" + subscriptionName
+                    LOG.info("Subscription  \"" + subscriptionName
                             + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
                     		+ "probably due to subscription has never matched any aggregated objects and "
                             + "no matched aggregated objects id has been stored in database for the specific subscription.");
@@ -144,7 +144,7 @@ public class SubscriptionService implements ISubscriptionService {
         if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                LOG.warn("Subscription  \"" + subscriptionName
+                LOG.info("Subscription  \"" + subscriptionName
                         + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
                 		+ "probably due to subscription has never matched any aggregated objects and "
                         + "no matched aggregated objects id has been stored in database for the specific subscription.");

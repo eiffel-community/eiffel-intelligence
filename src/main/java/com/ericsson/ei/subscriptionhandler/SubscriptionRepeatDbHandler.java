@@ -197,7 +197,6 @@ public class SubscriptionRepeatDbHandler {
             return false;
         }
 
-//        String idStr = listAggrObjIds.get(requirementId);
         if (listAggrObjIds.contains(aggrObjId)) {
             LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
             return true;

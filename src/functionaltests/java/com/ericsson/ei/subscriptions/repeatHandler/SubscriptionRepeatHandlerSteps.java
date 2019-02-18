@@ -144,7 +144,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         processSubscription(subscriptionStrWithTwoMatch, subscriptionWithTwoMatch);
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
-        assertEquals(2, resultRepeatFlagHandler.size());
+        assertEquals(1, resultRepeatFlagHandler.size());
         assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 0));
         assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 1));
     }
@@ -165,7 +165,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
      */
     private String getAggregatedObjectId(List<String> resultRepeatFlagHandler, int index) {
         JsonParser parser = new JsonParser();
-        JsonObject jsonObject = parser.parse(resultRepeatFlagHandler.get(index)).getAsJsonObject();
+        JsonObject jsonObject = parser.parse(resultRepeatFlagHandler.get(0)).getAsJsonObject();
+        System.out.println("JSONOBJECT: " + jsonObject.toString());
         JsonObject requirements = jsonObject.get("requirements").getAsJsonObject();
         return requirements.get(String.valueOf(index)).getAsJsonArray().get(0).toString();
     }

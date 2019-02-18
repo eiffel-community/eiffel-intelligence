@@ -20,6 +20,7 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.DBObject;
 
 import java.util.Iterator;
 
@@ -66,6 +67,7 @@ public class RunSubscription {
         int count_conditions = 0;
 
         int requirementIndex = 0;
+        LOGGER.debug("AGG OBJECT: " + aggregatedObject);
 
         while (requirementIterator.hasNext()) {
 
@@ -73,9 +75,13 @@ public class RunSubscription {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 aggrObjJsonNode = objectMapper.readValue(aggregatedObject, JsonNode.class);
+                
+//                DBObject idObj = (DBObject)aggrObjJsonNode.get("_id").get("$oid");
+                LOGGER.debug("AGGREGATED OBJECT ID: " + aggrObjJsonNode.asText());
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
+            LOGGER.debug("1111111111111111111111111111111111111111111111111111111111111111111111111111111");
 
             String subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
@@ -91,7 +97,9 @@ public class RunSubscription {
                         + subscriptionName + "\nand has Subscrption Repeat flag set to: " + subscriptionRepeatFlag);
                 break;
             }
-
+            
+            LOGGER.debug("222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+            
             JsonNode requirement = requirementIterator.next();
 
             LOGGER.info("The fulfilled requirement which condition will check is : " + requirement.toString());

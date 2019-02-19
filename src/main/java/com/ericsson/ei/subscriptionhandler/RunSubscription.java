@@ -65,23 +65,9 @@ public class RunSubscription {
         boolean conditionFulfilled = false;
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
-
         int requirementIndex = 0;
-        LOGGER.debug("AGG OBJECT: " + aggregatedObject);
 
         while (requirementIterator.hasNext()) {
-
-            JsonNode aggrObjJsonNode = null;
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                aggrObjJsonNode = objectMapper.readValue(aggregatedObject, JsonNode.class);
-                
-//                DBObject idObj = (DBObject)aggrObjJsonNode.get("_id").get("$oid");
-                LOGGER.debug("AGGREGATED OBJECT ID: " + aggrObjJsonNode.asText());
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-            LOGGER.debug("1111111111111111111111111111111111111111111111111111111111111111111111111111111");
 
             String subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
@@ -97,8 +83,6 @@ public class RunSubscription {
                         + subscriptionName + "\nand has Subscrption Repeat flag set to: " + subscriptionRepeatFlag);
                 break;
             }
-            
-            LOGGER.debug("222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
             
             JsonNode requirement = requirementIterator.next();
 

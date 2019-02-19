@@ -18,9 +18,7 @@ package com.ericsson.ei.subscriptionhandler;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.DBObject;
 
 import java.util.Iterator;
 

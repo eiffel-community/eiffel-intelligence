@@ -7,13 +7,8 @@ language: java
 services:
   - docker
 
-addons:
-  apt:
-    packages:
-      - openjdk-8-jdk
-
-        #jdk:
-        #  - oraclejdk8
+jdk:
+  - oraclejdk8
 
 # Run before every job
 before_install:

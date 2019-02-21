@@ -54,9 +54,8 @@ import com.mongodb.BasicDBObject;
 import lombok.Getter;
 
 /**
- * This class represents the REST POST notification mechanism and the alternate
- * way to save the aggregatedObject details in the database when the
- * notification fails.
+ * This class represents the REST POST notification mechanism and the alternate way to save the
+ * aggregatedObject details in the database when the notification fails.
  *
  * @author xjibbal
  */
@@ -98,9 +97,8 @@ public class InformSubscriber {
     private SendMail sendMail;
 
     /**
-     * This method extracts the mode of notification through which the
-     * subscriber should be notified, from the subscription Object. And if the
-     * notification fails, then it saved in the database.
+     * This method extracts the mode of notification through which the subscriber should be notified,
+     * from the subscription Object. And if the notification fails, then it saved in the database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
@@ -156,8 +154,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method prepares headers to be used when making a rest call with the
-     * method POST.
+     * This method prepares headers to be used when making a rest call with the method POST.
      *
      * @param headers
      * @param notificationMeta
@@ -230,8 +227,7 @@ public class InformSubscriber {
     }
 
     /**
-     * Tries to fetch a Jenkins crumb. Will return when ever a crumb was not
-     * found.
+     * Tries to fetch a Jenkins crumb. Will return when ever a crumb was not found.
      *
      * @param encoding
      * @param notificationMeta
@@ -263,10 +259,9 @@ public class InformSubscriber {
     }
 
     /**
-     * This method extract the url parameters from the notification meta. It
-     * runs the parameter values through jmespath to replace wanted parameter
-     * values with data from the aggregated object. It then reformats the
-     * notification meta containing the new parameters.
+     * This method extract the url parameters from the notification meta. It runs the parameter values
+     * through jmespath to replace wanted parameter values with data from the aggregated object. It then
+     * reformats the notification meta containing the new parameters.
      *
      * @param aggregatedObject
      * @param notificationMeta
@@ -282,8 +277,8 @@ public class InformSubscriber {
             String baseUrl = extractBaseUrl(notificationMeta);
             String contextPath = extractContextPath(notificationMeta);
             List<NameValuePair> params = extractUrlParameters(notificationMeta);
-            LOGGER.debug("Notification meta in parts:\n ## Base Url: {}\n ## Context Path: {}\n ## URL Parameters: {} ", baseUrl,
-                    contextPath, params);
+            LOGGER.debug("Notification meta in parts:\n ## Base Url: {}\n ## Context Path: {}\n ## URL Parameters: {} ",
+                    baseUrl, contextPath, params);
 
             List<NameValuePair> processedParams = processJmespathParameters(aggregatedObject, params);
             LOGGER.debug("JMESPATH processed parameters :\n ## {}", processedParams);
@@ -300,8 +295,7 @@ public class InformSubscriber {
     }
 
     /**
-     * Extract the query from the notificationMeta and returns them as a list of
-     * KeyValuePair
+     * Extract the query from the notificationMeta and returns them as a list of KeyValuePair
      *
      * @param notificationMeta
      * @return
@@ -315,9 +309,8 @@ public class InformSubscriber {
     }
 
     /**
-     * Splits a query string into one pair for each key and value. Loops said
-     * pairs and extracts the key and value as KeyValuePair. Adds KeyValuePair
-     * to list.
+     * Splits a query string into one pair for each key and value. Loops said pairs and extracts the key
+     * and value as KeyValuePair. Adds KeyValuePair to list.
      *
      * @param query
      * @return List<KeyValuePair>
@@ -357,8 +350,8 @@ public class InformSubscriber {
     }
 
     /**
-     * Runs JMESPATH rules on values in a list of KeyValuePair and replaces the
-     * value with extracted data
+     * Runs JMESPATH rules on values in a list of KeyValuePair and replaces the value with extracted
+     * data
      *
      * @param aggregatedObject
      * @param params
@@ -384,8 +377,7 @@ public class InformSubscriber {
     }
 
     /**
-     * Returns the base url from the notification meta. Base url is all but
-     * context path and parameters.
+     * Returns the base url from the notification meta. Base url is all but context path and parameters.
      *
      * @param notificationMeta
      * @return
@@ -414,8 +406,8 @@ public class InformSubscriber {
     }
 
     /**
-     * This method saves the missed Notification into a single document along
-     * with Subscription name, notification meta and time period.
+     * This method saves the missed Notification into a single document along with Subscription name,
+     * notification meta and time period.
      *
      * @param aggregatedObject
      * @param subscriptionName
@@ -506,8 +498,8 @@ public class InformSubscriber {
     }
 
     /**
-     * This method is responsible to display the configurable application
-     * properties and to create TTL index on the missed Notification collection.
+     * This method is responsible to display the configurable application properties and to create TTL
+     * index on the missed Notification collection.
      */
     @PostConstruct
     public void init() {

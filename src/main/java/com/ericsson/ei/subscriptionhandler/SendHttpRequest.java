@@ -43,8 +43,8 @@ public class SendHttpRequest {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST
-     * with raw body and form parameters.
+     * This method is responsible to notify the subscriber through REST POST with raw body and form
+     * parameters.
      *
      * @param notificationMeta
      * @param mapNotificationMessage
@@ -94,8 +94,8 @@ public class SendHttpRequest {
     }
 
     /**
-     * This method performs a get request to given url and with given headers,
-     * then returns the result as a ResponseEntity<JsonNode>.
+     * This method performs a get request to given url and with given headers, then returns the result
+     * as a ResponseEntity<JsonNode>.
      *
      * @param url
      * @param headers

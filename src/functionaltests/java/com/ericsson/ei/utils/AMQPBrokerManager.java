@@ -2,13 +2,18 @@ package com.ericsson.ei.utils;
 
 import com.google.common.io.Files;
 
-import org.apache.qpid.server.Broker;
-import org.apache.qpid.server.BrokerOptions;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.qpid.server.SystemLauncher;
+
 
 public class AMQPBrokerManager {
     public boolean isRunning = false;
-
-    private final Broker broker = new Broker();
+    
+    private final SystemLauncher systemLauncher = new SystemLauncher();
+    
     private String path;
     private String port;
 
@@ -18,19 +23,33 @@ public class AMQPBrokerManager {
         this.port = port;
     }
 
+    private Map<String, Object> createSystemConfig() {
+        Map<String, Object> attributes = new HashMap<>();
+        URL initialConfig = AMQPBrokerManager.class.getClassLoader().getResource(path);
+        attributes.put("type", "Memory");
+        attributes.put("qpid.amqp_port", "" + port);
+        attributes.put("qpid.pass_file", "src/test/resources/configs/password.properties");
+        attributes.put("qpid.work_dir", Files.createTempDir().getAbsolutePath());
+        attributes.put("initialConfigurationLocation", initialConfig.toExternalForm());
+        attributes.put("startupLoggedToSystemOut", true);
+        return attributes;
+    }
+    
+    
     public void startBroker() throws Exception {
-        final BrokerOptions brokerOptions = new BrokerOptions();
-        brokerOptions.setConfigProperty("qpid.amqp_port", port);
-        brokerOptions.setConfigProperty("qpid.pass_file", "src/functionaltests/resources/configs/password.properties");
-        brokerOptions.setConfigProperty("qpid.work_dir", Files.createTempDir().getAbsolutePath());
-        brokerOptions.setInitialConfigurationLocation(path);
 
-        broker.startup(brokerOptions);
+        final SystemLauncher systemLauncher = new SystemLauncher();
+        try {
+            systemLauncher.startup(createSystemConfig());
+        } finally {
+            systemLauncher.shutdown();
+        }
         isRunning = true;
     }
 
+    
     public void stopBroker() {
-        broker.shutdown();
+        systemLauncher.shutdown();
         isRunning = false;
     }
 }

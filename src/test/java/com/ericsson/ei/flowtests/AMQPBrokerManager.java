@@ -38,10 +38,13 @@ public class AMQPBrokerManager {
     
     public void startBroker() throws Exception {
 
-        final SystemLauncher systemLauncher = new SystemLauncher();
         try {
             systemLauncher.startup(createSystemConfig());
-        } finally {
+        }  catch (Exception e) {
+            System.out.println("ERROR: Create QPID System Config fail. Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        finally {
             systemLauncher.shutdown();
         }
         isRunning = true;

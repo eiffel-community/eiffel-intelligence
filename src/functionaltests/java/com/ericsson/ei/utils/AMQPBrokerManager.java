@@ -38,7 +38,6 @@ public class AMQPBrokerManager {
     
     public void startBroker() throws Exception {
 
-        final SystemLauncher systemLauncher = new SystemLauncher();
         try {
             systemLauncher.startup(createSystemConfig());
         } finally {

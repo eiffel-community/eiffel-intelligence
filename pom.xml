@@ -52,6 +52,10 @@
 
     <repositories>
         <repository>
+            <id>hortonworks.com</id>
+            <url>http://nexus-private.hortonworks.com:8081/nexus/content/groups/public</url>
+        </repository>
+        <repository>
             <id>jboss-public-repository-group</id>
             <name>JBoss Public Maven Repository Group</name>
             <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
@@ -273,9 +277,35 @@
         <dependency>
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker</artifactId>
-            <version>6.1.3</version>
+            <version>7.1.0</version>
             <scope>test</scope>
         </dependency>
+
+  <dependency>
+    <groupId>org.apache.qpid</groupId>
+    <artifactId>qpid-broker-core</artifactId>
+    <version>7.0.0</version>
+  </dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-management-http -->
+<dependency>
+    <groupId>org.apache.qpid</groupId>
+    <artifactId>qpid-broker-plugins-management-http</artifactId>
+    <version>7.1.0</version>
+    <scope>runtime</scope>
+</dependency>
+
+  <dependency>
+    <groupId>org.apache.qpid</groupId>
+    <artifactId>qpid-broker-plugins-amqp-1-0-protocol</artifactId>
+    <version>7.1.0</version>
+  </dependency>
+
+  <dependency>
+    <groupId>org.apache.qpid</groupId>
+    <artifactId>qpid-broker-plugins-memory-store</artifactId>
+    <version>7.1.0</version>
+  </dependency>
 
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>

@@ -40,6 +40,9 @@ public class AMQPBrokerManager {
 
         try {
             systemLauncher.startup(createSystemConfig());
+        } catch (Exception e) {
+            System.out.println("ERROR: Create QPID System Config fail. Error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             systemLauncher.shutdown();
         }

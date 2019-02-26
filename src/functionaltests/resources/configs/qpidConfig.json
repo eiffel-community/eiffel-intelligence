@@ -1,16 +1,17 @@
 {
   "name": "Embedded Broker",
-  "modelVersion": "7.0",
+  "modelVersion": "7.1",
   "authenticationproviders" : [ {
-    "name" : "Scram",
+    "name" : "passwordFile",
     "path" : "${qpid.pass_file}",
-    "type" : "PlainPasswordFile"
+    "type" : "PlainPasswordFile",
+    "secureOnlyMechanisms": []
   } ],
   "ports" : [  {
     "name" : "AMQP",
     "port" : "${qpid.amqp_port}",
     "protocols": [ "AMQP_0_9", "AMQP_0_9_1", "AMQP_1_0" ],
-    "authenticationProvider" : "Scram",
+    "authenticationProvider" : "passwordFile",
     "virtualhostaliases" : [ {
       "name" : "nameAlias",
       "type" : "nameAlias"
@@ -26,6 +27,6 @@
     "name" : "default",
     "type" : "Memory",
     "defaultVirtualHostNode" : "true",
-    "virtualHostInitialConfiguration" : "{\"type\": \"Memory\", \"nodeAutoCreationPolicies\": [{\"patterns\":\".*\",\"createdOnPublish\":\"true\",\"createdOnConsume\":\"true\",\"nodeType\":\"queue\",\"attributes\":{}}] }"
+    "virtualHostInitialConfiguration" : "{\"type\" : \"Memory\",\"name\" : \"default\",\"modelVersion\" : \"7.1\"}"
   }]
 }

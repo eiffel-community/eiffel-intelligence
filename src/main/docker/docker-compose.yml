@@ -1,6 +1,6 @@
 #################################################################################################
 #
-# Copyright 2018 Ericsson AB.
+# Copyright 2019 Ericsson AB.
 # For a full list of individual contributors, please see the commit history.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 ##################################################################################################
-# Eiffel Sandbox 
+# docker-compose commands 
 #
 # run:         docker-compose up         
 # stop:        docker-compose stop
@@ -27,7 +27,7 @@
 #     Unused Images:      docker images -q | xargs docker rmi
 #     Stopped containers: docker rm `docker ps -a -q` 
 #
-# Maintainer: michael.frick@ericsson.com
+# Maintainer: Eiffel-Community
 ##################################################################################################
 version: "2.1"
 services:
@@ -37,7 +37,7 @@ services:
     expose:
       - "27017"
     ports:
-      - "${MONGODB_PORT}:27017"
+      - "27017:27017"
     healthcheck: 
         test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
         interval: 30s
@@ -55,8 +55,8 @@ services:
       - "15672"
       - "5672"
     ports:
-      - "${RABBITMQ_WEB_PORT}:15672"
-      - "${RABBITMQ_AMQP_PORT}:5672"
+      - "15672:15672"
+      - "5672:5672"
     healthcheck:
         test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
         interval: 30s
@@ -77,7 +77,7 @@ services:
     expose:
       - "8080"
     ports:
-      - "${EIFFEL_ER_PORT}:8080"
+      - "8081:8080"
     depends_on:
       - rabbitmq
       - mongodb
@@ -124,47 +124,47 @@ services:
        - WAIT_MB_HOSTS=rabbitmq:15672
        - WAIT_DB_HOSTS=mongodb:27017
 
-  jenkins:
+  ei_backend:
     restart: always
-    image: bitnami/jenkins:2.138.3
+    image: eiffel-intelligence:0.0.19
     expose:
       - "8080"
     ports:
-      - "${JENKINS_PORT}:8080"
+      - "8080:8080"
     depends_on:
+      - mongodb
       - rabbitmq
-      - mongodb
-    environment:
-      - JENKINS_USERNAME=admin
-      - JENKINS_PASSWORD=admin
-#     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
-#     - DISABLE_JENKINS_INITIALIZATION=    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
-#     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
-
     networks:
           eiffel_2.0_1:
             aliases:
-              - jenkins
-
-  mail-server:
-    image: mailhog/mailhog
-    expose:
-     - "1025"
-     - "8025"
-    ports:
-     - "${MAIL_SMTP_PORT}:1025"
-     - "${MAIL_WEB_PORT}:8025"
-    depends_on:
-      - mongodb
-    environment:
-      MH_STORAGE: mongodb
-      MH_MONGO_URI: mongodb:27017
-      MH_MONGO_COLLECTION: messages
-      MH_MONGO_DB: mailhog 
-    networks:
-          eiffel_2.0_1:
-            aliases:
-              - mail-server
+              - ei_backend
+    environment:       # Overrides settings in application config file
+      - SpringApplicationName=ei-backend
+      - server.port=8080
+      - rules.path=src/main/resources/ArtifactRules_new.json
+      - rabbitmq.host=rabbitmq
+      - rabbitmq.port=5672
+      - rabbitmq.domainId=ei-domain
+      - rabbitmq.componentName=ei-backend
+      - rabbitmq.waitlist.queue.suffix=waitlist
+      - rabbitmq.exchange.name=ei-exchange
+      - rabbitmq.user=myuser
+      - rabbitmq.password=myuser
+      - spring.data.mongodb.host=mongodb
+      - spring.data.mongodb.port=27017
+      - spring.data.mongodb.database=eiffel2_intelligence
+      - missedNotificationDataBaseName=eiffel2_intelligence_MissedNotification
+      - search.query.prefix=object
+      - aggregated.object.name=aggregatedObject
+      - spring.mail.host=
+      - spring.mail.port=
+      - spring.mail.username=
+      - spring.mail.password=
+      - spring.mail.properties.mail.smtp.auth=false
+      - spring.mail.properties.mail.smtp.starttls.enable=false
+      - er.url=eiffel-er:8080
+      - WAIT_MB_HOSTS=rabbitmq:15672
+      - WAIT_DB_HOSTS=mongodb:27017
 
 networks:
   eiffel_2.0_1:

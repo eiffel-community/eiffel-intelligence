@@ -6,7 +6,7 @@ flow of EI to perform the above-mentioned tasks. In the following text, we go
 through a flow test step-by-step.
 
 We will use the rules for aggregating a so called Artifact object using the 
-rules defined [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/ArtifactRules_new.json).
+rules defined [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/ArtifactRules.json).
 
 The types of the events to be aggregated will be:
 * EiffelArtifactCreatedEvent

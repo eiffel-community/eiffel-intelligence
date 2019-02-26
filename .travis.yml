@@ -8,33 +8,59 @@ services:
 jdk:
   - oraclejdk8
 
+# Run before every job
 before_install:
   - uname -a
   - chmod +x pom.xml
 
-script:
-# since we run parallel tests using embedded mongodb in fresh environment all tests run first in parallel
-# will try to download the embedded mongo to this travis instance but the late ones will fail to write.
-# We will therefore run one test using mongodb first that will download the mongo instance and
-# then the rest of the test that will no longer need to download the embedded mongo since it will exist.
-#
-# It is also important that the first test to be run is a Spring Boot Test since spring boot also downloads
-# another version of embedded mongo db so all Spring Boot tests will end up in a race condition also
-  -  source docker-env.bash
-  -  docker-compose up -d
-  -  mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
-  -  mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
-  -  mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
 
+# This is only run before integrationTests job
+# To ensure docker containers are fully up and running we sleep 20s
+before_script:
+  - source docker-env.bash
+  - docker-compose up -d
+  - sleep 60
+
+
+# Generate site documentation using mvn site plugin
 before_deploy:
   - rm -rf docs
   - mvn site -B
-  - mvn clean -B
 
-deploy:
-  skip_cleanup: true
-  provider: pages
-  github-token: $GITHUB_TOKEN
-  local_dir: docs/
-  on:
-    branch: master
+
+# Using default stage 'test' for all our test jobs, and only running deploy stage
+# (after merge) to master branch
+stages:
+  - test
+  - name: deploy
+    if: branch = master
+
+
+# List of jobs to run, tied to specific stages
+jobs:
+  include:
+    - stage: test
+      name: functionalTests
+      before_script: skip
+      script:
+        # We will run one test using embedded mongodb first that will download the mongo instance and
+        # then the rest of the test that will no longer need to download the embedded mongo since it will exist.
+        #
+        # Also important that the first test to be run is a Spring Boot Test since spring boot also downloads
+        # another version of embedded mongo db to avoid race conditions between Spring Boot tests
+        - mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
+        - mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
+    - stage: test
+      name: integrationTests
+      script:
+        - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
+    - stage: deploy
+      name: deployGitHubPages
+      before_script: skip   # do not run this on deploy
+      script: skip          # do not run default test scripts
+      install: skip         # do not run default mvn install
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github-token: $GITHUB_TOKEN
+        local_dir: docs/

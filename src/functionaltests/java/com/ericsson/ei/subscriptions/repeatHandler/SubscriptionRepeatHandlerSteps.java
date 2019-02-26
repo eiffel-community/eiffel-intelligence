@@ -80,7 +80,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Autowired
     private RunSubscription runSubscription;
 
-    @Before("@SubscriptionRepeatTrue, @SubscriptionRepeatFalse")
+    @Before("@SubscriptionRepeatTrue or @SubscriptionRepeatFalse")
     public void beforeScenario() throws IOException, JSONException {
         assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName,
                 eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));

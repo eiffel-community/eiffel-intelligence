@@ -1,13 +1,14 @@
-FROM fabric8/java-jboss-openjdk8-jdk:1.2
+FROM tomcat:8.0-jre8
 MAINTAINER Eiffel-Community
-USER root
-ENV JAVA_APP_DIR=/deployments
-ENV JAVA_APP_JAR=eiffel-intelligence.war
-EXPOSE 8091 8778 9779
+
+ARG URL
+RUN echo Building Eiffel-Intelligence image based on artifact url: ${URL}
 
 # Create image with existing war file. User need to execute 'mvn package -DskipTest' before 'docker build'
-COPY ./target/eiffel-intelligence-*.war /deployments/eiffel-intelligence.war
+RUN ["rm", "-fr", "/usr/local/tomcat/webapps/ROOT"]
+ADD ./src/main/docker/health-check.sh  /eiffel/health-check.sh
+ADD ./src/main/docker/start-service.sh /eiffel/start-service.sh
+ADD ${URL} /usr/local/tomcat/webapps/ROOT.war
 
-CMD /deployments/run-java.sh
 
-
+CMD ["/eiffel/start-service.sh"]

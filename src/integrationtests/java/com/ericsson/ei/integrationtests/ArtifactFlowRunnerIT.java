@@ -2,7 +2,6 @@ package com.ericsson.ei.integrationtests;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.TestPropertySource;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
@@ -22,7 +21,7 @@ public class ArtifactFlowRunnerIT {
         System.setProperty("missedNotificationCollectionName", "missed_notification_artifact_flow");
         System.setProperty("sessions.collection.name", "sessions_artifact_flow");
 
-        System.setProperty("rules.path", "/ArtifactRules_new.json");
+        System.setProperty("rules.path", "/ArtifactRules.json");
         System.setProperty("rabbitmq.consumerName", "artifact_queue");
     }
 }

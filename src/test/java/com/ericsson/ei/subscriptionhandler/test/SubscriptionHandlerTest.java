@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -58,7 +59,7 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.subscriptionhandler.InformSubscriber;
 import com.ericsson.ei.subscriptionhandler.RunSubscription;
 import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SpringRestTemplate;
+import com.ericsson.ei.subscriptionhandler.SendHttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -113,13 +114,13 @@ public class SubscriptionHandlerTest {
     private static String subscriptionForMapNotification;
 
     @Autowired
-    private InformSubscriber subscription;
+    private InformSubscriber informSubscriber;
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private SpringRestTemplate springRestTemplate;
+    private SendHttpRequest springRestTemplate;
 
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
@@ -140,7 +141,7 @@ public class SubscriptionHandlerTest {
         aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
         aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification),
                 "UTF-8");
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+
         artifactRequirementSubscriptionData = FileUtils.readFileToString(new File(artifactRequirementSubscriptionPath),
                 "UTF-8");
         subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
@@ -149,7 +150,8 @@ public class SubscriptionHandlerTest {
         subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath),
                 "UTF-8");
 
-        url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "");
+        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+        url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "").replaceAll("'", "");
         urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta")
                 .replaceAll(regex, "");
 
@@ -236,7 +238,7 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void missedNotificationTest() throws Exception {
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
+        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dbName, collectionName);
         Iterator<String> itr = outputDoc.iterator();
         String data = itr.next().toString();
@@ -260,24 +262,42 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testRestPostTrigger() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(statusOk);
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        verify(springRestTemplate, times(1)).postDataMultiValue(url, mapNotificationMessage(subscriptionData), headersWithoutAuth);
+        JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
+
+        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
+        String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
+        String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
+
+        // Notify subscriber using url with jmes path
+        subscriptionDataJson.put("notificationMeta", urlWithJmesPath);
+        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
+
+        // Remove ' from url since JMESPATH does this
+        urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
+
+        // Create expected extraction
+        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
+
+        // Verify that springRestTemplate was called with the correct url and
+        // extracted data
+        verify(springRestTemplate, times(1)).postDataMultiValue(
+                urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
+                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(statusOk);
+        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
         when(springRestTemplate.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
+        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
         verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
                 mapNotificationMessage(subscriptionDataForAuthorization), headersWithAuth);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws Exception {
-        subscription.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
+        informSubscriber.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
         verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headersWithoutAuth);
         assertFalse(mongoDBHandler.getAllDocuments(dbName, collectionName).isEmpty());
@@ -287,7 +307,7 @@ public class SubscriptionHandlerTest {
     public void testQueryMissedNotificationEndPoint() throws Exception {
         String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(regex, "");
         JSONObject input = new JSONObject(aggregatedObject);
-        subscription.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
+        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         MvcResult result = mockMvc
                 .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
                 .andReturn();
@@ -300,7 +320,7 @@ public class SubscriptionHandlerTest {
 
     @Test
     public void testMapNotificationMessage() throws Exception {
-        MultiValueMap<String, String> actual = invokeMethod(subscription, "mapNotificationMessage",
+        MultiValueMap<String, String> actual = invokeMethod(informSubscriber, "mapNotificationMessage",
                 aggregatedObjectMapNotification, mapper.readTree(subscriptionForMapNotification));
         MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
         expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
@@ -324,7 +344,7 @@ public class SubscriptionHandlerTest {
         return mapNotificationMessage;
     }
 
-    private static ResponseEntity<String> createResponseEntity (String body, HttpStatus httpStatus) {
+    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
         return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
     }
 }

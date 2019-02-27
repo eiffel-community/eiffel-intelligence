@@ -36,7 +36,7 @@ public class TestConfigs {
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), Integer.toString(port));
+        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
 
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
         amqpBroker.startBroker();

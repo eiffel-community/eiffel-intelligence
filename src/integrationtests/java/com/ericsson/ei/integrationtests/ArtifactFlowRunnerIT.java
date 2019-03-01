@@ -2,7 +2,6 @@ package com.ericsson.ei.integrationtests;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.TestPropertySource;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;

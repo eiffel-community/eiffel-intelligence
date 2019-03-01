@@ -52,6 +52,10 @@
 
     <repositories>
         <repository>
+            <id>hortonworks.com</id>
+            <url>http://nexus-private.hortonworks.com:8081/nexus/content/groups/public</url>
+        </repository>
+        <repository>
             <id>jboss-public-repository-group</id>
             <name>JBoss Public Maven Repository Group</name>
             <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
@@ -63,6 +67,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.eiffel-community</groupId>
+            <artifactId>eiffel-commons</artifactId>
+            <version>0.0.4</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -273,8 +283,34 @@
         <dependency>
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker</artifactId>
-            <version>6.1.3</version>
+            <version>7.1.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-broker-core</artifactId>
+            <version>7.1.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-management-http -->
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-broker-plugins-management-http</artifactId>
+            <version>7.1.0</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-broker-plugins-amqp-1-0-protocol</artifactId>
+            <version>7.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-broker-plugins-memory-store</artifactId>
+            <version>7.1.0</version>
         </dependency>
 
         <dependency>
@@ -358,7 +394,7 @@
                 <version>${springBootVersion}</version>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -452,37 +488,37 @@
             </plugin>
 
             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-failsafe-plugin</artifactId>
-                 <version>2.22.0</version>
-                 <executions>
-                     <execution>
-                         <id>integration-test</id>
-                         <goals>
-                             <goal>integration-test</goal>
-                             <goal>verify</goal>
-                         </goals>
-                         <phase>integration-test</phase>
-                     </execution>
-                 </executions>
-                 <configuration>
-                     <forkCount>3</forkCount>
-                     <reuseForks>false</reuseForks>
-                     <skipTests>${skipTests}</skipTests>
-                     <skipITs>${skipITs}</skipITs>
-                     <systemPropertyVariables>
-                         <systemTest>true</systemTest>
-                         <er.url>http://localhost:8080/eventrepository/search/</er.url>
-                     </systemPropertyVariables>
-                     <excludes>
-                         <exclude>**/test/*</exclude>
-                         <exclude>**/functionaltests/*</exclude>
-                     </excludes>
-                      <additionalClasspathElements>
-                         <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                     </additionalClasspathElements>
-                 </configuration>
-              </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <forkCount>3</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <skipTests>${skipTests}</skipTests>
+                    <skipITs>${skipITs}</skipITs>
+                    <systemPropertyVariables>
+                        <systemTest>true</systemTest>
+                        <er.url>http://localhost:8080/eventrepository/search/</er.url>
+                    </systemPropertyVariables>
+                    <excludes>
+                        <exclude>**/test/*</exclude>
+                        <exclude>**/functionaltests/*</exclude>
+                    </excludes>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -505,8 +541,8 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <!-- site plugin requires all resources to exist within
-                                resources/ directory -->
+                            <!-- site plugin requires all resources to exist 
+                                within resources/ directory -->
                             <!-- but we don't want to break links in documentation -->
                             <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
                             <resources>
@@ -529,7 +565,7 @@
                 <configuration>
                     <!-- This is where site.xml is located -->
                     <siteDirectory>${basedir}/wiki</siteDirectory>
-                    <!-- Github pages only generates documentation from docs
+                    <!-- Github pages only generates documentation from docs 
                         directory -->
                     <outputDirectory>${basedir}/docs</outputDirectory>
                 </configuration>

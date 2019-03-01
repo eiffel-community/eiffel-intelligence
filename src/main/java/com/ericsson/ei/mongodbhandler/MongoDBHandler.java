@@ -120,11 +120,10 @@ public class MongoDBHandler {
                     result.add(JSON.serialize(document));
                 });
                 if (result.size() != 0) {
+                    // This will pass about 10 times/second and most of the times DB will be empty,
+                    // this is normal, no need to log
                     log.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " fetched No of :" + result.size());
-                } else {
-                    log.debug("getAllDocuments() :: database: " + dataBaseName + "and collection: " + collectionName
-                            + " documents are not found");
                 }
             }
         } catch (Exception e) {
@@ -171,8 +170,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the lock
-     * in one query. Lock is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock in one query. Lock
+     * is needed for multi process execution
      *
      * @param dataBaseName
      * @param collectionName
@@ -199,9 +198,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the input
-     * condition in one query. Lock is needed for multi process execution. This
-     * method is executed in a loop.
+     * This method is used for lock and return the document that matches the input condition in one
+     * query. Lock is needed for multi process execution. This method is executed in a loop.
      *
      * @param dataBaseName
      * @param collectionName
@@ -229,8 +227,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the delete documents from collection using a
-     * condition
+     * This method is used for the delete documents from collection using a condition
      *
      * @param dataBaseName
      * @param collectionName

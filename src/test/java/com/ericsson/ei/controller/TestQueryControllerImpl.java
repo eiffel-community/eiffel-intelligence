@@ -19,7 +19,7 @@ package com.ericsson.ei.controller;
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 
-import org.apache.qpid.util.FileUtils;
+import org.apache.qpid.server.util.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;

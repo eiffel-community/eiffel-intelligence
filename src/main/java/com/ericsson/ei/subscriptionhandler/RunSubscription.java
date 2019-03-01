@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
@@ -64,18 +63,9 @@ public class RunSubscription {
         boolean conditionFulfilled = false;
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
-
         int requirementIndex = 0;
 
         while (requirementIterator.hasNext()) {
-
-            JsonNode aggrObjJsonNode = null;
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                aggrObjJsonNode = objectMapper.readValue(aggregatedObject, JsonNode.class);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
 
             String subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();

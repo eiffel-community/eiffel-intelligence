@@ -26,6 +26,7 @@ import com.mongodb.BasicDBObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,6 @@ public class SubscriptionRepeatDbHandler {
 
         if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
             LOGGER.error("Couldn't update SubscriptionMathced id.");
-        } else {
             LOGGER.debug(
                     "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
             BasicDBObject document = new BasicDBObject();
@@ -120,17 +120,17 @@ public class SubscriptionRepeatDbHandler {
     private boolean updateExistingMatchedSubscriptionWithAggrObjId(String subscriptionId, int requirementId,
             String aggrObjId) throws Exception {
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-
         JsonNode updateDocJsonNode = mapper.readValue(
                 "{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
-
-        LOGGER.debug("SubscriptionId \"", subscriptionId,
+        LOGGER.debug("SubscriptionId \"", subscriptionId +
                 "\" document will be updated with following requirement update object: "
                         + updateDocJsonNode.toString());
 
         JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
+        
+        Document document = null;
         try {
-            mongoDbHandler.findAndModify(dataBaseName, collectionName, queryJsonNode.toString(),
+            document = mongoDbHandler.findAndModify(dataBaseName, collectionName, queryJsonNode.toString(),
                     updateDocJsonNode.toString());
         } catch (Exception e) {
             LOGGER.debug("Failed to update existing matched SubscriptionId with new AggrId." + "SubscriptionId: "
@@ -138,7 +138,15 @@ public class SubscriptionRepeatDbHandler {
                     + requirementId);
             return false;
         }
-        return true;
+        if (document != null && !document.isEmpty()) {
+            LOGGER.debug("Successfully updated Matched Subscription Aggregated Object list:" +
+                         "\nfor subsruptionId: " + subscriptionId +
+                         "\nwith Aggregated Object Id: " + aggrObjId +
+                         "\nwith matched Requirement Id: " + requirementId);
+            
+            return true;
+        }
+        return false;
     }
 
     public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, int requirementId,
@@ -153,7 +161,7 @@ public class SubscriptionRepeatDbHandler {
             try {
                 JsonNode jNode = mapper.readTree(objArray.get(0));
                 if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
-                    LOGGER.debug("SubscriptionId \"", subscriptionId,
+                    LOGGER.debug("SubscriptionId \"" + subscriptionId +
                             "\" , exist in document. Checking if AggrObjId has matched earlier.");
 
                     LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n"
@@ -161,10 +169,10 @@ public class SubscriptionRepeatDbHandler {
 
                     boolean triggered = checkRequirementIdTriggered(jNode, requirementId, aggrObjId);
 
-                    if (!triggered)
+                    if (!triggered) {
                         LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
                                 + "\nhas not matched any AggregatedObject.");
-
+                    }
                     return triggered;
                 }
             } catch (Exception e) {
@@ -189,8 +197,7 @@ public class SubscriptionRepeatDbHandler {
             return false;
         }
 
-        String idStr = listAggrObjIds.get(requirementId);
-        if (idStr.equals(aggrObjId)) {
+        if (listAggrObjIds.contains(aggrObjId)) {
             LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
             return true;
         }

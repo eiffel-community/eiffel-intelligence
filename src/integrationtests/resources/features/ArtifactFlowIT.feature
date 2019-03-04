@@ -23,7 +23,7 @@ Feature: Artifact flow Integrationtest
     on mail subscriptions
 
     # Setup Eiffel Intelligence
-    Given the rules "src/test/resources/ArtifactRules.json"
+    Given the rules "src/main/resources/ArtifactRules.json"
     And the events "src/test/resources/ArtifactFlowTestEvents.json"
     And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     And the upstream input "src/test/resources/upStreamInput.json"

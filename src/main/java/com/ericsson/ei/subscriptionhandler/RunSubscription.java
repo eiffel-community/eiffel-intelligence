@@ -70,10 +70,6 @@ public class RunSubscription {
             String subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
 
-            if (subscriptionName.equals("Subscription_Rest_Params_in_Head")) {
-                int breakIt = 1;
-            }
-
             if (id == null) {
                 LOGGER.error(
                         "ID has not been passed for given aggregated object. The subscription will be triggered again.");

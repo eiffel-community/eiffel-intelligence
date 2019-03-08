@@ -146,6 +146,24 @@ services:
             aliases:
               - jenkins
 
+  elasticsearch:
+    restart: always
+    image: bitnami/elasticsearch:6.6.1
+    expose:
+      - "8080"
+    ports:
+      - "${ELASTICSEARCH_PORT}:8080"
+    depends_on:
+      - mongodb
+    environment:
+      - JENKINS_USERNAME=admin
+      - JENKINS_PASSWORD=admin
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - jenkins
+
   mail-server:
     image: mailhog/mailhog
     expose:

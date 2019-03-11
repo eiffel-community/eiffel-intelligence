@@ -16,16 +16,16 @@
 */
 package com.ericsson.ei.subscriptionhandler;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
@@ -75,13 +75,14 @@ public class RunSubscription {
                         "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
 
-            if (subscriptionRepeatFlag == "false" && id != null && subscriptionRepeatDbHandler
-                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id)) {
+            if (subscriptionRepeatFlag == "false" && id != null
+                    && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
+                            subscriptionName, requirementIndex, id)) {
                 LOGGER.info("Subscription has already matched with AggregatedObject Id: " + id + "\nSubscriptionName: "
                         + subscriptionName + "\nand has Subscrption Repeat flag set to: " + subscriptionRepeatFlag);
                 break;
             }
-            
+
             JsonNode requirement = requirementIterator.next();
 
             LOGGER.info("The fulfilled requirement which condition will check is : " + requirement.toString());

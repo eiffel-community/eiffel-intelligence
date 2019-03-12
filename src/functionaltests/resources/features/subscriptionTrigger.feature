@@ -27,3 +27,5 @@ Feature: Subscription trigger test
     And Wait for EI to aggregate objects and trigger subscriptions
     Then Mail subscriptions were triggered 
     And Rest subscriptions were triggered
+    And I send one previous event again
+    And No subscription is retriggered

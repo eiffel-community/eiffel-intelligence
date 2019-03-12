@@ -153,13 +153,33 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
+        restSubscriptionsTriggered(1);
+        // clean mock server information about requests
+        mockClient.reset();
+    }
+
+    @When("^I send one previous event again$")
+    public void send_one_previous_event() throws Throwable {
+        List<String> eventNamesToSend = new ArrayList<>();
+        eventNamesToSend.add("event_EiffelArtifactCreatedEvent_3");
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
+    }
+
+    @When("^No subscription is retriggered$")
+    public void no_subscription_is_retriggered() throws Throwable {
+        restSubscriptionsTriggered(0);
+    }
+
+    private void restSubscriptionsTriggered(int times) throws Throwable {
         LOGGER.debug("Verifying REST requests.");
         List<String> endpointsToCheck = new ArrayList<>(Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
                 REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS, REST_ENDPOINT_ROW_BODY));
 
-        assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, 1));
-        for (String endpoint : endpointsToCheck) {
-            assert (requestBodyContainsStatedValues(endpoint));
+        assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, times));
+        if (times > 0) {
+            for (String endpoint : endpointsToCheck) {
+                assert (requestBodyContainsStatedValues(endpoint));
+            }
         }
     }
 
@@ -233,7 +253,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         while (!endpointsToCheck.isEmpty() && stopTime > System.currentTimeMillis()) {
             for (String endpoint : endpoints) {
                 String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
-                if ((new JSONArray(restBodyData)).length() >= expectedCalls) {
+                int actualRestCalls = new JSONArray(restBodyData).length();
+                if (actualRestCalls >= expectedCalls) {
                     endpointsToCheck.remove(endpoint);
                 }
             }

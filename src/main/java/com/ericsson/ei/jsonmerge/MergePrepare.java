@@ -45,14 +45,14 @@ public class MergePrepare {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MergePrepare.class);
+    static Logger log = LoggerFactory.getLogger(MergePrepare.class);
 
     public String getValueFromRule(String mergeRule) {
         String ruleValue = "";
         try {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             if (ruleJSONObject.keys().hasNext()) {
-                String ruleKey = (String) ruleJSONObject.keys().next();
+                String ruleKey = ruleJSONObject.keys().next();
                 Object value = ruleJSONObject.get(ruleKey);
                 if (value.getClass() == JSONObject.class)
                     return getValueFromRule(value.toString());
@@ -107,24 +107,25 @@ public class MergePrepare {
         return str;
     }
 
+    /**
+     * Returns the common start string from 2 strings
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
     public static String longestCommonSubstring(String s1, String s2) {
-        int start = 0;
-        int max = 0;
-        for (int i = 0; i < s1.length(); i++) {
-            for (int j = 0; j < s2.length(); j++) {
-                int x = 0;
-                while (s1.charAt(i + x) == s2.charAt(j + x)) {
-                    x++;
-                    if (((i + x) >= s1.length()) || ((j + x) >= s2.length()))
-                        break;
-                }
-                if (x > max) {
-                    max = x;
-                    start = i;
-                }
+        String commonString = "";
+        int charIndex = 0;
+        while (s1.length() > charIndex && s2.length() > charIndex) {
+            if (s1.charAt(charIndex) == s2.charAt(charIndex)) {
+                commonString = commonString + s1.charAt(charIndex);
+            } else {
+                break;
             }
+            charIndex++;
         }
-        return s1.substring(start, (start + max));
+        return commonString;
     }
 
     // TODO fix so that we do not need to pass both originObject and
@@ -346,9 +347,9 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in the
-     * path before doing the check.
-     * 
+     * This method can not be generalized since it removes the last element in the path before doing the
+     * check.
+     *
      * @param originObject
      * @param path
      * @param targetObject
@@ -364,9 +365,9 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in the
-     * path before doing the check.
-     * 
+     * This method can not be generalized since it removes the last element in the path before doing the
+     * check.
+     *
      * @param originObject
      * @param path
      * @param targetObject

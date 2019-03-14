@@ -117,14 +117,11 @@ public class SubscriptionService implements ISubscriptionService {
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
             String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-
             boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-            if (ownerExist) {
-                query = generateQuery(subscriptionName, ldapUserName);
-            } else {
-                query = generateQuery(subscriptionName, "");
+            if (!ownerExist) {
+                ldapUserName = "";
             }
-
+            query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
@@ -146,14 +143,11 @@ public class SubscriptionService implements ISubscriptionService {
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
         String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-        String deleteQuery;
         boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-        if (ownerExist) {
-            deleteQuery = generateQuery(subscriptionName, ldapUserName);
-        } else {
-            deleteQuery = generateQuery(subscriptionName, "");
+        if (!ownerExist) {
+            ldapUserName = "";
         }
-
+        String deleteQuery = generateQuery(subscriptionName, ldapUserName);
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
@@ -210,17 +204,15 @@ public class SubscriptionService implements ISubscriptionService {
      *            name of the current user
      * @return a String object
      */
-
     private String generateQuery(String subscriptionName, String ldapUserName) {
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (!ldapUserName.isEmpty()) {
+        if (!ldapUserName.isEmpty() && ldapUserName != null) {
             String queryUser = String.format(USER_NAME, ldapUserName);
             String queryTemp = query + "," + queryUser;
             query = String.format(AND, queryTemp);
         }
         return query;
     }
-
 
     /**
      * This method finds whether a given subscription has an owner
@@ -230,7 +222,6 @@ public class SubscriptionService implements ISubscriptionService {
      * @return a boolean
      * @throws SubscriptionNotFoundException
      */
-
     private boolean doSubscriptionOwnerExist(String subscriptionName) {
         boolean ownerExist = true;
         try {

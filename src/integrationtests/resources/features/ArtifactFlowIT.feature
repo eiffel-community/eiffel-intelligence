@@ -31,7 +31,6 @@ Feature: Artifact flow Integrationtest
     # Setup subscription
     Given subscription object for "MAIL" with name "MailTestSubscription" is created
     When notification meta "some.cool.email@ericsson.com" is set in subscription
-    And rest post body media type is set to "crazy-pinguin" is set in subscription
     And paremeter form key "" and form value "to_string(@)" is added in subscription
     And condition "id=='aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" at requirement index '0' is added in subscription
     Then subscription is uploaded

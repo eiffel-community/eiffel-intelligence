@@ -66,5 +66,5 @@
              "type":"string"
           }
        },       
-       "required": ["notificationMeta", "notificationType","restPostBodyMediaType", "subscriptionName", "requirements"]
+       "required": ["notificationMeta", "notificationType", "subscriptionName", "requirements"]
  }

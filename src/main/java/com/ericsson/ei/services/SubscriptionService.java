@@ -206,7 +206,7 @@ public class SubscriptionService implements ISubscriptionService {
      */
     private String generateQuery(String subscriptionName, String ldapUserName) {
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (!ldapUserName.isEmpty() && ldapUserName != null) {
+        if (ldapUserName != null && !ldapUserName.isEmpty()) {
             String queryUser = String.format(USER_NAME, ldapUserName);
             String queryTemp = query + "," + queryUser;
             query = String.format(AND, queryTemp);
@@ -223,11 +223,11 @@ public class SubscriptionService implements ISubscriptionService {
      * @throws SubscriptionNotFoundException
      */
     private boolean doSubscriptionOwnerExist(String subscriptionName) {
-        boolean ownerExist = true;
+        boolean ownerExist = false;
         try {
-            if (getSubscription(subscriptionName).getLdapUserName()
+            if (!getSubscription(subscriptionName).getLdapUserName()
                                                  .isEmpty()) {
-                ownerExist = false;
+                ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getMessage());

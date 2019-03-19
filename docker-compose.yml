@@ -148,21 +148,70 @@ services:
 
   elasticsearch:
     restart: always
-    image: bitnami/elasticsearch:6.6.1
-    expose:
-      - "8080"
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
     ports:
-      - "${ELASTICSEARCH_PORT}:8080"
+      - "${ELASTICSEARCH_PORT1}:9200"
+      - "${ELASTICSEARCH_PORT2}:9300"
     depends_on:
       - mongodb
     environment:
-      - JENKINS_USERNAME=admin
-      - JENKINS_PASSWORD=admin
+      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+      - discovery.type=single-node
+    healthcheck:
+      test: "wget -q -O - http://localhost:9200/_cat/health"
+      interval: 1s
+      timeout: 30s
+      retries: 300
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
 
     networks:
           eiffel_2.0_1:
             aliases:
-              - jenkins
+              - elasticsearch
+              
+  kibana:
+    restart: always
+    image: docker.elastic.co/kibana/kibana:6.2.4
+    expose:
+      - "8080"
+    ports:
+      - "${KIBANA_PORT}:8080"
+    depends_on:
+      - elasticsearch
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_NAME=kibana.example.org
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - kibana
+
+## monstache is used to sync from mongodb to elasticsearch using oplog in mongodb
+  monstache:
+    restart: always
+    image: rwynn/monstache:4.15.1
+    expose:
+      - "8080"
+    ports:
+      - "${MONSTACHE_PORT}:8080"
+    depends_on:
+      - mongodb
+      - elasticsearch
+    environment:
+      - MONSTACHE_MONGO_URL=mongodb:27017
+      - MONSTACHE_ES_URLS=http://elasticsearch:9200
+    links:
+      - elasticsearch
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - monstache
 
   mail-server:
     image: mailhog/mailhog

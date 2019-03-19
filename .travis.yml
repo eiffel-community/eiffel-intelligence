@@ -17,6 +17,7 @@ before_install:
 # This is only run before integrationTests job
 # To ensure docker containers are fully up and running we sleep 20s
 before_script:
+  - cd src/main/docker/
   - source docker-env.bash
   - docker-compose up -d
   - sleep 60

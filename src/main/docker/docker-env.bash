@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 export MONGODB_PORT=27017
 export RABBITMQ_AMQP_PORT=5672
 export RABBITMQ_WEB_PORT=15672

@@ -22,8 +22,10 @@ environment for running the integration tests on EI backend. It also includes
 an Eiffel Intelligence backend pre-configured. It is possible to start up Eiffel
 Intelligence backend also in this environment, to try ou local changes. Just
 replace the docker image for ei-backend service with your locally built one.
+Update image versions or ports in src/main/docker/env.bash.
 
 Standing in the root directory, run the below command to set up environment:
 
+  source src/main/docker/env.bash
   docker-compose -f src/main/docker/docker-compose.yml up -d
 

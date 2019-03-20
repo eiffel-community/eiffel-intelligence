@@ -124,6 +124,7 @@ services:
        - WAIT_MB_HOSTS=rabbitmq:15672
        - WAIT_DB_HOSTS=mongodb:27017
 
+
   jenkins:
     restart: always
     image: bitnami/jenkins:2.138.3
@@ -140,11 +141,11 @@ services:
       #     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
       #     - DISABLE_JENKINS_INITIALIZATION=    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
       #     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - jenkins
 
-      networks:
-        eiffel_2.0_1:
-          aliases:
-            - jenkins
 
   mail-server:
     image: mailhog/mailhog
@@ -207,6 +208,7 @@ services:
       - er.url=eiffel-er:8080/search/
       - WAIT_MB_HOSTS=rabbitmq:15672
       - WAIT_DB_HOSTS=mongodb:27017
+
 
 networks:
   eiffel_2.0_1:

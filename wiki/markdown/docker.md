@@ -92,15 +92,9 @@ This docker-compose file includes these components, [docker-compose.yml](https:/
 - ei-backend (Using the local EI-Backend Docker image built from previous steps)
 
 If you have used a different image tag when you build the EI Backend docker image,
-then you need to update docker-compose.yml file.
-
-This line need to changed, in ei_backend service section:
-
-"image: eiffel-intelligence:1.0.1"
-
-To:
-
-"image: \<your image tag\>"
+then you need to update which image to use in [src/main/docker/env.bash](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/docker/env.bash) file.
+The variable EI_BACKEND_IMAGE needs to be updated to the value of your
+recently built image: "eiffel-intelligence:1.0.1".
 
 Then run following docker-compose command to startup all components:
 

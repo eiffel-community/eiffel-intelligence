@@ -18,7 +18,7 @@ before_install:
 # To ensure docker containers are fully up and running we sleep 20s
 before_script:
   - cd src/main/docker/
-  - source docker-env.bash
+  - source env.bash
   - docker-compose up -d
   - sleep 60
   - cd ../../../

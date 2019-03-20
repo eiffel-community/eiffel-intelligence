@@ -19,7 +19,9 @@ docker build -t eiffel-intelligence-backend --build-arg URL=./${EIFFEL_WAR} -f s
 
 The docker-compose file in this directory can be used to set up the proper
 environment for running the integration tests on EI backend. It also includes
-an Eiffel Intelligence backend pre-configured.
+an Eiffel Intelligence backend pre-configured. It is possible to start up Eiffel
+Intelligence backend also in this environment, to try ou local changes. Just
+replace the docker image for ei-backend service with your locally built one.
 
 Standing in the root directory, run the below command to set up environment:
 

@@ -169,7 +169,7 @@ services:
 
   ei-backend:
     restart: always
-    image: eiffel-intelligence-backend:1.0.1
+    image: eiffelericsson/eiffel-intelligence-backend:1.0.1
     expose:
       - "8080"
     ports:

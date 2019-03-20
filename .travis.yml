@@ -21,6 +21,7 @@ before_script:
   - source docker-env.bash
   - docker-compose up -d
   - sleep 60
+  - cd ../../../
 
 
 # Generate site documentation using mvn site plugin

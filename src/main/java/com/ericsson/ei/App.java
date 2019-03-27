@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -31,11 +32,17 @@ import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.ericsson.ei.config.CheckEIConfigurations;
+import com.ericsson.ei.rules.RulesHandler;
+
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
 public class App extends SpringBootServletInitializer {
-
+    
+    @Autowired
+    private CheckEIConfigurations checkEIConfigurations;
+    
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(App.class);

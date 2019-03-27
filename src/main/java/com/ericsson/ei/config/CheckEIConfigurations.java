@@ -89,7 +89,7 @@ public class CheckEIConfigurations {
         } catch (IOException e) {
             LOGGER.debug("Rules file can't be loaded/read. RuleFile path: " +  rulePath, e.getMessage(), e);
         } finally {
-            LOGGER.debug("Rules file path check performed succesffully, Rule File: " + rulePath);
+            LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
         }
     }
 }

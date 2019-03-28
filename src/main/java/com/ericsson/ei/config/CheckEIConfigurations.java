@@ -22,7 +22,7 @@ public class CheckEIConfigurations {
     Environment env;
     
     @PostConstruct
-    public void logCofiguration() {
+    public void logAndCheckConfiguration() {
         
         String rulePath = env.getProperty("rules.path");
         
@@ -86,8 +86,8 @@ public class CheckEIConfigurations {
         
         try {
             new RulesHandler().readRuleFileContent(rulePath);
-        } catch (IOException e) {
-            LOGGER.debug("Rules file can't be loaded/read. RuleFile path: " +  rulePath, e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());
         } finally {
             LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
         }

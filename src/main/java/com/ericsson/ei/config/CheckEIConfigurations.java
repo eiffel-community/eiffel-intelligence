@@ -82,7 +82,7 @@ public class CheckEIConfigurations {
                 + "logging.level.root: " + env.getProperty("logging.level.root") + "\n"
                 + "logging.level.org.springframework.web: " + env.getProperty("logging.level.org.springframework.web") + "\n"
                 + "logging.level.com.ericsson.ei: " + env.getProperty("logging.level.com.ericsson.ei") + "\n"
-                + "\nThese properties is only some of the configuraitons, more configurations can have been provided.\n");
+                + "\nThese properties are only some of the configuraitons, more configurations could have been provided.\n");
         
         try {
             new RulesHandler().readRuleFileContent(rulePath);

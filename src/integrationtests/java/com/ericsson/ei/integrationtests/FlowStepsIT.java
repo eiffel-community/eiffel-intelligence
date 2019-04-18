@@ -248,7 +248,6 @@ public class FlowStepsIT extends IntegrationTestBase {
                 JsonNode to = newestMailJson.get("to");
                 assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
 
-
                 String createdDate = newestMailJson.get("created")
                                                    .get("$date")
                                                    .asText();

@@ -17,14 +17,14 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id == 'TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -48,14 +48,14 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id == 'TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -84,7 +84,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
@@ -92,7 +92,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -120,7 +120,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
@@ -128,7 +128,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -146,14 +146,14 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
       },
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -171,7 +171,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
@@ -179,7 +179,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }
@@ -203,7 +203,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
 
@@ -211,7 +211,7 @@
       {
         "type": "ARTIFACT_1",
         "conditions": [
-          {"jmespath": "gav.groupId=='com.mycompany.myproduct'"},
+          {"jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"},
           {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
         ]
       }

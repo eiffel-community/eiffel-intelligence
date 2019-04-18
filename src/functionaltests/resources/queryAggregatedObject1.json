@@ -7,6 +7,7 @@
         "object.testCaseExecutions.outcome.id":"TC6"
       }
     ],
-    "object.gav.groupId":"com.mycompany.myproduct"
+    "object.gav.groupId":"com.mycompany.myproduct",
+    "object.identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
   }
 }

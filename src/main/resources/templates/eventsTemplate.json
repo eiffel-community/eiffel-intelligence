@@ -10,11 +10,7 @@
                 "domainId": "someDomain",
                 "host": "someHost",
                 "name": "someName",
-                "serializer": {
-                    "groupId": "com.github.Ericsson",
-                    "artifactId": "eiffel-remrem-semantics",
-                    "version": "0.0.10"
-                },
+                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
                 "uri": "http://host:port/path"
             },
             "security": {
@@ -25,11 +21,7 @@
             }
         },
         "data": {
-            "gav": {
-                "groupId": "someGroup",
-                "artifactId": "someArtifact",
-                "version": "someVersion"
-            },
+            "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@2.1.7",
             "fileInformation": [
                 {
                     "classifier": "",
@@ -38,13 +30,7 @@
             ],
             "buildCommand": "trigger",
             "requiresImplementation": "NONE",
-            "dependsOn": [
-                {
-                    "groupId": "",
-                    "artifactId": "",
-                    "version": ""
-                }
-            ],
+            "dependsOn": ["pkg:maven/com.mycompany.myproduct/my-interface@%5B1.0%2C2.0%29"],
             "implements": [],
             "name": "event",
             "customData": []

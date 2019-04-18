@@ -235,8 +235,8 @@ public class FlowStepsIT extends IntegrationTestBase {
         jenkinsManager.deleteJob(this.jenkinsJobName);
     }
 
-    @Then("^mongodb should contain mail\\.$")
-    public void mongodb_should_contain_mails() throws Throwable {
+    @Then("^mongodb should contain \"([^\"]*)\" mails\\.$")
+    public void mongodb_should_contain_mails(int amountOfMails) throws Exception {
         long stopTime = System.currentTimeMillis() + 30000;
         Boolean mailHasBeenDelivered = false;
         long createdDateInMillis = 0;
@@ -245,6 +245,10 @@ public class FlowStepsIT extends IntegrationTestBase {
             JsonNode newestMailJson = getNewestMailFromDatabase();
 
             if (newestMailJson != null) {
+                JsonNode to = newestMailJson.get("to");
+                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
+
+
                 String createdDate = newestMailJson.get("created")
                                                    .get("$date")
                                                    .asText();

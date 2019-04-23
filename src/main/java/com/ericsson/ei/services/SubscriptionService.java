@@ -113,17 +113,18 @@ public class SubscriptionService implements ISubscriptionService {
     public boolean modifySubscription(Subscription subscription, String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         Document result = null;
+        String query;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-            String query = generateQuery(subscriptionName, ldapUserName);
+            String ldapUserName = getLdapUserName(subscriptionName);
+            query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOG.info("Subscription  \"" + subscriptionName
                             + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
-                    		+ "probably due to subscription has never matched any aggregated objects and "
+                            + "probably due to subscription has never matched any aggregated objects and "
                             + "no matched aggregated objects id has been stored in database for the specific subscription.");
                 }
             }
@@ -137,21 +138,19 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
-        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+        String ldapUserName = getLdapUserName(subscriptionName);
         String deleteQuery = generateQuery(subscriptionName, ldapUserName);
-
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOG.info("Subscription  \"" + subscriptionName
                         + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
-                		+ "probably due to subscription has never matched any aggregated objects and "
+                        + "probably due to subscription has never matched any aggregated objects and "
                         + "no matched aggregated objects id has been stored in database for the specific subscription.");
             }
         } else if (doSubscriptionExist(subscriptionName)) {
-            String message = "Failed to delete subscription \"" + subscriptionName
-                    + "\" invalid ldapUserName";
+            String message = "Failed to delete subscription \"" + subscriptionName + "\" invalid ldapUserName";
             throw new AccessException(message);
         }
 
@@ -197,14 +196,50 @@ public class SubscriptionService implements ISubscriptionService {
      *            name of the current user
      * @return a String object
      */
-
     private String generateQuery(String subscriptionName, String ldapUserName) {
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (!ldapUserName.isEmpty()) {
+        if (ldapUserName != null && !ldapUserName.isEmpty()) {
             String queryUser = String.format(USER_NAME, ldapUserName);
             String queryTemp = query + "," + queryUser;
             query = String.format(AND, queryTemp);
         }
         return query;
+    }
+
+    /**
+     * This method finds whether a given subscription has an owner
+     *
+     * @param subscriptionName-
+     *            subscription name
+     * @return a boolean
+     * @throws SubscriptionNotFoundException
+     */
+    private boolean doSubscriptionOwnerExist(String subscriptionName) {
+        boolean ownerExist = false;
+        try {
+            if (!getSubscription(subscriptionName).getLdapUserName().isEmpty()) {
+                ownerExist = true;
+            }
+        } catch (SubscriptionNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
+        return ownerExist;
+    }
+
+    /**
+     * This method ldapUserName, if exists, otherwise return empty string
+     *
+     * @param subscriptionName-
+     *            subscription name
+     * @return a string
+     */
+    private String getLdapUserName(String subscriptionName) {
+        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+        boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
+        if (!ownerExist) {
+            ldapUserName = "";
+        }
+
+        return ldapUserName;
     }
 }

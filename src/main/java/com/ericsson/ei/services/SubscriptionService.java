@@ -116,11 +116,7 @@ public class SubscriptionService implements ISubscriptionService {
         String query;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-            boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-            if (!ownerExist) {
-                ldapUserName = "";
-            }
+            String ldapUserName = getLdapUserName(subscriptionName);
             query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
@@ -142,11 +138,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
-        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-        boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-        if (!ownerExist) {
-            ldapUserName = "";
-        }
+        String ldapUserName = getLdapUserName(subscriptionName);
         String deleteQuery = generateQuery(subscriptionName, ldapUserName);
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
@@ -225,13 +217,29 @@ public class SubscriptionService implements ISubscriptionService {
     private boolean doSubscriptionOwnerExist(String subscriptionName) {
         boolean ownerExist = false;
         try {
-            if (!getSubscription(subscriptionName).getLdapUserName()
-                                                 .isEmpty()) {
+            if (!getSubscription(subscriptionName).getLdapUserName().isEmpty()) {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {
             LOG.error(e.getMessage());
         }
         return ownerExist;
+    }
+
+    /**
+     * This method ldapUserName, if exists, otherwise return empty string
+     *
+     * @param subscriptionName-
+     *            subscription name
+     * @return a string
+     */
+    private String getLdapUserName(String subscriptionName) {
+        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+        boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
+        if (!ownerExist) {
+            ldapUserName = "";
+        }
+
+        return ldapUserName;
     }
 }

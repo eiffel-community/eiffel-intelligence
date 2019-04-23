@@ -17,9 +17,11 @@ before_install:
 # This is only run before integrationTests job
 # To ensure docker containers are fully up and running we sleep 20s
 before_script:
-  - source docker-env.bash
+  - cd src/main/docker/
+  - source env.bash
   - docker-compose up -d
   - sleep 60
+  - cd ../../../
 
 
 # Generate site documentation using mvn site plugin

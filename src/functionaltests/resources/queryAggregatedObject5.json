@@ -1,6 +1,6 @@
 {
   "criteria": {
-     "aggregatedObject.identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.1.0"
+     "aggregatedObject.identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
 	},
   "filter" : "incomplete_path_filter(@, 'gitIdentifier')"
 }

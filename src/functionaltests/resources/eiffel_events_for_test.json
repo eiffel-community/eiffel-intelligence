@@ -53,7 +53,7 @@
       }
       ],
             
-      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.4"
+      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
     }
   },
   "event_EiffelCompositionDefinedEvent_4": {
@@ -144,7 +144,7 @@
         "classifier": ""
       }
       ],
-      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.5"
+      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
     }
   },
   "event_EiffelCompositionDefinedEvent_5": {
@@ -235,7 +235,7 @@
         "extension": "exe"
       }
       ],
-      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.3"
+      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
     }
   },
   "event_EiffelSourceChangeCreatedEvent_3": {
@@ -917,7 +917,7 @@
         "classifier": ""
       }
       ],
-      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.1"
+      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
     }
   },
   "event_EiffelArtifactCreatedEvent_2": {
@@ -965,7 +965,7 @@
         "classifier": ""
       }
       ],
-      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.2"
+      "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
     }
   },
   "event_EiffelArtifactPublishedEvent_1": {

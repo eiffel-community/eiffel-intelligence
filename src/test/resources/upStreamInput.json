@@ -56,11 +56,7 @@
                "classifier":"debug"
             }
          ],
-         "gav":{
-            "version":"1.33.0",
-            "artifactId":"other-system",
-            "groupId":"com.othercompany.otherproduct"
-         }
+         "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
       }
    },
    {
@@ -205,11 +201,7 @@
                "classifier":"debug"
             }
          ],
-         "gav":{
-            "version":"1.99.0",
-            "artifactId":"internal-system",
-            "groupId":"com.internalcompany.internalproduct"
-         }
+         "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
       }
    },
    {
@@ -245,11 +237,7 @@
                "classifier":"debug"
             }
          ],
-         "gav":{
-            "version":"1.33.0",
-            "artifactId":"other-system",
-            "groupId":"com.othercompany.secondproduct"
-         }
+         "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
       }
    }
 ]

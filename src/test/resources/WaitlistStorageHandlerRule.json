@@ -6,7 +6,7 @@
   "StartEvent": "YES",
   "IdentifyRules" : "event[?meta.type=='EiffelArtifactCreatedEvent'].meta.id",
   "MatchIdRules": {"objid": "%IdentifyRules_objid%"},
-  "ExtractionRules" : "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
+  "ExtractionRules" : "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
   "MergeResolverRules" : "root",
   "ArrayMergeOptions": "",
   "HistoryIdentifyRules":"event[?meta.type=='EiffelArtifactCreatedEvent'] | [0].[links] | [] | [?type=='COMPOSITION'].target",

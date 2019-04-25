@@ -17,7 +17,7 @@
             "id":"175f08ff-1e4b-4265-a0d4-36e744297dc3",
             "time":1529405139338,
             "type":"EiffelCompositionDefinedEvent",
-            "version":"1.1.0"
+            "version":"3.0.0"
          },
          "links":[
             {
@@ -38,17 +38,13 @@
                      "customData":[
 
                      ],
-                     "gav":{
-                        "groupId":"group id",
-                        "artifactId":"artifact id",
-                        "version":"0.0.0a"
-                     }
+                     "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
                   },
                   "meta":{
                      "id":"84e9dfe1-09f7-4002-83b9-1aff4b7844a2",
                      "time":1529405139319,
                      "type":"EiffelArtifactCreatedEvent",
-                     "version":"1.1.0"
+                     "version":"3.0.0"
                   },
                   "links":[
 
@@ -61,17 +57,13 @@
                      "customData":[
 
                      ],
-                     "gav":{
-                        "groupId":"group id",
-                        "artifactId":"artifact id",
-                        "version":"0.0.0a"
-                     }
+                     "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
                   },
                   "meta":{
                      "id":"cdffc8e9-5ee5-45c5-9f0e-0e89cea51dcf",
                      "time":1529405139319,
                      "type":"EiffelArtifactCreatedEvent",
-                     "version":"1.1.0"
+                     "version":"3.0.0"
                   },
                   "links":[
 
@@ -100,7 +92,7 @@
                   "id":"cc78087b-dc58-4da6-a009-51cea15bfa46",
                   "time":1529405139327,
                   "type":"EiffelArtifactPublishedEvent",
-                  "version":"1.1.0"
+                  "version":"3.0.0"
                },
                "links":[
                   {
@@ -128,7 +120,7 @@
                   "id":"908ff42d-786c-4a45-bf94-b43883d29784",
                   "time":1529405139639,
                   "type":"EiffelArtifactPublishedEvent",
-                  "version":"1.1.0"
+                  "version":"3.0.0"
                },
                "links":[
                   {
@@ -156,7 +148,7 @@
                   "id":"d7cf357d-9c05-4b51-84e7-af36b73d42df",
                   "time":1529405139330,
                   "type":"EiffelArtifactPublishedEvent",
-                  "version":"1.1.0"
+                  "version":"3.0.0"
                },
                "links":[
                   {
@@ -184,7 +176,7 @@
                   "id":"908ff42d-786c-4a45-bf94-b43883d49784",
                   "time":1529405139701,
                   "type":"EiffelArtifactPublishedEvent",
-                  "version":"1.1.0"
+                  "version":"3.0.0"
                },
                "links":[
                   {

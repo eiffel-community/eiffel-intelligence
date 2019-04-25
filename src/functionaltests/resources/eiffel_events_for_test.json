@@ -7,7 +7,7 @@
       },
       "type": "EiffelArtifactCreatedEvent",
       "id": "cfce572b-c3j4-441e-abc9-b62f48080ca2",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -74,7 +74,7 @@
       },
       "time": 1481875944572,
       "type": "EiffelCompositionDefinedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -99,7 +99,7 @@
       },
       "type": "EiffelArtifactCreatedEvent",
       "id": "cfre572b-c3j4-4d1e-ajc9-b62f45080ca2",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -165,7 +165,7 @@
       },
       "time": 1481875944572,
       "type": "EiffelCompositionDefinedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -208,7 +208,7 @@
       },
       "time": 1481875891763,
       "type": "EiffelArtifactCreatedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -241,7 +241,7 @@
   "event_EiffelSourceChangeCreatedEvent_3": {
     "meta": {
       "type": "EiffelSourceChangeCreatedEvent",
-      "version": "1.0.0",
+      "version": "4.0.0",
       "time": 1234567890,
       "id": "fb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
       "source": {
@@ -293,7 +293,7 @@
   "event_EiffelSourceChangeSubmittedEvent_3": {
     "meta": {
       "type": "EiffelSourceChangeSubmittedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "fb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
       "source": {
@@ -343,7 +343,7 @@
       },
       "time": 1481875921763,
       "type": "EiffelArtifactPublishedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -382,7 +382,7 @@
       },
       "time": 1481875921843,
       "type": "EiffelArtifactPublishedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -421,7 +421,7 @@
       },
       "time": 1481875944272,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -456,7 +456,7 @@
       },
       "time": 1481875988767,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -477,7 +477,7 @@
     "meta": {
       "id": "e1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890
     },
     "data": {
@@ -503,7 +503,7 @@
   "event_EiffelActivityStartedEvent_3": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
     },
@@ -526,7 +526,7 @@
   "event_EiffelActivityFinishedEvent_3": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
     },
@@ -576,7 +576,7 @@
       "source": {
         "domainId": "example.domain"
       },
-      "version": "1.0.0",
+      "version": "3.0.0",
       "id": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
       "time": 1490777327230
     },
@@ -609,7 +609,7 @@
       },
       "time": 1481875925916,
       "type": "EiffelTestCaseStartedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -638,7 +638,7 @@
       },
       "time": 1481875935919,
       "type": "EiffelTestCaseFinishedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "outcome": {
@@ -675,7 +675,7 @@
       "source": {
         "domainId": "example.domain"
       },
-      "version": "1.0.0",
+      "version": "3.0.0",
       "id": "6d3df0e0-404d-46ee-ab4f-3118457148f5",
       "time": 1490777357289
     },
@@ -708,7 +708,7 @@
       },
       "time": 1481875925918,
       "type": "EiffelTestCaseStartedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "testCase": {
@@ -742,7 +742,7 @@
       },
       "time": 1481875938919,
       "type": "EiffelTestCaseFinishedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "outcome": {
@@ -775,7 +775,7 @@
       },
       "time": 1481875943919,
       "type": "EiffelTestCaseFinishedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "outcome": {
@@ -812,7 +812,7 @@
       },
       "time": 1481875944272,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -847,7 +847,7 @@
       },
       "time": 1481875944572,
       "type": "EiffelCompositionDefinedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "customData": [
@@ -872,7 +872,7 @@
       },
       "type": "EiffelArtifactCreatedEvent",
       "id": "ccce572c-c364-441e-abc9-b62fed080ca2",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -928,7 +928,7 @@
       },
       "type": "EiffelArtifactCreatedEvent",
       "id": "b8daf9cd-660f-4efe-a2f1-52635f0e4bb7",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -976,7 +976,7 @@
       },
       "type": "EiffelArtifactPublishedEvent",
       "id": "0d93f0ce-1eab-46d1-80e3-207393c899df",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1019,7 +1019,7 @@
       },
       "type": "EiffelArtifactPublishedEvent",
       "id": "0afddcbb-916f-412c-ad3f-77b699f3f720",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1058,7 +1058,7 @@
       },
       "type": "EiffelConfidenceLevelModifiedEvent",
       "id": "f463feef-afd2-4cf1-a42b-ce144eb97024",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1093,7 +1093,7 @@
       },
       "type": "EiffelConfidenceLevelModifiedEvent",
       "id": "7aaee1be-1f1b-41a2-a1db-7481e9f31495",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1155,7 +1155,7 @@
       "source": {
         "domainId": "example.domain"
       },
-      "version": "1.0.0",
+      "version": "3.0.0",
       "id": "6d3df0e0-404d-46ee-ab4f-v11dr57148f4",
       "time": 1490777327230
     },
@@ -1178,7 +1178,7 @@
       },
       "type": "EiffelTestCaseStartedEvent",
       "id": "bcc98cef-707c-46be-ad89-392047f05a51",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1211,7 +1211,7 @@
       },
       "type": "EiffelTestCaseStartedEvent",
       "id": "c9f503da-d332-4ce0-bf15-e5918b55f3cd",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1244,7 +1244,7 @@
       },
       "type": "EiffelTestCaseStartedEvent",
       "id": "9ed792da-87c9-4eea-a4d6-9d3000fbc279",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1277,7 +1277,7 @@
       },
       "type": "EiffelTestCaseStartedEvent",
       "id": "3ed2415e-1ac1-45cb-bac2-112db71b6324",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1310,7 +1310,7 @@
       },
       "type": "EiffelTestCaseStartedEvent",
       "id": "347e63ff-b095-480a-b78d-ee4a68884d54",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1343,7 +1343,7 @@
       },
       "type": "EiffelTestCaseFinishedEvent",
       "id": "d7de0b67-fbc3-4581-93fd-c2454737d71d",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1375,7 +1375,7 @@
       },
       "type": "EiffelTestCaseFinishedEvent",
       "id": "17d10fef-d85f-4d34-975d-f6aebda74d8c",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1407,7 +1407,7 @@
       },
       "type": "EiffelTestCaseFinishedEvent",
       "id": "b90fdd06-cce0-4ff2-a977-fa32857064c4",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1439,7 +1439,7 @@
       },
       "type": "EiffelTestCaseFinishedEvent",
       "id": "3dfc81b0-abf2-43d1-9c05-3089102a758a",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {
@@ -1471,7 +1471,7 @@
       },
       "type": "EiffelTestCaseFinishedEvent",
       "id": "1238ae3a-5332-4676-8cad-6eee56ab7269",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "links": [
     {

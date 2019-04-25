@@ -117,6 +117,6 @@
     "time": 1234567890,
     "activity_started_event_id": "b46e01ud-25gb-4d7y-b9f6-836fre6yde47",
     "type": "EiffelActivityTriggeredEvent",
-    "version": "1.0.0"
+    "version": "3.0.0"
   }
 }

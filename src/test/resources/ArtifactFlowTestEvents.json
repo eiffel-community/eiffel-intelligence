@@ -17,7 +17,7 @@
             },
             "time": 1481875944272,
             "type": "EiffelConfidenceLevelModifiedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "value": "SUCCESS",
@@ -52,7 +52,7 @@
             },
             "time": 1481875921763,
             "type": "EiffelArtifactPublishedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "customData": [
@@ -99,7 +99,7 @@
             },
             "time": 1481875891763,
             "type": "EiffelArtifactCreatedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "customData": [
@@ -152,7 +152,7 @@
             "source": {
                 "domainId": "example.domain"
             },
-            "version": "1.0.0",
+            "version": "3.0.0",
             "id": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
             "time": 1490777327230
         },
@@ -185,7 +185,7 @@
             },
             "time": 1481875925916,
             "type": "EiffelTestCaseStartedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "customData": [
@@ -214,7 +214,7 @@
             },
             "time": 1481875935919,
             "type": "EiffelTestCaseFinishedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "outcome": {
@@ -251,7 +251,7 @@
             },
             "time": 1481875921843,
             "type": "EiffelArtifactPublishedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "customData": [
@@ -290,7 +290,7 @@
             },
             "time": 1481875988767,
             "type": "EiffelConfidenceLevelModifiedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "value": "SUCCESS",
@@ -325,7 +325,7 @@
             "source": {
                 "domainId": "example.domain"
             },
-            "version": "1.0.0",
+            "version": "3.0.0",
             "id": "ad3df0e0-404d-46ee-ab4f-3118457148f5",
             "time": 1490777357289
         },
@@ -375,7 +375,7 @@
             },
             "time": 1481875925918,
             "type": "EiffelTestCaseStartedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         }
     },
     "event_EiffelTestCaseFinishedEvent_3_1": {
@@ -392,7 +392,7 @@
             },
             "time": 1481875938919,
             "type": "EiffelTestCaseFinishedEvent",
-            "version": "1.0.0"
+            "version": "3.0.0"
         },
         "data": {
             "outcome": {

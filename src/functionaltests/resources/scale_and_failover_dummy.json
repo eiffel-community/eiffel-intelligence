@@ -6,7 +6,7 @@
         },
         "type": "EiffelArtifactCreatedEvent",
         "id": "{uuid}",
-        "version": "1.0.0"
+        "version": "3.0.0"
     },
     "links": [
         {
@@ -21,10 +21,6 @@
                 "classifier": ""
             }
         ],
-        "gav": {
-            "version": "0.0.1",
-            "artifactId": "dummy-artifact",
-            "groupId": "com.dummy.group"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"       
     }
 }

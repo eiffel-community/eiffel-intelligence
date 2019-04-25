@@ -2,7 +2,7 @@
   "event_EiffelSourceChangeSubmittedEvent_3": {
     "meta": {
       "type": "EiffelSourceChangeSubmittedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
       "source": {
@@ -52,7 +52,7 @@
       },
       "time": 1481875944272,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -87,7 +87,7 @@
       },
       "time": 1481875944278,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -108,7 +108,7 @@
     "meta": {
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890
     },
     "data": {
@@ -134,7 +134,7 @@
   "event_EiffelActivityStartedEvent_3": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
     },
@@ -157,7 +157,7 @@
   "event_EiffelActivityFinishedEvent_3": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
     },
@@ -188,7 +188,7 @@
     "meta": {
       "id": "se878b37-95f4-4d20-99b7-de9bdf351eed",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521113723785,
       "tags": [],
       "source": {
@@ -224,7 +224,7 @@
   "event_EiffelActivityStartedEvent_3_2": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c3"
     },
@@ -247,7 +247,7 @@
   "event_EiffelActivityFinishedEvent_3_2": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-3f17-975f-ebf0cd6ff1c3"
     },
@@ -278,7 +278,7 @@
     "meta": {
       "id": "sc24f5e8-9225-4f7b-9c77-7bafc7d03f6e",
       "type": "EiffelActivityCanceledEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521641056231,
       "tags": [],
       "source": {
@@ -307,7 +307,7 @@
     "meta": {
       "id": "sc24f5e8-9225-4f7b-9c77-7bafc7d03f7e",
       "type": "EiffelActivityCanceledEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521641056231,
       "tags": [],
       "source": {

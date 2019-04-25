@@ -3,7 +3,7 @@
     "meta": {
       "id": "e46ef12d-25gb-4d7y-b9fd-8763re66de47",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "source": {
         "domainId": "test-domainId"
@@ -46,7 +46,7 @@
   "event_EiffelActivityStartedEvent": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46e01ud-25gb-4d7y-b9f6-836fre6yde47"
     },
@@ -73,7 +73,7 @@
   "event_EiffelActivityFinishedEvent": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46t01uh-29gs-4d7y-b9v6-83kfqe6y4e47"
     },
@@ -103,7 +103,7 @@
   "event_EiffelTestExecutionRecipeCollectionCreatedEvent": {
     "meta": {
       "type": "EiffelTestExecutionRecipeCollectionCreatedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "eaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee0"
     },
@@ -168,7 +168,7 @@
   "event_EiffelTestSuiteStartedEvent": {
     "meta": {
       "type": "EiffelTestSuiteStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20gb-4d7y-h9fd-8763re6kde47"
     },
@@ -198,7 +198,7 @@
   "event_EiffelTestCaseTriggeredEvent": {
     "meta": {
       "type": "EiffelTestCaseTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20gb-4d2y-h9fa-87dada6kde47",
       "security": {
@@ -240,7 +240,7 @@
   "event_EiffelTestCaseStartedEvent": {
     "meta": {
       "type": "EiffelTestCaseStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20ab-4d2y-h9fe-87haha6kde47"
     },
@@ -267,7 +267,7 @@
   "event_EiffelTestCaseFinishedEvent": {
     "meta": {
       "type": "EiffelTestCaseFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20gb-4c2a-h9fa-8763heheae47"
     },
@@ -312,7 +312,7 @@
   "event_EiffelTestCaseTriggeredEvent_2": {
     "meta": {
       "type": "EiffelTestCaseTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19a-20ga-4d2y-h9fa-8763ae6kde47",
       "security": {
@@ -354,7 +354,7 @@
   "event_EiffelTestCaseStartedEvent_2": {
     "meta": {
       "type": "EiffelTestCaseStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20ab-4e2y-e9se-8762ae6kde47"
     },
@@ -381,7 +381,7 @@
   "event_EiffelTestCaseFinishedEvent_2": {
     "meta": {
       "type": "EiffelTestCaseFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "e46ef19d-20fb-4e2k-h9fa-8763ae6ese47"
     },

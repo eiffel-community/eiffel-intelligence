@@ -195,11 +195,7 @@
         "domainId": "eiffel038.seki.fem002",
         "host": "esekilxv9305",
         "name": "fem002-eiffel038",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem002-eiffel038.rnd.ki.sw.ericsson.se:8443/jenkins/job/test_xneekas/"
       }
     },
@@ -285,11 +281,7 @@
         "domainId": "eiffel039.seli.fem101",
         "host": "eselivm2v1464l",
         "name": "fem101-eiffel039",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
       }
     },
@@ -314,11 +306,7 @@
         "domainId": "eiffel039.seli.fem101",
         "host": "eselivm2v1464l",
         "name": "fem101-eiffel039",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
       }
     },

@@ -1,10 +1,11 @@
 package com.ericsson.ei.queryservice.test;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.queryservice.ProcessAggregatedObject;
-import com.ericsson.ei.queryservice.ProcessQueryParams;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.qpid.server.util.FileUtils;
 import org.json.JSONArray;
@@ -20,12 +21,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
+import com.ericsson.ei.App;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.ericsson.ei.queryservice.ProcessQueryParams;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
@@ -38,8 +38,8 @@ public class TestProcessQueryParams {
     private static final String REQUEST = "{\"criteria\":{\"testCaseExecutions.testCase.verdict\":\"PASSED\"}}";
     private static final String QUERY_WITH_CRITERIA_AND_OPTIONS = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static final String QUERY_WITH_CRITERIA = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }}";
-    private static final String QUERY_WITH_UNIVERSAL_OBJECT_NAME = "{\"criteria\" :{\"object.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"object.gav.groupId\": \"com.mycompany.myproduct\"} }";
-    private static final String QUERY_WITH_CONFIGURED_OBJECT_NAME = "{\"criteria\" :{\"aggregatedObject.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"aggregatedObject.gav.groupId\": \"com.mycompany.myproduct\"} }";
+    private static final String QUERY_WITH_UNIVERSAL_OBJECT_NAME = "{\"criteria\" :{\"object.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"object.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
+    private static final String QUERY_WITH_CONFIGURED_OBJECT_NAME = "{\"criteria\" :{\"aggregatedObject.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"aggregatedObject.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
     private static final String DATA_BASE_NAME = "eiffel_intelligence";
     private static final String AGGREGATION_COLLECTION_NAME = "aggregated_objects";
     private static JSONArray expected;
@@ -66,7 +66,7 @@ public class TestProcessQueryParams {
             JSONObject criteria = (JSONObject) query.get("criteria");
             JSONObject options = (JSONObject) query.get("options");
             String filterKey = null;
-            
+
 
             String request = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
             when(processAggregatedObject.processQueryAggregatedObject(
@@ -93,18 +93,18 @@ public class TestProcessQueryParams {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void testFilterFormParamForObjectName() throws IOException {
     	 try {
              JSONObject query = new JSONObject(QUERY_WITH_UNIVERSAL_OBJECT_NAME);
              JSONObject criteria = (JSONObject) query.get("criteria");
-             JSONObject options = (JSONObject) query.get("options"); 
+             JSONObject options = (JSONObject) query.get("options");
              String filter = null;
              JSONObject queryConf = new JSONObject(QUERY_WITH_CONFIGURED_OBJECT_NAME);
              JSONObject criteriaConf = (JSONObject) queryConf.get("criteria");
              JSONObject optionsConf = (JSONObject) queryConf.get("options");
-             
+
 
              String request = "{ \"$and\" : [ " + criteriaConf.toString() + "," + optionsConf.toString() + " ] }";
              when(processAggregatedObject.processQueryAggregatedObject(
@@ -124,6 +124,6 @@ public class TestProcessQueryParams {
         JSONArray result = processQueryParams.filterQueryParam(REQUEST);
         assertEquals(expected, result);
     }
-    
-    
+
+
 }

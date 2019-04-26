@@ -10,11 +10,7 @@
                 "domainId": "eiffel039.seli.fem101",
                 "host": "eselivm2v1464l",
                 "name": "fem101-eiffel039",
-                "serializer": {
-                    "groupId": "com.github.Ericsson",
-                    "artifactId": "eiffel-remrem-semantics",
-                    "version": "0.0.10"
-                },
+                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
                 "uri": "https://arm101-eiffel039.lmera.ericsson.se:8443/nexus/content/repositories/releases"
             },
             "security": {
@@ -63,11 +59,7 @@
                 "domainId": "eiffel039.seli.fem101",
                 "host": "eselivm2v1464l",
                 "name": "fem101-eiffel039",
-                "serializer": {
-                    "groupId": "com.github.Ericsson",
-                    "artifactId": "eiffel-remrem-semantics",
-                    "version": "0.0.10"
-                },
+                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
                 "uri": ""
             },
             "security": {
@@ -105,11 +97,7 @@
             "source": {
                 "domainId": "eiffel039.seli.fem101",
                 "name": "fem101-eiffel039",
-                "serializer": {
-                    "groupId": "com.github.Ericsson",
-                    "artifactId": "eiffel-remrem-semantics",
-                    "version": "0.0.10"
-                }
+                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3"
             }
         },
         "data": {

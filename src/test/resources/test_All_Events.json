@@ -18,7 +18,7 @@
       "type": "CAUSE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-	]
+    ]
 
   },
   "EiffelActivityStartedEvent": {
@@ -152,8 +152,7 @@
     ]
   },
   "data": {
-    "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-    },
+    "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
     "fileInformation": [
       {
         "classifier": "debug",
@@ -641,7 +640,7 @@
   "EiffelTestExecutionRecipeCollectionCreatedEvent": {
    "meta": {
     "type": "EiffelTestExecutionRecipeCollectionCreatedEvent",
-    "version": "3.0.0",
+    "version": "2.1.0",
     "time": 1234567890,
     "id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee19",
     "source": {
@@ -739,7 +738,7 @@
     "uri": "http://sample.com"
   },
   "links": [
-  	{
+    {
       "type": "ARTIFACT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     },
@@ -958,7 +957,7 @@
       "type": "ALERT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     },
-  	{
+    {
       "type": "CONTEXT",
       "target": "babaaaaa-bcbb-5cdc-9ded-eeeefeeeeee2"
     },

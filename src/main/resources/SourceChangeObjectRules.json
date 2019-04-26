@@ -58,7 +58,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null
+    "ProcessRules": "{activityDuration : diff(causedActivities | [?triggeredEventId=='%IdentifyRules%'].canceledTime | [0], causedActivities | [?triggeredEventId=='%IdentifyRules%'].startedTime | [0])}"
   },
   {
     "TemplateName": "SC_1",
@@ -73,7 +73,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null
+    "ProcessRules": "{activityDuration : diff(causedActivities | [?triggeredEventId=='%IdentifyRules%'].finishedTime | [0], causedActivities | [?triggeredEventId=='%IdentifyRules%'].startedTime | [0])}"
   },
   {
     "TemplateName": "SC_1",

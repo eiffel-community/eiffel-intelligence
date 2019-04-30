@@ -39,7 +39,7 @@ import com.ericsson.ei.rules.RulesHandler;
 
 @SpringBootApplication
 @EnableAsync
-@EnableScheduling
+//@EnableScheduling
 public class App extends SpringBootServletInitializer {
     
     @Override

@@ -31,21 +31,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.SimpleThreadScope;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-
-import com.ericsson.ei.config.CheckEIConfigurations;
-import com.ericsson.ei.rules.RulesHandler;
 
 
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
 public class App extends SpringBootServletInitializer implements SchedulingConfigurer {
+    
+    @Autowired
+    Environment env;
     
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -59,7 +59,7 @@ public class App extends SpringBootServletInitializer implements SchedulingConfi
 
     @Bean(destroyMethod="shutdown")
     public Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(100);
+        return Executors.newScheduledThreadPool(Integer.parseInt(env.getProperty("scheduled.threadpool.size")));
     }
 
     public static void main(String[] args) {

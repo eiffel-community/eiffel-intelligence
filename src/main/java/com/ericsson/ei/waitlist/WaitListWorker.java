@@ -59,11 +59,6 @@ public class WaitListWorker {
     @Autowired
     private EventToObjectMapHandler eventToObjectMapHandler;
 
-    @Bean
-    public TaskScheduler taskScheduler() {
-        return new ConcurrentTaskScheduler();
-    }
-
     @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
     public void run() {
         List<String> documents = waitListStorageHandler.getWaitList();

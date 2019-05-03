@@ -7,7 +7,7 @@
         "StartEvent": "YES",
         "IdentifyRules": "[meta.id]",
         "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
+        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
         "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
         "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
         "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",

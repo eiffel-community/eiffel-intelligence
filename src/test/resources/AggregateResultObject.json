@@ -21,11 +21,7 @@
             "id": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22_ARTIFACT_TEST",
             "time": 1521452368194,
             "type": "EiffelArtifactCreatedEvent",
-            "gav": {
-                "groupId": "com.ericsson.eiffel",
-                "artifactId": "eiffel-dummy-component-1",
-                "version": "0.0.48-SNAPSHOT"
-            },
+            "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
             "publications": [
                 {
                     "eventId": "2acd348d-05e6-4945-b441-dc7c1e55534e_ARTIFACT_TEST",

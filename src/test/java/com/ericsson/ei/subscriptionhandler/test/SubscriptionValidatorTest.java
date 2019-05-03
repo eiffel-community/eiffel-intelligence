@@ -60,7 +60,7 @@ public class SubscriptionValidatorTest {
         subscriptionValid.setRepeat(true);
         Requirement requirement = new Requirement();
         Condition condition = new Condition();
-        condition.setJmespath("gav.groupId=='com.mycompany.myproduct'");
+        condition.setJmespath("identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'");
         requirement.getConditions().add(condition);
         subscriptionValid.getRequirements().add(requirement);
 
@@ -82,7 +82,7 @@ public class SubscriptionValidatorTest {
         subscriptionInvalid.setRepeat(true);
         Requirement requirementInvalid = new Requirement();
         Condition conditionInvalid = new Condition();
-        conditionInvalid.setJmespath("gav.groupId=='com.mycompany.myproduct'");
+        conditionInvalid.setJmespath("identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'");
         requirementInvalid.getConditions().add(conditionInvalid);
         subscriptionInvalid.getRequirements().add(requirementInvalid);
     }

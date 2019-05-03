@@ -79,11 +79,7 @@
                         ]
                      },
                      "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                     "gav":{
-                        "groupId":"com.othercompany.otherproduct",
-                        "artifactId":"other-system",
-                        "version":"1.33.0"
-                     }
+                     "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"                     
                   },
                   {
                      "fileInformation":[
@@ -93,11 +89,7 @@
                         }
                      ],
                      "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                     "gav":{
-                        "groupId":"com.internalcompany.internalproduct",
-                        "artifactId":"internal-system",
-                        "version":"1.99.0"
-                     }
+                     "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
                   }
                ]
             }
@@ -155,11 +147,7 @@
       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
       "time":1481875891763,
       "type":"EiffelArtifactCreatedEvent",
-      "gav":{
-         "groupId":"com.mycompany.myproduct",
-         "artifactId":"sub-system",
-         "version":"1.1.0"
-      },
+      "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
       "artifacts":[
          {
             "fileInformation":[
@@ -169,11 +157,7 @@
                }
             ],
             "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-            "gav":{
-               "groupId":"com.othercompany.secondproduct",
-               "artifactId":"other-system",
-               "version":"1.33.0"
-            }
+            "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
          }
       ],
       "publications":[

@@ -16,7 +16,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+            "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
           }
         ]
       }

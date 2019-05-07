@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @SpringBootTest(classes = App.class)
 public class FlowTestTestExecution extends FlowTestBase {
 
-    private static final String RULES_FILE_PATH = "src/test/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";
     private static final String AGGREGATED_OBJECT_ID = "e46ef12d-25gb-4d7y-b9fd-8763re66de47";

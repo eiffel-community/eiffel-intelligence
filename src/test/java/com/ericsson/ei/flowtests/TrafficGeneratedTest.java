@@ -67,7 +67,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
     private static final int EVENT_PACKAGES = 10;
-    private static final String RULES_FILE_PATH = "src/test/resources/rules/ArtifactRules-Eiffel-Agen-Version.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events_MP.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregated_document_MP.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4";

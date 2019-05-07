@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
 
-    private static final String RULES_FILE_PATH = "src/test/resources/rules/AllEventsRules-Eiffel-Agen-Version.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
 

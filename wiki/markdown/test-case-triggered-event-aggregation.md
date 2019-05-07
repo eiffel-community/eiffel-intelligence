@@ -27,7 +27,7 @@ looks like below.
         "source": {
           "domainId": "example.domain"
         },
-        "version": "1.0.0",
+        "version": "3.0.0",
         "id": "6d3df0e0-404d-46ee-ab4f-3118457148f4",
         "time": 1490777327230
       },
@@ -97,7 +97,7 @@ like below:
         "source": {
           "domainId": "example.domain"
         },
-        "version": "1.0.0",
+        "version": "3.0.0",
         "id": "6d3df0e0-404d-46ee-ab4f-3118457148f5",
         "time": 1490777357289
       },
@@ -187,11 +187,7 @@ The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
           "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "time": 1481875891763,
           "type": "EiffelArtifactCreatedEvent",
-          "gav": {
-            "groupId": "com.mycompany.myproduct",
-            "artifactId": "sub-system",
-            "version": "1.1.0"
-          }
+          "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
         }
       }
 
@@ -269,11 +265,7 @@ And the result object will look like below:
         "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
-        "gav": {
-          "groupId": "com.mycompany.myproduct",
-          "artifactId": "sub-system",
-          "version": "1.1.0"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
     }
 
@@ -372,10 +364,6 @@ And the result object will look like below:
         "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
-        "gav": {
-          "groupId": "com.mycompany.myproduct",
-          "artifactId": "sub-system",
-          "version": "1.1.0"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
     }

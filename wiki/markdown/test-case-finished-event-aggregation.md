@@ -19,7 +19,7 @@ received as follow:
           },
           "time":1481875935919,
           "type":"EiffelTestCaseFinishedEvent",
-          "version":"1.0.0"
+          "version":"3.0.0"
        },
        "data":{
           "outcome":{
@@ -92,7 +92,7 @@ Following aggregated object is extracted by using the identify rules:
         },
         "time":1481875925916,
         "type":"EiffelTestCaseStartedEvent",
-        "version":"1.0.0"
+        "version":"3.0.0"
       },
       "data":{
         "customData":[
@@ -234,11 +234,7 @@ information about one or several executed test cases:
                     ]
                   },
                   "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                  "gav":{
-                    "groupId":"com.othercompany.otherproduct",
-                    "artifactId":"other-system",
-                    "version":"1.33.0"
-                  }
+                  "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                 },
                 {
                   "fileInformation":[
@@ -248,11 +244,7 @@ information about one or several executed test cases:
                     }
                   ],
                   "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                  "gav":{
-                    "groupId":"com.internalcompany.internalproduct",
-                    "artifactId":"internal-system",
-                    "version":"1.99.0"
-                  }
+                  "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                 }
               ]
             }
@@ -288,11 +280,7 @@ information about one or several executed test cases:
         "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time":1481875891763,
         "type":"EiffelArtifactCreatedEvent",
-        "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
-        },
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
         "publications":[
           {
             "eventId":"33d05e6f-9bd9-4138-83b6-e20cc74680a3",
@@ -314,11 +302,7 @@ information about one or several executed test cases:
               }
             ],
             "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-            "gav":{
-              "groupId":"com.othercompany.secondproduct",
-              "artifactId":"other-system",
-              "version":"1.33.0"
-            }
+            "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
           }
         ]
       }

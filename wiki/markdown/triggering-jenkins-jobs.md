@@ -59,7 +59,7 @@ There are some important details to know when triggering Jenkins jobs with param
 
                 "conditions" : [
                     {
-                        "jmespath" : "gav.groupId=='com.othercompany.library'"
+                        "jmespath" : "identity=='pkg:maven/com.othercompany.library/artifact-name@1.0.0'"
                     }
                 ]
             }
@@ -124,7 +124,7 @@ There are some important details to know when triggering Jenkins jobs with param
 
                 "conditions" : [
                     {
-                        "jmespath" : "gav.groupId=='com.othercompany.library'"
+                        "jmespath" : "identity=='pkg:maven/com.othercompany.library/artifact-name@1.0.0'"
                     }
                 ]
             }

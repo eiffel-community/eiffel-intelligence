@@ -50,7 +50,7 @@ For example if we run the following JMESPath expression:
        id:meta.id,
        type:meta.type,
        time:meta.time,
-       gav:data.gav,
+       identity:data.identity,
        fileInformation:data.fileInformation,
        buildCommand:data.buildCommand
     }
@@ -80,7 +80,7 @@ on Eiffel event:
           },
           "time": 1484061386383,
           "type": "EiffelArtifactCreatedEvent",
-          "version": "1.0.0"
+          "version": "3.0.0"
        },
        "data": {
           "customData": [
@@ -99,11 +99,7 @@ on Eiffel event:
                 "extension": "jar"
              }
           ],
-          "gav": {
-             "artifactId": "component-1",
-             "version": "1.5000.0",
-             "groupId": "com.mycompany.myproduct"
-          }
+          "identity": "pkg:maven/com.mycompany.myproduct/component-1@1.5000.0"
        }
     }
 
@@ -113,11 +109,7 @@ will give
       "id": "e90daae3-bf3f-4b0a-b899-67834fd5ebd0",
       "type": "EiffelArtifactCreatedEvent",
       "time": 1484061386383,
-      "gav": {
-        "artifactId": "component-1",
-        "version": "1.5000.0",
-        "groupId": "com.mycompany.myproduct"
-      },
+      "identity": "pkg:maven/com.mycompany.myproduct/component-1@1.5000.0",
       "fileInformation": [
         {
           "classifier": "",

@@ -25,7 +25,7 @@ Feature: Test execution flow integrationtest
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"
-    And the events "src/test/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"
+    And the events "src/test/resources/TestExecutionTestEvents.json"
     And the resulting aggregated object "src/test/resources/aggregatedTestActivityObject.json";
     Then the expected aggregated object ID is "e46ef12d-25gb-4d7y-b9fd-8763re66de47"
     # Setup jenkins

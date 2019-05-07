@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestIdRulesHandler {
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(TestRulesHandler.class);
-    private static final String RULES_PATH = "src/test/resources/rules/ArtifactRules-Eiffel-Agen-Version.json";
+    private static final String RULES_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENT_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
 
     @Test

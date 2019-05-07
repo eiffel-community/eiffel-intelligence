@@ -36,7 +36,7 @@ import java.util.Map;
 @SpringBootTest(classes = App.class)
 public class FlowTest2 extends FlowTestBase {
 
-    private static final String RULES_FILE_PATH = "src/test/resources/rules/ArtifactRules-Eiffel-Agen-Version.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_2 = "src/test/resources/AggregatedDocument2.json";

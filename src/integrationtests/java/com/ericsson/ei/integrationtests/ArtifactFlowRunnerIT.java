@@ -21,7 +21,7 @@ public class ArtifactFlowRunnerIT {
         System.setProperty("missedNotificationCollectionName", "missed_notification_artifact_flow");
         System.setProperty("sessions.collection.name", "sessions_artifact_flow");
 
-        System.setProperty("rules.path", "/ArtifactRules.json");
+        System.setProperty("rules.path", "/rules/ArtifactRules-Eiffel-Agen-Version.json");
         System.setProperty("rabbitmq.consumerName", "artifact_queue");
     }
 }

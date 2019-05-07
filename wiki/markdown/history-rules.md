@@ -15,7 +15,7 @@ JSON object from "HistoryExtractionRules" in aggregated object, same as
 returned from ER. The path for merging history data will get as long as the 
 depth of the tree where your historical event exists.
 
-A step by step example will be presented using [artifact aggregation rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/ArtifactRules.json).
+A step by step example will be presented using [artifact aggregation rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 Assume that an EiffelArtifactCreatedEvent is received and the upstream response 
 tree looks like [this](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/upStreamResultFile.json).

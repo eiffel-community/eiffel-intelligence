@@ -43,7 +43,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";
     private static final String AGGREGATED_OBJECT_FINAL_FILE_PATH = "src/functionaltests/resources/aggregatedObjectFinal.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
+    private static final String RULES_FILE_PATH = "src/test/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerOneMatch.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerTwoMatch.json";
     private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";

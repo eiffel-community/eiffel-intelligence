@@ -184,7 +184,7 @@ services:
     environment:       # Overrides settings in application config file
       - SpringApplicationName=eiffel-intelligence-backend
       - server.port=8080
-      - rules.path=src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json
+      - rules.path=src/main/resources/ArtifactRules.json
       - rabbitmq.host=rabbitmq
       - rabbitmq.port=${RABBITMQ_AMQP_PORT}
       - rabbitmq.domainId=ei-domain

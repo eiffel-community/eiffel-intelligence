@@ -139,14 +139,6 @@ public class SubscriptionValidator {
             for (String address : addresses) {
                     validateEmail(address.trim());
             }
-
-            String regexEmailCheck = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$";
-            boolean isInvalidEmailAddress = !Pattern.matches(regexEmailCheck, notificationMeta);
-            if (isInvalidEmailAddress) {
-                throw new SubscriptionValidationException(
-                        "Notification type is set to [MAIL] but the given notificatioMeta is not a valid e-mail ["
-                                + notificationMeta + "]");
-            }
         }
     }
 

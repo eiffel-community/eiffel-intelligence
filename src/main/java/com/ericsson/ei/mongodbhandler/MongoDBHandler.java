@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -64,6 +65,11 @@ public class MongoDBHandler {
     @PostConstruct
     public void init() {
         createConnection();
+    }
+    
+    @PreDestroy
+    public void close() {
+        mongoClient.close();
     }
 
     // Establishing the connection to mongodb and creating a collection

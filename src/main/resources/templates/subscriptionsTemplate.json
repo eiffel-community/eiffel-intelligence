@@ -48,7 +48,11 @@
         {
             "conditions" : [
                 {
+<<<<<<< HEAD
                     "jmespath": "split(data.identity, '/') | [2] =='com.mycompany.myproduct'"
+=======
+                    "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
+>>>>>>> cb70f4b14f789599a903aae2eb79caea96b40dc2
                 }
             ]
         }
@@ -77,7 +81,11 @@
         {
             "conditions" : [
                 {
+<<<<<<< HEAD
                     "jmespath": "split(data.identity, '/') | [2] =='com.mycompany.myproduct'"
+=======
+                    "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
+>>>>>>> cb70f4b14f789599a903aae2eb79caea96b40dc2
                 }
             ]
         }

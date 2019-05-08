@@ -82,7 +82,11 @@ public class SubscriptionValidatorTest {
         subscriptionInvalid.setRepeat(true);
         Requirement requirementInvalid = new Requirement();
         Condition conditionInvalid = new Condition();
+<<<<<<< HEAD
         conditionInvalid.setJmespath("split(data.identity', '/') | [2] =='com.mycompany.myproduct'");
+=======
+        conditionInvalid.setJmespath("identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'");
+>>>>>>> cb70f4b14f789599a903aae2eb79caea96b40dc2
         requirementInvalid.getConditions().add(conditionInvalid);
         subscriptionInvalid.getRequirements().add(requirementInvalid);
     }

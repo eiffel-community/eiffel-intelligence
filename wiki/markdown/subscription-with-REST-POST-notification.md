@@ -60,7 +60,7 @@ _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel
 
                 "conditions" : [
                     {
-                        "jmespath" : "gav.groupId=='com.othercompany.library'"
+                        "jmespath" : "identity=='pkg:maven/com.othercompany.library/artifact-name@1.0.0'"
                     }
                 ]
             }

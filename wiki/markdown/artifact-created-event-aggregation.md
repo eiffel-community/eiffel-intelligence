@@ -11,7 +11,7 @@ message bus.
         },
         "type": "EiffelArtifactCreatedEvent",
         "id": "ccce572c-c364-441e-abc9-b62fed080ca2",
-        "version": "1.0.0"
+        "version": "3.0.0"
     },
     "links": [{
             "target": "23df3bd2-c620-42ce-80ba-b7ba6551c9f9",
@@ -53,11 +53,7 @@ message bus.
                 "classifier": ""
             }
         ],
-        "gav": {
-            "version": "1.53.0",
-            "artifactId": "sub-system",
-            "groupId": "com.mycompany.myproduct"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.53.0"
     }
     }
 
@@ -84,12 +80,12 @@ application.properties file as “rules.path”.
     "MatchIdRules": {
         "_id": "%IdentifyRules_objid%"
     },
-    "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, gav : data.gav, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
+    "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
     "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
     "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
     "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",
     "HistoryIdentifyRules": "links | [?type=='COMPOSITION'].target",
-    "HistoryExtractionRules": "{id : meta.id, gav : data.gav, fileInformation : data.fileInformation}",
+    "HistoryExtractionRules": "{id : meta.id, identity : data.identity, fileInformation : data.fileInformation}",
     "HistoryPathRules": "{artifacts: [{id: meta.id}]}",
     "ProcessRules": null,
     "ProcessFunction": null
@@ -124,11 +120,7 @@ following information will be extracted:
     "id": "ccce572c-c364-441e-abc9-b62fed080ca2",
     "type": "EiffelArtifactCreatedEvent",
     "time": 1473177136433,
-    "gav": {
-        "version": "1.53.0",
-        "artifactId": "sub-system",
-        "groupId": "com.mycompany.myproduct"
-    },
+    "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.53.0",
     "fileInformation": [{
         "extension": "jar",
         "classifier": "debug"

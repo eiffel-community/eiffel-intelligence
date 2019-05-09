@@ -37,8 +37,8 @@ Examples of this endpoint using curl
 Examples of criterias:
 
     // This returns all objects where the object.testCaseExecutions.outcome.id is"TC5"
-    // or object.testCaseExecutions.outcome.id is "TC6" and "object.gav.groupId"
-    // is "com.mycompany.myproduct".
+    // or object.testCaseExecutions.outcome.id is "TC6" and "object.identity"
+    // is "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0".
 
     {
       "criteria": {
@@ -49,13 +49,13 @@ Examples of criterias:
             "object.testCaseExecutions.outcome.id":"TC6"
           }
         ],
-        "object.gav.groupId":"com.mycompany.myproduct"
+        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
     }
 
 
     // This returns all objects where TC5 succeeded in
-    // the array testCaseExecutions and object.gav.groupId is "com.mycompany.myproduct".
+    // the array testCaseExecutions and object.identity is "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0".
     // Options section is optional.
 
     {
@@ -68,7 +68,7 @@ Examples of criterias:
         }
       },
       "options": {
-        "object.gav.groupId": "com.mycompany.myproduct"
+        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
     }
 
@@ -106,9 +106,9 @@ Examples of criterias:
     }
 
 NOTE: It should be noted that "object" is a key word.  It is replaced
-dynamically in the code, and is configured in the application.properties file.
-e.g., in string "object.testCaseExecutions.outcome.id", substring "object" is a
-key word.
+dynamically in the code, and is configured in the application.properties file with
+the search.query.prefix option. e.g., in string "object.testCaseExecutions.outcome.id",
+substring "object" is a key word.
 
 ## Example of freestyle query that returns all aggregated objects
 By using a query that contains only empty "criteria" it is possible to return
@@ -135,6 +135,7 @@ Example:
 
     // This match an object in the same way as in the previous example. And then filter
     // it and returns eventId that has a path "aggregatedObject.publications[0].eventId".
+    // aggregatedObject is the name of the aggregated object in the database.
 
     {
       "criteria": {
@@ -146,7 +147,7 @@ Example:
         }
       },
       "options": {
-        "object.gav.groupId": "com.mycompany.myproduct"
+        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       },
       "filter" : "aggregatedObject.publications[0].eventId"
     }
@@ -157,24 +158,21 @@ To filter with only the key or the partial path, it is required to use
 
 Example:
 
-    // This finds all objects where groupId is "com.mycompany.myproduct", artifactId is
-    // "sub-system" and version is "1.1.0". Then it filters those objects and returns
-    // all values that has "svnIdentifier" as a key.
+    // This finds all objects where identity is "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0".
+    // Then it filters those objects and returns all values that has "svnIdentifier" as a key.
 
     {
       "criteria": {
-         "object.gav.groupId":"com.mycompany.myproduct",
-         "object.gav.artifactId":"sub-system",
-         "object.gav.version":"1.1.0"
+         "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       },
       "filter" : "incomplete_path_filter(@, 'svnIdentifier')"
     }
 
 As the filter functionality takes a plain jmespath expression it can be a more
-complex expression aswell. In the case below we retrieve all aggregated objects
+complex expression as well. In the case below we retrieve all aggregated objects
 that contains a certain commit using the criteria(MongoDB query) and then filter
 out which confidence levels the artifact has succeeded on. NOTE that the Mongo
-DB query aswell as the jmespath expression needs to be on the same line as json
+DB query as well as the jmespath expression needs to be on the same line as json
 cannot handle multilines inside a string. Although some tools such as curl will
 automatically minimize.
 
@@ -184,7 +182,7 @@ Example
         "criteria": {
             "$where": "function(){ var searchKey = 'id'; var value = 'JIRA-1234'; return searchInObj(obj); function searchInObj(obj){ for (var k in obj){ if (obj[k] == value && k == searchKey) { return true;  } if (isObject(obj[k]) && obj[k] !== null) { if (searchInObj(obj[k])) { return true;}}} return false; }}"
         },
-        "filter": "{id: aggregatedObject.id, artifactGav:aggregatedObject.gav, confidenceLevels:aggregatedObject.confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
+        "filter": "{id: aggregatedObject.id, artifactIdentity:aggregatedObject.identity, confidenceLevels:aggregatedObject.confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
     }
 
 ## Query missed notifications

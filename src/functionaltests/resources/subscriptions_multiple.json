@@ -17,7 +17,7 @@
       {
         "conditions": [
           {
-            "jmespath": "split(data.identity, '/') | [2] =='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }
@@ -41,7 +41,7 @@
       {
         "conditions": [
           {
-            "jmespath": "split(data.identity, '/') | [2] =='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }
@@ -65,7 +65,7 @@
       {
         "conditions": [
           {
-            "jmespath": "split(data.identity, '/') | [2] =='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }

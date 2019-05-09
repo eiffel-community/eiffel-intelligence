@@ -23,7 +23,7 @@ Feature: Source change flow integrationtest
     REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct 
     data to add to parameter
 
-    Given the rules "src/main/resources/SourceChangeObjectRules.json"
+    Given the rules "src/main/resources/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestSourceChangeObjectEvents.json"
     And the upstream input "src/test/resources/UpstreamEventsForSourceChange.json"
     And the resulting aggregated object "src/test/resources/aggregatedSourceChangeObject.json";
@@ -55,7 +55,7 @@ Feature: Source change flow integrationtest
     REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct 
     data to add to parameter
 
-    Given the rules "src/main/resources/SourceChangeObjectRules.json"
+    Given the rules "src/main/resources/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestSourceChangeObjectEvents.json"
     And the upstream input "src/test/resources/UpstreamEventsForSourceChange.json"
     And the resulting aggregated object "src/test/resources/aggregatedSourceChangeObject.json";

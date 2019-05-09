@@ -21,7 +21,7 @@ public class TestExecutionRunnerIT {
         System.setProperty("missedNotificationCollectionName", "missed_notification_test_execution_change_flow");
         System.setProperty("sessions.collection.name", "sessions_test_execution_flow");
 
-        System.setProperty("rules.path", "/TestExecutionObjectRules.json");
+        System.setProperty("rules.path", "/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json");
         System.setProperty("rabbitmq.consumerName", "test_execution_queue");
     }
 }

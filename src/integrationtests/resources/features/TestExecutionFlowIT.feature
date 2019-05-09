@@ -24,7 +24,7 @@ Feature: Test execution flow integrationtest
     data to add to parameter
 
     # Setup Eiffel Intelligence
-    Given the rules "src/main/resources/TestExecutionObjectRules.json"
+    Given the rules "src/main/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestExecutionTestEvents.json"
     And the resulting aggregated object "src/test/resources/aggregatedTestActivityObject.json";
     Then the expected aggregated object ID is "e46ef12d-25gb-4d7y-b9fd-8763re66de47"
@@ -55,7 +55,7 @@ Feature: Test execution flow integrationtest
     data to add as a json parameter in the body. This with multiple parameters.
 
     # Setup Eiffel Intelligence
-    Given the rules "src/main/resources/TestExecutionObjectRules.json"
+    Given the rules "src/main/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestExecutionTestEvents.json"
     And the resulting aggregated object "src/test/resources/aggregatedTestActivityObject.json";
     Then the expected aggregated object ID is "e46ef12d-25gb-4d7y-b9fd-8763re66de47"

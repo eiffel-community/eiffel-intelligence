@@ -28,9 +28,9 @@ This situation may be needed when the events throughput is very high. In this ca
   <img src="images/multiple_EI_instances_same_rule.png">
 </img>
   
-### Confiure Eiffel-Intelligence and Extraction Rules for specific Eiffel protocol versions
+### Configure Eiffel-Intelligence with Extraction Rules for specific Eiffel protocol version
 
-Extraction Rules for specific Eiffel protocol versions is counfigured by setting "rules.path" in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties) to point to correct Extraction rules json file.
+Extraction Rules for specific Eiffel protocol versions is configured by setting "rules.path" in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties) to point to correct Extraction rules json file.
 
 Eiffel-Intelligence provides default extractions rules json files for different Eiffel protocol versions inside the war artifact file and in the source code repository.
 All default extraction rules json files can be found here: [ExtractionRules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules) 

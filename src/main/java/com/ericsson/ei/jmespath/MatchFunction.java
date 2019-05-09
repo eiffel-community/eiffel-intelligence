@@ -17,6 +17,16 @@ public class MatchFunction extends BaseFunction {
                 ArgumentConstraints.typeOf(JmesPathType.STRING)));
     }
 
+    /**
+     * This method match a regex pattern with a given string. It is used for
+     * extracting groupID component of GAV from purl
+     *
+     * @param string
+     *            A given string, in this case purl
+     * @param pattern
+     *            Any regex pattern
+     * @return matching pattern
+     */
     public String match(String string, String pattern) {
         final Pattern REQUIRED_PATTERN_REGEX = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = REQUIRED_PATTERN_REGEX.matcher(string);
@@ -26,15 +36,22 @@ public class MatchFunction extends BaseFunction {
         return "";
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see io.burt.jmespath.function.BaseFunction#callFunction(io.burt.jmespath.
+     * Adapter, java.util.List)
+     *
+     * Takes a string and regex pattern string. Then apply regex on the given string
+     * for a match
+     */
     @Override
     protected <T> T callFunction(Adapter<T> runtime, List<FunctionArgument<T>> arguments) {
-        T value1 = arguments.get(0)
-                            .value();
-        T value2 = arguments.get(1)
-                            .value();
-        String val1 = runtime.toString(value1);
-        String val2 = runtime.toString(value2);
-        String result = match(val1, val2);
+        T string_val = arguments.get(0).value();
+        T pattern_val = arguments.get(1).value();
+        String string = runtime.toString(string_val);
+        String pattern = runtime.toString(pattern_val);
+        String result = match(string, pattern);
         return runtime.createString(result.toString());
     }
 }

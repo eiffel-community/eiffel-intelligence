@@ -20,20 +20,36 @@ public class SplitFunction extends BaseFunction {
                 ArgumentConstraints.typeOf(JmesPathType.STRING)));
     }
 
+    /**
+     * This method separate a string parts based on a give separator. It is used for
+     * extracting component of GAV from purl
+     *
+     * @param string
+     *            A given string, in this case purl
+     * @param separator
+     *            Any separator pattern
+     * @return string array
+     */
     public String[] split(String string, String separator) {
         return string.split(separator);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see io.burt.jmespath.function.BaseFunction#callFunction(io.burt.jmespath.
+     * Adapter, java.util.List)
+     *
+     * Takes a string and separator string. Then apply the separator to separate
+     * string and returns an arrays of separated jsonNode(s) for a match
+     */
     @Override
     protected <T> T callFunction(Adapter<T> runtime, List<FunctionArgument<T>> arguments) {
-        // TODO Auto-generated method stub
-        T value1 = arguments.get(0)
-                            .value();
-        T value2 = arguments.get(1)
-                            .value();
-        String val1 = runtime.toString(value1);
-        String val2 = runtime.toString(value2);
-        String[] result = split(val1, val2);
+        T string_arg = arguments.get(0).value();
+        T separator_arg = arguments.get(1).value();
+        String string = runtime.toString(string_arg);
+        String separator = runtime.toString(separator_arg);
+        String[] result = split(string, separator);
 
         List<JsonNode> resultList = new ArrayList<>();
 

@@ -11,7 +11,7 @@ services:
 before_install:
   - sudo apt-get install -y openjdk-8-jdk
   - java -version
-  - sudo  update-java-alternatives --set openjdk-8-jdk
+  - sudo  update-java-alternatives --set java-8-openjdk-amd64/
   - java -version
   - uname -a
   - chmod +x pom.xml

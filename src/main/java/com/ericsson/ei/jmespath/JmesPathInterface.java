@@ -31,12 +31,12 @@ import io.burt.jmespath.jackson.JacksonRuntime;
 
 /**
  * Expose JMESPath functionality
- * 
+ *
  */
 @Component
 public class JmesPathInterface {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(JmesPathInterface.class);
+    static Logger log = LoggerFactory.getLogger(JmesPathInterface.class);
 
     private JmesPath<JsonNode> jmespath;
 
@@ -45,6 +45,8 @@ public class JmesPathInterface {
         FunctionRegistry customFunctions = defaultFunctions.extend(new DiffFunction());
         customFunctions = customFunctions.extend(new IncompletePathContainsFunction());
         customFunctions = customFunctions.extend(new IncompletePathFilterFunction());
+        customFunctions = customFunctions.extend(new SplitFunction());
+        customFunctions = customFunctions.extend(new MatchFunction());
         jmespath = new JacksonRuntime(customFunctions);
     }
 

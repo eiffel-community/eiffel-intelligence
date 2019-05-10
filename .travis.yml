@@ -1,15 +1,22 @@
 sudo: required
 
+dist: xenial
+
 language: java
 
 services:
   - docker
 
-jdk:
-  - oraclejdk8
+addons:
+  apt:
+    sources:
+      - ppa:webupd8team/java
+    packages:
+      - oracle-java8-installer 
 
 # Run before every job
 before_install:
+  - java -version
   - uname -a
   - chmod +x pom.xml
 

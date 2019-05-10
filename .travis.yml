@@ -5,17 +5,13 @@ dist: xenial
 language: java
 
 services:
-  - docker
-
-addons:
-  apt:
-    sources:
-      - ppa:webupd8team/java
-    packages:
-      - oracle-java8-installer 
+  - docker 
 
 # Run before every job
 before_install:
+  - sudo add-apt-repository ppa:webupd8team/java -y
+  - sudo apt-get update -q
+  - sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
   - java -version
   - uname -a
   - chmod +x pom.xml

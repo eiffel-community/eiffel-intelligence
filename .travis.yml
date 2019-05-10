@@ -13,6 +13,7 @@ before_install:
   - java -version
   - sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
   - java -version
+  - ls /usr/lib/jvm/java-8-openjdk-amd64
   - uname -a
   - chmod +x pom.xml
 

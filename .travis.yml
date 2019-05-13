@@ -13,7 +13,7 @@ env:
 # Run before every job
 before_install:
   - sudo apt-get update
-  - sudo apt-get remove default-jdk
+  - sudo apt-get remove -y default-jdk openjdk-11-jdk openjdk-10-jdk openjdk-9-jdk
   - sudo apt-get install -y openjdk-8-jdk
   - java -version
   - uname -a

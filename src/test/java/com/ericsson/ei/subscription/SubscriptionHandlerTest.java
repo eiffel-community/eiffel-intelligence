@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscriptionhandler.test;
+package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,10 +56,6 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscriber;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
-import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SendHttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

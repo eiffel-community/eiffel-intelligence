@@ -25,7 +25,7 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;

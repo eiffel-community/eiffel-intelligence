@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscription;
+package com.ericsson.ei.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -50,7 +50,6 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;

@@ -1,6 +1,5 @@
 package com.ericsson.ei.config;
 
-import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 
@@ -14,22 +13,35 @@ import com.ericsson.ei.rules.RulesHandler;
 
 
 @Component
-public class CheckEIConfigurations {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(CheckEIConfigurations.class);
-    
+public class ConfigurationValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationValidator.class);
+
     @Autowired
     Environment env;
-    
+
     @PostConstruct
-    public void logAndCheckConfiguration() {
-        
-        String rulePath = env.getProperty("rules.path");
-        
+    public void validate() {
+        logConfiguration();
+        checkLoadRulesFile();
+    }
+
+    private void checkLoadRulesFile() {
+        try {
+            String rulePath = env.getProperty("rules.path");
+            new RulesHandler().readRuleFileContent(rulePath);
+        } catch (Exception e) {
+            LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());
+        } finally {
+            LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
+        }
+    }
+
+    private void logConfiguration() {
         LOGGER.debug("EI Backend started with following configurations:\n"
                 + "server.port: " + env.getProperty("server.port") + "\n"
                 + "server.session-timeout: " + env.getProperty("server.session-timeout") + "\n"
-                + "rules.path: " + rulePath + "\n"
+                + "rules.path: " + env.getProperty("rules.path" + "\n"
                 + "rabbitmq.host: " + env.getProperty("rabbitmq.host") + "\n"
                 + "rabbitmq.port: " + env.getProperty("rabbitmq.port") + "\n"
                 + "rabbitmq.user: " + env.getProperty("rabbitmq.user") + "\n"
@@ -82,14 +94,6 @@ public class CheckEIConfigurations {
                 + "logging.level.root: " + env.getProperty("logging.level.root") + "\n"
                 + "logging.level.org.springframework.web: " + env.getProperty("logging.level.org.springframework.web") + "\n"
                 + "logging.level.com.ericsson.ei: " + env.getProperty("logging.level.com.ericsson.ei") + "\n"
-                + "\nThese properties are only some of the configuraitons, more configurations could have been provided.\n");
-        
-        try {
-            new RulesHandler().readRuleFileContent(rulePath);
-        } catch (Exception e) {
-            LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());
-        } finally {
-            LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
-        }
+                + "\nThese properties are only some of the configurations, more configurations could have been provided.\n");
     }
 }

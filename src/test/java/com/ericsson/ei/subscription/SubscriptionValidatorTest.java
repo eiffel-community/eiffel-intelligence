@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscriptionhandler.test;
+package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertTrue;
 import static org.powermock.reflect.Whitebox.invokeMethod;
@@ -29,7 +29,7 @@ import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.controller.model.Requirement;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+import com.ericsson.ei.subscription.SubscriptionValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)

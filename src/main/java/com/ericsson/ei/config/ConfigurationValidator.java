@@ -27,8 +27,8 @@ public class ConfigurationValidator {
     }
 
     private void checkLoadRulesFile() {
+        String rulePath = env.getProperty("rules.path");
         try {
-            String rulePath = env.getProperty("rules.path");
             new RulesHandler().readRuleFileContent(rulePath);
         } catch (Exception e) {
             LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());

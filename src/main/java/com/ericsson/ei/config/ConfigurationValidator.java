@@ -41,7 +41,7 @@ public class ConfigurationValidator {
         LOGGER.debug("EI Backend started with following configurations:\n"
                 + "server.port: " + env.getProperty("server.port") + "\n"
                 + "server.session-timeout: " + env.getProperty("server.session-timeout") + "\n"
-                + "rules.path: " + env.getProperty("rules.path" + "\n"
+                + "rules.path: " + env.getProperty("rules.path") + "\n"
                 + "rabbitmq.host: " + env.getProperty("rabbitmq.host") + "\n"
                 + "rabbitmq.port: " + env.getProperty("rabbitmq.port") + "\n"
                 + "rabbitmq.user: " + env.getProperty("rabbitmq.user") + "\n"

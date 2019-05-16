@@ -186,10 +186,9 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOG.error("Error: " + e.getMessage());
                 errorMap.put(subscriptionName, INVALID_USER);
             } catch (Exception e) {
-                String errorMessage = "Failed to delete subscriptions. Exception: " + e.getClass().toString()
-                        + ". Error message:\n" + e.getMessage();
+                String errorMessage = "Failed to delete subscriptions. Error message:\n" + e.getMessage();
                 LOG.error(errorMessage, e);
-                errorMap.put(subscriptionName, e.getMessage());
+                errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
             }
         });
         return getResponse();

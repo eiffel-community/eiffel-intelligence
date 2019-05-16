@@ -83,7 +83,7 @@ public class SubscriptionService implements ISubscriptionService {
 
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
-        if (list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             throw new SubscriptionNotFoundException("No record found for the Subscription Name:" + subscriptionName);
         }
         for (String input : list) {
@@ -163,7 +163,7 @@ public class SubscriptionService implements ISubscriptionService {
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
-        if (list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             throw new SubscriptionNotFoundException("No Subscriptions found");
         }
         for (String input : list) {
@@ -217,7 +217,9 @@ public class SubscriptionService implements ISubscriptionService {
     private boolean doSubscriptionOwnerExist(String subscriptionName) {
         boolean ownerExist = false;
         try {
-            if (!getSubscription(subscriptionName).getLdapUserName().isEmpty()) {
+            Subscription subscription = getSubscription(subscriptionName);
+            String getLdapUserName = subscription.getLdapUserName();
+            if (getLdapUserName != null && getLdapUserName.isEmpty()) {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {

@@ -23,7 +23,7 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.RunSubscription;
+import com.ericsson.ei.subscription.RunSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;

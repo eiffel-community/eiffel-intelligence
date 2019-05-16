@@ -19,7 +19,7 @@ package com.ericsson.ei.handlers;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,7 +28,6 @@ import com.mongodb.util.JSON;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -37,16 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import lombok.Setter;

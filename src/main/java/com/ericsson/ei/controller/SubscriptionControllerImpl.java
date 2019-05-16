@@ -43,7 +43,7 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+import com.ericsson.ei.subscription.SubscriptionValidator;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

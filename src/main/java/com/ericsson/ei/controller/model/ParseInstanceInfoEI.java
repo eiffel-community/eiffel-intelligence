@@ -19,9 +19,9 @@ package com.ericsson.ei.controller.model;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
-import com.ericsson.ei.subscriptionhandler.InformSubscriber;
-import com.ericsson.ei.subscriptionhandler.SendMail;
-import com.ericsson.ei.subscriptionhandler.SubscriptionHandler;
+import com.ericsson.ei.subscription.InformSubscriber;
+import com.ericsson.ei.subscription.SendMail;
+import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
 
@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;

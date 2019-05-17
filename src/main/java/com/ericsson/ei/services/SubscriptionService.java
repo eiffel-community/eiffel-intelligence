@@ -219,7 +219,7 @@ public class SubscriptionService implements ISubscriptionService {
         try {
             Subscription subscription = getSubscription(subscriptionName);
             String getLdapUserName = subscription.getLdapUserName();
-            if (getLdapUserName != null && getLdapUserName.isEmpty()) {
+            if (getLdapUserName != null && !getLdapUserName.isEmpty()) {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {

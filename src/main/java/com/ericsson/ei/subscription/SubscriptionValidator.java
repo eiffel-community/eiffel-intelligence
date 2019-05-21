@@ -44,9 +44,14 @@ public class SubscriptionValidator {
     private static final String SCHEMA_FILE_PATH = "/schemas/subscription_schema.json";
 
     /**
-     * Validation of parameters values in subscriptions objects. Throws
-     * SubscriptionValidationException if validation of a parameter fails due to
-     * wrong format of parameter.
+     * The private constructor forces all implementations to use the functions as static methods.
+     */
+    private SubscriptionValidator() {
+    }
+
+    /**
+     * Validation of parameters values in subscriptions objects. Throws SubscriptionValidationException
+     * if validation of a parameter fails due to wrong format of parameter.
      *
      * @param subscription
      */
@@ -65,9 +70,8 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of subscriptionName parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due
-     * to wrong format of parameter.
+     * Validation of subscriptionName parameter Throws SubscriptionValidationException if validation of
+     * the parameter fails due to wrong format of parameter.
      *
      * @param subscriptionName
      */
@@ -82,8 +86,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of NotificationMessageKeyValues parameters (key/values) Throws
-     * SubscriptionValidationException if validation of the parameter fails due
-     * to wrong format of parameter.
+     * SubscriptionValidationException if validation of the parameter fails due to wrong format of
+     * parameter.
      *
      * @param notificationMessage
      * @param restPostBodyMediaType
@@ -120,9 +124,8 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of notificationMeta parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due
-     * to wrong format of parameter.
+     * Validation of notificationMeta parameter Throws SubscriptionValidationException if validation of
+     * the parameter fails due to wrong format of parameter.
      *
      * @param notificationMeta
      * @param notificationType
@@ -137,15 +140,14 @@ public class SubscriptionValidator {
         if (Pattern.matches(regexMail, notificationType)) {
             String[] addresses = notificationMeta.split(",");
             for (String address : addresses) {
-                    validateEmail(address.trim());
+                validateEmail(address.trim());
             }
         }
     }
 
     /**
-     * Validation of notificationType parameter Throws
-     * SubscriptionValidationException if validation of the parameter fails due
-     * to wrong format of parameter.
+     * Validation of notificationType parameter Throws SubscriptionValidationException if validation of
+     * the parameter fails due to wrong format of parameter.
      *
      * @param notificationType
      */
@@ -172,8 +174,8 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of email address Throws SubscriptionValidationException if
-     * validation of the parameter fails due to wrong format of parameter.
+     * Validation of email address Throws SubscriptionValidationException if validation of the parameter
+     * fails due to wrong format of parameter.
      *
      * @param email
      */

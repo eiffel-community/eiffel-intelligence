@@ -18,6 +18,7 @@ package com.ericsson.ei.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +51,8 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
+import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -248,10 +251,32 @@ public class SubscriptionServiceTest {
             Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
             Mockito.when(authentication.getName()).thenReturn("ABC");
 
-            boolean deleteSubscription = subscriptionService.deleteSubscription(expectedSubscriptionName);
-            assertEquals(deleteSubscription, true);
+            boolean isDeleted = subscriptionService.deleteSubscription(expectedSubscriptionName);
+            assertEquals("Subscription should have been deleted: ", true, isDeleted);
         } catch (IOException | JSONException e) {
         }
+    }
+
+    @Test
+    public void testDeleteSubscriptionsMissingLdapUserName() throws AccessException, IOException {
+        String subscriptionName = "test_name";
+        SubscriptionObject subscriptionObject = new RestPostSubscriptionObject(subscriptionName);
+        String subscriptionString = subscriptionObject.toString();
+
+        // Remove ldapUserName key
+        String subscriptionStringWithoutLdapUserName = subscriptionString.replace("ldapUserName", "anotherKey");
+        Subscription subscription = mapper.readValue(subscriptionStringWithoutLdapUserName, Subscription.class);
+
+        // Ensure ldapUserName is null
+        String ldapUserName = subscription.getLdapUserName();
+        assertNull(ldapUserName);
+
+        // Create subscription in mongo db.
+        subscriptionService.addSubscription(subscription);
+
+        // Delete subscription
+        boolean isDeleted = subscriptionService.deleteSubscription(subscription.getSubscriptionName());
+        assertEquals("Subscription should have been deleted: ", true, isDeleted);
     }
 
     @Test

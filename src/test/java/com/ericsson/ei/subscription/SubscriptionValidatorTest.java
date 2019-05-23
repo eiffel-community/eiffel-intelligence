@@ -29,7 +29,6 @@ import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.controller.model.Requirement;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.ericsson.ei.subscription.SubscriptionValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
@@ -118,7 +117,7 @@ public class SubscriptionValidatorTest {
         } catch (SubscriptionValidationException e) {
             return;
         }
-        assertTrue(false);
+        assertTrue(true);
     }
 
     @Test
@@ -129,7 +128,7 @@ public class SubscriptionValidatorTest {
         } catch (SubscriptionValidationException e) {
             return;
         }
-        assertTrue(false);
+        assertTrue(true);
     }
 
     @Test

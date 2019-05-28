@@ -76,10 +76,15 @@ public class SubscriptionValidator {
      * @param subscriptionName
      */
     private static void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
-        String regex = "^[A-Za-z0-9_]+$";
+        // When this regExp need to be changed then remember to change the one in the
+        // back-end (invalidSubscriptionNameRegex in subscription.js), which do the same
+        // invalid subscription name check. The two
+        // regEx always need to be the same for ensuring the same check.
+        // /(\W)/ Is a regEx that matches anything that is not [A-Z,a-z,0-8] and _.
+        String invalidSubscriptionNameRegex = "(\\W)";
         if (subscriptionName == null) {
             throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
-        } else if (!Pattern.matches(regex, subscriptionName)) {
+        } else if (Pattern.matches(invalidSubscriptionNameRegex, subscriptionName)) {
             throw new SubscriptionValidationException("Wrong format of SubscriptionName: " + subscriptionName);
         }
     }
@@ -180,7 +185,12 @@ public class SubscriptionValidator {
      * @param email
      */
     public static void validateEmail(String email) throws SubscriptionValidationException {
-        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+        // When this regExp need to be changed then remember to change the one in the
+        // back-end (validEmailRegExpression in subscription.js), which do the same
+        // email validation check. The two
+        // regEx always need to be the same for ensuring the same check.
+        String validEmailRegExpression = "^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegExpression,
                 Pattern.CASE_INSENSITIVE);
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         if (!(matcher.matches())) {

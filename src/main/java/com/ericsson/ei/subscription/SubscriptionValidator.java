@@ -16,11 +16,13 @@
 */
 package com.ericsson.ei.subscription;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -28,6 +30,7 @@ import org.springframework.http.MediaType;
 import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.eiffelcommons.utils.RegExProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JsonLoader;
@@ -44,14 +47,16 @@ public class SubscriptionValidator {
     private static final String SCHEMA_FILE_PATH = "/schemas/subscription_schema.json";
 
     /**
-     * The private constructor forces all implementations to use the functions as static methods.
+     * The private constructor forces all implementations to use the functions as
+     * static methods.
      */
     private SubscriptionValidator() {
     }
 
     /**
-     * Validation of parameters values in subscriptions objects. Throws SubscriptionValidationException
-     * if validation of a parameter fails due to wrong format of parameter.
+     * Validation of parameters values in subscriptions objects. Throws
+     * SubscriptionValidationException if validation of a parameter fails due to
+     * wrong format of parameter.
      *
      * @param subscription
      */
@@ -70,18 +75,22 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of subscriptionName parameter Throws SubscriptionValidationException if validation of
-     * the parameter fails due to wrong format of parameter.
+     * Validation of subscriptionName parameter Throws
+     * SubscriptionValidationException if validation of the parameter fails due to
+     * wrong format of parameter.
      *
      * @param subscriptionName
      */
     private static void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
-        // When this regExp need to be changed then remember to change the one in the
-        // back-end (invalidSubscriptionNameRegex in subscription.js), which do the same
-        // invalid subscription name check. The two
-        // regEx always need to be the same for ensuring the same check.
-        // /(\W)/ Is a regEx that matches anything that is not [A-Z,a-z,0-8] and _.
-        String invalidSubscriptionNameRegex = "(\\W)";
+        // Here the regEx used is :/(\W)/ that matches anything that is not
+        // [A-Z,a-z,0-8] and _.
+        String invalidSubscriptionNameRegex = null;
+        try {
+            invalidSubscriptionNameRegex = (String) RegExProvider.getRegExs().get("invalidName");
+        } catch (JSONException | IOException e) {
+            LOGGER.error("Error message: " + e.getMessage(), e);
+        }
+
         if (subscriptionName == null) {
             throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
         } else if (Pattern.matches(invalidSubscriptionNameRegex, subscriptionName)) {
@@ -91,8 +100,8 @@ public class SubscriptionValidator {
 
     /**
      * Validation of NotificationMessageKeyValues parameters (key/values) Throws
-     * SubscriptionValidationException if validation of the parameter fails due to wrong format of
-     * parameter.
+     * SubscriptionValidationException if validation of the parameter fails due to
+     * wrong format of parameter.
      *
      * @param notificationMessage
      * @param restPostBodyMediaType
@@ -129,8 +138,9 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of notificationMeta parameter Throws SubscriptionValidationException if validation of
-     * the parameter fails due to wrong format of parameter.
+     * Validation of notificationMeta parameter Throws
+     * SubscriptionValidationException if validation of the parameter fails due to
+     * wrong format of parameter.
      *
      * @param notificationMeta
      * @param notificationType
@@ -151,8 +161,9 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of notificationType parameter Throws SubscriptionValidationException if validation of
-     * the parameter fails due to wrong format of parameter.
+     * Validation of notificationType parameter Throws
+     * SubscriptionValidationException if validation of the parameter fails due to
+     * wrong format of parameter.
      *
      * @param notificationType
      */
@@ -179,19 +190,19 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of email address Throws SubscriptionValidationException if validation of the parameter
-     * fails due to wrong format of parameter.
+     * Validation of email address Throws SubscriptionValidationException if
+     * validation of the parameter fails due to wrong format of parameter.
      *
      * @param email
      */
     public static void validateEmail(String email) throws SubscriptionValidationException {
-        // When this regExp need to be changed then remember to change the one in the
-        // back-end (validEmailRegExpression in subscription.js), which do the same
-        // email validation check. The two
-        // regEx always need to be the same for ensuring the same check.
-        String validEmailRegExpression = "^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegExpression,
-                Pattern.CASE_INSENSITIVE);
+        String validEmailRegEx = null;
+        try {
+            validEmailRegEx = (String) RegExProvider.getRegExs().get("validEmail");
+        } catch (JSONException | IOException e) {
+            LOGGER.error("Error message: " + e.getMessage(), e);
+        }
+        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         if (!(matcher.matches())) {
             throw new SubscriptionValidationException(

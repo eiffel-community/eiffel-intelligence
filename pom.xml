@@ -68,9 +68,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.eiffel-community</groupId>
-            <artifactId>eiffel-commons</artifactId>
-            <version>0.0.4</version>
+            <groupId>com.github.ericsson</groupId>
+            <artifactId>eiffel-commons-java</artifactId>
+            <version>0.0.6</version>
         </dependency>
 
         <dependency>

@@ -86,13 +86,15 @@ public class SubscriptionValidator {
         // [A-Z,a-z,0-8] and _.
         String invalidSubscriptionNameRegex = null;
         try {
-            invalidSubscriptionNameRegex = (String) RegExProvider.getRegExs().get("invalidName");
+            invalidSubscriptionNameRegex = RegExProvider.getRegExs().getString("invalidName");
         } catch (JSONException | IOException e) {
             LOGGER.error("Error message: " + e.getMessage(), e);
         }
 
         if (subscriptionName == null) {
             throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
+        } else if (invalidSubscriptionNameRegex == null || invalidSubscriptionNameRegex.isEmpty()) {
+            throw new SubscriptionValidationException("A valid regEx is not provided");
         } else if (Pattern.matches(invalidSubscriptionNameRegex, subscriptionName)) {
             throw new SubscriptionValidationException("Wrong format of SubscriptionName: " + subscriptionName);
         }
@@ -198,16 +200,21 @@ public class SubscriptionValidator {
     public static void validateEmail(String email) throws SubscriptionValidationException {
         String validEmailRegEx = null;
         try {
-            validEmailRegEx = (String) RegExProvider.getRegExs().get("validEmail");
+            validEmailRegEx = RegExProvider.getRegExs().getString("validEmail");
         } catch (JSONException | IOException e) {
             LOGGER.error("Error message: " + e.getMessage(), e);
         }
-        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
-        if (!(matcher.matches())) {
-            throw new SubscriptionValidationException(
-                    "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["
-                            + email + "]");
+
+        if (validEmailRegEx == null || validEmailRegEx.isEmpty()) {
+            throw new SubscriptionValidationException("A valid regEx for email is not provided");
+        } else {
+            final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+            if (!(matcher.matches())) {
+                throw new SubscriptionValidationException(
+                        "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["
+                                + email + "]");
+            }
         }
     }
 

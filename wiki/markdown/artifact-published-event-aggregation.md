@@ -1,6 +1,6 @@
 # ArtifactPublishedEvent Aggregation
 
-Consider an artifact has been published and EiffelTestCaseStarted event is
+Consider an artifact has been published and EiffelArtifactPublished event is
 generated as follow:
 
     {

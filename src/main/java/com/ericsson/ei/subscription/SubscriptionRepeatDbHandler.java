@@ -95,7 +95,7 @@ public class SubscriptionRepeatDbHandler {
         }
 
         if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.error("Couldn't update SubscriptionMathced id.");
+            LOGGER.error("Couldn't update SubscriptionMatched id.");
             LOGGER.debug(
                     "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
             BasicDBObject document = new BasicDBObject();

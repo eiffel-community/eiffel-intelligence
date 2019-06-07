@@ -209,14 +209,13 @@ public class SubscriptionValidator {
         if (validEmailRegEx == null || validEmailRegEx.isEmpty()) {
             throw new SubscriptionValidationException(
                     "A valid regular expression for subscription email validation is not provided");
-        } else {
-            final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
-            if (!(matcher.matches())) {
-                throw new SubscriptionValidationException(
-                        "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["
-                                + email + "]");
-            }
+        }
+        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        if (!(matcher.matches())) {
+            throw new SubscriptionValidationException(
+                    "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["
+                            + email + "]");
         }
     }
 

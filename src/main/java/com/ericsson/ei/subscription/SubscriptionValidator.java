@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +86,7 @@ public class SubscriptionValidator {
         // Here the regEx used is :/(\W)/ that matches anything that is not
         // [A-Z,a-z,0-8] and _.
         String invalidSubscriptionNameRegex = null;
-        try {
-            invalidSubscriptionNameRegex = RegExProvider.getRegExs().getString("invalidName");
-        } catch (JSONException | IOException e) {
-            LOGGER.error("Error message: " + e.getMessage(), e);
-        }
+        invalidSubscriptionNameRegex = RegExProvider.SUBSCRIPTION_NAME;
 
         if (subscriptionName == null) {
             throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
@@ -200,11 +197,7 @@ public class SubscriptionValidator {
      */
     public static void validateEmail(String email) throws SubscriptionValidationException {
         String validEmailRegEx = null;
-        try {
-            validEmailRegEx = RegExProvider.getRegExs().getString("validEmail");
-        } catch (JSONException | IOException e) {
-            LOGGER.error("Error message: " + e.getMessage(), e);
-        }
+        validEmailRegEx = RegExProvider.NOTIFICATION_META;
 
         if (validEmailRegEx == null || validEmailRegEx.isEmpty()) {
             throw new SubscriptionValidationException(

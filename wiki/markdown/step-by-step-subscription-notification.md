@@ -1,11 +1,5 @@
 # Step By Step Subscription Notification
 
-Whenever an aggregated object is created or modified, it is evaluated against
-all registered subscriptions to find out whether it meets any subscription
-requirements. If it fulfils a subscription requirement then notification is
-sent to the subscriber as specified in that subscription. For further explanation,
-consider the following example:
-
 Suppose a subscription is created (as shown below) by a user and then that is
 stored in the subscription database. More detail about subscription and its fields can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
 and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/Add-Subscription.md).

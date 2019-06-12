@@ -99,7 +99,7 @@ public class ObjectHandlerTest {
             log.error(e.getMessage(), e);
         }
         rulesObject = new RulesObject(rulesJson);
-        assertTrue(objHandler.insertObject(input, rulesObject, event, null));
+        objHandler.insertObject(input, rulesObject, event, null);
     }
 
     @Test

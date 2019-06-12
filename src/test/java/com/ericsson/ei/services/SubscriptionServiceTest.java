@@ -132,16 +132,11 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testInsertSubscription() {
-        Subscription subscription;
-        try {
-            subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-            boolean addSubscription = subscriptionService.addSubscription(subscription);
-            assertEquals(addSubscription, true);
-            // deleting the test data
-            deleteSubscriptionsByName(subscription.getSubscriptionName());
-        } catch (Exception e) {
-        }
+    public void testInsertSubscription() throws Exception {
+        Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+        subscriptionService.addSubscription(subscription);
+        // deleting the test data
+        deleteSubscriptionsByName(subscription.getSubscriptionName());
     }
 
     @Test

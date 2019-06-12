@@ -62,7 +62,7 @@ public class MongoDBHandlerTest {
         setUpEmbeddedMongo();
         mongoDBHandler = new MongoDBHandler();
         mongoDBHandler.setMongoClient(mongoClient);
-        assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, input));
+        mongoDBHandler.insertDocument(dataBaseName, collectionName, input);
     }
 
     @Test

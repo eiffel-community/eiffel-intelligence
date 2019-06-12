@@ -50,6 +50,7 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoWriteException;
 
 import lombok.Getter;
 
@@ -414,17 +415,18 @@ public class InformSubscriber {
      * @param notificationMeta
      */
     private void saveMissedNotificationToDB(String aggregatedObject, String subscriptionName, String notificationMeta) {
-        String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
-        LOGGER.debug("Input missed Notification document : " + input);
-        mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
-                ttlValue);
-        boolean output = mongoDBHandler.insertDocument(missedNotificationDataBaseName, missedNotificationCollectionName,
-                input);
+        try {
+            String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
+            LOGGER.debug("Input missed Notification document : " + input);
 
-        if (!output) {
-            LOGGER.debug("Failed to insert the notification into database");
-        } else
+            mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
+                    ttlValue);
+            mongoDBHandler.insertDocument(missedNotificationDataBaseName, missedNotificationCollectionName,
+                    input);
             LOGGER.debug("Notification saved in the database");
+        } catch (MongoWriteException e) {
+            LOGGER.debug("Failed to insert the notification into database");
+        }
     }
 
     /**

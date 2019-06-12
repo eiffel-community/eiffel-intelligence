@@ -41,9 +41,8 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     MongoDBHandler mongoDBHandler;
 
     @Override
-    public boolean addSubscription(String StringSubscription) {
-        return mongoDBHandler.insertDocument(dataBaseName, collectionName, StringSubscription);
-
+    public void addSubscription(String StringSubscription) {
+        mongoDBHandler.insertDocument(dataBaseName, collectionName, StringSubscription);
     }
 
     @Override

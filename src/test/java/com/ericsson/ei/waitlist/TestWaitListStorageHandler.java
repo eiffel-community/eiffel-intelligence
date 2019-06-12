@@ -48,7 +48,7 @@ public class TestWaitListStorageHandler {
     private final String rulesPath = "src/test/resources/WaitlistStorageHandlerRule.json";
     private final String eventPath = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private final String inputJson1="src/test/resources/testWaitListinput1.json";
-    
+
     ArrayList<String> output=new ArrayList<String>();
 
     @Before
@@ -56,7 +56,6 @@ public class TestWaitListStorageHandler {
         MockitoAnnotations.initMocks(this);
         output.add(FileUtils.readFileToString(new File(inputJson1), "UTF-8"));
         Mockito.when(mongoDBHandler.getAllDocuments(Mockito.any(), Mockito.any())).thenReturn(output);
-        Mockito.when(mongoDBHandler.insertDocument(Mockito.any(), Mockito.any(),Mockito.anyString())).thenReturn(true);
         waitListStorageHandler.setMongoDbHandler(mongoDBHandler);
         waitListStorageHandler.setJmesPathInterface(jmespath);
     }

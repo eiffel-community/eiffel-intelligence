@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.rmqhandler;
+package com.ericsson.ei.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.listener.EIMessageListenerAdapter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -112,7 +112,7 @@ public class RmqHandler {
 
 
     @Bean
-    ConnectionFactory connectionFactory() {
+    public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
 
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {

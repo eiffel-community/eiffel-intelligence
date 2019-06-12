@@ -17,12 +17,16 @@
 package com.ericsson.ei.subscription;
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoWriteException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,69 +86,71 @@ public class SubscriptionRepeatDbHandler {
      * Function that stores the matched aggregatedObjectId to the database.
      *
      */
-    public void addMatchedAggrObjToSubscriptionId(String subscriptionId, int requirementId, String aggrObjId)
-            throws Exception {
+    public void addMatchedAggrObjToSubscriptionId(String subscriptionId, int requirementId, String aggrObjId) {
+        try {
+            LOGGER.debug("Adding/Updating matched AggrObjId: " + aggrObjId + " to SubscriptionsId: " + subscriptionId
+                    + " aggrId matched list");
 
-        LOGGER.debug("Adding/Updating matched AggrObjId: " + aggrObjId + " to SubscriptionsId: " + subscriptionId
-                + " aggrId matched list");
-
-        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.debug("Subscription: " + subscriptionId + " and AggrObjId, " + aggrObjId
-                    + " has already been matched." + "No need to register the subscription match.");
-            return;
-        }
-
-        if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.error("Couldn't update SubscriptionMatched id.");
-            LOGGER.debug(
-                    "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
-            BasicDBObject document = new BasicDBObject();
-            document.put("subscriptionId", subscriptionId);
-
-            ArrayList<String> aggrObjIdsList = new ArrayList<String>();
-            aggrObjIdsList.add(aggrObjId);
-
-            BasicDBObject reqDocument = new BasicDBObject();
-            reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
-
-            document.put("requirements", reqDocument);
-
-            LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
-            boolean result = mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
-            if (result == false) {
-                throw new Exception("Failed to insert the document into database");
+            if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId)) {
+                LOGGER.debug("Subscription: " + subscriptionId + " and AggrObjId, " + aggrObjId
+                        + " has already been matched." + "No need to register the subscription match.");
+                return;
             }
+
+            if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
+                LOGGER.error("Couldn't update SubscriptionMatched id.");
+                LOGGER.debug(
+                        "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
+                BasicDBObject document = new BasicDBObject();
+                document.put("subscriptionId", subscriptionId);
+
+                ArrayList<String> aggrObjIdsList = new ArrayList<String>();
+                aggrObjIdsList.add(aggrObjId);
+
+                BasicDBObject reqDocument = new BasicDBObject();
+                reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
+
+                document.put("requirements", reqDocument);
+
+                LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
+                mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
+            }
+        } catch (MongoWriteException e) {
+            LOGGER.error("Failed to insert the document into database");
+            e.printStackTrace();
         }
+
     }
 
     private boolean updateExistingMatchedSubscriptionWithAggrObjId(String subscriptionId, int requirementId,
-            String aggrObjId) throws Exception {
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-        JsonNode updateDocJsonNode = mapper.readValue(
-                "{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
-        LOGGER.debug("SubscriptionId \"", subscriptionId +
-                "\" document will be updated with following requirement update object: "
-                        + updateDocJsonNode.toString());
+            String aggrObjId) {
 
-        JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
-
-        Document document = null;
         try {
+            String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+            JsonNode updateDocJsonNode = mapper.readValue(
+                    "{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
+            LOGGER.debug("SubscriptionId \"", subscriptionId +
+                    "\" document will be updated with following requirement update object: "
+                            + updateDocJsonNode.toString());
+
+            JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
+
+            Document document = null;
+
             document = mongoDbHandler.findAndModify(dataBaseName, collectionName, queryJsonNode.toString(),
                     updateDocJsonNode.toString());
+            if (document != null && !document.isEmpty()) {
+                LOGGER.debug("Successfully updated Matched Subscription Aggregated Object list:" +
+                             "\nfor subscriptionId: " + subscriptionId +
+                             "\nwith Aggregated Object Id: " + aggrObjId +
+                             "\nwith matched Requirement Id: " + requirementId);
+                return true;
+            }
         } catch (Exception e) {
-            LOGGER.debug("Failed to update existing matched SubscriptionId with new AggrId." + "SubscriptionId: "
+            LOGGER.error("Failed to update existing matched SubscriptionId with new AggrId." + "SubscriptionId: "
                     + subscriptionId + "New matched AggrObjId: " + aggrObjId + "RequirementId that have matched: "
                     + requirementId);
             return false;
-        }
-        if (document != null && !document.isEmpty()) {
-            LOGGER.debug("Successfully updated Matched Subscription Aggregated Object list:" +
-                         "\nfor subsruptionId: " + subscriptionId +
-                         "\nwith Aggregated Object Id: " + aggrObjId +
-                         "\nwith matched Requirement Id: " + requirementId);
-
-            return true;
         }
         return false;
     }

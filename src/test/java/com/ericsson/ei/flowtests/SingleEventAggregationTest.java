@@ -100,8 +100,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
             String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
             JSONArray jsonArray = new JSONArray(readFileToString);
             Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-            boolean addSubscription = subscriptionService.addSubscription(subscription);
-            assertEquals(addSubscription, true);
+            subscriptionService.addSubscription(subscription);
         } catch (Exception e) {
 
         }

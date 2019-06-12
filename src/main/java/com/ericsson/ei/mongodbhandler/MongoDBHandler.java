@@ -66,7 +66,7 @@ public class MongoDBHandler {
     public void init() {
         createConnection();
     }
-    
+
     @PreDestroy
     public void close() {
         mongoClient.close();
@@ -93,21 +93,15 @@ public class MongoDBHandler {
      * @param input          json String
      * @return
      */
-    public boolean insertDocument(String dataBaseName, String collectionName, String input) {
-        try {
-            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            if (collection != null) {
-                final Document dbObjectInput = Document.parse(input);
-                collection.insertOne(dbObjectInput);
-                log.debug("Object : " + input);
-                log.debug("inserted successfully in ");
-                log.debug("collection : " + collectionName + "and db : " + dataBaseName);
-                return true;
-            }
-        } catch (MongoWriteException e) {
-            log.error(e.getMessage(), e);
+    public void insertDocument(String dataBaseName, String collectionName, String input) throws MongoWriteException {
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        if (collection != null) {
+            final Document dbObjectInput = Document.parse(input);
+            collection.insertOne(dbObjectInput);
+            log.debug("Object : " + input);
+            log.debug("inserted successfully in ");
+            log.debug("collection : " + collectionName + "and db : " + dataBaseName);
         }
-        return false;
     }
 
     /**

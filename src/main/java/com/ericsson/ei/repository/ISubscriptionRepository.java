@@ -31,7 +31,7 @@ public interface ISubscriptionRepository {
 
     boolean deleteSubscription(String name);
 
-    boolean addSubscription(String subscription);
+    void addSubscription(String subscription);
 
     MongoDBHandler getMongoDbHandler();
 

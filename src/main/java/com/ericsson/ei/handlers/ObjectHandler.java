@@ -76,7 +76,7 @@ public class ObjectHandler {
     @Value("${aggregated.collection.ttlValue}")
     private String ttlValue;
 
-    public boolean insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -89,13 +89,12 @@ public class ObjectHandler {
             mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
         }
 
-        boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
-        postInsertActions(aggregatedObject, rulesObject, event, id, result);
-        return result;
+        mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
+        postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
-    public boolean insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
-        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
+        insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -113,7 +112,7 @@ public class ObjectHandler {
      *            String
      * @return true if operation succeed
      */
-    public boolean updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+    public void updateObject(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -123,21 +122,17 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
-        boolean result = mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
-        postInsertActions(aggregatedObject, rulesObject, event, id, result);
-        return result;
+        mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
-    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id,
-            boolean performActions) {
-        if (performActions) {
-            eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-            subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
-        }
+    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 
-    public boolean updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
-        return updateObject(aggregatedObject.toString(), rulesObject, event, id);
+    public void updateObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) {
+        updateObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     public List<String> findObjectsByCondition(String condition) {

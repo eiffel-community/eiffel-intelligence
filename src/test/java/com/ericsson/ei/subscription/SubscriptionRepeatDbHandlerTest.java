@@ -85,131 +85,116 @@ public class SubscriptionRepeatDbHandlerTest {
 
     @Before
     public void beforeTests() {
-    	mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
+        mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
 
     @Test
-	public void addOneNewMatchedAggrIdToDatabase() {
+    public void addOneNewMatchedAggrIdToDatabase() {
 
-    	String subscriptionId = "12345";
-		int requirementId = 0;
-		String aggrObjId = "99999";
+        String subscriptionId = "12345";
+        int requirementId = 0;
+        String aggrObjId = "99999";
 
-		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
-    	try {
-			subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
-    	BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
 
-    	assertEquals(subscriptionId, dbResult.get("subscriptionId").toString());
+        assertEquals(subscriptionId, dbResult.get("subscriptionId").toString());
 
-    	String actual = dbResult.get("requirements").toString();
-    	String expected = "{ \"0\" : [ " +  "\"" + aggrObjId + "\"" + "]}";
+        String actual = dbResult.get("requirements").toString();
+        String expected = "{ \"0\" : [ " +  "\"" + aggrObjId + "\"" + "]}";
 
 
-    	boolean result = true;
-    	if (expected == actual) {
-    		result = false;
-        	log.error("\nACTUAL: |" + actual + "|\nEXPECTED: |" + expected + "|");
+        boolean result = true;
+        if (expected == actual) {
+            result = false;
+            log.error("\nACTUAL: |" + actual + "|\nEXPECTED: |" + expected + "|");
 
-    	}
-		assertEquals(true, result);
-	}
+        }
+        assertEquals(true, result);
+    }
 
     @Test
-	public void addTwoNewMatchedAggrIdToDatabase() {
+    public void addTwoNewMatchedAggrIdToDatabase() {
 
-    	String subscriptionId = "12345";
-		int requirementId = 0;
-		String aggrObjId = "99999";
+        String subscriptionId = "12345";
+        int requirementId = 0;
+        String aggrObjId = "99999";
 
-	  	String subscriptionId2 = "98754";
-	  	int requirementId2 = 1;
-		String aggrObjId2 = "45678";
+          String subscriptionId2 = "98754";
+          int requirementId2 = 1;
+        String aggrObjId2 = "45678";
 
-		String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
+        String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
 
-    	try {
-			subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
-    	try {
-			subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
 
-    	BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
 
-    	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
+        assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
 
-    	String actual = dbResult.get("requirements").toString();
-    	String expected = "{ \"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]}";
+        String actual = dbResult.get("requirements").toString();
+        String expected = "{ \"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]}";
 
 
-    	String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
-    	boolean result = true;
-    	if (!expected.equals(actual)) {
-    		result = false;
-        	log.error(msg);
-    	}
+        String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
+        boolean result = true;
+        if (!expected.equals(actual)) {
+            result = false;
+            log.error(msg);
+        }
 
-		assertEquals(msg, result, true);
-	}
+        assertEquals(msg, result, true);
+    }
 
     @Test
-	public void addTwoNewSameMatchedAggrIdToDatabase() {
+    public void addTwoNewSameMatchedAggrIdToDatabase() {
 
-    	String subscriptionId = "12345";
-		int requirementId = 0;
-		String aggrObjId = "99999";
+        String subscriptionId = "12345";
+        int requirementId = 0;
+        String aggrObjId = "99999";
 
-	  	String subscriptionId2 = "12345";
-	  	int requirementId2 = 0;
-		String aggrObjId2 = "99998";
+          String subscriptionId2 = "12345";
+          int requirementId2 = 0;
+        String aggrObjId2 = "99998";
 
-		String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-
-
-    	try {
-			subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-    	try {
-			subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-    	BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
-
-    	assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
-    	log.error("DB REQUIREMENTS: " + dbResult.get("requirements").toString());
-    	log.error("DB Content: " + dbResult.toString());
+        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
 
-    	String actual = dbResult.get("requirements").toString();
-    	String expected = "{ \"0\" : [ \"" + aggrObjId + "\" , \"" + aggrObjId2 + "\"]}";
-    	String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
-    	boolean result = true;
-    	if (!expected.equals(actual)) {
-    		result = false;
-        	log.error(msg);
-    	}
+        try {
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
 
-		assertEquals(msg, result, true);
-	}
+        try {
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+
+        assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
+        log.error("DB REQUIREMENTS: " + dbResult.get("requirements").toString());
+        log.error("DB Content: " + dbResult.toString());
+
+
+        String actual = dbResult.get("requirements").toString();
+        String expected = "{ \"0\" : [ \"" + aggrObjId + "\" , \"" + aggrObjId2 + "\"]}";
+        String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
+        boolean result = true;
+        if (!expected.equals(actual)) {
+            result = false;
+            log.error(msg);
+        }
+
+        assertEquals(msg, result, true);
+    }
 }

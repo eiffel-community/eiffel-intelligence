@@ -114,13 +114,8 @@ public class RunSubscription {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
                     LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
-                    try {
-                        subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
-                                requirementIndex, id);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
-                        e.printStackTrace();
-                    }
+                    subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
+                            requirementIndex, id);
                 }
             }
 

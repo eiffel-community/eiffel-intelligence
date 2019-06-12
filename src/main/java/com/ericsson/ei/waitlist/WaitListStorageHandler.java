@@ -21,6 +21,7 @@ import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoWriteException;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -63,15 +64,17 @@ public class WaitListStorageHandler {
     @Autowired
     private JmesPathInterface jmesPathInterface;
 
-    public void addEventToWaitList(String event, RulesObject rulesObject) throws Exception {
-        String condition = "{\"_id\" : \"" + new JSONObject(event).getJSONObject("meta").getString("id") + "\"}";
-        List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
-        if (foundEventsInWaitList.isEmpty()) {
-            String input = addPropertiesToEvent(event, rulesObject);
-            boolean result = mongoDbHandler.insertDocument(databaseName, collectionName, input);
-            if (!result) {
-                throw new Exception("Failed to insert the document into database");
+    public void addEventToWaitList(String event, RulesObject rulesObject) {
+        try {
+            String condition = "{\"_id\" : \"" + new JSONObject(event).getJSONObject("meta").getString("id") + "\"}";
+            List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
+            if (foundEventsInWaitList.isEmpty()) {
+                String input = addPropertiesToEvent(event, rulesObject);
+                mongoDbHandler.insertDocument(databaseName, collectionName, input);
             }
+        } catch (MongoWriteException e) {
+            LOGGER.debug("Failed to insert event into waitlist");
+            e.printStackTrace();
         }
     }
 

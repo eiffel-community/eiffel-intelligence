@@ -64,15 +64,11 @@ public class SubscriptionService implements ISubscriptionService {
     private ISubscriptionRepository subscriptionRepository;
 
     @Override
-    public boolean addSubscription(Subscription subscription) {
+    public void addSubscription(Subscription subscription) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
-        try {
-            stringSubscription = mapper.writeValueAsString(subscription);
-            return subscriptionRepository.addSubscription(stringSubscription);
-        } catch (JsonProcessingException e) {
-            return false;
-        }
+        stringSubscription = mapper.writeValueAsString(subscription);
+        subscriptionRepository.addSubscription(stringSubscription);
     }
 
     @Override

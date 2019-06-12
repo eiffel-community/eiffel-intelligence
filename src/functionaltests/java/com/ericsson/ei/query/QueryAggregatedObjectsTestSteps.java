@@ -93,17 +93,14 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         boolean aggregatedObjectExists = aggregatedObject.size() > 0;
         if (!aggregatedObjectExists) {
-            aggregatedObjectExists = createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
+            createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
         }
-
-        assertEquals(true, aggregatedObjectExists);
     }
 
     @Given("^Missed Notification object is created$")
     public void missed_notification_object_is_created() throws Throwable {
         LOGGER.debug("Missed Notification object has been created in MongoDb");
-        assertEquals(true, createDocumentInMongoDb(missedNotificationDatabaseName, missedNotificationCollectionName,
-                missedNotificationObj));
+        createDocumentInMongoDb(missedNotificationDatabaseName, missedNotificationCollectionName, missedNotificationObj);
     }
 
     @Then("^Perform valid query on created Aggregated object")
@@ -474,9 +471,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
      *         successfully created in database.
      *
      */
-    private boolean createDocumentInMongoDb(String databaseName, String collectionName, String objToBeInserted) {
+    private void createDocumentInMongoDb(String databaseName, String collectionName, String objToBeInserted) {
         LOGGER.debug("Inserting Object to MongoDb.\nDatabase: " + databaseName + "\nCollection: " + collectionName
                 + "\nDocument to be inserted\n: " + objToBeInserted);
-        return mongoDBHandler.insertDocument(databaseName, collectionName, objToBeInserted);
+        mongoDBHandler.insertDocument(databaseName, collectionName, objToBeInserted);
     }
 }

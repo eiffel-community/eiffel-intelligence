@@ -2,7 +2,7 @@
 
 Suppose a subscription is created (as shown below) by a user and then that is
 stored in the subscription database. More detail about subscription and its fields can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
-and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/Add-Subscription.md).
+and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
 
     {
         "created": "2017-07-26",

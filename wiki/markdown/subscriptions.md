@@ -14,8 +14,8 @@ sent to the subscriber as specified in that subscription. For further explanatio
 ### Adding subscriptions
 It is possible to add subscriptions using the Eiffel Intelligence
 front-end GUI. More information [can be found here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)
-
 It is also possible to manage subscriptions [using the REST API](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md).
+
 
 ### Adding comments inside subscription
 

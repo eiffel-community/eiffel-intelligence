@@ -22,7 +22,18 @@
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence
-Eiffel Intelligence is a real time data aggregation and analysis solution for Eiffel events. While Eiffel represents an event based architecture, Eiffel Intelligence addresses the need of stakeholders to view the current state of the system by bridging the divide from immutable events to mutable state representation.
+Eiffel Intelligence is a real time data aggregation and analysis solution
+for Eiffel events. While Eiffel represents an event based architecture,
+Eiffel Intelligence addresses the need of stakeholders to view the current
+state of the system by bridging the divide from immutable events to mutable
+state representation.
+
+Eiffel Intelligence consists of two components: the Eiffel Intelligence
+back-end (this repository) and the [Eiffel Intelligence front-end](https://github.com/eiffel-community/eiffel-intelligence-frontend),
+which is a graphical user interface.
+
+## What is Eiffel Intelligence?
+More information about what Eiffel Intelligence is and what it can be used for [can be read here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/index.md).
 
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
@@ -44,7 +55,6 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**REST POST notification**](wiki/markdown/subscription-with-REST-POST-notification.md)
     - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
     - [**Trigger parameterized Jenkins jobs**](wiki/markdown/triggering-jenkins-jobs.md)
-    - [**Step by Step Subscription Notification**](wiki/markdown/step-by-step-subscription-notification.md)
 1. [**Understanding rules**](wiki/markdown/rules.md)
     - [**Introduction**](wiki/markdown/rules.md#Introduction)
     - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)
@@ -59,6 +69,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**TestCaseFinishedEvent Aggregation**](wiki/markdown/test-case-finished-event-aggregation.md)
     - [**ArtifactPublishedEvent Aggregation**](wiki/markdown/artifact-published-event-aggregation.md)
     - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/confidence-level-modified-event-aggregation.md)
+1. [**Step by Step Subscription Notification**](wiki/markdown/step-by-step-subscription-notification.md)
 1. [**REST API**](wiki/markdown/REST-API.md)
     - [**Query aggregated objects**](wiki/markdown/query.md)
     - [**Running rules on objects**](wiki/markdown/running-rules-on-objects.md)

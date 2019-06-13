@@ -45,8 +45,8 @@
             </item>
             <item collapse="true" name="Understanding subscriptions" href="subscriptions.html">
                 <item name="Subscription with REST POST notification" href="subscription-with-REST-POST-notification.html" />
+                <item name="HTTP POST notification to trigger parameterized Jenkins jobs" href="triggering-jenkins-jobs.html" />
                 <item name="Subscription with Email notification" href="subscription-with-email-notification.html" />
-                <item name="Trigger parameterized Jenkins jobs" href="triggering-jenkins-jobs.html" />
                 <item name="Step-by-step Subscription Notification" href="step-by-step-subscription-notification.html" />
             </item>
             <item collapse="true" name ="Understanding rules" href="rules.html">

@@ -8,7 +8,7 @@ Whenever an aggregated object is created or modified, it is evaluated against
 all registered subscriptions to find out whether the aggregated object meets any subscription
 requirements. If it fulfills a subscription requirement then a notification is
 sent to the subscriber as specified in that subscription. For further
-explanation of the process, [consider the following example](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/step-by-step-subscription-notification.md)
+explanation of the process, [consider the following example](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/step-by-step-subscription-notification.md).
 
 
 ### Adding subscriptions

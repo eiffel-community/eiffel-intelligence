@@ -2,7 +2,7 @@
   "event_EiffelSourceChangeSubmittedEvent_3": {
     "meta": {
       "type": "EiffelSourceChangeSubmittedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
       "source": {
@@ -52,7 +52,7 @@
       },
       "time": 1481875944272,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -87,7 +87,7 @@
       },
       "time": 1481875944278,
       "type": "EiffelConfidenceLevelModifiedEvent",
-      "version": "1.0.0"
+      "version": "3.0.0"
     },
     "data": {
       "value": "SUCCESS",
@@ -108,7 +108,7 @@
     "meta": {
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c86ff1c2",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890
     },
     "data": {
@@ -134,7 +134,7 @@
   "event_EiffelActivityStartedEvent_3": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c2"
     },
@@ -157,7 +157,7 @@
   "event_EiffelActivityFinishedEvent_3": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-3f17-975f-ebf0cd6ff1c2"
     },
@@ -188,18 +188,14 @@
     "meta": {
       "id": "se878b37-95f4-4d20-99b7-de9bdf351eed",
       "type": "EiffelActivityTriggeredEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521113723785,
       "tags": [],
       "source": {
         "domainId": "eiffel038.seki.fem002",
         "host": "esekilxv9305",
         "name": "fem002-eiffel038",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem002-eiffel038.rnd.ki.sw.ericsson.se:8443/jenkins/job/test_xneekas/"
       }
     },
@@ -224,7 +220,7 @@
   "event_EiffelActivityStartedEvent_3_2": {
     "meta": {
       "type": "EiffelActivityStartedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-4f17-9753-ebf0c7f4sey1c3"
     },
@@ -247,7 +243,7 @@
   "event_EiffelActivityFinishedEvent_3_2": {
     "meta": {
       "type": "EiffelActivityFinishedEvent",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "time": 1234567890,
       "id": "s1e93f13-7c3c-3f17-975f-ebf0cd6ff1c3"
     },
@@ -278,18 +274,14 @@
     "meta": {
       "id": "sc24f5e8-9225-4f7b-9c77-7bafc7d03f6e",
       "type": "EiffelActivityCanceledEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521641056231,
       "tags": [],
       "source": {
         "domainId": "eiffel039.seli.fem101",
         "host": "eselivm2v1464l",
         "name": "fem101-eiffel039",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
       }
     },
@@ -307,18 +299,14 @@
     "meta": {
       "id": "sc24f5e8-9225-4f7b-9c77-7bafc7d03f7e",
       "type": "EiffelActivityCanceledEvent",
-      "version": "1.1.0",
+      "version": "3.0.0",
       "time": 1521641056231,
       "tags": [],
       "source": {
         "domainId": "eiffel039.seli.fem101",
         "host": "eselivm2v1464l",
         "name": "fem101-eiffel039",
-        "serializer": {
-          "groupId": "com.github.Ericsson",
-          "artifactId": "eiffel-remrem-semantics",
-          "version": "0.0.10"
-        },
+        "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
         "uri": "https://fem101-eiffel039.lmera.ericsson.se:8443/jenkins/job/eandzab_test2/"
       }
     },

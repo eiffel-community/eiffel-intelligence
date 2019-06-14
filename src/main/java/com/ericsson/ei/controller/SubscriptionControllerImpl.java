@@ -43,7 +43,7 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.services.ISubscriptionService;
-import com.ericsson.ei.subscriptionhandler.SubscriptionValidator;
+import com.ericsson.ei.subscription.SubscriptionValidator;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,8 +65,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Autowired
     private ISubscriptionService subscriptionService;
 
-    private SubscriptionValidator subscriptionValidator = new SubscriptionValidator();
-
     private Map<String, String> errorMap;
 
     @Override
@@ -81,7 +79,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             String subscriptionName = subscription.getSubscriptionName();
             try {
                 LOG.debug("Subscription creation has been started: " + subscriptionName);
-                subscriptionValidator.validateSubscription(subscription);
+                SubscriptionValidator.validateSubscription(subscription);
 
                 if (!subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);
@@ -146,8 +144,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             String subscriptionName = subscription.getSubscriptionName();
             LOG.debug("Subscription updating has been started: " + subscriptionName);
             try {
-                subscriptionValidator.validateSubscription(subscription);
-
+                SubscriptionValidator.validateSubscription(subscription);
                 if (subscriptionService.doSubscriptionExist(subscriptionName)) {
                     subscription.setLdapUserName(user);
                     subscription.setCreated((float) Instant.now().toEpochMilli());
@@ -188,6 +185,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             } catch (AccessException e) {
                 LOG.error("Error: " + e.getMessage());
                 errorMap.put(subscriptionName, INVALID_USER);
+            } catch (Exception e) {
+                String errorMessage = "Failed to delete subscriptions. Error message:\n" + e.getMessage();
+                LOG.error(errorMessage, e);
+                errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
             }
         });
         return getResponse();

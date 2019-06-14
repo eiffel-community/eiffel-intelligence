@@ -16,7 +16,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }

@@ -45,8 +45,9 @@
             </item>
             <item collapse="true" name="Understanding subscriptions" href="subscriptions.html">
                 <item name="Subscription with REST POST notification" href="subscription-with-REST-POST-notification.html" />
+                <item name="HTTP POST notification to trigger parameterized Jenkins jobs" href="triggering-jenkins-jobs.html" />
                 <item name="Subscription with Email notification" href="subscription-with-email-notification.html" />
-                <item name="Trigger parameterized Jenkins jobs" href="triggering-jenkins-jobs.html" />
+                <item name="Step-by-step Subscription Notification" href="step-by-step-subscription-notification.html" />
             </item>
             <item collapse="true" name ="Understanding rules" href="rules.html">
                 <item name="Merge Resolver Rules" href="merge-resolver-rules.html" />
@@ -62,7 +63,6 @@
                 <item name="ArtifactPublishedEvent aggregation" href="artifact-published-event-aggregation.html" />
                 <item name="ConfidenceLevelModifiedEvent" href="confidence-level-modified-event-aggregation.html" />
             </item>
-            <item name="Step-by-step Subscription Notification" href="step-by-step-subscription-notification.html" />
             <item collapse="true" name="REST API" href="REST-API.html">
                 <item name="Query" href="query.html" />
                 <item name="Running rules on objects" href="running-rules-on-objects.html" />

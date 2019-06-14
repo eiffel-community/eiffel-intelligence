@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 ##################################################################################################
-# docker-compose commands 
+# docker-compose commands
 #
-# run:         docker-compose up         
+# run:         docker-compose up
 # stop:        docker-compose stop
 # stop/remove: docker-compose down --volumes
 #
 # Cleanup/Remove (if needed):
-#     Dangling Volumes:   docker volume rm `docker volume ls -q -f dangling=true`            
+#     Dangling Volumes:   docker volume rm `docker volume ls -q -f dangling=true`
 #     Unused Images:      docker images -q | xargs docker rmi
-#     Stopped containers: docker rm `docker ps -a -q` 
+#     Stopped containers: docker rm `docker ps -a -q`
 #
 # Maintainer: Eiffel-Community
 ##################################################################################################
@@ -33,16 +33,16 @@ version: "2.1"
 services:
   mongodb:
     restart: always
-    image: mongo:latest
+    image: ${MONGODB_IMAGE}
     expose:
       - "27017"
     ports:
-      - "27017:27017"
-    healthcheck: 
+      - "${MONGODB_PORT}:27017"
+    healthcheck:
         test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
         interval: 30s
         timeout: 10s
-        retries: 5        
+        retries: 5
     networks:
           eiffel_2.0_1:
             aliases:
@@ -50,13 +50,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: bitnami/rabbitmq:3.7.8-debian-9
+    image: ${RABBITMQ_IMAGE}
     expose:
       - "15672"
       - "5672"
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${RABBITMQ_WEB_PORT}:15672"
+      - "${RABBITMQ_AMQP_PORT}:5672"
     healthcheck:
         test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
         interval: 30s
@@ -73,11 +73,11 @@ services:
 
   eiffel-er:
     restart: always
-    image: eiffelericsson/eiffel-er:0.0.67
+    image: ${EIFFEL_ER_IMAGE}
     expose:
       - "8080"
     ports:
-      - "8081:8080"
+      - "${EIFFEL_ER_PORT}:8080"
     depends_on:
       - rabbitmq
       - mongodb
@@ -85,14 +85,14 @@ services:
           eiffel_2.0_1:
             aliases:
               - eiffel-er
-    environment:   # Overrides settings in config file in catalina folder. OBS --> skip quotes for rabbitmq.bindingKey value  
+    environment:   # Overrides settings in config file in catalina folder. OBS --> skip quotes for rabbitmq.bindingKey value
                    # No config file copied to catalina folder in Dockerfile, only uses env vars below ;-)
                    # /eventrepository removed in contextpath
        - server.contextPath=/
        - server.port=8080
        - rabbitmq.host=rabbitmq
        - rabbitmq.componentName=eventrepository
-       - rabbitmq.port=5672
+       - rabbitmq.port=${RABBITMQ_AMQP_PORT}
        - rabbitmq.domainId=ei-domain
        - rabbitmq.durable=true
        - rabbitmq.user=myuser
@@ -103,7 +103,7 @@ services:
        - rabbitmq.createExchangeIfNotExisting=true
        - rabbitmq.consumerName=messageConsumer
        - mongodb.host=mongodb
-       - mongodb.port=27017
+       - mongodb.port=${MONGODB_PORT}
        - mongodb.database=eiffel
        - mongodb.collection=events
        - mongodb.user
@@ -121,29 +121,72 @@ services:
        - index.dynamicIndex.maxIndexesCount=5
        - index.dynamicIndex.filePath=src/main/resources/dynamic_indexing.json
        - index.dynamicIndex.fileUpdatePeriod=30
-       - WAIT_MB_HOSTS=rabbitmq:15672
-       - WAIT_DB_HOSTS=mongodb:27017
+       - WAIT_MB_HOSTS=rabbitmq:${RABBITMQ_WEB_PORT}
+       - WAIT_DB_HOSTS=mongodb:${MONGODB_PORT}
 
-  ei_backend:
+
+  jenkins:
     restart: always
-    image: eiffel-intelligence:0.0.19
+    image: ${JENKINS_IMAGE}
     expose:
       - "8080"
     ports:
-      - "8080:8080"
+      - "${JENKINS_PORT}:8080"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      - JENKINS_USERNAME=admin
+      - JENKINS_PASSWORD=admin
+      #     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
+      #     - DISABLE_JENKINS_INITIALIZATION=    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
+      #     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - jenkins
+
+
+  mail-server:
+    image: ${MAILSERVER_IMAGE}
+    expose:
+      - "1025"
+      - "8025"
+    ports:
+      - "${MAIL_SMTP_PORT}:1025"
+      - "${MAIL_WEB_PORT}:8025"
+    depends_on:
+      - mongodb
+    environment:
+      MH_STORAGE: mongodb
+      MH_MONGO_URI: mongodb:${MONGODB_PORT}
+      MH_MONGO_COLLECTION: messages
+      MH_MONGO_DB: mailhog
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - mail-server
+
+  ei-backend:
+    restart: always
+    image: ${EI_BACKEND_IMAGE}
+    expose:
+      - "8080"
+    ports:
+      - "${EI_BACKEND_PORT}:8080"
     depends_on:
       - mongodb
       - rabbitmq
     networks:
           eiffel_2.0_1:
             aliases:
-              - ei_backend
+              - ei-backend
     environment:       # Overrides settings in application config file
-      - SpringApplicationName=ei-backend
+      - SpringApplicationName=eiffel-intelligence-backend
       - server.port=8080
-      - rules.path=src/main/resources/ArtifactRules_new.json
+      - rules.path=src/main/resources/ArtifactRules.json
       - rabbitmq.host=rabbitmq
-      - rabbitmq.port=5672
+      - rabbitmq.port=${RABBITMQ_AMQP_PORT}
       - rabbitmq.domainId=ei-domain
       - rabbitmq.componentName=ei-backend
       - rabbitmq.waitlist.queue.suffix=waitlist
@@ -151,7 +194,7 @@ services:
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser
       - spring.data.mongodb.host=mongodb
-      - spring.data.mongodb.port=27017
+      - spring.data.mongodb.port=${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - missedNotificationDataBaseName=eiffel2_intelligence_MissedNotification
       - search.query.prefix=object
@@ -162,9 +205,79 @@ services:
       - spring.mail.password=
       - spring.mail.properties.mail.smtp.auth=false
       - spring.mail.properties.mail.smtp.starttls.enable=false
-      - er.url=eiffel-er:8080
-      - WAIT_MB_HOSTS=rabbitmq:15672
-      - WAIT_DB_HOSTS=mongodb:27017
+      - er.url=eiffel-er:${EIFFEL_ER_PORT}/search/
+      - WAIT_MB_HOSTS=rabbitmq:${RABBITMQ_WEB_PORT}
+      - WAIT_DB_HOSTS=mongodb:${MONGODB_PORT}
+      - logging.level.root=OFF
+      - logging.level.org.springframework.web=DEBUG
+      - logging.level.com.ericsson.ei=DEBUG
+
+elasticsearch:
+    restart: always
+    image: ${ELASTICSEARCH_IMAGE}
+    ports:
+      - "${ELASTICSEARCH_PORT1}:9200"
+      - "${ELASTICSEARCH_PORT2}:9300"
+    depends_on:
+      - mongodb
+    environment:
+      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+      - discovery.type=single-node
+    healthcheck:
+      test: "wget -q -O - http://localhost:9200/_cat/health"
+      interval: 1s
+      timeout: 30s
+      retries: 300
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - elasticsearch
+              
+  kibana:
+    restart: always
+    image: ${KIBANA_IMAGE}
+    expose:
+      - "8080"
+    ports:
+      - "${KIBANA_PORT}:8080"
+    depends_on:
+      - elasticsearch
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_NAME=kibana.example.org
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - kibana
+
+## monstache is used to sync from mongodb to elasticsearch using oplog in mongodb
+  monstache:
+    restart: always
+    image: ${MONSTACHE_IMAGE}
+    expose:
+      - "8080"
+    ports:
+      - "${MONSTACHE_PORT}:8080"
+    depends_on:
+      - mongodb
+      - elasticsearch
+    environment:
+      - MONSTACHE_MONGO_URL=mongodb:27017
+      - MONSTACHE_ES_URLS=http://elasticsearch:9200
+    links:
+      - elasticsearch
+
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - monstache
 
 networks:
   eiffel_2.0_1:

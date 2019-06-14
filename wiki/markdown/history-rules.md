@@ -15,7 +15,7 @@ JSON object from "HistoryExtractionRules" in aggregated object, same as
 returned from ER. The path for merging history data will get as long as the 
 depth of the tree where your historical event exists.
 
-A step by step example will be presented using [artifact aggregation rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/ArtifactRules.json).
+A step by step example will be presented using [artifact aggregation rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 Assume that an EiffelArtifactCreatedEvent is received and the upstream response 
 tree looks like [this](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/upStreamResultFile.json).
@@ -23,14 +23,11 @@ tree looks like [this](https://github.com/Ericsson/eiffel-intelligence/blob/mast
 The starting aggregated object is :
 
     {
+       "TemplateName":"ARTIFACT_1",
        "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
        "type":"EiffelArtifactCreatedEvent",
        "time":1481875891763,
-       "gav":{
-          "artifactId":"sub-system",
-          "version":"1.1.0",
-          "groupId":"com.mycompany.myproduct"
-       },
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "classifier":"debug",
@@ -45,8 +42,7 @@ The starting aggregated object is :
              "extension":"exe"
           }
        ],
-       "buildCommand":null,
-       "TemplateName":"ARTIFACT_1"
+       "buildCommand":null
     }
 
 The first event to be traversed in the tree is an EiffelCompositionDefinedEvent 
@@ -64,6 +60,11 @@ EiffelArtifactCreatedEvent.
 The new aggregated object is now:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -88,15 +89,6 @@ The new aggregated object is now:
                 "time":2000
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -106,11 +98,7 @@ with **HistoryExtractionRules** is
 
     {
        "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-       "gav":{
-          "version":"1.33.0",
-          "artifactId":"other-system",
-          "groupId":"com.othercompany.otherproduct"
-       },
+       "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -131,6 +119,11 @@ EiffelArtifactCreatedEvent and has been appended to previous path.
 The resulting aggregated object is now:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -162,24 +155,11 @@ The resulting aggregated object is now:
                          }
                       ],
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -200,6 +180,11 @@ which appended to previous path become:
 and the new aggregated object is:
     
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -240,24 +225,11 @@ and the new aggregated object is:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -283,6 +255,11 @@ which will give us the absolute path for merge
 and the aggregated object will now look like:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -333,24 +310,11 @@ and the aggregated object will now look like:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -381,6 +345,11 @@ which will give us the absolute path for merge
 and the aggregated object will now look like:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -445,24 +414,11 @@ and the aggregated object will now look like:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -495,6 +451,11 @@ and absolute path:
 which gives us the following aggregated object:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -572,24 +533,11 @@ which gives us the following aggregated object:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -598,11 +546,7 @@ Now we return back in the tree and process the second
 
     {
        "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-       "gav":{
-          "version":"1.99.0",
-          "artifactId":"internal-system",
-          "groupId":"com.internalcompany.internalproduct"
-       },
+       "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -622,6 +566,11 @@ and absolute path:
 This results in following aggregated object:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -698,40 +647,23 @@ This results in following aggregated object:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    },
                    // this second artifact information is the new addition to 
                    // internal composition 
                    {
+                      "id":"4400572b-c3j4-441e-abc9-b62f48080033",
+                      "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0",
                       "fileInformation":[
                          {
                             "extension":"jar",
                             "classifier":"debug"
                          }
-                      ],
-                      "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                      "gav":{
-                         "groupId":"com.internalcompany.internalproduct",
-                         "artifactId":"internal-system",
-                         "version":"1.99.0"
-                      }
+                      ]
                    }
                 ]
              }
           ]
-       },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
        }
     }
 
@@ -741,11 +673,7 @@ used by all **EiffelArtifactCreatedEvent** and here we will get:
 
     {
        "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-       "gav":{
-          "version":"1.33.0",
-          "artifactId":"other-system",
-          "groupId":"com.othercompany.secondproduct"
-       },
+       "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -761,6 +689,11 @@ to merge at relative path "" and absolute path:
 The final aggregated object is now:
 
     {
+       "TemplateName":"ARTIFACT_1",
+       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+       "type":"EiffelArtifactCreatedEvent",
+       "time":1481875891763,
+       "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
        "fileInformation":[
           {
              "extension":"jar",
@@ -837,54 +770,33 @@ The final aggregated object is now:
                          ]
                       },
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                      "gav":{
-                         "groupId":"com.othercompany.otherproduct",
-                         "artifactId":"other-system",
-                         "version":"1.33.0"
-                      }
+                      "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    },
                    {
+                      "id":"4400572b-c3j4-441e-abc9-b62f48080033",
+                      "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0",
                       "fileInformation":[
                          {
                             "extension":"jar",
                             "classifier":"debug"
                          }
-                      ],
-                      "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                      "gav":{
-                         "groupId":"com.internalcompany.internalproduct",
-                         "artifactId":"internal-system",
-                         "version":"1.99.0"
-                      }
+                      ]
                    }
                 ]
              }
           ]
        },
-       "TemplateName":"ARTIFACT_1",
-       "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "time":1481875891763,
-       "type":"EiffelArtifactCreatedEvent",
-       "gav":{
-          "groupId":"com.mycompany.myproduct",
-          "artifactId":"sub-system",
-          "version":"1.1.0"
-       },
        // artifacts array is the last addition now
        "artifacts":[
           {
+             "id":"1100572b-c3b4-461e-abc9-b62f48087011",
+             "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0",
              "fileInformation":[
                 {
                    "extension":"jar",
                    "classifier":"debug"
                 }
-             ],
-             "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-             "gav":{
-                "groupId":"com.othercompany.secondproduct",
-                "artifactId":"other-system",
-                "version":"1.33.0"
-             }
+             ]
           }
        ]
     }

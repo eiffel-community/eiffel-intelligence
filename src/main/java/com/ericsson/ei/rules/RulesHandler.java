@@ -57,20 +57,27 @@ public class RulesHandler {
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJson = objectmapper.readTree(jsonContent);
     }
+    
+    public String readRuleFileContent(String ruleFilePath) throws IOException {
+        String ruleJsonFileContent;
+        InputStream in = this.getClass().getResourceAsStream(ruleFilePath);
+        if(in == null) {
+            ruleJsonFileContent = FileUtils.readFileToString(new File(ruleFilePath), Charset.defaultCharset());
+        } else {
+            ruleJsonFileContent = getContent(in);
+        }
+        return ruleJsonFileContent;
+    }
 
     @PostConstruct public void init() {
+
         if (parsedJson == null) {
             try {
-                InputStream in = this.getClass().getResourceAsStream(jsonFilePath);
-                if(in == null) {
-                    jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), Charset.defaultCharset());
-                } else {
-                    jsonFileContent = getContent(in);
-                }
+                jsonFileContent = readRuleFileContent(jsonFilePath);
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJson = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.error("RulesHandler Init: Failed to read Rules file: " + jsonFilePath, e.getMessage(), e);
             }
         }
     }
@@ -82,7 +89,7 @@ public class RulesHandler {
             ObjectMapper objectmapper = new ObjectMapper();
             parsedJson = objectmapper.readTree(jsonFileContent);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to read Rules file: " + jsonFilePath, e.getMessage(), e);
         }
     }
 

@@ -46,7 +46,7 @@ Example subscriptions
                // notice single quotes surrounds the value to be checked
                // this tells jmespath that this is a constant and not 
                // an object from the aggregated object
-                "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+                "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
               },
               {
                 "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
@@ -57,7 +57,7 @@ Example subscriptions
             "type": "ARTIFACT_1",
             "conditions": [
               {
-                "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+                "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
               },
               {
                 "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"

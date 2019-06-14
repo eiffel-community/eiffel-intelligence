@@ -1,15 +1,21 @@
 sudo: required
 
+dist: xenial
+
 language: java
 
 services:
-  - docker
+  - docker 
 
-jdk:
-  - oraclejdk8
+env:
+  - JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 # Run before every job
 before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y openjdk-8-jdk
+  - PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//')
+  - java -version
   - uname -a
   - chmod +x pom.xml
 
@@ -17,9 +23,11 @@ before_install:
 # This is only run before integrationTests job
 # To ensure docker containers are fully up and running we sleep 20s
 before_script:
-  - source docker-env.bash
+  - cd src/main/docker/
+  - source env.bash
   - docker-compose up -d
   - sleep 60
+  - cd ../../../
 
 
 # Generate site documentation using mvn site plugin

@@ -21,5 +21,6 @@
     }
   ],
   "subscriptionName": "Subscription_Test",
-  "userName": "ABC"
+  "userName": "ABC",
+  "ldapUserName":""
 }

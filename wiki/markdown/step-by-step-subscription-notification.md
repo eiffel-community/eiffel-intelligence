@@ -1,14 +1,8 @@
 # Step By Step Subscription Notification
 
-Whenever an aggregated object is created or modified, it is evaluated against
-all registered subscriptions to find out whether it meets any subscription
-requirements. If it fulfils a subscription requirement then notification is
-sent to the subscriber as specified in that subscription. For further explanation,
-consider the following example:
-
 Suppose a subscription is created (as shown below) by a user and then that is
 stored in the subscription database. More detail about subscription and its fields can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
-and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/Add-Subscription.md).
+and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
 
     {
         "created": "2017-07-26",
@@ -22,7 +16,7 @@ and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob
         "repeat": false,
         "requirements": [{
                 "conditions": [{
-                        "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+                        "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/sub-system@1.1.0'"
                     },
                     {
                         "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
@@ -32,7 +26,7 @@ and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob
             },
             {
                 "conditions": [{
-                        "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+                        "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/sub-system@1.1.0'"
                     },
                     {
                         "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"
@@ -76,24 +70,20 @@ is created:
         "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time": 1481875891763,
         "type": "ARTIFACT_1",
-        "gav": {
-            "groupId": "com.mycompany.myproduct",
-            "artifactId": "sub-system",
-            "version": "1.1.0"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
     }
 
 
 When this aggregated object is evaluated against the subscriptions stored in
-database, then it fulfils our subscription criteria. It can be seen that both
+database, then it fulfills our subscription criteria. It can be seen that both
 conditions of the first requirement are satisfied by the aggregated object.
-More specifically, in the first condition, JMESPath rule is looking for the
-gav.groupId=='com.mycompany.myproduct' and in the second condition it looks for
-testCaseExecutions.testCase.conclusion == 'SUCCESSFUL' and testCase.id=='TC5'.
-Both strings can be found in the aggregated object JSON. Consequently, the
-process is started to send notification to specified subscriber. For this,
-'notificationMeta' and 'notificationType' field values are extracted from the
-subscription.
+More specifically, in the first condition, JMESPath rule is looking for
+identity=='pkg:maven/com.mycompany.myproduct/sub-system@1.1.0' and in the second
+condition it looks for testCaseExecutions.testCase.conclusion == 'SUCCESSFUL'
+and testCase.id=='TC5'. Both strings can be found in the aggregated object JSON.
+Consequently, the process is started to send notification to specified subscriber.
+For this, 'notificationMeta' and 'notificationType' field values are extracted
+from the subscription.
 
 ### Notify via REST POST ###
 In this case the notification need to be sent as **REST POST** to
@@ -127,11 +117,7 @@ raw JSON body it would look like this:
                 "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
                 "time": 1481875891763,
                 "type": "ARTIFACT_1",
-                "gav": {
-                    "groupId": "com.mycompany.myproduct",
-                    "artifactId": "sub-system",
-                    "version": "1.1.0"
-                }
+                "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
             }
         ]
     }
@@ -185,10 +171,6 @@ notifications and configured in the application.properties as â€œemail.subjectâ€
             "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
             "time": 1481875891763,
             "type": "ARTIFACT_1",
-            "gav": {
-                "groupId": "com.mycompany.myproduct",
-                "artifactId": "sub-system",
-                "version": "1.1.0"
-            }
+            "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
         }
     }

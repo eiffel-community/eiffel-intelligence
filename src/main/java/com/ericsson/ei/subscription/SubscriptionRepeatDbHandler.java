@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscriptionhandler;
+package com.ericsson.ei.subscription;
 
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -61,26 +61,26 @@ public class SubscriptionRepeatDbHandler {
     //    "subscriptionId" : "subsA",
     //               RequirementId corresponds to a Requirement List of matched Aggregated Objects Ids.
     //                <RequirementId>   <AggrObjIds>
-    //    "requirements" : {"0" : [      
-    //                                "11112", 
-    //                                "72324", 
-    //                                "72364", 
-    //                                "72233", 
+    //    "requirements" : {"0" : [
+    //                                "11112",
+    //                                "72324",
+    //                                "72364",
+    //                                "72233",
     //                                "71233"
     //                           ],
-    //                     "1" : [ 
-    //                                "11112", 
-    //                                "72324", 
-    //                                "72364", 
-    //                                "72233", 
-    //                                "71233"   
+    //                     "1" : [
+    //                                "11112",
+    //                                "72324",
+    //                                "72364",
+    //                                "72233",
+    //                                "71233"
     //                           ]
     //                    }
     // }
 
     /*
      * Function that stores the matched aggregatedObjectId to the database.
-     * 
+     *
      */
     public void addMatchedAggrObjToSubscriptionId(String subscriptionId, int requirementId, String aggrObjId)
             throws Exception {
@@ -95,7 +95,7 @@ public class SubscriptionRepeatDbHandler {
         }
 
         if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.error("Couldn't update SubscriptionMathced id.");
+            LOGGER.error("Couldn't update SubscriptionMatched id.");
             LOGGER.debug(
                     "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
             BasicDBObject document = new BasicDBObject();
@@ -127,7 +127,7 @@ public class SubscriptionRepeatDbHandler {
                         + updateDocJsonNode.toString());
 
         JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
-        
+
         Document document = null;
         try {
             document = mongoDbHandler.findAndModify(dataBaseName, collectionName, queryJsonNode.toString(),
@@ -143,7 +143,7 @@ public class SubscriptionRepeatDbHandler {
                          "\nfor subsruptionId: " + subscriptionId +
                          "\nwith Aggregated Object Id: " + aggrObjId +
                          "\nwith matched Requirement Id: " + requirementId);
-            
+
             return true;
         }
         return false;

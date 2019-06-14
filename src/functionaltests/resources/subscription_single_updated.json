@@ -15,7 +15,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           },
           {
             "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
@@ -26,7 +26,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.mycompany.myproduct'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           },
           {
             "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"

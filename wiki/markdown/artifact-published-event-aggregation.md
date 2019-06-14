@@ -1,6 +1,6 @@
 # ArtifactPublishedEvent Aggregation
 
-Consider an artifact has been published and EiffelTestCaseStarted event is
+Consider an artifact has been published and EiffelArtifactPublished event is
 generated as follow:
 
     {
@@ -21,7 +21,7 @@ generated as follow:
            },
            "time":1481875921763,
            "type":"EiffelArtifactPublishedEvent",
-           "version":"1.0.0"
+           "version":"3.0.0"
         },
         "data":{
            "customData":[
@@ -53,7 +53,7 @@ In the next step rules for this event are extracted:
         "StartEvent":"NO",
         "IdentifyRules":"links | [?type=='ARTIFACT'].target",
         "MatchIdRules":{
-           "_id":"%IdentifyRules_objid%"
+          "_id":"%IdentifyRules_objid%"
         },
         "ExtractionRules":"{ eventId : meta.id, time : meta.time, locations : data.locations }",
         "MergeResolverRules":"[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]",
@@ -155,11 +155,7 @@ Following aggregated object is extracted by using the identify rules:
                              ]
                           },
                           "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                          "gav":{
-                             "groupId":"com.othercompany.otherproduct",
-                             "artifactId":"other-system",
-                             "version":"1.33.0"
-                          }
+                          "identity": "pkg:maven/com.mycompany.otherproduct/other-system@1.33.0"
                        },
                        {
                           "fileInformation":[
@@ -169,11 +165,7 @@ Following aggregated object is extracted by using the identify rules:
                              }
                           ],
                           "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                          "gav":{
-                             "groupId":"com.internalcompany.internalproduct",
-                             "artifactId":"internal-system",
-                             "version":"1.99.0"
-                          }
+                          "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                        }
                     ]
                  }
@@ -207,11 +199,7 @@ Following aggregated object is extracted by using the identify rules:
            "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
            "time":1481875891763,
            "type":"EiffelArtifactCreatedEvent",
-           "gav":{
-              "groupId":"com.mycompany.myproduct",
-              "artifactId":"sub-system",
-              "version":"1.1.0"
-           },
+           "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
            "artifacts":[
               {
                  "fileInformation":[
@@ -221,11 +209,7 @@ Following aggregated object is extracted by using the identify rules:
                     }
                  ],
                  "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-                 "gav":{
-                    "groupId":"com.othercompany.secondproduct",
-                    "artifactId":"other-system",
-                    "version":"1.33.0"
-                 }
+                 "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
               }
            ]
         }
@@ -370,11 +354,7 @@ Finally, after merging the content, the merged object looks like this:
                           ]
                        },
                        "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                       "gav":{
-                          "groupId":"com.othercompany.otherproduct",
-                          "artifactId":"other-system",
-                          "version":"1.33.0"
-                       }
+                       "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                     },
                     {
                        "fileInformation":[
@@ -384,11 +364,7 @@ Finally, after merging the content, the merged object looks like this:
                           }
                        ],
                        "id":"4400572b-c3j4-441e-abc9-b62f48080033",
-                       "gav":{
-                          "groupId":"com.internalcompany.internalproduct",
-                          "artifactId":"internal-system",
-                          "version":"1.99.0"
-                       }
+                       "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                     }
                  ]
               }
@@ -422,11 +398,7 @@ Finally, after merging the content, the merged object looks like this:
         "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time":1481875891763,
         "type":"EiffelArtifactCreatedEvent",
-        "gav":{
-           "groupId":"com.mycompany.myproduct",
-           "artifactId":"sub-system",
-           "version":"1.1.0"
-        },
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
         "artifacts":[
            {
               "fileInformation":[
@@ -436,11 +408,7 @@ Finally, after merging the content, the merged object looks like this:
                  }
               ],
               "id":"1100572b-c3b4-461e-abc9-b62f48087011",
-              "gav":{
-                 "groupId":"com.othercompany.secondproduct",
-                 "artifactId":"other-system",
-                 "version":"1.33.0"
-              }
+              "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
            }
         ],
         "publications":[

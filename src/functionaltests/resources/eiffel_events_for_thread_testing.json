@@ -17,7 +17,7 @@
       },
       "time":1481875944272,
       "type":"EiffelConfidenceLevelModifiedEvent",
-      "version":"1.0.0"
+      "version":"3.0.0"
     },
     "data":{  
       "value":"SUCCESS",
@@ -52,7 +52,7 @@
       },
       "time":1481875921763,
       "type":"EiffelArtifactPublishedEvent",
-      "version":"1.0.0"
+      "version":"3.0.0"
     },
     "data":{  
       "customData":[  
@@ -96,7 +96,7 @@
       "source":{  
         "domainId":"example.domain"
       },
-      "version":"1.0.0",
+      "version":"3.0.0",
       "id":"6d3df0e0-404d-46ee-ab4f-3118457148f4",
       "time":1490777327230
     },
@@ -129,7 +129,7 @@
       },
       "time":1481875925916,
       "type":"EiffelTestCaseStartedEvent",
-      "version":"1.0.0"
+      "version":"3.0.0"
     },
     "data":{  
       "customData":[  

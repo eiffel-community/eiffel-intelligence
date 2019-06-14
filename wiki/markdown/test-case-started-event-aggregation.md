@@ -21,7 +21,7 @@ event is received as follow:
            },
            "time":1481875925916,
            "type":"EiffelTestCaseStartedEvent",
-           "version":"1.0.0"
+           "version":"3.0.0"
         },
         "data":{
            "customData":[
@@ -105,11 +105,7 @@ Following aggregated object is extracted by using the identify rules:
               "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
               "time":1481875891763,
               "type":"EiffelArtifactCreatedEvent",
-              "gav":{
-                 "groupId":"com.mycompany.myproduct",
-                 "artifactId":"sub-system",
-                 "version":"1.1.0"
-              }
+              "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
            }
         }
     ]
@@ -191,11 +187,7 @@ Finally, after merging the content, the merged object looks like this:
         "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time":1481875891763,
         "type":"EiffelArtifactCreatedEvent",
-        "gav":{
-           "groupId":"com.mycompany.myproduct",
-           "artifactId":"sub-system",
-           "version":"1.1.0"
-        }
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
     }
 
 Next step is to extract the process rules apply on the aggregated object:

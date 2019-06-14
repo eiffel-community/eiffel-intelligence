@@ -16,7 +16,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.othercompany.library'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }
@@ -39,7 +39,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.othercompany.library'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }
@@ -62,7 +62,7 @@
       {
         "conditions": [
           {
-            "jmespath": "gav.groupId=='com.othercompany.library'"
+            "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
           }
         ]
       }

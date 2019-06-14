@@ -22,7 +22,7 @@ Suppose an EiffelConfidenceLevelModifiedEvent is received:
         },
         "time": 1481875988767,
         "type": "EiffelConfidenceLevelModifiedEvent",
-        "version": "1.0.0"
+        "version": "3.0.0"
       },
       "data": {
         "value": "SUCCESS",
@@ -167,11 +167,7 @@ fetched object looks like that:
                       ]
                     },
                     "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-                    "gav": {
-                      "groupId": "com.othercompany.otherproduct",
-                      "artifactId": "other-system",
-                      "version": "1.33.0"
-                    }
+                    "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                   },
                   {
                     "fileInformation": [
@@ -181,11 +177,7 @@ fetched object looks like that:
                       }
                     ],
                     "id": "4400572b-c3j4-441e-abc9-b62f48080033",
-                    "gav": {
-                      "groupId": "com.internalcompany.internalproduct",
-                      "artifactId": "internal-system",
-                      "version": "1.99.0"
-                    }
+                    "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                   }
                 ]
               }
@@ -195,11 +187,7 @@ fetched object looks like that:
           "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "time": 1481875891763,
           "type": "EiffelArtifactCreatedEvent",
-          "gav": {
-            "groupId": "com.mycompany.myproduct",
-            "artifactId": "sub-system",
-            "version": "1.1.0"
-          },
+          "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
           "artifacts": [
             {
               "fileInformation": [
@@ -209,11 +197,7 @@ fetched object looks like that:
                 }
               ],
               "id": "1100572b-c3b4-461e-abc9-b62f48087011",
-              "gav": {
-                "groupId": "com.othercompany.secondproduct",
-                "artifactId": "other-system",
-                "version": "1.33.0"
-              }
+              "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
             }
           ],
           "publications": [
@@ -254,160 +238,143 @@ object with key “confidenceLevels”. Data in correct format will look like:
 And the result object will be:
 
     {
-       "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-       "aggregatedObject": {
-           "fileInformation": [
-           {
-               "extension": "jar",
-               "classifier": "debug"
-           },
-           {
-               "extension": "txt",
-               "classifier": "test"
-           },
-           {
-               "extension": "exe",
-               "classifier": "application"
-           }
-       ],
-       "buildCommand": null,
-       "internalComposition": {
-           "compositions": [
-               {
-                   "eventId": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
-                   "name": "My composition",
-                   "time": 2000,
-                   "artifacts": [
-                       {
-                           "fileInformation": [
-                           {
-                               "extension": "jar",
-                               "classifier": "debug"
-                           }
-                       ],
-                       "internalComposition": {
-                           "compositions": [
-                           {
-                               "eventId": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
-                               "sourceChanges": [
-                                   {
-                                       "submitter": {
-                                           "name": "Jane Doe",
-                                           "email": "jane.doe@company.com"
-                                       },
-                                       "gitIdentifier": null,
-                                       "SCSEventId": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
-                                       "sourceCreations": [
-                                           {
-                                               "gitIdentifier": {
-                                                   "repoName": "myPrivateRepo",
-                                                   "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
-                                                   "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
-                                                   "branch": "myBranch"
-                                           },
-                                           "SCCEventId": "ac085e24-ac4c-41be-912d-08c7afd32285",
-                                           "author": {
-                                               "name": "John Doe",
-                                               "id": "johndoe",
-                                               "email": "john.doe@company.com",
-                                               "group": "Team Gophers"
-                                            },
-                                            "issues": [
-                                            ]
-                                       },
-                                       {
-                                           "gitIdentifier": {
-                                               "repoName": "myPrivateRepo",
-                                               "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
-                                               "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
-                                               "branch": "myBranch"
-                                           },
-                                           "SCCEventId": "552ad6a4-c522-47e2-9195-0481930979e4",
-                                           "author": null,
-                                           "issues": [
-                                               {
-                                                   "tracker": "JIRA",
-                                                   "id": "JIRA-1234",
-                                                   "type": "BUG",
-                                                   "uri": "http://jira.company.com/browse/JIRA-1234",
-                                                   "transition": "RESOLVED"
-                                               }
-                                           ]
-                                       }
-                                   ]
+      "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+      "aggregatedObject": {
+        "fileInformation": [
+          {
+            "extension": "jar",
+            "classifier": "debug"
+          },
+          {
+            "extension": "txt",
+            "classifier": "test"
+          },
+          {
+            "extension": "exe",
+            "classifier": "application"
+          }
+        ],
+        "buildCommand": null,
+        "internalComposition": {
+          "compositions": [
+            {
+              "eventId": "fb6ef12d-25fb-4d77-b9fd-87688e66de47",
+              "name": "My composition",
+              "time": 2000,
+              "artifacts": [
+                {
+                  "fileInformation": [
+                    {
+                      "extension": "jar",
+                      "classifier": "debug"
+                    }
+                  ],
+                  "internalComposition": {
+                    "compositions": [
+                      {
+                        "eventId": "fb6ef12d-25fb-4d77-b9fd-87688e66da4j",
+                        "sourceChanges": [
+                          {
+                            "submitter": {
+                              "name": "Jane Doe",
+                              "email": "jane.doe@company.com"
+                            },
+                            "gitIdentifier": null,
+                            "SCSEventId": "3ce9df6e-cd45-4320-ae66-945f038caa1b",
+                            "sourceCreations": [
+                              {
+                                "gitIdentifier": {
+                                  "repoName": "myPrivateRepo",
+                                  "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
+                                  "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                  "branch": "myBranch"
+                                },
+                                "SCCEventId": "ac085e24-ac4c-41be-912d-08c7afd32285",
+                                "author": {
+                                  "name": "John Doe",
+                                  "id": "johndoe",
+                                  "email": "john.doe@company.com",
+                                  "group": "Team Gophers"
+                                },
+                                "issues": []
+                              },
+                              {
+                                "gitIdentifier": {
+                                  "repoName": "myPrivateRepo",
+                                  "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
+                                  "commitId": "fd090b60a4aedc5161da9c035a49b14a319829b4",
+                                  "branch": "myBranch"
+                                },
+                                "SCCEventId": "552ad6a4-c522-47e2-9195-0481930979e4",
+                                "author": null,
+                                "issues": [
+                                  {
+                                    "tracker": "JIRA",
+                                    "id": "JIRA-1234",
+                                    "type": "BUG",
+                                    "uri": "http://jira.company.com/browse/JIRA-1234",
+                                    "transition": "RESOLVED"
+                                  }
+                                ]
                               }
+                            ]
+                          }
                         ],
                         "name": "Other composition",
                         "time": 5005
-                    }
-                ]
-            },
-            "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-            "gav": {
-                "groupId": "com.othercompany.otherproduct",
-                "artifactId": "other-system",
-                "version": "1.33.0"
-            }
-        },
-        {
-            "fileInformation": [
+                      }
+                    ]
+                  },
+                  "id": "1100572b-c3j4-441e-abc9-b62f48080011",
+                  "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
+                },
                 {
-                    "extension": "jar",
-                    "classifier": "debug"
+                  "fileInformation": [
+                    {
+                      "extension": "jar",
+                      "classifier": "debug"
+                    }
+                  ],
+                  "id": "4400572b-c3j4-441e-abc9-b62f48080033",
+                  "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                 }
-            ],
-            "id": "4400572b-c3j4-441e-abc9-b62f48080033",
-            "gav": {
-                "groupId": "com.internalcompany.internalproduct",
-                "artifactId": "internal-system",
-                "version": "1.99.0"
-              }
+              ]
             }
           ]
-        }
-      ]
-    },
-    "confidenceLevels": [
-        {
+        },
+        "confidenceLevels": [
+          {
             "eventId": "f37d59a3-069e-4f4c-8cc5-a52e73501a76",
             "name": "performance",
             "time": 1481875988767,
             "value": "SUCCESS"
-        }
-    ],
-    "TemplateName": "ARTIFACT_1",
-    "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-    "time": 1481875891763,
-    "type": "EiffelArtifactCreatedEvent",
-    "gav": {
-        "groupId": "com.mycompany.myproduct",
-        "artifactId": "sub-system",
-        "version": "1.1.0"
-    },
-    "artifacts": [
-        {
+          }
+        ],
+        "TemplateName": "ARTIFACT_1",
+        "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+        "time": 1481875891763,
+        "type": "EiffelArtifactCreatedEvent",
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
+        "artifacts": [
+          {
             "fileInformation": [
-                {
-                    "extension": "jar",
-                    "classifier": "debug"
-                }
+              {
+                "extension": "jar",
+                "classifier": "debug"
+              }
             ],
             "id": "1100572b-c3b4-461e-abc9-b62f48087011",
-            "gav": {
-                "groupId": "com.othercompany.secondproduct",
-                "artifactId": "other-system",
-                "version": "1.33.0"
-            }
-        }
-    ],
-    "publications": [
-        {
+            "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
+          }
+        ],
+        "publications": [
+          {
             "eventId": "33d05e6f-9bd9-4138-83b6-e20cc74680a3",
             "locations": [
-                {
-                    "type": "PLAIN",
-                    "uri": "https://myrepository.com/mySubSystemArtifact"
-                }
+              {
+                "type": "PLAIN",
+                "uri": "https://myrepository.com/mySubSystemArtifact"
+              }
             ],
             "time": 1481875921763
           }
@@ -437,7 +404,7 @@ Then a new EiffelConfidenceLevelModifiedEvent arrives:
         },
         "time": 1481875944272,
         "type": "EiffelConfidenceLevelModifiedEvent",
-        "version": "1.0.0"
+        "version": "3.0.0"
       },
       "data": {
         "value": "SUCCESS",
@@ -580,11 +547,7 @@ object looks like this:
                       ]
                     },
                     "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-                    "gav": {
-                      "groupId": "com.othercompany.otherproduct",
-                      "artifactId": "other-system",
-                      "version": "1.33.0"
-                    }
+                    "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                   },
                   {
                     "fileInformation": [
@@ -594,11 +557,7 @@ object looks like this:
                       }
                     ],
                     "id": "4400572b-c3j4-441e-abc9-b62f48080033",
-                    "gav": {
-                      "groupId": "com.internalcompany.internalproduct",
-                      "artifactId": "internal-system",
-                      "version": "1.99.0"
-                    }
+                    "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                   }
                 ]
               }
@@ -623,11 +582,7 @@ object looks like this:
           "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "time": 1481875891763,
           "type": "EiffelArtifactCreatedEvent",
-          "gav": {
-            "groupId": "com.mycompany.myproduct",
-            "artifactId": "sub-system",
-            "version": "1.1.0"
-          },
+          "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
           "artifacts": [
             {
               "fileInformation": [
@@ -637,11 +592,7 @@ object looks like this:
                 }
               ],
               "id": "1100572b-c3b4-461e-abc9-b62f48087011",
-              "gav": {
-                "groupId": "com.othercompany.secondproduct",
-                "artifactId": "other-system",
-                "version": "1.33.0"
-              }
+              "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
             }
           ],
           "publications": [
@@ -789,11 +740,7 @@ And the result object will be:
                     ]
                   },
                   "id": "1100572b-c3j4-441e-abc9-b62f48080011",
-                  "gav": {
-                    "groupId": "com.othercompany.otherproduct",
-                    "artifactId": "other-system",
-                    "version": "1.33.0"
-                  }
+                  "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                 },
                 {
                   "fileInformation": [
@@ -803,11 +750,7 @@ And the result object will be:
                     }
                   ],
                   "id": "4400572b-c3j4-441e-abc9-b62f48080033",
-                  "gav": {
-                    "groupId": "com.internalcompany.internalproduct",
-                    "artifactId": "internal-system",
-                    "version": "1.99.0"
-                  }
+                  "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0"
                 }
               ]
             }
@@ -838,11 +781,7 @@ And the result object will be:
         "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
-        "gav": {
-          "groupId": "com.mycompany.myproduct",
-          "artifactId": "sub-system",
-          "version": "1.1.0"
-        },
+        "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0",
         "artifacts": [
           {
             "fileInformation": [
@@ -852,11 +791,7 @@ And the result object will be:
               }
             ],
             "id": "1100572b-c3b4-461e-abc9-b62f48087011",
-            "gav": {
-              "groupId": "com.othercompany.secondproduct",
-              "artifactId": "other-system",
-              "version": "1.33.0"
-            }
+            "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
           }
         ],
         "publications": [

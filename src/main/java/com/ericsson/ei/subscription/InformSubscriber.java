@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscriptionhandler;
+package com.ericsson.ei.subscription;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;

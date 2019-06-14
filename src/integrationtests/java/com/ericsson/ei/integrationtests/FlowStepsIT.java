@@ -67,7 +67,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Value("${jenkins.host:localhost}")
     private String jenkinsHost;
 
-    @Value("${jenkins.port:8081}")
+    @Value("${jenkins.port:8082}")
     private int jenkinsPort;
 
     @Value("${jenkins.username:admin}")
@@ -148,8 +148,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     }
 
-    @When("^paremeter form key \"([^\"]*)\" and form value \"([^\"]*)\" is added in subscription$")
-    public void paremeter_key_and_value_is_added_in_subscription(String formKey, String formValue) {
+    @When("^parameter form key \"([^\"]*)\" and form value \"([^\"]*)\" is added in subscription$")
+    public void parameter_key_and_value_is_added_in_subscription(String formKey, String formValue) {
         subscriptionObject.addNotificationMessageKeyValue(formKey, formValue);
     }
 
@@ -218,8 +218,8 @@ public class FlowStepsIT extends IntegrationTestBase {
         this.aggregatedObjectID = aggregatedObjectID;
     }
 
-    @Then("^verify jenkins job data timestamp is after test subscription was creted$")
-    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_creted() throws Throwable {
+    @Then("^verify jenkins job data timestamp is after test subscription was created$")
+    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created() throws Throwable {
         long jenkinsTriggeredTime = jobStatusData.getLong("timestamp");
         assert (jenkinsTriggeredTime >= startTime) : "Jenkins job was triggered before execution of this test.";
     }
@@ -235,8 +235,8 @@ public class FlowStepsIT extends IntegrationTestBase {
         jenkinsManager.deleteJob(this.jenkinsJobName);
     }
 
-    @Then("^mongodb should contain mail\\.$")
-    public void mongodb_should_contain_mails() throws Throwable {
+    @Then("^mongodb should contain \"([^\"]*)\" mails\\.$")
+    public void mongodb_should_contain_mails(int amountOfMails) throws Exception {
         long stopTime = System.currentTimeMillis() + 30000;
         Boolean mailHasBeenDelivered = false;
         long createdDateInMillis = 0;
@@ -245,6 +245,9 @@ public class FlowStepsIT extends IntegrationTestBase {
             JsonNode newestMailJson = getNewestMailFromDatabase();
 
             if (newestMailJson != null) {
+                JsonNode to = newestMailJson.get("to");
+                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
+
                 String createdDate = newestMailJson.get("created")
                                                    .get("$date")
                                                    .asText();

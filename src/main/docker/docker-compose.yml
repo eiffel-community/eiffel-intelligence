@@ -269,7 +269,7 @@ services:
       - mongodb
       - elasticsearch
     environment:
-      - MONSTACHE_MONGO_URL=mongodb:27017
+      - MONSTACHE_MONGO_URL=mongodb:${MONGODB_PORT}
       - MONSTACHE_ES_URLS=http://elasticsearch:9200
     links:
       - elasticsearch

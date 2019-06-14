@@ -212,7 +212,7 @@ services:
       - logging.level.org.springframework.web=DEBUG
       - logging.level.com.ericsson.ei=DEBUG
 
-elasticsearch:
+  elasticsearch:
     restart: always
     image: ${ELASTICSEARCH_IMAGE}
     ports:

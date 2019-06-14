@@ -16,14 +16,11 @@
 */
 package com.ericsson.ei.subscription;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Consts;
-import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -83,8 +80,6 @@ public class SubscriptionValidator {
      * @param subscriptionName
      */
     private static void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
-        // Here the regEx used is :/(\W)/ that matches anything that is not
-        // [A-Z,a-z,0-8] and _.
         String invalidSubscriptionNameRegex = null;
         invalidSubscriptionNameRegex = RegExProvider.SUBSCRIPTION_NAME;
 
@@ -203,8 +198,8 @@ public class SubscriptionValidator {
             throw new SubscriptionValidationException(
                     "A valid regular expression for subscription email validation is not provided");
         }
-        final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        final Pattern validEmailAddressRegex = Pattern.compile(validEmailRegEx, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = validEmailAddressRegex.matcher(email);
         if (!(matcher.matches())) {
             throw new SubscriptionValidationException(
                     "Notification type is set to [MAIL] but the given notificatioMeta contains an invalid e-mail ["

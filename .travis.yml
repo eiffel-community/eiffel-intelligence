@@ -26,7 +26,9 @@ before_script:
   - cd src/main/docker/
   - source env.bash
   - docker-compose up -d
-  - sleep 180
+  - sleep 60
+  - docker-compose logs rabbitmq
+  - docker-compose logs jenkins
   - cd ../../../
   - docker ps -a
 

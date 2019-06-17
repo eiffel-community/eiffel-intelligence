@@ -7,13 +7,12 @@
     "StartEvent": "YES",
     "IdentifyRules": "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
-    "ExtractionRules": "{ activity_triggered_event_id : meta.id, type : meta.type, time : meta.time, version : meta.version, ongoing : `\"false\"` }",
+    "ExtractionRules": "{ activity_triggered_event_id : meta.id, type : meta.type, activity_triggered_time : meta.time, version : meta.version, ongoing : `\"false\"` }",
     "MergeResolverRules": null,
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -27,8 +26,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -43,8 +41,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -59,8 +56,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -75,8 +71,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -91,8 +86,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -107,8 +101,7 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   },
   {
     "TemplateName": "TEST_EXECUTION_1",
@@ -123,7 +116,6 @@
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "",
     "HistoryExtractionRules": "",
-    "ProcessRules": null,
-    "ProcessFunction": null
+    "ProcessRules": null
   }
 ]

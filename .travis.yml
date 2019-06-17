@@ -25,8 +25,7 @@ before_install:
 before_script:
   - cd src/main/docker/
   - source env.bash
-  - docker-compose up --no-start
-  - docker-compose start mongodb rabbitmq eiffel-er jenkins mail-server ei-backend
+  - docker-compose up -d mongodb rabbitmq eiffel-er jenkins mail-server ei-backend
   - sleep 60
   - cd ../../../
 

@@ -139,7 +139,7 @@ services:
       - JENKINS_USERNAME=admin
       - JENKINS_PASSWORD=admin
       #     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
-      #     - DISABLE_JENKINS_INITIALIZATION=    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
+      #     - DISABLE_JENKINS_INITIALIZATION=yes    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
       #     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
     networks:
       eiffel_2.0_1:

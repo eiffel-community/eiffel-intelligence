@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -51,12 +52,11 @@ public class RulesHandler {
     private static final String EI_HOME_DEFAULT_NAME = ".eiffel-intelligence";
 
     @Value("${rules.path}")
-    private String jsonFilePath;
+    private String rulesFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
     private static String jsonFileContent;
     private static JsonNode parsedJson;
-    private String eiHomePath;
 
     public RulesHandler() {
         super();
@@ -67,87 +67,83 @@ public class RulesHandler {
         parsedJson = objectmapper.readTree(jsonContent);
     }
 
-    public String readRuleFileContent(String path) throws Exception {
-        String ruleJsonFileContent = null;
-        String ruleFilePath = "";
-        if (checkIfPathIsURLAndJSON(path)) {
-            setEIHomePath();
-            ruleFilePath = downloadRuleFileToHomeDirectory(path);
+    public String readRulesFileContent(String path) throws Exception {
+        setRulesFilePath(path);
+        downloadRulesFile(path);
+        return readRulesJsonFileContent();
+    }
+    
+    public void setRulesFilePath(String path) throws IOException {
+        if (checkIfPathIsURL(path)) {
+            rulesFilePath = getRulesFilePath();
         } else {
-            ruleFilePath = path;
+            rulesFilePath  = path;
         }
-        if (!ruleFilePath.equals("")) {
-            ruleJsonFileContent = readRulesFileContent(ruleFilePath);
+    }
+
+    public void downloadRulesFile(String path) throws IOException {
+        if (checkIfPathIsURL(path)) {
+            downloadRuleFileToHomeDirectory(path);
         }
-        if (ruleFilePath.equals("") || ruleJsonFileContent.equals("")) {
+    }
+
+    public void downloadRuleFileToHomeDirectory(String url) throws IOException {
+        URL source = new URL(url);
+        final File destination = new File(rulesFilePath);
+        FileUtils.copyURLToFile(source, destination);
+    }
+
+    public String readRulesJsonFileContent() throws Exception {
+        String rulesJsonFileContent = null;
+        InputStream inputStream = this.getClass().getResourceAsStream(rulesFilePath);
+        if (inputStream == null) {
+            rulesJsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
+        } else {
+            rulesJsonFileContent = getContent(inputStream);
+        }
+        if (rulesJsonFileContent.equals("")) {
             throw new Exception("Rules content cannot be empty");
         }
-        return ruleJsonFileContent;
+        return rulesJsonFileContent;
     }
 
-    public String readRulesFileContent(String ruleFilePath) throws IOException {
-        String ruleJsonFileContent = null;
-        InputStream in = this.getClass().getResourceAsStream(ruleFilePath);
-        if (in == null) {
-            ruleJsonFileContent = FileUtils.readFileToString(new File(ruleFilePath), Charset.defaultCharset());
-        } else {
-            ruleJsonFileContent = getContent(in);
-        }
-        return ruleJsonFileContent;
-    }
-
-    public boolean checkIfPathIsURLAndJSON(String path) {
-        String urlAndJsonRegex = "https?:\\/\\/.*\\.json";
-        return path.matches(urlAndJsonRegex);
-    }
-
-    public void setEIHomePath() {
-        String homeFolder = System.getProperty("user.home");
-        eiHomePath = Paths.get(homeFolder, EI_HOME_DEFAULT_NAME).toString();
-    }
-
-    public String downloadRuleFileToHomeDirectory(String url) {
-        String downloadPath = "";
+    public boolean checkIfPathIsURL(String path) {
+        String protocolRegex = "https?";
         try {
-            downloadPath = downloadURLToFile(url);
-        } catch (MalformedURLException e) {
-            LOGGER.error("Failed to create URL object.\nURL: {}\nError: {}", url, e.getMessage());
-        } catch (IOException e) {
-            LOGGER.error("Failed to download file.\nURL: {}\nError: {}", url, e.getMessage());
+            URI uri = new URI(path);
+            return uri.getScheme().matches(protocolRegex);
+        } catch (Exception e) {
+            return false;
         }
-        return downloadPath;
     }
 
-    public String downloadURLToFile(String url) throws IOException {
-        URL source = new URL(url);
-        String fileName = source.getFile();
-        String downloadPath = eiHomePath + fileName;
-        final File destination = new File(downloadPath);
-        FileUtils.copyURLToFile(source, destination);
-        return downloadPath;
+    public String getRulesFilePath() {
+        String homeFolder = System.getProperty("user.home");
+        String rulesFileName = "rules.json";
+        return Paths.get(homeFolder, EI_HOME_DEFAULT_NAME, rulesFileName).toString();
     }
 
     @PostConstruct
     public void init() {
         if (parsedJson == null) {
             try {
-                jsonFileContent = readRuleFileContent(jsonFilePath);
+                jsonFileContent = readRulesFileContent(rulesFilePath);
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJson = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
-                LOGGER.error("RulesHandler Init: Failed to read Rules file: " + jsonFilePath, e.getMessage(), e);
+                LOGGER.error("RulesHandler Init: Failed to read Rules file: " + rulesFilePath, e.getMessage(), e);
             }
         }
     }
 
     public void setRulePath(String path) {
-        this.jsonFilePath = path;
+        this.rulesFilePath = path;
         try {
-            RulesHandler.jsonFileContent = FileUtils.readFileToString(new File(jsonFilePath), Charset.defaultCharset());
+            RulesHandler.jsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
             ObjectMapper objectmapper = new ObjectMapper();
             parsedJson = objectmapper.readTree(jsonFileContent);
         } catch (IOException e) {
-            LOGGER.error("Failed to read Rules file: " + jsonFilePath, e.getMessage(), e);
+            LOGGER.error("Failed to read Rules file: " + rulesFilePath, e.getMessage(), e);
         }
     }
 

@@ -30,7 +30,7 @@ public class ConfigurationValidator {
     private void checkLoadRulesFile() {
         String rulePath = env.getProperty("rules.path");
         try {
-            new RulesHandler().readRuleFileContent(rulePath);
+            new RulesHandler().readRulesFileContent(rulePath);
         } catch (Exception e) {
             LOGGER.error("Rules file failed to be loaded/read. Path: {} \nError: {}", rulePath, ExceptionUtils.getStackTrace(e));
             System.exit(1);

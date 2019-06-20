@@ -20,7 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
@@ -39,29 +44,42 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-@Scope(value="thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RulesHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesHandler.class);
 
-    @Value("${rules.path}") private String jsonFilePath;
+    private static final String EI_HOME_DEFAULT_NAME = ".eiffel-intelligence";
+
+    @Value("${rules.path}")
+    private String jsonFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
     private static String jsonFileContent;
     private static JsonNode parsedJson;
-    
+    private String eiHomePath;
+
     public RulesHandler() {
         super();
     }
-    
+
     public void setParsedJson(String jsonContent) throws JsonProcessingException, IOException {
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJson = objectmapper.readTree(jsonContent);
     }
-    
-    public String readRuleFileContent(String ruleFilePath) throws IOException {
-        String ruleJsonFileContent;
+
+    public String readRuleFileContent(String path) throws IOException {
+        String ruleJsonFileContent = null;
+        String ruleFilePath = "";
+
+        if (checkIfPathIsURL(path)) {
+            checkAndCreateHomeDirectory();
+            ruleFilePath = downloadRuleFileToHomeDirectory(path);
+        } else {
+            ruleFilePath = path;
+        }
+
         InputStream in = this.getClass().getResourceAsStream(ruleFilePath);
-        if(in == null) {
+        if (in == null) {
             ruleJsonFileContent = FileUtils.readFileToString(new File(ruleFilePath), Charset.defaultCharset());
         } else {
             ruleJsonFileContent = getContent(in);
@@ -69,8 +87,65 @@ public class RulesHandler {
         return ruleJsonFileContent;
     }
 
-    @PostConstruct public void init() {
+    public boolean checkIfPathIsURL(String path) {
+        String protocolRegex = "https?";
+        try {
+            URI uri = new URI(path);
+            return uri.getScheme().matches(protocolRegex);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
+    public void checkAndCreateHomeDirectory() {
+        setEIHomePath();
+        boolean hasHomeDirectory = checkIfHomeDirectoryExists();
+        if (!hasHomeDirectory) {
+            createHomeDirectory();
+        }
+    }
+
+    public void setEIHomePath() {
+        String homeFolder = System.getProperty("user.home");
+        eiHomePath = Paths.get(homeFolder, EI_HOME_DEFAULT_NAME).toString();
+    }
+
+    public boolean checkIfHomeDirectoryExists() {
+        return Files.isDirectory(Paths.get(eiHomePath));
+    }
+
+    public void createHomeDirectory() {
+        boolean isDirectoryCreated = new File(eiHomePath).mkdirs();
+        if (!isDirectoryCreated) {
+            LOGGER.error(
+                    "Failed to create eiffel intelligence home folder in {}. Please check access rights or choose a specific rules.path in application.properties.",
+                    eiHomePath);
+        }
+    }
+
+    public String downloadRuleFileToHomeDirectory(String url) {
+        String downloadPath = "";
+        try {
+            downloadPath = downloadURLToFile(url);
+        } catch (MalformedURLException e) {
+            LOGGER.error("Failed to create URL object.\nURL: {}\nError: {}", url, e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error("Failed to download file.\nURL: {}\nError: {}", url, e.getMessage());
+        }
+        return downloadPath;
+    }
+    
+    public String downloadURLToFile(String url) throws IOException {
+        URL source = new URL(url);
+        String fileName = source.getFile();
+        String downloadPath = eiHomePath + "/" + fileName;
+        final File destination = new File(downloadPath);
+        FileUtils.copyURLToFile(source, destination);
+        return downloadPath;
+    }
+
+    @PostConstruct
+    public void init() {
         if (parsedJson == null) {
             try {
                 jsonFileContent = readRuleFileContent(jsonFilePath);
@@ -98,7 +173,7 @@ public class RulesHandler {
         JsonNode type;
         JsonNode result;
         Iterator<JsonNode> iter = parsedJson.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             JsonNode rule = iter.next();
             typeRule = rule.get("TypeRule").toString();
 
@@ -115,9 +190,8 @@ public class RulesHandler {
         return null;
     }
 
-    private String getContent(InputStream inputStream){
+    private String getContent(InputStream inputStream) {
         try {
-
 
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -125,8 +199,8 @@ public class RulesHandler {
             while ((length = inputStream.read(buffer)) != -1) {
                 result.write(buffer, 0, length);
             }
-            return result.toString("UTF-8");}
-        catch (Exception e) {
+            return result.toString("UTF-8");
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         return null;

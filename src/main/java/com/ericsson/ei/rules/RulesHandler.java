@@ -67,17 +67,26 @@ public class RulesHandler {
         parsedJson = objectmapper.readTree(jsonContent);
     }
 
-    public String readRuleFileContent(String path) throws IOException {
+    public String readRuleFileContent(String path) throws Exception {
         String ruleJsonFileContent = null;
         String ruleFilePath = "";
-
-        if (checkIfPathIsURL(path)) {
-            checkAndCreateHomeDirectory();
+        if (checkIfPathIsURLAndJSON(path)) {
+            setEIHomePath();
             ruleFilePath = downloadRuleFileToHomeDirectory(path);
         } else {
             ruleFilePath = path;
         }
+        if (!ruleFilePath.equals("")) {
+            ruleJsonFileContent = readRulesFileContent(ruleFilePath);
+        }
+        if (ruleFilePath.equals("") || ruleJsonFileContent.equals("")) {
+            throw new Exception("Rules content cannot be empty");
+        }
+        return ruleJsonFileContent;
+    }
 
+    public String readRulesFileContent(String ruleFilePath) throws IOException {
+        String ruleJsonFileContent = null;
         InputStream in = this.getClass().getResourceAsStream(ruleFilePath);
         if (in == null) {
             ruleJsonFileContent = FileUtils.readFileToString(new File(ruleFilePath), Charset.defaultCharset());
@@ -87,40 +96,14 @@ public class RulesHandler {
         return ruleJsonFileContent;
     }
 
-    public boolean checkIfPathIsURL(String path) {
-        String protocolRegex = "https?";
-        try {
-            URI uri = new URI(path);
-            return uri.getScheme().matches(protocolRegex);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public void checkAndCreateHomeDirectory() {
-        setEIHomePath();
-        boolean hasHomeDirectory = checkIfHomeDirectoryExists();
-        if (!hasHomeDirectory) {
-            createHomeDirectory();
-        }
+    public boolean checkIfPathIsURLAndJSON(String path) {
+        String urlAndJsonRegex = "https?:\\/\\/.*\\.json";
+        return path.matches(urlAndJsonRegex);
     }
 
     public void setEIHomePath() {
         String homeFolder = System.getProperty("user.home");
         eiHomePath = Paths.get(homeFolder, EI_HOME_DEFAULT_NAME).toString();
-    }
-
-    public boolean checkIfHomeDirectoryExists() {
-        return Files.isDirectory(Paths.get(eiHomePath));
-    }
-
-    public void createHomeDirectory() {
-        boolean isDirectoryCreated = new File(eiHomePath).mkdirs();
-        if (!isDirectoryCreated) {
-            LOGGER.error(
-                    "Failed to create eiffel intelligence home folder in {}. Please check access rights or choose a specific rules.path in application.properties.",
-                    eiHomePath);
-        }
     }
 
     public String downloadRuleFileToHomeDirectory(String url) {
@@ -134,11 +117,11 @@ public class RulesHandler {
         }
         return downloadPath;
     }
-    
+
     public String downloadURLToFile(String url) throws IOException {
         URL source = new URL(url);
         String fileName = source.getFile();
-        String downloadPath = eiHomePath + "/" + fileName;
+        String downloadPath = eiHomePath + fileName;
         final File destination = new File(downloadPath);
         FileUtils.copyURLToFile(source, destination);
         return downloadPath;
@@ -192,7 +175,6 @@ public class RulesHandler {
 
     private String getContent(InputStream inputStream) {
         try {
-
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int length;

@@ -31,9 +31,10 @@ public class ConfigurationValidator {
         try {
             new RulesHandler().readRuleFileContent(rulePath);
         } catch (Exception e) {
-            LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());
+            LOGGER.debug("Rules file failed to be loaded/read. Path: " + rulePath, e.getMessage());
+            System.exit(1);
         } finally {
-            LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
+            LOGGER.debug("Rules file path check performed successfully. Path: " + rulePath);
         }
     }
 

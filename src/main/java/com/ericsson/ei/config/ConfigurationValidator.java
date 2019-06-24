@@ -3,15 +3,11 @@ package com.ericsson.ei.config;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import com.ericsson.ei.rules.RulesHandler;
-
 
 @Component
 public class ConfigurationValidator {
@@ -24,19 +20,6 @@ public class ConfigurationValidator {
     @PostConstruct
     public void validate() {
         logConfiguration();
-        checkLoadRulesFile();
-    }
-
-    private void checkLoadRulesFile() {
-        String rulePath = env.getProperty("rules.path");
-        try {
-            new RulesHandler().readRulesFileContent(rulePath);
-        } catch (Exception e) {
-            LOGGER.error("Rules file failed to be loaded/read. Path: {} \nError: {}", rulePath, ExceptionUtils.getStackTrace(e));
-            System.exit(1);
-        } finally {
-            LOGGER.debug("Rules file path check performed successfully. Path: {}", rulePath);
-        }
     }
 
     private void logConfiguration() {

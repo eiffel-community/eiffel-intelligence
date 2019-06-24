@@ -16,27 +16,22 @@
 */
 package com.ericsson.ei.rules;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -45,11 +40,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope("thread")
 public class RulesHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesHandler.class);
-
-    private static final String EI_HOME_DEFAULT_NAME = ".eiffel-intelligence";
 
     @Value("${rules.path}")
     private String rulesFilePath;
@@ -58,19 +51,20 @@ public class RulesHandler {
     private static String jsonFileContent;
     private static JsonNode parsedJson;
 
-    public RulesHandler() {
+    public RulesHandler() throws Exception {
         super();
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         if (parsedJson == null) {
             try {
-                jsonFileContent = readRulesFileContent(rulesFilePath);
+                jsonFileContent = readRulesFileContent();
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJson = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
-                LOGGER.error("RulesHandler Init: Failed to read Rules file: " + rulesFilePath, e.getMessage(), e);
+                LOGGER.error("Rules file failed to be loaded/read. Path: {}", rulesFilePath);
+                throw e;
             }
         }
     }
@@ -89,17 +83,22 @@ public class RulesHandler {
     }
 
     /**
-     * Reads the content of a given rules file path into a String
+     * Reads the content of a given rules file path or URL.
      *
-     * @param path
-     *            the source file path
-     * @return the file content as a String
+     * @return the rules file content
      * @throws Exception
      */
-    public String readRulesFileContent(String path) throws Exception {
-        setRulesFilePath(path);
-        downloadRulesFile(path);
-        return readRulesJsonFileContent();
+    public String readRulesFileContent() throws Exception {
+        String content;
+        if (isPathUsingScheme(rulesFilePath)) {
+            content = readRulesFileFromURI();
+        } else {
+            content = readRulesFileFromPath();
+        }
+        if (content.isEmpty()) {
+            throw new Exception("Rules content cannot be empty");
+        }
+        return content;
     }
 
     /**
@@ -149,113 +148,48 @@ public class RulesHandler {
     }
 
     /**
-     * Gets content from input stream.
-     *
-     * @param inputStream
-     *            the input stream
-     * @return string with content
-     */
-    private String getContent(InputStream inputStream) {
-        try {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
-            }
-            return result.toString("UTF-8");
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the path where the rules file is located.
-     *
-     * @param path
-     *            the rules file path
-     * @throws IOException
-     */
-    private void setRulesFilePath(String path) throws IOException {
-        if (isPathURL(path)) {
-            rulesFilePath = getRulesFilePath();
-        } else {
-            rulesFilePath = path;
-        }
-    }
-
-    /**
-     * If the path is a URL it will be downloaded and placed into the home folder.
-     *
-     * @param path
-     *            the rules file path
-     * @throws IOException
-     */
-    private void downloadRulesFile(String path) throws IOException {
-        if (isPathURL(path)) {
-            downloadRuleFileToHomeDirectory(path);
-        }
-    }
-
-    /**
-     * Downloads rules file from URL to rules file path.
-     *
-     * @param url
-     *            the url of rules file
-     * @throws IOException
-     */
-    private void downloadRuleFileToHomeDirectory(String url) throws IOException {
-        URL source = new URL(url);
-        final File destination = new File(rulesFilePath);
-        FileUtils.copyURLToFile(source, destination);
-    }
-
-    /**
-     * Reads the content of the rules file.
+     * Reads the rules file content from a URI.
      *
      * @return rules file content
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    private String readRulesFileFromURI() throws IOException, URISyntaxException {
+        return IOUtils.toString(new URI(rulesFilePath), "UTF-8");
+    }
+
+    /**
+     * Reads the rules file content from a full or relative path.
+     *
+     * @return rules file content
+     * @throws IOException
      * @throws Exception
      */
-    private String readRulesJsonFileContent() throws Exception {
+    private String readRulesFileFromPath() throws IOException {
         String rulesJsonFileContent = null;
         InputStream inputStream = this.getClass().getResourceAsStream(rulesFilePath);
         if (inputStream == null) {
             rulesJsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
         } else {
-            rulesJsonFileContent = getContent(inputStream);
-        }
-        if (rulesJsonFileContent.equals("")) {
-            throw new Exception("Rules content cannot be empty");
+            rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
         }
         return rulesJsonFileContent;
     }
 
     /**
-     * Checks if the given path is a URL.
+     * Checks if the path is using a scheme.
      *
      * @param path
      *            the rules file path
-     * @return
+     * @return true if there is a match, false otherwise
      */
-    private boolean isPathURL(String path) {
-        String protocolRegex = "https?";
+    private boolean isPathUsingScheme(String path) {
+        String schemeRegex = "https?|file";
         try {
             URI uri = new URI(path);
-            return uri.getScheme().matches(protocolRegex);
+            return uri.getScheme().matches(schemeRegex);
         } catch (Exception e) {
             return false;
         }
-    }
-
-    /**
-     * Compiles the rules file home directory path.
-     *
-     * @return the rules file path
-     */
-    private String getRulesFilePath() {
-        String homeFolder = System.getProperty("user.home");
-        String rulesFileName = "rules.json";
-        return Paths.get(homeFolder, EI_HOME_DEFAULT_NAME, rulesFileName).toString();
     }
 }

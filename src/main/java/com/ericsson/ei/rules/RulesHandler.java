@@ -48,18 +48,20 @@ public class RulesHandler {
     private String rulesFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
-    private static String jsonFileContent;
     private static JsonNode parsedJson;
 
     public RulesHandler() throws Exception {
         super();
+        if (rulesFilePath == null) {
+            rulesFilePath = System.getProperty("rules.path");
+        }
     }
 
     @PostConstruct
     public void init() throws Exception {
         if (parsedJson == null) {
             try {
-                jsonFileContent = readRulesFileContent();
+                String jsonFileContent = readRulesFileContent();
                 ObjectMapper objectmapper = new ObjectMapper();
                 parsedJson = objectmapper.readTree(jsonFileContent);
             } catch (Exception e) {
@@ -80,42 +82,6 @@ public class RulesHandler {
     public void setParsedJson(String jsonContent) throws JsonProcessingException, IOException {
         ObjectMapper objectmapper = new ObjectMapper();
         parsedJson = objectmapper.readTree(jsonContent);
-    }
-
-    /**
-     * Reads the content of a given rules file path or URL.
-     *
-     * @return the rules file content
-     * @throws Exception
-     */
-    public String readRulesFileContent() throws Exception {
-        String content;
-        if (isPathUsingScheme(rulesFilePath)) {
-            content = readRulesFileFromURI();
-        } else {
-            content = readRulesFileFromPath();
-        }
-        if (content.isEmpty()) {
-            throw new Exception("Rules content cannot be empty");
-        }
-        return content;
-    }
-
-    /**
-     * Sets the rules file path and loads the file.
-     *
-     * @param path
-     *            the rules file path
-     */
-    public void setRulePath(String path) {
-        this.rulesFilePath = path;
-        try {
-            RulesHandler.jsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
-            ObjectMapper objectmapper = new ObjectMapper();
-            parsedJson = objectmapper.readTree(jsonFileContent);
-        } catch (IOException e) {
-            LOGGER.error("Failed to read Rules file: " + rulesFilePath, e.getMessage(), e);
-        }
     }
 
     /**
@@ -145,6 +111,25 @@ public class RulesHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Reads the content of a given rules file path or URL.
+     *
+     * @return the rules file content
+     * @throws Exception
+     */
+    private String readRulesFileContent() throws Exception {
+        String content;
+        if (isPathUsingScheme(rulesFilePath)) {
+            content = readRulesFileFromURI();
+        } else {
+            content = readRulesFileFromPath();
+        }
+        if (content.isEmpty()) {
+            throw new Exception("Rules content cannot be empty");
+        }
+        return content;
     }
 
     /**

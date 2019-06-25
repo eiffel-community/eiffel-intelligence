@@ -62,9 +62,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     public ObjectHandler objectHandler;
 
     @Autowired
-    private RulesHandler rulesHandler;
-
-    @Autowired
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
@@ -169,8 +166,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
                 getFlowTestConfigs().createExchange(exchangeName, queueName);
             }
 
-            rulesHandler.setRulePath(getRulesFilePath());
-
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();
@@ -202,11 +197,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
             LOGGER.error(e.getMessage(), e);
         }
     }
-
-    /**
-     * @return path to file with rules, that is used in flow test
-     */
-    abstract String getRulesFilePath();
 
     /**
      * @return path to file, with events, that is used in flow test

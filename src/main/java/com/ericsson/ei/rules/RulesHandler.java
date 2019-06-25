@@ -28,8 +28,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -42,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 @Scope("thread")
 public class RulesHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RulesHandler.class);
 
     @Value("${rules.path}")
     private String rulesFilePath;
@@ -60,14 +57,9 @@ public class RulesHandler {
     @PostConstruct
     public void init() throws Exception {
         if (parsedJson == null) {
-            try {
-                String jsonFileContent = readRulesFileContent();
-                ObjectMapper objectmapper = new ObjectMapper();
-                parsedJson = objectmapper.readTree(jsonFileContent);
-            } catch (Exception e) {
-                LOGGER.error("Rules file failed to be loaded/read. Path: {}", rulesFilePath);
-                throw e;
-            }
+            String jsonFileContent = readRulesFileContent();
+            ObjectMapper objectmapper = new ObjectMapper();
+            parsedJson = objectmapper.readTree(jsonFileContent);
         }
     }
 

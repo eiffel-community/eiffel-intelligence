@@ -10,9 +10,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConfigurationValidator {
+public class ConfigurationLogger {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationValidator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationLogger.class);
 
     @Autowired
     Environment env;

@@ -18,7 +18,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;

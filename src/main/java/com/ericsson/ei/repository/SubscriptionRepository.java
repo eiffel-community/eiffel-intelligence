@@ -18,6 +18,7 @@ package com.ericsson.ei.repository;
 
 import java.util.ArrayList;
 
+import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 
 
 @Component
@@ -41,7 +42,7 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     MongoDBHandler mongoDBHandler;
 
     @Override
-    public void addSubscription(String StringSubscription) {
+    public void addSubscription(String StringSubscription) throws MongoWriteException {
         mongoDBHandler.insertDocument(dataBaseName, collectionName, StringSubscription);
     }
 

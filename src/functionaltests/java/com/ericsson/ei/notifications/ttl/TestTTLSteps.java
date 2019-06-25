@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.subscription.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;

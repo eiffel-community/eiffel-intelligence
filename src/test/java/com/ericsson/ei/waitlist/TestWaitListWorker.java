@@ -21,7 +21,7 @@ import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;

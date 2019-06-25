@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

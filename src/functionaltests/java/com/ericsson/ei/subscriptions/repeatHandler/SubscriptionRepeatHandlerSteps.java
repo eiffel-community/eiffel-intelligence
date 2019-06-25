@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.RunSubscription;

@@ -46,7 +46,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
@@ -124,7 +124,11 @@ public class InformSubscriber {
             boolean success = makeRestCalls(notificationMeta, mapNotificationMessage, headers);
 
             if (!success) {
-                saveMissedNotificationToDB(aggregatedObject, subscriptionName, notificationMeta);
+                String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
+                LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
+                mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
+                        ttlValue);
+                saveMissedNotificationToDB(missedNotification);
             }
         }
 
@@ -407,22 +411,13 @@ public class InformSubscriber {
     }
 
     /**
-     * This method saves the missed Notification into a single document along with Subscription name,
-     * notification meta and time period.
-     *
-     * @param aggregatedObject
-     * @param subscriptionName
-     * @param notificationMeta
+     * This method saves the missed Notification into a single document in
+     * the database.
      */
-    private void saveMissedNotificationToDB(String aggregatedObject, String subscriptionName, String notificationMeta) {
+    private void saveMissedNotificationToDB(String missedNotification) {
         try {
-            String input = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
-            LOGGER.debug("Input missed Notification document : " + input);
-
-            mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
-                    ttlValue);
             mongoDBHandler.insertDocument(missedNotificationDataBaseName, missedNotificationCollectionName,
-                    input);
+                    missedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the notification into database");

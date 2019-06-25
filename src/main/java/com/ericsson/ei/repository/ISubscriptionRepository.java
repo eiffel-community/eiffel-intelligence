@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import org.bson.Document;
 import org.json.JSONException;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 
 public interface ISubscriptionRepository {
 

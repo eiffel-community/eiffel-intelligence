@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;

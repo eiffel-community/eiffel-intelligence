@@ -58,22 +58,32 @@ public class SendMail {
     @Autowired
     private JavaMailSender emailSender;
 
+    @PostConstruct
+    public void display() {
+        LOGGER.debug("Email Sender : " + sender);
+        LOGGER.debug("Email Subject : " + subject);
+    }
+
     public void setMailSender(JavaMailSender emailSender) {
         this.emailSender = emailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject and send mail to the
-     * receiver with aggregatedObject as the body.
+     * This method sends mail to the given receiver mail address(es) with the
+     * given email subject and body from the mapNotificationMessage.
      *
      * @param receiver
+     *     Who to send the mail to
      * @param mapNotificationMessage
+     *     A String to be used as the body of the email
+     * @param emailSubject
+     *     The subject of the email to send
      */
     public void sendMail(String receiver, String mapNotificationMessage, String emailSubject)
             throws MessagingException {
         Set<String> extEmails = new HashSet<>();
         try {
-            extEmails = extractEmails(receiver);
+            extEmails = extractAndValidateEmails(receiver);
         } catch (SubscriptionValidationException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
@@ -95,14 +105,18 @@ public class SendMail {
     }
 
     /**
-     * This method takes string of comma separated email addresses and return the Set of validated email
-     * addresses
+     * This method takes a string of comma separated email addresses and
+     * validates each of them before putting them in a Set of validated email
+     * addresses to return.
      *
-     * @param contents
+     * @param receivers
+     *     A string containing one or more comma separated email addresses
+     * @return emailAdd
+     * @throws SubscriptionValidationException
      */
-    public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
+    public Set<String> extractAndValidateEmails(String receivers) throws SubscriptionValidationException {
         Set<String> emailAdd = new HashSet<>();
-        String[] addresses = contents.split(",");
+        String[] addresses = receivers.split(",");
         for (String add : addresses) {
             SubscriptionValidator.validateEmail(add.trim());
             emailAdd.add(add);
@@ -111,21 +125,16 @@ public class SendMail {
     }
 
     /**
-     * This method takes the user provided email subject and if it is not empty, return it. Otherwise,
-     * it return the default subject
+     * This method takes the user provided email subject and if it is not empty,
+     * returns it. Otherwise, it returns the default subject.
      *
      * @param emailSubject
+     * @return emailSubject
      */
-    public String getSubject(String emailSubject) {
+    private String getSubject(String emailSubject) {
         if (emailSubject.isEmpty()) {
             return subject;
         }
         return emailSubject;
-    }
-
-    @PostConstruct
-    public void display() {
-        LOGGER.debug("Email Sender : " + sender);
-        LOGGER.debug("Email Subject : " + subject);
     }
 }

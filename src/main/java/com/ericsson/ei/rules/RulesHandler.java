@@ -29,7 +29,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -38,14 +37,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-@Scope("thread")
 public class RulesHandler {
 
     @Value("${rules.path}")
     private String rulesFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
-    private static JsonNode parsedJson;
+    private JsonNode parsedJson;
 
     public RulesHandler() throws Exception {
         super();

@@ -1,6 +1,5 @@
-
-@tag
-Feature: QueryAggregatedObjectsTestSteps
+@QueryAggregatedObjects
+Feature: Test Query Aggregated Objects
 
   @QueryAggregatedObjectsTestSteps
   Scenario: Test QueryAggregatedObjectsTestSteps

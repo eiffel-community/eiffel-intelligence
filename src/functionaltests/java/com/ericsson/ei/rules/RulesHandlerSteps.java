@@ -54,7 +54,7 @@ public class RulesHandlerSteps {
         this.rulesPath = rulesPath.replace("{port}", String.valueOf(port));
     }
 
-    @Given("^path should be absolute$")
+    @Given("^path is made absolute$")
     public void path_is_absolute() {
         rulesPath = new File(rulesPath).getAbsolutePath();
     }

@@ -66,22 +66,29 @@ public class RulesHandlerSteps {
 
     @Then("^rules are loaded$")
     public void rules_are_loaded() throws Exception {
-        LOGGER.info("Rules Path: " + rulesPath);
-        System.setProperty("rules.path", rulesPath);
-        rulesHandler = new RulesHandler();
-        rulesHandler.init();
+        initializeRulesHandler();
     }
 
     @Then("^rules are loaded with expected exception$")
     public void rules_are_loaded_with_exception() throws Exception {
-        LOGGER.debug("Rules Path: " + rulesPath);
-        System.setProperty("rules.path", rulesPath);
         try {
-            rulesHandler = new RulesHandler();
-            rulesHandler.init();
+            initializeRulesHandler();
         } catch (Exception e) {
             LOGGER.debug("Expected exception occurred");
         }
+    }
+
+    /**
+     * Create a new instance of RulesHandler using a rules.path
+     * set by the rulesPath variable.
+     *
+     * @throws Exception
+     */
+    private void initializeRulesHandler() throws Exception {
+        LOGGER.debug("Rules Path: " + rulesPath);
+        System.setProperty("rules.path", rulesPath);
+        rulesHandler = new RulesHandler();
+        rulesHandler.init();
     }
 
     /**

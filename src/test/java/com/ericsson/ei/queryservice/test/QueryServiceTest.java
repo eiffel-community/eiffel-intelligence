@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.fasterxml.jackson.databind.JsonNode;

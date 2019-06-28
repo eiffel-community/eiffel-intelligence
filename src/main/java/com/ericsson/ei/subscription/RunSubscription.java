@@ -72,14 +72,14 @@ public class RunSubscription {
 
             if (id == null) {
                 LOGGER.error(
-                        "ID has not been passed for given aggregated object. The subscription will be triggered again.");
+                    "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
 
             if (subscriptionRepeatFlag == "false" && id != null
                     && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                             subscriptionName, requirementIndex, id)) {
                 LOGGER.info("Subscription has already matched with AggregatedObject Id: " + id + "\nSubscriptionName: "
-                        + subscriptionName + "\nand has Subscrption Repeat flag set to: " + subscriptionRepeatFlag);
+                        + subscriptionName + "\nand has Subscription Repeat flag set to: " + subscriptionRepeatFlag);
                 break;
             }
 
@@ -101,7 +101,7 @@ public class RunSubscription {
                 boolean resultNotEqualsToNull = !resultString.equals("null");
                 boolean resultNotEqualsToFalse = !resultString.equals("false");
                 boolean resultNotEmpty = !resultString.equals("");
-                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fullfullment:"
+                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fulfillment:"
                         + "'\nResult not equals to null' is '" + resultNotEqualsToNull
                         + " '\nResult not equals to false' is '" + resultNotEqualsToFalse
                         + "' '\nResult not empty' is '" + resultNotEmpty + "'");
@@ -114,13 +114,8 @@ public class RunSubscription {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
                     LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
-                    try {
-                        subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
-                                requirementIndex, id);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
-                        e.printStackTrace();
-                    }
+                    subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
+                            requirementIndex, id);
                 }
             }
 

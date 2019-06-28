@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.mongodbhandler;
+package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -30,13 +31,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mongodb.BasicDBObject;
-import com.mongodb.Block;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCommandException;
-import com.mongodb.MongoCredential;
-import com.mongodb.MongoWriteException;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -50,7 +44,7 @@ import lombok.Setter;
 
 @Component
 public class MongoDBHandler {
-    static Logger log = LoggerFactory.getLogger(MongoDBHandler.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
 
     @Autowired
     private MongoProperties mongoProperties;
@@ -66,7 +60,7 @@ public class MongoDBHandler {
     public void init() {
         createConnection();
     }
-    
+
     @PreDestroy
     public void close() {
         mongoClient.close();
@@ -93,21 +87,14 @@ public class MongoDBHandler {
      * @param input          json String
      * @return
      */
-    public boolean insertDocument(String dataBaseName, String collectionName, String input) {
-        try {
-            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            if (collection != null) {
-                final Document dbObjectInput = Document.parse(input);
-                collection.insertOne(dbObjectInput);
-                log.debug("Object : " + input);
-                log.debug("inserted successfully in ");
-                log.debug("collection : " + collectionName + "and db : " + dataBaseName);
-                return true;
-            }
-        } catch (MongoWriteException e) {
-            log.error(e.getMessage(), e);
+    public void insertDocument(String dataBaseName, String collectionName, String input) throws MongoWriteException {
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        if (collection != null) {
+            final Document dbObjectInput = Document.parse(input);
+            collection.insertOne(dbObjectInput);
+            LOGGER.debug("Object: " + input + "\n was inserted successfully in collection: \n"
+                    + collectionName + " and database " + dataBaseName + ".");
         }
-        return false;
     }
 
     /**
@@ -128,12 +115,12 @@ public class MongoDBHandler {
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,
                     // this is normal, no need to log
-                    log.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " fetched No of :" + result.size());
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return result;
     }
@@ -149,7 +136,7 @@ public class MongoDBHandler {
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
 
-        log.debug("Find and retrieve data from database." + "\nDatabase: " + dataBaseName + "\nCollection: "
+        LOGGER.debug("Find and retrieve data from database." + "\nDatabase: " + dataBaseName + "\nCollection: "
                 + collectionName + "\nCondition/Query: " + condition);
 
         try {
@@ -159,17 +146,17 @@ public class MongoDBHandler {
                     result.add(JSON.serialize(document));
                 });
                 if (result.size() != 0) {
-                    log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " fetched No of :" + result.size());
                 } else {
-                    log.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " documents are not found");
                 }
             } else {
-                log.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
+                LOGGER.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return result;
@@ -192,12 +179,12 @@ public class MongoDBHandler {
                 final Document dbObjectInput = Document.parse(input);
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-                log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
+                LOGGER.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
                         + " is document Updated :" + updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return false;
@@ -221,13 +208,13 @@ public class MongoDBHandler {
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
                 if (result != null) {
-                    log.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
                             + " updated successfully");
                     return result;
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -247,17 +234,17 @@ public class MongoDBHandler {
                 final Document dbObjectCondition = Document.parse(condition);
                 DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
                 if (deleteMany.getDeletedCount() > 0) {
-                    log.debug("database" + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("database" + dataBaseName + " and collection: " + collectionName
                             + " deleted No.of records " + deleteMany.getDeletedCount());
                     return true;
                 } else {
-                    log.debug("database " + dataBaseName + " and collection: " + collectionName
+                    LOGGER.debug("database " + dataBaseName + " and collection: " + collectionName
                             + " No documents found to delete");
                     return false;
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return false;
     }
@@ -282,19 +269,19 @@ public class MongoDBHandler {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
         List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
         if (!collectionList.contains(collectionName)) {
-            log.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
+            LOGGER.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
                     + ") not available in mongodb, Creating ........");
             try {
                 db.createCollection(collectionName);
             } catch (MongoCommandException e) {
                 String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
                 if (e.getMessage().contains(message)) {
-                    log.warn("A " + message + ".");
+                    LOGGER.warn("A " + message + ".");
                 } else {
                     throw e;
                 }
             }
-            log.debug("done....");
+            LOGGER.debug("done....");
         }
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;

@@ -22,15 +22,16 @@ import org.springframework.expression.AccessException;
 
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ISubscriptionService {
 
     /**
      *
      * @param subscription
-     * @return
+     * @throws JsonProcessingException
      */
-    boolean addSubscription(Subscription subscription);
+    void addSubscription(Subscription subscription) throws JsonProcessingException;
 
     /**
      *

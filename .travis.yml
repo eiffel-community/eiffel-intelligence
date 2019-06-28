@@ -30,6 +30,10 @@ before_script:
   - cd ../../../
 
 
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+
+
 # Generate site documentation using mvn site plugin
 before_deploy:
   - rm -rf docs

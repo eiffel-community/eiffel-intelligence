@@ -20,7 +20,7 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.subscription.InformSubscriber;
-import com.ericsson.ei.subscription.SendMail;
+import com.ericsson.ei.subscription.EmailSender;
 import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
@@ -73,7 +73,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private List<SendMail> email;
+    private List<EmailSender> email;
 
     @Getter
     @Autowired

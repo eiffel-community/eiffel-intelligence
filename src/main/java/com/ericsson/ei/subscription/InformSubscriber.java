@@ -94,7 +94,7 @@ public class InformSubscriber {
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    private SendMail sendMail;
+    private EmailSender emailSender;
 
 
     /**
@@ -144,7 +144,7 @@ public class InformSubscriber {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
             try {
-                sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
+                emailSender.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
             } catch (MessagingException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
@@ -416,7 +416,7 @@ public class InformSubscriber {
      * @param notificationMeta
      *     A String containing a URL
      * @return
-     *     The base url, which is everything but context path and parameters.
+     *     The base url, which excludes context path and parameters.
      * @throws MalformedURLException
      * @throws URISyntaxException
      */

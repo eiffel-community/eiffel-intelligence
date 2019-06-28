@@ -122,7 +122,7 @@ public class SubscriptionHandlerTest {
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
     @Autowired
-    private SendMail sendMail;
+    private EmailSender mailSender;
 
     @Mock
     private QueryResponse queryResponse;
@@ -252,7 +252,7 @@ public class SubscriptionHandlerTest {
     public void sendMailTest() throws Exception {
         Set<String> extRec = new HashSet<>();
         String recievers = "asdf.hklm@ericsson.se, affda.fddfd@ericsson.com, sasasa.dfdfdf@fdad.com, abcd.defg@gmail.com";
-        extRec = (sendMail.extractAndValidateEmails(recievers));
+        extRec = (mailSender.extractAndValidateEmails(recievers));
         assertEquals(String.valueOf(extRec.toArray().length), "4");
     }
 

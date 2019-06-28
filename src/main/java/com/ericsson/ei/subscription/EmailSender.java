@@ -43,9 +43,9 @@ import lombok.Getter;
  */
 
 @Component
-public class SendMail {
+public class EmailSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
     @Getter
     @Value("${email.sender}")
@@ -59,7 +59,7 @@ public class SendMail {
     private JavaMailSender emailSender;
 
     @PostConstruct
-    public void display() {
+    public void logSettings() {
         LOGGER.debug("Email Sender : " + sender);
         LOGGER.debug("Email Subject : " + subject);
     }

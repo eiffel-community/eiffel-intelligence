@@ -32,24 +32,26 @@ import org.springframework.web.client.RestOperations;
  * This class is responsible to send HTTP requests when handling subscriptions.
  */
 @Component
-public class SendHttpRequest {
+public class HttpRequestSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestSender.class);
 
     private RestOperations rest;
 
-    public SendHttpRequest(RestTemplateBuilder builder) {
+    public HttpRequestSender(RestTemplateBuilder builder) {
         rest = builder.build();
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST with raw body and form
-     * parameters.
+     * This method is responsible to notify the subscriber through REST POST
+     * with raw body and form parameters.
      *
      * @param notificationMeta
+     *     A String containing the URL to send request to
      * @param mapNotificationMessage
+     *     Contains the body of the HTTP request
      * @param headers
-     * @return integer
+     * @return boolean success of the request
      */
     public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
             HttpHeaders headers) {
@@ -94,12 +96,12 @@ public class SendHttpRequest {
     }
 
     /**
-     * This method performs a get request to given url and with given headers, then returns the result
-     * as a ResponseEntity<JsonNode>.
+     * This method performs a get request to given url and with given headers,
+     * then returns the result as a ResponseEntity<JsonNode>.
      *
      * @param url
      * @param headers
-     * @return
+     * @return ResponseEntity
      */
     public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
         HttpEntity<String> request = new HttpEntity<>(headers);

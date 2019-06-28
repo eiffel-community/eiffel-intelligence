@@ -116,7 +116,7 @@ public class SubscriptionHandlerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private SendHttpRequest springRestTemplate;
+    private HttpRequestSender springRestTemplate;
 
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";

@@ -88,7 +88,7 @@ public class InformSubscriber {
     private JmesPathInterface jmespath;
 
     @Autowired
-    private SendHttpRequest restTemplate;
+    private HttpRequestSender restTemplate;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;

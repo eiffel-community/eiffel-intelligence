@@ -31,7 +31,7 @@ before_script:
 
 
 install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 
 # Generate site documentation using mvn site plugin
@@ -60,12 +60,12 @@ jobs:
         #
         # Also important that the first test to be run is a Spring Boot Test since spring boot also downloads
         # another version of embedded mongo db to avoid race conditions between Spring Boot tests
-        - mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B -U
+        - mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
         - mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
     - stage: test
       name: integrationTests
       script:
-        - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B -U
+        - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
     - stage: deploy
       name: deployGitHubPages
       before_script: skip   # do not run this on deploy

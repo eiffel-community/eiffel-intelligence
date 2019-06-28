@@ -13,7 +13,7 @@ public class SpringBeanScopeRegisterConfig {
  
     @Bean
     public static BeanFactoryPostProcessor beanFactoryPostProcessor() {
-        return new CustomScopeRegisteringBeanFactoryPostProcessor();
+        return new ThreadScopeConfig();
     }
  
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,15 +65,11 @@ public class SubscriptionService implements ISubscriptionService {
     private ISubscriptionRepository subscriptionRepository;
 
     @Override
-    public boolean addSubscription(Subscription subscription) {
+    public void addSubscription(Subscription subscription) throws JsonProcessingException, MongoWriteException {
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
-        try {
-            stringSubscription = mapper.writeValueAsString(subscription);
-            return subscriptionRepository.addSubscription(stringSubscription);
-        } catch (JsonProcessingException e) {
-            return false;
-        }
+        stringSubscription = mapper.writeValueAsString(subscription);
+        subscriptionRepository.addSubscription(stringSubscription);
     }
 
     @Override

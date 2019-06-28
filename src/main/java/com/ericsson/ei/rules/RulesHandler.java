@@ -56,8 +56,7 @@ public class RulesHandler {
     public void init() throws Exception {
         if (parsedJson == null) {
             String jsonFileContent = readRulesFileContent();
-            ObjectMapper objectmapper = new ObjectMapper();
-            parsedJson = objectmapper.readTree(jsonFileContent);
+            setParsedJson(jsonFileContent);
         }
     }
 
@@ -82,19 +81,16 @@ public class RulesHandler {
      * @return rules object
      */
     public RulesObject getRulesForEvent(String event) {
-        String typeRule;
-        JsonNode type;
-        JsonNode result;
         Iterator<JsonNode> iter = parsedJson.iterator();
         while (iter.hasNext()) {
             JsonNode rule = iter.next();
-            typeRule = rule.get("TypeRule").toString();
+            String typeRule = rule.get("TypeRule").toString();
 
             // Remove the surrounding double quote signs
             typeRule = typeRule.replaceAll("^\"|\"$", "");
 
-            result = jmesPathInterface.runRuleOnEvent(typeRule, event);
-            type = rule.get("Type");
+            JsonNode result = jmesPathInterface.runRuleOnEvent(typeRule, event);
+            JsonNode type = rule.get("Type");
 
             if (result.equals(type)) {
                 return new RulesObject(rule);
@@ -142,11 +138,12 @@ public class RulesHandler {
      */
     private String readRulesFileFromPath() throws IOException {
         String rulesJsonFileContent = null;
-        InputStream inputStream = this.getClass().getResourceAsStream(rulesFilePath);
-        if (inputStream == null) {
-            rulesJsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
-        } else {
-            rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
+        try (InputStream inputStream = this.getClass().getResourceAsStream(rulesFilePath)) {
+            if (inputStream == null) {
+                rulesJsonFileContent = FileUtils.readFileToString(new File(rulesFilePath), Charset.defaultCharset());
+            } else {
+                rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
+            }
         }
         return rulesJsonFileContent;
     }

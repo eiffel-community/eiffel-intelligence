@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
@@ -34,19 +35,13 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest2.class })
 @SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/ArtifactRules.json"})
 public class FlowTest2 extends FlowTestBase {
-
-    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_2 = "src/test/resources/AggregatedDocument2.json";
     private static final String AGGREGATED_OBJECT_ID_1 = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
     private static final String AGGREGATED_OBJECT_ID_2 = "ccce572c-c364-441e-abc9-b62fed080ca2";
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
-    }
 
     @Override
     String getEventsFilePath() {

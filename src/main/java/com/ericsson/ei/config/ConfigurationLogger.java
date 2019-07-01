@@ -9,13 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.rules.RulesHandler;
-
-
 @Component
-public class ConfigurationValidator {
+public class ConfigurationLogger {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationValidator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationLogger.class);
 
     @Autowired
     Environment env;
@@ -23,18 +20,6 @@ public class ConfigurationValidator {
     @PostConstruct
     public void validate() {
         logConfiguration();
-        checkLoadRulesFile();
-    }
-
-    private void checkLoadRulesFile() {
-        String rulePath = env.getProperty("rules.path");
-        try {
-            new RulesHandler().readRuleFileContent(rulePath);
-        } catch (Exception e) {
-            LOGGER.debug("Rules file failed to be loaded/read. RuleFile path: " +  rulePath, e.getMessage());
-        } finally {
-            LOGGER.debug("Rules file path check performed successfully, Rule File: " + rulePath);
-        }
     }
 
     private void logConfiguration() {

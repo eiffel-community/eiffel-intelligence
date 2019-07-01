@@ -1,6 +1,7 @@
+@RabbitMQConnection
+Feature: Test Rabbit MQ Connection
 
-Feature: RabbitMQConnection
-
+  @RabbitMQConnectionScenario
   Scenario: Testing to automatically reconnect to Message Bus
     Given We are connected to message bus
     When Message bus goes down

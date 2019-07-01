@@ -35,6 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
@@ -49,18 +50,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class })
 @SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/SourceChangeObjectRules.json"})
 public class FlowSourceChangeObject extends FlowTestBase {
-
-    private static final String RULES_FILE_PATH = "src/test/resources/SourceChangeObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObjectEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
     private static final String AGGREGATED_OBJECT_ID = "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
     private static final String UPSTREAM_FILE = "UpstreamEventsForMockedSourceChange.json";
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
-    }
 
     @Override
     String getEventsFilePath() {

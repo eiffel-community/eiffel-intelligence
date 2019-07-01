@@ -5,14 +5,14 @@
 
     <mirrors>
         <mirror>
+            <id>jboss-public-repository-group</id>
+            <mirrorOf>JBoss Public Maven Repository Group</mirrorOf>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </mirror>
+        <mirror>
             <id>jitpack.io</id>
             <mirrorOf>jitpack.io</mirrorOf>
             <url>https://jitpack.io</url>
-        </mirror>
-        <mirror>
-            <id>hortonworks.com</id>
-            <mirrorOf>hortonworks.com</mirrorOf>
-            <url>http://nexus-private.hortonworks.com:8081/nexus/content/groups/public</url>
         </mirror>
         <mirror>
             <id>oracleReleases</id>

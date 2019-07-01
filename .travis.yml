@@ -30,14 +30,10 @@ before_script:
   - cd ../../../
 
 
-install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
-
 # Generate site documentation using mvn site plugin
 before_deploy:
   - rm -rf docs
-  - mvn site -B -U
+  - mvn site -B
 
 
 # Using default stage 'test' for all our test jobs, and only running deploy stage

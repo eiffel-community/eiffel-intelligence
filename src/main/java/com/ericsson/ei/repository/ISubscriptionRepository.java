@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import org.bson.Document;
 import org.json.JSONException;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 
 public interface ISubscriptionRepository {
 
@@ -31,7 +31,7 @@ public interface ISubscriptionRepository {
 
     boolean deleteSubscription(String name);
 
-    boolean addSubscription(String subscription);
+    void addSubscription(String subscription);
 
     MongoDBHandler getMongoDbHandler();
 

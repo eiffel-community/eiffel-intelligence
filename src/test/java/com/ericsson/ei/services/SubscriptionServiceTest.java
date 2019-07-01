@@ -50,7 +50,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -132,16 +132,11 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testInsertSubscription() {
-        Subscription subscription;
-        try {
-            subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-            boolean addSubscription = subscriptionService.addSubscription(subscription);
-            assertEquals(addSubscription, true);
-            // deleting the test data
-            deleteSubscriptionsByName(subscription.getSubscriptionName());
-        } catch (Exception e) {
-        }
+    public void testInsertSubscription() throws Exception {
+        Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+        subscriptionService.addSubscription(subscription);
+        // deleting the test data
+        deleteSubscriptionsByName(subscription.getSubscriptionName());
     }
 
     @Test

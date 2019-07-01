@@ -51,8 +51,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

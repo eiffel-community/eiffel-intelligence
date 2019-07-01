@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.RunSubscription;
@@ -82,8 +82,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     @Before("@SubscriptionRepeatTrue or @SubscriptionRepeatFalse")
     public void beforeScenario() throws IOException, JSONException {
-        assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName,
-                eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString()));
+        mongoDBHandler.insertDocument(dataBaseName, collectionName,
+                eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH).toString());
         subscriptionStrWithOneMatch = FileUtils.readFileToString(
                 new File(REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH), "UTF-8");
         subscriptionStrWithTwoMatch = FileUtils.readFileToString(
@@ -179,7 +179,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
      */
     private void processSubscription(String subscriptionStrValue, JSONObject subscriptionObject) throws IOException {
         Subscription subscription = mapper.readValue(subscriptionObject.toString(), Subscription.class);
-        assertTrue(subscriptionService.addSubscription(subscription));
+        subscriptionService.addSubscription(subscription);
         String expectedSubscriptionName = subscription.getSubscriptionName();
         JsonNode subscriptionJson = mapper.readTree(subscriptionStrValue);
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");

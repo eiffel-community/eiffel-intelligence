@@ -50,6 +50,8 @@
         </plugins>
     </reporting>
 
+    <!-- Repositories from additional providers -->
+    <!-- WARNING: Changes made here must also be made in .mvn/local-settings.xml -->
     <repositories>
         <repository>
             <id>jboss-public-repository-group</id>

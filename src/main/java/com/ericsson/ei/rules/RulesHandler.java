@@ -46,7 +46,6 @@ public class RulesHandler {
     private JsonNode parsedJson;
 
     public RulesHandler() throws Exception {
-        super();
         if (rulesFilePath == null) {
             rulesFilePath = System.getProperty("rules.path");
         }

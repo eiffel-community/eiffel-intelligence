@@ -1,8 +1,8 @@
 # Step By Step Subscription Notification
 
 Suppose a subscription is created (as shown below) by a user and then that is
-stored in the subscription database. More detail about subscription and its fields can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
-and [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
+stored in the subscription database. Read more about the [subscription REST API](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
+and [adding subscriptions via Eiffel Intelligence frontend GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
 
     {
         "created": "2017-07-26",
@@ -86,12 +86,16 @@ For this, 'notificationMeta' and 'notificationType' field values are extracted
 from the subscription.
 
 ### Notify via REST POST ###
-In this case the notification need to be sent as **REST POST** to
-the url http://127.0.0.1:3000/ei/test_subscription_rest. In this example the
-notification message is prepared as key value pairs. If it was sent as
-raw JSON body it would look like this:
+In the example subscription above, the notification is sent as **REST POST** to
+the url http://127.0.0.1:3000/ei/test_subscription_rest. The notification message
+is prepared as key value pairs in the request. The notification message in
+this example contains the full aggregated object as a value.
 
-**Notification Message:**
+    parameters:
+        jsonparameters: { full aggregated object}
+        runpipeline: mybuildstep
+
+If it was sent as raw JSON body, the notification message would look like below:
 
     {
         [
@@ -137,11 +141,12 @@ property file as “notification.ttl.value”.
 If the “notificationType” of the subscription is “MAIL” then the notification
 message is sent to the email address(es) specified in the “notificationMeta”
 field. If more than one email address is written, it should be written as a
-comma separated string. Currently, the subject for email notification is not
-configurable for individual subscriptions. It is the same for all email
-notifications and configured in the application.properties as “email.subject”.
+comma separated string. The subject for the email can be set globally (same
+for all subscriptions) in application.properties as "email.subject". It can
+also be set for individual subscriptions using the Eiffel Intelligence front-end GUI.
 
-**Miss notification in the miss notification database with TTL value:**
+
+**Missed notification in the missed notification database with TTL value:**
 
     {
         "subscriptionName": "Subscription_1",

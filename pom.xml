@@ -50,11 +50,9 @@
         </plugins>
     </reporting>
 
+    <!-- Repositories from additional providers -->
+    <!-- WARNING: Changes made here must also be made in .mvn/project-settings.xml -->
     <repositories>
-        <repository>
-            <id>hortonworks.com</id>
-            <url>http://nexus-private.hortonworks.com:8081/nexus/content/groups/public</url>
-        </repository>
         <repository>
             <id>jboss-public-repository-group</id>
             <name>JBoss Public Maven Repository Group</name>
@@ -63,6 +61,12 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>oracleReleases</id>
+            <name>Oracle Released Java Packages</name>
+            <url>http://download.oracle.com/maven</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 

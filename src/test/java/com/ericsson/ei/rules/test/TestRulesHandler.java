@@ -41,9 +41,10 @@ public class TestRulesHandler {
 
     private RulesHandler unitUnderTest;
 
-    @Before public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty("rules.path", RULES_PATH);
         unitUnderTest = new RulesHandler();
-        unitUnderTest.setRulePath(RULES_PATH);
         unitUnderTest.init();
     }
 

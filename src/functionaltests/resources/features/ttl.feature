@@ -1,7 +1,7 @@
 #Author: emelie.pettersson@ericsson.com
 
 @TtlAndNotifications
-Feature: TestTTL
+Feature: Test TTL
 
   @TestNotificationRetries
   Scenario: Test notification retries

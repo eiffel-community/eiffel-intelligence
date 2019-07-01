@@ -45,9 +45,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
@@ -62,12 +64,12 @@ import com.rabbitmq.client.Channel;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
-@SpringBootTest
+@SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/ArtifactRules.json"})
 public class TrafficGeneratedTest extends FlowTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
     private static final int EVENT_PACKAGES = 10;
-    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events_MP.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregated_document_MP.json";
     private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4";
@@ -79,9 +81,6 @@ public class TrafficGeneratedTest extends FlowTestBase {
 
     @Autowired
     private ObjectHandler objectHandler;
-
-    @Autowired
-    private RulesHandler rulesHandler;
 
     @Autowired
     private UpStreamEventsHandler upStreamEventsHandler;
@@ -118,8 +117,6 @@ public class TrafficGeneratedTest extends FlowTestBase {
             String exchange = "ei-poc-4";
             getFlowTestConfigs().createExchange(exchange, queueName);
             Channel channel = getFlowTestConfigs().getConn().createChannel();
-
-            rulesHandler.setRulePath(RULES_FILE_PATH);
 
             long timeBefore = System.currentTimeMillis();
 
@@ -206,12 +203,6 @@ public class TrafficGeneratedTest extends FlowTestBase {
             LOGGER.debug("Complete aggregated object #" + i + ": " + actualJSON);
             assertEquals(expectedJSON.toString().length(), actualJSON.toString().length());
         }
-    }
-
-    @Override
-    String getRulesFilePath() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
@@ -54,11 +55,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
 @SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/ArtifactRules.json"})
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/ArtifactRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/ArtifactFlowTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     private static final String AGGREGATED_OBJECT_ID = "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
@@ -98,11 +99,6 @@ public class FlowTest extends FlowTestBase {
                 }
             }
         }
-    }
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
     }
 
     @Override

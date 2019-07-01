@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.RunSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -38,12 +38,11 @@ import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
+@TestPropertySource(properties = {"rules.path=src/test/resources/TestExecutionObjectRules.json"})
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";
-    private static final String AGGREGATED_OBJECT_FINAL_FILE_PATH = "src/functionaltests/resources/aggregatedObjectFinal.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_ONE_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerOneMatch.json";
     private static final String REPEAT_FLAG_SUBSCRIPTION_COLLECTIONS_WITH_TWO_MATCH = "src/functionaltests/resources/subscriptionRepeatHandlerTwoMatch.json";
     private static final String AGGREGATED_OBJECT_ID = "b46ef12d-25gb-4d7y-b9fd-8763re66de47";
@@ -72,9 +71,6 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    private RulesHandler rulesHandler;
-
-    @Autowired
     private ISubscriptionService subscriptionService;
 
     @Autowired
@@ -95,7 +91,6 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     @Given("^Publish events on Message Bus$")
     public void publish_events_on_Message_Bus() throws IOException, InterruptedException {
-        rulesHandler.setRulePath(RULES_FILE_PATH);
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EVENTS_FILE_PATH, eventNamesToSend);
         List<String> arguments = new ArrayList<>();

@@ -19,7 +19,6 @@ package com.ericsson.ei.subscription;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -58,13 +57,7 @@ public class EmailSender {
     @Autowired
     private JavaMailSender emailSender;
 
-    @PostConstruct
-    public void logSettings() {
-        LOGGER.debug("Email Sender : " + sender);
-        LOGGER.debug("Email Subject : " + subject);
-    }
-
-    public void setMailSender(JavaMailSender emailSender) {
+    public void setEmailSender(JavaMailSender emailSender) {
         this.emailSender = emailSender;
     }
 
@@ -79,46 +72,52 @@ public class EmailSender {
      * @param emailSubject
      *     The subject of the email to send
      */
-    public void sendMail(String receiver, String mapNotificationMessage, String emailSubject)
-            throws MessagingException {
+    public void sendEmail(String receiver, String mapNotificationMessage, String emailSubject) {
         Set<String> extEmails = new HashSet<>();
-        try {
-            extEmails = extractAndValidateEmails(receiver);
-        } catch (SubscriptionValidationException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
-
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        extEmails = extractEmails(receiver);
         String[] to = extEmails.toArray(new String[0]);
-        try {
-            helper.setFrom(sender);
-            helper.setSubject(getSubject(emailSubject));
-            helper.setText(mapNotificationMessage);
-            helper.setTo(to);
-        } catch (MessagingException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
+
+        MimeMessage message = prepareEmail(mapNotificationMessage, emailSubject, to);
         emailSender.send(message);
     }
 
     /**
+     * This method creates a MimeMessageHelper and prepares the email to send
+     *
+     * @param mapNotificationMessage
+     *     A String to be used by the body of the email
+     * @param emailSubject
+     *     The subject of the email to send
+     * @param receiver
+     *     Who to send the email to
+     * */
+    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject, String[] receiver) {
+        MimeMessage message = emailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sender);
+            helper.setSubject(getSubject(emailSubject));
+            helper.setText(mapNotificationMessage);
+            helper.setTo(receiver);
+        } catch (MessagingException e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    /**
      * This method takes a string of comma separated email addresses and
-     * validates each of them before putting them in a Set of validated email
-     * addresses to return.
+     * puts them in a Set of email addresses to return.
      *
      * @param receivers
      *     A string containing one or more comma separated email addresses
      * @return emailAdd
-     * @throws SubscriptionValidationException
      */
-    public Set<String> extractAndValidateEmails(String receivers) throws SubscriptionValidationException {
+    public Set<String> extractEmails(String receivers) {
         Set<String> emailAdd = new HashSet<>();
         String[] addresses = receivers.split(",");
         for (String add : addresses) {
-            SubscriptionValidator.validateEmail(add.trim());
             emailAdd.add(add);
         }
         return emailAdd;

@@ -116,13 +116,13 @@ public class SubscriptionHandlerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private HttpRequestSender springRestTemplate;
+    private HttpRequestSender httpRequestSender;
 
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
     @Autowired
-    private EmailSender mailSender;
+    private EmailSender emailSender;
 
     @Mock
     private QueryResponse queryResponse;
@@ -252,14 +252,14 @@ public class SubscriptionHandlerTest {
     public void sendMailTest() throws Exception {
         Set<String> extRec = new HashSet<>();
         String recievers = "asdf.hklm@ericsson.se, affda.fddfd@ericsson.com, sasasa.dfdfdf@fdad.com, abcd.defg@gmail.com";
-        extRec = (mailSender.extractAndValidateEmails(recievers));
+        extRec = (emailSender.extractEmails(recievers));
         assertEquals(String.valueOf(extRec.toArray().length), "4");
     }
 
     @Test
     public void testRestPostTrigger() throws Exception {
         JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
-        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
+        when(httpRequestSender.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
 
         String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
         String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
@@ -275,26 +275,26 @@ public class SubscriptionHandlerTest {
         // Create expected extraction
         String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
 
-        // Verify that springRestTemplate was called with the correct url and
+        // Verify that httpRequestSender was called with the correct url and
         // extracted data
-        verify(springRestTemplate, times(1)).postDataMultiValue(
+        verify(httpRequestSender, times(1)).postDataMultiValue(
                 urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
                 mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
     }
 
     @Test
     public void testRestPostTriggerForAuthorization() throws Exception {
-        when(springRestTemplate.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
-        when(springRestTemplate.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
+        when(httpRequestSender.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
+        when(httpRequestSender.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
         informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
-        verify(springRestTemplate, times(1)).postDataMultiValue(urlAuthorization,
+        verify(httpRequestSender, times(1)).postDataMultiValue(urlAuthorization,
                 mapNotificationMessage(subscriptionDataForAuthorization), headersWithAuth);
     }
 
     @Test
     public void testRestPostTriggerFailure() throws Exception {
         informSubscriber.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-        verify(springRestTemplate, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
+        verify(httpRequestSender, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
                 headersWithoutAuth);
         assertFalse(mongoDBHandler.getAllDocuments(dbName, collectionName).isEmpty());
     }

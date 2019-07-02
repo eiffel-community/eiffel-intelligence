@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 
 import org.apache.http.NameValuePair;
@@ -89,7 +88,7 @@ public class InformSubscriber {
     private JmesPathInterface jmespath;
 
     @Autowired
-    private HttpRequestSender restTemplate;
+    private HttpRequestSender httpRequestSender;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -97,18 +96,6 @@ public class InformSubscriber {
     @Autowired
     private EmailSender emailSender;
 
-
-    /**
-     * This method is responsible to display the configurable application properties
-     * regarding subscription notifications.
-     */
-    @PostConstruct
-    public void init() {
-        LOGGER.debug("missedNotificationCollectionName : " + missedNotificationCollectionName);
-        LOGGER.debug("missedNotificationDataBaseName : " + missedNotificationDataBaseName);
-        LOGGER.debug("notification.failAttempt : " + failAttempt);
-        LOGGER.debug("Missed Notification TTL value : " + ttlValue);
-    }
 
     /**
      * This method extracts the mode of notification through which the subscriber should be notified,
@@ -148,12 +135,7 @@ public class InformSubscriber {
         if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
-            try {
-                emailSender.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-                LOGGER.error(e.getMessage());
-            }
+            emailSender.sendEmail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
         }
     }
 
@@ -176,7 +158,7 @@ public class InformSubscriber {
 
         do {
             restCallTries++;
-            success = restTemplate.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
+            success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
             LOGGER.debug("After trying for " + restCallTries + " time(s), the result is : " + success);
         } while (!success && restCallTries <= failAttempt);
 
@@ -283,7 +265,7 @@ public class InformSubscriber {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encoding);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<JsonNode> response = restTemplate.makeGetRequest(url.toString(), headers);
+        ResponseEntity<JsonNode> response = httpRequestSender.makeGetRequest(url.toString(), headers);
 
         if (response == null || response.getStatusCodeValue() != HttpStatus.OK.value()) {
             LOGGER.debug("No jenkins crumb found, most likely not jenkins or jenkins with crumb disabled");

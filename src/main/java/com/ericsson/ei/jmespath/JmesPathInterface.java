@@ -75,10 +75,8 @@ public class JmesPathInterface {
             JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
             result = expression.search(eventJson);
         } catch (Exception e) {
-            String msg = "runRuleOnEvent failed for given arguments:\n";
-            msg += "Rule was: " + rule + "\n";
-            msg += "Event was: " + event + "\n";
-            LOGGER.error(msg, e);
+            String message = String.format("runRuleOnEvent failed for given arguments: \nRule was:\n %s \nEvent was:\n %s", rule, event);
+            LOGGER.error(message, e);
         }
 
         return result;

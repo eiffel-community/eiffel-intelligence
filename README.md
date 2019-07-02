@@ -57,7 +57,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
     - [**Step by Step Subscription Notification**](wiki/markdown/step-by-step-subscription-notification.md)
 1. [**Understanding rules**](wiki/markdown/rules.md)
-    - [**Introduction**](wiki/markdown/rules.md#Introduction)
+    - [**What is JMESPath?**](wiki/markdown/rules.md#What-is-JMESPath?)
     - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)
     - [**MergeResolverRules**](wiki/markdown/merge-resolver-rules.md)
     - [**History Rules**](wiki/markdown/history-rules.md)

@@ -52,6 +52,75 @@ conditions inside them. Each requirement group is separated with an 'OR',
 while the conditions inside a requirement are connected with an 'AND'. This
 means all the conditions in a requirement group must be fulfilled, while
 only one of the requirement groups needs to be fulfilled, for the
-subscription to trigger.
+subscription to trigger. Subscription templates [can be found here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).
 
-Some example subscriptions for a particular aggregated object [can be found here]().
+We will go through how to write some example requirements in subscriptions
+based on the below aggregated object. Conditions in subscriptions are
+written with [JMESPath syntax](http://jmespath.org/specification.html).
+Below is a document from the database which contains a unique ID and an
+aggregated object.
+
+    {
+        "_id" : "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",
+        "aggregatedObject" : {
+            "fileInformation" : [
+                {
+                    "extension" : "war",
+                    "classifier" : ""
+                }
+            ],
+            "artifactCustomData" : [],
+            "buildCommand" : "trigger",
+            "identity" : "pkg:maven/com.mycompany.myproduct/artifact-name@2.1.7",
+            "confidenceLevels" : [
+                {
+                    "eventId" : "e3be0cf8-2ebd-4d6d-bf5c-a3b535cd084e",
+                    "name" : "dummy_1_stable",
+                    "time" : 1521452400324,
+                    "value" : "SUCCESS"
+                }
+            ],
+            "TemplateName" : "ARTIFACT_1",
+            "id" : "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",
+            "time" : 1521452368194,
+            "type" : "EiffelArtifactCreatedEvent",
+            "publications" : [
+                {
+                    "eventId" : "2acd348d-05e6-4945-b441-dc7c1e55534e",
+                    "locations" : [
+                        {
+                            "type" : "NEXUS",
+                            "uri" : "http://host:port/path"
+                        }
+                    ],
+                    "time" : 1521452368758
+                }
+            ]
+        }
+    }
+
+Let's say we need a subscription which is triggered on when an artifact
+has been published to a location of type "NEXUS". This subscription wants
+to listen for when an Eiffel ArtifactPublished event is aggregated by
+Eiffel Intelligence.
+
+It is possible to use [JMESPath expressions](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#What-is-JMESPath?)
+in the conditions of a subscription. We can write a requirement in the
+subscription with the condition to check for the data of interest. In this
+case, it is a JSON object in the list of locations containing the key
+"type" and value "NEXUS". This could be expressed like below:
+
+    publications[?locations[?type=='NEXUS']]
+
+It is important to note, when writing conditions the expression starts
+inside the aggregated object. This means we only have to traverse the JSON
+structure inside the aggregated object.
+
+If we want to trigger a subscription based on when an artifact has reached
+the confidence level of 'SUCCESS' we can write the below expression for
+our condition:
+
+    confidenceLevels[?name=='dummy_1_stable'] && confidenceLevels[?value=='SUCCESS']
+
+These two conditions check both that the artifact name is the right one,
+and that the confidence level is what we are looking for.

@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class is responsible to fetch the criterias from both the query
+ * This class is responsible to fetch the criteria from both the query
  * parameters or the form parameters. Then find the aggregatedObject from the
  * database and concatenate the result.
  */
@@ -48,10 +48,10 @@ public class ProcessQueryParams {
 
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
-    
+
     @Value("${aggregated.object.name}")
     private String objectName;
-    
+
     @Value("${search.query.prefix}")
     private String searchQueryPrefix;
 
@@ -63,15 +63,15 @@ public class ProcessQueryParams {
      * This method takes the parameters from the REST POST request body. If the
      * Aggregated Object matches the condition, then it is returned.
      *
-     * @param request
+     * @param criteriaObj
+     * @param optionsObj
+     * @param filter
      * @return JSONArray
-     * @throws IOException
      */
     public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
         String criteria = editObjectNameInQueryParam(criteriaObj);
-        
-        
+
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
@@ -88,9 +88,10 @@ public class ProcessQueryParams {
     /**
      * This method checks if filter condition exists.
      *
-     * @param filterKey, resultAggregatedObjectArray
+     * @param filter
+     * @param resultAggregatedObjectArray
+     *     An array of aggregated objects
      * @return JSONArray
-     * @throws IOException
      */
     private JSONArray checkFilterCondition(String filter, JSONArray resultAggregatedObject) {
         if (filter == null || filter.equals("")) {
@@ -104,12 +105,14 @@ public class ProcessQueryParams {
     }
 
     /**
-     * This method takes array of aggregated objects and a filterKey. It returns a JSONArray where each element has a key (object Id)
+     * This method takes an array of aggregated objects and a filter. It
+     * returns a JSONArray where each element has a key (object Id)
      * and a list of filtered values.
      *
-     * @param filterKey, resultAggregatedObjectArray
+     * @param filter
+     * @param resultAggregatedObjectArray
+     *     An array of aggregated objects
      * @return JSONArray
-     * @throws IOException
      */
     private JSONArray filterResult(String filter, JSONArray resultAggregatedObjectArray) {
         JSONArray resultArray = new JSONArray();
@@ -123,14 +126,15 @@ public class ProcessQueryParams {
                 resultArray.put(tempJson);
             }
         } catch (JSONException e) {
-            LOGGER.error("Failed to filter an object\n: " + e.getMessage());
+            LOGGER.error("Failed to filter an object: \n" + e.getMessage());
             e.printStackTrace();
         }
         return resultArray;
     }
 
     /**
-     * This method takes the parameters from the REST GET request query. If the Aggregated Object matches the condition, then it is returned.
+     * This method takes the parameters from the REST GET request query. If the
+     * Aggregated Object matches the condition, then it is returned.
      *
      * @param request
      * @return JSONArray
@@ -142,7 +146,7 @@ public class ProcessQueryParams {
         try {
             criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
         } catch (IOException e) {
-            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n" + request);
+            LOGGER.error("Failed to parse freestyle query criteria field from request:\n" + request);
             return new JSONArray();
         }
         LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
@@ -154,13 +158,16 @@ public class ProcessQueryParams {
         LOGGER.debug("Aggregation Database : " + databaseName
                 + "\nAggregation Collection is : " + aggregationCollectionName);
     }
-    
+
     /**
-     * This method takes takes the tesxt as input and replaces all the instances of "object" with the object name in the properties file and return the edited text.
+     * This method takes takes the text as input and replaces all the instances
+     * of the searchQueryPrefix (defined in application.properties) with the aggregated
+     * object name (also defined in application.properties) and return the edited text.
+     *
      * @param  txtObject JSONObject
-     * @return String text after object name replaced with the name configured in the properties file
+     * @return String text with search prefix replaced by the name for aggregated object
      */
     public String editObjectNameInQueryParam(JSONObject txtObject) {
-        return Pattern.compile("("+ searchQueryPrefix + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");    	
-    }    
+        return Pattern.compile("("+ searchQueryPrefix + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");
+    }
 }

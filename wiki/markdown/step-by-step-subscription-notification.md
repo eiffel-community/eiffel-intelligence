@@ -45,7 +45,7 @@ contains two conditions. As per subscription logic, when all the conditions in
 any one of the given requirements are met in an aggregated object then the
 subscription is triggered. Triggering means that the subscriber will be notified
 with the chosen notification method. It should be noted that conditions are given
-as JMESPath rule. Let us suppose that an aggregated object, as shown in below,
+as JMESPath expression. Let us suppose that an aggregated object, as shown below,
 is created:
 
     {
@@ -85,14 +85,14 @@ Consequently, the process is started to send notification to specified subscribe
 For this, 'notificationMeta' and 'notificationType' field values are extracted
 from the subscription.
 
-### Notify via REST POST ###
+## Notify via REST POST
 In the example subscription above, the notification is sent as **REST POST** to
 the url http://127.0.0.1:3000/ei/test_subscription_rest. The notification message
 is prepared as key value pairs in the request. The notification message in
 this example contains the full aggregated object as a value.
 
     parameters:
-        jsonparameters: { full aggregated object}
+        jsonparameters: {full aggregated object}
         runpipeline: mybuildstep
 
 If it was sent as raw JSON body, the notification message would look like below:
@@ -126,7 +126,36 @@ If it was sent as raw JSON body, the notification message would look like below:
         ]
     }
 
-If the notification message sending fails, then a fixed number of attempts are
+
+## Notify via MAIL
+If the “notificationType” of the subscription is “MAIL” then the notification
+message is sent to the email address(es) specified in the “notificationMeta”
+field. If more than one email address is written, it should be written as a
+comma separated string. The subject for the email can be set globally (same
+for all subscriptions) in application.properties as "email.subject". It can
+also be set for individual subscriptions using the Eiffel Intelligence front-end GUI.
+
+As with the conditions, it is also possible to write JMESPath expressions
+for the notification message. If we use the example subscription above, the
+notification could be to send parameters which contains only some of the
+information from the aggregated object. We could for example use the below
+JMESPath expression in the subscription notification message:
+
+    "{parameter: [{ name: 'artifactIdentity', value : to_string(@.identity) }, { name: 'testCase', value: to_string(@.testCaseExecutions[0].testCase.id) } { name: 'runpipeline', value : 'mybuildstep' }]}"
+
+This expression only selects the field identity from the aggregated object
+and this is used as value for the parameter "artifactIdentity", and the
+complete notification message can be seen below:
+
+    parameters:
+        artifactIdentity: pkg:maven/com.mycompany.myproduct/sub-system@1.1.0
+        testCase: TC5
+        runpipeline: mybuildstep
+
+
+## Missed notifications
+
+If the notification via REST POST fails, then a fixed number of attempts are
 made to resend successfully. The number of attempts are specified in the
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 as “notification.failAttempt”. If message sending attempts fails for the
@@ -136,15 +165,6 @@ file as “missedNotificationDataBaseName” and collection name as
 “missedNotificationCollectionName”. The message is stored in the database
 for a certain duration before being deleted. This time can be configured in the
 property file as “notification.ttl.value”.
-
-### Notify via MAIL ###
-If the “notificationType” of the subscription is “MAIL” then the notification
-message is sent to the email address(es) specified in the “notificationMeta”
-field. If more than one email address is written, it should be written as a
-comma separated string. The subject for the email can be set globally (same
-for all subscriptions) in application.properties as "email.subject". It can
-also be set for individual subscriptions using the Eiffel Intelligence front-end GUI.
-
 
 **Missed notification in the missed notification database with TTL value:**
 

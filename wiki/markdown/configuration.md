@@ -1,9 +1,8 @@
 # Configuration
 
-Address and port for message buss and MongoDB needs to be configured in
-[application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
-for the application to run properly. Each property is explained in the file so open the properties file for a view
-on properties role.
+Configuration for the message bus, MongoDB and other settings for
+Eiffel Intelligence needs to be defined in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+for the application to run properly.
 
 ## Setting up multiple EI instances
 
@@ -124,7 +123,10 @@ collection is defined by the below property:
 ### Notifications
 
 **email.sender** defines who should be the sender of the email Eiffel
-Intelligence sends when a subscription is triggered.
+Intelligence sends when a subscription is triggered. If a subscription is
+defined with the notificationMeta "receivermail@example.com" this receiver
+would be notified when the subscription fulfills all conditions via an E-mail.
+The sender of this e-mail is defined by the **email.sender** property.
 The value for email.subject is used by all subscriptions which have been
 created via the REST API. When a subscription is created using the Eiffel
 Intelligence front-end GUI it is possible to set individual email subject
@@ -143,7 +145,7 @@ what the collection name for missed notifications should be. **notification.ttl.
 Eiffel Intelligence how long a missed notification will be stored in the
 database before deletion. With **notification.failAttempt** property, it
 is possible to configure the number of attempts Eiffel Intelligence will
-retry to make REST POST notification when a subscription is filled.
+retry to make a REST POST notification when a subscription is triggered.
 
 * missedNotificationDatabaseName
 * missedNotificationCollectionName

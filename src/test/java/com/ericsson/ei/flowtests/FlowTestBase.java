@@ -36,8 +36,8 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
-import com.ericsson.ei.rmqhandler.RmqHandler;
+import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,9 +60,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     @Autowired
     public ObjectHandler objectHandler;
-
-    @Autowired
-    private RulesHandler rulesHandler;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -169,8 +166,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
                 getFlowTestConfigs().createExchange(exchangeName, queueName);
             }
 
-            rulesHandler.setRulePath(getRulesFilePath());
-
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();
@@ -202,11 +197,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
             LOGGER.error(e.getMessage(), e);
         }
     }
-
-    /**
-     * @return path to file with rules, that is used in flow test
-     */
-    abstract String getRulesFilePath();
 
     /**
      * @return path to file, with events, that is used in flow test

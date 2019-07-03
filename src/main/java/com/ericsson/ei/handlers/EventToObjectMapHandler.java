@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -136,10 +135,10 @@ public class EventToObjectMapHandler {
         }
         return list;
     }
-    
+
     /**
      * The method is responsible for the delete the EventObjectMap by using the suffix template Name
-     * 
+     *
      * @param templateName
      * @return boolean
      */

@@ -14,11 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.mongoDBHandler.test;
+package com.ericsson.ei.handlers.test;
 
 import static org.junit.Assert.assertTrue;
 
-import com.ericsson.ei.mongodbhandler.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.mongodb.MongoClient;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class MongoDBHandlerTest {
         setUpEmbeddedMongo();
         mongoDBHandler = new MongoDBHandler();
         mongoDBHandler.setMongoClient(mongoClient);
-        assertTrue(mongoDBHandler.insertDocument(dataBaseName, collectionName, input));
+        mongoDBHandler.insertDocument(dataBaseName, collectionName, input);
     }
 
     @Test

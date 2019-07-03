@@ -25,6 +25,7 @@ import java.util.Map;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
@@ -34,17 +35,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTestTestExecution.class })
 @SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/TestExecutionObjectRules.json"})
 public class FlowTestTestExecution extends FlowTestBase {
-
-    private static final String RULES_FILE_PATH = "src/test/resources/TestExecutionObjectRules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";
     private static final String AGGREGATED_OBJECT_ID = "e46ef12d-25gb-4d7y-b9fd-8763re66de47";
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
-    }
 
     @Override
     String getEventsFilePath() {

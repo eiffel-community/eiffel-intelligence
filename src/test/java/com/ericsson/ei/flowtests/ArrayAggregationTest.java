@@ -30,17 +30,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, ArrayAggregationTest.class })
 @SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/arrayAggregationRules.json"})
 public class ArrayAggregationTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "arrayAggregationUpstreamResult.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/arrayAggregationEvents.json";
-    private static final String RULES_FILE_PATH = "src/test/resources/arrayAggregationRules.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/arrayAggregatedObject.json";
     private static final String AGGREGATED_OBJECT_ID = "175f08ff-1e4b-4265-a0d4-36e744297dc3";
 
@@ -63,11 +64,6 @@ public class ArrayAggregationTest extends FlowTestBase {
 
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
                 anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
-    }
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
     }
 
     @Override

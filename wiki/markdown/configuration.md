@@ -40,5 +40,10 @@ Example of setting "rules.path" property in application.properties using default
 - rules.path: /rules/ArtifactRules-Eiffel-Toulouse-Version.json
 - rules.path: /rules/SourceChangeObjectRules-Eiffel-Toulouse-Version.json
 
-It is possible to use external provided extraction rules by providing full path to the extraction rules json file:
+It is possible to use external provided extraction rules by providing the full path or a URI.
+URI schemes that are accepted are 'file','http' and 'https'.
+Examples of setting "rules.path" property to an external rules file:
 - rules.path: /full/path/to/ExtractionRules.json
+- rules.path: file:///full/path/to/ExtractionRules.json
+- rules.path: http://somehost.com/full/path/to/ExtractionRules.json
+- rules.path: https://somehost.com/full/path/to/ExtractionRules.json

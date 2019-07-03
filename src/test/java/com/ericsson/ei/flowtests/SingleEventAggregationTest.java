@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
@@ -54,13 +56,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
-        SingleEventAggregationTest.class })
-@SpringBootTest
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, SingleEventAggregationTest.class })
+@SpringBootTest(classes = App.class)
+@TestPropertySource(properties = {"rules.path=src/test/resources/all_event_rules.json"})
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
-
-    private static final String RULES_FILE_PATH = "src/test/resources/all_event_rules.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
 
@@ -75,11 +75,6 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Mock
     private ERQueryService erQueryService;
-
-    @Override
-    String getRulesFilePath() {
-        return RULES_FILE_PATH;
-    }
 
     @Override
     String getEventsFilePath() {
@@ -100,8 +95,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
             String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
             JSONArray jsonArray = new JSONArray(readFileToString);
             Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-            boolean addSubscription = subscriptionService.addSubscription(subscription);
-            assertEquals(addSubscription, true);
+            subscriptionService.addSubscription(subscription);
         } catch (Exception e) {
 
         }

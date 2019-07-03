@@ -87,7 +87,6 @@ public class SubscriptionRestAPITest {
     @Test
     public void addSubscription() throws Exception {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
-        Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
         // adding the current security context, otherwise
         // "SecurityContextHolder.getContext()" throws out null pointer
@@ -108,7 +107,6 @@ public class SubscriptionRestAPITest {
     @Test
     public void addSubscriptionWithExistedName() throws Exception {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(true);
-        Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
         // adding the current security context, otherwise
         // "SecurityContextHolder.getContext()" throws out null pointer
@@ -129,7 +127,6 @@ public class SubscriptionRestAPITest {
     @Test
     public void addSubscriptionMulti() throws Exception {
         Mockito.when(subscriptionService.doSubscriptionExist(Mockito.anyString())).thenReturn(false);
-        Mockito.when(subscriptionService.addSubscription(Mockito.any(Subscription.class))).thenReturn(false);
 
         // adding the current security context
         SecurityContextHolder.setContext(securityContext);

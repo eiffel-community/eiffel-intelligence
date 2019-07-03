@@ -103,11 +103,9 @@ public class SendHttpRequest {
      */
     public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
         HttpEntity<String> request = new HttpEntity<>(headers);
-        try {
-            ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
-            return response;
-        } catch (Exception e) {
-            return null;
-        }
+
+        ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
+        return response;
+
     }
 }

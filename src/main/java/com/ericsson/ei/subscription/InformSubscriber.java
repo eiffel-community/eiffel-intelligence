@@ -44,6 +44,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.ericsson.ei.exception.AuthorizationException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongodbhandler.MongoDBHandler;
@@ -102,8 +103,9 @@ public class InformSubscriber {
      *
      * @param aggregatedObject
      * @param subscriptionJson
+     * @throws AuthorizationException
      */
-    public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) {
+    public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) throws AuthorizationException {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
@@ -160,8 +162,9 @@ public class InformSubscriber {
      * @param notificationMeta
      * @param subscriptionJson
      * @return
+     * @throws AuthorizationException
      */
-    private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson) {
+    private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson) throws AuthorizationException {
         HttpHeaders headers = new HttpHeaders();
 
         String headerContentMediaType = getSubscriptionField("restPostBodyMediaType", subscriptionJson);
@@ -181,29 +184,47 @@ public class InformSubscriber {
      * @param notificationMeta
      * @param subscriptionJson
      * @return
+     * @throws AuthorizationException
      */
-    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) {
+    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) throws AuthorizationException {
         String authType = getSubscriptionField("authenticationType", subscriptionJson);
-        if (!authType.equals("BASIC_AUTH")) {
-            return headers;
-        }
-
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
 
-        if (!username.equals("") && !password.equals("")) {
-            String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-            headers.add("Authorization", "Basic " + encoding);
-            LOGGER.debug("Successfully added header for 'Authorization'");
-
-            // Adding jenkins crumb if any
-            headers = addJenkinsCrumbData(headers, encoding, notificationMeta);
-
-        } else {
-            LOGGER.error(
-                    "userName/password field in subscription is missing. Make sure both are provided for BASIC_AUTH.");
+        boolean authorizationDetailsProvided = isAuthorizationDetailsProvided(authType, username, password);
+        if (!authorizationDetailsProvided) {
+            return headers;
         }
+
+        String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        headers.add("Authorization", "Basic " + encoding);
+        LOGGER.debug("Successfully added header for 'Authorization'");
+
+        if (authType.equals("BASIC_AUTH_JENKINS_CSRF")) {
+            headers = addJenkinsCrumbData(headers, encoding, notificationMeta);
+        }
+
         return headers;
+    }
+
+    /**
+     *
+     * @param authType
+     * @param username
+     * @param password
+     * @return
+     */
+    private boolean isAuthorizationDetailsProvided(String authType, String username, String password) {
+        if (authType.equals("NO_AUTH")) {
+            return false;
+        }
+
+        if (username.equals("") && password.equals("")) {
+            LOGGER.error("userName/password field in subscription is missing. Make sure both are provided for BASIC_AUTH.");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -213,9 +234,10 @@ public class InformSubscriber {
      * @param encoding
      * @param notificationMeta
      * @return
+     * @throws AuthorizationException
      */
-    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta) {
-        JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumbIfAny(encoding, notificationMeta);
+    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta) throws AuthorizationException {
+        JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumb(encoding, notificationMeta);
         if (jenkinsJsonCrumbData != null) {
             String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
             String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
@@ -232,15 +254,17 @@ public class InformSubscriber {
      * @param encoding
      * @param notificationMeta
      * @return
+     * @throws AuthorizationException
      */
-    private JsonNode fetchJenkinsCrumbIfAny(String encoding, String notificationMeta) {
+    private JsonNode fetchJenkinsCrumb(String encoding, String notificationMeta) throws AuthorizationException {
         URL url;
         try {
             String baseUrl = extractBaseUrl(notificationMeta);
             url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
         } catch (MalformedURLException e) {
-            LOGGER.error("Error! Failed to format url to collect jenkins crumb");
-            return null;
+            String message = "Error! Failed to format url to collect jenkins crumb";
+            LOGGER.error(message);
+            throw new AuthorizationException(message, e);
         }
 
         HttpHeaders headers = new HttpHeaders();

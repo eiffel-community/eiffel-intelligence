@@ -64,7 +64,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
 
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is: " + response.toString());
-            return new ResponseEntity<>(queryResponse, httpStatus);
+            return new ResponseEntity<QueryResponse>(queryResponse, httpStatus);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";
             LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));

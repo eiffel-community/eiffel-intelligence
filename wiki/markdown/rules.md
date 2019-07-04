@@ -1,8 +1,6 @@
 # Rules
 
-## Introduction
-Eiffel Intelligence uses JMESPath for extracting information from events and
-for post processing of data in an aggregated object.
+## What is JMESPath?
 
 JMESPath is a query language for JSON. You can extract and transform elements
 from a JSON document. The result of applying a JMESPath expression against a
@@ -26,9 +24,40 @@ value is returned. Assume that we have such JSON object
 {"a": {"b": {"c": {"d": "value"}}}} and we need to get the string "value" from
 object. The JMESPath identifier will be a.b.c.d. [JMESPath identifier documentation](http://jmespath.org/specification.html#identifiers).
 
-Lets do some more complicated example on Eiffel event where we need to extract
-the "SUCCESS" from the event. The expression for such JSON query will be
-data.value
+### Extract data from Eiffel event
+
+        {
+            "meta": {
+                "id": "e3be0cf8-2ebd-4d6d-bf5c-a3b535cd084e",
+                "type": "EiffelConfidenceLevelModifiedEvent",
+                "version": "1.1.0",
+                "time": 1521452400324,
+                "tags": [],
+                "source": {
+                    "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
+                    "uri": "http://host:port/path"
+                }
+            },
+            "data": {
+                "name": "dummy_1_stable",
+                "value": "SUCCESS"
+            },
+            "links": [
+                {
+                    "type": "SUBJECT",
+                    "target": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22"
+                }
+            ]
+        }
+
+Lets go through an example, in which we need to extract the value "SUCCESS"
+from an Eiffel event. The expression for such a JSON query will be
+"data.value".
+
+Eiffel Intelligence uses JMESPath for extracting information from events and
+for post processing of data in an aggregated object. Hence, JMESPath is used
+to traverse JSON structures when writing rules, subscription requirements or
+querying an aggregated object.
 
 ## Rule set up
 

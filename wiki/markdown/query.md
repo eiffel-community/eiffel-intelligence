@@ -115,8 +115,9 @@ By using a query that contains only empty "criteria" it is possible to return
 all aggregated objects from the database. The aggregated objects will be
 returned from specific collection (which name is defined by property
 aggregated.collection.name) that is stored in specific database (which name is
-defined by property spring.data.mongodb.database). All properties can be found
-in [application's properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties).
+defined by property spring.data.mongodb.database). Read more about the
+different properties in [application's properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+or in the [documentation](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md).
 
 Example:
 

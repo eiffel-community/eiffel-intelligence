@@ -77,7 +77,7 @@ public class TestQueryControllerImpl {
     public void filterFormParamTest() throws Exception {
 
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.filterFormParam(any(JSONObject.class), any(JSONObject.class), any(String.class))).thenReturn(inputObj);
+        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class))).thenReturn(inputObj);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
                 .accept(MediaType.ALL)

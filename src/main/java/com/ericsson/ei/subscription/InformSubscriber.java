@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -64,7 +62,7 @@ import lombok.Getter;
 public class InformSubscriber {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InformSubscriber.class);
-    // Regular expression for replacement unexpected character like \"
+    // Regular expression for replacing unexpected character like \"
     private static final String REGEX = "^\"|\"$";
     private static final String JENKINS_CRUMB_ENDPOINT = "/crumbIssuer/api/json";
 
@@ -98,8 +96,9 @@ public class InformSubscriber {
 
 
     /**
-     * This method extracts the mode of notification through which the subscriber should be notified,
-     * from the subscription Object. And if the notification fails, then it saved in the database.
+     * This method extracts the mode of notification through which the subscriber
+     * should be notified, from the subscription Object. And if the notification
+     * fails, then it saved in the database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
@@ -114,14 +113,14 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            // prepare notification meta
+            // Prepare notification meta
             notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
 
             // Prepare request headers
             HttpHeaders headers = prepareHeaders(notificationMeta, subscriptionJson);
 
-            // Make rest call(s)
-            boolean success = makeRestCalls(notificationMeta, mapNotificationMessage, headers);
+            // Make HTTP request(s)
+            boolean success = makeHTTPRequests(notificationMeta, mapNotificationMessage, headers);
 
             if (!success) {
                 String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
@@ -151,22 +150,23 @@ public class InformSubscriber {
      * @return success
      *     A boolean value depending on the outcome of the final HTTP request
      * */
-    private boolean makeRestCalls(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) {
+    private boolean makeHTTPRequests(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
+                                     HttpHeaders headers) {
         boolean success = false;
-        int restCallTries = 0;
+        int requestTries = 0;
 
         do {
-            restCallTries++;
+            requestTries++;
             success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-            LOGGER.debug("After trying for " + restCallTries + " time(s), the result is : " + success);
-        } while (!success && restCallTries <= failAttempt);
+            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : " + success);
+        } while (!success && requestTries <= failAttempt);
 
         return success;
     }
 
     /**
-     * This method prepares headers to be used when making a rest call with the method POST.
+     * This method prepares headers to be used when making a rest call with the
+     * method POST.
      *
      * @param notificationMeta
      *    A String containing a URL
@@ -176,12 +176,9 @@ public class InformSubscriber {
      */
     private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson) {
         HttpHeaders headers = new HttpHeaders();
-
         String headerContentMediaType = getSubscriptionField("restPostBodyMediaType", subscriptionJson);
         headers.setContentType(MediaType.valueOf(headerContentMediaType));
-        LOGGER.debug("Successfully added header: "
-                + String.format("'%s':'%s'", "restPostBodyMediaType", headerContentMediaType));
-
+        LOGGER.debug("Successfully added header: 'restPostBodyMediaType':'{}'", headerContentMediaType);
         headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
 
         return headers;
@@ -240,7 +237,6 @@ public class InformSubscriber {
             LOGGER.debug("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
         }
         return headers;
-
     }
 
     /**

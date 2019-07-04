@@ -62,21 +62,20 @@ public class EmailSender {
     }
 
     /**
-     * This method sends mail to the given receiver mail address(es) with the
+     * This method sends mail to the given receivers mail address(es) with the
      * given email subject and body from the mapNotificationMessage.
      *
-     * @param receiver
+     * @param receivers
      *     Who to send the mail to
      * @param mapNotificationMessage
      *     A String to be used as the body of the email
      * @param emailSubject
      *     The subject of the email to send
      */
-    public void sendEmail(String receiver, String mapNotificationMessage, String emailSubject) {
-        Set<String> extEmails = new HashSet<>();
-        extEmails = extractEmails(receiver);
-        String[] to = extEmails.toArray(new String[0]);
-
+    public void sendEmail(String receivers, String mapNotificationMessage, String emailSubject) {
+        Set<String> emails = new HashSet<>();
+        emails = extractEmails(receivers);
+        String[] to = emails.toArray(new String[0]);
         MimeMessage message = prepareEmail(mapNotificationMessage, emailSubject, to);
         emailSender.send(message);
     }
@@ -88,17 +87,17 @@ public class EmailSender {
      *     A String to be used by the body of the email
      * @param emailSubject
      *     The subject of the email to send
-     * @param receiver
+     * @param receivers
      *     Who to send the email to
      * */
-    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject, String[] receiver) {
+    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject, String[] receivers) {
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom(sender);
             helper.setSubject(getSubject(emailSubject));
             helper.setText(mapNotificationMessage);
-            helper.setTo(receiver);
+            helper.setTo(receivers);
         } catch (MessagingException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();

@@ -15,6 +15,7 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class represents the REST GET mechanism to extract the aggregated data
- * on the basis of the SubscriptionName from the Missed Notification Object.
+ * This class represents the REST GET mechanism to extract the aggregated data on the basis of the SubscriptionName from the Missed Notification
+ * Object.
  */
 @Component
 @CrossOrigin
@@ -44,15 +45,14 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST GET mechanism to extract the data on
-     * the basis of the SubscriptionName from the Missed Notification Object.
+     * This method is responsible for the REST GET mechanism to extract the data on the basis of the SubscriptionName from the Missed Notification
+     * Object.
      *
      * @param subscriptionName
      * @return ResponseEntity
      */
     @Override
-    public ResponseEntity<?> getQueryMissedNotifications(
-            @RequestParam("SubscriptionName") final String subscriptionName) {
+    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
@@ -64,14 +64,13 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is : " + response.toString());
             if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
-                LOGGER.debug("Missed notification with subscription name " + subscriptionName
-                        + " was successfully removed from database");
+                LOGGER.debug("Missed notification with subscription name " + subscriptionName + " was successfully removed from database");
             }
             return new ResponseEntity<>(queryResponse, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract the data from the Missed Notification Object based on subscription name "
-                    + subscriptionName + ". Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to extract the data from the Missed Notification Object based on subscription name "
+                    + subscriptionName + ".";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

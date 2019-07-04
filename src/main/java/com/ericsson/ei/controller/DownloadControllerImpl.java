@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +49,8 @@ public class DownloadControllerImpl implements DownloadController {
             response.put("events", "/download/eventsTemplate");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to get information about download endpoints. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to get information about download endpoints.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -60,11 +61,11 @@ public class DownloadControllerImpl implements DownloadController {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>("Subscriptions template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            String errorMessage = "Failed to download subscriptions template file. Error message:\n" + e.getMessage();
-            LOGGER.error(e.getMessage(), e);
+            String errorMessage = "Internal Server Error: Failed to download subscriptions template file.";
+            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,11 +76,11 @@ public class DownloadControllerImpl implements DownloadController {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>("Rules template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            String errorMessage = "Failed to download rules template file. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to download rules template file.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -90,11 +91,11 @@ public class DownloadControllerImpl implements DownloadController {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>("Events template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            String errorMessage = "Failed to download events template file. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to download events template file.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

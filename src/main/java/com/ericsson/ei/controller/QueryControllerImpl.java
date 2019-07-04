@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.controller;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -73,8 +74,8 @@ public class QueryControllerImpl implements QueryController {
             }
             return new ResponseEntity<>(result.toString(), httpStatus);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to extract data from the Aggregated Object using freestyle query.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

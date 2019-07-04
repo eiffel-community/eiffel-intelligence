@@ -18,6 +18,7 @@ package com.ericsson.ei.controller;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,7 +105,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
         }
     }
@@ -121,14 +122,13 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
-                    String message = "Aggregated event is not generated. List of rules or list of events are not correct";
-                    String errorMessage = "Failed to generate aggregated object. Error message:\n" + message;
+                    String errorMessage = "Failed to generate aggregated object. List of rules or list of events are not correct";
                     LOGGER.error(errorMessage);
                     return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
                 }
             } catch (JSONException | IOException e) {
-                String errorMessage = "Failed to generate aggregated object. Error message:\n" + e.getMessage();
-                LOGGER.error(errorMessage, e);
+                String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
+                LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
                 return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
@@ -148,8 +148,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         try {
             return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to get Status. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to get Status.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

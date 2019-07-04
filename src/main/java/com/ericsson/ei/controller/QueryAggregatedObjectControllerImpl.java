@@ -15,6 +15,7 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,8 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 /**
- * This class represents the REST GET mechanism to extract the aggregated data
- * on the basis of the ID from the aggregatedObject.
+ * This class represents the REST GET mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
  */
 @Component
 @CrossOrigin
@@ -45,8 +44,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
     private ProcessAggregatedObject processAggregatedObject;
 
     /**
-     * This method is responsible for the REST Get mechanism to extract the
-     * aggregated data on the basis of the ID from the aggregatedObject.
+     * This method is responsible for the REST Get mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
      *
      * @param id
      * @return ResponseEntity
@@ -68,9 +66,8 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
             LOGGER.debug("The response is: " + response.toString());
             return new ResponseEntity<>(queryResponse, httpStatus);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID " + id
-                    + ". Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

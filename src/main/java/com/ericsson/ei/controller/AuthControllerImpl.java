@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.controller;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +53,8 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to check if security is enabled. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to check if security is enabled.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -66,8 +67,8 @@ public class AuthControllerImpl implements AuthController {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to log in user. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to log in user.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -79,8 +80,8 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Internal Server Error: Failed to check backend status.";
+            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

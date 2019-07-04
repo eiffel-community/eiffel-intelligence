@@ -65,13 +65,12 @@ public class TestProcessQueryParams {
             JSONObject query = new JSONObject(QUERY_WITH_CRITERIA_AND_OPTIONS);
             JSONObject criteria = (JSONObject) query.get("criteria");
             JSONObject options = (JSONObject) query.get("options");
-            String filterKey = null;
-
+            String filter = null;
 
             String request = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
             when(processAggregatedObject.processQueryAggregatedObject(
                     request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-            JSONArray result = processQueryParams.filterFormParam(criteria, options,filterKey);
+            JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -81,13 +80,13 @@ public class TestProcessQueryParams {
     @Test
     public void testFilterFormParamWithOnlyCriteria() throws IOException {
         try {
-            JSONObject queryBody = new JSONObject(QUERY_WITH_CRITERIA);
-            JSONObject criteria = (JSONObject) queryBody.get("criteria");
+            JSONObject query = new JSONObject(QUERY_WITH_CRITERIA);
+            JSONObject criteria = (JSONObject) query.get("criteria");
             JSONObject options = null;
             String filter = null;
             when(processAggregatedObject.processQueryAggregatedObject(
                     criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-            JSONArray result = processQueryParams.filterFormParam(criteria, options,filter);
+            JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -96,7 +95,7 @@ public class TestProcessQueryParams {
 
     @Test
     public void testFilterFormParamForObjectName() throws IOException {
-    	 try {
+        try {
              JSONObject query = new JSONObject(QUERY_WITH_UNIVERSAL_OBJECT_NAME);
              JSONObject criteria = (JSONObject) query.get("criteria");
              JSONObject options = (JSONObject) query.get("options");
@@ -109,7 +108,7 @@ public class TestProcessQueryParams {
              String request = "{ \"$and\" : [ " + criteriaConf.toString() + "," + optionsConf.toString() + " ] }";
              when(processAggregatedObject.processQueryAggregatedObject(
                      request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-             JSONArray result = processQueryParams.filterFormParam(criteria, options, filter);
+             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
              assertEquals(expected, result);
          } catch (Exception e) {
              fail(e.getMessage());

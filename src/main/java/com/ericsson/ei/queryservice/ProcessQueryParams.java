@@ -28,15 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class is responsible to fetch the criteria from both the query
- * parameters or the form parameters. Then find the aggregatedObject from the
- * database and concatenate the result.
+ * This class is responsible to search for an aggregatedObject in the database,
+ * which matches the criteria sent in. It filters the result if
+ * any filter was given, and returns the result from the search.
  */
 @Component
 public class ProcessQueryParams {
@@ -68,7 +66,7 @@ public class ProcessQueryParams {
      * @param filter
      * @return JSONArray
      */
-    public JSONArray filterFormParam(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
+    public JSONArray runQuery(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
         String criteria = editObjectNameInQueryParam(criteriaObj);
 
@@ -76,11 +74,16 @@ public class ProcessQueryParams {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
             String options = editObjectNameInQueryParam(optionsObj);
-            LOGGER.debug("The options is : " + options);
+            LOGGER.debug("The options are: " + options);
             String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
-        resultAggregatedObject = checkFilterCondition(filter, resultAggregatedObject);
+
+        if(hasFilterCondition(filter)) {
+            JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
+            LOGGER.debug("Filtered values from resultAggregatedObject: " + filteredResults.toString());
+            return filteredResults;
+        }
 
         return resultAggregatedObject;
     }
@@ -89,19 +92,15 @@ public class ProcessQueryParams {
      * This method checks if filter condition exists.
      *
      * @param filter
-     * @param resultAggregatedObjectArray
      *     An array of aggregated objects
      * @return JSONArray
      */
-    private JSONArray checkFilterCondition(String filter, JSONArray resultAggregatedObject) {
-        if (filter == null || filter.equals("")) {
-            LOGGER.debug("No filter conditions provided. ResultAggregatedObject : " + resultAggregatedObject.toString());
-        } else {
-            JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
-            LOGGER.debug("Filtered values from resultAggregatedObject : " + filteredResults.toString());
-            return filteredResults;
+    private boolean hasFilterCondition(String filter) {
+        if (filter != null && !filter.equals("")) {
+            return true;
         }
-        return resultAggregatedObject;
+        LOGGER.debug("No filter conditions were provided.");
+        return false;
     }
 
     /**
@@ -110,6 +109,7 @@ public class ProcessQueryParams {
      * and a list of filtered values.
      *
      * @param filter
+     *     The filter to apply to an array of aggregated objects
      * @param resultAggregatedObjectArray
      *     An array of aggregated objects
      * @return JSONArray
@@ -126,7 +126,7 @@ public class ProcessQueryParams {
                 resultArray.put(tempJson);
             }
         } catch (JSONException e) {
-            LOGGER.error("Failed to filter an object: \n" + e.getMessage());
+            LOGGER.error("Failed to filter an aggregated object: " + e.getMessage());
             e.printStackTrace();
         }
         return resultArray;
@@ -153,21 +153,16 @@ public class ProcessQueryParams {
         return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
 
-    @PostConstruct
-    public void print() {
-        LOGGER.debug("Aggregation Database : " + databaseName
-                + "\nAggregation Collection is : " + aggregationCollectionName);
-    }
-
     /**
      * This method takes takes the text as input and replaces all the instances
      * of the searchQueryPrefix (defined in application.properties) with the aggregated
      * object name (also defined in application.properties) and return the edited text.
      *
-     * @param  txtObject JSONObject
+     * @param  txtObject
+     *     A JSONObject with text to be replaced
      * @return String text with search prefix replaced by the name for aggregated object
      */
-    public String editObjectNameInQueryParam(JSONObject txtObject) {
+    private String editObjectNameInQueryParam(JSONObject txtObject) {
         return Pattern.compile("("+ searchQueryPrefix + ".)").matcher(txtObject.toString()).replaceAll(objectName +".");
     }
 }

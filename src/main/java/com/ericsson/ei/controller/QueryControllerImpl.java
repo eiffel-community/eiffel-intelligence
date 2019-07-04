@@ -34,8 +34,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class represents the REST end-points for the query service. It can take
- * both query parameters and form parameters as criterias.
+ * This class represents the REST end-points for the query service. Criteria is
+ * required to have in the request body, while options and filter are optional.
  */
 @Component
 @CrossOrigin
@@ -64,7 +64,7 @@ public class QueryControllerImpl implements QueryController {
                 filter = body.getFilter();
             }
 
-            JSONArray result = processQueryParams.filterFormParam(criteria, options, filter);
+            JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             if(!result.toString().equalsIgnoreCase(emptyResponseContent)) {
                 httpStatus = HttpStatus.OK;
             } else {

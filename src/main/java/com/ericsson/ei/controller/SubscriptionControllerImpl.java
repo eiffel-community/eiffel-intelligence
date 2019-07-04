@@ -40,10 +40,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.controller.model.SubscriptionResponse;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.SubscriptionValidator;
+import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,11 +66,12 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     private ISubscriptionService subscriptionService;
 
     private Map<String, String> errorMap;
+    private String errorMessage;
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> createSubscription(
+    public ResponseEntity<?> createSubscription(
             @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
@@ -96,13 +97,13 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return getResponse();
+        return getPostResponse();
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(@PathVariable String subscriptionNames) {
+    public ResponseEntity<?> getSubscriptionByNames(@PathVariable String subscriptionNames) {
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
@@ -129,13 +130,17 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         response.setFoundSubscriptions(foundSubscriptionList);
         response.setNotFoundSubscriptions(notFoundSubscriptionList);
         HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        if (httpStatus == HttpStatus.NOT_FOUND) {
+            String errorMessage = "Failed to fetch subscriptions:\n" + notFoundSubscriptionList.toString();
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), httpStatus);
+        }
         return new ResponseEntity<>(response, httpStatus);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Updates the existing subscriptions")
-    public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(
+    public ResponseEntity<?> updateSubscriptions(
             @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
@@ -160,13 +165,13 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return getResponse();
+        return getPutResponse();
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(
+    public ResponseEntity<?> deleteSubscriptionByNames(
             @PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
@@ -191,7 +196,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
             }
         });
-        return getResponse();
+        return getDeleteResponse();
     }
 
     @Override
@@ -217,16 +222,27 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
     }
 
-    private ResponseEntity<List<SubscriptionResponse>> getResponse() {
+    private ResponseEntity<?> getPostResponse() {
+        errorMessage = "Failed to create Subscriptions:\n";
+        return getResponse();
+    }
+
+    private ResponseEntity<?> getPutResponse() {
+        errorMessage = "Failed to update subscription:\n";
+        return getResponse();
+    }
+
+    private ResponseEntity<?> getDeleteResponse() {
+        errorMessage = "Failed to delete subscriptions:\n";
+        return getResponse();
+    }
+
+    private ResponseEntity<?> getResponse() {
         if (!errorMap.isEmpty()) {
-            List<SubscriptionResponse> subscriptionResponseList = new ArrayList<>();
-            errorMap.forEach((subscriptionName, reason) -> {
-                SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-                subscriptionResponse.setSubscription(subscriptionName);
-                subscriptionResponse.setReason(reason);
-                subscriptionResponseList.add(subscriptionResponse);
-            });
-            return new ResponseEntity<>(subscriptionResponseList, HttpStatus.BAD_REQUEST);
+            for (Map.Entry<String, String> entry : errorMap.entrySet()) {
+                errorMessage += "" + entry.getKey() + " :: " + entry.getValue() + "\n";
+            }
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ericsson.ei.controller.model.QueryBody;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
+import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -74,7 +75,7 @@ public class QueryControllerImpl implements QueryController {
         } catch (Exception e) {
             String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

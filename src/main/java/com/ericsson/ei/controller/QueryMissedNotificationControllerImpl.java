@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -50,7 +51,7 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      * @return ResponseEntity
      */
     @Override
-    public ResponseEntity<QueryResponse> getQueryMissedNotifications(
+    public ResponseEntity<?> getQueryMissedNotifications(
             @RequestParam("SubscriptionName") final String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
@@ -70,10 +71,8 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
         } catch (Exception e) {
             String errorMessage = "Failed to extract the data from the Missed Notification Object based on subscription name "
                     + subscriptionName + ". Error message:\n" + e.getMessage();
-            queryResponseEntity.setAdditionalProperty("errorMessage", errorMessage);
             LOGGER.error(errorMessage, e);
-            queryResponse.setQueryResponseEntity(queryResponseEntity);
-            return new ResponseEntity<>(queryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

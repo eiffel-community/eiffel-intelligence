@@ -14,6 +14,7 @@
 package com.ericsson.ei.controller;
 
 import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
+import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +46,7 @@ public class InformationControllerImpl implements InformationController {
         } catch (Exception e) {
             String errorMessage = "Failed to parse EI backend information. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

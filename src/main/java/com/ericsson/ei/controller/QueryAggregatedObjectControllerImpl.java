@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -51,7 +52,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      * @return ResponseEntity
      */
     @Override
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();
@@ -70,8 +71,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
             String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID " + id
                     + ". Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            queryResponse.setAdditionalProperty("errorMessage", errorMessage);
-            return new ResponseEntity<>(queryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

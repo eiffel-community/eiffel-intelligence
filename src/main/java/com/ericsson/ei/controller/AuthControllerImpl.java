@@ -26,6 +26,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.ericsson.ei.utils.ResponseMessage;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -52,7 +54,7 @@ public class AuthControllerImpl implements AuthController {
         } catch (Exception e) {
             String errorMessage = "Failed to check if security is enabled. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -66,7 +68,7 @@ public class AuthControllerImpl implements AuthController {
         } catch (Exception e) {
             String errorMessage = "Failed to log in user. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -79,7 +81,7 @@ public class AuthControllerImpl implements AuthController {
         } catch (Exception e) {
             String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

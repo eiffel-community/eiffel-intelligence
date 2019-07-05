@@ -65,15 +65,12 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Autowired
     private ISubscriptionService subscriptionService;
 
-    private Map<String, String> errorMap;
-    private String errorMessage;
-
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates the subscriptions")
     public ResponseEntity<?> createSubscription(
             @RequestBody List<Subscription> subscriptions) {
-        errorMap = new HashMap<>();
+        Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
@@ -96,7 +93,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return getPostResponse();
+        return getPostResponse(errorMap);
     }
 
     @Override
@@ -141,7 +138,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Updates the existing subscriptions")
     public ResponseEntity<?> updateSubscriptions(
             @RequestBody List<Subscription> subscriptions) {
-        errorMap = new HashMap<>();
+        Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
         subscriptions.forEach(subscription -> {
@@ -163,7 +160,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
-        return getPutResponse();
+        return getPutResponse(errorMap);
     }
 
     @Override
@@ -171,7 +168,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @ApiOperation(value = "Removes the subscriptions from the database")
     public ResponseEntity<?> deleteSubscriptionByNames(
             @PathVariable String subscriptionNames) {
-        errorMap = new HashMap<>();
+        Map<String, String> errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
 
@@ -193,7 +190,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
             }
         });
-        return getDeleteResponse();
+        return getDeleteResponse(errorMap);
     }
 
     @Override
@@ -211,29 +208,30 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.info(e.getMessage(),e);
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(e.getMessage()), HttpStatus.OK);
         } catch (Exception e) {
-            LOG.error("Internal Server Error: Failed to fetch subscriptions.", e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Failed to fetch subscriptions.";
+            LOG.error("Internal Server Error: {}", errorMessage, e);
+            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private ResponseEntity<?> getPostResponse() {
-        errorMessage = "Failed to create Subscriptions:\n";
-        return getResponse();
+    private ResponseEntity<?> getPostResponse(Map<String, String> errorMap) {
+        String errorMessage = "Failed to create Subscriptions:\n";
+        return getResponse(errorMap, errorMessage);
     }
 
-    private ResponseEntity<?> getPutResponse() {
-        errorMessage = "Failed to update subscription:\n";
-        return getResponse();
+    private ResponseEntity<?> getPutResponse(Map<String, String> errorMap) {
+        String errorMessage = "Failed to update subscription:\n";
+        return getResponse(errorMap, errorMessage);
     }
 
-    private ResponseEntity<?> getDeleteResponse() {
-        errorMessage = "Failed to delete subscriptions:\n";
-        return getResponse();
+    private ResponseEntity<?> getDeleteResponse(Map<String, String> errorMap) {
+        String errorMessage = "Failed to delete subscriptions:\n";
+        return getResponse(errorMap, errorMessage);
     }
 
-    private ResponseEntity<?> getResponse() {
+    private ResponseEntity<?> getResponse(Map<String, String> errorMap, String errorMessage) {
         if (!errorMap.isEmpty()) {
             for (Map.Entry<String, String> entry : errorMap.entrySet()) {
                 errorMessage += "" + entry.getKey() + " :: " + entry.getValue() + "\n";

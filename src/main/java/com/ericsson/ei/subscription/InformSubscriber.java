@@ -43,6 +43,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthorizationException;
 import com.ericsson.ei.handlers.DateUtils;
@@ -69,6 +70,10 @@ public class InformSubscriber {
     // Regular expression for replacement unexpected character like \"|
     private static final String REGEX = "^\"|\"$";
     private static final String JENKINS_CRUMB_ENDPOINT = "/crumbIssuer/api/json";
+
+    private static final String AUTHENTICATION_TYPE_NO_AUTH = "NO_AUTH";
+    private static final String AUTHENTICATION_TYPE_BASIC_AUTH = "BASIC_AUTH";
+    private static final String AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF = "BASIC_AUTH_JENKINS_CSRF";
 
     @Getter
     @Value("${notification.failAttempt:#{0}}")
@@ -126,7 +131,8 @@ public class InformSubscriber {
             boolean success = makeRestCalls(notificationMeta, mapNotificationMessage, headers);
 
             if (!success) {
-                String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
+                String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName,
+                        notificationMeta);
                 LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
                 mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
                         ttlValue);
@@ -146,8 +152,17 @@ public class InformSubscriber {
         }
     }
 
+    /**
+     * This method performs one or several http request depending on the repeat flag settings.
+     *
+     * @param notificationMeta
+     * @param mapNotificationMessage
+     * @param headers
+     * @return
+     * @throws AuthorizationException
+     */
     private boolean makeRestCalls(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) {
+            HttpHeaders headers) throws AuthorizationException {
         boolean success = false;
         int restCallTries = 0;
 
@@ -169,13 +184,13 @@ public class InformSubscriber {
      * @return
      * @throws AuthorizationException
      */
-    private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson) throws AuthorizationException {
+    private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson)
+            throws AuthorizationException {
         HttpHeaders headers = new HttpHeaders();
 
         String headerContentMediaType = getSubscriptionField("restPostBodyMediaType", subscriptionJson);
         headers.setContentType(MediaType.valueOf(headerContentMediaType));
-        LOGGER.debug("Successfully added header: "
-                + String.format("'%s':'%s'", "restPostBodyMediaType", headerContentMediaType));
+        LOGGER.debug("Successfully added header: 'restPostBodyMediaType':'{}'", headerContentMediaType);
 
         headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
 
@@ -191,12 +206,13 @@ public class InformSubscriber {
      * @return
      * @throws AuthorizationException
      */
-    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson) throws AuthorizationException {
+    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson)
+            throws AuthorizationException {
         String authType = getSubscriptionField("authenticationType", subscriptionJson);
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
 
-        boolean authorizationDetailsProvided = isAuthorizationDetailsProvided(authType, username, password);
+        boolean authorizationDetailsProvided = isAuthenticationDetailsProvided(authType, username, password);
         if (!authorizationDetailsProvided) {
             return headers;
         }
@@ -205,7 +221,7 @@ public class InformSubscriber {
         headers.add("Authorization", "Basic " + encoding);
         LOGGER.debug("Successfully added header for 'Authorization'");
 
-        if (authType.equals("BASIC_AUTH_JENKINS_CSRF")) {
+        if (authType.equals(AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF)) {
             headers = addJenkinsCrumbData(headers, encoding, notificationMeta);
         }
 
@@ -213,19 +229,22 @@ public class InformSubscriber {
     }
 
     /**
+     * This method returns a boolean indicating that authentication details was provided in the
+     * subscription
      *
      * @param authType
      * @param username
      * @param password
      * @return
      */
-    private boolean isAuthorizationDetailsProvided(String authType, String username, String password) {
-        if (authType.equals("NO_AUTH")) {
+    private boolean isAuthenticationDetailsProvided(String authType, String username, String password) {
+        if (authType.equals(AUTHENTICATION_TYPE_NO_AUTH)) {
             return false;
         }
 
         if (username.equals("") && password.equals("")) {
-            LOGGER.error("userName/password field in subscription is missing. Make sure both are provided for BASIC_AUTH.");
+            LOGGER.error("userName/password field in subscription is missing. Make sure both are provided for {}.",
+                    AUTHENTICATION_TYPE_BASIC_AUTH);
             return false;
         }
 
@@ -241,13 +260,17 @@ public class InformSubscriber {
      * @return
      * @throws AuthorizationException
      */
-    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta) throws AuthorizationException {
+    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta)
+            throws AuthorizationException {
+        LOGGER.info("Jenkins Crumb data is about to be fetched.");
         JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumb(encoding, notificationMeta);
         if (jenkinsJsonCrumbData != null) {
             String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
             String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
             headers.add(crumbKey, crumbValue);
-            LOGGER.debug("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
+            LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
+        } else {
+            LOGGER.info("Failed to fetch Jenkins Crumb data!");
         }
         return headers;
 
@@ -262,29 +285,49 @@ public class InformSubscriber {
      * @throws AuthorizationException
      */
     private JsonNode fetchJenkinsCrumb(String encoding, String notificationMeta) throws AuthorizationException {
-        URL url;
         try {
-            String baseUrl = extractBaseUrl(notificationMeta);
-            url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
+            URL url = buildJenkinsCrumbUrl(notificationMeta);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Basic " + encoding);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            ResponseEntity<JsonNode> response = restTemplate.makeGetRequest(url.toString(), headers);
+
+            JsonNode JenkinsJsonCrumbData = response.getBody();
+            return JenkinsJsonCrumbData;
+
         } catch (MalformedURLException e) {
-            String message = "Error! Failed to format url to collect jenkins crumb";
-            LOGGER.error(message);
+            String message = "Failed to format url to collect jenkins crumb.";
+            LOGGER.error(message, e);
             throw new AuthorizationException(message, e);
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.UNAUTHORIZED == e.getStatusCode()) {
+                String message = "Failed to fetch crumb. Authentication failed, wrong username or password.";
+                LOGGER.error(message, e);
+                throw new AuthorizationException(message, e);
+            }
+            if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
+                String message = String.format(
+                        "Failed to fetch crumb. The authentication type is %s, but SCRF Protection seems disabled in Jenkins.",
+                        AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
+                LOGGER.warn(message, e);
+                return null;
+            }
+            throw e;
         }
+    }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + encoding);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<JsonNode> response = restTemplate.makeGetRequest(url.toString(), headers);
-
-        if (response == null || response.getStatusCodeValue() != HttpStatus.OK.value()) {
-            LOGGER.debug("No jenkins crumb found, most likely not jenkins or jenkins with crumb disabled");
-            return null;
-        }
-
-        LOGGER.debug("Successfully fetched Jenkins crumb.");
-        JsonNode JenkinsJsonCrumbData = response.getBody();
-        return JenkinsJsonCrumbData;
+    /**
+     * This function replaes the user given context paths with the crumb issuer context path.
+     *
+     * @param notificationMeta
+     * @return
+     * @throws MalformedURLException
+     */
+    private URL buildJenkinsCrumbUrl(String notificationMeta) throws MalformedURLException {
+        String baseUrl = extractBaseUrl(notificationMeta);
+        URL url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
+        return url;
     }
 
     /**
@@ -435,8 +478,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method saves the missed Notification into a single document in
-     * the database.
+     * This method saves the missed Notification into a single document in the database.
      */
     private void saveMissedNotificationToDB(String missedNotification) {
         try {

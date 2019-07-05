@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
+import com.ericsson.ei.exception.AuthorizationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.slf4j.Logger;
@@ -50,12 +51,14 @@ public class SendHttpRequest {
      * @param mapNotificationMessage
      * @param headers
      * @return integer
+     * @throws AuthorizationException
      */
     public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) {
+            HttpHeaders headers) throws AuthorizationException {
         ResponseEntity<JsonNode> response;
 
         try {
+            LOGGER.info("Performing HTTP request to url: {}", notificationMeta);
             boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
                     .equals(MediaType.APPLICATION_FORM_URLENCODED);
             if (isApplicationXWwwFormUrlEncoded) {
@@ -68,12 +71,19 @@ public class SendHttpRequest {
             }
 
         } catch (HttpClientErrorException e) {
-            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta
-                    + "\n " + e.getMessage());
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                String message = String.format("Failed to perform HTTP request due to '%s'."
+                        + "\nEnsure that you use correct authenticationType, username and password."
+                        + "\nDue to authentication error EI will not perform retries.", e.getMessage());
+                LOGGER.error(message, e);
+                throw new AuthorizationException(message, e);
+            }
+            LOGGER.error("HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
+                    notificationMeta, e.getMessage(), e);
             return false;
         } catch (HttpServerErrorException e) {
-            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: "
-                    + notificationMeta + "\n " + e.getMessage());
+            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
+                    notificationMeta, e.getMessage(), e);
             return false;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

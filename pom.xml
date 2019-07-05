@@ -29,7 +29,7 @@
         <springLdapVersion>2.3.2.RELEASE</springLdapVersion>
         <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
         <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
-        <forkCountTests>2.5C</forkCountTests>
+        <forkCountTests>1</forkCountTests>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
-            <version>0.0.10</version>
+            <version>0.0.12</version>
         </dependency>
 
         <dependency>

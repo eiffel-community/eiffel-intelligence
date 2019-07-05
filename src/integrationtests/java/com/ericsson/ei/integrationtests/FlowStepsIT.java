@@ -100,8 +100,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     public void the_upstream_input(String upstreamInputFile) throws Throwable {
         this.upstreamInputFile = upstreamInputFile;
 
-        final URL upStreamInput = new File(upstreamInputFile).toURI()
-                                                             .toURL();
+        final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
         extraEventsCount = upstreamJson.size();
     }
@@ -132,12 +131,11 @@ public class FlowStepsIT extends IntegrationTestBase {
         subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
-    @When("^basic_auth authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
-    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(String username,
-                                                                                            String password)
-            throws Throwable {
+    @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
+    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(String authenticationType,
+            String username, String password) throws Throwable {
         if (subscriptionObject instanceof RestPostSubscriptionObject) {
-            ((RestPostSubscriptionObject) subscriptionObject).setBasicAuth(username, password);
+            ((RestPostSubscriptionObject) subscriptionObject).setAuthenticationType(authenticationType).setUsername(username).setPassword(password);
         }
     }
 
@@ -166,8 +164,7 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^the upstream input events are sent")
     public void upstream_input_events_are_sent() throws IOException {
-        final URL upStreamInput = new File(upstreamInputFile).toURI()
-                                                             .toURL();
+        final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
         if (upstreamJson != null) {
             for (JsonNode event : upstreamJson) {
@@ -210,7 +207,7 @@ public class FlowStepsIT extends IntegrationTestBase {
             }
         }
 
-        assertEquals(true, jobStatusDataFetched);
+        assertEquals("Failed to fetch Job Status Data: ", true, jobStatusDataFetched);
     }
 
     @Then("^the expected aggregated object ID is \"([^\"]*)\"$")
@@ -248,13 +245,9 @@ public class FlowStepsIT extends IntegrationTestBase {
                 JsonNode to = newestMailJson.get("to");
                 assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
 
-                String createdDate = newestMailJson.get("created")
-                                                   .get("$date")
-                                                   .asText();
+                String createdDate = newestMailJson.get("created").get("$date").asText();
 
-                createdDateInMillis = ZonedDateTime.parse(createdDate)
-                                                   .toInstant()
-                                                   .toEpochMilli();
+                createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
                 mailHasBeenDelivered = createdDateInMillis >= startTime;
             }
 
@@ -281,12 +274,9 @@ public class FlowStepsIT extends IntegrationTestBase {
         startTime = System.currentTimeMillis();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setHost(eiHost)
-                   .setPort(port)
-                   .setEndpoint("/subscriptions")
-                   .addHeader("Content-type", "application/json")
-                   .setBody(subscriptionObject.getAsSubscriptions()
-                                              .toString());
+        postRequest.setHost(eiHost).setPort(port).setEndpoint("/subscriptions")
+                .addHeader("Content-type", "application/json")
+                .setBody(subscriptionObject.getAsSubscriptions().toString());
 
         ResponseEntity<String> response = postRequest.performRequest();
         assertEquals(200, response.getStatusCodeValue());
@@ -351,8 +341,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         for (int j = 0; j < parameters.length(); j++) {
             JSONObject parameter = parameters.getJSONObject(j);
 
-            if (parameter.has("name") && parameter.has("value") && parameter.getString("name")
-                                                                            .equals(key)) {
+            if (parameter.has("name") && parameter.has("value") && parameter.getString("name").equals(key)) {
                 value = parameter.getString("value");
                 return value;
             }
@@ -372,8 +361,9 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     /**
-     * Replaces given input parameters if user wishes with test defined parameters. If user want the user may specify
-     * the host, port job name and token directly in the feauture file and they will not be replaced.
+     * Replaces given input parameters if user wishes with test defined parameters. If user want the
+     * user may specify the host, port job name and token directly in the feauture file and they will
+     * not be replaced.
      * <p>
      * ${jenkinsHost} is replaced with jenkins host.
      * <p>

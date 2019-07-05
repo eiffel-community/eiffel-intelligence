@@ -75,7 +75,7 @@ public class QueryControllerImpl implements QueryController {
             return new ResponseEntity<>(result.toString(), httpStatus);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract data from the Aggregated Object using freestyle query.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

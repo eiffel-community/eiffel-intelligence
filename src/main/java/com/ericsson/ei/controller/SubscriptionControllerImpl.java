@@ -93,7 +93,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_ALREADY_EXISTS);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to create subscription " + subscriptionName, ExceptionUtils.getStackTrace(e));
+                LOG.error("Failed to create subscription " + subscriptionName, e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -119,10 +119,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 foundSubscriptionList.add(subscription);
                 LOG.debug("Subscription [" + subscriptionName + "] fetched successfully.");
             } catch (SubscriptionNotFoundException e) {
-                LOG.error("Subscription not found: " + subscriptionName, ExceptionUtils.getStackTrace(e));
+                LOG.error("Subscription not found: " + subscriptionName, e);
                 notFoundSubscriptionList.add(subscriptionName);
             } catch (Exception e) {
-                LOG.error("Failed to fetch subscription " + subscriptionName, ExceptionUtils.getStackTrace(e));
+                LOG.error("Failed to fetch subscription " + subscriptionName, e);
                 notFoundSubscriptionList.add(subscriptionName);
             }
         });
@@ -160,7 +160,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to update subscription " + subscriptionName, ExceptionUtils.getStackTrace(e));
+                LOG.error("Failed to update subscription " + subscriptionName, e);
                 errorMap.put(subscriptionName, e.getMessage());
             }
         });
@@ -187,10 +187,10 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                     errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (AccessException e) {
-                LOG.error("Failed to delete subscription: " + subscriptionName, ExceptionUtils.getStackTrace(e));
+                LOG.error("Failed to delete subscription: " + subscriptionName, e);
                 errorMap.put(subscriptionName, INVALID_USER);
             } catch (Exception e) {
-                LOG.error("Failed to delete subscriptions.", ExceptionUtils.getStackTrace(e));
+                LOG.error("Failed to delete subscriptions.", e);
                 errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
             }
         });
@@ -214,7 +214,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             LOG.info(ExceptionUtils.getStackTrace(e));
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
-            LOG.error("Internal Server Error: Failed to fetch subscriptions.", ExceptionUtils.getStackTrace(e));
+            LOG.error("Internal Server Error: Failed to fetch subscriptions.", e);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

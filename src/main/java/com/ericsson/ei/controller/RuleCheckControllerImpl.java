@@ -105,7 +105,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
         }
     }
@@ -128,7 +128,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 }
             } catch (JSONException | IOException e) {
                 String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
-                LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+                LOGGER.error(errorMessage, e);
                 return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
@@ -149,7 +149,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
             return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get Status.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

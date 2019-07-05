@@ -50,7 +50,7 @@ public class DownloadControllerImpl implements DownloadController {
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get information about download endpoints.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -59,13 +59,11 @@ public class DownloadControllerImpl implements DownloadController {
     public ResponseEntity<?> getDownloadSubscriptionsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
+
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Subscriptions template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download subscriptions template file.";
-            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
+            LOGGER.error(e.getMessage(), e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -74,13 +72,15 @@ public class DownloadControllerImpl implements DownloadController {
     public ResponseEntity<?> getDownloadRulesTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
+            if (is == null) {
+                String errorMessage = "Rules template file is not found.";
+                LOGGER.error(errorMessage);
+                return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Rules template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download rules template file.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -89,13 +89,15 @@ public class DownloadControllerImpl implements DownloadController {
     public ResponseEntity<?> getDownloadEventsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
+            if (is == null) {
+                String errorMessage = "Events template file is not found.";
+                LOGGER.error(errorMessage);
+                return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Events template file is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download events template file.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

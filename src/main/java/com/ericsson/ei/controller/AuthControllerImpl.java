@@ -54,7 +54,7 @@ public class AuthControllerImpl implements AuthController {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to check if security is enabled.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -68,7 +68,7 @@ public class AuthControllerImpl implements AuthController {
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to log in user.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -81,7 +81,7 @@ public class AuthControllerImpl implements AuthController {
             return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to check backend status.";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

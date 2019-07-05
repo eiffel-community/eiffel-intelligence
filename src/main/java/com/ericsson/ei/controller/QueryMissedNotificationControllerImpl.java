@@ -70,7 +70,7 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract the data from the Missed Notification Object based on subscription name "
                     + subscriptionName + ".";
-            LOGGER.error(errorMessage, ExceptionUtils.getStackTrace(e));
+            LOGGER.error(errorMessage, e);
             return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

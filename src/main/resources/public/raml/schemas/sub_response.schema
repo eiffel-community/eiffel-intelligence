@@ -1,18 +1,17 @@
 {
-   "type": "array",
-   "items": {
-      "$schema":"http://json-schema.org/draft-04/schema#",
-      "javaType":"com.ericsson.ei.controller.model.SubscriptionResponse",
-      "definitions":{
-      },
-      "properties":{
-         "subscription":{
-            "type":"string"
-         },
-         "reason":{
-            "type":"string"
-         }
-      },
-      "type":"object"
-   }
+    "type": "array",
+    "items": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "javaType": "com.ericsson.ei.controller.model.SubscriptionResponse",
+        "definitions": {},
+        "properties": {
+            "subscription": {
+                "type": "string"
+            },
+            "reason": {
+                "type": "string"
+            }
+        },
+        "type": "object"
+    }
 }

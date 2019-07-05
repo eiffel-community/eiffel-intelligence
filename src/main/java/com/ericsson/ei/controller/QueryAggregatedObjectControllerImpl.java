@@ -15,6 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 @CrossOrigin
+@Api(value = "queryAggregatedObject", tags = {"Query aggregated object"})
 public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
 
     private static Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
@@ -51,6 +54,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      * @return ResponseEntity
      */
     @Override
+    @ApiOperation(value = "")
     public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();

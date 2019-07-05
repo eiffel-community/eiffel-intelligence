@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * No description
+ * This class retrieves aggregated objects given a free style query. Criteria is required to have in the request body, while options and filter are optional.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -23,7 +23,7 @@ public interface QueryController {
 
 
     /**
-     * The REST POST method is used to query Aggregated Objects with the criterias requested, which are present in the request body of the request URL.
+     * The REST POST method is used to query aggregated abjects with the requested criteria, which are present in the request body.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)

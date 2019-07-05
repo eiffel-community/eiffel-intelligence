@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides interaction with InstanceInfo resource
+ * Provides information about Eiffel Intelligence backend.
  * 
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
@@ -21,8 +21,7 @@ public interface InformationController {
 
 
     /**
-     * List of all instance information
-     * 
+     * This method retrieves backend instance information.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)

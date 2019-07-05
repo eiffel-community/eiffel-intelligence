@@ -1,10 +1,10 @@
 {
-     "$schema":"http://json-schema.org/draft-04/schema#",
-     "javaType":"com.ericsson.ei.controller.model.QueryResponse",
-     "properties":{
-        "queryResponseEntity":{
-           "type":"object"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "javaType": "com.ericsson.ei.controller.model.QueryResponse",
+    "properties": {
+        "queryResponseEntity": {
+            "type": "object"
         }
-     },
-     "type":"object"
-  }
+    },
+    "type": "object"
+}

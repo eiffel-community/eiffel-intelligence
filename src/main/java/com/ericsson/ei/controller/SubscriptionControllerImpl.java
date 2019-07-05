@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
+@Api(value = "subscriptions", tags = {"Subscriptions"})
 public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
@@ -69,7 +69,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Creates the subscriptions")
+    @ApiOperation(value = "Creates subscription(s)")
     public ResponseEntity<List<SubscriptionResponse>> createSubscription(
             @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
@@ -134,7 +134,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Updates the existing subscriptions")
+    @ApiOperation(value = "Updates existing subscription(s)")
     public ResponseEntity<List<SubscriptionResponse>> updateSubscriptions(
             @RequestBody List<Subscription> subscriptions) {
         errorMap = new HashMap<>();
@@ -165,7 +165,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Removes the subscriptions from the database")
+    @ApiOperation(value = "Removes subscription(s) from the database")
     public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(
             @PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();
@@ -196,7 +196,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieves all the subscriptions")
+    @ApiOperation(value = "Retrieves all subscriptions")
     public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Fetching subscriptions has been initiated");
         try {

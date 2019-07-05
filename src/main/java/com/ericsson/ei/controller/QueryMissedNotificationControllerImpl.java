@@ -15,6 +15,11 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 @CrossOrigin
+@Api(value = "queryMissedNotification", tags = {"Missed notifications"})
 public class QueryMissedNotificationControllerImpl implements QueryMissedNotificationController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(QueryMissedNotificationControllerImpl.class);
@@ -47,9 +53,9 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      * the basis of the SubscriptionName from the Missed Notification Object.
      *
      * @param subscriptionName
-     * @return ResponseEntity
      */
     @Override
+    @ApiOperation(value = "Retrieve missed notifications", response = QueryResponse.class)
     public ResponseEntity<QueryResponse> getQueryMissedNotifications(
             @RequestParam("SubscriptionName") final String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();

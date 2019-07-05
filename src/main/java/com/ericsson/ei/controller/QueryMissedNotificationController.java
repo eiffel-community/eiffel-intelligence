@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * No description
+ * This class searches for missed notifications in the database.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -22,7 +22,7 @@ public interface QueryMissedNotificationController {
 
 
     /**
-     * List the missed notification based on the subscriptionName in the query parameter.
+     * This method returns missed notification(s) given a subscription name.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)

@@ -35,7 +35,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "Auth", description = "REST endpoints for authentication and authorization")
+@Api(value = "Auth", tags = {"Authentication"})
 public class AuthControllerImpl implements AuthController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthControllerImpl.class);

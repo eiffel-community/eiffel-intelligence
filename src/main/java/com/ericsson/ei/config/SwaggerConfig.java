@@ -42,9 +42,9 @@ public class SwaggerConfig {
     @SuppressWarnings("deprecation")
     private ApiInfo metaData() {
         ApiInfo apiInfo = new ApiInfo(
-                "Subscription REST API",
-                "Subscription REST API to store and retrive the subscription.",
-                "1.0",
+                "Eiffel Intelligence REST API",
+                "A real time data aggregation and analysis solution for Eiffel events.",
+                "2.0",
                 "Terms of service","",
                "Apache License Version 2.0",
                "https://www.apache.org/licenses/LICENSE-2.0");

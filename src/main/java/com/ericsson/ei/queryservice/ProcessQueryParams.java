@@ -123,8 +123,7 @@ public class ProcessQueryParams {
                 resultArray.put(tempJson);
             }
         } catch (JSONException e) {
-            LOGGER.error("Failed to filter an object\n: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to filter an object.", e);
         }
         return resultArray;
     }
@@ -142,7 +141,7 @@ public class ProcessQueryParams {
         try {
             criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
         } catch (IOException e) {
-            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n" + request);
+            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
             return new JSONArray();
         }
         LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());

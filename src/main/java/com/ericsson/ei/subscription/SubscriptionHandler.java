@@ -107,9 +107,7 @@ public class SubscriptionHandler {
                 informSubscriber.informSubscriber(aggregatedObject, subscriptionJson);
             }
         } catch (Exception e) {
-            String msg = "Subscription: " + subscriptionData + "failed for ";
-            msg += "aggregated object: " + aggregatedObject;
-            LOGGER.error(msg, e);
+            LOGGER.error("Subscription: {}, failed for aggregated object: {}", subscriptionData, aggregatedObject, e);
         }
     }
 

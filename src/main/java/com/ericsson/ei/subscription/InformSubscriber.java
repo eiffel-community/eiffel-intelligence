@@ -135,12 +135,7 @@ public class InformSubscriber {
         if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
-            try {
-                sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-                LOGGER.error(e.getMessage());
-            }
+            sendMail.sendMail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
         }
     }
 
@@ -244,7 +239,7 @@ public class InformSubscriber {
             String baseUrl = extractBaseUrl(notificationMeta);
             url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
         } catch (MalformedURLException e) {
-            LOGGER.error("Error! Failed to format url to collect jenkins crumb");
+            LOGGER.error("Failed to format url to collect jenkins crumb.", e);
             return null;
         }
 
@@ -294,7 +289,7 @@ public class InformSubscriber {
 
             return notificationMeta;
         } catch (MalformedURLException | UnsupportedEncodingException e) {
-            LOGGER.error("Failed to extract parameters: " + e.getMessage());
+            LOGGER.error("Failed to extract parameters.", e);
             return notificationMeta;
         }
     }
@@ -420,7 +415,7 @@ public class InformSubscriber {
                     missedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database");
+            LOGGER.debug("Failed to insert the notification into database.", e);
         }
     }
 
@@ -440,7 +435,7 @@ public class InformSubscriber {
         try {
             document.put("Time", DateUtils.getDate());
         } catch (ParseException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to get date object.", e);
         }
         document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
         return document.toString();

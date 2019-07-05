@@ -84,7 +84,7 @@ public class SubscriptionValidator {
         invalidSubscriptionNameRegex = RegExProvider.SUBSCRIPTION_NAME;
 
         if (subscriptionName == null) {
-            throw new SubscriptionValidationException("Required field SubscriptionName has not been set");
+            throw new SubscriptionValidationException("Required field SubscriptionName has not been set.");
         } else if (invalidSubscriptionNameRegex == null || invalidSubscriptionNameRegex.isEmpty()) {
             throw new SubscriptionValidationException(
                     "A valid regular expression for validating subscription name is not provided.");
@@ -144,7 +144,7 @@ public class SubscriptionValidator {
             throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         if (notificationMeta == null || notificationMeta.isEmpty()) {
-            throw new SubscriptionValidationException("Required field NotificationMeta has not been set");
+            throw new SubscriptionValidationException("Required field NotificationMeta has not been set.");
         }
 
         if (Pattern.matches(regexMail, notificationType)) {
@@ -166,7 +166,7 @@ public class SubscriptionValidator {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
         String regexRestPost = "[\\s]*REST_POST[\\\\s]*";
         if (notificationType == null) {
-            throw new SubscriptionValidationException("Required field NotificationType has not been set");
+            throw new SubscriptionValidationException("Required field NotificationType has not been set.");
         } else if (!(Pattern.matches(regexMail, notificationType)
                 || Pattern.matches(regexRestPost, notificationType))) {
             throw new SubscriptionValidationException("Wrong format of NotificationType: " + notificationType);
@@ -177,7 +177,7 @@ public class SubscriptionValidator {
         String regexApplication_JSON = "[\\s]*application/json[\\\\s]*";
         String regexApplicationFormUrlEncoded = "[\\s]*application/x-www-form-urlencoded[\\\\s]*";
         if (restPostMediaType == null) {
-            throw new SubscriptionValidationException("Required field RestPostMediaType has not been set");
+            throw new SubscriptionValidationException("Required field RestPostMediaType has not been set.");
         } else if (!(Pattern.matches(regexApplication_JSON, restPostMediaType)
                 || Pattern.matches(regexApplicationFormUrlEncoded, restPostMediaType))) {
             throw new SubscriptionValidationException("Wrong format of RestPostMediaType: " + restPostMediaType);
@@ -219,7 +219,7 @@ public class SubscriptionValidator {
             ProcessingReport report = schema.validate(subscriptionJson);
             boolean waitreport = true;
         } catch (Exception e) {
-            throw new SubscriptionValidationException("Schema validation fails" + e.getMessage());
+            throw new SubscriptionValidationException("Schema validation fails\nError message: " + e.getMessage());
         }
     }
 
@@ -229,9 +229,9 @@ public class SubscriptionValidator {
         try {
             jsonSubscriptionObj1 = mapper.valueToTree(subObject);
         } catch (Exception e) {
-            LOGGER.error("Failed to create object to json" + "\nError message: " + e.getMessage(), e);
+            LOGGER.error("Failed to create object to json.", e);
             throw new SubscriptionValidationException(
-                    "Failed to create object to json" + "\nError message: " + e.getMessage());
+                    "Failed to create object to json.\nError message: " + e.getMessage());
         }
         return jsonSubscriptionObj1;
     }

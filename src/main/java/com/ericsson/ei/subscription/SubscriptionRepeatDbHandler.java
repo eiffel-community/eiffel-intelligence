@@ -131,8 +131,7 @@ public class SubscriptionRepeatDbHandler {
                     return triggered;
                 }
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-                e.printStackTrace();
+                LOGGER.error("Failed to check if requirement has triggered. Error: {}", e.getMessage(), e);
             }
         }
         LOGGER.debug("AggrObjId: " + aggrObjId + "not found for SubscriptionId: " + subscriptionId
@@ -180,7 +179,7 @@ public class SubscriptionRepeatDbHandler {
             LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
             mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
         } catch (MongoWriteException e) {
-            LOGGER.error("Failed to insert the document into database " + e.getMessage(), e);
+            LOGGER.error("Failed to insert the document into database. Error: {}", e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -191,7 +190,7 @@ public class SubscriptionRepeatDbHandler {
             JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
             return queryJsonNode;
         } catch (Exception e) {
-            LOGGER.error("Failed to create subscription query" + e.getMessage(), e);
+            LOGGER.error("Failed to create subscription query. Error: {}", e.getMessage(), e);
             e.printStackTrace();
         }
         return null;
@@ -206,7 +205,7 @@ public class SubscriptionRepeatDbHandler {
                     + updateDocJsonNode.toString());
             return updateDocJsonNode;
         } catch (Exception e) {
-            LOGGER.error("Failed to create query for updating aggregated object!" + e.getMessage(), e);
+            LOGGER.error("Failed to create query for updating aggregated object. Error: {}", e.getMessage(), e);
             e.printStackTrace();
         }
         return null;

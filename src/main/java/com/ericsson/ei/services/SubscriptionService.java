@@ -81,7 +81,7 @@ public class SubscriptionService implements ISubscriptionService {
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
-            throw new SubscriptionNotFoundException("No record found for the Subscription Name:" + subscriptionName);
+            throw new SubscriptionNotFoundException("No record found for the Subscription Name: " + subscriptionName);
         }
         for (String input : list) {
             Subscription subscription;
@@ -127,7 +127,7 @@ public class SubscriptionService implements ISubscriptionService {
             }
 
         } catch (JSONException | JsonProcessingException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error("Failed to modify subscription.", e);
             return false;
         }
         return true;
@@ -171,7 +171,7 @@ public class SubscriptionService implements ISubscriptionService {
                 subscription.setAggregationtype(SpringApplicationName);
                 subscriptions.add(subscription);
             } catch (IOException e) {
-                LOG.error("malformed json string");
+                LOG.error("Failed to get subscription.", e);
             }
         }
         return subscriptions;
@@ -220,7 +220,7 @@ public class SubscriptionService implements ISubscriptionService {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(),e);
         }
         return ownerExist;
     }

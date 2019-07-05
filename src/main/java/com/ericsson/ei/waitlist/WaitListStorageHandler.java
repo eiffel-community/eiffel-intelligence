@@ -72,8 +72,7 @@ public class WaitListStorageHandler {
                 mongoDbHandler.insertDocument(databaseName, collectionName, input);
             }
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert event into waitlist");
-            e.printStackTrace();
+            LOGGER.debug("Failed to insert event into waitlist.", e);
         }
     }
 
@@ -94,7 +93,7 @@ public class WaitListStorageHandler {
         try {
             date = dateFormat.parse(time);
         } catch (ParseException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to parse time from date object.", e);
         }
         BasicDBObject document = new BasicDBObject();
         document.put("_id", id.textValue());

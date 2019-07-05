@@ -45,7 +45,7 @@ public class MergePrepare {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MergePrepare.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MergePrepare.class);
 
     public String getValueFromRule(String mergeRule) {
         String ruleValue = "";
@@ -66,10 +66,10 @@ public class MergePrepare {
                 JSONArray ruleJSONArray = new JSONArray(mergeRule);
                 return getValueFromRule(ruleJSONArray.get(1).toString());
             } catch (Exception ne) {
-                log.info(ne.getMessage(), ne);
+                LOGGER.info(ne.getMessage(), ne);
             }
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            LOGGER.info(e.getMessage(), e);
         }
         return ruleValue;
     }
@@ -80,7 +80,7 @@ public class MergePrepare {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             stringRule = ruleJSONObject.toString();
         } catch (JSONException e) {
-            log.info(e.getMessage(), e);
+            LOGGER.info(e.getMessage(), e);
         }
         String flattenRule = JsonFlattener.flatten(stringRule);
         flattenRule = destringify(flattenRule);
@@ -131,8 +131,8 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
-        log.debug(" mergeRules are : " + mergeRule);
-        log.debug(" originObject is : " + originObject);
+        LOGGER.debug(" mergeRules are : " + mergeRule);
+        LOGGER.debug(" originObject is : " + originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.get(0).toString();
@@ -167,7 +167,7 @@ public class MergePrepare {
                 return finalPath;
             }
         } catch (Exception ne) {
-            log.error(ne.getMessage(), ne);
+            LOGGER.error(ne.getMessage(), ne);
         }
         return "";
     }
@@ -200,7 +200,7 @@ public class MergePrepare {
             }
             return resembled;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return path;
@@ -224,7 +224,7 @@ public class MergePrepare {
         } catch (JSONException e) {
             return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);
         String flattenRule = JsonFlattener.flatten(stringRule);
@@ -254,7 +254,7 @@ public class MergePrepare {
                 if (!(jsonResult instanceof NullNode))
                     mergePath = ruleKey;
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         } else {
             for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
@@ -338,7 +338,7 @@ public class MergePrepare {
                     mergePath = mergePath.replaceFirst("\\/", "");
                     mergePath = mergePath.replaceAll("\\/", "\\.");
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
@@ -390,7 +390,7 @@ public class MergePrepare {
             }
             return jsonResult.get(firstKey);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return null;
@@ -446,7 +446,7 @@ public class MergePrepare {
             msg += "objectTomerge was: " + objectToMerge + "\n";
             msg += "mergeRule was: " + mergeRule + "\n";
             msg += "mergePath was: " + mergePath + "\n";
-            log.error(msg, e);
+            LOGGER.error(msg, e);
         }
         return newObject.toString();
     }
@@ -481,7 +481,7 @@ public class MergePrepare {
                 return size;
             }
         } catch (JSONException e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return size;

@@ -67,16 +67,8 @@ public class SendHttpRequest {
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
 
-        } catch (HttpClientErrorException e) {
-            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta
-                    + "\n " + e.getMessage());
-            return false;
-        } catch (HttpServerErrorException e) {
-            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: "
-                    + notificationMeta + "\n " + e.getMessage());
-            return false;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("HTTP-request failed when trying to connect to URL: {}\nError: {}", notificationMeta, e.getMessage(), e);
             return false;
         }
 
@@ -86,9 +78,9 @@ public class SendHttpRequest {
 
         JsonNode body = response.getBody();
         if (httpStatusSuccess) {
-            LOGGER.debug("The response status code [" + status + "] and Body: " + body);
+            LOGGER.debug("The response status code [{}] and Body: {}",status, body);
         } else {
-            LOGGER.debug("POST call failed with status code [" + status + "] and Body: " + body);
+            LOGGER.debug("POST call failed with status code [{}] and Body: {}",status, body);
         }
         return httpStatusSuccess;
     }
@@ -107,6 +99,7 @@ public class SendHttpRequest {
             ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
             return response;
         } catch (Exception e) {
+            LOGGER.error("HTTP-request failed when trying to connect to URL: {}\nError: {}", url, e.getMessage(), e);
             return null;
         }
     }

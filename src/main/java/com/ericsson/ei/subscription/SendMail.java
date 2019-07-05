@@ -69,29 +69,26 @@ public class SendMail {
      * @param receiver
      * @param mapNotificationMessage
      */
-    public void sendMail(String receiver, String mapNotificationMessage, String emailSubject)
-            throws MessagingException {
+    public void sendMail(String receiver, String mapNotificationMessage, String emailSubject) {
         Set<String> extEmails = new HashSet<>();
         try {
             extEmails = extractEmails(receiver);
         } catch (SubscriptionValidationException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        String[] to = extEmails.toArray(new String[0]);
         try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            String[] to = extEmails.toArray(new String[0]);
             helper.setFrom(sender);
             helper.setSubject(getSubject(emailSubject));
             helper.setText(mapNotificationMessage);
             helper.setTo(to);
+            emailSender.send(message);
         } catch (MessagingException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to create and send e-mail.", e);
         }
-        emailSender.send(message);
     }
 
     /**

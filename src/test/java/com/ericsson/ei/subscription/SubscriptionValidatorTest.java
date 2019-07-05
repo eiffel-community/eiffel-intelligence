@@ -300,7 +300,7 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeValidMessageTest() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "RestPostMediaType", MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType", MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -310,7 +310,7 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeValidMessage2Test() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "RestPostMediaType", MediaType.APPLICATION_JSON.toString());
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType", MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -320,7 +320,7 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeInvalidMessageTest() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "RestPostMediaType",
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType",
                     MediaType.APPLICATION_OCTET_STREAM_VALUE.toString());
         } catch (SubscriptionValidationException e) {
             return;
@@ -331,7 +331,7 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeInvalidMessage2Test() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "RestPostMediaType", "");
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType", "");
         } catch (SubscriptionValidationException e) {
             return;
         }

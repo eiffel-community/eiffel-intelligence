@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides information about Eiffel Intelligence backend.
- * 
+ * This class provides information about Eiffel Intelligence backend.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */

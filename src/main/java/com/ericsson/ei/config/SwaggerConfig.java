@@ -17,6 +17,8 @@
 
 package com.ericsson.ei.config;
 
+import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,6 +32,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+
+    @Autowired
+    ParseInstanceInfoEI parseInstanceInfoEI;
+
     @Bean
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -44,7 +50,7 @@ public class SwaggerConfig {
         ApiInfo apiInfo = new ApiInfo(
                 "Eiffel Intelligence REST API",
                 "A real time data aggregation and analysis solution for Eiffel events.",
-                "2.0",
+                parseInstanceInfoEI.getVersion(),
                 "Terms of service","",
                "Apache License Version 2.0",
                "https://www.apache.org/licenses/LICENSE-2.0");

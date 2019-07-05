@@ -238,13 +238,12 @@ public class InformSubscriber {
      * @return
      */
     private boolean isAuthenticationDetailsProvided(String authType, String username, String password) {
-        if (authType.equals(AUTHENTICATION_TYPE_NO_AUTH)) {
+        if (authType.isEmpty() || authType.equals(AUTHENTICATION_TYPE_NO_AUTH)) {
             return false;
         }
 
         if (username.equals("") && password.equals("")) {
-            LOGGER.error("userName/password field in subscription is missing. Make sure both are provided for {}.",
-                    AUTHENTICATION_TYPE_BASIC_AUTH);
+            LOGGER.error("userName/password field in subscription is missing.");
             return false;
         }
 

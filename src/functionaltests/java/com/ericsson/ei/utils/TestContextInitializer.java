@@ -15,6 +15,8 @@ public class TestContextInitializer extends TestConfigs
     @Override
     public void initialize(ConfigurableApplicationContext ac) {
 
+        setRules();
+
         try {
             createAmqpBroker();
             startUpMongoClient();

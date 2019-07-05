@@ -59,7 +59,11 @@ public class DownloadControllerImpl implements DownloadController {
     public ResponseEntity<?> getDownloadSubscriptionsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
-
+            if (is == null) {
+                String errorMessage = "Subscriptions template file is not found.";
+                LOGGER.error(errorMessage);
+                return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download subscriptions template file.";

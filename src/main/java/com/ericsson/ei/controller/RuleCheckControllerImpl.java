@@ -18,7 +18,6 @@ package com.ericsson.ei.controller;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

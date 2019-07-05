@@ -16,11 +16,9 @@
 */
 package com.ericsson.ei.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

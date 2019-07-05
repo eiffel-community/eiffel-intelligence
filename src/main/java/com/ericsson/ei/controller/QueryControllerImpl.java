@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.controller;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;

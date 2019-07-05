@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,7 +210,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOG.info(ExceptionUtils.getStackTrace(e));
+            LOG.info(e.getMessage(),e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error("Internal Server Error: Failed to fetch subscriptions.", e);

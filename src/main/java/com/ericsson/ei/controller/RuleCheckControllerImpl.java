@@ -35,6 +35,7 @@ import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.services.IRuleCheckService;
+import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -104,7 +105,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         } catch (Exception e) {
             String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -120,21 +122,24 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
-                    String errorMessage = "Aggregated event is not generated. List of rules or list of events are not correct";
+                    String errorMessage = "Failed to generate aggregated object. List of rules or list of events are not correct";
                     LOGGER.error(errorMessage);
-                    return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+                    String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+                    return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
                 }
             } catch (JSONException | IOException e) {
-                String errorMessage = "Failed to generate aggregated object. Error message:\n" + e.getMessage();
+                String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
-                return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+                String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+                return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             String errorMessage = "Test Rules functionality is disabled in backend server. "
                     + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
                     + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
-            return new ResponseEntity<>(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -146,9 +151,10 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         try {
             return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to get Status. Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to get Status.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

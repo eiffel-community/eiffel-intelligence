@@ -17,7 +17,6 @@
         200:
           body:
             application/json:
-              schema: subscriptionResponse
 
     put:
       description: Modify existing Subscriptions.
@@ -28,7 +27,6 @@
         200:
           body:
             application/json:
-              schema: subscriptionResponse
 
     /{subscriptionNames}:
       uriParameters:
@@ -44,9 +42,6 @@
           200:        
             body:
               application/json:
-                schema: getSubscriptionResponse
-
-
 
       delete:
         description: Removes the subscriptions from the database for the given subscription names.
@@ -54,4 +49,3 @@
           200:
             body:
               application/json:
-                schema: subscriptionResponse

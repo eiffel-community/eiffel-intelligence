@@ -219,7 +219,7 @@ public class SubscriptionValidator {
             ProcessingReport report = schema.validate(subscriptionJson);
             boolean waitreport = true;
         } catch (Exception e) {
-            throw new SubscriptionValidationException("Schema validation fails\nError message: " + e.getMessage());
+            throw new SubscriptionValidationException("Schema validation failed.", e);
         }
     }
 
@@ -230,8 +230,7 @@ public class SubscriptionValidator {
             jsonSubscriptionObj1 = mapper.valueToTree(subObject);
         } catch (Exception e) {
             LOGGER.error("Failed to create object to json.", e);
-            throw new SubscriptionValidationException(
-                    "Failed to create object to json.\nError message: " + e.getMessage());
+            throw new SubscriptionValidationException("Failed to create object to json.", e);
         }
         return jsonSubscriptionObj1;
     }

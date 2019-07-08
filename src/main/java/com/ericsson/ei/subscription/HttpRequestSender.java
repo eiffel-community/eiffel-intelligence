@@ -50,35 +50,37 @@ public class HttpRequestSender {
      * @param notificationMeta       A String containing the URL to send request to
      * @param mapNotificationMessage Contains the body of the HTTP request
      * @param headers
-     * @throws AuthenticationException
      * @return boolean success of the request
+     * @throws AuthenticationException
      */
     public boolean postDataMultiValue(String notificationMeta,
-            MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
-            throws AuthenticationException {
+            MultiValueMap<String, String> mapNotificationMessage,
+            HttpHeaders headers) throws AuthenticationException {
         ResponseEntity<JsonNode> response;
 
         try {
             LOGGER.info("Performing HTTP request to url: {}", notificationMeta);
-            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType().equals(
-                    MediaType.APPLICATION_FORM_URLENCODED);
+            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
+                                                             .equals(MediaType.APPLICATION_FORM_URLENCODED);
             if (isApplicationXWwwFormUrlEncoded) {
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
                         mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {
-                HttpEntity<String> request = new HttpEntity<>(String.valueOf((mapNotificationMessage
-                        .get("")).get(0)), headers);
+                HttpEntity<String> request = new HttpEntity<>(
+                        String.valueOf((mapNotificationMessage.get("")).get(0)),
+                        headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
 
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e
-                    .getStatusCode() == HttpStatus.FORBIDDEN) {
+            boolean unauthorizedRequest = e.getStatusCode() == HttpStatus.UNAUTHORIZED;
+            boolean badRequestForbidden = e.getStatusCode() == HttpStatus.FORBIDDEN;
+            if (unauthorizedRequest || badRequestForbidden) {
                 String message = String.format("Failed to perform HTTP request due to '%s'."
                         + "\nEnsure that you use correct authenticationType, username and password."
-                        + "\nDue to authentication error EI will not perform retries.", e
-                                .getMessage());
+                        + "\nDue to authentication error EI will not perform retries.",
+                        e.getMessage());
                 LOGGER.error(message, e);
                 throw new AuthenticationException(message, e);
             }

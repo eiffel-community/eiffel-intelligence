@@ -128,15 +128,19 @@ public class FlowStepsIT extends IntegrationTestBase {
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
     public void notification_meta_is_set_in_subscription(String notificationMeta) throws Throwable {
         notificationMeta = replaceVariablesInNotificationMeta(notificationMeta);
-        subscriptionObject.setNotificationMeta(notificationMeta).toString();
+        subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
     @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
     public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(
             String authenticationType, String username, String password) throws Throwable {
-        if (subscriptionObject instanceof RestPostSubscriptionObject) {
-            ((RestPostSubscriptionObject) subscriptionObject).setAuthenticationType(
-                    authenticationType).setUsername(username).setPassword(password);
+
+        RestPostSubscriptionObject restPostSubscriptionObject = (RestPostSubscriptionObject) subscriptionObject;
+        if (restPostSubscriptionObject != null) {
+            restPostSubscriptionObject.setAuthenticationType(authenticationType)
+                                      .setUsername(username)
+                                      .setPassword(password);
+            subscriptionObject = restPostSubscriptionObject;
         }
     }
 
@@ -278,9 +282,11 @@ public class FlowStepsIT extends IntegrationTestBase {
         startTime = System.currentTimeMillis();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setHost(eiHost).setPort(port).setEndpoint("/subscriptions").addHeader(
-                "Content-type", "application/json").setBody(subscriptionObject.getAsSubscriptions()
-                        .toString());
+        postRequest.setHost(eiHost)
+                   .setPort(port)
+                   .setEndpoint("/subscriptions")
+                   .addHeader("Content-type", "application/json")
+                   .setBody(subscriptionObject.getAsSubscriptions().toString());
 
         ResponseEntity<String> response = postRequest.performRequest();
         assertEquals(200, response.getStatusCodeValue());
@@ -347,7 +353,7 @@ public class FlowStepsIT extends IntegrationTestBase {
             JSONObject parameter = parameters.getJSONObject(j);
 
             if (parameter.has("name") && parameter.has("value") && parameter.getString("name")
-                    .equals(key)) {
+                                                                            .equals(key)) {
                 value = parameter.getString("value");
                 return value;
             }

@@ -42,7 +42,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.ericsson.ei.exception.AuthorizationException;
+import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.handlers.MongoDBHandler;
@@ -54,7 +54,7 @@ import com.mongodb.MongoWriteException;
 import lombok.Getter;
 
 /**
- * This class represents the REST POST notification mechanism and the alternate way to save the
+ * Represents the REST POST notification mechanism and the alternate way to save the
  * aggregatedObject details in the database when the notification fails.
  *
  * @author xjibbal
@@ -101,16 +101,16 @@ public class InformSubscriber {
     private EmailSender emailSender;
 
     /**
-     * This method extracts the mode of notification through which the subscriber should be
+     * Extracts the mode of notification through which the subscriber should be
      * notified, from the subscription Object. And if the notification fails, then it saved in the
      * database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
-            throws AuthorizationException {
+            throws AuthenticationException {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
@@ -149,18 +149,18 @@ public class InformSubscriber {
     }
 
     /**
-     * This method attempts to make HTTP POST requests. If the request fails, it is retried until
+     * Attempts to make HTTP POST requests. If the request fails, it is retried until
      * the maximum number of failAttempts have been reached.
      *
      * @param notificationMeta       The URL to send the request to
      * @param mapNotificationMessage The body of the HTTP request
      * @param headers
      * @return success A boolean value depending on the outcome of the final HTTP request
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     private boolean makeHTTPRequests(String notificationMeta,
             MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
-            throws AuthorizationException {
+            throws AuthenticationException {
         boolean success = false;
         int requestTries = 0;
 
@@ -176,15 +176,15 @@ public class InformSubscriber {
     }
 
     /**
-     * This method prepares headers to be used when making a rest call with the method POST.
+     * Prepares headers to be used when making a rest call with the method POST.
      *
      * @param notificationMeta A String containing a URL
      * @param subscriptionJson Used to extract the rest post body media type from
      * @return headers
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson)
-            throws AuthorizationException {
+            throws AuthenticationException {
         HttpHeaders headers = new HttpHeaders();
         String headerContentMediaType = getSubscriptionField("restPostBodyMediaType",
                 subscriptionJson);
@@ -198,16 +198,16 @@ public class InformSubscriber {
     }
 
     /**
-     * This method adds the authentication details to the headers.
+     * Adds the authentication details to the headers.
      *
      * @param headers
      * @param notificationMeta A String containing a URL
      * @param subscriptionJson Used to extract the authentication type from
      * @return headers
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta,
-            JsonNode subscriptionJson) throws AuthorizationException {
+            JsonNode subscriptionJson) throws AuthenticationException {
         String authType = getSubscriptionField("authenticationType", subscriptionJson);
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
@@ -231,7 +231,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method returns a boolean indicating that authentication details was provided in the
+     * Returns a boolean indicating that authentication details was provided in the
      * subscription
      *
      * @param authType
@@ -254,16 +254,16 @@ public class InformSubscriber {
     }
 
     /**
-     * This method adds crumb to the headers if applicable.
+     * Adds crumb to the headers if applicable.
      *
      * @param headers
      * @param encoding
      * @param notificationMeta A String containing a URL
      * @return headers Headers containing Jenkins crumb data
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding,
-            String notificationMeta) throws AuthorizationException {
+            String notificationMeta) throws AuthenticationException {
         LOGGER.info("Jenkins Crumb data is about to be fetched.");
         JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumb(encoding, notificationMeta);
         if (jenkinsJsonCrumbData != null) {
@@ -285,10 +285,10 @@ public class InformSubscriber {
      * @param encoding
      * @param notificationMeta A String containing a URL
      * @return JenkinsJsonCrumbData
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      */
     private JsonNode fetchJenkinsCrumb(String encoding, String notificationMeta)
-            throws AuthorizationException {
+            throws AuthenticationException {
         try {
             URL url = buildJenkinsCrumbUrl(notificationMeta);
 
@@ -304,17 +304,17 @@ public class InformSubscriber {
         } catch (MalformedURLException e) {
             String message = "Failed to format url to collect jenkins crumb.";
             LOGGER.error(message, e);
-            throw new AuthorizationException(message, e);
+            throw new AuthenticationException(message, e);
         } catch (HttpClientErrorException e) {
             if (HttpStatus.UNAUTHORIZED == e.getStatusCode()) {
                 String message = "Failed to fetch crumb. Authentication failed, wrong username or password.";
                 LOGGER.error(message, e);
-                throw new AuthorizationException(message, e);
+                throw new AuthenticationException(message, e);
             }
             if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
                 String message = String.format(
                         "Failed to fetch crumb. The authentication type is %s,"
-                                + " but SCRF Protection seems disabled in Jenkins.",
+                                + " but CSRF Protection seems disabled in Jenkins.",
                         AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
                 LOGGER.warn(message, e);
                 return null;
@@ -324,7 +324,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This function replaes the user given context paths with the crumb issuer context path.
+     * Replaces the user given context paths with the crumb issuer context path.
      *
      * @param notificationMeta
      * @return
@@ -337,7 +337,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method extracts the url parameters from the notification meta. It runs the parameter
+     * Extracts the url parameters from the notification meta. It runs the parameter
      * values through JMESPath to replace wanted parameter values with data from the aggregated
      * object. It then reformats the notification meta containing the new parameters.
      *
@@ -475,7 +475,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method returns the context path from the notification meta.
+     * Returns the context path from the notification meta.
      *
      * @param notificationMeta A String containing a URL
      * @return contextPath
@@ -489,7 +489,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method saves the missed Notification into a single document in the database.
+     * Saves the missed Notification into a single document in the database.
      */
     private void saveMissedNotificationToDB(String missedNotification) {
         try {
@@ -502,7 +502,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method prepares the document to be saved in the missed notification database.
+     * Prepares the document to be saved in the missed notification database.
      *
      * @param aggregatedObject
      * @param subscriptionName
@@ -524,7 +524,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method, given the field name, returns its value.
+     * Given the field name, returns its value.
      *
      * @param subscriptionJson
      * @param fieldName
@@ -542,7 +542,7 @@ public class InformSubscriber {
     }
 
     /**
-     * This method extracts key and value from notification message in a given subscription.
+     * Extracts key and value from notification message in a given subscription.
      *
      * @param aggregatedObject
      * @param subscriptionJson

@@ -16,7 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
-import com.ericsson.ei.exception.AuthorizationException;
+import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.slf4j.Logger;
@@ -50,12 +50,12 @@ public class HttpRequestSender {
      * @param notificationMeta       A String containing the URL to send request to
      * @param mapNotificationMessage Contains the body of the HTTP request
      * @param headers
-     * @throws AuthorizationException
+     * @throws AuthenticationException
      * @return boolean success of the request
      */
     public boolean postDataMultiValue(String notificationMeta,
             MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
-            throws AuthorizationException {
+            throws AuthenticationException {
         ResponseEntity<JsonNode> response;
 
         try {
@@ -80,7 +80,7 @@ public class HttpRequestSender {
                         + "\nDue to authentication error EI will not perform retries.", e
                                 .getMessage());
                 LOGGER.error(message, e);
-                throw new AuthorizationException(message, e);
+                throw new AuthenticationException(message, e);
             }
             LOGGER.error(
                     "HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",

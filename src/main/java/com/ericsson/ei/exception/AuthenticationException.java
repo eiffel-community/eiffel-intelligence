@@ -1,5 +1,5 @@
 /*
-   Copyright 2017 Ericsson AB.
+   Copyright 2019 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,20 @@
 */
 package com.ericsson.ei.exception;
 
-public class AuthorizationException extends Exception {
-    
+public class AuthenticationException extends Exception {
+
     private static final long serialVersionUID = 2L;
-    
-    public AuthorizationException() {
+
+    public AuthenticationException() {
         super();
     }
-    
-    public AuthorizationException(String message) {
+
+    public AuthenticationException(String message) {
         super(message);
     }
-    
-    public AuthorizationException(String message, Throwable e) {
+
+    public AuthenticationException(String message, Throwable e) {
         super(message, e);
     }
-    
+
 }

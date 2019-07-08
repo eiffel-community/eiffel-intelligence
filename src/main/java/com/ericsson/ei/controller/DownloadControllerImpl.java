@@ -49,7 +49,8 @@ public class DownloadControllerImpl implements DownloadController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get information about download endpoints.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -66,7 +67,8 @@ public class DownloadControllerImpl implements DownloadController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download subscriptions template file.";
             LOGGER.error(e.getMessage(), e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,7 +85,8 @@ public class DownloadControllerImpl implements DownloadController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download rules template file.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -100,7 +103,8 @@ public class DownloadControllerImpl implements DownloadController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to download events template file.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

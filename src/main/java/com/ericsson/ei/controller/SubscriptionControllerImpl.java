@@ -128,7 +128,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
         if (httpStatus == HttpStatus.NOT_FOUND) {
             String errorMessage = "Failed to fetch subscriptions:\n" + notFoundSubscriptionList.toString();
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), httpStatus);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, httpStatus);
         }
         return new ResponseEntity<>(response, httpStatus);
     }
@@ -212,7 +213,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         } catch (Exception e) {
             String errorMessage = "Failed to fetch subscriptions.";
             LOG.error("Internal Server Error: {}", errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -236,7 +238,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             for (Map.Entry<String, String> entry : errorMap.entrySet()) {
                 errorMessage += "" + entry.getKey() + " :: " + entry.getValue() + "\n";
             }
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -67,7 +67,8 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

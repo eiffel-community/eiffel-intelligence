@@ -105,7 +105,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         } catch (Exception e) {
             String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -123,19 +124,22 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 } else {
                     String errorMessage = "Failed to generate aggregated object. List of rules or list of events are not correct";
                     LOGGER.error(errorMessage);
-                    return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.BAD_REQUEST);
+                    String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+                    return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
                 }
             } catch (JSONException | IOException e) {
                 String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
-                return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+                String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+                return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             String errorMessage = "Test Rules functionality is disabled in backend server. "
                     + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
                     + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.SERVICE_UNAVAILABLE);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -149,7 +153,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get Status.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -47,7 +47,8 @@ public class InformationControllerImpl implements InformationController {
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to parse EI backend information.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

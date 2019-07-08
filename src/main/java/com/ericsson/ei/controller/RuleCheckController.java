@@ -22,7 +22,7 @@ public interface RuleCheckController {
 
 
     /**
-     * This call for run the jmespath rule object or rule on the JSON object
+     * This method extracts data from a single Eiffel event based on the given JMESPath expression.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
@@ -32,7 +32,7 @@ public interface RuleCheckController {
         RuleCheckBody ruleCheckBody);
 
     /**
-     * This call for run the jmespath rule objects on the Json array of objects, we get aggregation Object as output
+     * This method extracts data from the given list of Eiffel events, based on a set of rules and returns an aggregated object.
      * 
      */
     @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
@@ -42,7 +42,7 @@ public interface RuleCheckController {
         RulesCheckBody rulesCheckBody);
 
     /**
-     * This call for the current status of test rule entry point, we get status as output
+     * This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
      * 
      */
     @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)

@@ -5,7 +5,7 @@ dist: xenial
 language: java
 
 services:
-  - docker 
+  - docker
 
 env:
   - JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -23,11 +23,9 @@ before_install:
 # This is only run before integrationTests job
 # To ensure docker containers are fully up and running we sleep 20s
 before_script:
-  - cd src/main/docker/
-  - source env.bash
-  - docker-compose up -d mongodb rabbitmq eiffel-er jenkins mail-server ei-backend
+  - source src/main/docker/env.bash
+  - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb rabbitmq eiffel-er jenkins mail-server
   - sleep 60
-  - cd ../../../
 
 
 # Generate site documentation using mvn site plugin

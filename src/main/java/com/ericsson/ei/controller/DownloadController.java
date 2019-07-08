@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * No description
+ * This class is responsible for providing templates of rules, Eiffel events and subscriptions.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -20,28 +20,28 @@ public interface DownloadController {
 
 
     /**
-     * This call for getting list of available templates
+     * This method returns a list of endpoints for downloading templates.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getDownload();
 
     /**
-     * This call for getting subscriptions template
+     * This method returns a subscription template.
      * 
      */
     @RequestMapping(value = "/subscriptionsTemplate", method = RequestMethod.GET)
     public ResponseEntity<?> getDownloadSubscriptionsTemplate();
 
     /**
-     * This call for getting rules template
+     * This method returns a template for rules.
      * 
      */
     @RequestMapping(value = "/rulesTemplate", method = RequestMethod.GET)
     public ResponseEntity<?> getDownloadRulesTemplate();
 
     /**
-     * This call for getting events template
+     * This method returns a template for Eiffel events.
      * 
      */
     @RequestMapping(value = "/eventsTemplate", method = RequestMethod.GET)

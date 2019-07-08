@@ -59,7 +59,7 @@ public class ProcessMissedNotification {
         try {
             jsonCondition = mapper.readTree(condition);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to parse JSON.", e);
         }
         LOGGER.debug("The Json condition is : " + jsonCondition);
         List<String> output = handler.find(missedNotificationDatabaseName, missedNotificationCollectionName,
@@ -68,7 +68,7 @@ public class ProcessMissedNotification {
             try {
                 return mapper.readTree(a).path("AggregatedObject").toString();
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.error("Failed to parse JSON.", e);
             }
             return null;
         }).collect(Collectors.toList());

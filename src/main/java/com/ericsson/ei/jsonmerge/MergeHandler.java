@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class MergeHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MergeHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MergeHandler.class);
 
     @Value("${mergeidmarker}")
     private String mergeIdMarker;
@@ -79,10 +79,10 @@ public class MergeHandler {
             }
 
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
-            log.debug("Merged Aggregated Object:\n" + mergedObject);
+            LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
         } catch (Exception e) {
             // TODO: don't catch naked Exception class
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         } finally {
             // unlocking of document will be performed, when mergedObject will
             // be inserted to database
@@ -109,13 +109,13 @@ public class MergeHandler {
             }
 
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
-            log.debug("Merged Aggregated Object:\n" + mergedObject);
+            LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
             // unlocking of document will be performed, when mergedObject will
             // be inserted to database
             objectHandler.updateObject(mergedObject, rules, event, id);
         } catch (Exception e) {
             // TODO: don't catch naked Exception class
-            log.info(e.getMessage(), e);
+            LOGGER.info(e.getMessage(), e);
         }
 
         return mergedObject;
@@ -142,7 +142,7 @@ public class MergeHandler {
             JSONObject preparedJsonObject = new JSONObject(preparedObject);
             updateJsonObject(aggregatedJsonObject, preparedJsonObject);
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            LOGGER.info(e.getMessage(), e);
         }
         return aggregatedJsonObject == null ? null : aggregatedJsonObject.toString();
     }
@@ -177,9 +177,8 @@ public class MergeHandler {
                 }
             }
         } catch (Exception e) {
-            String msg = "Exception: updateJsonObject failled for aggregatedJsonObject : " + aggregatedJsonObject
-                    + "and preparedJsonObject: " + preparedJsonObject;
-            log.error(msg, e);
+            LOGGER.error("Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
+                    aggregatedJsonObject, preparedJsonObject, e);
         }
     }
 
@@ -210,9 +209,8 @@ public class MergeHandler {
                     element = preparedJsonObject.get(i);
                 }
             } catch (JSONException e) {
-                String msg = "Exception: updateJsonObject failled for aggregatedJsonObject : " + aggregatedJsonObject
-                        + "and preparedJsonObject: " + preparedJsonObject;
-                log.error(msg, e);
+                LOGGER.error("Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
+                        aggregatedJsonObject, preparedJsonObject, e);
             }
         }
     }
@@ -256,7 +254,7 @@ public class MergeHandler {
                 return result.toString();
             }
         } catch (Exception e) {
-            log.info(e.getMessage(), e);
+            LOGGER.info(e.getMessage(), e);
         }
         return null;
     }

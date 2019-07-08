@@ -198,8 +198,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
         try {
             result = addKeys("", result, object);
         } catch (Exception e) {
-            LOGGER.error("Failed to flatten an object\n: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to flatten an object.", e);
         }
         return result;
     }
@@ -225,7 +224,7 @@ public class IncompletePathFilterFunction extends BaseFunction {
                 }
             }
         } catch (JSONException e) {
-            LOGGER.error("Failed to add key\n: " + e.getMessage());
+            LOGGER.error("Failed to add key.", e);
             e.printStackTrace();
         }
         return result;

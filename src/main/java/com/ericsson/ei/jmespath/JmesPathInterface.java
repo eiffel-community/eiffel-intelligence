@@ -36,7 +36,7 @@ import io.burt.jmespath.jackson.JacksonRuntime;
 @Component
 public class JmesPathInterface {
 
-    static Logger log = LoggerFactory.getLogger(JmesPathInterface.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JmesPathInterface.class);
 
     private JmesPath<JsonNode> jmespath;
 
@@ -66,10 +66,7 @@ public class JmesPathInterface {
             JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
             result = expression.search(eventJson);
         } catch (Exception e) {
-            String msg = "runRuleOnEvent failed for given arguments:\n";
-            msg += "rule was: " + rule + "\n";
-            msg += "event was: " + event + "\n";
-            log.error(msg, e);
+            LOGGER.error("Failed to run rule on event.\nRule: {}\nEvent: {}", rule, event, e);
         }
 
         return result;

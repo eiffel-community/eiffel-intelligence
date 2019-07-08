@@ -66,10 +66,8 @@ public class MergePrepare {
                 JSONArray ruleJSONArray = new JSONArray(mergeRule);
                 return getValueFromRule(ruleJSONArray.get(1).toString());
             } catch (Exception ne) {
-                LOGGER.info(ne.getMessage(), ne);
+                LOGGER.info("Failed to get value from rule.", ne);
             }
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage(), e);
         }
         return ruleValue;
     }

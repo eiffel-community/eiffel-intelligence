@@ -65,7 +65,7 @@ public class ProcessAggregatedObject {
         try {
             jsonCondition = mapper.readTree(query);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to parse JSON.", e);
         }
         LOGGER.debug("The Json condition is : " + jsonCondition);
         ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
@@ -120,7 +120,7 @@ public class ProcessAggregatedObject {
             try {
                 doc = new JSONObject(temp);
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.error("Failed to parse JSON.", e);
             }
             jsonArray.put(doc);
         }

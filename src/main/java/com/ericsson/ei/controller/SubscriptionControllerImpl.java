@@ -208,7 +208,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             LOG.info(e.getMessage(),e);
-            return new ResponseEntity<>(ResponseMessage.createJsonMessage(e.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to fetch subscriptions.";
             LOG.error("Internal Server Error: {}", errorMessage, e);

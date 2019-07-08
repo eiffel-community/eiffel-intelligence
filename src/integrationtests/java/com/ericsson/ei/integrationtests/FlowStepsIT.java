@@ -111,8 +111,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Given("^subscription object for \"([^\"]*)\" with name \"([^\"]*)\" is created$")
-    public void subscription_object_for_with_name_is_created(String subscriptionType, String subscriptionName)
-            throws Throwable {
+    public void subscription_object_for_with_name_is_created(String subscriptionType,
+            String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
             subscriptionObject = new MailSubscriptionObject(subscriptionName);
         } else {
@@ -128,20 +128,21 @@ public class FlowStepsIT extends IntegrationTestBase {
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
     public void notification_meta_is_set_in_subscription(String notificationMeta) throws Throwable {
         notificationMeta = replaceVariablesInNotificationMeta(notificationMeta);
-        subscriptionObject.setNotificationMeta(notificationMeta);
+        subscriptionObject.setNotificationMeta(notificationMeta).toString();
     }
 
     @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
-    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(String authenticationType,
-            String username, String password) throws Throwable {
+    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(
+            String authenticationType, String username, String password) throws Throwable {
         if (subscriptionObject instanceof RestPostSubscriptionObject) {
-            ((RestPostSubscriptionObject) subscriptionObject).setAuthenticationType(authenticationType).setUsername(username).setPassword(password);
+            ((RestPostSubscriptionObject) subscriptionObject).setAuthenticationType(
+                    authenticationType).setUsername(username).setPassword(password);
         }
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
-    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(String restPostBodyMediaType)
-            throws Throwable {
+    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(
+            String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
 
     }
@@ -152,9 +153,10 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @When("^condition \"([^\"]*)\" at requirement index '(\\d+)' is added in subscription$")
-    public void requirement_for_condition_is_added_in_subscription(String condition, int requirementIndex)
-            throws Throwable {
-        subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put("jmespath", condition));
+    public void requirement_for_condition_is_added_in_subscription(String condition,
+            int requirementIndex) throws Throwable {
+        subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put(
+                "jmespath", condition));
     }
 
     @When("^the eiffel events are sent$")
@@ -216,7 +218,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Then("^verify jenkins job data timestamp is after test subscription was created$")
-    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created() throws Throwable {
+    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created()
+            throws Throwable {
         long jenkinsTriggeredTime = jobStatusData.getLong("timestamp");
         assert (jenkinsTriggeredTime >= startTime) : "Jenkins job was triggered before execution of this test.";
     }
@@ -243,7 +246,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
             if (newestMailJson != null) {
                 JsonNode to = newestMailJson.get("to");
-                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
+                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails,
+                        amountOfMails, to.size());
 
                 String createdDate = newestMailJson.get("created").get("$date").asText();
 
@@ -260,8 +264,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @Then("^jenkins is set up with job name \"([^\"]*)\"$")
     public void jenkins_is_set_up_with_job_name(String JobName) throws Throwable {
-        jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort, jenkinsUsername,
-                jenkinsPassword);
+        jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort,
+                jenkinsUsername, jenkinsPassword);
         jenkinsManager.forceCreateJob(JobName, jenkinsXmlData.getXmlAsString());
         jenkinsJobName = JobName;
     }
@@ -274,9 +278,9 @@ public class FlowStepsIT extends IntegrationTestBase {
         startTime = System.currentTimeMillis();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setHost(eiHost).setPort(port).setEndpoint("/subscriptions")
-                .addHeader("Content-type", "application/json")
-                .setBody(subscriptionObject.getAsSubscriptions().toString());
+        postRequest.setHost(eiHost).setPort(port).setEndpoint("/subscriptions").addHeader(
+                "Content-type", "application/json").setBody(subscriptionObject.getAsSubscriptions()
+                        .toString());
 
         ResponseEntity<String> response = postRequest.performRequest();
         assertEquals(200, response.getStatusCodeValue());
@@ -330,7 +334,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     /**
-     * Iterates the parameter array and returns the value if the key is found in given parameter array.
+     * Iterates the parameter array and returns the value if the key is found in given parameter
+     * array.
      *
      * @param parameters
      * @param key
@@ -341,7 +346,8 @@ public class FlowStepsIT extends IntegrationTestBase {
         for (int j = 0; j < parameters.length(); j++) {
             JSONObject parameter = parameters.getJSONObject(j);
 
-            if (parameter.has("name") && parameter.has("value") && parameter.getString("name").equals(key)) {
+            if (parameter.has("name") && parameter.has("value") && parameter.getString("name")
+                    .equals(key)) {
                 value = parameter.getString("value");
                 return value;
             }
@@ -350,7 +356,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     private JsonNode getNewestMailFromDatabase() throws Exception {
-        ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME, "messages");
+        ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME,
+                "messages");
 
         if (allMails.size() > 0) {
             String mailString = allMails.get(allMails.size() - 1);
@@ -362,8 +369,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     /**
      * Replaces given input parameters if user wishes with test defined parameters. If user want the
-     * user may specify the host, port job name and token directly in the feauture file and they will
-     * not be replaced.
+     * user may specify the host, port job name and token directly in the feauture file and they
+     * will not be replaced.
      * <p>
      * ${jenkinsHost} is replaced with jenkins host.
      * <p>
@@ -378,9 +385,12 @@ public class FlowStepsIT extends IntegrationTestBase {
      */
     private String replaceVariablesInNotificationMeta(String notificationMeta) {
         notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsHost\\}", jenkinsHost);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(jenkinsPort));
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}", this.jenkinsJobName);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}", this.jenkinsJobToken);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(
+                jenkinsPort));
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}",
+                this.jenkinsJobName);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}",
+                this.jenkinsJobToken);
         return notificationMeta;
     }
 }

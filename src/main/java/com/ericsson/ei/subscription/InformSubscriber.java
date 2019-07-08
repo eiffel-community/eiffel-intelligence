@@ -101,25 +101,28 @@ public class InformSubscriber {
     private EmailSender emailSender;
 
     /**
-     * This method extracts the mode of notification through which the subscriber should be notified,
-     * from the subscription Object. And if the notification fails, then it saved in the database.
+     * This method extracts the mode of notification through which the subscriber should be
+     * notified, from the subscription Object. And if the notification fails, then it saved in the
+     * database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
      * @throws AuthorizationException
      */
-    public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson) throws AuthorizationException {
+    public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
+            throws AuthorizationException {
         String subscriptionName = getSubscriptionField("subscriptionName", subscriptionJson);
         String notificationType = getSubscriptionField("notificationType", subscriptionJson);
         String notificationMeta = getSubscriptionField("notificationMeta", subscriptionJson);
 
-        MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(aggregatedObject,
-                subscriptionJson);
+        MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(
+                aggregatedObject, subscriptionJson);
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
             // Prepare notification meta
-            notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject, notificationMeta);
+            notificationMeta = replaceParamsValuesWithAggregatedData(aggregatedObject,
+                    notificationMeta);
 
             // Prepare request headers
             HttpHeaders headers = prepareHeaders(notificationMeta, subscriptionJson);
@@ -128,11 +131,11 @@ public class InformSubscriber {
             boolean success = makeHTTPRequests(notificationMeta, mapNotificationMessage, headers);
 
             if (!success) {
-                String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName,
-                        notificationMeta);
+                String missedNotification = prepareMissedNotification(aggregatedObject,
+                        subscriptionName, notificationMeta);
                 LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
-                mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
-                        ttlValue);
+                mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
+                        missedNotificationCollectionName, "Time", ttlValue);
                 saveMissedNotificationToDB(missedNotification);
             }
         }
@@ -140,13 +143,14 @@ public class InformSubscriber {
         if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
-            emailSender.sendEmail(notificationMeta, String.valueOf((mapNotificationMessage.get("")).get(0)), subject);
+            emailSender.sendEmail(notificationMeta, String.valueOf((mapNotificationMessage.get(""))
+                    .get(0)), subject);
         }
     }
 
     /**
-     * This method attempts to make HTTP POST requests. If the request fails, it is retried until the
-     * maximum number of failAttempts have been reached.
+     * This method attempts to make HTTP POST requests. If the request fails, it is retried until
+     * the maximum number of failAttempts have been reached.
      *
      * @param notificationMeta       The URL to send the request to
      * @param mapNotificationMessage The body of the HTTP request
@@ -154,15 +158,18 @@ public class InformSubscriber {
      * @return success A boolean value depending on the outcome of the final HTTP request
      * @throws AuthorizationException
      */
-    private boolean makeHTTPRequests(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) throws AuthorizationException {
+    private boolean makeHTTPRequests(String notificationMeta,
+            MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
+            throws AuthorizationException {
         boolean success = false;
         int requestTries = 0;
 
         do {
             requestTries++;
-            success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : " + success);
+            success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage,
+                    headers);
+            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : "
+                    + success);
         } while (!success && requestTries <= failAttempt);
 
         return success;
@@ -179,9 +186,11 @@ public class InformSubscriber {
     private HttpHeaders prepareHeaders(String notificationMeta, JsonNode subscriptionJson)
             throws AuthorizationException {
         HttpHeaders headers = new HttpHeaders();
-        String headerContentMediaType = getSubscriptionField("restPostBodyMediaType", subscriptionJson);
+        String headerContentMediaType = getSubscriptionField("restPostBodyMediaType",
+                subscriptionJson);
         headers.setContentType(MediaType.valueOf(headerContentMediaType));
-        LOGGER.debug("Successfully added header: 'restPostBodyMediaType':'{}'", headerContentMediaType);
+        LOGGER.debug("Successfully added header: 'restPostBodyMediaType':'{}'",
+                headerContentMediaType);
 
         headers = addAuthenticationData(headers, notificationMeta, subscriptionJson);
 
@@ -197,18 +206,20 @@ public class InformSubscriber {
      * @return headers
      * @throws AuthorizationException
      */
-    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta, JsonNode subscriptionJson)
-            throws AuthorizationException {
+    private HttpHeaders addAuthenticationData(HttpHeaders headers, String notificationMeta,
+            JsonNode subscriptionJson) throws AuthorizationException {
         String authType = getSubscriptionField("authenticationType", subscriptionJson);
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
 
-        boolean authorizationDetailsProvided = isAuthenticationDetailsProvided(authType, username, password);
+        boolean authorizationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
+                password);
         if (!authorizationDetailsProvided) {
             return headers;
         }
 
-        String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        String encoding = Base64.getEncoder().encodeToString((username + ":" + password)
+                .getBytes());
         headers.add("Authorization", "Basic " + encoding);
         LOGGER.debug("Successfully added header for 'Authorization'");
 
@@ -228,7 +239,8 @@ public class InformSubscriber {
      * @param password
      * @return
      */
-    private boolean isAuthenticationDetailsProvided(String authType, String username, String password) {
+    private boolean isAuthenticationDetailsProvided(String authType, String username,
+            String password) {
         if (authType.isEmpty() || authType.equals(AUTHENTICATION_TYPE_NO_AUTH)) {
             return false;
         }
@@ -250,15 +262,16 @@ public class InformSubscriber {
      * @return headers Headers containing Jenkins crumb data
      * @throws AuthorizationException
      */
-    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding, String notificationMeta)
-            throws AuthorizationException {
+    private HttpHeaders addJenkinsCrumbData(HttpHeaders headers, String encoding,
+            String notificationMeta) throws AuthorizationException {
         LOGGER.info("Jenkins Crumb data is about to be fetched.");
         JsonNode jenkinsJsonCrumbData = fetchJenkinsCrumb(encoding, notificationMeta);
         if (jenkinsJsonCrumbData != null) {
             String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
             String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
             headers.add(crumbKey, crumbValue);
-            LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
+            LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey,
+                    crumbValue));
         } else {
             LOGGER.info("Failed to fetch Jenkins Crumb data!");
         }
@@ -274,14 +287,16 @@ public class InformSubscriber {
      * @return JenkinsJsonCrumbData
      * @throws AuthorizationException
      */
-    private JsonNode fetchJenkinsCrumb(String encoding, String notificationMeta) throws AuthorizationException {
+    private JsonNode fetchJenkinsCrumb(String encoding, String notificationMeta)
+            throws AuthorizationException {
         try {
             URL url = buildJenkinsCrumbUrl(notificationMeta);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Basic " + encoding);
             headers.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity<JsonNode> response = httpRequestSender.makeGetRequest(url.toString(), headers);
+            ResponseEntity<JsonNode> response = httpRequestSender.makeGetRequest(url.toString(),
+                    headers);
 
             JsonNode JenkinsJsonCrumbData = response.getBody();
             return JenkinsJsonCrumbData;
@@ -298,7 +313,8 @@ public class InformSubscriber {
             }
             if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
                 String message = String.format(
-                        "Failed to fetch crumb. The authentication type is %s, but SCRF Protection seems disabled in Jenkins.",
+                        "Failed to fetch crumb. The authentication type is %s,"
+                                + " but SCRF Protection seems disabled in Jenkins.",
                         AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
                 LOGGER.warn(message, e);
                 return null;
@@ -321,15 +337,17 @@ public class InformSubscriber {
     }
 
     /**
-     * This method extracts the url parameters from the notification meta. It runs the parameter values
-     * through JMESPath to replace wanted parameter values with data from the aggregated object. It then
-     * reformats the notification meta containing the new parameters.
+     * This method extracts the url parameters from the notification meta. It runs the parameter
+     * values through JMESPath to replace wanted parameter values with data from the aggregated
+     * object. It then reformats the notification meta containing the new parameters.
      *
-     * @param aggregatedObject The aggregated object contains the url parameters which will be updated
+     * @param aggregatedObject The aggregated object contains the url parameters which will be
+     *                         updated
      * @param notificationMeta A String containing a URL
      * @return String
      */
-    private String replaceParamsValuesWithAggregatedData(String aggregatedObject, String notificationMeta) {
+    private String replaceParamsValuesWithAggregatedData(String aggregatedObject,
+            String notificationMeta) {
         if (!notificationMeta.contains("?")) {
             return notificationMeta;
         }
@@ -339,10 +357,12 @@ public class InformSubscriber {
             String baseUrl = extractBaseUrl(notificationMeta);
             String contextPath = extractContextPath(notificationMeta);
             List<NameValuePair> params = extractUrlParameters(notificationMeta);
-            LOGGER.debug("Notification meta in parts:\n ## Base Url: {}\n ## Context Path: {}\n ## URL Parameters: {} ",
-                    baseUrl, contextPath, params);
+            LOGGER.debug("Notification meta in parts:\n ## Base Url: "
+                    + "{}\n ## Context Path: {}\n ## URL Parameters: {} ", baseUrl, contextPath,
+                    params);
 
-            List<NameValuePair> processedParams = processJMESPathParameters(aggregatedObject, params);
+            List<NameValuePair> processedParams = processJMESPathParameters(aggregatedObject,
+                    params);
             LOGGER.debug("JMESPath processed parameters :\n ## {}", processedParams);
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
@@ -363,7 +383,8 @@ public class InformSubscriber {
      * @return
      * @throws MalformedURLException
      */
-    private List<NameValuePair> extractUrlParameters(String notificationMeta) throws MalformedURLException {
+    private List<NameValuePair> extractUrlParameters(String notificationMeta)
+            throws MalformedURLException {
         URL url = new URL(notificationMeta);
         String query = url.getQuery();
         List<NameValuePair> params = splitQuery(query);
@@ -371,8 +392,8 @@ public class InformSubscriber {
     }
 
     /**
-     * Splits a query string into one pair for each key and value. Loops said pairs and extracts the key
-     * and value as KeyValuePair. Adds KeyValuePair to list.
+     * Splits a query string into one pair for each key and value. Loops said pairs and extracts the
+     * key and value as KeyValuePair. Adds KeyValuePair to list.
      *
      * @param query
      * @return List<KeyValuePair>
@@ -420,8 +441,8 @@ public class InformSubscriber {
      * @return List<NameValuePair>
      * @throws UnsupportedEncodingException
      */
-    private List<NameValuePair> processJMESPathParameters(String aggregatedObject, List<NameValuePair> params)
-            throws UnsupportedEncodingException {
+    private List<NameValuePair> processJMESPathParameters(String aggregatedObject,
+            List<NameValuePair> params) throws UnsupportedEncodingException {
         List<NameValuePair> processedParams = new ArrayList<>();
 
         for (NameValuePair param : params) {
@@ -429,8 +450,8 @@ public class InformSubscriber {
             String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
             LOGGER.debug("Input parameter key and value: " + name + " : " + value);
-            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
-                    "");
+            value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject)
+                    .toString().replaceAll(REGEX, "");
 
             LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
             processedParams.add(new BasicNameValuePair(name, value));
@@ -472,8 +493,8 @@ public class InformSubscriber {
      */
     private void saveMissedNotificationToDB(String missedNotification) {
         try {
-            mongoDBHandler.insertDocument(missedNotificationDataBaseName, missedNotificationCollectionName,
-                    missedNotification);
+            mongoDBHandler.insertDocument(missedNotificationDataBaseName,
+                    missedNotificationCollectionName, missedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the notification into database");
@@ -527,7 +548,8 @@ public class InformSubscriber {
      * @param subscriptionJson
      * @return
      */
-    private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject, JsonNode subscriptionJson) {
+    private MultiValueMap<String, String> mapNotificationMessage(String aggregatedObject,
+            JsonNode subscriptionJson) {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
         ArrayNode arrNode = (ArrayNode) subscriptionJson.get("notificationMessageKeyValues");
 
@@ -538,8 +560,10 @@ public class InformSubscriber {
                 String formKey = objNode.get("formkey").asText();
                 String preJMESPathExtractionFormValue = objNode.get("formvalue").asText();
 
-                JsonNode extractedJsonNode = jmespath.runRuleOnEvent(preJMESPathExtractionFormValue, aggregatedObject);
-                String postJMESPathExtractionFormValue = extractedJsonNode.toString().replaceAll(REGEX, "");
+                JsonNode extractedJsonNode = jmespath.runRuleOnEvent(preJMESPathExtractionFormValue,
+                        aggregatedObject);
+                String postJMESPathExtractionFormValue = extractedJsonNode.toString().replaceAll(
+                        REGEX, "");
 
                 LOGGER.debug("formValue after running the extraction: [{}] for formKey: [{}]",
                         postJMESPathExtractionFormValue, formKey);

@@ -53,36 +53,42 @@ public class HttpRequestSender {
      * @throws AuthorizationException
      * @return boolean success of the request
      */
-    public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) throws AuthorizationException {
+    public boolean postDataMultiValue(String notificationMeta,
+            MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
+            throws AuthorizationException {
         ResponseEntity<JsonNode> response;
 
         try {
             LOGGER.info("Performing HTTP request to url: {}", notificationMeta);
-            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
-                    .equals(MediaType.APPLICATION_FORM_URLENCODED);
+            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType().equals(
+                    MediaType.APPLICATION_FORM_URLENCODED);
             if (isApplicationXWwwFormUrlEncoded) {
-                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
+                        mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {
-                HttpEntity<String> request = new HttpEntity<>(String.valueOf((mapNotificationMessage.get("")).get(0)),
-                        headers);
+                HttpEntity<String> request = new HttpEntity<>(String.valueOf((mapNotificationMessage
+                        .get("")).get(0)), headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
 
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e
+                    .getStatusCode() == HttpStatus.FORBIDDEN) {
                 String message = String.format("Failed to perform HTTP request due to '%s'."
                         + "\nEnsure that you use correct authenticationType, username and password."
-                        + "\nDue to authentication error EI will not perform retries.", e.getMessage());
+                        + "\nDue to authentication error EI will not perform retries.", e
+                                .getMessage());
                 LOGGER.error(message, e);
                 throw new AuthorizationException(message, e);
             }
-            LOGGER.error("HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
+            LOGGER.error(
+                    "HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
                     notificationMeta, e.getMessage(), e);
             return false;
         } catch (HttpServerErrorException e) {
-            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
+            LOGGER.error(
+                    "HTTP-request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
                     notificationMeta, e.getMessage(), e);
             return false;
         } catch (Exception e) {
@@ -104,8 +110,8 @@ public class HttpRequestSender {
     }
 
     /**
-     * This method performs a get request to given url and with given headers, then returns the result
-     * as a ResponseEntity<JsonNode>.
+     * This method performs a get request to given url and with given headers, then returns the
+     * result as a ResponseEntity<JsonNode>.
      *
      * @param url
      * @param headers
@@ -114,7 +120,8 @@ public class HttpRequestSender {
     public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
         HttpEntity<String> request = new HttpEntity<>(headers);
 
-        ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
+        ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request,
+                JsonNode.class);
         return response;
 
     }

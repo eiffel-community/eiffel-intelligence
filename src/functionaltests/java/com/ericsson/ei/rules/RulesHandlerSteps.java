@@ -6,6 +6,8 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.Ignore;
 import org.mockserver.client.MockServerClient;
@@ -55,13 +57,14 @@ public class RulesHandlerSteps {
     }
 
     @Given("^path is made absolute$")
-    public void path_is_absolute() {
+    public void path_is_absolute() throws IOException {
         rulesPath = new File(rulesPath).getAbsolutePath();
+        rulesPath = rulesPath.replace("\\", "/");
     }
 
     @Given("^path is URI with \"([^\"]*)\" scheme$")
     public void path_is_uri(String scheme) {
-        rulesPath = scheme + "://" + rulesPath;
+        rulesPath = scheme + rulesPath;
     }
 
     @Then("^rules are loaded$")

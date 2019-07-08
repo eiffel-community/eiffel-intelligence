@@ -165,7 +165,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Removes subscription(s) from the database")
+    @ApiOperation(value = "Removes subscription(s)")
     public ResponseEntity<List<SubscriptionResponse>> deleteSubscriptionByNames(
             @PathVariable String subscriptionNames) {
         errorMap = new HashMap<>();

@@ -23,7 +23,7 @@ public interface QueryController {
 
 
     /**
-     * The REST POST method is used to query aggregated abjects with the requested criteria, which are present in the request body.
+     * The REST POST method is used to query aggregated objects with the requested criteria, which are present in the request body.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)

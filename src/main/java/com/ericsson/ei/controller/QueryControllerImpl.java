@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "query", description = "REST endpoints for the freestyle query service")
+@Api(value = "query", tags = {"Query"})
 public class QueryControllerImpl implements QueryController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
@@ -50,7 +50,7 @@ public class QueryControllerImpl implements QueryController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "")
+    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
     public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
         String emptyResponseContent = "[]";
         HttpStatus httpStatus;

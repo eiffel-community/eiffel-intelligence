@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "subscription", description = "The Subscription API for the store and retrieve the subscriptions from the database")
+@Api(value = "subscriptions", tags = {"Subscriptions"})
 public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
@@ -67,9 +67,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Creates the subscriptions")
-    public ResponseEntity<?> createSubscription(
-            @RequestBody List<Subscription> subscriptions) {
+    @ApiOperation(value = "Creates subscription(s)")
+    public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -136,9 +135,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Updates the existing subscriptions")
-    public ResponseEntity<?> updateSubscriptions(
-            @RequestBody List<Subscription> subscriptions) {
+    @ApiOperation(value = "Updates existing subscription(s)")
+    public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -166,9 +164,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Removes the subscriptions from the database")
-    public ResponseEntity<?> deleteSubscriptionByNames(
-            @PathVariable String subscriptionNames) {
+    @ApiOperation(value = "Removes subscription(s)")
+    public ResponseEntity<?> deleteSubscriptionByNames(@PathVariable String subscriptionNames) {
         Map<String, String> errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
@@ -196,7 +193,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieves all the subscriptions")
+    @ApiOperation(value = "Retrieves all subscriptions")
     public ResponseEntity<?> getSubscriptions() {
         LOG.debug("Fetching subscriptions has been initiated");
         try {

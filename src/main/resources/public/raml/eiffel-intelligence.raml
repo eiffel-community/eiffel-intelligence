@@ -7,8 +7,8 @@ schemas:
   queryBody: !include schemas/query_body.schema
   stringServiceResponse: !include schemas/string_service_response.schema
   ruleCheckBody: !include schemas/rule_check_body.schema
-  rulesCheckBody: !include schemas/rules_check_body.schema  
-  
+  rulesCheckBody: !include schemas/rules_check_body.schema
+
 resourceTypes:
   standard:
     get?:
@@ -28,17 +28,17 @@ resourceTypes:
       responses:
         404:
           description: |
-            The requested resource to delete was not found            
+            The requested resource to delete was not found
 
-title: Subscriptions Services and EI Query Services
-version: 1
+title: Eiffel Intelligence
+version: 2
 mediaType: application/json
 baseUri: /
 /subscriptions: !include resourceTypes/subscription.raml
 /query: !include resourceTypes/query.raml
 /queryAggregatedObject: !include resourceTypes/query-aggregated_object.raml
 /queryMissedNotifications: !include resourceTypes/query-missed_notifications.raml
-/download: !include resourceTypes/template.raml
+/download: !include resourceTypes/download.raml
 /rules: !include resourceTypes/rules.raml
 /auth: !include resourceTypes/auth.raml
 /information: !include resourceTypes/instance_info.raml

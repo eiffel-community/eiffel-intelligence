@@ -1,13 +1,13 @@
 {
-   "$schema":"http://json-schema.org/draft-04/schema#",
-   "javaType":"com.ericsson.ei.controller.model.RulesCheckBody",
-      "properties":{
-         "listRulesJson":{
+    "$schema":"http://json-schema.org/draft-04/schema#",
+    "javaType":"com.ericsson.ei.controller.model.RulesCheckBody",
+    "properties":{
+        "listRulesJson":{
             "type":"array"
-         },
-         "listEventsJson":{
+        },
+        "listEventsJson":{
             "type":"array"
-         }
-      },
-   "type":"object"
+        }
+    },
+    "type":"object"
 }

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Component
 @CrossOrigin
-@Api(value = "information", description = "The Information about Eiffel Intelligence Backend instance")
+@Api(value = "information", tags = {"Information"})
 public class InformationControllerImpl implements InformationController {
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformationControllerImpl.class);
 
@@ -38,7 +38,7 @@ public class InformationControllerImpl implements InformationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Parse information")
+    @ApiOperation(value = "Shows information about Eiffel Intelligence backend")
     public ResponseEntity<?> getInformation() {
         try {
             String info = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(instanceInfo);

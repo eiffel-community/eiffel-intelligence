@@ -62,7 +62,7 @@ import lombok.Setter;
 
 @Component
 @CrossOrigin
-@Api(value = "Check Rules", description = "REST endpoints for executing rule(s) on the JSON")
+@Api(value = "checkRules", tags = {"Check rules"})
 public class RuleCheckControllerImpl implements RuleCheckController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckControllerImpl.class);
@@ -90,7 +90,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
      */
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To execute rule on JSON", response = String.class)
+    @ApiOperation(value = "To execute rule on one Eiffel event", response = String.class)
     public ResponseEntity<?> createRulesRuleCheck(
             @ApiParam(value = "JSON object", required = true) @RequestBody RuleCheckBody body) {
         JSONObject rule = new JSONObject(body.getRule().getAdditionalProperties());
@@ -98,7 +98,6 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
         String ruleString = rule.toString().replaceAll("\"", "");
         try {
-
             String res = jmesPathInterface.runRuleOnEvent(ruleString, event.toString()).toString();
             LOGGER.debug("Query: " + body.getRule()+ " executed successfully");
             return new ResponseEntity<>(res, HttpStatus.OK);
@@ -112,7 +111,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Return the aggregated object(s)", response = String.class)
+    @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Returns the aggregated object(s)", response = String.class)
     public ResponseEntity<?> createRuleCheckAggregation(
             @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body) {
         if (testEnable) {
@@ -134,8 +133,8 @@ public class RuleCheckControllerImpl implements RuleCheckController {
                 return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            String errorMessage = "Test Rules functionality is disabled in backend server. "
-                    + "Configure \"testaggregated.controller.enabled\" setting in backend servers properties "
+            String errorMessage = "Test rules functionality is disabled in backend server. "
+                    + "Configure \"testaggregated.enabled\" setting in backend servers properties "
                     + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
@@ -145,13 +144,13 @@ public class RuleCheckControllerImpl implements RuleCheckController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To get Rules Check Srvice enabled status", response = String.class)
+    @ApiOperation(value = "Check if rules check service is enabled", response = String.class)
     public ResponseEntity<?> getRuleCheckTestRulePageEnabled() {
         LOGGER.debug("Getting Enabling Status of Rules Check Service");
         try {
             return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to get Status.";
+            String errorMessage = "Internal Server Error: Failed to get status.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

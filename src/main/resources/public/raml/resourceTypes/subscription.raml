@@ -1,51 +1,49 @@
-
-
-    description: Provides interaction with Subscription resource
-    get:
-      description: Fetches all subscriptions as list.
-      responses:
-        200:
-          body:
-            application/json:
-
-    post:
-      description: Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique.
+description: Provides REST API for handling subscriptions.
+get:
+  description: This method retrieves all subscriptions from the database.
+  responses:
+    200:
       body:
         application/json:
-          schema: subscriptionList
-      responses:
-        200:
-          body:
-            application/json:
 
-    put:
-      description: Modify existing Subscriptions.
+post:
+  description: This method creates new subscription(s) and saves in the database. The name of a subscription must be unique.
+  body:
+    application/json:
+      schema: subscriptionList
+  responses:
+    200:
       body:
         application/json:
-          schema: subscriptionList
-      responses:
-        200:
-          body:
-            application/json:
 
-    /{subscriptionNames}:
-      uriParameters:
-        subscriptionNames:
-          displayName: SubscriptionNames
-          description: The names of the Subscriptions separated by comma.
-          required: true
-          type: string
+put:
+  description: This method modifies existing subscriptions.
+  body:
+    application/json:
+      schema: subscriptionList
+  responses:
+    200:
+      body:
+        application/json:
 
-      get:
-        description: Returns the subscriptions for the given subscription names.
-        responses:
-          200:        
-            body:
-              application/json:
+/{subscriptionNames}:
+  uriParameters:
+    subscriptionNames:
+      displayName: SubscriptionNames
+      description: The names of the subscriptions separated by comma.
+      required: true
+      type: string
 
-      delete:
-        description: Removes the subscriptions from the database for the given subscription names.
-        responses:
-          200:
-            body:
-              application/json:
+  get:
+    description: This method returns the subscriptions for the given subscription names.
+    responses:
+      200:
+        body:
+          application/json:
+
+  delete:
+    description: This method removes the subscriptions from the database for the given subscription names.
+    responses:
+      200:
+        body:
+          application/json:

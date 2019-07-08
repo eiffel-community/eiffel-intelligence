@@ -18,6 +18,7 @@ package com.ericsson.ei.controller;
 
 import java.io.InputStream;
 
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,12 +34,13 @@ import io.swagger.annotations.Api;
 
 @Component
 @CrossOrigin
-@Api(value = "Get Templates", description = "REST endpoints for getting templates")
+@Api(value = "Download templates", tags = {"Download"})
 public class DownloadControllerImpl implements DownloadController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DownloadControllerImpl.class);
 
     @Override
+    @ApiOperation(value = "Retrieve REST endpoints for downloading templates")
     public ResponseEntity<?> getDownload() {
         try {
             JSONObject response = new JSONObject();
@@ -55,6 +57,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
+    @ApiOperation(value = "Download subscription template")
     public ResponseEntity<?> getDownloadSubscriptionsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
@@ -73,6 +76,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
+    @ApiOperation(value = "Download rules template")
     public ResponseEntity<?> getDownloadRulesTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
@@ -91,6 +95,7 @@ public class DownloadControllerImpl implements DownloadController {
     }
 
     @Override
+    @ApiOperation(value = "Download Eiffel events template")
     public ResponseEntity<?> getDownloadEventsTemplate() {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");

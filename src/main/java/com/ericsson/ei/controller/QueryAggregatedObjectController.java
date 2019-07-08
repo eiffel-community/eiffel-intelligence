@@ -1,7 +1,6 @@
 
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.controller.model.QueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,7 @@ public interface QueryAggregatedObjectController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(
+    public ResponseEntity<?> getQueryAggregatedObject(
         @RequestParam
         String id);
 

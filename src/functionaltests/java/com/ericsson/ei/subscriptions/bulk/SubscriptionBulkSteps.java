@@ -116,6 +116,13 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
         assertEquals(subscriptionName, jsonResponse.getString("subscription"));
     }
 
+    @Then("^get in response content subscription \"([^\"]*)\" expecting an error$")
+    public void get_in_response_content_subscription_and_reason_with_error(String subscriptionName) throws Throwable {
+        JSONObject jsonResponse = new JSONObject(response.getBody().toString());
+        String errorMessage = jsonResponse.getString("message");
+        assertEquals(true, errorMessage.contains(subscriptionName));
+    }
+
     @Then("^number of retrieved subscriptions using REST API \"([^\"]*)\" is (\\d+)$")
     public void number_of_retrieved_subscriptions_using_REST_API_is(
             String endpoint, int subscriptionsNumber) throws Throwable {

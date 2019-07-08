@@ -33,4 +33,4 @@ Feature: Test Subscription CRUD
     Given The REST API "/subscriptions" is up and running
     When  I make a DELETE request with subscription name "Subscription_Test" to the subscription REST API "/subscriptions/"
     Then  I get response code of 200
-    And   My GET request with subscription name "Subscription_Test" at REST API "/subscriptions/" returns an empty String
+    And   My GET request with subscription name "Subscription_Test" at REST API "/subscriptions/" returns an error message

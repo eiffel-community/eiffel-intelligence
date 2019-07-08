@@ -3,7 +3,6 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 import javax.validation.Valid;
-import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +35,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> createSubscription(
+    public ResponseEntity<?> createSubscription(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
@@ -46,7 +45,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> updateSubscriptions(
+    public ResponseEntity<?> updateSubscriptions(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
@@ -56,7 +55,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(
+    public ResponseEntity<?> getSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 
@@ -65,7 +64,7 @@ public interface SubscriptionController {
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionByNames(
+    public ResponseEntity<?> deleteSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 

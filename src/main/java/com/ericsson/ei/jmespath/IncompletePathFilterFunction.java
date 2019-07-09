@@ -225,7 +225,6 @@ public class IncompletePathFilterFunction extends BaseFunction {
             }
         } catch (JSONException e) {
             LOGGER.error("Failed to add key.", e);
-            e.printStackTrace();
         }
         return result;
     }

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class DownstreamExtractionHandler {
 
-    private static Logger log = LoggerFactory.getLogger(DownstreamExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamExtractionHandler.class);
 
     @Autowired private JmesPathInterface jmesPathInterface;
     @Autowired private DownstreamMergeHandler mergeHandler;
@@ -39,21 +39,20 @@ public class DownstreamExtractionHandler {
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, String aggregatedDbObject) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            log.debug("Start extraction of Aggregated Object:\n" + aggregatedDbObject + 
+            LOGGER.debug("Start extraction of Aggregated Object:\n" + aggregatedDbObject + 
             		"\nwith Event:\n" + event);
             JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
             runExtraction(rulesObject, mergeId, event, aggregatedJsonObject);
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOGGER.info("Failed with extraction." ,e);
         }
     }
 
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
         JsonNode extractedContent;
         extractedContent = extractContent(rulesObject, event);
-        log.debug("Start extraction of Aggregated Object:\n" + aggregatedDbObject.toString() + 
+        LOGGER.debug("Start extraction of Aggregated Object:\n" + aggregatedDbObject.toString() + 
         		"\nwith Event:\n" + event);
-
 
         if(aggregatedDbObject != null) {
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);

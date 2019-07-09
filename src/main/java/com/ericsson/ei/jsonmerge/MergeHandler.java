@@ -80,9 +80,6 @@ public class MergeHandler {
 
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
             LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
-        } catch (Exception e) {
-            // TODO: don't catch naked Exception class
-            LOGGER.error(e.getMessage(), e);
         } finally {
             // unlocking of document will be performed, when mergedObject will
             // be inserted to database
@@ -96,27 +93,22 @@ public class MergeHandler {
             String mergePath) {
         String mergedObject = null;
         String preparedToMergeObject;
-        try {
-            // lock and get the AggregatedObject
-            String aggregatedObject = getAggregatedObject(id, true);
+        // lock and get the AggregatedObject
+        String aggregatedObject = getAggregatedObject(id, true);
 
-            // String mergeRule = getMergeRules(rules);
-            if (mergePath != null && !mergePath.isEmpty()) {
-                preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
-                        objectToMerge.toString(), "", mergePath);
-            } else {
-                preparedToMergeObject = objectToMerge.toString();
-            }
-
-            mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
-            LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
-            // unlocking of document will be performed, when mergedObject will
-            // be inserted to database
-            objectHandler.updateObject(mergedObject, rules, event, id);
-        } catch (Exception e) {
-            // TODO: don't catch naked Exception class
-            LOGGER.info(e.getMessage(), e);
+        // String mergeRule = getMergeRules(rules);
+        if (mergePath != null && !mergePath.isEmpty()) {
+            preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
+                    objectToMerge.toString(), "", mergePath);
+        } else {
+            preparedToMergeObject = objectToMerge.toString();
         }
+
+        mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
+        LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
+        // unlocking of document will be performed, when mergedObject will
+        // be inserted to database
+        objectHandler.updateObject(mergedObject, rules, event, id);
 
         return mergedObject;
     }
@@ -141,8 +133,8 @@ public class MergeHandler {
             aggregatedJsonObject = new JSONObject(aggregatedObject);
             JSONObject preparedJsonObject = new JSONObject(preparedObject);
             updateJsonObject(aggregatedJsonObject, preparedJsonObject);
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage(), e);
+        } catch (JSONException e) {
+            LOGGER.info("Failed to parse JSON.", e);
         }
         return aggregatedJsonObject == null ? null : aggregatedJsonObject.toString();
     }
@@ -203,10 +195,6 @@ public class MergeHandler {
                     JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null) ? new JSONArray()
                             : preparedObj);
                     updateJsonObject(objectFromAggregation, objectFromPreparation);
-                } else {
-                    // TODO: wtf is this?
-                    Object element = aggregatedJsonObject.get(i);
-                    element = preparedJsonObject.get(i);
                 }
             } catch (JSONException e) {
                 LOGGER.error("Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
@@ -241,20 +229,16 @@ public class MergeHandler {
      * @param id String to search in database and lock this document.
      */
     public String getAggregatedObject(String id, boolean withLock) {
-        try {
-            String document = "";
-            if (withLock) {
-                document = objectHandler.lockDocument(id);
-            } else {
-                document = objectHandler.findObjectById(id);
-            }
+        String document = "";
+        if (withLock) {
+            document = objectHandler.lockDocument(id);
+        } else {
+            document = objectHandler.findObjectById(id);
+        }
 
-            JsonNode result = objectHandler.getAggregatedObject(document);
-            if (result != null) {
-                return result.toString();
-            }
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage(), e);
+        JsonNode result = objectHandler.getAggregatedObject(document);
+        if (result != null) {
+            return result.toString();
         }
         return null;
     }

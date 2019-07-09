@@ -31,7 +31,7 @@ import java.util.List;
 @Component
 public class IdRulesHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(IdRulesHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(IdRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -62,11 +62,7 @@ public class IdRulesHandler {
                         if (rulesObject.isStartEventRules()) {
                             extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
                         } else {
-                            try {
-                                waitListStorageHandler.addEventToWaitList(event, rulesObject);
-                            } catch (Exception e) {
-                                log.info(e.getMessage(), e);
-                            }
+                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
                         }
                     }
                 }
@@ -81,7 +77,7 @@ public class IdRulesHandler {
             try {
                 ids = jmesPathInterface.runRuleOnEvent(idRule, event);
             } catch (Exception e) {
-                log.info(e.getMessage(),e);
+                LOGGER.info("Failed to get ID from event.", e);
             }
         }
 

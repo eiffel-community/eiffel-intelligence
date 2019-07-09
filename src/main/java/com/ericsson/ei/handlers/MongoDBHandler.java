@@ -120,7 +120,7 @@ public class MongoDBHandler {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to retrieve documents.", e);
         }
         return result;
     }
@@ -156,7 +156,7 @@ public class MongoDBHandler {
                 LOGGER.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to retrieve documents.", e);
         }
 
         return result;
@@ -184,7 +184,7 @@ public class MongoDBHandler {
                 return updateMany.wasAcknowledged();
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to update document.", e);
         }
 
         return false;
@@ -214,7 +214,7 @@ public class MongoDBHandler {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to update document.", e);
         }
         return null;
     }
@@ -276,7 +276,7 @@ public class MongoDBHandler {
             } catch (MongoCommandException e) {
                 String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
                 if (e.getMessage().contains(message)) {
-                    LOGGER.warn("A " + message + ".");
+                    LOGGER.warn("A " + message + ".", e);
                 } else {
                     throw e;
                 }

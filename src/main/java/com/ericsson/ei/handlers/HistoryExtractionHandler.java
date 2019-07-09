@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HistoryExtractionHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -73,16 +73,12 @@ public class HistoryExtractionHandler {
         String aggregatedObject = mergeHandler.getAggregatedObject(aggregatedObjectId, false);
         String objAtPathStr = "";
         String pathTrimmed = mergePrepare.trimLastInPath(pathInAggregatedObject, ".");
-        try {
-            if (pathTrimmed.isEmpty()) {
-                objAtPathStr = aggregatedObject;
-            } else {
-                pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
-                JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
-                objAtPathStr = objAtPath.toString();
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        if (pathTrimmed.isEmpty()) {
+            objAtPathStr = aggregatedObject;
+        } else {
+            pathTrimmed = mergePrepare.makeJmespathArrayIndexes(pathTrimmed);
+            JsonNode objAtPath = jmesPathInterface.runRuleOnEvent(pathTrimmed, aggregatedObject);
+            objAtPathStr = objAtPath.toString();
         }
         String array_path = getPathFromExtractedContent(objAtPathStr, ruleString);
 

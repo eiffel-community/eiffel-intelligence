@@ -42,7 +42,7 @@ import lombok.Setter;
 @Component
 public class ObjectHandler {
 
-    static Logger log = LoggerFactory.getLogger(ObjectHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandler.class);
 
     @Getter
     @Setter
@@ -94,7 +94,7 @@ public class ObjectHandler {
             id = idNode.textValue();
         }
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
-        log.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+        LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
 
         if (getTtl() > 0) {
             mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
@@ -129,7 +129,7 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
-        log.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject + "\nEvent:\n" + event);
+        LOGGER.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject + "\nEvent:\n" + event);
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
@@ -196,7 +196,7 @@ public class ObjectHandler {
             try {
                 document.put("Time", DateUtils.getDate());
             } catch (ParseException e) {
-                log.error(e.getMessage(), e);
+                LOGGER.error("Failed to attach date to document.", e);
             }
         }
         return document;
@@ -216,7 +216,7 @@ public class ObjectHandler {
             JsonNode objectDoc = documentJson.get("aggregatedObject");
             return objectDoc;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error("Failed to get aggregated object.", e);
         }
         return null;
     }
@@ -253,14 +253,14 @@ public class ObjectHandler {
                 Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(),
                         documentJson.toString());
                 if (result != null) {
-                    log.debug("DB locked by " + Thread.currentThread().getId() + " thread");
+                    LOGGER.debug("DB locked by " + Thread.currentThread().getId() + " thread");
                     documentLocked = false;
                     return JSON.serialize(result);
                 }
                 // To Remove
-                log.debug("Waiting by " + Thread.currentThread().getId() + " thread");
+                LOGGER.debug("Waiting by " + Thread.currentThread().getId() + " thread");
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                LOGGER.error("Failed to parse JSON.", e);
             }
         }
         return null;
@@ -279,7 +279,7 @@ public class ObjectHandler {
             try {
                 ttl = Integer.parseInt(ttlValue);
             } catch (NumberFormatException e) {
-                log.error(e.getMessage(), e);
+                LOGGER.error("Failed to parse TTL value.", e);
             }
         }
         return ttl;

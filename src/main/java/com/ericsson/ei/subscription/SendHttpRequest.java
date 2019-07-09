@@ -68,7 +68,7 @@ public class SendHttpRequest {
             }
 
         } catch (Exception e) {
-            LOGGER.error("HTTP-request failed when trying to connect to URL: {}\nError: {}", notificationMeta, e.getMessage(), e);
+            LOGGER.error("HTTP-request failed when trying to connect to URL: {}", notificationMeta, e);
             return false;
         }
 
@@ -99,7 +99,7 @@ public class SendHttpRequest {
             ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
             return response;
         } catch (Exception e) {
-            LOGGER.error("HTTP-request failed when trying to connect to URL: {}\nError: {}", url, e.getMessage(), e);
+            LOGGER.error("HTTP-request failed when trying to connect to URL: {}", url, e);
             return null;
         }
     }

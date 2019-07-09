@@ -64,7 +64,7 @@ public class ExtractionHandler {
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            log.info("Failed with extraction.", e);
         }
     }
 

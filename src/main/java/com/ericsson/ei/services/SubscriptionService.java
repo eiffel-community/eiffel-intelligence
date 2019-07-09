@@ -91,7 +91,7 @@ public class SubscriptionService implements ISubscriptionService {
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
             } catch (IOException e) {
-                LOG.error("Malformed JSON string");
+                LOG.error("Malformed JSON string", e);
             }
         }
         return null;
@@ -220,7 +220,7 @@ public class SubscriptionService implements ISubscriptionService {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {
-            LOG.error(e.getMessage(),e);
+            LOG.error(e.getMessage(), e);
         }
         return ownerExist;
     }

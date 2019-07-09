@@ -83,7 +83,7 @@ public class ERQueryService {
                 final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
                 LOGGER.trace("The response is : " + response.toString());
             } catch (RestClientException e) {
-                LOGGER.error("Error occurred while executing REST GET to: " + erUrl + " for " + eventId, e);
+                LOGGER.error("Error occurred while executing REST GET to: {} for {}", erUrl, eventId, e);
             }
         } else {
             LOGGER.info("The URL to ER is not provided");
@@ -135,7 +135,7 @@ public class ERQueryService {
             try {
                 return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
             } catch (RestClientException e) {
-                LOGGER.error("Error occurred while executing REST POST to: " + erUrl + " for\n" + requestEntity, e);
+                LOGGER.error("Error occurred while executing REST POST to: {} for\n{}", erUrl, requestEntity, e);
             }
         } else {
             LOGGER.info("The URL to ER is not provided");

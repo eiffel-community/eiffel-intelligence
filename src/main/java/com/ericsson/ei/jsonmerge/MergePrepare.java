@@ -78,7 +78,7 @@ public class MergePrepare {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             stringRule = ruleJSONObject.toString();
         } catch (JSONException e) {
-            LOGGER.info(e.getMessage(), e);
+            LOGGER.info("Failed to parse JSON.", e);
         }
         String flattenRule = JsonFlattener.flatten(stringRule);
         flattenRule = destringify(flattenRule);
@@ -164,8 +164,8 @@ public class MergePrepare {
                 String finalPath = firstPathTrimmed + "." + ruleKey;
                 return finalPath;
             }
-        } catch (Exception ne) {
-            LOGGER.error(ne.getMessage(), ne);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get merge path from merge rules.", e);
         }
         return "";
     }
@@ -198,7 +198,7 @@ public class MergePrepare {
             }
             return resembled;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to make JMESPath array indexes.", e);
         }
 
         return path;
@@ -220,9 +220,8 @@ public class MergePrepare {
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
         } catch (JSONException e) {
+            LOGGER.error("Failed to parse JSON.", e);
             return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);
         String flattenRule = JsonFlattener.flatten(stringRule);
@@ -245,15 +244,13 @@ public class MergePrepare {
 
         if (skipPathSearch) {
             int pos = ruleKey.lastIndexOf(".");
-            if (pos > 0)
+            if (pos > 0) {
                 ruleKey = ruleKey.substring(0, pos);
-            try {
-                JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
-                if (!(jsonResult instanceof NullNode))
-                    mergePath = ruleKey;
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
             }
+            JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
+            if (!(jsonResult instanceof NullNode)) {
+                mergePath = ruleKey;
+            }  
         } else {
             for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
                 String entryKey = entry.getKey();
@@ -336,7 +333,7 @@ public class MergePrepare {
                     mergePath = mergePath.replaceFirst("\\/", "");
                     mergePath = mergePath.replaceAll("\\/", "\\.");
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
+                    LOGGER.error("Failed to parse JSON.", e);
                 }
             }
         }
@@ -388,7 +385,7 @@ public class MergePrepare {
             }
             return jsonResult.get(firstKey);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to get property value.", e);
         }
 
         return null;
@@ -479,7 +476,7 @@ public class MergePrepare {
                 return size;
             }
         } catch (JSONException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to get object array size.", e);
         }
 
         return size;

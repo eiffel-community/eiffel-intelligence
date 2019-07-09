@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HistoryExtractionHandler {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryExtractionHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;

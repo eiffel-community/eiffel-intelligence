@@ -230,7 +230,7 @@ public class MongoDBHandler {
                     LOGGER.debug("database: {} and collection: {} deleted No.of records {}", dataBaseName, collectionName, deleteMany.getDeletedCount());
                     return true;
                 } else {
-                    LOGGER.debug("database {} and collection: {} No documents found to delete", dataBaseName, collectionName);
+                    LOGGER.debug("database {} and collection: {} No documents found to delete.", dataBaseName, collectionName);
                     return false;
                 }
             }

@@ -272,8 +272,6 @@ public class InformSubscriber {
             headers.add(crumbKey, crumbValue);
             LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey,
                     crumbValue));
-        } else {
-            LOGGER.info("Failed to fetch Jenkins Crumb data!");
         }
         return headers;
     }

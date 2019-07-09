@@ -34,10 +34,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class is responsible to take a aggregatedObject and match it with all
- * the Subscription Object, to check ALL Conditions/requirement for
- * notification. (AND between conditions in requirements, "OR" between
- * requirements with conditions)
+ * This class is responsible to take a aggregatedObject and match it with all the Subscription
+ * Object, to check ALL Conditions/requirement for notification. (AND between conditions in
+ * requirements, "OR" between requirements with conditions)
  *
  * @author xjibbal
  */
@@ -45,7 +44,7 @@ import lombok.Setter;
 @Component
 public class SubscriptionHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandler.class);
 
     @Getter
     @Value("${subscription.collection.name}")
@@ -69,9 +68,8 @@ public class SubscriptionHandler {
     private JmesPathInterface jmespath;
 
     /**
-     * The method takes a aggregatedObject as argument and fetches all the
-     * subscriber from the database in order to match the subscription conditions in
-     * a separate thread.
+     * The method takes a aggregatedObject as argument and fetches all the subscriber from the
+     * database in order to match the subscription conditions in a separate thread.
      *
      * @param aggregatedObject
      */
@@ -79,16 +77,17 @@ public class SubscriptionHandler {
         Thread subscriptionThread = new Thread(() -> {
             List<String> subscriptions = mongoDBHandler.getAllDocuments(subscriptionDataBaseName,
                     subscriptionCollectionName);
-            subscriptions.forEach(subscription -> extractConditions(aggregatedObject, subscription, id));
+            subscriptions.forEach(
+                    subscription -> extractConditions(aggregatedObject, subscription, id));
         });
         subscriptionThread.setName("SubscriptionHandler");
         subscriptionThread.start();
     }
 
     /**
-     * This method takes both aggregatedObject and a Subscription object as
-     * arguments and fetches the subscription conditions from the subscription
-     * object and matches these conditions with the aggregatedObject.
+     * This method takes both aggregatedObject and a Subscription object as arguments and fetches
+     * the subscription conditions from the subscription object and matches these conditions with
+     * the aggregatedObject.
      *
      * @param aggregatedObject
      * @param subscriptionData
@@ -102,7 +101,8 @@ public class SubscriptionHandler {
             ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
-            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, id)) {
+            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
+                    subscriptionJson, id)) {
                 LOGGER.debug("The subscription conditions match for the aggregatedObject");
                 informSubscriber.informSubscriber(aggregatedObject, subscriptionJson);
             }
@@ -114,8 +114,29 @@ public class SubscriptionHandler {
     }
 
     /**
-     * This method is responsible for displaying configurable application parameters
-     * like Subscription database name and collection name, etc.
+     * Given the field name in a subscription, returns its value.
+     *
+     * @param subscriptionJson
+     * @param fieldName
+     * @return field value
+     */
+    public String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
+        // TODO: Implement . notation. authenticationDetails.username would return the
+        // username value in {"authenticationDetails":{"username":"myName", "password":"secret"}}
+
+        String value;
+        if (subscriptionJson.get(fieldName) != null) {
+            value = subscriptionJson.get(fieldName).asText();
+            LOGGER.debug("Extracted value [{}] from subscription field [{}].", value, fieldName);
+        } else {
+            value = "";
+        }
+        return value;
+    }
+
+    /**
+     * This method is responsible for displaying configurable application parameters like
+     * Subscription database name and collection name, etc.
      */
     @PostConstruct
     public void print() {

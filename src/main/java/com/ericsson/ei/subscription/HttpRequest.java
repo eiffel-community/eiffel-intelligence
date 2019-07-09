@@ -25,6 +25,10 @@ import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 public class HttpRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -45,18 +49,24 @@ public class HttpRequest {
     @Autowired
     private JmesPathInterface jmespath;
 
+    @Setter
+    @Getter
+    @Accessors(chain = true)
     private String aggregatedObject;
+
+    @Setter
+    @Getter
+    @Accessors(chain = true)
     private JsonNode subscriptionJson;
+
+    @Setter
+    @Getter
+    @Accessors(chain = true)
+    private String notificationMeta;
+
     private HttpHeaders headers;
     private String username;
     private String password;
-    private String notificationMeta;
-
-    public HttpRequest(String aggregatedObject, JsonNode subscriptionJson) {
-        this.aggregatedObject = aggregatedObject;
-        this.subscriptionJson = subscriptionJson;
-        // TODO Auto-generated constructor stub
-    }
 
     public void send() {
         // TODO Auto-generated method stub

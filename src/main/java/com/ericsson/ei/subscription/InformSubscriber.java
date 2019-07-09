@@ -64,6 +64,7 @@ import lombok.Getter;
 public class InformSubscriber {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InformSubscriber.class);
+    private static final String REGEX = "^\"|\"$";
 
     @Getter
     @Value("${notification.failAttempt:#{0}}")
@@ -118,7 +119,10 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            HttpRequest request = new HttpRequest(aggregatedObject, subscriptionJson);
+            HttpRequest request = new HttpRequest();
+            request.setAggregatedObject(aggregatedObject)
+                   .setSubscriptionJson(subscriptionJson)
+                   .setNotificationMeta(notificationMeta);
 
             boolean success = makeHTTPRequests(notificationMeta, mapNotificationMessage, null);
 

@@ -94,7 +94,7 @@ public class ObjectHandler {
             id = idNode.textValue();
         }
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
-        LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: " + document.toString());
+        LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}", document.toString());
 
         if (getTtl() > 0) {
             mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
@@ -129,7 +129,7 @@ public class ObjectHandler {
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
             id = idNode.textValue();
         }
-        LOGGER.debug("ObjectHandler: Updating Aggregated Object:\n" + aggregatedObject + "\nEvent:\n" + event);
+        LOGGER.debug("ObjectHandler: Updating Aggregated Object:\n{} \nEvent:\n{}", aggregatedObject, event);
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
@@ -253,12 +253,12 @@ public class ObjectHandler {
                 Document result = mongoDbHandler.findAndModify(databaseName, collectionName, queryCondition.toString(),
                         documentJson.toString());
                 if (result != null) {
-                    LOGGER.debug("DB locked by " + Thread.currentThread().getId() + " thread");
+                    LOGGER.debug("DB locked by {} thread", Thread.currentThread().getId());
                     documentLocked = false;
                     return JSON.serialize(result);
                 }
                 // To Remove
-                LOGGER.debug("Waiting by " + Thread.currentThread().getId() + " thread");
+                LOGGER.debug("Waiting by {} thread", Thread.currentThread().getId());
             } catch (Exception e) {
                 LOGGER.error("Failed to parse JSON.", e);
             }

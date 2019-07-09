@@ -74,14 +74,14 @@ public class ProcessQueryParams {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
             String options = editObjectNameInQueryParam(optionsObj);
-            LOGGER.debug("The options are: " + options);
+            LOGGER.debug("The options are: {}", options);
             String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
 
         if(hasFilterCondition(filter)) {
             JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
-            LOGGER.debug("Filtered values from resultAggregatedObject: " + filteredResults.toString());
+            LOGGER.debug("Filtered values from resultAggregatedObject: {}", filteredResults.toString());
             return filteredResults;
         }
 
@@ -148,7 +148,7 @@ public class ProcessQueryParams {
             LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
             return new JSONArray();
         }
-        LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
+        LOGGER.debug("Freestyle criteria query: {}", criteriasJsonNode.toString());
         return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
 

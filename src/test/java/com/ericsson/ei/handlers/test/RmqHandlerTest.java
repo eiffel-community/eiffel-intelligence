@@ -37,7 +37,7 @@ import com.ericsson.ei.handlers.RmqHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class, 
+        App.class,
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 public class RmqHandlerTest {
@@ -56,7 +56,7 @@ public class RmqHandlerTest {
 
     @Mock
     private ConnectionFactory factory;
-    
+
     @BeforeClass
     public static void init() {
         int port = SocketUtils.findAvailableTcpPort();

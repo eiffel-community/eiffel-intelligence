@@ -122,7 +122,7 @@ public class RmqHandler {
 
         if (tlsVersion != null && !tlsVersion.isEmpty()) {
             try {
-                LOGGER.debug("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
+                LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", tlsVersion);
                 cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(tlsVersion);
             } catch (Exception e) {
                 LOGGER.error("Failed to set SSL/TLS version.", e);
@@ -201,7 +201,7 @@ public class RmqHandler {
     }
 
     public void publishObjectToWaitlistQueue(String message) {
-        log.debug("Publishing message to message bus...");
+        LOGGER.debug("Publishing message to message bus...");
         rabbitTemplate.convertAndSend(message);
     }
 

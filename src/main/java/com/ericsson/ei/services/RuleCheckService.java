@@ -46,7 +46,7 @@ public class RuleCheckService implements IRuleCheckService {
             templateNames.add(templateName);
             if (templateNames.size() == 1) {
                 addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
-                LOGGER.debug("Event to prepare aggregated object :: " + listEventsJson.getJSONObject(i).toString());
+                LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
                 eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
             }
         }

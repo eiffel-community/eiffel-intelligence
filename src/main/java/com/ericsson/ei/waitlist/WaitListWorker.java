@@ -89,7 +89,7 @@ public class WaitListWorker {
             if (ids.isArray()) {
                 JsonNode idNode = eventJson.get("_id");
                 JsonNode timeNode = eventJson.get("Time");
-                LOGGER.debug("[EIFFEL EVENT RESENT] id:" + idNode.textValue() + " time:" + timeNode);
+                LOGGER.debug("[EIFFEL EVENT RESENT] id: {} time: {}", idNode.textValue(), timeNode);
                 for (final JsonNode idJsonObj : ids) {
                     Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
                             idJsonObj.textValue());

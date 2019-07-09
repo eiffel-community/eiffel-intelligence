@@ -59,9 +59,9 @@ public class ProcessRulesHandler {
                 processRules = processRules.replace("%IdentifyRules%", id);
             }
 
-            LOGGER.info("processRules: " + processRules);
-            LOGGER.info("aggregationObject: " + aggregationObject);
-            LOGGER.info("event: " + event);
+            LOGGER.info("processRules: {}", processRules);
+            LOGGER.info("aggregationObject: {}", aggregationObject);
+            LOGGER.info("event: {}", event);
             JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
             return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
         }

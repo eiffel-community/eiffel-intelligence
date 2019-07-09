@@ -225,7 +225,7 @@ public class MergeHandler {
     /**
      * This method set lock property in document in database and returns the
      * aggregated document which will be further modified.
-     * 
+     *
      * @param id String to search in database and lock this document.
      */
     public String getAggregatedObject(String id, boolean withLock) {

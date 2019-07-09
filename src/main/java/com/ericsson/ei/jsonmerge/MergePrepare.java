@@ -129,8 +129,8 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
-        LOGGER.debug(" mergeRules are : " + mergeRule);
-        LOGGER.debug(" originObject is : " + originObject);
+        LOGGER.debug("mergeRules are : {}", mergeRule);
+        LOGGER.debug("originObject is : {}", originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.get(0).toString();
@@ -250,7 +250,7 @@ public class MergePrepare {
             JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
             if (!(jsonResult instanceof NullNode)) {
                 mergePath = ruleKey;
-            }  
+            }
         } else {
             for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
                 String entryKey = entry.getKey();
@@ -343,7 +343,7 @@ public class MergePrepare {
     /**
      * This method can not be generalized since it removes the last element in the
      * path before doing the check.
-     * 
+     *
      * @param originObject
      * @param path
      * @param targetObject
@@ -361,7 +361,7 @@ public class MergePrepare {
     /**
      * This method can not be generalized since it removes the last element in the
      * path before doing the check.
-     * 
+     *
      * @param originObject
      * @param path
      * @param targetObject
@@ -436,12 +436,12 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-            String msg = "addMissingLevels failed for arguments:\n";
-            msg += "originObject was : " + originObject + "\n";
-            msg += "objectTomerge was: " + objectToMerge + "\n";
-            msg += "mergeRule was: " + mergeRule + "\n";
-            msg += "mergePath was: " + mergePath + "\n";
-            LOGGER.error(msg, e);
+            LOGGER.error("addMissingLevels failed for arguments:\n" +
+        	    	"originObject was : {}\n" +
+        	    	"objectTomerge was: {}\n" +
+        	    	"mergeRule was: {}\n" +
+        	    	"mergePath was: {}\n",
+        	    	originObject, objectToMerge, mergeRule, mergePath, e);
         }
         return newObject.toString();
     }

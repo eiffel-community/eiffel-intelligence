@@ -17,19 +17,19 @@
 package com.ericsson.ei.exception;
 
 public class SubscriptionValidationException extends Exception {
-    
+
     private static final long serialVersionUID = 2L;
-    
+
     public SubscriptionValidationException() {
         super();
     }
-    
+
     public SubscriptionValidationException(String message) {
         super(message);
     }
-    
+
     public SubscriptionValidationException(String message, Throwable e) {
         super(message, e);
     }
-    
+
 }

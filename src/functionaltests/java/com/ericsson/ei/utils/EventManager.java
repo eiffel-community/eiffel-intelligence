@@ -45,7 +45,7 @@ public class EventManager {
      * Send Eiffel Event to the waitlist queue. Takes a Json String containing a
      * single event.
 
-     * 
+     *
      * @param eiffelEventJson
      */
     public void sendEiffelEvent(String eiffelEventJson) {
@@ -87,7 +87,7 @@ public class EventManager {
 
     /**
      * Converts a JSON string into a tree model.
-     * 
+     *
      * @param document
      *            string of json
      * @return JsonNode tree model

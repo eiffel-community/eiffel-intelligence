@@ -75,13 +75,13 @@ public class ERQueryService {
     public ResponseEntity<String> getEventDataById(String eventId) {
         if(StringUtils.isNotBlank(url)) {
             final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
-            LOGGER.debug("The URL to ER is: " + erUrl);
+            LOGGER.debug("The URL to ER is: {}", erUrl);
 
             final Map<String, String> params = Collections.singletonMap("id", eventId);
             LOGGER.trace("The ID parameter is set");
             try {
                 final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
-                LOGGER.trace("The response is : " + response.toString());
+                LOGGER.trace("The response is : {}", response.toString());
             } catch (RestClientException e) {
                 LOGGER.error("Error occurred while executing REST GET to: {} for {}", erUrl, eventId, e);
             }
@@ -117,7 +117,7 @@ public class ERQueryService {
 
         if(StringUtils.isNotBlank(url)) {
             final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
-            LOGGER.debug("The URL to ER is: " + erUrl);
+            LOGGER.debug("The URL to ER is: {}", erUrl);
 
             // Request Body parameters
             final SearchParameters searchParameters = getSearchParameters(searchOption);
@@ -130,7 +130,7 @@ public class ERQueryService {
 
             final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
             final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
-            LOGGER.debug("The request is : " + uriComponents.toUri().toString());
+            LOGGER.debug("The request is : {}", uriComponents.toUri().toString());
 
             try {
                 return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
@@ -175,6 +175,6 @@ public class ERQueryService {
     @PostConstruct
     public void init() {
         // TODO: is this needed?
-        LOGGER.debug("The url parameter is : " + url);
+        LOGGER.debug("The url parameter is : {}", url);
     }
 }

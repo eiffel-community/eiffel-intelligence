@@ -45,7 +45,8 @@ import lombok.Setter;
 @Component
 public class SubscriptionHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SubscriptionHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory
+	    .getLogger(SubscriptionHandler.class);
 
     @Getter
     @Value("${subscription.collection.name}")
@@ -70,19 +71,22 @@ public class SubscriptionHandler {
 
     /**
      * The method takes a aggregatedObject as argument and fetches all the
-     * subscriber from the database in order to match the subscription conditions in
-     * a separate thread.
+     * subscriber from the database in order to match the subscription
+     * conditions in a separate thread.
      *
      * @param aggregatedObject
      */
-    public void checkSubscriptionForObject(final String aggregatedObject, final String id) {
-        Thread subscriptionThread = new Thread(() -> {
-            List<String> subscriptions = mongoDBHandler.getAllDocuments(subscriptionDataBaseName,
-                    subscriptionCollectionName);
-            subscriptions.forEach(subscription -> extractConditions(aggregatedObject, subscription, id));
-        });
-        subscriptionThread.setName("SubscriptionHandler");
-        subscriptionThread.start();
+    public void checkSubscriptionForObject(final String aggregatedObject,
+	    final String id) {
+	Thread subscriptionThread = new Thread(() -> {
+	    List<String> subscriptions = mongoDBHandler.getAllDocuments(
+		    subscriptionDataBaseName, subscriptionCollectionName);
+	    subscriptions
+		    .forEach(subscription -> extractConditions(aggregatedObject,
+			    subscription, id));
+	});
+	subscriptionThread.setName("SubscriptionHandler");
+	subscriptionThread.start();
     }
 
     /**
@@ -94,33 +98,41 @@ public class SubscriptionHandler {
      * @param subscriptionData
      * @param id
      */
-    private void extractConditions(String aggregatedObject, String subscriptionData, String id) {
-        try {
-            JsonNode subscriptionJson = new ObjectMapper().readTree(subscriptionData);
-            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject);
-            ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-            LOGGER.debug("Requirements : " + requirementNode.toString());
-            Iterator<JsonNode> requirementIterator = requirementNode.elements();
-            if (runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson, id)) {
-                LOGGER.debug("The subscription conditions match for the aggregatedObject");
-                informSubscriber.informSubscriber(aggregatedObject, subscriptionJson);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Subscription: {}, failed for aggregated object: {}", subscriptionData, aggregatedObject, e);
-        }
+    private void extractConditions(String aggregatedObject,
+	    String subscriptionData, String id) {
+	try {
+	    JsonNode subscriptionJson = new ObjectMapper()
+		    .readTree(subscriptionData);
+	    LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
+	    LOGGER.debug("Aggregated Object : " + aggregatedObject);
+	    ArrayNode requirementNode = (ArrayNode) subscriptionJson
+		    .get("requirements");
+	    LOGGER.debug("Requirements : " + requirementNode.toString());
+	    Iterator<JsonNode> requirementIterator = requirementNode.elements();
+	    if (runSubscription.runSubscriptionOnObject(aggregatedObject,
+		    requirementIterator, subscriptionJson, id)) {
+		LOGGER.debug(
+			"The subscription conditions match for the aggregatedObject");
+		informSubscriber.informSubscriber(aggregatedObject,
+			subscriptionJson);
+	    }
+	} catch (Exception e) {
+	    LOGGER.error("Subscription: {}, failed for aggregated object: {}",
+		    subscriptionData, aggregatedObject, e);
+	}
     }
 
     /**
-     * This method is responsible for displaying configurable application parameters
-     * like Subscription database name and collection name, etc.
+     * This method is responsible for displaying configurable application
+     * parameters like Subscription database name and collection name, etc.
      */
     @PostConstruct
     public void print() {
-        LOGGER.debug("SubscriptionDataBaseName : " + subscriptionDataBaseName);
-        LOGGER.debug("SubscriptionCollectionName : " + subscriptionCollectionName);
-        LOGGER.debug("MongoDBHandler object : " + mongoDBHandler);
-        LOGGER.debug("JmesPathInterface : " + jmespath);
+	LOGGER.debug("SubscriptionDataBaseName : {}", subscriptionDataBaseName);
+	LOGGER.debug("SubscriptionCollectionName : {}",
+		subscriptionCollectionName);
+	LOGGER.debug("MongoDBHandler object : {}", mongoDBHandler);
+	LOGGER.debug("JmesPathInterface : {}", jmespath);
 
     }
 }

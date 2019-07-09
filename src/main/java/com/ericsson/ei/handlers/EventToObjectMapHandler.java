@@ -95,8 +95,7 @@ public class EventToObjectMapHandler {
             ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
             ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
             String mapStr = entry.toString();
-            LOGGER.debug("MongoDbHandler Insert/Update Event: " + mapStr +
-            		"\nto database: " + databaseName + " and to Collection: " + collectionName);
+            LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);
             if (firstTime) {
                 mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
             } else {
@@ -144,7 +143,7 @@ public class EventToObjectMapHandler {
      */
     public boolean deleteEventObjectMap(String templateName) {
         String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
-        LOGGER.info("The Json condition for delete aggregated object is : " + condition);
+        LOGGER.info("The Json condition for delete aggregated object is : {}", condition);
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 

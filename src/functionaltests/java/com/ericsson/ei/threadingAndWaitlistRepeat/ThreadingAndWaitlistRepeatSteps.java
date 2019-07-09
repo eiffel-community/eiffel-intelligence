@@ -46,7 +46,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     @Before("@ThreadingAndWaitlistRepeatScenario")
     public void beforeScenario() throws IOException {
         tempLogFile = File.createTempFile("logfile", ".tmp");
-        tempLogFile.deleteOnExit(); 
+        tempLogFile.deleteOnExit();
         System.setOut(new PrintStream(tempLogFile));
     }
 

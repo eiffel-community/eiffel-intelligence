@@ -40,7 +40,8 @@ import lombok.Setter;
 @Component
 public class SubscriptionRepeatDbHandler {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(SubscriptionRepeatDbHandler.class);
+    private static final Logger LOGGER = LoggerFactory
+	    .getLogger(SubscriptionRepeatDbHandler.class);
 
     @Autowired
     public MongoDBHandler mongoDbHandler;
@@ -58,177 +59,220 @@ public class SubscriptionRepeatDbHandler {
 
     // RepeatFlagHandling structure in MongoDb:
     // {
-    //    "_id" : ObjectId("5ac62b4ea4f87e29e8cc5915"),
-    //    "subscriptionId" : "subsA",
-    //               RequirementId corresponds to a Requirement List of matched Aggregated Objects Ids.
-    //                <RequirementId>   <AggrObjIds>
-    //    "requirements" : {"0" : [
-    //                                "11112",
-    //                                "72324",
-    //                                "72364",
-    //                                "72233",
-    //                                "71233"
-    //                           ],
-    //                     "1" : [
-    //                                "11112",
-    //                                "72324",
-    //                                "72364",
-    //                                "72233",
-    //                                "71233"
-    //                           ]
-    //                    }
+    // "_id" : ObjectId("5ac62b4ea4f87e29e8cc5915"),
+    // "subscriptionId" : "subsA",
+    // RequirementId corresponds to a Requirement List of matched Aggregated
+    // Objects
+    // Ids.
+    // <RequirementId> <AggrObjIds>
+    // "requirements" : {"0" : [
+    // "11112",
+    // "72324",
+    // "72364",
+    // "72233",
+    // "71233"
+    // ],
+    // "1" : [
+    // "11112",
+    // "72324",
+    // "72364",
+    // "72233",
+    // "71233"
+    // ]
+    // }
     // }
 
     /**
      * Function that stores the matched aggregatedObjectId to the database.
+     *
      * @param subscriptionId
      * @param requirementId
      * @param aggrObjId
      */
-    public void addMatchedAggrObjToSubscriptionId(String subscriptionId, int requirementId, String aggrObjId) {
-        LOGGER.debug("Adding/Updating matched AggrObjId: " + aggrObjId + " to SubscriptionsId: " + subscriptionId
-                + " aggrId matched list");
+    public void addMatchedAggrObjToSubscriptionId(String subscriptionId,
+	    int requirementId, String aggrObjId) {
+	LOGGER.debug(
+		"Adding/Updating matched AggrObjId: {} to SubscriptionsId: {} aggrId matched list",
+		aggrObjId, subscriptionId);
 
-        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.debug("Subscription: " + subscriptionId + " and AggrObjId, " + aggrObjId
-                    + " has already been matched." + "No need to register the subscription match.");
-            return;
-        }
+	if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
+		subscriptionId, requirementId, aggrObjId)) {
+	    LOGGER.debug(
+		    "Subscription: {} and AggrObjId, {} has already been matched. No need to register the subscription match.",
+		    subscriptionId, aggrObjId);
+	    return;
+	}
 
-        if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId, requirementId, aggrObjId)) {
-            LOGGER.debug(
-                    "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
+	if (!updateExistingMatchedSubscriptionWithAggrObjId(subscriptionId,
+		requirementId, aggrObjId)) {
+	    LOGGER.debug(
+		    "New Subscription AggrId has not matched, inserting new SubscriptionId and AggrObjId to matched list.");
 
-            insertNewMatchedAggregationToDatabase(subscriptionId, requirementId, aggrObjId);
-        }
+	    insertNewMatchedAggregationToDatabase(subscriptionId, requirementId,
+		    aggrObjId);
+	}
     }
 
-    public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(String subscriptionId, int requirementId,
-                                                                         String aggrObjId) {
+    public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
+	    String subscriptionId, int requirementId, String aggrObjId) {
 
-        LOGGER.debug("Checking if AggrObjId: " + aggrObjId + " exist in SubscriptionId: " + subscriptionId
-                + " AggrId matched list.");
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-        List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName, subscriptionQuery);
-        if (objArray != null && !objArray.isEmpty()) {
+	LOGGER.debug(
+		"Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
+		aggrObjId, subscriptionId);
+	String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId
+		+ "\"}";
+	List<String> objArray = mongoDbHandler.find(dataBaseName,
+		collectionName, subscriptionQuery);
+	if (objArray != null && !objArray.isEmpty()) {
 
-            LOGGER.debug("Making AggrObjId checks on SubscriptionId document: " + objArray.get(0));
-            try {
-                JsonNode jNode = mapper.readTree(objArray.get(0));
-                if (jNode.get("subscriptionId").asText().trim().equals(subscriptionId)) {
-                    LOGGER.debug("SubscriptionId \"" + subscriptionId +
-                            "\" , exist in document. Checking if AggrObjId has matched earlier.");
+	    LOGGER.debug(
+		    "Making AggrObjId checks on SubscriptionId document: {}",
+		    objArray.get(0));
+	    try {
+		JsonNode jNode = mapper.readTree(objArray.get(0));
+		if (jNode.get("subscriptionId").asText().trim()
+			.equals(subscriptionId)) {
+		    LOGGER.debug(
+			    "SubscriptionId \"{}\" , exist in document. Checking if AggrObjId has matched earlier.",
+			    subscriptionId);
 
-                    LOGGER.debug("Subscription requirementId: " + requirementId + " and Requirements content:\n"
-                            + jNode.get("requirements").get(new Integer(requirementId).toString()));
+		    LOGGER.debug(
+			    "Subscription requirementId: {} and Requirements content:\n{}",
+			    jNode.get("requirements")
+				    .get(new Integer(requirementId).toString()),
+			    requirementId);
 
-                    boolean triggered = checkRequirementIdTriggered(jNode, requirementId, aggrObjId);
+		    boolean triggered = checkRequirementIdTriggered(jNode,
+			    requirementId, aggrObjId);
 
-                    if (!triggered) {
-                        LOGGER.debug("RequirementId: " + requirementId + " and SubscriptionId: " + subscriptionId
-                                + "\nhas not matched any AggregatedObject.");
-                    }
-                    return triggered;
-                }
-            } catch (Exception e) {
-                LOGGER.error("Failed to check if requirement has triggered.", e);
-            }
-        }
-        LOGGER.debug("AggrObjId: " + aggrObjId + "not found for SubscriptionId: " + subscriptionId
-                + " in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.");
-        return false;
+		    if (!triggered) {
+			LOGGER.debug(
+				"RequirementId: {} and SubscriptionId: {} has not matched any AggregatedObject.",
+				requirementId, subscriptionId);
+		    }
+		    return triggered;
+		}
+	    } catch (Exception e) {
+		LOGGER.error("Failed to check if requirement has triggered.",
+			e);
+	    }
+	}
+	LOGGER.debug(
+		"AggrObjId: {} not found for SubscriptionId: {} in SubscriptionRepeatFlagHandlerDb -> Returning FALSE.",
+		aggrObjId, subscriptionId);
+	return false;
     }
 
-    private boolean updateExistingMatchedSubscriptionWithAggrObjId(String subscriptionId, int requirementId,
-            String aggrObjId) {
+    private boolean updateExistingMatchedSubscriptionWithAggrObjId(
+	    String subscriptionId, int requirementId, String aggrObjId) {
 
-        JsonNode queryJsonNode = prepareSubscriptionQuery(subscriptionId);
-        JsonNode updateDocJsonNode = prepareQueryToUpdateAggregation(subscriptionId, requirementId, aggrObjId);
+	JsonNode queryJsonNode = prepareSubscriptionQuery(subscriptionId);
+	JsonNode updateDocJsonNode = prepareQueryToUpdateAggregation(
+		subscriptionId, requirementId, aggrObjId);
 
-        Document document = null;
+	Document document = null;
 
-        document = mongoDbHandler.findAndModify(dataBaseName, collectionName, queryJsonNode.toString(),
-                updateDocJsonNode.toString());
-        if (document != null && !document.isEmpty()) {
-            LOGGER.debug("Successfully updated Matched Subscription Aggregated Object list:" +
-                         "\nfor subscriptionId: " + subscriptionId +
-                         "\nwith Aggregated Object Id: " + aggrObjId +
-                         "\nwith matched Requirement Id: " + requirementId);
-            return true;
-        }
+	document = mongoDbHandler.findAndModify(dataBaseName, collectionName,
+		queryJsonNode.toString(), updateDocJsonNode.toString());
+	if (document != null && !document.isEmpty()) {
+	    LOGGER.debug(
+		    "Successfully updated Matched Subscription Aggregated Object list:"
+			    + "\nfor subscriptionId: {}"
+			    + "\nwith Aggregated Object Id: {}"
+			    + "\nwith matched Requirement Id: {}",
+		    subscriptionId, aggrObjId, requirementId);
+	    return true;
+	}
 
-        LOGGER.warn("Failed to update existing matched SubscriptionId with new AggrId." + " SubscriptionId: "
-                + subscriptionId + " New matched AggrObjId: " + aggrObjId + " RequirementId that have matched: "
-                + requirementId);
-        return false;
+	LOGGER.warn(
+		"Failed to update existing matched SubscriptionId with new AggrId."
+			+ "SubscriptionId: {} " + "New matched AggrObjId: {} "
+			+ "RequirementId that have matched: {}",
+		subscriptionId, aggrObjId, requirementId);
+	return false;
     }
 
-    private void insertNewMatchedAggregationToDatabase(String subscriptionId, int requirementId, String aggrObjId) {
-        try {
-            BasicDBObject document = new BasicDBObject();
-            document.put("subscriptionId", subscriptionId);
+    private void insertNewMatchedAggregationToDatabase(String subscriptionId,
+	    int requirementId, String aggrObjId) {
+	try {
+	    BasicDBObject document = new BasicDBObject();
+	    document.put("subscriptionId", subscriptionId);
 
-            ArrayList<String> aggrObjIdsList = new ArrayList<String>();
-            aggrObjIdsList.add(aggrObjId);
+	    ArrayList<String> aggrObjIdsList = new ArrayList<String>();
+	    aggrObjIdsList.add(aggrObjId);
 
-            BasicDBObject reqDocument = new BasicDBObject();
-            reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
+	    BasicDBObject reqDocument = new BasicDBObject();
+	    reqDocument.put(String.valueOf(requirementId), aggrObjIdsList);
 
-            document.put("requirements", reqDocument);
+	    document.put("requirements", reqDocument);
 
-            LOGGER.debug("New Matched AggrIdObject update on Subscription to be inserted to Db: " + document);
-            mongoDbHandler.insertDocument(dataBaseName, collectionName, document.toString());
-        } catch (MongoWriteException e) {
-            LOGGER.error("Failed to insert the document into database.", e);
-            e.printStackTrace();
-        }
+	    LOGGER.debug(
+		    "New Matched AggrIdObject update on Subscription to be inserted to Db: {}",
+		    document);
+	    mongoDbHandler.insertDocument(dataBaseName, collectionName,
+		    document.toString());
+	} catch (MongoWriteException e) {
+	    LOGGER.error("Failed to insert the document into database.", e);
+	    e.printStackTrace();
+	}
     }
 
     private JsonNode prepareSubscriptionQuery(String subscriptionId) {
-        try {
-            String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-            JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
-            return queryJsonNode;
-        } catch (Exception e) {
-            LOGGER.error("Failed to create subscription query. Error: {}", e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return null;
+	try {
+	    String subscriptionQuery = "{\"subscriptionId\" : \""
+		    + subscriptionId + "\"}";
+	    JsonNode queryJsonNode = mapper.readValue(subscriptionQuery,
+		    JsonNode.class);
+	    return queryJsonNode;
+	} catch (Exception e) {
+	    LOGGER.error("Failed to create subscription query. Error: {}",
+		    e.getMessage(), e);
+	    e.printStackTrace();
+	}
+	return null;
     }
 
-    private JsonNode prepareQueryToUpdateAggregation(String subscriptionId, int requirementId, String aggrObjId) {
-        try {
-            JsonNode updateDocJsonNode = mapper.readValue(
-                    "{\"$push\" : { \"requirements." + requirementId + "\" : \"" + aggrObjId + "\"}}", JsonNode.class);
-            LOGGER.debug("SubscriptionId \"", subscriptionId +
-                    "\" document will be updated with following requirement update object: "
-                    + updateDocJsonNode.toString());
-            return updateDocJsonNode;
-        } catch (Exception e) {
-            LOGGER.error("Failed to create query for updating aggregated object.", e);
-            e.printStackTrace();
-        }
-        return null;
+    private JsonNode prepareQueryToUpdateAggregation(String subscriptionId,
+	    int requirementId, String aggrObjId) {
+	try {
+	    JsonNode updateDocJsonNode = mapper
+		    .readValue(
+			    "{\"$push\" : { \"requirements." + requirementId
+				    + "\" : \"" + aggrObjId + "\"}}",
+			    JsonNode.class);
+	    LOGGER.debug(
+		    "SubscriptionId \"{}\" document will be updated with following requirement update object: {}",
+		    subscriptionId, updateDocJsonNode.toString());
+	    return updateDocJsonNode;
+	} catch (Exception e) {
+	    LOGGER.error(
+		    "Failed to create query for updating aggregated object.",
+		    e);
+	    e.printStackTrace();
+	}
+	return null;
     }
 
+    private boolean checkRequirementIdTriggered(JsonNode jNode,
+	    int requirementId, String aggrObjId) throws Exception {
+	ObjectReader reader = mapper
+		.readerFor(new TypeReference<List<String>>() {
+		});
+	JsonNode ids = jNode.get("requirements").get("" + requirementId);
+	if (ids == null)
+	    return false;
+	List<String> listAggrObjIds = reader.readValue(ids);
 
-    private boolean checkRequirementIdTriggered(JsonNode jNode, int requirementId, String aggrObjId) throws Exception {
-        ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
-        });
-        JsonNode ids = jNode.get("requirements").get("" + requirementId);
-        if (ids == null)
-            return false;
-        List<String> listAggrObjIds = reader.readValue(ids);
+	if (requirementId > (listAggrObjIds.size() - 1)) {
+	    return false;
+	}
 
-        if (requirementId > (listAggrObjIds.size() - 1)) {
-            return false;
-        }
+	if (listAggrObjIds.contains(aggrObjId)) {
+	    LOGGER.debug("Subscription has matched aggrObjId already: {}",
+		    aggrObjId);
+	    return true;
+	}
 
-        if (listAggrObjIds.contains(aggrObjId)) {
-            LOGGER.debug("Subscription has matched aggrObjId already: " + aggrObjId);
-            return true;
-        }
-
-        return false;
+	return false;
     }
 }

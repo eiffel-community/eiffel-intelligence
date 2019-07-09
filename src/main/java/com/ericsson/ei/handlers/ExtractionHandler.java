@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExtractionHandler {
 
-    private static Logger log = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
 
     @Autowired private JmesPathInterface jmesPathInterface;
     @Autowired private MergeHandler mergeHandler;
@@ -64,7 +64,7 @@ public class ExtractionHandler {
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
-            log.info("Failed with extraction.", e);
+            LOGGER.info("Failed with extraction.", e);
         }
     }
 
@@ -72,9 +72,10 @@ public class ExtractionHandler {
         JsonNode extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
-            log.debug("ExtractionHandler: Merging Aggregated Object:\n" + aggregatedDbObject.toString() +
-            		"\nwith extracted content:\n" + extractedContent.toString() +
-            		"\nfrom event:\n" + event);
+            LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}" +
+            		"\nwith extracted content:\n{}" +
+            		"\nfrom event:\n{}",
+            		aggregatedDbObject.toString(), extractedContent.toString(), event);
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
             processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);

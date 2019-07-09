@@ -23,17 +23,17 @@ public final class HttpExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpExecutor.class);
 
     private HttpExecutor() {
-        
+
     }
-    
+
     public static HttpExecutor getInstance() {
         if(instance == null) {
             instance = new HttpExecutor();
         }
-        
+
         return instance;
     }
-    
+
     /**
      * Close existing HttpClient and create a new one.
      *
@@ -49,7 +49,7 @@ public final class HttpExecutor {
         }
         this.client = HttpClientBuilder.create().build();
     }
-    
+
     /**
      * Handle the response from a HTTP request
      * @param request
@@ -71,7 +71,7 @@ public final class HttpExecutor {
         } catch(IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        
+
         MultiValueMap<String, String> headersMap = new LinkedMultiValueMap<String, String>();
         for (Header header : headers) {
             headersMap.add(header.getName(), header.getValue());

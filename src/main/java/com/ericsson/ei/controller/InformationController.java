@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * This class provides information about Eiffel Intelligence backend.
  * (Generated with springmvc-raml-parser v.2.0.4)
- * 
+ *
  */
 @RestController
 @Validated
@@ -21,7 +21,7 @@ public interface InformationController {
 
     /**
      * This method retrieves backend instance information.
-     * 
+     *
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getInformation();

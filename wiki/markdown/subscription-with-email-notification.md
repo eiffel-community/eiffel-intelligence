@@ -23,17 +23,17 @@ _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel
         // a notification will be triggered. No matter how many times the aggregated object
         // is updated.
         "repeat" : false,
-        
+
         // Creation time in system time, added by Eiffel Intelligence.
         "created" : 1542802953782,
-        
+
         "authenticationType" : "NO_AUTH",
-        
+
         // How to notify when a subscription is triggered.
         "notificationType" : "MAIL",
         "notificationMeta" : "mymail@company.com",
         "emailSubject" : "My Email Subject",
-        
+
         // Content of the email message.
         "notificationMessageKeyValues" : [
             {
@@ -45,7 +45,7 @@ _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel
                 "formvalue" : "{mydata: [{ fullaggregation : to_string(@) }]}"
             }
         ],
-        
+
         // An array of requirements. At least one requirement should be fulfilled to
         // trigger this subscription.
         "requirements" : [
@@ -77,4 +77,3 @@ Read more on how Eiffel Intelligence groups [requirements and conditions in subs
 
 
 
- 

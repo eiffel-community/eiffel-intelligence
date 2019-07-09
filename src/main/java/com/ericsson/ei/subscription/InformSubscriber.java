@@ -124,7 +124,7 @@ public class InformSubscriber {
 
             if (!success) {
                 String missedNotification = prepareMissedNotification(aggregatedObject, subscriptionName, notificationMeta);
-                LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
+                LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
                 mongoDBHandler.createTTLIndex(missedNotificationDataBaseName, missedNotificationCollectionName, "Time",
                         ttlValue);
                 saveMissedNotificationToDB(missedNotification);
@@ -158,7 +158,7 @@ public class InformSubscriber {
         do {
             requestTries++;
             success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage, headers);
-            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : " + success);
+            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
 
         return success;
@@ -234,7 +234,7 @@ public class InformSubscriber {
             String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
             String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
             headers.add(crumbKey, crumbValue);
-            LOGGER.debug("Successfully added header: " + String.format("'%s':'%s'", crumbKey, crumbValue));
+            LOGGER.debug("Successfully added header: {}", String.format("'%s':'%s'", crumbKey, crumbValue));
         }
         return headers;
     }
@@ -302,7 +302,7 @@ public class InformSubscriber {
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
             notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
-            LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
+            LOGGER.debug("Formatted notificationMeta = {}", notificationMeta);
 
             return notificationMeta;
         } catch (MalformedURLException | UnsupportedEncodingException e) {
@@ -383,11 +383,11 @@ public class InformSubscriber {
             String name = URLDecoder.decode(param.getName(), "UTF-8");
             String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
-            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Input parameter key and value: {} : {}", name, value);
             value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject).toString().replaceAll(REGEX,
                     "");
 
-            LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Formatted parameter key and value: {} : {}", name, value);
             processedParams.add(new BasicNameValuePair(name, value));
         }
         return processedParams;

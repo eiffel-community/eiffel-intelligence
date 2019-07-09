@@ -18,13 +18,13 @@ _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel
         // added by Eiffel Intelligence if LDAP is enabled. Defaults to an empty string.
         "ldapUserName" : "ABC",
 
-        // Instructs whether the same subscription should be re-triggered 
-        // for new additions to the aggregated object. If this is set to 
-        // false, only the first time the conditions are fulfilled, a 
-        // notification will be triggered. No matter how many times the 
+        // Instructs whether the same subscription should be re-triggered
+        // for new additions to the aggregated object. If this is set to
+        // false, only the first time the conditions are fulfilled, a
+        // notification will be triggered. No matter how many times the
         // aggregated object is updated.
         "repeat" : false,
-        
+
         // Creation time in system time, added by Eiffel Intelligence.
         "created" : 1542117412833,
 

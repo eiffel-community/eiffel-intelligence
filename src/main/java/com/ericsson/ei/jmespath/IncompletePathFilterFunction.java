@@ -49,9 +49,9 @@ public class IncompletePathFilterFunction extends BaseFunction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.burt.jmespath.function.BaseFunction#callFunction(io.burt.jmespath.Adapter, java.util.List)
-     * 
+     *
      * This takes JSON object and a key. The key can contain the whole path, parts of path, or only a simple key.
      * It search through the whole object after the values that have same key and returns a Map that contains
      * a key and a list of all found values.

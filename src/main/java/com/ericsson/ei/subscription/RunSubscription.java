@@ -78,14 +78,13 @@ public class RunSubscription {
             if (subscriptionRepeatFlag == "false" && id != null
                     && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                             subscriptionName, requirementIndex, id)) {
-                LOGGER.info("Subscription has already matched with AggregatedObject Id: " + id + "\nSubscriptionName: "
-                        + subscriptionName + "\nand has Subscription Repeat flag set to: " + subscriptionRepeatFlag);
+                LOGGER.info("Subscription has already matched with AggregatedObject Id: {}\nSubscriptionName: {}\nand has Subscription Repeat flag set to: {}", id, subscriptionName, subscriptionRepeatFlag);
                 break;
             }
 
             JsonNode requirement = requirementIterator.next();
 
-            LOGGER.info("The fulfilled requirement which condition will check is : " + requirement.toString());
+            LOGGER.info("The fulfilled requirement which condition will check is : {}", requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
 
             count_condition_fulfillment = 0;
@@ -101,10 +100,11 @@ public class RunSubscription {
                 boolean resultNotEqualsToNull = !resultString.equals("null");
                 boolean resultNotEqualsToFalse = !resultString.equals("false");
                 boolean resultNotEmpty = !resultString.equals("");
-                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fulfillment:"
-                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull
-                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse
-                        + "' '\nResult not empty' is '" + resultNotEmpty + "'");
+                LOGGER.debug("Jmespath rule result: '{}'\nConditions fulfillment:"
+                        + "'\nResult not equals to null' is '{}"
+                        + " '\nResult not equals to false' is '{}"
+                        + "' '\nResult not empty' is '{}'",
+                        result.toString(), resultNotEqualsToNull, resultNotEqualsToFalse, resultNotEmpty);
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }
@@ -122,7 +122,7 @@ public class RunSubscription {
             requirementIndex++;
         }
 
-        LOGGER.info("The final value of conditionFulfilled is : " + conditionFulfilled);
+        LOGGER.info("The final value of conditionFulfilled is : {}", conditionFulfilled);
 
         return conditionFulfilled;
     }

@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class HistoryExtractionHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(HistoryExtractionHandler.class);
-
     @Autowired
     private JmesPathInterface jmesPathInterface;
     @Autowired
@@ -106,7 +104,7 @@ public class HistoryExtractionHandler {
 
     /**
      * Get the rule path as dot notation
-     * 
+     *
      * @param stringRule
      *            - rule as string
      * @return

@@ -25,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
+import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.subscription.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -115,7 +116,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     @When("^I want to inform subscriber$")
-    public void inform_subscriber() throws IOException {
+    public void inform_subscriber() throws IOException, AuthenticationException {
         JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         informSubscriber.informSubscriber(aggregatedObject.toString(), subscriptionObject);
     }

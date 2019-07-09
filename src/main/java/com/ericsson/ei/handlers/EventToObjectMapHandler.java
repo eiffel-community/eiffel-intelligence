@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class EventToObjectMapHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
     @Value("${event_object_map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class DownstreamIdRulesHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;

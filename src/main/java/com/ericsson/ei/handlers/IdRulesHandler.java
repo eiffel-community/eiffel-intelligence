@@ -31,7 +31,7 @@ import java.util.List;
 @Component
 public class IdRulesHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(IdRulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;

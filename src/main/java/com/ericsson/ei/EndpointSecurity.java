@@ -34,7 +34,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(EndpointSecurity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EndpointSecurity.class);
 
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;

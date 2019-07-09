@@ -45,7 +45,7 @@ public class MergePrepare {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MergePrepare.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MergePrepare.class);
 
     public String getValueFromRule(String mergeRule) {
         String ruleValue = "";
@@ -129,8 +129,7 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
-        LOGGER.debug("mergeRules are : {}", mergeRule);
-        LOGGER.debug("originObject is : {}", originObject);
+        LOGGER.debug("mergeRules are : {}\n originObject is : {}", mergeRule, originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.get(0).toString();
@@ -436,11 +435,11 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("addMissingLevels failed for arguments:\n" +
-        	    	"originObject was : {}\n" +
-        	    	"objectTomerge was: {}\n" +
-        	    	"mergeRule was: {}\n" +
-        	    	"mergePath was: {}\n",
+            LOGGER.error("addMissingLevels failed for arguments:\n"
+        	    	+ "originObject was : {}\n"
+        	    	+ "objectTomerge was: {}\n"
+        	    	+ "mergeRule was: {}\n"
+        	    	+ "mergePath was: {}\n",
         	    	originObject, objectToMerge, mergeRule, mergePath, e);
         }
         return newObject.toString();

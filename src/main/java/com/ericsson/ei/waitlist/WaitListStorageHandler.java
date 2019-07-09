@@ -41,7 +41,7 @@ import java.util.List;
 
 @Component
 public class WaitListStorageHandler {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WaitListStorageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitListStorageHandler.class);
 
     @Getter
     @Value("${waitlist.collection.name}")

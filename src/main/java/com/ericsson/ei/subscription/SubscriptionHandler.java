@@ -45,8 +45,7 @@ import lombok.Setter;
 @Component
 public class SubscriptionHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory
-	    .getLogger(SubscriptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionHandler.class);
 
     @Getter
     @Value("${subscription.collection.name}")

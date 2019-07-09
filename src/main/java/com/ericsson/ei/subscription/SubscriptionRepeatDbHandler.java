@@ -40,8 +40,7 @@ import lombok.Setter;
 @Component
 public class SubscriptionRepeatDbHandler {
 
-    private static final Logger LOGGER = LoggerFactory
-	    .getLogger(SubscriptionRepeatDbHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionRepeatDbHandler.class);
 
     @Autowired
     public MongoDBHandler mongoDbHandler;

@@ -41,8 +41,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactoryBuilder;
 
 public class SubscriptionValidator {
 
-    private static final Logger LOGGER = LoggerFactory
-	    .getLogger(SubscriptionValidator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionValidator.class);
     private static final String SCHEMA_FILE_PATH = "/schemas/subscription_schema.json";
 
     /**

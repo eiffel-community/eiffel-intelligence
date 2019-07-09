@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExtractionHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
     @Autowired private JmesPathInterface jmesPathInterface;
     @Autowired private MergeHandler mergeHandler;
@@ -72,9 +72,9 @@ public class ExtractionHandler {
         JsonNode extractedContent = extractContent(rulesObject, event);
 
         if(aggregatedDbObject != null) {
-            LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}" +
-            		"\nwith extracted content:\n{}" +
-            		"\nfrom event:\n{}",
+            LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
+            		+ "\nwith extracted content:\n{}"
+            		+ "\nfrom event:\n{}",
             		aggregatedDbObject.toString(), extractedContent.toString(), event);
             String objectId = objectHandler.extractObjectId(aggregatedDbObject);
             String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);

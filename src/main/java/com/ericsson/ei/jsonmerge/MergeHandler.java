@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class MergeHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MergeHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MergeHandler.class);
 
     @Value("${mergeidmarker}")
     private String mergeIdMarker;

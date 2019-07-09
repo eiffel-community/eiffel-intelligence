@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Component
 public class RunSubscription {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunSubscription.class);
 
     @Autowired
     private JmesPathInterface jmespath;

@@ -52,7 +52,7 @@ public class EventHandler {
     }
 
     public void eventReceived(String event) {
-        LOGGER.info("Thread id {} spawned", Thread.currentThread().getId());
+        LOGGER.debug("Thread id {} spawned", Thread.currentThread().getId());
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
         // downstreamIdRulesHandler.runIdRules(eventRules, event);

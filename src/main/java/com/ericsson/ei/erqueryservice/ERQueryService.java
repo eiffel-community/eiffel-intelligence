@@ -48,7 +48,7 @@ import java.util.Map;
 @Component
 public class ERQueryService {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ERQueryService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ERQueryService.class);
 
     private RestOperations rest;
 

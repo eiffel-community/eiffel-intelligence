@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class DateUtils {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory
-	    .getLogger(ObjectHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandler.class);
 
     /**
      * This method creates the date object with the current date for appending

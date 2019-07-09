@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessMissedNotification {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
 
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;

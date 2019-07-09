@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class WaitListWorker {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitListWorker.class);
 
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;

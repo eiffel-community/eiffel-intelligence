@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin
 @Api(value = "information", tags = {"Information"})
 public class InformationControllerImpl implements InformationController {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(InformationControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InformationControllerImpl.class);
 
     @Autowired
     private ParseInstanceInfoEI instanceInfo;

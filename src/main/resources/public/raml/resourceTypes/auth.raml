@@ -1,6 +1,6 @@
+description: This class handles requests related to authentication.
 get:
-  description: This call for checking if security is enabled
-  displayName: check security
+  description: This method checks if security is enabled.
   responses:
     200:
       body:
@@ -8,8 +8,7 @@ get:
 
 /login:
   get:
-    description: This call for getting logged in user
-    displayName: login
+    description: This method returns a logged in user.
     responses:
       200:
         body:
@@ -17,8 +16,7 @@ get:
 
 /checkStatus:
   get:
-    description: This call for checking backend status
-    displayName: check status
+    description: This method checks Eiffel Intelligene backend status.
     responses:
       200:
         body:

@@ -57,6 +57,7 @@ public class SubscriptionValidator {
      * wrong format of parameter.
      *
      * @param subscription
+     * @throws SubscriptionValidationException
      */
     public static void validateSubscription(Subscription subscription) throws SubscriptionValidationException {
         LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
@@ -66,18 +67,19 @@ public class SubscriptionValidator {
         validateNotificationType(subscription.getNotificationType());
         validateNotificationMeta(subscription.getNotificationMeta(), subscription.getNotificationType());
         if (subscription.getNotificationType().equals("REST_POST")) {
-            RestPostMediaType(subscription.getRestPostBodyMediaType());
+            validateRestPostMediaType(subscription.getRestPostBodyMediaType());
         }
         validateWithSchema(subscription);
         LOGGER.debug("Validating of subscription " + subscription.getSubscriptionName() + " finished successfully.");
     }
 
     /**
-     * Validation of subscriptionName parameter Throws
+     * Validation of subscriptionName parameter in a subscription. Throws
      * SubscriptionValidationException if validation of the parameter fails due to
      * wrong format of parameter.
      *
      * @param subscriptionName
+     * @throws SubscriptionValidationException
      */
     private static void validateSubscriptionName(String subscriptionName) throws SubscriptionValidationException {
         String invalidSubscriptionNameRegex = null;
@@ -94,14 +96,16 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of NotificationMessageKeyValues parameters (key/values) Throws
+     * Validation of NotificationMessageKeyValues parameters (key/values). Throws
      * SubscriptionValidationException if validation of the parameter fails due to
      * wrong format of parameter.
      *
      * @param notificationMessage
+     *     The message body to use for a notification of a subscription
      * @param restPostBodyMediaType
+     *     The media type of the REST POST request body
+     * @throws SubscriptionValidationException
      */
-
     private static void validateNotificationMessageKeyValues(List<NotificationMessageKeyValue> notificationMessage,
             String restPostBodyMediaType) throws SubscriptionValidationException {
         for (NotificationMessageKeyValue item : notificationMessage) {
@@ -133,12 +137,15 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of notificationMeta parameter Throws
+     * Validation of notificationMeta parameter. Throws
      * SubscriptionValidationException if validation of the parameter fails due to
      * wrong format of parameter.
      *
      * @param notificationMeta
+     *     A String containing a URL or email address(es)
      * @param notificationType
+     *     The type of notification, could be MAIL or REST POST
+     * @throws SubscriptionValidationException
      */
     private static void validateNotificationMeta(String notificationMeta, String notificationType)
             throws SubscriptionValidationException {
@@ -156,11 +163,13 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of notificationType parameter Throws
+     * Validation of notificationType parameter. Throws
      * SubscriptionValidationException if validation of the parameter fails due to
      * wrong format of parameter.
      *
      * @param notificationType
+     *     The type of notification, could be MAIL or REST POST
+     * @throws SubscriptionValidationException
      */
     private static void validateNotificationType(String notificationType) throws SubscriptionValidationException {
         String regexMail = "[\\s]*MAIL[\\\\s]*";
@@ -173,7 +182,14 @@ public class SubscriptionValidator {
         }
     }
 
-    private static void RestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
+    /**
+     * Validation of the REST POST body media type. Only 'application/json' and
+     * 'application/x-www-form-urlencoded' are supported.
+     *
+     * @param restPostMediaType
+     * @throws SubscriptionValidationException
+     * */
+    private static void validateRestPostMediaType(String restPostMediaType) throws SubscriptionValidationException {
         String regexApplication_JSON = "[\\s]*application/json[\\\\s]*";
         String regexApplicationFormUrlEncoded = "[\\s]*application/x-www-form-urlencoded[\\\\s]*";
         if (restPostMediaType == null) {
@@ -185,10 +201,11 @@ public class SubscriptionValidator {
     }
 
     /**
-     * Validation of email address Throws SubscriptionValidationException if
+     * Validation of email address. Throws SubscriptionValidationException if
      * validation of the parameter fails due to wrong format of parameter.
      *
      * @param email
+     * @throws SubscriptionValidationException
      */
     public static void validateEmail(String email) throws SubscriptionValidationException {
         String validEmailRegEx = null;
@@ -207,8 +224,15 @@ public class SubscriptionValidator {
         }
     }
 
-    public static void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
-        LOGGER.debug("Validation of subscription " + subscription.getSubscriptionName() + " Started.");
+    /**
+     * This method validates the entire subscription against a predefined
+     * schema.
+     *
+     * @param subscription
+     * @throws SubscriptionValidationException
+     * */
+    private static void validateWithSchema(Subscription subscription) throws SubscriptionValidationException {
+        LOGGER.debug("Started validation of subscription: " + subscription.getSubscriptionName());
         try {
             JsonNode subscriptionJson = objectToJson(subscription);
             JsonNode schemaObj = JsonLoader.fromResource(SCHEMA_FILE_PATH);
@@ -223,7 +247,14 @@ public class SubscriptionValidator {
         }
     }
 
-    public static JsonNode objectToJson(Subscription subObject) throws SubscriptionValidationException {
+    /**
+     * This method transforms a subscription object into a JSON object.
+     *
+     * @param subObject
+     *     The subscription object to be transformed
+     * @throws SubscriptionValidationException
+     * */
+    private static JsonNode objectToJson(Subscription subObject) throws SubscriptionValidationException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonSubscriptionObj1;
         try {

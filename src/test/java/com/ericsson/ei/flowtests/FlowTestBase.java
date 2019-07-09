@@ -38,7 +38,6 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -113,21 +112,21 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     protected FlowTestConfigs getFlowTestConfigs() {
-        return configsMap.get(getClasName());
+        return configsMap.get(getClassName());
     }
 
     private void createFlowTestConfigs() {
         FlowTestConfigs newConfigs = new FlowTestConfigs();
-        String className = getClasName();
+        String className = getClassName();
         configsMap.put(className, newConfigs);
     }
 
-    private String getClasName() {
+    private String getClassName() {
         return this.getClass().getName();
     }
 
     private void cleanFlowTestConfigs() {
-        configsMap.remove(getClasName());
+        configsMap.remove(getClassName());
     }
 
     // setFirstEventWaitTime: variable to set the wait time after publishing the

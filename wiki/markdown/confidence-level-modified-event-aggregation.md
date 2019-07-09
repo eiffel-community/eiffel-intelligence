@@ -1,8 +1,8 @@
-# ConfidenceLevelModifiedEvent Aggregation
+# ConfidenceLevelModified event Aggregation
 
 ### 1) f37d59a3-069e-4f4c-8cc5-a52e73501a76
 
-Suppose an EiffelConfidenceLevelModifiedEvent is received:
+Suppose an EiffelConfidenceLevelModified event is received:
 
     {
       "links": [
@@ -69,11 +69,11 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
-But there is no object with such id in the database and aggregatedObject
-returns empty. Event is added to wait list. There it waits until the object
-with requested id appears in database. After some time, the event is fetched
+But there is no object with such id in the database and the aggregated object
+returns empty. The Eiffel event is added to the wait list. There it waits until an object
+with the requested id appears in the database. After some time, the event is fetched
 again and the whole process starts from the beginning. The rule is extracted,
-and the ids are selected. This time the object with the required id exist in
+and the ids are selected. This time the object with the required id exists in
 the database, but it was already aggregated with some other objects. The
 fetched object looks like that:
 
@@ -219,12 +219,13 @@ The required content is extracted from the event as specified in the rule:
 
     "ExtractionRules": "{  eventId:meta.id,  time:meta.time,  name:data.name,  value:data.value }"
 
-And is put in to the object in the way as it is specified in this rule:
+And is put in to the aggregated object in the way it is specified in this rule:
 
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]"
 
-JSON object with requested data will be put into array and stored in aggregated
-object with key “confidenceLevels”. Data in correct format will look like:
+The JSON object with requested data will be put into an array and stored
+in the aggregated object with the key “confidenceLevels”. Data in the correct
+format will look like below:
 
     "confidenceLevels": [
       {
@@ -235,7 +236,7 @@ object with key “confidenceLevels”. Data in correct format will look like:
       }
     ]
 
-And the result object will be:
+And the resulting aggregated object will be:
 
     {
       "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
@@ -384,7 +385,7 @@ And the result object will be:
 
 ### 2) f37d59a3-069e-4f4c-8cc5-a52e73501a75
 
-Then a new EiffelConfidenceLevelModifiedEvent arrives:
+Then a new ConfidenceLevelModified event arrives:
 
     {
       "links": [
@@ -422,8 +423,8 @@ Then a new EiffelConfidenceLevelModifiedEvent arrives:
       }
     }
 
-The whole process with finding rule is repeated for this event and the rule
-looks like:
+The whole process with finding the configured rule is repeated for this
+Eiffel event and the rule looks like below:
 
     {
       "TemplateName": "ARTIFACT_1",
@@ -452,10 +453,9 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
-It is the same object id as in previous aggregation but some other aggregations
-were done under the time between this and previous
-EiffelConfidenceLevelModifiedEvent object appearance. Because of that the
-object looks like this:
+It is the same event id as in the previous aggregation but some other
+aggregations were done during the time between this and previous
+ConfidenceLevelModified event appearance. Because of that the object looks like this:
 
     {
         "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
@@ -614,11 +614,11 @@ The required content is extracted from the event as specified in the rule:
 
     "ExtractionRules": "{  eventId:meta.id,  time:meta.time,  name:data.name,  value:data.value }"
 
-And is put in to the object in the way as it is specified in this rule:
+And is put in to the aggregated object in the way it is specified in this rule:
 
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]"
 
-Data in correct format will look like:
+Data in the correct format will look like below:
 
     "confidenceLevels": [
     {
@@ -629,9 +629,9 @@ Data in correct format will look like:
     }
     ]
 
-But because the object already contains a key “confidenceLevels” that contains
-an array. The JSON object with data will be added to existing array. New
-“confidenceLevels” array will look like:
+But because the aggregated object already contains a key “confidenceLevels”
+that contains an array. The JSON object with data will be added to existing
+array. New “confidenceLevels” array will look like below:
 
     "confidenceLevels": [
           {
@@ -648,7 +648,7 @@ an array. The JSON object with data will be added to existing array. New
           }
         ]
 
-And the result object will be:
+And the resulting aggregated object will be:
 
     {
       "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",

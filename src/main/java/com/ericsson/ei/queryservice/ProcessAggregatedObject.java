@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,8 +30,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class represents the mechanism to extract the aggregated data on the
- * basis of the ID from the aggregatedObject.
+ * This class represents the mechanism to extract the aggregated object, which
+ * matches the given search criteria, from the database.
  */
 @Component
 public class ProcessAggregatedObject {
@@ -47,11 +45,11 @@ public class ProcessAggregatedObject {
     private String aggregationDataBaseName;
 
     @Autowired
-    private MongoDBHandler handler;
+    private MongoDBHandler mongoDBHandler;
 
     /**
-     * The method is responsible to extract the aggregated data on the basis of the
-     * ID from the aggregatedObject.
+     * The method is responsible to extract the aggregated data given the
+     * ID from the aggregated object.
      *
      * @param id
      * @return ArrayList
@@ -59,59 +57,60 @@ public class ProcessAggregatedObject {
     public ArrayList<String> processQueryAggregatedObject(String id) {
         ObjectMapper mapper = new ObjectMapper();
         String query = "{\"_id\": \"" + id + "\"}";
-
-        LOGGER.debug("The condition is : " + query);
         JsonNode jsonCondition = null;
+
         try {
             jsonCondition = mapper.readTree(query);
         } catch (Exception e) {
             LOGGER.error("Failed to parse JSON.", e);
         }
-        LOGGER.debug("The Json condition is : " + jsonCondition);
-        ArrayList<String> response = handler.find(aggregationDataBaseName, aggregationCollectionName,
+        LOGGER.debug("The JSON condition is: {}", jsonCondition);
+        ArrayList<String> response = mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName,
                 jsonCondition.toString());
         return response;
     }
 
     /**
-     * The method is responsible to extract the aggregated data on the basis of the
-     * ID from the aggregatedObject.
+     * The method is responsible to extract the aggregated data given the
+     * templateName from the aggregated object.
      *
      * @param templateName
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
         String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
-        LOGGER.debug("The Json condition is : " + condition);
-        return handler.find(aggregationDataBaseName, aggregationCollectionName, condition);
+        LOGGER.debug("The JSON condition is: {}", condition);
+        return mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName, condition);
     }
 
     /**
-     * The method is responsible for the delete the aggregated object using template
-     * name suffix
+     * This method is responsible for deleting the aggregated object with given
+     * template name suffix
      *
      * @param templateName
      * @return boolean
      */
     public boolean deleteAggregatedObject(String templateName) {
         String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
-        LOGGER.debug("The Json condition for delete aggregated object is : " + condition);
-        return handler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
+        LOGGER.debug("The JSON condition for deleting aggregated object is: {}", condition);
+        return mongoDBHandler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
     }
 
     /**
-     * This method is responsible for fetching all the aggregatedObjects from the
-     * Aggregation database and return it as JSONArray.
+     * This method is responsible for fetching all the aggregated objects from the
+     * aggregation database based on the given query and returns the result as a
+     * JSONArray.
      *
-     * @param request
+     * @param query
+     *     A String containing search criteria to use
      * @param AggregationDataBaseName
      * @param AggregationCollectionName
      * @return JSONArray
      */
-    public JSONArray processQueryAggregatedObject(String request, String AggregationDataBaseName,
+    public JSONArray processQueryAggregatedObject(String query, String AggregationDataBaseName,
             String AggregationCollectionName) {
-        List<String> allDocuments = handler.find(AggregationDataBaseName, AggregationCollectionName, request);
-        LOGGER.debug("Number of document returned from AggregatedObject collection is : " + allDocuments.size());
+        List<String> allDocuments = mongoDBHandler.find(AggregationDataBaseName, AggregationCollectionName, query);
+        LOGGER.debug("Number of documents returned from {} collection is : {}", AggregationCollectionName, allDocuments.size());
         Iterator<String> allDocumentsItr = allDocuments.iterator();
         JSONArray jsonArray = new JSONArray();
         JSONObject doc = null;
@@ -127,9 +126,4 @@ public class ProcessAggregatedObject {
         return jsonArray;
     }
 
-    @PostConstruct
-    public void init() {
-        LOGGER.debug("The Aggregated Database is : " + aggregationDataBaseName + "\nThe Aggregated Collection is : "
-                + aggregationCollectionName);
-    }
 }

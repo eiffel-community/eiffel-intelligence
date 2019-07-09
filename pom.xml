@@ -29,7 +29,7 @@
         <springLdapVersion>2.3.2.RELEASE</springLdapVersion>
         <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
         <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
-        <forkCountTests>2.5C</forkCountTests>
+        <forkCountTests>2.0C</forkCountTests>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -295,6 +295,7 @@
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker-core</artifactId>
             <version>7.1.0</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-management-http -->
@@ -302,19 +303,21 @@
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker-plugins-management-http</artifactId>
             <version>7.1.0</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker-plugins-amqp-1-0-protocol</artifactId>
             <version>7.1.0</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-broker-plugins-memory-store</artifactId>
             <version>7.1.0</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

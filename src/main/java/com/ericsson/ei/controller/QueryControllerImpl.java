@@ -29,17 +29,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ericsson.ei.controller.model.QueryBody;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
+import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class represents the REST end-points for the query service. It can take
- * both query parameters and form parameters as criterias.
+ * This class represents the REST end-points for the query service. Criteria is
+ * required to have in the request body, while options and filter are optional.
  */
 @Component
 @CrossOrigin
-@Api(value = "query", description = "REST endpoints for the freestyle query service")
+@Api(value = "query", tags = {"Query"})
 public class QueryControllerImpl implements QueryController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
@@ -49,7 +50,7 @@ public class QueryControllerImpl implements QueryController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "")
+    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
     public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
         String emptyResponseContent = "[]";
         HttpStatus httpStatus;
@@ -64,7 +65,7 @@ public class QueryControllerImpl implements QueryController {
                 filter = body.getFilter();
             }
 
-            JSONArray result = processQueryParams.filterFormParam(criteria, options, filter);
+            JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             if(!result.toString().equalsIgnoreCase(emptyResponseContent)) {
                 httpStatus = HttpStatus.OK;
             } else {
@@ -72,9 +73,10 @@ public class QueryControllerImpl implements QueryController {
             }
             return new ResponseEntity<>(result.toString(), httpStatus);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract data from the Aggregated Object using freestyle query. Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to extract data from the Aggregated Object using freestyle query.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

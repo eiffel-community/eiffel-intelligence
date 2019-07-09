@@ -50,6 +50,15 @@ public class JmesPathInterface {
         jmespath = new JacksonRuntime(customFunctions);
     }
 
+    /**
+     * This method makes use of the JMESPath to compile the expression and then
+     * searches for this expression in the given JSON structure.
+     *
+     * @param rule
+     * @param event
+     * @return result
+     *     JSONNode of the result from the JMESPath expression search
+     * */
     public JsonNode runRuleOnEvent(String rule, String event) {
         JsonNode result = JsonNodeFactory.instance.nullNode();
         String inputs[] = { rule, event };

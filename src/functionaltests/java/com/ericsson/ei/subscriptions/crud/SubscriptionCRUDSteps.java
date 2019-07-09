@@ -120,18 +120,17 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         response = httpRequest.performRequest();
     }
 
-    @Then("^My GET request with subscription name \"([^\"]*)\" at REST API \"([^\"]*)\" returns an empty String$")
+    @Then("^My GET request with subscription name \"([^\"]*)\" at REST API \"([^\"]*)\" returns an error message$")
     public void my_GET_request_with_subscription_name_at_REST_API_returns_empty_String(String name, String endPoint)
             throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint + name)
                 .addHeader("Accept", "application/json");
         response = httpRequest.performRequest();
-        JsonNode node = eventManager.getJSONFromString(response.getBody());
-        int size = node.get("foundSubscriptions").size();
-        String notFound = node.get("notFoundSubscriptions").get(0).asText();
-        assertEquals("Subscription was found, should be empty",0, size);
-        assertEquals(name, notFound);
+        JSONObject jsonResponse = new JSONObject(response.getBody().toString());
+        String errorMessage = jsonResponse.getString("message");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(true, errorMessage.contains(name));
     }
     // Scenario:4 ends ==================================================================
 }

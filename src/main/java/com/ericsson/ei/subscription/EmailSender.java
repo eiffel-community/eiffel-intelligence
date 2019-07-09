@@ -19,7 +19,6 @@ package com.ericsson.ei.subscription;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -43,9 +42,9 @@ import lombok.Getter;
  */
 
 @Component
-public class SendMail {
+public class EmailSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
     @Getter
     @Value("${email.sender}")
@@ -58,71 +57,81 @@ public class SendMail {
     @Autowired
     private JavaMailSender emailSender;
 
-    public void setMailSender(JavaMailSender emailSender) {
+    public void setEmailSender(JavaMailSender emailSender) {
         this.emailSender = emailSender;
     }
 
     /**
-     * This method takes two arguments i.e receiver mail-id and aggregatedObject and send mail to the
-     * receiver with aggregatedObject as the body.
+     * This method sends mail to the given receivers mail address(es) with the
+     * given email subject and body from the mapNotificationMessage.
      *
-     * @param receiver
+     * @param receivers
+     *     Who to send the mail to
      * @param mapNotificationMessage
+     *     A String to be used as the body of the email
+     * @param emailSubject
+     *     The subject of the email to send
      */
-    public void sendMail(String receiver, String mapNotificationMessage, String emailSubject) {
-        Set<String> extEmails = new HashSet<>();
-        try {
-            extEmails = extractEmails(receiver);
-        } catch (SubscriptionValidationException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        try {
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            String[] to = extEmails.toArray(new String[0]);
-            helper.setFrom(sender);
-            helper.setSubject(getSubject(emailSubject));
-            helper.setText(mapNotificationMessage);
-            helper.setTo(to);
-            emailSender.send(message);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to create and send e-mail.", e);
-        }
+    public void sendEmail(String receivers, String mapNotificationMessage, String emailSubject) {
+        Set<String> emails = new HashSet<>();
+        emails = extractEmails(receivers);
+        String[] to = emails.toArray(new String[0]);
+        MimeMessage message = prepareEmail(mapNotificationMessage, emailSubject, to);
+        emailSender.send(message);
     }
 
     /**
-     * This method takes string of comma separated email addresses and return the Set of validated email
-     * addresses
+     * This method creates a MimeMessageHelper and prepares the email to send
      *
-     * @param contents
+     * @param mapNotificationMessage
+     *     A String to be used by the body of the email
+     * @param emailSubject
+     *     The subject of the email to send
+     * @param receivers
+     *     Who to send the email to
+     * */
+    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject, String[] receivers) {
+        MimeMessage message = emailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sender);
+            helper.setSubject(getSubject(emailSubject));
+            helper.setText(mapNotificationMessage);
+            helper.setTo(receivers);
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to create and send e-mail.", e);
+        }
+        return message;
+    }
+
+    /**
+     * This method takes a string of comma separated email addresses and
+     * puts them in a Set of email addresses to return.
+     *
+     * @param receivers
+     *     A string containing one or more comma separated email addresses
+     * @return emailAdd
      */
-    public Set<String> extractEmails(String contents) throws SubscriptionValidationException {
+    public Set<String> extractEmails(String receivers) {
         Set<String> emailAdd = new HashSet<>();
-        String[] addresses = contents.split(",");
+        String[] addresses = receivers.split(",");
         for (String add : addresses) {
-            SubscriptionValidator.validateEmail(add.trim());
             emailAdd.add(add);
         }
         return emailAdd;
     }
 
     /**
-     * This method takes the user provided email subject and if it is not empty, return it. Otherwise,
-     * it return the default subject
+     * This method takes the user provided email subject and if it is not empty,
+     * returns it. Otherwise, it returns the default subject.
      *
      * @param emailSubject
+     * @return emailSubject
      */
-    public String getSubject(String emailSubject) {
+    private String getSubject(String emailSubject) {
         if (emailSubject.isEmpty()) {
             return subject;
         }
         return emailSubject;
-    }
-
-    @PostConstruct
-    public void display() {
-        LOGGER.debug("Email Sender : " + sender);
-        LOGGER.debug("Email Subject : " + subject);
     }
 }

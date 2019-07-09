@@ -6,8 +6,6 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.nio.file.Path;
 
 import org.junit.Ignore;
 import org.mockserver.client.MockServerClient;
@@ -57,7 +55,7 @@ public class RulesHandlerSteps {
     }
 
     @Given("^path is made absolute$")
-    public void path_is_absolute() throws IOException {
+    public void path_is_absolute() {
         rulesPath = new File(rulesPath).getAbsolutePath();
         rulesPath = rulesPath.replace("\\", "/");
     }
@@ -82,8 +80,7 @@ public class RulesHandlerSteps {
     }
 
     /**
-     * Create a new instance of RulesHandler using a rules.path
-     * set by the rulesPath variable.
+     * Create a new instance of RulesHandler using a rules.path set by the rulesPath variable.
      *
      * @throws Exception
      */
@@ -103,7 +100,9 @@ public class RulesHandlerSteps {
 
         LOGGER.debug("Setting up endpoints on host '" + HOST + "' and port '" + port + "'");
         mockClient = new MockServerClient(HOST, port);
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE)).respond(response().withStatusCode(201).withBody(BODY));
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY)).respond(response().withStatusCode(201).withBody(EMPTY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE))
+                  .respond(response().withStatusCode(201).withBody(BODY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY))
+                  .respond(response().withStatusCode(201).withBody(EMPTY));
     }
 }

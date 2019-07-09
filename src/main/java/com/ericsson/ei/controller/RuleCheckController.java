@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * No description
  * (Generated with springmvc-raml-parser v.2.0.4)
- *
+ * 
  */
 @RestController
 @Validated
@@ -23,7 +23,7 @@ public interface RuleCheckController {
 
     /**
      * This method extracts data from a single Eiffel event based on the given JMESPath expression.
-     *
+     * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createRulesRuleCheck(
@@ -33,7 +33,7 @@ public interface RuleCheckController {
 
     /**
      * This method extracts data from the given list of Eiffel events, based on a set of rules and returns an aggregated object.
-     *
+     * 
      */
     @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
     public ResponseEntity<?> createRuleCheckAggregation(
@@ -43,7 +43,7 @@ public interface RuleCheckController {
 
     /**
      * This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
-     *
+     * 
      */
     @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)
     public ResponseEntity<?> getRuleCheckTestRulePageEnabled();

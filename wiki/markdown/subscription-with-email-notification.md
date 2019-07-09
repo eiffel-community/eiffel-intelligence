@@ -11,7 +11,7 @@ _**Subscription templates can be found [here](https://github.com/Ericsson/eiffel
 
     {
         // The name of the subscription to make it easy to search for it.
-        // Only numbers,letters and underscore allowed.
+        // Only numbers, letters and underscore allowed.
         "subscriptionName" : "Subscription3_Mail_Notification",
 
         // The name of the logged in user creating or updating the subscription

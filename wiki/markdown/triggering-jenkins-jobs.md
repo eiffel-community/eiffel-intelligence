@@ -81,7 +81,7 @@ Observe that we use buildWithParameters and empty notificationMessageKeyValues.
     
     {
         // The name of the subscription to make it easy to search for it.
-        // Only numbers,letters and underscore allowed.    
+        // Only numbers, letters and underscore allowed.    
         "subscriptionName" : "Subscription1",
 
         // The name of the logged in user creating or updating the subscription

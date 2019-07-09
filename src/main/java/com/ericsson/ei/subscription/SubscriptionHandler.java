@@ -120,18 +120,4 @@ public class SubscriptionHandler {
 		    subscriptionData, aggregatedObject, e);
 	}
     }
-
-    /**
-     * This method is responsible for displaying configurable application
-     * parameters like Subscription database name and collection name, etc.
-     */
-    @PostConstruct
-    public void print() {
-	LOGGER.debug("SubscriptionDataBaseName : {}", subscriptionDataBaseName);
-	LOGGER.debug("SubscriptionCollectionName : {}",
-		subscriptionCollectionName);
-	LOGGER.debug("MongoDBHandler object : {}", mongoDBHandler);
-	LOGGER.debug("JmesPathInterface : {}", jmespath);
-
-    }
 }

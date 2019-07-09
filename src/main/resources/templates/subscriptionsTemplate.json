@@ -1,11 +1,10 @@
 [{
     "subscriptionName" : "Subscription1",
-    "userName" : "functionalUser",
-    "password" : "functionalUserPassword",
     "ldapUserName" : "ABC",
     "repeat" : false,
-    "notificationMessageKeyValuesAuth" : [],
     "authenticationType" : "BASIC_AUTH",
+    "userName" : "functionalUser",
+    "password" : "functionalUserPassword",
     "created" : 1542117412833,
     "notificationType" : "REST_POST",
     "notificationMeta" : "http://eiffel-jenkins1:8080/job/ei-artifact-triggered-job/build",
@@ -32,11 +31,10 @@
     "subscriptionName" : "Subscription2",
     "ldapUserName" : "ABC",
     "repeat" : false,
-    "notificationMessageKeyValuesAuth" : [],
     "authenticationType" : "NO_AUTH",
     "created" : 1542117412834,
-    "notificationMeta" : "http://eiffel-jenkins2:8080/job/ei-artifact-triggered-job/build",
     "notificationType" : "REST_POST",
+    "notificationMeta" : "http://eiffel-jenkins2:8080/job/ei-artifact-triggered-job/build",
     "restPostBodyMediaType" : "application/x-www-form-urlencoded",
     "notificationMessageKeyValues" : [
         {
@@ -54,19 +52,16 @@
         }
 
     ]
-
 },
 {
     "subscriptionName" : "Subscription3_Mail_Notification",
     "ldapUserName" : "ABC",
     "repeat" : false,
-    "notificationMessageKeyValuesAuth" : [],
     "authenticationType" : "NO_AUTH",
     "created" : 1542802953782,
+    "notificationType" : "MAIL",
     "notificationMeta" : "mymail@company.com",
     "emailSubject" : "My Email Subject",
-    "notificationType" : "MAIL",
-    "restPostBodyMediaType" : "",
     "notificationMessageKeyValues" : [
         {
             "formkey" : "",

@@ -101,9 +101,8 @@ public class InformSubscriber {
     private EmailSender emailSender;
 
     /**
-     * Extracts the mode of notification through which the subscriber should be
-     * notified, from the subscription Object. And if the notification fails, then it saved in the
-     * database.
+     * Extracts the mode of notification through which the subscriber should be notified, from the
+     * subscription Object. And if the notification fails, then it saved in the database.
      *
      * @param aggregatedObject
      * @param subscriptionJson
@@ -144,13 +143,14 @@ public class InformSubscriber {
             LOGGER.debug("Notification through EMAIL");
             String subject = getSubscriptionField("emailSubject", subscriptionJson);
             emailSender.sendEmail(notificationMeta, String.valueOf((mapNotificationMessage.get(""))
-                    .get(0)), subject);
+                                                                                                   .get(0)),
+                    subject);
         }
     }
 
     /**
-     * Attempts to make HTTP POST requests. If the request fails, it is retried until
-     * the maximum number of failAttempts have been reached.
+     * Attempts to make HTTP POST requests. If the request fails, it is retried until the maximum
+     * number of failAttempts have been reached.
      *
      * @param notificationMeta       The URL to send the request to
      * @param mapNotificationMessage The body of the HTTP request
@@ -212,14 +212,15 @@ public class InformSubscriber {
         String username = getSubscriptionField("userName", subscriptionJson);
         String password = getSubscriptionField("password", subscriptionJson);
 
-        boolean authorizationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
+        boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
                 password);
-        if (!authorizationDetailsProvided) {
+        if (!authenticationDetailsProvided) {
             return headers;
         }
 
-        String encoding = Base64.getEncoder().encodeToString((username + ":" + password)
-                .getBytes());
+        String encoding = Base64.getEncoder()
+                                .encodeToString((username + ":" + password)
+                                                                           .getBytes());
         headers.add("Authorization", "Basic " + encoding);
         LOGGER.debug("Successfully added header for 'Authorization'");
 
@@ -231,8 +232,7 @@ public class InformSubscriber {
     }
 
     /**
-     * Returns a boolean indicating that authentication details was provided in the
-     * subscription
+     * Returns a boolean indicating that authentication details was provided in the subscription
      *
      * @param authType
      * @param username
@@ -337,9 +337,9 @@ public class InformSubscriber {
     }
 
     /**
-     * Extracts the url parameters from the notification meta. It runs the parameter
-     * values through JMESPath to replace wanted parameter values with data from the aggregated
-     * object. It then reformats the notification meta containing the new parameters.
+     * Extracts the url parameters from the notification meta. It runs the parameter values through
+     * JMESPath to replace wanted parameter values with data from the aggregated object. It then
+     * reformats the notification meta containing the new parameters.
      *
      * @param aggregatedObject The aggregated object contains the url parameters which will be
      *                         updated
@@ -451,7 +451,8 @@ public class InformSubscriber {
 
             LOGGER.debug("Input parameter key and value: " + name + " : " + value);
             value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject)
-                    .toString().replaceAll(REGEX, "");
+                            .toString()
+                            .replaceAll(REGEX, "");
 
             LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
             processedParams.add(new BasicNameValuePair(name, value));
@@ -562,8 +563,9 @@ public class InformSubscriber {
 
                 JsonNode extractedJsonNode = jmespath.runRuleOnEvent(preJMESPathExtractionFormValue,
                         aggregatedObject);
-                String postJMESPathExtractionFormValue = extractedJsonNode.toString().replaceAll(
-                        REGEX, "");
+                String postJMESPathExtractionFormValue = extractedJsonNode.toString()
+                                                                          .replaceAll(
+                                                                                  REGEX, "");
 
                 LOGGER.debug("formValue after running the extraction: [{}] for formKey: [{}]",
                         postJMESPathExtractionFormValue, formKey);

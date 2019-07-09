@@ -130,7 +130,8 @@ public class RulesHandler {
      * @throws URISyntaxException
      */
     private String readRulesFileFromURI() throws IOException, URISyntaxException {
-        return IOUtils.toString(new URI(rulesFilePath), "UTF-8");
+        URI fileUri = new URI(rulesFilePath);
+        return IOUtils.toString(fileUri, "UTF-8");
     }
 
     /**

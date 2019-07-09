@@ -100,8 +100,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     public void the_upstream_input(String upstreamInputFile) throws Throwable {
         this.upstreamInputFile = upstreamInputFile;
 
-        final URL upStreamInput = new File(upstreamInputFile).toURI()
-                                                             .toURL();
+        final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
         extraEventsCount = upstreamJson.size();
     }
@@ -112,8 +111,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Given("^subscription object for \"([^\"]*)\" with name \"([^\"]*)\" is created$")
-    public void subscription_object_for_with_name_is_created(String subscriptionType, String subscriptionName)
-            throws Throwable {
+    public void subscription_object_for_with_name_is_created(String subscriptionType,
+            String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
             subscriptionObject = new MailSubscriptionObject(subscriptionName);
         } else {
@@ -132,18 +131,22 @@ public class FlowStepsIT extends IntegrationTestBase {
         subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
-    @When("^basic_auth authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
-    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(String username,
-                                                                                            String password)
-            throws Throwable {
-        if (subscriptionObject instanceof RestPostSubscriptionObject) {
-            ((RestPostSubscriptionObject) subscriptionObject).setBasicAuth(username, password);
+    @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
+    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(
+            String authenticationType, String username, String password) throws Throwable {
+
+        RestPostSubscriptionObject restPostSubscriptionObject = (RestPostSubscriptionObject) subscriptionObject;
+        if (restPostSubscriptionObject != null) {
+            restPostSubscriptionObject.setAuthenticationType(authenticationType)
+                                      .setUsername(username)
+                                      .setPassword(password);
+            subscriptionObject = restPostSubscriptionObject;
         }
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
-    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(String restPostBodyMediaType)
-            throws Throwable {
+    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(
+            String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
 
     }
@@ -154,9 +157,10 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @When("^condition \"([^\"]*)\" at requirement index '(\\d+)' is added in subscription$")
-    public void requirement_for_condition_is_added_in_subscription(String condition, int requirementIndex)
-            throws Throwable {
-        subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put("jmespath", condition));
+    public void requirement_for_condition_is_added_in_subscription(String condition,
+            int requirementIndex) throws Throwable {
+        subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put(
+                "jmespath", condition));
     }
 
     @When("^the eiffel events are sent$")
@@ -166,8 +170,7 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^the upstream input events are sent")
     public void upstream_input_events_are_sent() throws IOException {
-        final URL upStreamInput = new File(upstreamInputFile).toURI()
-                                                             .toURL();
+        final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
         if (upstreamJson != null) {
             for (JsonNode event : upstreamJson) {
@@ -210,7 +213,7 @@ public class FlowStepsIT extends IntegrationTestBase {
             }
         }
 
-        assertEquals(true, jobStatusDataFetched);
+        assertEquals("Failed to fetch Job Status Data: ", true, jobStatusDataFetched);
     }
 
     @Then("^the expected aggregated object ID is \"([^\"]*)\"$")
@@ -219,7 +222,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Then("^verify jenkins job data timestamp is after test subscription was created$")
-    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created() throws Throwable {
+    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created()
+            throws Throwable {
         long jenkinsTriggeredTime = jobStatusData.getLong("timestamp");
         assert (jenkinsTriggeredTime >= startTime) : "Jenkins job was triggered before execution of this test.";
     }
@@ -246,15 +250,12 @@ public class FlowStepsIT extends IntegrationTestBase {
 
             if (newestMailJson != null) {
                 JsonNode to = newestMailJson.get("to");
-                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails, amountOfMails, to.size());
+                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails,
+                        amountOfMails, to.size());
 
-                String createdDate = newestMailJson.get("created")
-                                                   .get("$date")
-                                                   .asText();
+                String createdDate = newestMailJson.get("created").get("$date").asText();
 
-                createdDateInMillis = ZonedDateTime.parse(createdDate)
-                                                   .toInstant()
-                                                   .toEpochMilli();
+                createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
                 mailHasBeenDelivered = createdDateInMillis >= startTime;
             }
 
@@ -267,8 +268,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @Then("^jenkins is set up with job name \"([^\"]*)\"$")
     public void jenkins_is_set_up_with_job_name(String JobName) throws Throwable {
-        jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort, jenkinsUsername,
-                jenkinsPassword);
+        jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort,
+                jenkinsUsername, jenkinsPassword);
         jenkinsManager.forceCreateJob(JobName, jenkinsXmlData.getXmlAsString());
         jenkinsJobName = JobName;
     }
@@ -285,8 +286,7 @@ public class FlowStepsIT extends IntegrationTestBase {
                    .setPort(port)
                    .setEndpoint("/subscriptions")
                    .addHeader("Content-type", "application/json")
-                   .setBody(subscriptionObject.getAsSubscriptions()
-                                              .toString());
+                   .setBody(subscriptionObject.getAsSubscriptions().toString());
 
         ResponseEntity<String> response = postRequest.performRequest();
         assertEquals(200, response.getStatusCodeValue());
@@ -340,7 +340,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     /**
-     * Iterates the parameter array and returns the value if the key is found in given parameter array.
+     * Iterates the parameter array and returns the value if the key is found in given parameter
+     * array.
      *
      * @param parameters
      * @param key
@@ -361,7 +362,8 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     private JsonNode getNewestMailFromDatabase() throws Exception {
-        ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME, "messages");
+        ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME,
+                "messages");
 
         if (allMails.size() > 0) {
             String mailString = allMails.get(allMails.size() - 1);
@@ -372,8 +374,9 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     /**
-     * Replaces given input parameters if user wishes with test defined parameters. If user want the user may specify
-     * the host, port job name and token directly in the feauture file and they will not be replaced.
+     * Replaces given input parameters if user wishes with test defined parameters. If user want the
+     * user may specify the host, port job name and token directly in the feauture file and they
+     * will not be replaced.
      * <p>
      * ${jenkinsHost} is replaced with jenkins host.
      * <p>
@@ -388,9 +391,12 @@ public class FlowStepsIT extends IntegrationTestBase {
      */
     private String replaceVariablesInNotificationMeta(String notificationMeta) {
         notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsHost\\}", jenkinsHost);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(jenkinsPort));
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}", this.jenkinsJobName);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}", this.jenkinsJobToken);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(
+                jenkinsPort));
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}",
+                this.jenkinsJobName);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}",
+                this.jenkinsJobToken);
         return notificationMeta;
     }
 }

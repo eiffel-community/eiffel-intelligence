@@ -35,7 +35,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTestTestExecution.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {"rules.path=src/test/resources/TestExecutionObjectRules.json"})
+@TestPropertySource(properties = { "rules.path=src/test/resources/TestExecutionObjectRules.json",
+        "spring.data.mongodb.database: FlowTestTestExecution", "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTestTestExecutionConsumer" })
 public class FlowTestTestExecution extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";

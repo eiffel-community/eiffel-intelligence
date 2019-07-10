@@ -15,7 +15,6 @@ package com.ericsson.ei.flowtests;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +76,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static HashMap<String, TestConfigs> configsMap = new HashMap<String, TestConfigs>();
+//    private static HashMap<String, TestConfigs> configsMap = new HashMap<String, TestConfigs>();
 
     @Value("${systemTest:false}")
     protected boolean systemTest;
@@ -98,6 +97,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         LOGGER.info("System Test is: " + systemTest);
         if (!systemTest) {
             mongoDBHandler.setMongoClient(TestConfigs.mongoClientInstance());
+            LOGGER.info("MongoDB db is: " + mongoDBHandler.getMongoProperties().getDatabase());
             // mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
             waitlist.setMongoDbHandler(mongoDBHandler);
         }
@@ -163,11 +163,11 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
                 channel = connectionFactory.createConnection().createChannel(true);
             }
 
-            String exchangeName = "ei-poc-4";
-            if (!systemTest) {
-                TestConfigs.createExchange(exchangeName, queueName);
-                // getFlowTestConfigs().createExchange(exchangeName, queueName);
-            }
+            String exchangeName = rmqHandler.getExchangeName();
+//            if (!systemTest) {
+//                TestConfigs.createExchange(exchangeName, queueName);
+            // getFlowTestConfigs().createExchange(exchangeName, queueName);
+//            }
 
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());

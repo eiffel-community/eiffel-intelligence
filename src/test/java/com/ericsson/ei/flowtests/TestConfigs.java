@@ -42,7 +42,8 @@ public class TestConfigs {
     }
 
     private static void setUpMessageBus() throws Exception {
-        if (amqpBroker != null) {
+        LOGGER.debug("setting up message buss");
+        if (amqpBroker != null || conn != null || cf != null) {
             return;
         }
 
@@ -113,6 +114,7 @@ public class TestConfigs {
 
     public static void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
+        LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
         RabbitAdmin admin = new RabbitAdmin(ccf);
         Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);

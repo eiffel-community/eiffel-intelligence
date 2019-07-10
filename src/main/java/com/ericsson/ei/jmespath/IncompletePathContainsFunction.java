@@ -20,19 +20,19 @@ public class IncompletePathContainsFunction extends BaseFunction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * io.burt.jmespath.function.BaseFunction#callFunction(io.burt.jmespath.
      * Adapter, java.util.List)
-     * 
+     *
      * Takes a JSON object and a path with value. The path can contain only
      * parts of a path or the entire path but then function is redundant since
      * JMESPath can already handle full paths in a JSON object. For example
      * paths a.b.c.d.e and b.d.c.d.e are valid for incomplete path c.e since
      * both elements of the incomplete path are contained in the example paths.
-     * 
+     *
      * But the value should also match.
-     * 
+     *
      * Returns true if there is at least one path that contains the elements of
      * the partial path and given value.
      */

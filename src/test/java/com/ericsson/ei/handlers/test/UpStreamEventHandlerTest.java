@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class, 
+        App.class,
         EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 public class UpStreamEventHandlerTest {
@@ -43,7 +43,7 @@ public class UpStreamEventHandlerTest {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("spring.data.mongodb.port", "" + port);
     }
-    
+
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {
         // TO DO to complete implementation

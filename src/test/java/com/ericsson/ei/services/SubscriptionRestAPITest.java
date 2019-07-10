@@ -249,7 +249,7 @@ public class SubscriptionRestAPITest {
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        
+
         String errorMessage = new JSONObject(result.getResponse().getContentAsString()).getString("message");
 
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());

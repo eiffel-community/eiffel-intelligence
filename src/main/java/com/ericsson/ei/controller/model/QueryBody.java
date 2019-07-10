@@ -24,9 +24,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class QueryBody {
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("criteria")
     @Valid
@@ -42,9 +42,9 @@ public class QueryBody {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("criteria")
     public Criteria getCriteria() {
@@ -52,9 +52,9 @@ public class QueryBody {
     }
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("criteria")
     public void setCriteria(Criteria criteria) {

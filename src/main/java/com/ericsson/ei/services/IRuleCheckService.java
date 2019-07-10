@@ -15,7 +15,7 @@ public interface IRuleCheckService {
      * aggregated object, once aggregation done it return and remove from the
      * mongodb. All these test events aggregated objects having the suffiex name
      * "_"<templateName>
-     * 
+     *
      * @param listRulesJson
      *            each event has their own rule set
      * @param listEventsJson

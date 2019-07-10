@@ -132,7 +132,7 @@ public class InformSubscriber {
             if (!success) {
                 String missedNotification = prepareMissedNotification(aggregatedObject,
                         subscriptionName, notificationMeta);
-                LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
+                LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
                 mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
                         missedNotificationCollectionName, "Time", ttlValue);
                 saveMissedNotificationToDB(missedNotification);
@@ -168,8 +168,7 @@ public class InformSubscriber {
             requestTries++;
             success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage,
                     headers);
-            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : "
-                    + success);
+            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
 
         return success;
@@ -270,7 +269,7 @@ public class InformSubscriber {
             String crumbKey = jenkinsJsonCrumbData.get("crumbRequestField").asText();
             String crumbValue = jenkinsJsonCrumbData.get("crumb").asText();
             headers.add(crumbKey, crumbValue);
-            LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey,
+            LOGGER.info("Successfully added header: {}", String.format("'%s':'%s'", crumbKey,
                     crumbValue));
         }
         return headers;
@@ -289,7 +288,6 @@ public class InformSubscriber {
             throws AuthenticationException {
         try {
             URL url = buildJenkinsCrumbUrl(notificationMeta);
-
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Basic " + encoding);
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -365,11 +363,11 @@ public class InformSubscriber {
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
             notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
-            LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
+            LOGGER.debug("Formatted notificationMeta = {}", notificationMeta);
 
             return notificationMeta;
         } catch (MalformedURLException | UnsupportedEncodingException e) {
-            LOGGER.error("Failed to extract parameters: " + e.getMessage());
+            LOGGER.error("Failed to extract parameters.", e);
             return notificationMeta;
         }
     }
@@ -447,12 +445,12 @@ public class InformSubscriber {
             String name = URLDecoder.decode(param.getName(), "UTF-8");
             String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
-            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Input parameter key and value: {} : {}", name, value);
             value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject)
                             .toString()
                             .replaceAll(REGEX, "");
 
-            LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Formatted parameter key and value: {} : {}", name, value);
             processedParams.add(new BasicNameValuePair(name, value));
         }
         return processedParams;
@@ -496,7 +494,7 @@ public class InformSubscriber {
                     missedNotificationCollectionName, missedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database");
+            LOGGER.debug("Failed to insert the notification into database.", e);
         }
     }
 
@@ -516,7 +514,7 @@ public class InformSubscriber {
         try {
             document.put("Time", DateUtils.getDate());
         } catch (ParseException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to get date object.", e);
         }
         document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
         return document.toString();

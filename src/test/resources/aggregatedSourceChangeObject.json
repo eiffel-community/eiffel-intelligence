@@ -71,7 +71,7 @@
          "time": 1234567890
       },
       "id": "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47",
-      "creations" : [ 
+      "creations" : [
             {
                 "eventId" : "sb6ef12d-25fb-4d7j-b9fd-5fgvsr4fe66de47",
                 "author" : {
@@ -80,7 +80,7 @@
                     "email" : "john.doe@company.com",
                     "group" : "Team Gophers"
                 },
-                "creations" : [ 
+                "creations" : [
                     {
                         "eventId" : "sb6ef12d-25fb-4d77-b9fd-5fktsrefe66de47",
                         "author" : {
@@ -90,7 +90,7 @@
                             "group" : "Team Gophers"
                         },
                         "time" : 1234567890,
-                        "issues" : [ 
+                        "issues" : [
                             {
                                 "tracker" : "JIRA",
                                 "id" : "JIRA-1234",
@@ -102,7 +102,7 @@
                     }
                 ],
                 "time" : 1234567890,
-                "issues" : [ 
+                "issues" : [
                     {
                         "tracker" : "JIRA",
                         "id" : "JIRA-1234",

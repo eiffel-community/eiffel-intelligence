@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Api(value = "queryAggregatedObject", tags = {"Query aggregated object"})
 public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -66,7 +66,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
             }
 
             queryResponse.setQueryResponseEntity(queryResponseEntity);
-            LOGGER.debug("The response is: " + response.toString());
+            LOGGER.debug("The response is: {}", response.toString());
             return new ResponseEntity<QueryResponse>(queryResponse, httpStatus);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";

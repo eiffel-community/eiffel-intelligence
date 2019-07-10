@@ -18,7 +18,7 @@ public class ConfigurationLogger {
     Environment env;
 
     @PostConstruct
-    public void validate() {
+    public void print() {
         logConfiguration();
     }
 

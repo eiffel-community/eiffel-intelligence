@@ -79,20 +79,20 @@ database, then it fulfills our subscription criteria. It can be seen that both
 conditions of the first requirement are satisfied by the aggregated object.
 More specifically, in the first condition, JMESPath rule is looking for:
 
-    identity=='pkg:maven/com.mycompany.myproduct/sub-system@1.1.0' 
-    
-and in the second condition it looks for 
+    identity=='pkg:maven/com.mycompany.myproduct/sub-system@1.1.0'
 
-    testCaseExecutions.testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5' 
+and in the second condition it looks for
 
-Both strings can be found in the aggregated object JSON. Consequently, the process 
-is started to send notification to specified subscriber. For this, 'notificationMeta' 
+    testCaseExecutions.testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5'
+
+Both strings can be found in the aggregated object JSON. Consequently, the process
+is started to send notification to specified subscriber. For this, 'notificationMeta'
 and 'notificationType' field values are extracted from the subscription.
 
 ## Notify via REST POST
 In the example subscription above, the notification is sent as **REST POST** to
 the url http://127.0.0.1:3000/ei/test_subscription_rest. The notification message
-in this subscription is prepared as key value pairs in the request.  
+in this subscription is prepared as key value pairs in the request.
 
     "notificationMessageKeyValues": [{
         "formkey": "e",
@@ -100,7 +100,7 @@ in this subscription is prepared as key value pairs in the request.
     }]
 
 The key is 'jsonparams' and the value is the full aggregated object. These are part
-of the notification message for this particular subscription. Below is a list of the 
+of the notification message for this particular subscription. Below is a list of the
 key value pairs which will be sent for this subscription.
 
     parameters:
@@ -175,7 +175,7 @@ specified number of time, then a missed notification is prepared and stored
 in database. The name of the database is specified in the application.properties
 file as “missedNotificationDataBaseName” and collection name as
 “missedNotificationCollectionName”. The message is stored in the database
-for a certain duration before being deleted. This time can be configured in 
+for a certain duration before being deleted. This time can be configured in
 application.properties as “notification.ttl.value”.
 
 **Missed notification in the missed notification database with TTL value:**

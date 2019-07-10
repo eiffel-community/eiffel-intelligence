@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessMissedNotification {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessMissedNotification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
 
     @Value("${missedNotificationCollectionName}")
     private String missedNotificationCollectionName;
@@ -54,21 +54,21 @@ public class ProcessMissedNotification {
     public List<String> processQueryMissedNotification(String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
-        LOGGER.debug("The condition is : " + condition);
+        LOGGER.debug("The condition is : {}", condition);
         JsonNode jsonCondition = null;
         try {
             jsonCondition = mapper.readTree(condition);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to parse JSON.", e);
         }
-        LOGGER.debug("The Json condition is : " + jsonCondition);
+        LOGGER.debug("The Json condition is : {}", jsonCondition);
         List<String> output = handler.find(missedNotificationDatabaseName, missedNotificationCollectionName,
                 jsonCondition.toString());
         return output.stream().map(a -> {
             try {
                 return mapper.readTree(a).path("AggregatedObject").toString();
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.error("Failed to parse JSON.", e);
             }
             return null;
         }).collect(Collectors.toList());
@@ -83,14 +83,14 @@ public class ProcessMissedNotification {
      */
     public boolean deleteMissedNotification(String subscriptionName) {
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
-        LOGGER.debug("The JSON condition for delete missed notification is : " + condition);
+        LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
         return handler.dropDocument(missedNotificationDatabaseName, missedNotificationCollectionName, condition);
     }
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("MissedNotification Database is : " + missedNotificationDatabaseName
-            + "\nMissedNotification Collection is : " + missedNotificationCollectionName);
+        LOGGER.debug("MissedNotification Database is : {}" + "\nMissedNotification Collection is : {}",
+        	missedNotificationDatabaseName, missedNotificationCollectionName);
     }
 
 }

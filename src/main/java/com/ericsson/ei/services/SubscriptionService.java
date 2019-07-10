@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class SubscriptionService implements ISubscriptionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
@@ -81,7 +81,7 @@ public class SubscriptionService implements ISubscriptionService {
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
-            throw new SubscriptionNotFoundException("No record found for the Subscription Name:" + subscriptionName);
+            throw new SubscriptionNotFoundException("No record found for the Subscription Name: " + subscriptionName);
         }
         for (String input : list) {
             Subscription subscription;
@@ -91,7 +91,7 @@ public class SubscriptionService implements ISubscriptionService {
                 subscription.setAggregationtype(SpringApplicationName);
                 return subscription;
             } catch (IOException e) {
-                LOG.error("Malformed JSON string");
+                LOGGER.error("Malformed JSON string", e);
             }
         }
         return null;
@@ -119,15 +119,16 @@ public class SubscriptionService implements ISubscriptionService {
             if (result != null) {
                 String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                    LOG.info("Subscription  \"" + subscriptionName
+                    LOGGER.info("Subscription  \"{}"
                             + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
                             + "probably due to subscription has never matched any aggregated objects and "
-                            + "no matched aggregated objects id has been stored in database for the specific subscription.");
+                            + "no matched aggregated objects id has been stored in database for the specific subscription.",
+                            subscriptionName);
                 }
             }
 
         } catch (JSONException | JsonProcessingException e) {
-            LOG.error(e.getMessage(), e);
+            LOGGER.error("Failed to modify subscription.", e);
             return false;
         }
         return true;
@@ -141,10 +142,11 @@ public class SubscriptionService implements ISubscriptionService {
         if (deleteResult) {
             String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                LOG.info("Subscription  \"" + subscriptionName
+                LOGGER.info("Subscription  \"{}"
                         + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
                         + "probably due to subscription has never matched any aggregated objects and "
-                        + "no matched aggregated objects id has been stored in database for the specific subscription.");
+                        + "no matched aggregated objects id has been stored in database for the specific subscription.",
+                        subscriptionName);
             }
         } else if (doSubscriptionExist(subscriptionName)) {
             String message = "Failed to delete subscription \"" + subscriptionName + "\" invalid ldapUserName";
@@ -171,15 +173,14 @@ public class SubscriptionService implements ISubscriptionService {
                 subscription.setAggregationtype(SpringApplicationName);
                 subscriptions.add(subscription);
             } catch (IOException e) {
-                LOG.error("malformed json string");
+                LOGGER.error("Failed to get subscription.", e);
             }
         }
         return subscriptions;
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
-        LOG.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: "
-                + subscriptionNameQuery);
+        LOGGER.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}", subscriptionNameQuery);
         MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
         return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
     }
@@ -220,7 +221,7 @@ public class SubscriptionService implements ISubscriptionService {
                 ownerExist = true;
             }
         } catch (SubscriptionNotFoundException e) {
-            LOG.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
         }
         return ownerExist;
     }

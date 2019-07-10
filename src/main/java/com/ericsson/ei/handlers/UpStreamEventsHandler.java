@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class UpStreamEventsHandler {
 
-    private static Logger log = LoggerFactory.getLogger(UpStreamEventsHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpStreamEventsHandler.class);
 
     @Autowired
     private ERQueryService eventRepositoryQueryService;
@@ -64,19 +64,19 @@ public class UpStreamEventsHandler {
         final ResponseEntity<JsonNode> responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
         if (responseEntity == null) {
-            log.warn("Asked for upstream from " + aggregatedObjectId + " but got null response entity back!");
+            LOGGER.warn("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
             return;
         }
 
         final JsonNode searchResult = responseEntity.getBody();
         if (searchResult == null) {
-            log.warn("Asked for upstream from " + aggregatedObjectId + " but got null result back!");
+            LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
             return;
         }
 
         final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
         if (!upstreamLinkObjects.isArray()) {
-            log.warn("Expected upstreamLinkObjects to be an array but is: " + upstreamLinkObjects.getNodeType());
+            LOGGER.warn("Expected upstreamLinkObjects to be an array but is: {}", upstreamLinkObjects.getNodeType());
         }
 
         // apply history extract rules on each node in the tree

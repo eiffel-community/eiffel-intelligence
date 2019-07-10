@@ -1,4 +1,4 @@
-package com.ericsson.ei.utils;
+package com.ericsson.ei.notifications;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 
 @Component
-public class NotificationMeta {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationMeta.class);
+public class UrlParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlParser.class);
     private static final String REGEX = "^\"|\"$";
     // Regular expression for replacing unexpected character like \"
 

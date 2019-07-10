@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscription;
+package com.ericsson.ei.notifications;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,18 +57,6 @@ public class HttpRequestSender {
 
         try {
             LOGGER.info("Performing HTTP request to url: {}", url);
-//            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
-//                                                             .equals(MediaType.APPLICATION_FORM_URLENCODED);
-//            if (isApplicationXWwwFormUrlEncoded) {
-//                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
-//                        mapNotificationMessage, headers);
-//                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
-//            } else {
-//                HttpEntity<String> request = new HttpEntity<>(
-//                        String.valueOf((mapNotificationMessage.get("")).get(0)),
-//                        headers);
-//                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
-//            }
             response = rest.postForEntity(url, request, JsonNode.class);
 
         } catch (HttpClientErrorException e) {

@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.subscription;
+package com.ericsson.ei.notifications;
 
 import java.text.ParseException;
 
@@ -30,7 +30,6 @@ import org.springframework.util.MultiValueMap;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.utils.NotificationMeta;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,7 +40,7 @@ import com.mongodb.MongoWriteException;
 import lombok.Getter;
 
 /**
- * Represents the REST POST notification mechanism and the alternate way to save the
+ * Represents the notification mechanism and the alternate way to save the
  * aggregatedObject details in the database when the notification fails.
  *
  * @author xjibbal
@@ -81,8 +80,7 @@ public class InformSubscriber {
     @Autowired
     private EmailSender emailSender;
 
-    @Autowired
-    private NotificationMeta notificationMeta;
+    private UrlParser urlParser = new UrlParser();
 
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
@@ -105,10 +103,10 @@ public class InformSubscriber {
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
 
-            String url = this.notificationMeta.runJmesPathOnParameters(notificationMeta,
+            String url = this.urlParser.runJmesPathOnParameters(notificationMeta,
                     aggregatedObject);
 
-            HttpRequest request = new HttpRequest(httpRequestSender, this.notificationMeta);
+            HttpRequest request = new HttpRequest(httpRequestSender);
             request.setAggregatedObject(aggregatedObject)
                    .setMapNotificationMessage(mapNotificationMessage)
                    .setSubscriptionJson(subscriptionJson)
@@ -140,7 +138,7 @@ public class InformSubscriber {
      * Attempts to make HTTP POST requests. If the request fails, it is retried until the maximum
      * number of failAttempts have been reached.
      *
-     * @param notificationMeta       The URL to send the request to
+     * @param urlParser       The URL to send the request to
      * @param mapNotificationMessage The body of the HTTP request
      * @param headers
      * @return success A boolean value depending on the outcome of the final HTTP request

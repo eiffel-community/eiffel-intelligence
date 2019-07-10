@@ -1,4 +1,4 @@
-package com.ericsson.ei.subscription;
+package com.ericsson.ei.notifications;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +15,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.utils.NotificationMeta;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,8 +26,6 @@ import lombok.experimental.Accessors;
 public class HttpRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
-    private static final String JENKINS_CRUMB_ENDPOINT = "/crumbIssuer/api/json";
-
     private static final String AUTHENTICATION_TYPE_NO_AUTH = "NO_AUTH";
     private static final String AUTHENTICATION_TYPE_BASIC_AUTH = "BASIC_AUTH";
     private static final String AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF = "BASIC_AUTH_JENKINS_CSRF";
@@ -36,8 +33,6 @@ public class HttpRequest {
     private SubscriptionField subscriptionField;
 
     private HttpRequestSender httpRequestSender;
-
-    private NotificationMeta notificationMeta2;
 
     @Getter
     @Setter
@@ -59,9 +54,8 @@ public class HttpRequest {
     private String contentType;
     private HttpHeaders headers;
 
-    HttpRequest(HttpRequestSender httpRequestSender, NotificationMeta notificationMeta) {
+    HttpRequest(HttpRequestSender httpRequestSender) {
         this.httpRequestSender = httpRequestSender;
-        this.notificationMeta2 = notificationMeta;
     }
 
     /**
@@ -79,7 +73,7 @@ public class HttpRequest {
      * Builds a HTTP request with headers.
      * */
     public HttpRequest build() throws AuthenticationException {
-        //subscriptionField = new SubscriptionField(this.subscriptionJson);
+        this.subscriptionField = new SubscriptionField(this.subscriptionJson);
         prepareHeaders();
         createRequest();
 
@@ -148,7 +142,7 @@ public class HttpRequest {
         LOGGER.debug("Successfully added header for 'Authorization'");
 
         if (authType.equals(AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF)) {
-            JsonNode crumb = fetchJenkinsCrumb(encoding);
+            JsonNode crumb = new JenkinsCrumb(httpRequestSender).fetchJenkinsCrumb(encoding, this.url);
             addJenkinsCrumbData(crumb);
         }
 
@@ -190,63 +184,6 @@ public class HttpRequest {
             LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey,
                     crumbValue));
         }
-    }
-
-    /**
-     * Tries to fetch a Jenkins crumb. Will return Jenkins crumb data in JSON
-     * format, or null if no crumb was found.
-     *
-     * @param encoding
-     * @return JenkinsJsonCrumbData
-     * @throws AuthenticationException
-     */
-    private JsonNode fetchJenkinsCrumb(String encoding)
-            throws AuthenticationException {
-        try {
-            URL url = buildJenkinsCrumbUrl(this.url);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Basic " + encoding);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity<JsonNode> response = httpRequestSender.makeGetRequest(url.toString(),
-                    headers);
-
-            JsonNode JenkinsJsonCrumbData = response.getBody();
-            return JenkinsJsonCrumbData;
-
-        } catch (MalformedURLException e) {
-            String message = "Failed to format url to collect jenkins crumb.";
-            LOGGER.error(message, e);
-            throw new AuthenticationException(message, e);
-        } catch (HttpClientErrorException e) {
-            if (HttpStatus.UNAUTHORIZED == e.getStatusCode()) {
-                String message = "Failed to fetch crumb. Authentication failed, wrong username or password.";
-                LOGGER.error(message, e);
-                throw new AuthenticationException(message, e);
-            }
-            if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
-                String message = String.format(
-                    "Failed to fetch crumb. The authentication type is %s,"
-                        + " but CSRF Protection seems disabled in Jenkins.",
-                    AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
-                LOGGER.warn(message, e);
-                return null;
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Replaces the user given context paths with the crumb issuer context path.
-     *
-     * @param url
-     * @return jenkinsCrumbUrl
-     * @throws MalformedURLException
-     */
-    private URL buildJenkinsCrumbUrl(String url) throws MalformedURLException {
-        String baseUrl = notificationMeta2.extractBaseUrl(url);
-        URL jenkinsCrumbUrl = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
-        return jenkinsCrumbUrl;
     }
 
 }

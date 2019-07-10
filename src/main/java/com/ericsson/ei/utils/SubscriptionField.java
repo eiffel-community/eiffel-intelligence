@@ -3,7 +3,7 @@ package com.ericsson.ei.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.subscription.HttpRequest;
+import com.ericsson.ei.notifications.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class SubscriptionField {

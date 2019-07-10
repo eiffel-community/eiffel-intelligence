@@ -104,7 +104,7 @@ public class RunSubscription {
                 boolean isFulfilled = resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty;
                 String fulfilledStatement = String.format("Condition was %sfulfilled.", isFulfilled ? "" : "not ");
                 LOGGER.debug("Condition: {}\nJMESPath evaluation result: {}\n{}",
-                        condition, result.toString(), isFulfilled, fulfilledStatement);
+                        condition, result.toString(), fulfilledStatement);
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }

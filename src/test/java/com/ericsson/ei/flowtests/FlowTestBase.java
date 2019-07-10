@@ -35,9 +35,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +77,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
+    private static HashMap<String, TestConfigs> configsMap = new HashMap<String, TestConfigs>();
 
     @Value("${systemTest:false}")
     protected boolean systemTest;
@@ -89,15 +89,16 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         if (!systemTestValue) {
             System.setProperty("flow.test", "true");
             createFlowTestConfigs();
-            getFlowTestConfigs().init();
+            // getFlowTestConfigs().init();
         }
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         LOGGER.info("System Test is: " + systemTest);
         if (!systemTest) {
-            mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
+            mongoDBHandler.setMongoClient(TestConfigs.mongoClientInstance());
+            // mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
             waitlist.setMongoDbHandler(mongoDBHandler);
         }
     }
@@ -106,19 +107,20 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     public void teardown() {
         if (!systemTest) {
             mongoDBHandler.setMongoClient(null);
-            getFlowTestConfigs().tearDown();
+            // getFlowTestConfigs().tearDown();
             cleanFlowTestConfigs();
         }
     }
 
-    protected FlowTestConfigs getFlowTestConfigs() {
-        return configsMap.get(getClassName());
-    }
+    // protected TestConfigs getFlowTestConfigs() {
+    // return configsMap.get(getClassName());
+    // }
 
-    private void createFlowTestConfigs() {
-        FlowTestConfigs newConfigs = new FlowTestConfigs();
-        String className = getClassName();
-        configsMap.put(className, newConfigs);
+    private void createFlowTestConfigs() throws Exception {
+        TestConfigs.init();
+        // TestConfigs newConfigs = new TestConfigs();
+        // String className = getClassName();
+        // configsMap.put(className, newConfigs);
     }
 
     private String getClassName() {
@@ -126,7 +128,9 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     private void cleanFlowTestConfigs() {
-        configsMap.remove(getClassName());
+        String dbName = System.getProperty("spring.data.mongodb.database");
+        // mongoDBHandler.getMongoClient().dropDatabase(dbName);
+        // configsMap.remove(getClassName());
     }
 
     // setFirstEventWaitTime: variable to set the wait time after publishing the
@@ -151,18 +155,18 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     @Test
-    public void flowTest() throws InterruptedException {
+    public void flowTest() throws Exception {
         try {
             String queueName = rmqHandler.getQueueName();
-            Channel channel = null;
-            if (!systemTest) {
-                channel = getFlowTestConfigs().getConn().createChannel();
-            } else {
+            Channel channel = TestConfigs.getConn().createChannel();
+            if (channel == null) {
                 channel = connectionFactory.createConnection().createChannel(true);
             }
+
             String exchangeName = "ei-poc-4";
             if (!systemTest) {
-                getFlowTestConfigs().createExchange(exchangeName, queueName);
+                TestConfigs.createExchange(exchangeName, queueName);
+                // getFlowTestConfigs().createExchange(exchangeName, queueName);
             }
 
             List<String> eventNames = getEventNamesToSend();
@@ -220,10 +224,11 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     // count documents that were processed
-    private long countProcessedEvents(String database, String collection) {
+    private long countProcessedEvents(String database, String collection) throws Exception {
         MongoClient mongoClient = null;
         if (!systemTest) {
-            mongoClient = getFlowTestConfigs().getMongoClient();
+            mongoClient = TestConfigs.mongoClientInstance();
+            // mongoClient = getFlowTestConfigs().getMongoClient();
         } else {
             mongoClient = mongoDBHandler.getMongoClient();
         }
@@ -232,7 +237,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         return table.count();
     }
 
-    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws Exception {
         // wait for all events to be processed
         long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;

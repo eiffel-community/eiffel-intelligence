@@ -55,7 +55,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {"rules.path=src/test/resources/ArtifactRules.json"})
+@TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json",
+        "spring.data.mongodb.database: FlowTest", "rabbitmq.exchange.name: FlowTest-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTestConsumer" })
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";

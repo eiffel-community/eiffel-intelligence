@@ -20,28 +20,32 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 import lombok.Getter;
 
-public class FlowTestConfigs {
+public class TestConfigs {
 
-    private AMQPBrokerManager amqpBroker;
-    private MongodForTestsFactory testsFactory;
-    private Queue queue = null;
-    private RabbitAdmin admin;
-    private ConnectionFactory cf;
+    private static AMQPBrokerManager amqpBroker;
+    private static MongodForTestsFactory testsFactory;
+//    private Queue queue = null;
+//    private RabbitAdmin admin;
+    private static ConnectionFactory cf;
 
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(FlowTestConfigs.class);
-
-    @Getter
-    private Connection conn;
+    final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
     @Getter
-    private MongoClient mongoClient = null;
+    private static Connection conn;
 
-    public void init() throws Exception {
+    @Getter
+    private static MongoClient mongoClient = null;
+
+    public static void init() throws Exception {
         setUpMessageBus();
         setUpEmbeddedMongo();
     }
 
-    private void setUpMessageBus() throws Exception {
+    private static void setUpMessageBus() throws Exception {
+        if (amqpBroker != null) {
+            return;
+        }
+
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
@@ -64,7 +68,19 @@ public class FlowTestConfigs {
 
     }
 
-    private void setUpEmbeddedMongo() throws IOException {
+    public static MongoClient mongoClientInstance() throws Exception {
+        if (mongoClient == null) {
+            setUpEmbeddedMongo();
+        }
+
+        return mongoClient;
+    }
+
+    private static void setUpEmbeddedMongo() throws IOException {
+        if (mongoClient != null) {
+            return;
+        }
+
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
@@ -77,28 +93,28 @@ public class FlowTestConfigs {
     }
 
     public void tearDown() {
-        if (amqpBroker != null) {
-            amqpBroker.stopBroker();
-        }
-        try {
-            conn.close();
-        } catch (Exception e) {
-            // We try to close the connection but if
-            // the connection is closed we just receive the
-            // exception and go on
-        }
-
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
+//        if (amqpBroker != null) {
+//            amqpBroker.stopBroker();
+//        }
+//        try {
+//            conn.close();
+//        } catch (Exception e) {
+//            // We try to close the connection but if
+//            // the connection is closed we just receive the
+//            // exception and go on
+//        }
+//
+//        if (mongoClient != null)
+//            mongoClient.close();
+//        if (testsFactory != null)
+//            testsFactory.shutdown();
 
     }
 
-    void createExchange(final String exchangeName, final String queueName) {
+    public static void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
-        admin = new RabbitAdmin(ccf);
-        queue = new Queue(queueName, false);
+        RabbitAdmin admin = new RabbitAdmin(ccf);
+        Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);
         final TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);

@@ -55,7 +55,6 @@ import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.ericsson.ei.rules.RulesHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -115,8 +114,8 @@ public class TrafficGeneratedTest extends FlowTestBase {
 
             String queueName = rmqHandler.getQueueName();
             String exchange = "ei-poc-4";
-            getFlowTestConfigs().createExchange(exchange, queueName);
-            Channel channel = getFlowTestConfigs().getConn().createChannel();
+            TestConfigs.createExchange(exchange, queueName);
+            Channel channel = TestConfigs.getConn().createChannel();
 
             long timeBefore = System.currentTimeMillis();
 
@@ -149,7 +148,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
      * targets to unique value. Ids of events that are located in the same package
      * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
      * used.
-     * 
+     *
      * @param eventNames list of events to be sent.
      * @return list of ready to send events.
      */
@@ -175,6 +174,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
         return events;
     }
 
+    @Override
     List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
 

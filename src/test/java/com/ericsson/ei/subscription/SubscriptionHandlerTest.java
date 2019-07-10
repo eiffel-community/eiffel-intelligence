@@ -45,6 +45,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,8 +55,10 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.flowtests.TestConfigs;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.testsuite.SuiteTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -64,6 +67,7 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionHandlerTest" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
@@ -118,7 +122,7 @@ public class SubscriptionHandlerTest {
     @MockBean
     private HttpRequestSender httpRequestSender;
 
-    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagDataBaseName = "SubscriptionHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
     @Autowired
@@ -128,8 +132,17 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
+
+        System.out.println(SuiteTest.getMongoClients().isEmpty());
+
+        mongoClient = TestConfigs.mongoClientInstance();
+        if (mongoClient == null) {
+            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            mongoClient = testsFactory.newMongo();
+        }
+
+        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        // mongoClient = testsFactory.newMongo();
         String port = "" + mongoClient.getAddress().getPort();
         System.setProperty("spring.data.mongodb.port", port);
 

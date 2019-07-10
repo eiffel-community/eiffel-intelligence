@@ -30,6 +30,8 @@ import org.springframework.util.MultiValueMap;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.utils.NotificationMeta;
+import com.ericsson.ei.utils.SubscriptionField;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -80,7 +82,7 @@ public class InformSubscriber {
     private EmailSender emailSender;
 
     @Autowired
-    private SubscriptionHandler subscriptionHandler;
+    private NotificationMeta notificationMeta;
 
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
@@ -92,26 +94,30 @@ public class InformSubscriber {
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
             throws AuthenticationException {
-        String subscriptionName = subscriptionHandler.getSubscriptionField("subscriptionName",
-                subscriptionJson);
-        String notificationType = subscriptionHandler.getSubscriptionField("notificationType",
-                subscriptionJson);
-        String notificationMeta = subscriptionHandler.getSubscriptionField("notificationMeta",
-                subscriptionJson);
+        SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
+        String subscriptionName = subscriptionField.get("subscriptionName");
+        String notificationType = subscriptionField.get("notificationType");
+        String notificationMeta = subscriptionField.get("notificationMeta");
 
         MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(
                 aggregatedObject, subscriptionJson);
 
         if (notificationType.trim().equals("REST_POST")) {
             LOGGER.debug("Notification through REST_POST");
-            HttpRequest request = new HttpRequest();
+
+            String url = this.notificationMeta.runJmesPathOnParameters(notificationMeta,
+                    aggregatedObject);
+
+            HttpRequest request = new HttpRequest(httpRequestSender, this.notificationMeta);
             request.setAggregatedObject(aggregatedObject)
+                   .setMapNotificationMessage(mapNotificationMessage)
                    .setSubscriptionJson(subscriptionJson)
-                   .setNotificationMeta(notificationMeta);
+                   .setUrl(url)
+                   .build();
 
             // TODO: perform request
 
-            boolean success = makeHTTPRequests(notificationMeta, mapNotificationMessage, null);
+            boolean success = makeHTTPRequests(request);
 
             if (!success) {
                 String missedNotification = prepareMissedNotification(aggregatedObject,
@@ -125,8 +131,7 @@ public class InformSubscriber {
 
         if (notificationType.trim().equals("MAIL")) {
             LOGGER.debug("Notification through EMAIL");
-            String subject = subscriptionHandler.getSubscriptionField("emailSubject",
-                    subscriptionJson);
+            String subject = subscriptionField.get("emailSubject");
             String message = String.valueOf((mapNotificationMessage.get("")).get(0));
             emailSender.sendEmail(notificationMeta, message, subject);
             // TODO: save to missed notification if email sending goes wrong
@@ -143,16 +148,14 @@ public class InformSubscriber {
      * @return success A boolean value depending on the outcome of the final HTTP request
      * @throws AuthenticationException
      */
-    private boolean makeHTTPRequests(String notificationMeta,
-            MultiValueMap<String, String> mapNotificationMessage, HttpHeaders headers)
+    private boolean makeHTTPRequests(HttpRequest request)
             throws AuthenticationException {
         boolean success = false;
         int requestTries = 0;
 
         do {
             requestTries++;
-            success = httpRequestSender.postDataMultiValue(notificationMeta, mapNotificationMessage,
-                    headers);
+            success = request.perform();
             LOGGER.debug("After trying for " + requestTries + " time(s), the result is : "
                     + success);
         } while (!success && requestTries <= failAttempt);

@@ -114,27 +114,6 @@ public class SubscriptionHandler {
     }
 
     /**
-     * Given the field name in a subscription, returns its value.
-     *
-     * @param subscriptionJson
-     * @param fieldName
-     * @return field value
-     */
-    public String getSubscriptionField(String fieldName, JsonNode subscriptionJson) {
-        // TODO: Implement . notation. authenticationDetails.username would return the
-        // username value in {"authenticationDetails":{"username":"myName", "password":"secret"}}
-
-        String value;
-        if (subscriptionJson.get(fieldName) != null) {
-            value = subscriptionJson.get(fieldName).asText();
-            LOGGER.debug("Extracted value [{}] from subscription field [{}].", value, fieldName);
-        } else {
-            value = "";
-        }
-        return value;
-    }
-
-    /**
      * This method is responsible for displaying configurable application parameters like
      * Subscription database name and collection name, etc.
      */

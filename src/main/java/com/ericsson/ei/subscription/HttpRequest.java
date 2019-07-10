@@ -226,9 +226,9 @@ public class HttpRequest {
             }
             if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
                 String message = String.format(
-                        "Failed to fetch crumb. The authentication type is %s,"
-                                + " but CSRF Protection seems disabled in Jenkins.",
-                        AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
+                    "Failed to fetch crumb. The authentication type is %s,"
+                        + " but CSRF Protection seems disabled in Jenkins.",
+                    AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF);
                 LOGGER.warn(message, e);
                 return null;
             }

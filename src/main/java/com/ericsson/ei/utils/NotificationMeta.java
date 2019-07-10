@@ -53,20 +53,21 @@ public class NotificationMeta {
             List<NameValuePair> params = extractUrlParameters(notificationMeta);
             LOGGER.debug("Notification meta in parts:\n ## Base Url: "
                     + "{}\n ## Context Path: {}\n ## URL Parameters: {} ", baseUrl, contextPath,
-                    params);
+                params);
 
             List<NameValuePair> processedParams = processJMESPathParameters(aggregatedObject,
-                    params);
+                params);
             LOGGER.debug("JMESPath processed parameters :\n ## {}", processedParams);
             String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
 
             notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
-            LOGGER.debug("Formatted notificationMeta = " + notificationMeta);
+            LOGGER.debug("Formatted notificationMeta = {}", notificationMeta);
 
+            return notificationMeta;
         } catch (MalformedURLException | UnsupportedEncodingException e) {
-            LOGGER.error("Failed to extract parameters: " + e.getMessage());
+            LOGGER.error("Failed to extract parameters.", e);
+            return notificationMeta;
         }
-        return notificationMeta;
     }
 
     /**
@@ -171,12 +172,12 @@ public class NotificationMeta {
             String name = URLDecoder.decode(param.getName(), "UTF-8");
             String value = URLDecoder.decode(param.getValue(), "UTF-8");
 
-            LOGGER.debug("Input parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Input parameter key and value: {} : {}", name, value);
             value = jmespath.runRuleOnEvent(value.replaceAll(REGEX, ""), aggregatedObject)
                             .toString()
                             .replaceAll(REGEX, "");
 
-            LOGGER.debug("Formatted parameter key and value: " + name + " : " + value);
+            LOGGER.debug("Formatted parameter key and value: {} : {}", name, value);
             processedParams.add(new BasicNameValuePair(name, value));
         }
         return processedParams;

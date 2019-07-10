@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 public class HttpRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -51,17 +52,14 @@ public class HttpRequest {
 
     @Setter
     @Getter
-    @Accessors(chain = true)
     private String aggregatedObject;
 
     @Setter
     @Getter
-    @Accessors(chain = true)
     private JsonNode subscriptionJson;
 
     @Setter
     @Getter
-    @Accessors(chain = true)
     private String notificationMeta;
 
     private HttpHeaders headers;
@@ -81,7 +79,7 @@ public class HttpRequest {
     }
 
     /**
-     * Prepares headers to be used when making a rest call with the method POST.
+     * Prepares headers to be used when making a request with the method POST.
      *
      * @param notificationMeta A String containing a URL
      * @param subscriptionJson Used to extract the rest post body media type from

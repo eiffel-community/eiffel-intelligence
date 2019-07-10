@@ -16,31 +16,16 @@
 */
 package com.ericsson.ei.subscription;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.DateUtils;
@@ -124,6 +109,8 @@ public class InformSubscriber {
                    .setSubscriptionJson(subscriptionJson)
                    .setNotificationMeta(notificationMeta);
 
+            // TODO: perform request
+
             boolean success = makeHTTPRequests(notificationMeta, mapNotificationMessage, null);
 
             if (!success) {
@@ -142,6 +129,7 @@ public class InformSubscriber {
                     subscriptionJson);
             String message = String.valueOf((mapNotificationMessage.get("")).get(0));
             emailSender.sendEmail(notificationMeta, message, subject);
+            // TODO: save to missed notification if email sending goes wrong
         }
     }
 

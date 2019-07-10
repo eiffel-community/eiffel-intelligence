@@ -44,6 +44,17 @@ public class HttpRequestSender {
     }
 
     /**
+     *  Perform a HTTP request to a specific url. Returns the response.
+     *
+     * */
+    public ResponseEntity<JsonNode> performRequest(HttpRequest request,
+                                                   String url) {
+        ResponseEntity<JsonNode> response;
+        // TODO: send request
+        return response;
+    }
+
+    /**
      * This method is responsible to notify the subscriber through REST POST with raw body and form
      * parameters.
      *

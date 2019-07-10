@@ -68,13 +68,12 @@ public class HttpRequest {
     private HttpEntity<?> request;
     private String contentType;
     private HttpHeaders headers;
-    private String username;
-    private String password;
 
-    HttpRequest (HttpRequestSender httpRequestSender, NotificationMeta notificationMeta) {
+    HttpRequest(HttpRequestSender httpRequestSender, NotificationMeta notificationMeta) {
         this.httpRequestSender = httpRequestSender;
         this.notificationMeta2 = notificationMeta;
     }
+
     /**
      * Perform a HTTP request to a specific url. Returns the response.
      *
@@ -82,8 +81,7 @@ public class HttpRequest {
      *
      */
     public boolean perform() throws AuthenticationException {
-        boolean response = httpRequestSender.postDataMultiValue(this.url,
-                this.mapNotificationMessage, this.headers);
+        boolean response = httpRequestSender.postDataMultiValue(this.url, this.request);
         // TODO: send request
         return response;
     }
@@ -97,8 +95,8 @@ public class HttpRequest {
     }
 
     private void createRequest() {
-        boolean isApplicationXWwwFormUrlEncoded = contentType.equals(
-                MediaType.APPLICATION_FORM_URLENCODED);
+        boolean isApplicationXWwwFormUrlEncoded = MediaType.valueOf(contentType)
+                                                           .equals(MediaType.APPLICATION_FORM_URLENCODED);
         if (isApplicationXWwwFormUrlEncoded) {
             request = new HttpEntity<MultiValueMap<String, String>>(
                     this.mapNotificationMessage, this.headers);
@@ -112,7 +110,7 @@ public class HttpRequest {
     /**
      * Prepares headers to be used when making a request with the method POST.
      *
-     * @param url A String containing a URL
+     * @param url              A String containing a URL
      * @param subscriptionJson Used to extract the rest post body media type from
      * @return headers
      * @throws AuthenticationException

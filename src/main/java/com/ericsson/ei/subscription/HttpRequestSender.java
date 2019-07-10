@@ -53,25 +53,25 @@ public class HttpRequestSender {
      * @return boolean success of the request
      * @throws AuthenticationException
      */
-    public boolean postDataMultiValue(String notificationMeta,
-            MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) throws AuthenticationException {
+    public boolean postDataMultiValue(String url, HttpEntity<?> request)
+            throws AuthenticationException {
         ResponseEntity<JsonNode> response;
 
         try {
-            LOGGER.info("Performing HTTP request to url: {}", notificationMeta);
-            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
-                                                             .equals(MediaType.APPLICATION_FORM_URLENCODED);
-            if (isApplicationXWwwFormUrlEncoded) {
-                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
-                        mapNotificationMessage, headers);
-                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
-            } else {
-                HttpEntity<String> request = new HttpEntity<>(
-                        String.valueOf((mapNotificationMessage.get("")).get(0)),
-                        headers);
-                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
-            }
+            LOGGER.info("Performing HTTP request to url: {}", url);
+//            boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
+//                                                             .equals(MediaType.APPLICATION_FORM_URLENCODED);
+//            if (isApplicationXWwwFormUrlEncoded) {
+//                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
+//                        mapNotificationMessage, headers);
+//                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
+//            } else {
+//                HttpEntity<String> request = new HttpEntity<>(
+//                        String.valueOf((mapNotificationMessage.get("")).get(0)),
+//                        headers);
+//                response = rest.postForEntity(notificationMeta, request, JsonNode.class);
+//            }
+            response = rest.postForEntity(url, request, JsonNode.class);
 
         } catch (HttpClientErrorException e) {
             boolean unauthorizedRequest = e.getStatusCode() == HttpStatus.UNAUTHORIZED;
@@ -86,12 +86,12 @@ public class HttpRequestSender {
             }
             LOGGER.error(
                     "HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
-                    notificationMeta, e.getMessage(), e);
+                    url, e.getMessage(), e);
             return false;
         } catch (HttpServerErrorException e) {
             LOGGER.error(
                     "HTTP-request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
-                    notificationMeta, e.getMessage(), e);
+                    url, e.getMessage(), e);
             return false;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

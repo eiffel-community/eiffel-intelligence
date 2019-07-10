@@ -115,8 +115,6 @@ public class InformSubscriber {
                    .setUrl(url)
                    .build();
 
-            // TODO: perform request
-
             boolean success = makeHTTPRequests(request);
 
             if (!success) {

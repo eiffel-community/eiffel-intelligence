@@ -164,7 +164,12 @@ public class RulesHandler {
         String schemeRegex = "https?|file";
         try {
             URI uri = new URI(path);
-            return uri.getScheme().matches(schemeRegex);
+            String scheme = uri.getScheme();
+            if (scheme == null) {
+                return false;
+            } else {
+                return scheme.matches(schemeRegex);
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to check path scheme.", e);
             return false;

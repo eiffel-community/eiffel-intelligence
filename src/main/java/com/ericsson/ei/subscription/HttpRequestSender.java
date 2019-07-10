@@ -85,16 +85,16 @@ public class HttpRequestSender {
                 throw new AuthenticationException(message, e);
             }
             LOGGER.error(
-                    "HTTP-request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
+                    "HTTP request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
                     notificationMeta, e.getMessage(), e);
             return false;
         } catch (HttpServerErrorException e) {
             LOGGER.error(
-                    "HTTP-request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
+                    "HTTP request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
                     notificationMeta, e.getMessage(), e);
             return false;
         } catch (Exception e) {
-            LOGGER.error("HTTP-request failed when trying to connect to URL: {}", notificationMeta, e);
+            LOGGER.error("HTTP request failed when trying to connect to URL: {}", notificationMeta, e);
             return false;
         }
 
@@ -104,9 +104,9 @@ public class HttpRequestSender {
 
         JsonNode body = response.getBody();
         if (httpStatusSuccess) {
-            LOGGER.debug("The response status code [{}] and Body: {}",status, body);
+            LOGGER.debug("The response status code [{}] and body: {}",status, body);
         } else {
-            LOGGER.debug("POST call failed with status code [{}] and Body: {}",status, body);
+            LOGGER.debug("POST request failed with status code [{}] and body: {}",status, body);
         }
         return httpStatusSuccess;
     }

@@ -89,6 +89,8 @@ public class WaitListWorker {
             if (ids.isArray()) {
                 JsonNode idNode = eventJson.get("_id");
                 JsonNode timeNode = eventJson.get("Time");
+                // This log message is used in ThreadingAndWaitlist functional test,
+                // if the format is changed the match must also be changed in the test.
                 LOGGER.debug("[EIFFEL EVENT RESENT] id: {} time: {}", idNode.textValue(), timeNode);
                 for (final JsonNode idJsonObj : ids) {
                     Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,

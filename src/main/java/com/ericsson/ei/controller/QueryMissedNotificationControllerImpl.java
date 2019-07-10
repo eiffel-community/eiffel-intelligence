@@ -67,9 +67,9 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
                 queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
             }
             queryResponse.setQueryResponseEntity(queryResponseEntity);
-            LOGGER.debug("The response is : " + response.toString());
+            LOGGER.debug("The response is : {}", response.toString());
             if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
-                LOGGER.debug("Missed notification with subscription name " + subscriptionName + " was successfully removed from database");
+                LOGGER.debug("Missed notification with subscription name {} was successfully removed from database", subscriptionName);
             }
             return new ResponseEntity<>(queryResponse, HttpStatus.OK);
         } catch (Exception e) {

@@ -99,7 +99,7 @@ public class RuleCheckControllerImpl implements RuleCheckController {
         String ruleString = rule.toString().replaceAll("\"", "");
         try {
             String res = jmesPathInterface.runRuleOnEvent(ruleString, event.toString()).toString();
-            LOGGER.debug("Query: " + body.getRule()+ " executed successfully");
+            LOGGER.debug("Query: {} executed successfully", body.getRule());
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Failed to run rule on event. Error message:\n" + e.getMessage();

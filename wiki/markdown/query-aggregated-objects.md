@@ -10,11 +10,11 @@ Query aggregated objects can be done using two endpoints.
 
         http://<host adress>:<host port>/query?request="testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
 
-2. The criteria can be passed as form body in a post request, example of body 
+2. The criteria can be passed as form body in a post request, example of body
 is presented below. _Options_ section is optional.
 
 
-    // This returns all objects that fulfills all three criteria. 
+    // This returns all objects that fulfills all three criteria.
     // Notice that this is the same as just sending the id as criteria.
     // Since there will not be any other object with same id
     {
@@ -28,7 +28,7 @@ is presented below. _Options_ section is optional.
     }
 
     // This returns all objects where the verdict is PASSED
-    // and the test case id is either TC5 or TC6. 
+    // and the test case id is either TC5 or TC6.
     {
        "criteria":{
           "testCaseExecutions.testCase.verdict":"PASSED",

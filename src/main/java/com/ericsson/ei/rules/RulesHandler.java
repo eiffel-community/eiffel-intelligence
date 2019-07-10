@@ -28,10 +28,13 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.services.RuleCheckService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +47,8 @@ public class RulesHandler {
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
     private JsonNode parsedJson;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RulesHandler.class);
 
     public RulesHandler() throws Exception {
         if (rulesFilePath == null) {
@@ -159,8 +164,14 @@ public class RulesHandler {
         String schemeRegex = "https?|file";
         try {
             URI uri = new URI(path);
-            return uri.getScheme().matches(schemeRegex);
+            String scheme = uri.getScheme();
+            if (scheme == null) {
+                return false;
+            } else {
+                return scheme.matches(schemeRegex);
+            }
         } catch (Exception e) {
+            LOGGER.error("Failed to check path scheme.", e);
             return false;
         }
     }

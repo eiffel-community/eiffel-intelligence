@@ -120,7 +120,7 @@ public class InformSubscriber {
             if (!success) {
                 String missedNotification = prepareMissedNotification(aggregatedObject,
                         subscriptionName, notificationMeta);
-                LOGGER.debug("Prepared 'missed notification' document : " + missedNotification);
+                LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
                 mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
                         missedNotificationCollectionName, "Time", ttlValue);
                 saveMissedNotificationToDB(missedNotification);
@@ -154,8 +154,7 @@ public class InformSubscriber {
         do {
             requestTries++;
             success = request.perform();
-            LOGGER.debug("After trying for " + requestTries + " time(s), the result is : "
-                    + success);
+            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
 
         return success;
@@ -170,7 +169,7 @@ public class InformSubscriber {
                     missedNotificationCollectionName, missedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database");
+            LOGGER.debug("Failed to insert the notification into database.", e);
         }
     }
 
@@ -190,7 +189,7 @@ public class InformSubscriber {
         try {
             document.put("Time", DateUtils.getDate());
         } catch (ParseException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to get date object.", e);
         }
         document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
         return document.toString();

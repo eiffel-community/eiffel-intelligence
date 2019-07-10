@@ -1,4 +1,4 @@
-[  
+[
   {
     "TemplateName":"Event_copy",
     "Type":"EiffelActivityCanceledEvent",
@@ -128,7 +128,7 @@
     "IdentifyRules" : "[meta.id]",
     "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
     "ExtractionRules" : "@"
-  },  
+  },
   {
     "TemplateName":"Event_copy",
     "Type":"EiffelConfidenceLevelModifiedEvent",

@@ -149,7 +149,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
      * targets to unique value. Ids of events that are located in the same package
      * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
      * used.
-     * 
+     *
      * @param eventNames list of events to be sent.
      * @return list of ready to send events.
      */

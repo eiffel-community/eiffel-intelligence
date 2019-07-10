@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Component
 public class RunSubscription {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(RunSubscription.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunSubscription.class);
 
     @Autowired
     private JmesPathInterface jmespath;
@@ -78,33 +78,33 @@ public class RunSubscription {
             if (subscriptionRepeatFlag == "false" && id != null
                     && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                             subscriptionName, requirementIndex, id)) {
-                LOGGER.info("Subscription has already matched with AggregatedObject Id: " + id + "\nSubscriptionName: "
-                        + subscriptionName + "\nand has Subscription Repeat flag set to: " + subscriptionRepeatFlag);
+                LOGGER.info("Subscription has already matched with AggregatedObject Id: {}\n"
+                        + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
+                        id, subscriptionName, subscriptionRepeatFlag);
                 break;
             }
 
             JsonNode requirement = requirementIterator.next();
 
-            LOGGER.info("The fulfilled requirement which condition will check is : " + requirement.toString());
+            LOGGER.info("The fulfilled requirement which condition will check is : {}", requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
 
             count_condition_fulfillment = 0;
             count_conditions = conditions.size();
 
-            LOGGER.info("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
-                String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
-                JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
+                String condition = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
+                JsonNode result = jmespath.runRuleOnEvent(condition, aggregatedObject);
                 String resultString = result.toString();
                 resultString = destringify(resultString);
                 boolean resultNotEqualsToNull = !resultString.equals("null");
                 boolean resultNotEqualsToFalse = !resultString.equals("false");
                 boolean resultNotEmpty = !resultString.equals("");
-                LOGGER.debug("Jmespath rule result: '" + result.toString() + "'\nConditions fulfillment:"
-                        + "'\nResult not equals to null' is '" + resultNotEqualsToNull
-                        + " '\nResult not equals to false' is '" + resultNotEqualsToFalse
-                        + "' '\nResult not empty' is '" + resultNotEmpty + "'");
+                boolean isFulfilled = resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty;
+                String fulfilledStatement = String.format("Condition was %sfulfilled.", isFulfilled ? "" : "not ");
+                LOGGER.debug("Condition: {}\nJMESPath evaluation result: {}\n{}",
+                        condition, result.toString(), fulfilledStatement);
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }
@@ -122,7 +122,7 @@ public class RunSubscription {
             requirementIndex++;
         }
 
-        LOGGER.info("The final value of conditionFulfilled is : " + conditionFulfilled);
+        LOGGER.info("The final value of conditionFulfilled is : {}", conditionFulfilled);
 
         return conditionFulfilled;
     }

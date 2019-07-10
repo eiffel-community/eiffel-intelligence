@@ -59,20 +59,20 @@ Pull requests can be merged by members of the [the repository maintainers' team]
 ### License Management
 To be accepted into the repository, contributions must be licensed under the Apache License 2.0. Consequently, a license notice shall be included in suitable comment syntax where applicable. This license notice shall state the copyright holder(s) and point to the commit history for a full list of individual contributors, on the following format:
 
-> Copyright <Year(s)> <Copyright holder of original contribution [and others].>  
+> Copyright <Year(s)> <Copyright holder of original contribution [and others].>
 > For a full list of individual contributors, please see the commit history.
 
 The copyright holder is either the individual contributor if they act on their own behalf, or any organization on whose behalf they contribute. When multiple copyright holders have contributed to the same file, the copyright notice shall be appended "and others". The copyright year(s) shall reflect the year(s) of contribution(s) and be updated accordingly when new contributions are made to the file. To exemplify, the copyright notice of an original contribution made by Jane Doe acting on behalf of Ericsson AB may read:
 
-> Copyright 2018 Ericsson AB.  
+> Copyright 2018 Ericsson AB.
 > For a full list of individual contributors, please see the commit history.
 
 When John Doe, acting on his own behalf, makes a subsequent addition to the same file, the notice will be updated accordingly:
 
-> Copyright 2018 Ericsson AB and others.  
+> Copyright 2018 Ericsson AB and others.
 > For a full list of individual contributors, please see the commit history.
 
 When John Doe makes a subsequent contribution the following year, the notice will again be updated:
 
-> Copyright 2018-2019 Ericsson AB and others.  
+> Copyright 2018-2019 Ericsson AB and others.
 > For a full list of individual contributors, please see the commit history.

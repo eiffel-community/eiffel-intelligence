@@ -10,9 +10,9 @@
 
 ## Create subscriptions
 
-Takes the subscription rules, the name for subscription and the user name of 
-the person registering this subscription and saves the subscription in 
-subscription database. The subscription name needs to be unique. Multiple 
+Takes the subscription rules, the name for subscription and the user name of
+the person registering this subscription and saves the subscription in
+subscription database. The subscription name needs to be unique. Multiple
 subscriptions may be sent through a json array.
 
     POST /subscriptions
@@ -44,7 +44,7 @@ Example subscriptions
             "conditions": [
               {
                // notice single quotes surrounds the value to be checked
-               // this tells jmespath that this is a constant and not 
+               // this tells jmespath that this is a constant and not
                // an object from the aggregated object
                 "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
               },
@@ -68,7 +68,7 @@ Example subscriptions
       }
     ]
 
-    
+
     // this subscription will trigger a REST POST CALL
     // when an artifact for issue JIRA-1234
     // has passed testcase TC5 successfully
@@ -87,8 +87,8 @@ Example subscriptions
         "requirements": [
           {
             "description" : "A subscription that will notify when an artifact for given issue id, has passed a certain test successfully",
-            "conditions": [         
-              {            
+            "conditions": [
+              {
                 "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
               },
               {
@@ -116,7 +116,7 @@ Example of a subscription array
 
 ## Get subscriptions for the given names
 
-Get a single specific subscription or get multiples subscriptions with a comma 
+Get a single specific subscription or get multiples subscriptions with a comma
 separated list to the same endpoint
 
     GET /subscriptions/<name>
@@ -128,18 +128,18 @@ Curl command example
 
 ## Update subscriptions
 
-Modify existing Subscriptions based on subscriptionName. Multiple subscriptions 
+Modify existing Subscriptions based on subscriptionName. Multiple subscriptions
 may be sent through a json array.
 
     PUT /subscriptions
 
-Curl command example 
+Curl command example
 
     curl -X PUT -H "Content-type: application/json"  --data @<path to json file> http://<host>:8090/subscriptions
 
 ## Delete subscriptions for the given names
 
-Delete a single specific subscription or delete multiples subscriptions with a 
+Delete a single specific subscription or delete multiples subscriptions with a
 comma separated list to the same endpoint
 
     DELETE /subscriptions/<name>

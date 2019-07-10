@@ -29,9 +29,9 @@ public class HttpSessionConfig {
     public static String getCurrentUser() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
-    
+
     @Bean
     public HttpSessionIdResolver httpSessionIdResolver() {
-        return new HeaderAndCookieHttpSessionIdResolver(); 
+        return new HeaderAndCookieHttpSessionIdResolver();
     }
 }

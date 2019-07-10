@@ -78,7 +78,9 @@ public class RunSubscription {
             if (subscriptionRepeatFlag == "false" && id != null
                     && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                             subscriptionName, requirementIndex, id)) {
-                LOGGER.info("Subscription has already matched with AggregatedObject Id: {}\nSubscriptionName: {}\nand has Subscription Repeat flag set to: {}", id, subscriptionName, subscriptionRepeatFlag);
+                LOGGER.info("Subscription has already matched with AggregatedObject Id: {}\n"
+                        + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
+                        id, subscriptionName, subscriptionRepeatFlag);
                 break;
             }
 
@@ -90,21 +92,19 @@ public class RunSubscription {
             count_condition_fulfillment = 0;
             count_conditions = conditions.size();
 
-            LOGGER.info("Conditions of the subscription : " + conditions.toString());
             Iterator<JsonNode> conditionIterator = conditions.elements();
             while (conditionIterator.hasNext()) {
-                String rule = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
-                JsonNode result = jmespath.runRuleOnEvent(rule, aggregatedObject);
+                String condition = conditionIterator.next().get("jmespath").toString().replaceAll("^\"|\"$", "");
+                JsonNode result = jmespath.runRuleOnEvent(condition, aggregatedObject);
                 String resultString = result.toString();
                 resultString = destringify(resultString);
                 boolean resultNotEqualsToNull = !resultString.equals("null");
                 boolean resultNotEqualsToFalse = !resultString.equals("false");
                 boolean resultNotEmpty = !resultString.equals("");
-                LOGGER.debug("Jmespath rule result: '{}'\nConditions fulfillment:"
-                        + "'\nResult not equals to null' is '{}"
-                        + " '\nResult not equals to false' is '{}"
-                        + "' '\nResult not empty' is '{}'",
-                        result.toString(), resultNotEqualsToNull, resultNotEqualsToFalse, resultNotEmpty);
+                boolean isFulfilled = resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty;
+                String fulfilledStatement = String.format("Condition was %sfulfilled.", isFulfilled ? "" : "not ");
+                LOGGER.debug("Condition: {}\nJMESPath evaluation result: {}\n{}",
+                        condition, result.toString(), isFulfilled, fulfilledStatement);
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }

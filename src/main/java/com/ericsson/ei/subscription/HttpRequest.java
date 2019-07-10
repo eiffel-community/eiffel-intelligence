@@ -1,20 +1,11 @@
 package com.ericsson.ei.subscription;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,7 +15,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.utils.NotificationMeta;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -77,42 +67,29 @@ public class HttpRequest {
     /**
      * Perform a HTTP request to a specific url. Returns the response.
      *
+     * @return response     A boolean value of the request response
      * @throws AuthenticationException
-     *
      */
     public boolean perform() throws AuthenticationException {
         boolean response = httpRequestSender.postDataMultiValue(this.url, this.request);
-        // TODO: send request
         return response;
     }
 
+    /**
+     * Builds a HTTP request with headers.
+     * */
     public HttpRequest build() throws AuthenticationException {
-        subscriptionField = new SubscriptionField(this.subscriptionJson);
+        //subscriptionField = new SubscriptionField(this.subscriptionJson);
         prepareHeaders();
         createRequest();
 
         return this;
     }
 
-    private void createRequest() {
-        boolean isApplicationXWwwFormUrlEncoded = MediaType.valueOf(contentType)
-                                                           .equals(MediaType.APPLICATION_FORM_URLENCODED);
-        if (isApplicationXWwwFormUrlEncoded) {
-            request = new HttpEntity<MultiValueMap<String, String>>(
-                    this.mapNotificationMessage, this.headers);
-        } else {
-            request = new HttpEntity<String>(
-                    String.valueOf((mapNotificationMessage.get("")).get(0)),
-                    this.headers);
-        }
-    }
-
     /**
-     * Prepares headers to be used when making a request with the method POST.
+     * Prepares headers to be used in a POST request.
+     * POST.
      *
-     * @param url              A String containing a URL
-     * @param subscriptionJson Used to extract the rest post body media type from
-     * @return headers
      * @throws AuthenticationException
      */
     private void prepareHeaders() throws AuthenticationException {
@@ -122,7 +99,24 @@ public class HttpRequest {
     }
 
     /**
-     * Adds content type to the headers
+     * Creates a HTTP request based on the content type.
+     *
+     * */
+    private void createRequest() {
+        boolean isApplicationXWwwFormUrlEncoded = MediaType.valueOf(contentType)
+                                                           .equals(MediaType.APPLICATION_FORM_URLENCODED);
+        if (isApplicationXWwwFormUrlEncoded) {
+            request = new HttpEntity<MultiValueMap<String, String>>(
+                this.mapNotificationMessage, this.headers);
+        } else {
+            request = new HttpEntity<String>(
+                String.valueOf((mapNotificationMessage.get("")).get(0)),
+                this.headers);
+        }
+    }
+
+    /**
+     * Adds content type to the headers.
      */
     private void setContentTypeInHeader() {
         this.contentType = subscriptionField.get("restPostBodyMediaType");
@@ -161,7 +155,8 @@ public class HttpRequest {
     }
 
     /**
-     * Returns a boolean indicating that authentication details was provided in the subscription
+     * Returns a boolean indicating that authentication details was provided in
+     * the subscription.
      *
      * @param authType
      * @param username
@@ -198,8 +193,8 @@ public class HttpRequest {
     }
 
     /**
-     * Tries to fetch a Jenkins crumb. Will return Jenkins crumb data in JSON format, or null if no
-     * crumb was found.
+     * Tries to fetch a Jenkins crumb. Will return Jenkins crumb data in JSON
+     * format, or null if no crumb was found.
      *
      * @param encoding
      * @return JenkinsJsonCrumbData
@@ -244,14 +239,14 @@ public class HttpRequest {
     /**
      * Replaces the user given context paths with the crumb issuer context path.
      *
-     * @param notificationMeta
-     * @return
+     * @param url
+     * @return jenkinsCrumbUrl
      * @throws MalformedURLException
      */
-    private URL buildJenkinsCrumbUrl(String notificationMeta) throws MalformedURLException {
-        String baseUrl = notificationMeta2.extractBaseUrl(notificationMeta);
-        URL url = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
-        return url;
+    private URL buildJenkinsCrumbUrl(String url) throws MalformedURLException {
+        String baseUrl = notificationMeta2.extractBaseUrl(url);
+        URL jenkinsCrumbUrl = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
+        return jenkinsCrumbUrl;
     }
 
 }

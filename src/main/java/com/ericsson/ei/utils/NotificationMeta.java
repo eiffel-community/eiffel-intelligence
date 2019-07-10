@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.subscription.InformSubscriber;
 
 @Component
 public class NotificationMeta {

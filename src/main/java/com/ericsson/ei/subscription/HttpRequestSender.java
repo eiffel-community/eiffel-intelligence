@@ -44,12 +44,10 @@ public class HttpRequestSender {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST with raw body and form
-     * parameters.
+     * Sends a REST POST request to the given url.
      *
-     * @param notificationMeta       A String containing the URL to send request to
-     * @param mapNotificationMessage Contains the body of the HTTP request
-     * @param headers
+     * @param url       A String containing the URL to send request to
+     * @param request   A HTTP POST request
      * @return boolean success of the request
      * @throws AuthenticationException
      */

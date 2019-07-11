@@ -46,8 +46,8 @@ public class HttpRequestSender {
     /**
      * Sends a REST POST request to the given url.
      *
-     * @param url       A String containing the URL to send request to
-     * @param request   A HTTP POST request
+     * @param url     A String containing the URL to send request to
+     * @param request A HTTP POST request
      * @return boolean success of the request
      * @throws AuthenticationException
      */
@@ -60,28 +60,12 @@ public class HttpRequestSender {
             response = rest.postForEntity(url, request, JsonNode.class);
 
         } catch (HttpClientErrorException e) {
-            boolean unauthorizedRequest = e.getStatusCode() == HttpStatus.UNAUTHORIZED;
-            boolean badRequestForbidden = e.getStatusCode() == HttpStatus.FORBIDDEN;
-            if (unauthorizedRequest || badRequestForbidden) {
-                String message = String.format("Failed to perform HTTP request due to '%s'."
-                        + "\nEnsure that you use correct authenticationType, username and password."
-                        + "\nDue to authentication error EI will not perform retries.",
-                        e.getMessage());
-                LOGGER.error(message, e);
-                throw new AuthenticationException(message, e);
-            }
-            LOGGER.error(
-                    "HTTP request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
-                    url, e.getMessage(), e);
-            return false;
-        } catch (HttpServerErrorException e) {
-            LOGGER.error(
-                    "HTTP request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
-                    url, e.getMessage(), e);
+            checkIfAuthenticationException(e);
+            LOGGER.error("HTTP request failed, bad request! When trying to connect to URL: {}\n{}",
+                    url, e);
             return false;
         } catch (Exception e) {
-            LOGGER.error("HTTP request failed when trying to connect to URL: "
-                + "{}", url, e);
+            LOGGER.error("HTTP request to url {} failed\n", url, e);
             return false;
         }
 
@@ -90,12 +74,31 @@ public class HttpRequestSender {
                 || status == HttpStatus.CREATED;
 
         JsonNode body = response.getBody();
-        if (httpStatusSuccess) {
-            LOGGER.debug("The response status code [{}] and body: {}",status, body);
-        } else {
-            LOGGER.debug("POST request failed with status code [{}] and body: {}",status, body);
-        }
+
+        LOGGER.debug("The http post request response status code is [{}] and body: {}", status, body);
+
         return httpStatusSuccess;
+    }
+
+    /**
+     * Validates a given HttpClientErrorException and throws a new AuthenticationException if the
+     * exception is caused by and authentication failure.
+     *
+     * @param e
+     * @throws AuthenticationException
+     */
+    private void checkIfAuthenticationException(HttpClientErrorException e)
+            throws AuthenticationException {
+        boolean unauthorizedRequest = e.getStatusCode() == HttpStatus.UNAUTHORIZED;
+        boolean badRequestForbidden = e.getStatusCode() == HttpStatus.FORBIDDEN;
+        if (unauthorizedRequest || badRequestForbidden) {
+            String message = String.format("Failed to perform HTTP request due to '%s'."
+                    + "\nEnsure that you use correct authenticationType, username and password."
+                    + "\nDue to authentication error EI will not perform retries.",
+                    e.getMessage());
+            LOGGER.error(message, e);
+            throw new AuthenticationException(message, e);
+        }
     }
 
     /**

@@ -122,7 +122,7 @@ public class EmailSender {
      * @param receivers A string containing one or more comma separated email addresses
      * @return emailAdd
      */
-    public Set<String> extractEmails(String receivers) {
+    private Set<String> extractEmails(String receivers) {
         Set<String> emailAdd = new HashSet<>();
         String[] addresses = receivers.split(",");
         for (String add : addresses) {

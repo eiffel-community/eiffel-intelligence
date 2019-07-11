@@ -45,7 +45,7 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
-public class SubscriptionHandlerTest {
+public class RunSubscriptionTest {
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String aggregatedInternalPath = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";

@@ -67,9 +67,6 @@ public class SubscriptionHandler {
     @Autowired
     private RunSubscription runSubscription;
 
-    @Autowired
-    private JmesPathInterface jmespath;
-
     /**
      * The method takes a aggregatedObject as argument and fetches all the
      * subscriber from the database in order to match the subscription

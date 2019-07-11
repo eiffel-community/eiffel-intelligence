@@ -89,7 +89,7 @@ public class QueryServiceRESTAPITest {
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/aggregated-object")
                 .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
@@ -112,7 +112,7 @@ public class QueryServiceRESTAPITest {
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/missed-notifications?")
                 .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 

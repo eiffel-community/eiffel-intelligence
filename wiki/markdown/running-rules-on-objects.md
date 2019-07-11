@@ -4,7 +4,7 @@
 |------|---------------------|
 |POST |/rules/rule-check|
 |POST | /rules/rule-check/aggregation|
-|GET | /rules/rule-check/testRulePageEnabled |
+|GET | /rules/rule-check/test-rule-page-enabled |
 
 
 Before deploying a new instance of Eiffel Intelligence it is good to test the
@@ -23,7 +23,7 @@ A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/E
 
 Using this arbitrary endpoint one can use check if testRules are enabled in this EI instance.
 
-    curl -X GET http://<host>:8090/rules/rule-check/testRulePageEnabled
+    curl -X GET http://<host>:8090/rules/rule-check/test-rule-page-enabled
 
 
 

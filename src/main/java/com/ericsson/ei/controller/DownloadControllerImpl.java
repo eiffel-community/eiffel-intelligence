@@ -44,9 +44,9 @@ public class DownloadControllerImpl implements DownloadController {
     public ResponseEntity<?> getDownload() {
         try {
             JSONObject response = new JSONObject();
-            response.put("subscriptions", "/download/subscriptionsTemplate");
-            response.put("rules", "/download/rulesTemplate");
-            response.put("events", "/download/eventsTemplate");
+            response.put("subscriptions", "/download/subscriptions-template");
+            response.put("rules", "/download/rules-template");
+            response.put("events", "/download/events-template");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get information about download endpoints.";

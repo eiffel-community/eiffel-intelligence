@@ -286,7 +286,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     private JsonNode queryAggregatedObject(String id) throws URISyntaxException, IOException{
         HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
-        String endpoint = "/queryAggregatedObject";
+        String endpoint = "/query/aggregated-object";
 
         httpRequest.setHost(eiHost)
             .setPort(port)

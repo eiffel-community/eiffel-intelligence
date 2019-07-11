@@ -54,9 +54,9 @@ public class TestDownloadControllerImpl {
     @Test
     public void testGetDownload() throws Exception {
         JSONObject responseBody = new JSONObject();
-        responseBody.put("subscriptions", "/download/subscriptionsTemplate");
-        responseBody.put("rules", "/download/rulesTemplate");
-        responseBody.put("events", "/download/eventsTemplate");
+        responseBody.put("subscriptions", "/download/subscriptions-template");
+        responseBody.put("rules", "/download/rules-template");
+        responseBody.put("events", "/download/events-template");
         mockMvc.perform(MockMvcRequestBuilders.get("/download")
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -66,7 +66,7 @@ public class TestDownloadControllerImpl {
 
     @Test
     public void testGetSubscriptionsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/subscriptionsTemplate")
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/subscriptions-template")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -74,7 +74,7 @@ public class TestDownloadControllerImpl {
 
     @Test
     public void testGetRulesTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate")
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/rules-template")
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andReturn();
@@ -82,7 +82,7 @@ public class TestDownloadControllerImpl {
 
     @Test
     public void testGetEventsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate")
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/events-template")
             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andReturn();

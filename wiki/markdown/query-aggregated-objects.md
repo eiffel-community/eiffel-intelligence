@@ -45,4 +45,4 @@ is presented below. _Options_ section is optional.
 
 ## The second endpoint is more strict and the user must provide the id of the event that started the aggregated object.
 
-    http://<host adress>:<host port>/queryAggregatedObject?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
+    http://<host adress>:<host port>/query/aggregated-object?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43

@@ -1,20 +1,20 @@
 # Query
 
-|Method|Endpoint             |
-|------|---------------------|
-|GET   |/queryAggregatedObject|
-|POST   |/query|
-|GET   |/queryMissedNotifications|
+|Method|Endpoint                   |
+|------|---------------------------|
+|GET   |/query/aggregated-object   |
+|POST  |/query                     |
+|GET   |/query/missed-notifications|
 
 ## Perform query on created aggregated object
-    GET /queryAggregatedObject
+    GET /query/aggregated-object
 
 **Query parameters**:
 ID=\<documentID\>
 
 Examples of this endpoint using curl
 
-    curl -X GET -H "Content-type: application/json"  http://localhost:8090/queryAggregatedObject?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
+    curl -X GET -H "Content-type: application/json"  http://localhost:8090/query/aggregated-object?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
 
 ## Perform freestyle query on created aggregated object
 It is possible to query for documents using freestyle queries. These freestyle
@@ -187,12 +187,12 @@ Example
     }
 
 ## Query missed notifications
-    GET /queryMissedNotifications
+    GET /query/missed-notifications
 
 **Query parameters**:
 SubscriptionName=<Subscription Name/Subscription ID>
 
 Examples of this endpoint using curl
 
-    curl -X GET -H "Content-type: application/json" localhost:39835/queryMissedNotifications?SubscriptionName=Subscription_1
+    curl -X GET -H "Content-type: application/json" localhost:39835/query/missed-notifications?SubscriptionName=Subscription_1
 

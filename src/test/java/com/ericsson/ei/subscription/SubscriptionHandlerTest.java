@@ -78,7 +78,7 @@ public class SubscriptionHandlerTest {
     private static final String dbName = "MissedNotification";
     private static final String collectionName = "Notification";
     private static final String regex = "^\"|\"$";
-    private static final String missedNotificationUrl = "/queryMissedNotifications";
+    private static final String missedNotificationUrl = "/query/missed-notifications";
     private static final boolean statusOk = true;
 
     private static HttpHeaders headersWithAuth = new HttpHeaders();

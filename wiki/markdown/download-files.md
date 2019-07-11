@@ -4,12 +4,12 @@ Via this RestApi user can download EI templates files.
 
 These entrypoint exits today:
 
-|Method|Endpoint                        |Comment                                    |
-|------|--------------------------------|-------------------------------------------|
-|GET   |/download                       |List available files that can be downloaded|
-|GET   |/download/subscriptionsTemplate |Returns subscription template file|
-|GET   |/download/rulesTemplate         |Returns rules template file|
-|GET   |/download/eventsTemplate        |Returns events template file|
+|Method|Endpoint                         |Comment                                    |
+|------|---------------------------------|-------------------------------------------|
+|GET   |/download                        |List available files that can be downloaded|
+|GET   |/download/subscriptions-template |Returns subscription template file|
+|GET   |/download/rules-template         |Returns rules template file|
+|GET   |/download/events-template        |Returns events template file|
 
 
 ## List available files
@@ -22,23 +22,23 @@ Curl command
 
 ## Download subscription template file
 
-    GET /download/subscriptionsTemplate
+    GET /download/subscriptions-template
 
 Curl command
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/subscriptionsTemplate
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/subscriptions-template
 
 ## Download rules template file
 
-    GET /download/rulesTemplate
+    GET /download/rules-template
 
 Curl command
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/rulesTemplate
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/rules-template
 
 ## Download events template file
 
-    GET /download/eventsTemplate
+    GET /download/events-template
 Curl command
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/eventsTemplate
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/download/events-template

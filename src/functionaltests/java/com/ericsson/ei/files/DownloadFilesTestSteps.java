@@ -56,7 +56,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     @Then("^List available files$")
     public void list_available_files() throws Exception {
         LOGGER.debug("Listing all availble files that can be download via RestApi.");
-        String expectedSubscriptionsValue =  "/download/subscriptionsTemplate";
+        String expectedSubscriptionsValue =  "/download/subscriptions-template";
 
         httpRequest.setEndpoint("/download");
         response = httpRequest.performRequest();
@@ -73,7 +73,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_subscription_template_file() throws Exception {
         String expectedSubscriptionTemplateContent = FileUtils.readFileToString(new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/subscriptionsTemplate");
+        httpRequest.setEndpoint("/download/subscriptions-template");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -88,7 +88,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_rules_template_file() throws Exception {
         String expectedRulesTemplateContent = FileUtils.readFileToString(new File(RULES_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/rulesTemplate");
+        httpRequest.setEndpoint("/download/rules-template");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -103,7 +103,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_event_template_file() throws Exception {
         String expectedEventsTemplateContent = FileUtils.readFileToString(new File(EVENTS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/eventsTemplate");
+        httpRequest.setEndpoint("/download/events-template");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

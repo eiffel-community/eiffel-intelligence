@@ -26,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 
 import lombok.Getter;
@@ -62,35 +64,44 @@ public class EmailSender {
     }
 
     /**
-     * This method sends mail to the given receivers mail address(es) with the
-     * given email subject and body from the mapNotificationMessage.
+     * This method sends mail to the given receivers mail address(es) with the given email subject
+     * and body from the mapNotificationMessage.
      *
-     * @param receivers
-     *     Who to send the mail to
-     * @param mapNotificationMessage
-     *     A String to be used as the body of the email
-     * @param emailSubject
-     *     The subject of the email to send
+     * @param receivers              Who to send the mail to
+     * @param mapNotificationMessage A String to be used as the body of the email
+     * @param emailSubject           The subject of the email to send
+     * @throws NotificationFailureException
      */
-    public void sendEmail(String receivers, String mapNotificationMessage, String emailSubject) {
+    public void sendEmail(MimeMessage message) throws NotificationFailureException {
+        try {
+            emailSender.send(message);
+        } catch (MailException e) {
+            LOGGER.error("", e);
+            throw new NotificationFailureException("Failed to send notification email!");
+        }
+    }
+
+    /**
+     *
+     * */
+    public MimeMessage prepareEmailMessage(String receivers, String mapNotificationMessage,
+            String emailSubject) {
         Set<String> emails = new HashSet<>();
         emails = extractEmails(receivers);
         String[] to = emails.toArray(new String[0]);
         MimeMessage message = prepareEmail(mapNotificationMessage, emailSubject, to);
-        emailSender.send(message);
+        return message;
     }
 
     /**
      * This method creates a MimeMessageHelper and prepares the email to send
      *
-     * @param mapNotificationMessage
-     *     A String to be used by the body of the email
-     * @param emailSubject
-     *     The subject of the email to send
-     * @param receivers
-     *     Who to send the email to
-     * */
-    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject, String[] receivers) {
+     * @param mapNotificationMessage A String to be used by the body of the email
+     * @param emailSubject           The subject of the email to send
+     * @param receivers              Who to send the email to
+     */
+    private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject,
+            String[] receivers) {
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -105,11 +116,10 @@ public class EmailSender {
     }
 
     /**
-     * This method takes a string of comma separated email addresses and
-     * puts them in a Set of email addresses to return.
+     * This method takes a string of comma separated email addresses and puts them in a Set of email
+     * addresses to return.
      *
-     * @param receivers
-     *     A string containing one or more comma separated email addresses
+     * @param receivers A string containing one or more comma separated email addresses
      * @return emailAdd
      */
     public Set<String> extractEmails(String receivers) {
@@ -122,8 +132,8 @@ public class EmailSender {
     }
 
     /**
-     * This method takes the user provided email subject and if it is not empty,
-     * returns it. Otherwise, it returns the default subject.
+     * This method takes the user provided email subject and if it is not empty, returns it.
+     * Otherwise, it returns the default subject.
      *
      * @param emailSubject
      * @return emailSubject

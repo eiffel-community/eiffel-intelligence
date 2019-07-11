@@ -27,60 +27,84 @@ public class UrlParser {
     @Autowired
     private JmesPathInterface jmespath;
 
-    public String runJmesPathOnParameters(String notificationMeta, String aggregatedObject) {
-        String processedNotificationMeta = replaceParamsValuesWithAggregatedData(notificationMeta, aggregatedObject);
-        return processedNotificationMeta;
-    }
-
-
     /**
-     * Extracts the url parameters from the notification meta. It runs the parameter values through
-     * JMESPath to replace wanted parameter values with data from the aggregated object. It then
-     * reformats the notification meta containing the new parameters.
-     * @param notificationMeta
+     * Extracts the url parameters from the given url. It runs the parameter values through JMESPath
+     * to replace wanted parameter values with data from the aggregated object. It then reformats
+     * the url containing the new parameters.
+     *
+     * @param url
      *
      * @return String
      */
-    private String replaceParamsValuesWithAggregatedData(String notificationMeta, String aggregatedObject) {
-        if (!notificationMeta.contains("?")) {
-            return notificationMeta;
+    public String runJmesPathOnParameters(String url, String aggregatedObject) {
+        if (!url.contains("?")) {
+            return url;
         }
-        LOGGER.debug("Unformatted notificationMeta = " + notificationMeta);
+        LOGGER.debug("Unformatted notificationMeta = " + url);
 
         try {
-            String baseUrl = extractBaseUrl(notificationMeta);
-            String contextPath = extractContextPath(notificationMeta);
-            List<NameValuePair> params = extractUrlParameters(notificationMeta);
-            LOGGER.debug("Notification meta in parts:\n ## Base Url: "
+            String baseUrl = extractBaseUrl(url);
+            String contextPath = extractContextPath(url);
+            List<NameValuePair> params = extractUrlParameters(url);
+            LOGGER.debug("Url in parts:\n ## Base Url: "
                     + "{}\n ## Context Path: {}\n ## URL Parameters: {} ", baseUrl, contextPath,
-                params);
+                    params);
 
             List<NameValuePair> processedParams = processJMESPathParameters(aggregatedObject,
-                params);
+                    params);
             LOGGER.debug("JMESPath processed parameters :\n ## {}", processedParams);
-            String encodedQuery = URLEncodedUtils.format(processedParams, "UTF8");
+            String encodedParams = URLEncodedUtils.format(processedParams, "UTF8");
 
-            notificationMeta = String.format("%s%s?%s", baseUrl, contextPath, encodedQuery);
-            LOGGER.debug("Formatted notificationMeta = {}", notificationMeta);
+            url = String.format("%s%s?%s", baseUrl, contextPath, encodedParams);
+            LOGGER.debug("Formatted url = {}", url);
 
-            return notificationMeta;
+            return url;
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             LOGGER.error("Failed to extract parameters.", e);
-            return notificationMeta;
+            return url;
         }
     }
 
     /**
-     * Extracts the query from the notificationMeta and returns them as a list of KeyValuePair.
+     * Returns the base url from the given String.
      *
-     * @param notificationMeta
+     * @param url A String containing a URL
+     * @return The base url, which excludes context path and parameters.
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public String extractBaseUrl(String url) throws MalformedURLException {
+        URL absoluteUrl = new URL(url);
+        String protocol = absoluteUrl.getProtocol();
+        String authority = absoluteUrl.getAuthority();
+        return String.format("%s://%s", protocol, authority);
+    }
+
+    /**
+     * Returns the context path from the url.
+     *
+     * @param url A String containing a URL
+     * @return contextPath
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    private String extractContextPath(String url) throws MalformedURLException {
+        URL absoluteUrl = new URL(url);
+        String contextPath = absoluteUrl.getPath();
+        return contextPath;
+    }
+
+    /**
+     * Extracts the query from the url and returns them as a list of KeyValuePair.
+     *
+     * @param url
      * @return
      * @throws MalformedURLException
      */
-    private List<NameValuePair> extractUrlParameters(String notificationMeta)
+    private List<NameValuePair> extractUrlParameters(String url)
             throws MalformedURLException {
-        URL url = new URL(notificationMeta);
-        String query = url.getQuery();
+        URL absoluteUrl = new URL(url);
+        String query = absoluteUrl.getQuery();
         List<NameValuePair> params = splitQuery(query);
         return params;
     }
@@ -124,35 +148,6 @@ public class UrlParser {
         }
 
         return new BasicNameValuePair(key, value);
-    }
-
-    /**
-     * Returns the base url from the notification meta.
-     *
-     * @param notificationMeta A String containing a URL
-     * @return The base url, which excludes context path and parameters.
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     */
-    public String extractBaseUrl(String notificationMeta) throws MalformedURLException {
-        URL url = new URL(notificationMeta);
-        String protocol = url.getProtocol();
-        String authority = url.getAuthority();
-        return String.format("%s://%s", protocol, authority);
-    }
-
-    /**
-     * Returns the context path from the notification meta.
-     *
-     * @param notificationMeta A String containing a URL
-     * @return contextPath
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     */
-    private String extractContextPath(String notificationMeta) throws MalformedURLException {
-        URL url = new URL(notificationMeta);
-        String contextPath = url.getPath();
-        return contextPath;
     }
 
     /**

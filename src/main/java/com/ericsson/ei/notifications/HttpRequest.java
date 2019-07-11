@@ -8,13 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -32,7 +30,10 @@ public class HttpRequest {
 
     private SubscriptionField subscriptionField;
 
-    private HttpRequestSender httpRequestSender;
+    // Manual wired
+    private HttpRequestSender httpRequestSender = SpringContext.getBean(HttpRequestSender.class);
+    private JenkinsCrumb jenkinsCrumb = SpringContext.getBean(JenkinsCrumb.class);
+    private UrlParser urlParser = SpringContext.getBean(UrlParser.class);
 
     @Getter
     @Setter
@@ -54,10 +55,6 @@ public class HttpRequest {
     private String contentType;
     private HttpHeaders headers;
 
-    HttpRequest(HttpRequestSender httpRequestSender) {
-        this.httpRequestSender = httpRequestSender;
-    }
-
     /**
      * Perform a HTTP request to a specific url. Returns the response.
      *
@@ -76,6 +73,7 @@ public class HttpRequest {
         this.subscriptionField = new SubscriptionField(this.subscriptionJson);
         prepareHeaders();
         createRequest();
+        this.url = urlParser.runJmesPathOnParameters(this.url, this.aggregatedObject);
 
         return this;
     }
@@ -142,7 +140,7 @@ public class HttpRequest {
         LOGGER.debug("Successfully added header for 'Authorization'");
 
         if (authType.equals(AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF)) {
-            JsonNode crumb = new JenkinsCrumb(httpRequestSender).fetchJenkinsCrumb(encoding, this.url);
+            JsonNode crumb = jenkinsCrumb.fetchJenkinsCrumb(encoding, this.url);
             addJenkinsCrumbData(crumb);
         }
 

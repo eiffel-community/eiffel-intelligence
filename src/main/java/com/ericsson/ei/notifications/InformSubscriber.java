@@ -18,6 +18,8 @@ package com.ericsson.ei.notifications;
 
 import java.text.ParseException;
 
+import javax.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.utils.SubscriptionField;
@@ -80,8 +83,6 @@ public class InformSubscriber {
     @Autowired
     private EmailSender emailSender;
 
-    private UrlParser urlParser = new UrlParser();
-
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.
@@ -100,37 +101,33 @@ public class InformSubscriber {
         MultiValueMap<String, String> mapNotificationMessage = mapNotificationMessage(
                 aggregatedObject, subscriptionJson);
 
-        if (notificationType.trim().equals("REST_POST")) {
-            LOGGER.debug("Notification through REST_POST");
+        try {
+            if (notificationType.trim().equals("REST_POST")) {
+                LOGGER.debug("Notification through REST_POST");
 
-            String url = this.urlParser.runJmesPathOnParameters(notificationMeta,
-                    aggregatedObject);
-
-            HttpRequest request = new HttpRequest(httpRequestSender);
-            request.setAggregatedObject(aggregatedObject)
-                   .setMapNotificationMessage(mapNotificationMessage)
-                   .setSubscriptionJson(subscriptionJson)
-                   .setUrl(url)
-                   .build();
-
-            boolean success = makeHTTPRequests(request);
-
-            if (!success) {
-                String missedNotification = prepareMissedNotification(aggregatedObject,
-                        subscriptionName, notificationMeta);
-                LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
-                mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
-                        missedNotificationCollectionName, "Time", ttlValue);
-                saveMissedNotificationToDB(missedNotification);
+                HttpRequest request = new HttpRequest();
+                request.setAggregatedObject(aggregatedObject)
+                       .setMapNotificationMessage(mapNotificationMessage)
+                       .setSubscriptionJson(subscriptionJson)
+                       .setUrl(notificationMeta)
+                       .build();
+                makeHTTPRequests(request);
             }
-        }
 
-        if (notificationType.trim().equals("MAIL")) {
-            LOGGER.debug("Notification through EMAIL");
-            String subject = subscriptionField.get("emailSubject");
-            String message = String.valueOf((mapNotificationMessage.get("")).get(0));
-            emailSender.sendEmail(notificationMeta, message, subject);
-            // TODO: save to missed notification if email sending goes wrong
+            if (notificationType.trim().equals("MAIL")) {
+                LOGGER.debug("Notification through EMAIL");
+                String subject = subscriptionField.get("emailSubject");
+                String emailBody = String.valueOf((mapNotificationMessage.get("")).get(0));
+                MimeMessage message = emailSender.prepareEmailMessage(notificationMeta, emailBody, subject);
+                emailSender.sendEmail(message);
+            }
+        } catch (NotificationFailureException | AuthenticationException e) {
+            String missedNotification = prepareMissedNotification(aggregatedObject,
+                    subscriptionName, notificationMeta);
+            LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
+            mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
+                    missedNotificationCollectionName, "Time", ttlValue);
+            saveMissedNotificationToDB(missedNotification);
         }
     }
 
@@ -138,14 +135,11 @@ public class InformSubscriber {
      * Attempts to make HTTP POST requests. If the request fails, it is retried until the maximum
      * number of failAttempts have been reached.
      *
-     * @param urlParser       The URL to send the request to
-     * @param mapNotificationMessage The body of the HTTP request
-     * @param headers
-     * @return success A boolean value depending on the outcome of the final HTTP request
-     * @throws AuthenticationException
+     * @param request
+     * @throws AuthenticationException, NotificationFailureException
      */
-    private boolean makeHTTPRequests(HttpRequest request)
-            throws AuthenticationException {
+    private void makeHTTPRequests(HttpRequest request)
+            throws AuthenticationException, NotificationFailureException {
         boolean success = false;
         int requestTries = 0;
 
@@ -155,7 +149,9 @@ public class InformSubscriber {
             LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
 
-        return success;
+        if (!success) {
+            throw new NotificationFailureException("Failed to send HTTP notification!");
+        }
     }
 
     /**

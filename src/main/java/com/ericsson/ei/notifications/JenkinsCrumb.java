@@ -5,28 +5,27 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+@Component
 public class JenkinsCrumb {
     private static final Logger LOGGER = LoggerFactory.getLogger(JenkinsCrumb.class);
-
-    private UrlParser urlParser = new UrlParser();
-
-    private HttpRequestSender httpRequestSender;
-
     private static final String JENKINS_CRUMB_ENDPOINT = "/crumbIssuer/api/json";
 
-    public JenkinsCrumb(HttpRequestSender httpRequestSender) {
-        this.httpRequestSender = httpRequestSender;
-    }
+    @Autowired
+    private UrlParser urlParser;
 
+    @Autowired
+    private HttpRequestSender httpRequestSender;
 
     /**
      * Tries to fetch a Jenkins crumb. Will return Jenkins crumb data in JSON

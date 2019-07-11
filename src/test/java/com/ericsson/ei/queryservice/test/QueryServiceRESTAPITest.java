@@ -56,7 +56,7 @@ public class QueryServiceRESTAPITest {
 
     static JSONArray jsonArray = null;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
+    static Logger LOGGER = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String missedNotificationPath = "src/test/resources/MissedNotification.json";
@@ -75,16 +75,19 @@ public class QueryServiceRESTAPITest {
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
+        aggregatedObject =
+            FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+        missedNotification =
+            FileUtils.readFileToString(new File(missedNotificationPath), "UTF-8");
     }
 
     @Test
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput =
+            FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
+        LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
@@ -96,7 +99,7 @@ public class QueryServiceRESTAPITest {
 
         String output = result.getResponse().getContentAsString().toString();
         output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
-        log.info("The Output is : " + output);
+        LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(expectedOutput, output);
@@ -106,8 +109,10 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput =
+            FileUtils.readFileToString(new File(missedNotificationOutputPath)
+                , "UTF-8");
+        LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
@@ -118,7 +123,7 @@ public class QueryServiceRESTAPITest {
 
         String output = result.getResponse().getContentAsString().toString();
         output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
-        log.info("The Output is : " + output);
+        LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(expectedOutput, output);

@@ -125,8 +125,6 @@ public class InformSubscriberTest {
     private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
-    @Autowired
-    private EmailSender emailSender;
 
     @Mock
     private QueryResponse queryResponse;
@@ -183,60 +181,6 @@ public class InformSubscriberTest {
     }
 
     @Test
-    public void runSubscriptionOnObjectTest() throws Exception {
-        JsonNode subscriptionJson = mapper.readTree(subscriptionData);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-
-        boolean output = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson, "someID");
-        assertTrue(output);
-    }
-
-    @Test
-    public void runRequirementSubscriptionOnObjectTest() throws Exception {
-        JsonNode subscriptionJson = mapper.readTree(artifactRequirementSubscriptionData);
-        JsonNode aggregatedDocument = mapper.readTree(aggregatedInternalObject);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        JsonNode aggregatedObject = aggregatedDocument.get("aggregatedObject");
-        String aggregationStr = aggregatedObject.toString();
-        boolean output = runSubscription.runSubscriptionOnObject(aggregationStr, requirementIterator, subscriptionJson,
-                "someID");
-        assertTrue(output);
-    }
-
-    @Test
-    public void runSubscriptionOnObjectRepeatFlagFalseTest() throws Exception {
-        JsonNode subscriptionJson = mapper.readTree(subscriptionData);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        Iterator<JsonNode> requirementIterator2 = requirementNode.elements();
-
-        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson, "someID");
-        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
-                subscriptionJson, "someID");
-        assertTrue(output1);
-        assertFalse(output2);
-    }
-
-    @Test
-    public void runSubscriptionOnObjectRepeatFlagTrueTest() throws Exception {
-        JsonNode subscriptionJson = mapper.readTree(subscriptionRepeatFlagTrueData);
-        ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
-        Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        Iterator<JsonNode> requirementIterator2 = requirementNode.elements();
-
-        boolean output1 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator,
-                subscriptionJson, "someID");
-        boolean output2 = runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator2,
-                subscriptionJson, "someID");
-        assertTrue(output1);
-        assertTrue(output2);
-    }
-
-    @Test
     public void missedNotificationTest() throws Exception {
         informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
         Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dbName, collectionName);
@@ -252,13 +196,7 @@ public class InformSubscriberTest {
         assertEquals(expectedOutput, output);
     }
 
-    @Test
-    public void sendMailTest() throws Exception {
-        Set<String> extRec = new HashSet<>();
-        String recievers = "asdf.hklm@ericsson.se, affda.fddfd@ericsson.com, sasasa.dfdfdf@fdad.com, abcd.defg@gmail.com";
-        extRec = (emailSender.extractEmails(recievers));
-        assertEquals(String.valueOf(extRec.toArray().length), "4");
-    }
+
 //    NOT TO FORGET TO FIX TESTS!!!!!!!!!
 //    @Test
 //    public void testRestPostTrigger() throws Exception {
@@ -303,20 +241,6 @@ public class InformSubscriberTest {
 //        assertFalse(mongoDBHandler.getAllDocuments(dbName, collectionName).isEmpty());
 //    }
 
-    @Test
-    public void testQueryMissedNotificationEndPoint() throws Exception {
-        String subscriptionName = new JSONObject(subscriptionData).getString("subscriptionName").replaceAll(regex, "");
-        JSONObject input = new JSONObject(aggregatedObject);
-        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
-                .andReturn();
-        String response = result.getResponse().getContentAsString().replace("\\", "");
-        assertEquals(
-                "{\"queryResponseEntity\":" + input.toString() + "}",
-                response);
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-    }
 
     @Test
     public void testMapNotificationMessage() throws Exception {
@@ -342,6 +266,11 @@ public class InformSubscriberTest {
             }
         }
         return mapNotificationMessage;
+    }
+
+    @Test
+    public void testPrepareMissedNotification() {
+        // TODO: test
     }
 
     private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {

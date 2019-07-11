@@ -16,16 +16,11 @@ package com.ericsson.ei.notifications;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import java.io.File;
-import java.net.URLEncoder;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -37,7 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,17 +41,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.notifications.EmailSender;
-import com.ericsson.ei.notifications.HttpRequestSender;
-import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.subscription.RunSubscription;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -79,10 +68,13 @@ public class InformSubscriberTest {
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String artifactRequirementSubscriptionPath = "src/test/resources/artifactRequirementSubscription.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
-    private static final String dbName = "MissedNotification";
-    private static final String collectionName = "Notification";
+    private static final String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
+    private static final String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
+    private static final String missedNotificationDatabase = "MissedNotification";
+    private static final String missedNotificationCollection = "Notification";
+    private static final String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static final String subRepeatFlagCollectionName = "subscription_repeat_handler";
     private static final String regex = "^\"|\"$";
-    private static final String missedNotificationUrl = "/queryMissedNotifications";
     private static final boolean statusOk = true;
 
     private static HttpHeaders headersWithAuth = new HttpHeaders();
@@ -95,6 +87,8 @@ public class InformSubscriberTest {
     private static String subscriptionDataForAuthorization;
     private static String url;
     private static String urlAuthorization;
+    private static String subscriptionRepeatFlagTrueData;
+    private static String subscriptionForMapNotification;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
     private ObjectMapper mapper = new ObjectMapper();
@@ -108,11 +102,6 @@ public class InformSubscriberTest {
     @Autowired
     private JmesPathInterface jmespath;
 
-    private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
-    private static String subscriptionRepeatFlagTrueData;
-    private static String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
-    private static String subscriptionForMapNotification;
-
     @Autowired
     private InformSubscriber informSubscriber;
 
@@ -121,9 +110,6 @@ public class InformSubscriberTest {
 
     @MockBean
     private HttpRequestSender httpRequestSender;
-
-    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
-    private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
 
     @Mock
@@ -181,18 +167,19 @@ public class InformSubscriberTest {
     }
 
     @Test
-    public void missedNotificationTest() throws Exception {
+    public void testMissedNotificationExistInDatabase() throws Exception {
         informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        Iterable<String> outputDoc = mongoDBHandler.getAllDocuments(dbName, collectionName);
-        Iterator<String> itr = outputDoc.iterator();
-        String data = itr.next().toString();
-        JsonNode jsonResult = null;
+        Iterable<String> missedNotifications = mongoDBHandler.getAllDocuments(
+            missedNotificationDatabase, missedNotificationCollection);
+        Iterator<String> itr = missedNotifications.iterator();
+        String missedNotification = itr.next().toString();
+        JsonNode missedNotificationJSON = null;
         JsonNode expectedOutput = null;
         ObjectMapper mapper = new ObjectMapper();
         expectedOutput = mapper.readTree(aggregatedObject);
-        jsonResult = mapper.readTree(data);
+        missedNotificationJSON = mapper.readTree(missedNotification);
 
-        JsonNode output = jsonResult.get("AggregatedObject");
+        JsonNode output = missedNotificationJSON.get("AggregatedObject");
         assertEquals(expectedOutput, output);
     }
 
@@ -238,7 +225,7 @@ public class InformSubscriberTest {
 //        informSubscriber.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
 //        verify(httpRequestSender, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
 //                headersWithoutAuth);
-//        assertFalse(mongoDBHandler.getAllDocuments(dbName, collectionName).isEmpty());
+//        assertFalse(mongoDBHandler.getAllDocuments(missedNotificationDatabase, missedNotificationCollection).isEmpty());
 //    }
 
 

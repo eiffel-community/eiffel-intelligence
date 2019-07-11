@@ -14,9 +14,8 @@
 package com.ericsson.ei.queryservice.test;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.controller.QueryAggregatedObjectController;
-import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
+import com.ericsson.ei.controller.QueryController;
+import com.ericsson.ei.controller.QueryControllerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(classes = {App.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
+@WebMvcTest(value = QueryController.class, secure = false)
 public class QueryServiceRESTAPITest {
 
     @Autowired
@@ -68,10 +67,7 @@ public class QueryServiceRESTAPITest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    private QueryAggregatedObjectControllerImpl aggregatedObjectController;
-
-    @MockBean
-    private QueryMissedNotificationControllerImpl missedNotificationController;
+    private QueryControllerImpl queryController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -86,7 +82,7 @@ public class QueryServiceRESTAPITest {
         String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath));
         log.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
+        Mockito.when(queryController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/aggregated-object")
@@ -109,7 +105,7 @@ public class QueryServiceRESTAPITest {
         String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath));
         log.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
+        Mockito.when(queryController.getQueryMissedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query/missed-notifications?")

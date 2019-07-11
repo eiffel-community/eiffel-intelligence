@@ -30,21 +30,21 @@ public interface DownloadController {
      * This method returns a subscription template.
      * 
      */
-    @RequestMapping(value = "/subscriptionsTemplate", method = RequestMethod.GET)
+    @RequestMapping(value = "/subscriptions-template", method = RequestMethod.GET)
     public ResponseEntity<?> getDownloadSubscriptionsTemplate();
 
     /**
      * This method returns a template for rules.
      * 
      */
-    @RequestMapping(value = "/rulesTemplate", method = RequestMethod.GET)
+    @RequestMapping(value = "/rules-template", method = RequestMethod.GET)
     public ResponseEntity<?> getDownloadRulesTemplate();
 
     /**
      * This method returns a template for Eiffel events.
      * 
      */
-    @RequestMapping(value = "/eventsTemplate", method = RequestMethod.GET)
+    @RequestMapping(value = "/events-template", method = RequestMethod.GET)
     public ResponseEntity<?> getDownloadEventsTemplate();
 
 }

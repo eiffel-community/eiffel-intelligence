@@ -16,6 +16,8 @@
 */
 package com.ericsson.ei.controller;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -26,17 +28,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.controller.model.QueryBody;
+import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.controller.model.QueryResponseEntity;
+import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.ericsson.ei.utils.ResponseMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class represents the REST end-points for the query service. Criteria is
- * required to have in the request body, while options and filter are optional.
+ * This class represents the REST end-points for the query services.
  */
 @Component
 @CrossOrigin
@@ -48,9 +55,21 @@ public class QueryControllerImpl implements QueryController {
     @Autowired
     private ProcessQueryParams processQueryParams;
 
+    @Autowired
+    private ProcessAggregatedObject processAggregatedObject;
+
+    @Autowired
+    private ProcessMissedNotification processMissedNotification;
+
+    /**
+     * This method is used to query aggregated objects with the requested criteria, which must be present in the request body. Options and filter are optional.
+     * 
+     * @param body
+     * @return ResponseEntity
+     */
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
+    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects", response = String.class)
     public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
         String emptyResponseContent = "[]";
         HttpStatus httpStatus;
@@ -71,9 +90,71 @@ public class QueryControllerImpl implements QueryController {
             } else {
                 httpStatus = HttpStatus.NO_CONTENT;
             }
-            return new ResponseEntity<>(result.toString(), httpStatus);
+            return new ResponseEntity<String>(result.toString(), httpStatus);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to extract data from the Aggregated Object using freestyle query.";
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * This method retrieves aggregated data on a specific aggregated object, given an ID.
+     *
+     * @param id
+     * @return ResponseEntity
+     */
+    @Override
+    @ApiOperation(value = "Retrieve an aggregated object by id", response = QueryResponse.class)
+    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+        ObjectMapper mapper = new ObjectMapper();
+        QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
+        QueryResponse queryResponse = new QueryResponse();
+        HttpStatus httpStatus = HttpStatus.NO_CONTENT;
+        try {
+            List<String> response = processAggregatedObject.processQueryAggregatedObject(id);
+            if (!response.isEmpty()) {
+                queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
+                httpStatus = HttpStatus.OK;
+            }
+
+            queryResponse.setQueryResponseEntity(queryResponseEntity);
+            LOGGER.debug("The response is: {}", response.toString());
+            return new ResponseEntity<QueryResponse>(queryResponse, httpStatus);
+        } catch (Exception e) {
+            String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * This method returns missed notification(s) given a subscription name.
+     *
+     * @param subscriptionName
+     */
+    @Override
+    @ApiOperation(value = "Retrieve missed notifications", response = QueryResponse.class)
+    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
+        ObjectMapper mapper = new ObjectMapper();
+        QueryResponse queryResponse = new QueryResponse();
+        QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
+        try {
+            List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+            if (!response.isEmpty()) {
+                queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
+            }
+            queryResponse.setQueryResponseEntity(queryResponseEntity);
+            LOGGER.debug("The response is : {}", response.toString());
+            if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
+                LOGGER.debug("Missed notification with subscription name {} was successfully removed from database", subscriptionName);
+            }
+            return new ResponseEntity<QueryResponse>(queryResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            String errorMessage = "Internal Server Error: Failed to extract the data from the Missed Notification Object based on subscription name "
+                    + subscriptionName + ".";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

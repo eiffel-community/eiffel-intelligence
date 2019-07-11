@@ -45,7 +45,7 @@ public interface RuleCheckController {
      * This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
      * 
      */
-    @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)
+    @RequestMapping(value = "/test-rule-page-enabled", method = RequestMethod.GET)
     public ResponseEntity<?> getRuleCheckTestRulePageEnabled();
 
 }

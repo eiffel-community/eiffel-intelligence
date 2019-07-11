@@ -1,8 +1,9 @@
 description: This class retrieves aggregated objects given a free style query. Criteria is
              required to have in the request body, while options and filter are optional.
 post:
-  description: The REST POST method is used to query aggregated objects with the
-               requested criteria, which are present in the request body.
+  description: This method is used to query aggregated objects with the
+               requested criteria, which must be present in the request body. 
+               Options and filter are optional.
   body:
     application/json:
       schema: queryBody
@@ -10,3 +11,33 @@ post:
     200:
       body:
         application/json:
+
+/aggregated-object:
+  get:
+    description: This method retrieves aggregated data on a specific aggregated object, given an ID.
+    queryParameters:
+      id:
+        displayName: id
+        type: string
+        description: Id of the aggregatedObject
+        example: 6acc3c87-75e0-4b6d-88f5-b1a5d4e62b44
+        required: true
+    responses:
+      200:
+        body:
+          application/json:
+
+/missed-notifications:
+  get:
+    description: This method returns missed notification(s) given a subscription name.
+    queryParameters:
+      subscriptionName:
+        displayName: subscriptionName
+        type: string
+        description: SubscriptionName of the Missed Notification
+        example: Subscription_1
+        required: true
+    responses:
+      200:
+        body:
+          application/json:

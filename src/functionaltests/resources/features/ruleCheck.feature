@@ -35,6 +35,6 @@ Feature: Test Rules Checker
   @RuleCheckStatus
   Scenario: Check status of test rule page using REST API
     When rules checking is enabled
-    Then get request from REST API "/rules/rule-check/testRulePageEnabled" return response code of 200 and status as "true"
+    Then get request from REST API "/rules/rule-check/test-rule-page-enabled" return response code of 200 and status as "true"
     When rules checking is not enabled
-    Then get request from REST API "/rules/rule-check/testRulePageEnabled" return response code of 200 and status as "false"
+    Then get request from REST API "/rules/rule-check/test-rule-page-enabled" return response code of 200 and status as "false"

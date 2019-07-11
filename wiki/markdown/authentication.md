@@ -1,11 +1,11 @@
 # Authentication
 
-|Method|Endpoint         |Authentication|
-|------|-----------------|--------------|
-|GET   |/auth            |no            |
-|GET   |/auth/login      |yes           |
-|GET   |/auth/logout     |no            |
-|GET   |/auth/checkStatus|yes           |
+|Method|Endpoint          |Authentication|
+|------|------------------|--------------|
+|GET   |/auth             |no            |
+|GET   |/auth/login       |yes           |
+|GET   |/auth/logout      |no            |
+|GET   |/auth/check-status|yes           |
 
 Authentication is not a requirement but can be turned on and off in the
 application properties file with the '_ldap.enabled_' property.
@@ -88,11 +88,11 @@ Curl command with token
 
 An arbitrary endpoint to check if backend is up and running
 
-    GET /auth/checkStatus
+    GET /auth/check-status
 
 Curl command
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/auth/checkStatus
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/auth/check-status
 
 Example of response body
 

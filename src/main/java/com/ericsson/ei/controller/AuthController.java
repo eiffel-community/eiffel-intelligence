@@ -37,7 +37,7 @@ public interface AuthController {
      * This method checks Eiffel Intelligene backend status.
      * 
      */
-    @RequestMapping(value = "/checkStatus", method = RequestMethod.GET)
+    @RequestMapping(value = "/check-status", method = RequestMethod.GET)
     public ResponseEntity<?> getAuthCheckStatus();
 
 }

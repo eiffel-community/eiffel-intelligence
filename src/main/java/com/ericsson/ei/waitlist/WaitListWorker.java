@@ -22,10 +22,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
@@ -83,13 +80,15 @@ public class WaitListWorker {
         String eventStr = event.asText();
         RulesObject rulesObject = rulesHandler.getRulesForEvent(eventStr);
         String idRule = rulesObject.getIdentifyRules();
-
+        // waitlistId is only used for debugging and tests
+        int waitlistId = this.hashCode();
         if (idRule != null && !idRule.isEmpty()) {
             JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, eventStr);
             if (ids.isArray()) {
                 JsonNode idNode = eventJson.get("_id");
                 JsonNode timeNode = eventJson.get("Time");
-                LOGGER.debug("[EIFFEL EVENT RESENT] id:" + idNode.textValue() + " time:" + timeNode);
+                LOGGER.debug("[EIFFEL EVENT RESENT FROM WAITLIST: {}] id:" + idNode.textValue() + " time:" + timeNode,
+                        waitlistId);
                 for (final JsonNode idJsonObj : ids) {
                     Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
                             idJsonObj.textValue());

@@ -29,6 +29,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.dumbster.smtp.SimpleSmtpServer;
@@ -43,6 +44,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionTriggerSteps",
+        "rabbitmq.exchange.name: SubscriptionTriggerSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionTriggerStepsConsumer" })
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);

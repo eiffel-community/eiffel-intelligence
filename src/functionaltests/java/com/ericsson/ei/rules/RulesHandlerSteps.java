@@ -12,6 +12,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import cucumber.api.java.After;
@@ -20,6 +21,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: RulesHandlerSteps",
+        "rabbitmq.exchange.name: RulesHandlerSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: RulesHandlerStepsConsumer" })
 public class RulesHandlerSteps {
 
     private ClientAndServer restServer;
@@ -79,15 +83,16 @@ public class RulesHandlerSteps {
     }
 
     /**
-     * Create a new instance of RulesHandler using a rules.path
-     * set by the rulesPath variable.
+     * Create a new instance of RulesHandler using a rules.path set by the rulesPath
+     * variable.
      *
      * @throws Exception
      */
     private void initializeRulesHandler() throws Exception {
         LOGGER.debug("Rules Path: " + rulesPath);
-        System.setProperty("rules.path", rulesPath);
+//        System.setProperty("rules.path", rulesPath);
         rulesHandler = new RulesHandler();
+        rulesHandler.setRulesFilePath(rulesPath);
         rulesHandler.init();
     }
 
@@ -100,7 +105,9 @@ public class RulesHandlerSteps {
 
         LOGGER.debug("Setting up endpoints on host '" + HOST + "' and port '" + port + "'");
         mockClient = new MockServerClient(HOST, port);
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE)).respond(response().withStatusCode(201).withBody(BODY));
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY)).respond(response().withStatusCode(201).withBody(EMPTY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE))
+                  .respond(response().withStatusCode(201).withBody(BODY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY))
+                  .respond(response().withStatusCode(201).withBody(EMPTY));
     }
 }

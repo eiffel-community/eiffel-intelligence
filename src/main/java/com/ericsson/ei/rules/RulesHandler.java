@@ -36,10 +36,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.Setter;
+
 @Component
 public class RulesHandler {
 
     @Value("${rules.path}")
+    @Setter
     private String rulesFilePath;
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
@@ -62,8 +65,7 @@ public class RulesHandler {
     /**
      * Parses a given String into a JsonNode.
      *
-     * @param jsonContent
-     *            the content to be parsed
+     * @param jsonContent the content to be parsed
      * @throws JsonProcessingException
      * @throws IOException
      */
@@ -75,8 +77,7 @@ public class RulesHandler {
     /**
      * Gets applicable rule for a given event.
      *
-     * @param event
-     *            the event string
+     * @param event the event string
      * @return rules object
      */
     public RulesObject getRulesForEvent(String event) {
@@ -150,8 +151,7 @@ public class RulesHandler {
     /**
      * Checks if the path is using a scheme.
      *
-     * @param path
-     *            the rules file path
+     * @param path the rules file path
      * @return true if there is a match, false otherwise
      */
     private boolean isPathUsingScheme(String path) {

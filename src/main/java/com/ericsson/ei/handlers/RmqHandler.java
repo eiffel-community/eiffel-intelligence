@@ -18,7 +18,11 @@ package com.ericsson.ei.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -105,11 +109,14 @@ public class RmqHandler {
     @Value("${threads.maxPoolSize}")
     private int maxThreads;
 
+    @Setter
     private RabbitTemplate rabbitTemplate;
+    @Getter
     private CachingConnectionFactory cachingConnectionFactory;
-    private SimpleMessageListenerContainer container;
-    private SimpleMessageListenerContainer waitlistContainer;
 
+    @Getter
+    private SimpleMessageListenerContainer container;
+//    private SimpleMessageListenerContainer waitlistContainer;
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -133,12 +140,12 @@ public class RmqHandler {
         cachingConnectionFactory.setPublisherConfirms(true);
         cachingConnectionFactory.setPublisherReturns(true);
 
-        // This will disable connectionFactories auto recovery and use Spring AMQP auto recovery
+        // This will disable connectionFactories auto recovery and use Spring AMQP auto
+        // recovery
         cachingConnectionFactory.getRabbitConnectionFactory().setAutomaticRecoveryEnabled(false);
 
         return cachingConnectionFactory;
     }
-
 
     @Bean
     Queue queue() {
@@ -156,7 +163,8 @@ public class RmqHandler {
     }
 
     @Bean
-    SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory, EventHandler eventHandler) {
+    public SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory,
+            EventHandler eventHandler) {
         String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
@@ -208,7 +216,7 @@ public class RmqHandler {
 
     public void close() {
         try {
-            waitlistContainer.destroy();
+//            waitlistContainer.destroy();
             container.destroy();
             cachingConnectionFactory.destroy();
         } catch (Exception e) {

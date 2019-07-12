@@ -1,12 +1,10 @@
 package com.ericsson.ei.rules;
 
-import com.ericsson.ei.controller.RuleCheckController;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import static org.junit.Assert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,14 +13,22 @@ import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.File;
+import com.ericsson.ei.controller.RuleCheckController;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 
-import static org.junit.Assert.assertEquals;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: RuleCheckSteps",
+        "rabbitmq.exchange.name: RuleCheckSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: RuleCheckStepsConsumer" })
 public class RuleCheckSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
@@ -49,43 +55,42 @@ public class RuleCheckSteps extends FunctionalTestBase {
     }
 
     @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")
-    public void file_with_JMESPath_rules_and_file_with_events(String rulesFileName, String eventsFileName) throws Throwable {
+    public void file_with_JMESPath_rules_and_file_with_events(String rulesFileName, String eventsFileName)
+            throws Throwable {
         rules = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + rulesFileName), "UTF-8");
         events = FileUtils.readFileToString(new File(TEST_RESOURCES_PATH + eventsFileName), "UTF-8");
     }
 
     @When("^make a POST request to the REST API \"([^\"]*)\" with a single rule")
     public void make_a_POST_request_to_the_REST_API_with_request_parameter(String endpoint) throws Throwable {
-        String requestBody = new JSONObject()
-                .put("rule", new JSONObject(rules))
-                .put("event", new JSONObject(events))
-                .toString();
+        String requestBody = new JSONObject().put("rule", new JSONObject(rules))
+                                             .put("event", new JSONObject(events))
+                                             .toString();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
-                .setHost(hostName)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setEndpoint(endpoint)
-                .setBody(requestBody)
-                .performRequest();
+                              .setHost(hostName)
+                              .addHeader("content-type", "application/json")
+                              .addHeader("Accept", "application/json")
+                              .setEndpoint(endpoint)
+                              .setBody(requestBody)
+                              .performRequest();
     }
 
     @When("^make a POST request to the REST API \"([^\"]*)\"$")
     public void make_a_POST_request_to_the_REST_API(String endpoint) throws Throwable {
-        String requestBody = new JSONObject()
-                .put("listRulesJson", new JSONArray(rules))
-                .put("listEventsJson", new JSONArray(events))
-                .toString();
+        String requestBody = new JSONObject().put("listRulesJson", new JSONArray(rules))
+                                             .put("listEventsJson", new JSONArray(events))
+                                             .toString();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
-                .setHost(hostName)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setEndpoint(endpoint)
-                .setBody(requestBody)
-                .performRequest();
+                              .setHost(hostName)
+                              .addHeader("content-type", "application/json")
+                              .addHeader("Accept", "application/json")
+                              .setEndpoint(endpoint)
+                              .setBody(requestBody)
+                              .performRequest();
     }
 
     @Then("^get response code of (\\d+)$")
@@ -110,15 +115,16 @@ public class RuleCheckSteps extends FunctionalTestBase {
     }
 
     @Then("^get request from REST API \"([^\"]*)\" return response code of (\\d+) and status as \"([^\"]*)\"$")
-    public void get_request_from_REST_API_return_response_code_of_and_status_as(String endpoint, int statusCode, String status) throws Throwable {
+    public void get_request_from_REST_API_return_response_code_of_and_status_as(String endpoint, int statusCode,
+            String status) throws Throwable {
         String responseBody = new JSONObject().put("status", Boolean.valueOf(status)).toString();
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         ResponseEntity<String> apiResponse = getRequest.setPort(applicationPort)
-                .setHost(hostName)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setEndpoint(endpoint)
-                .performRequest();
+                                                       .setHost(hostName)
+                                                       .addHeader("content-type", "application/json")
+                                                       .addHeader("Accept", "application/json")
+                                                       .setEndpoint(endpoint)
+                                                       .performRequest();
 
         assertEquals(statusCode, apiResponse.getStatusCodeValue());
         assertEquals(responseBody, apiResponse.getBody());

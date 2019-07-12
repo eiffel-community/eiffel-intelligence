@@ -7,9 +7,12 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -23,7 +26,12 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionContentSteps",
+        "rabbitmq.exchange.name: SubscriptionContentSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionContentStepsConsumer" })
 public class SubscriptionContentSteps extends FunctionalTestBase {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);
 
     @LocalServerPort
     private int applicationPort;
@@ -36,6 +44,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @PostConstruct
     private void setUp() {
+        LOGGER.debug("Application port is: {}", applicationPort);
         getRequest = new HttpRequest(HttpMethod.GET);
 
         getRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
@@ -44,8 +53,11 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         deleteRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions");
 
         postRequest = new HttpRequest(HttpMethod.POST);
-        postRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions")
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json");
+        postRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint("/subscriptions")
+                   .addHeader("content-type", "application/json")
+                   .addHeader("Accept", "application/json");
 
     }
 
@@ -141,18 +153,18 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
         assertEquals("[]", response.getBody().toString());
     }
 
-	// SCENARIO 4
+    // SCENARIO 4
 
-	@When("^I try to create subscription request with missing required fields\"([^\"]*)\"$")
-	public void i_try_to_create_subscription_request_with_missing_required_fields(String missingFieldSubscriptionFile)
-			throws Throwable {
-		postRequest.setBody(new File(missingFieldSubscriptionFile));
-		response = postRequest.performRequest();
-	}
+    @When("^I try to create subscription request with missing required fields\"([^\"]*)\"$")
+    public void i_try_to_create_subscription_request_with_missing_required_fields(String missingFieldSubscriptionFile)
+            throws Throwable {
+        postRequest.setBody(new File(missingFieldSubscriptionFile));
+        response = postRequest.performRequest();
+    }
 
-	@Then("^The subscription with missing field is rejected$")
-	public void the_subscription_with_missing_field_is_rejected() throws Throwable {
-		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
-	}
+    @Then("^The subscription with missing field is rejected$")
+    public void the_subscription_with_missing_field_is_rejected() throws Throwable {
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
+    }
 
 }

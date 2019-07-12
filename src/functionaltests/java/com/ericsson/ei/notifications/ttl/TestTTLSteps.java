@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
@@ -30,7 +29,6 @@ import com.ericsson.ei.subscription.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,8 +40,10 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1" })
-@ContextConfiguration(initializers = TestContextInitializer.class)
+        "notification.failAttempt:1", "spring.data.mongodb.database: TestTTLSteps",
+        "rabbitmq.exchange.name: TestTTLSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: TestTTLStepsConsumer" })
+//@ContextConfiguration(initializers = TestContextInitializer.class)
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
@@ -146,9 +146,12 @@ public class TestTTLSteps extends FunctionalTestBase {
         String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH_CREATION), "UTF-8");
         JSONArray jsonArr = new JSONArray(readFileToString);
         httpRequest = new HttpRequest(HttpMethod.POST);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setBody(jsonArr.toString());
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint)
+                   .addHeader("content-type", "application/json")
+                   .addHeader("Accept", "application/json")
+                   .setBody(jsonArr.toString());
         httpRequest.performRequest();
     }
 
@@ -157,8 +160,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         LOGGER.debug("Sending an Eiffel event");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager
-                .verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+        List<String> missingEventIds = dbManager.verifyEventsInDB(
+                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
@@ -202,8 +205,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     /**
-     * Setting up mock server to receive calls on one endpoint and respond with
-     * 500 to trigger retries of POST request
+     * Setting up mock server to receive calls on one endpoint and respond with 500
+     * to trigger retries of POST request
      */
     private void setUpMockServer() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -213,7 +216,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 
         // set up expectations on mock server to get calls on this endpoint
         mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
-                .respond(HttpResponse.response().withStatusCode(500));
+                        .respond(HttpResponse.response().withStatusCode(500));
     }
 
     /**
@@ -230,7 +233,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection,
+                    condition);
 
             if (notificationExist.size() == expectedSize) {
                 return notificationExist.size();

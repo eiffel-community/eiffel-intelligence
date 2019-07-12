@@ -106,6 +106,8 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @After
     public void teardown() {
         if (!systemTest) {
+            String dbName = mongoDBHandler.getMongoProperties().getDatabase();
+            mongoDBHandler.dropDatabase(dbName);
             mongoDBHandler.setMongoClient(null);
             // getFlowTestConfigs().tearDown();
             cleanFlowTestConfigs();

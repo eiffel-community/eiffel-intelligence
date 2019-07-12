@@ -58,10 +58,6 @@ public class EmailSender {
     @Autowired
     private JavaMailSender emailSender;
 
-    public void setEmailSender(JavaMailSender emailSender) {
-        this.emailSender = emailSender;
-    }
-
     /**
      * This method sends an email.
      *

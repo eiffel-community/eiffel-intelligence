@@ -1,54 +1,57 @@
+/*
+   Copyright 2017 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.notifications;
 
-import com.ericsson.ei.App;
+import static org.mockito.Mockito.doThrow;
+
+import javax.mail.internet.MimeMessage;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.util.HashSet;
-import java.util.Set;
+import com.ericsson.ei.exception.NotificationFailureException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class })
+@RunWith(MockitoJUnitRunner.class)
 public class EmailSenderTest {
 
-    @Autowired
+    @Mock
+    JavaMailSender javaMailSender;
+
+    @Mock
+    MimeMessage message;
+
+    @Mock
+    MimeMessageHelper mimeMessageHelper;
+
+    @InjectMocks
     private EmailSender emailSender;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Test
-    public void testExtractEmails() throws Exception {
-        Set<String> extRec = new HashSet<>();
-        String receivers = "asdf.hklm@ericsson.se, affda"
-            + ".fddfd@ericsson.com, sasasa.dfdfdf@fdad.com, abcd.defg@gmail.com";
-        extRec = (emailSender.extractEmails(receivers));
-        assertEquals(String.valueOf(extRec.toArray().length), "4");
+    @Test(expected = NotificationFailureException.class)
+    public void sendEmailThrowsException() throws Exception {
+        doThrow(new MailSendException("")).when(javaMailSender).send(message);
+        emailSender.sendEmail(message);
     }
 
-/*    @Test
-    public void testPrepareEmailMessage() throws MessagingException {
-        String mapNotificiationMessage = "";
-        String recipient = "test@example.com";
-        String emailSubject = "Subscription was triggered!";
-
-        MimeMessage message = emailSender.prepareEmailMessage(recipient,
-            mapNotificiationMessage, emailSubject);
-
-        System.out.println("new message:: " + message.toString());
-
-        assertTrue(message.getSender().equals("noreply@ericsson.com"));
-        assertTrue(message.getSubject().equals(emailSubject));
-        assertTrue(message.getAllRecipients().equals(recipient));
-    }*/
-
+    /*
+     * prepareEmail is not possible to test due too much hidden Spring mumbo jumbo doing things in
+     * back ground.
+     */
 }

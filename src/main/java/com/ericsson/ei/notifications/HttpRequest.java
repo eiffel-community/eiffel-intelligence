@@ -51,8 +51,11 @@ public class HttpRequest {
     @Setter
     private String url;
 
+    @Getter
     private HttpEntity<?> request;
+    @Getter
     private String contentType;
+    @Getter
     private HttpHeaders headers;
 
     /**

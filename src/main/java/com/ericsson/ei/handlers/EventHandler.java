@@ -33,7 +33,7 @@ import com.rabbitmq.client.Channel;
 @Component
 public class EventHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventHandler.class);
+    private static Logger log = LoggerFactory.getLogger(EventHandler.class);
 
     @Autowired
     RulesHandler rulesHandler;
@@ -52,7 +52,6 @@ public class EventHandler {
     }
 
     public void eventReceived(String event) {
-        LOGGER.debug("Thread id {} spawned", Thread.currentThread().getId());
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
         // downstreamIdRulesHandler.runIdRules(eventRules, event);
@@ -65,12 +64,13 @@ public class EventHandler {
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
         String port = environment.getProperty("local.server.port");
-        LOGGER.debug("Event {} received on port {}", id, port);
+        log.debug("Thread id {} spawned for EventHandler on port: {}", Thread.currentThread().getId(), port);
+        log.debug("Event {} received on port {}", id, port);
 
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
 
-        LOGGER.debug("Event {} processed on port {}", id, port);
+        log.debug("Event {} processed on port {}", id, port);
     }
 }

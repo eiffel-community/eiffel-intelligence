@@ -58,7 +58,6 @@ import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.test.utils.TestConfigs;
-import com.ericsson.ei.testsuite.SuiteTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -133,7 +132,7 @@ public class SubscriptionHandlerTest {
 
     public static void setUpEmbeddedMongo() throws Exception {
 
-        System.out.println(SuiteTest.getMongoClients().isEmpty());
+        // System.out.println(SuiteTest.getMongoClients().isEmpty());
 
         mongoClient = TestConfigs.mongoClientInstance();
         if (mongoClient == null) {

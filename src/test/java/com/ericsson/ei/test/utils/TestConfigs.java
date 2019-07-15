@@ -47,6 +47,8 @@ public class TestConfigs {
 
     private static void setUpMessageBus() throws Exception {
         LOGGER.debug("setting up message buss");
+  
+        System.out.println("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
         if (amqpBroker != null || conn != null || cf != null) {
             return;
         }
@@ -57,6 +59,8 @@ public class TestConfigs {
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
+        
+        System.out.println("done setting up message buss properties");
         LOGGER.info("setting up message buss");
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
@@ -70,7 +74,7 @@ public class TestConfigs {
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
-
+        System.out.println("after setting up message buss");
     }
 
     public static MongoClient mongoClientInstance() throws Exception {

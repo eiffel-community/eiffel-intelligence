@@ -106,13 +106,13 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     @After
     public void teardown() {
-        if (!systemTest) {
-            String dbName = mongoDBHandler.getMongoProperties().getDatabase();
-            mongoDBHandler.dropDatabase(dbName);
-            mongoDBHandler.setMongoClient(null);
-            // getFlowTestConfigs().tearDown();
-            cleanFlowTestConfigs();
-        }
+        // if (!systemTest) {
+        // String dbName = mongoDBHandler.getMongoProperties().getDatabase();
+        // mongoDBHandler.dropDatabase(dbName);
+        // mongoDBHandler.setMongoClient(null);
+        // // getFlowTestConfigs().tearDown();
+        // cleanFlowTestConfigs();
+        // }
     }
 
     // protected TestConfigs getFlowTestConfigs() {
@@ -120,7 +120,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     // }
 
     private void createFlowTestConfigs() throws Exception {
-        TestConfigs.init();
+        // TestConfigs.init();
         // TestConfigs newConfigs = new TestConfigs();
         // String className = getClassName();
         // configsMap.put(className, newConfigs);

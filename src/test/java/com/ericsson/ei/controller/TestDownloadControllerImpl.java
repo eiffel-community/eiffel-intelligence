@@ -16,28 +16,36 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.App;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SocketUtils;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.ericsson.ei.App;
+import com.ericsson.ei.utils.TestContextInitializer;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: TestDownloadControllerImpl",
+        "rabbitmq.exchange.name: TestDownloadControllerImpl-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: TestDownloadControllerImpl" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-    App.class,
-    EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+        App.class
+        // ,
+        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
 })
 @AutoConfigureMockMvc
 public class TestDownloadControllerImpl {
@@ -46,9 +54,10 @@ public class TestDownloadControllerImpl {
     private MockMvc mockMvc;
 
     @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+    public static void init() throws Exception {
+        // TestConfigs.init();
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("spring.data.mongodb.port", "" + port);
     }
 
     @Test

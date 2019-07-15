@@ -15,6 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,31 +29,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
+import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 /**
- * This class represents the REST GET mechanism to extract the aggregated data
- * on the basis of the ID from the aggregatedObject.
+ * This class represents the REST GET mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
  */
 @Component
 @CrossOrigin
+@Api(value = "queryAggregatedObject", tags = {"Query aggregated object"})
 public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
 
     /**
-     * This method is responsible for the REST Get mechanism to extract the
-     * aggregated data on the basis of the ID from the aggregatedObject.
+     * This method is responsible for the REST Get mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
      *
      * @param id
      * @return ResponseEntity
      */
     @Override
-    public ResponseEntity<QueryResponse> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+    @ApiOperation(value = "")
+    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();
@@ -64,14 +66,13 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
             }
 
             queryResponse.setQueryResponseEntity(queryResponseEntity);
-            LOGGER.debug("The response is: " + response.toString());
-            return new ResponseEntity<>(queryResponse, httpStatus);
+            LOGGER.debug("The response is: {}", response.toString());
+            return new ResponseEntity<QueryResponse>(queryResponse, httpStatus);
         } catch (Exception e) {
-            String errorMessage = "Failed to extract the aggregated data from the Aggregated Object based on ID " + id
-                    + ". Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to extract the aggregated data from the Aggregated Object based on ID " + id + ".";
             LOGGER.error(errorMessage, e);
-            queryResponse.setAdditionalProperty("errorMessage", errorMessage);
-            return new ResponseEntity<>(queryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

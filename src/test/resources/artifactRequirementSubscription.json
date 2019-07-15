@@ -13,8 +13,8 @@
     "requirements": [
       {
         "description" : "A subscription that will notify when an artifact for given issue id, has passed a certain test successfully",
-        "conditions": [         
-          {            
+        "conditions": [
+          {
             "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
           },
           {

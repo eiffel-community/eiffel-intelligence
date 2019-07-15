@@ -68,13 +68,10 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        String actualSubscriptionsValue = objMapper.readValue(response.getBody(), JsonNode.class)
-                                                   .get("subscriptions")
-                                                   .asText();
-        assertEquals(
-                "List all files don't return expected subscriptions file value. \nExpected: "
-                        + expectedSubscriptionsValue + "\nActual: " + actualSubscriptionsValue,
-                expectedSubscriptionsValue, actualSubscriptionsValue);
+        String actualSubscriptionsValue = objMapper.readValue(response.getBody(), JsonNode.class).get("subscriptions").asText();
+        assertEquals("List all files don't return expected subscriptions file value. \nExpected: "
+        + expectedSubscriptionsValue + "\nActual: "+ actualSubscriptionsValue,
+        expectedSubscriptionsValue, actualSubscriptionsValue);
     }
 
     @And("^Get subscription template file$")

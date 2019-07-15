@@ -1,8 +1,7 @@
-description: This service for the execute the rules over the Json Content
+description: This class is used to test rules on Eiffel events. Testrules must be enabled in Eiffel Intelligence.
 /rule-check:
   post:
-    description: This call for run the jmespath rule object or rule on the JSON object
-    displayName: checkRule
+    description: This method extracts data from a single Eiffel event based on the given JMESPath expression.
     body:
       application/json:
         schema: ruleCheckBody
@@ -13,8 +12,7 @@ description: This service for the execute the rules over the Json Content
 
   /aggregation:
     post:
-      description: This call for run the jmespath rule objects on the Json array of objects, we get aggregation Object as output
-      displayName: findAggregation
+      description: This method extracts data from the given list of Eiffel events, based on a set of rules and returns an aggregated object.
       body:
         application/json:
           schema: rulesCheckBody
@@ -25,8 +23,7 @@ description: This service for the execute the rules over the Json Content
 
   /testRulePageEnabled:
     get:
-      description: This call for the current status of test rule entry point, we get status as output
-      displayName: findTestRuleServiceStatus
+      description: This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
       responses:
         200:
           body:

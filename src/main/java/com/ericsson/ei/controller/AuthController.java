@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * No description
+ * This class handles requests related to authentication.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -20,21 +20,21 @@ public interface AuthController {
 
 
     /**
-     * This call for checking if security is enabled
+     * This method checks if security is enabled.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getAuth();
 
     /**
-     * This call for getting logged in user
+     * This method returns a logged in user.
      * 
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ResponseEntity<?> getAuthLogin();
 
     /**
-     * This call for checking backend status
+     * This method checks Eiffel Intelligene backend status.
      * 
      */
     @RequestMapping(value = "/checkStatus", method = RequestMethod.GET)

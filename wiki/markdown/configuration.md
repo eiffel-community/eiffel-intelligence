@@ -125,12 +125,12 @@ collection is defined by the below property:
 **email.sender** defines who should be the sender of the email Eiffel
 Intelligence sends when a subscription is triggered. If a subscription is
 defined with the notificationMeta "receivermail@example.com" this receiver
-would be notified when the subscription fulfills all conditions via an E-mail.
+would be notified when the subscription fulfills all conditions via an e-mail.
 The sender of this e-mail is defined by the **email.sender** property.
-The value for email.subject is used by all subscriptions which have been
+The value for "email.subject" is used by all subscriptions which have been
 created via the REST API. When a subscription is created using the Eiffel
-Intelligence front-end GUI it is possible to set individual email subject
-for each subscription.
+Intelligence front-end GUI it is possible to set individual e-mail subject
+for each subscription. Note that these two properties are mandatory to set.
 
 * email.sender
 * email.subject

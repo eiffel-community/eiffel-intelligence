@@ -121,13 +121,14 @@ public class AuthenticationSteps extends FunctionalTestBase {
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions/" + SUBSCRIPTION_NAME);
 
         response = httpRequest.performRequest();
-        GetSubscriptionResponse subscription = new ObjectMapper().readValue(response.getBody().toString(),
-                GetSubscriptionResponse.class);
         if (!check.isEmpty()) {
+            JSONObject jsonResponse = new JSONObject(response.getBody().toString());
+            String errorMessage = jsonResponse.getString("message");
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-            assertEquals(true, subscription.getFoundSubscriptions().isEmpty());
-            assertEquals(SUBSCRIPTION_NAME, subscription.getNotFoundSubscriptions().get(0));
+            assertEquals(true, errorMessage.contains(SUBSCRIPTION_NAME));
         } else {
+            GetSubscriptionResponse subscription = new ObjectMapper().readValue(response.getBody().toString(),
+                    GetSubscriptionResponse.class);
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(true, subscription.getNotFoundSubscriptions().isEmpty());
             assertEquals(SUBSCRIPTION_NAME, subscription.getFoundSubscriptions().get(0).getSubscriptionName());

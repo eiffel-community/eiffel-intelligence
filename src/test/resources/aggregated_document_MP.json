@@ -68,7 +68,7 @@
         "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4000000",
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
-        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",        
+        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
         "publications": [
             {
                 "eventId": "33d05e6f-9bd9-4138-83b6-e20cc7000000",

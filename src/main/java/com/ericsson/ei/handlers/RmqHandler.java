@@ -42,7 +42,7 @@ import lombok.Setter;
 
 @Component
 public class RmqHandler {
-    static Logger log = (Logger) LoggerFactory.getLogger(RmqHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RmqHandler.class);
 
     @Getter
     @Setter
@@ -129,11 +129,10 @@ public class RmqHandler {
 
         if (tlsVersion != null && !tlsVersion.isEmpty()) {
             try {
-                log.debug("Using SSL/TLS version " + tlsVersion + " connection to RabbitMQ.");
+                LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", tlsVersion);
                 cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(tlsVersion);
             } catch (Exception e) {
-                log.error("Failed to set SSL/TLS version.");
-                log.error(e.getMessage(), e);
+                LOGGER.error("Failed to set SSL/TLS version.", e);
             }
         }
 
@@ -202,7 +201,7 @@ public class RmqHandler {
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                    log.info("Received confirm with result : {}", ack);
+                    LOGGER.info("Received confirm with result : {}", ack);
                 }
             });
         }
@@ -210,7 +209,7 @@ public class RmqHandler {
     }
 
     public void publishObjectToWaitlistQueue(String message) {
-        log.debug("Publishing message to message bus...");
+        LOGGER.debug("Publishing message to message bus...");
         rabbitTemplate.convertAndSend(message);
     }
 
@@ -220,8 +219,7 @@ public class RmqHandler {
             container.destroy();
             cachingConnectionFactory.destroy();
         } catch (Exception e) {
-            log.error("Exception occurred while closing connections");
-            log.error(e.getMessage(), e);
+            LOGGER.error("Exception occurred while closing connections.", e);
         }
     }
 

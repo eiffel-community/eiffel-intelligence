@@ -24,11 +24,11 @@ Feature: Test Subscription Content
   When I create an invalid subscription with "src/functionaltests/resources/InvalidSubscription.json"
   Then The invalid subscription is rejected
   And The invalid subscription does not exist
- 
+
   @SubscriptionWithMissingFileds
   Scenario: Test creating subscription with missing required fields in Subscription Schema
   Given No subscriptions exist
   When I try to create subscription request with missing required fields"src/functionaltests/resources/missingFieldsSubscription.json"
   Then The subscription with missing field is rejected
-  
+
 

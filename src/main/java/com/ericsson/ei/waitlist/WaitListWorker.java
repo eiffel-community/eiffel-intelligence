@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class WaitListWorker {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WaitListWorker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitListWorker.class);
 
     @Autowired
     private WaitListStorageHandler waitListStorageHandler;
@@ -70,7 +70,7 @@ public class WaitListWorker {
                     checkTargetAggregationsExistAndRepublishEvent(eventJson);
                 }
             } catch (Exception e) {
-                LOGGER.error("Exception occured while trying to resend event: " + document, e);
+                LOGGER.error("Exception occured while trying to resend event: {}", document, e);
             }
         }
     }
@@ -87,8 +87,9 @@ public class WaitListWorker {
             if (ids.isArray()) {
                 JsonNode idNode = eventJson.get("_id");
                 JsonNode timeNode = eventJson.get("Time");
-                LOGGER.debug("[EIFFEL EVENT RESENT FROM WAITLIST: {}] id:" + idNode.textValue() + " time:" + timeNode,
-                        waitlistId);
+                // This log message is used in ThreadingAndWaitlist functional test,
+                // if the format is changed the match must also be changed in the test.
+                LOGGER.debug("[EIFFEL EVENT RESENT] id: {} time: {}", idNode.textValue(), timeNode);
                 for (final JsonNode idJsonObj : ids) {
                     Collection<String> objects = matchIdRulesHandler.fetchObjectsById(rulesObject,
                             idJsonObj.textValue());

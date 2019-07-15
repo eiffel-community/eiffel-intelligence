@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class EventToObjectMapHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
     @Value("${event_object_map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
@@ -95,15 +95,14 @@ public class EventToObjectMapHandler {
             ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
             ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
             String mapStr = entry.toString();
-            log.debug("MongoDbHandler Insert/Update Event: " + mapStr +
-            		"\nto database: " + databaseName + " and to Collection: " + collectionName);
+            LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);
             if (firstTime) {
                 mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
             } else {
                 mongodbhandler.updateDocument(databaseName, collectionName, condition, mapStr);
             }
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOGGER.info("Failed to update event object list.", e);
         }
     }
 
@@ -130,7 +129,7 @@ public class EventToObjectMapHandler {
                 JsonNode value = document.get(listPropertyName);
                 list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>(){});
             } catch (Exception e) {
-                log.info(e.getMessage(),e);
+                LOGGER.info("Failed to deserialize event object list.", e);
             }
         }
         return list;
@@ -144,7 +143,7 @@ public class EventToObjectMapHandler {
      */
     public boolean deleteEventObjectMap(String templateName) {
         String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
-        log.info("The Json condition for delete aggregated object is : " + condition);
+        LOGGER.info("The JSON condition for deleting aggregated object is : {}", condition);
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 

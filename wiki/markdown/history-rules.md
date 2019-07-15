@@ -1,23 +1,23 @@
 # History Rules
 
-**History Rules** below are used if you need to aggregate data from existing 
-events linked upstream by received event.  An API to **ER (Event Repository)** 
-that returns the historical events in right format must be configured in 
+**History Rules** below are used if you need to aggregate data from existing
+events linked upstream by received event.  An API to **ER (Event Repository)**
+that returns the historical events in right format must be configured in
 application.properties.
 
-**HistoryExtractionRules** - JSON object of JMESPath identifier(s) which will 
-create or modify the existing data in aggregated object for internal 
+**HistoryExtractionRules** - JSON object of JMESPath identifier(s) which will
+create or modify the existing data in aggregated object for internal
 composition, same as "ExtractionRules".
 
-**HistoryPathRules** - JMESPath identifier of the place where to insert the 
-JSON object from "HistoryExtractionRules" in aggregated object, same as 
-"MergeResolverRules" but it is relative to its position in the tree path 
-returned from ER. The path for merging history data will get as long as the 
+**HistoryPathRules** - JMESPath identifier of the place where to insert the
+JSON object from "HistoryExtractionRules" in aggregated object, same as
+"MergeResolverRules" but it is relative to its position in the tree path
+returned from ER. The path for merging history data will get as long as the
 depth of the tree where your historical event exists.
 
 A step by step example will be presented using [artifact aggregation rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
-Assume that an EiffelArtifactCreatedEvent is received and the upstream response 
+Assume that an EiffelArtifactCreatedEvent is received and the upstream response
 tree looks like [this](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/upStreamResultFile.json).
 
 The starting aggregated object is :
@@ -45,8 +45,8 @@ The starting aggregated object is :
        "buildCommand":null
     }
 
-The first event to be traversed in the tree is an EiffelCompositionDefinedEvent 
-and the JSON object extracted from it with **HistoryExtractionRules** is 
+The first event to be traversed in the tree is an EiffelCompositionDefinedEvent
+and the JSON object extracted from it with **HistoryExtractionRules** is
 
     {"eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66de47","time":2000,"name":"My composition"}
 
@@ -54,7 +54,7 @@ and it will be appended at following location in aggregated object
 
     internalComposition.compositions.0
 
-This location is at the root object since this event is under the start 
+This location is at the root object since this event is under the start
 EiffelArtifactCreatedEvent.
 
 The new aggregated object is now:
@@ -92,9 +92,9 @@ The new aggregated object is now:
        }
     }
 
-The next event to be traversed  is an EiffelArtifactCreatedEvent that previous 
-EiffelCompositionDefinedEvent links to and the JSON object extracted from it 
-with **HistoryExtractionRules** is 
+The next event to be traversed  is an EiffelArtifactCreatedEvent that previous
+EiffelCompositionDefinedEvent links to and the JSON object extracted from it
+with **HistoryExtractionRules** is
 
     {
        "id":"1100572b-c3j4-441e-abc9-b62f48080011",
@@ -113,7 +113,7 @@ and it will be appended at following location in aggregated object
 
    internalComposition.compositions.0.artifacts.0
 
-_**artifacts.0**_ is given by **HistoryPathRules** for 
+_**artifacts.0**_ is given by **HistoryPathRules** for
 EiffelArtifactCreatedEvent and has been appended to previous path.
 
 The resulting aggregated object is now:
@@ -163,22 +163,22 @@ The resulting aggregated object is now:
        }
     }
 
-We continue with aggregating the **EiffelCompositionDefinedEvent** linked by 
-latest EiffelArtifactCreatedEvent we aggregated. Its **HistoryExtractionRule** 
+We continue with aggregating the **EiffelCompositionDefinedEvent** linked by
+latest EiffelArtifactCreatedEvent we aggregated. Its **HistoryExtractionRule**
 results in:
 
     {"eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66da4j","time":5005,"name":"Other composition"}
 
 with path for merge:
 
-    internalComposition.compositions.0 
+    internalComposition.compositions.0
 
 which appended to previous path become:
 
     internalComposition.compositions.0.artifacts.0.internalComposition.compositions.0
 
 and the new aggregated object is:
-    
+
     {
        "TemplateName":"ARTIFACT_1",
        "id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
@@ -233,13 +233,13 @@ and the new aggregated object is:
        }
     }
 
-You can see that this latest _internalComposition_ section was added to the 
-latest artifacts element in the upper _internalComposition_ section. This is 
+You can see that this latest _internalComposition_ section was added to the
+latest artifacts element in the upper _internalComposition_ section. This is
 also a reflection of the upstream tree returned from _Event Repository_.
 
-We move further down the tree and will aggregate 
-**EiffelSourceChangeSubmittedEvent** and after applying its 
-**HistoryExtractionRule** we get 
+We move further down the tree and will aggregate
+**EiffelSourceChangeSubmittedEvent** and after applying its
+**HistoryExtractionRule** we get
 
     {"SCSEventId":"3ce9df6e-cd45-4320-ae66-945f038caa1b","gitIdentifier":null,"submitter":{"name":"Jane Doe","email":"jane.doe@company.com"}}
 
@@ -318,7 +318,7 @@ and the aggregated object will now look like:
        }
     }
 
-Now it is time to aggregate the **EiffelSourceChangeCreatedEvent** and its 
+Now it is time to aggregate the **EiffelSourceChangeCreatedEvent** and its
 **HistoryExtractionRule** gives us following object to merge:
 
     {
@@ -330,11 +330,11 @@ Now it is time to aggregate the **EiffelSourceChangeCreatedEvent** and its
           "group":"Team Gophers"
        },
        "issues":[
-    
+
        ]
     }
 
-with relative path 
+with relative path
 
     sourceCreations.0
 
@@ -402,7 +402,7 @@ and the aggregated object will now look like:
                                               "group":"Team Gophers"
                                            },
                                            "issues":[
-    
+
                                            ]
                                         }
                                      ]
@@ -422,9 +422,9 @@ and the aggregated object will now look like:
        }
     }
 
-Since the tree returns the first **EiffelSourceChangeCreatedEvent** we 
+Since the tree returns the first **EiffelSourceChangeCreatedEvent** we
 aggregate following information from it too.
-    
+
     {
        "SCCEventId":"552ad6a4-c522-47e2-9195-0481930979e4",
        "author":null,
@@ -507,7 +507,7 @@ which gives us the following aggregated object:
                                               "group":"Team Gophers"
                                            },
                                            "issues":[
-    
+
                                            ]
                                         },
                                         // This second entry in sourceCreations is the new additions
@@ -541,7 +541,7 @@ which gives us the following aggregated object:
        }
     }
 
-Now we return back in the tree and process the second 
+Now we return back in the tree and process the second
 **EiffelArtifactCreatedEvent** making the first composition. So we will append:
 
     {
@@ -622,7 +622,7 @@ This results in following aggregated object:
                                               "group":"Team Gophers"
                                            },
                                            "issues":[
-    
+
                                            ]
                                         },
                                         {
@@ -649,8 +649,8 @@ This results in following aggregated object:
                       "id":"1100572b-c3j4-441e-abc9-b62f48080011",
                       "identity": "pkg:maven/com.othercompany.otherproduct/other-system@1.33.0"
                    },
-                   // this second artifact information is the new addition to 
-                   // internal composition 
+                   // this second artifact information is the new addition to
+                   // internal composition
                    {
                       "id":"4400572b-c3j4-441e-abc9-b62f48080033",
                       "identity": "pkg:maven/com.internalcompany.internalproduct/internal-system@1.99.0",
@@ -745,7 +745,7 @@ The final aggregated object is now:
                                               "group":"Team Gophers"
                                            },
                                            "issues":[
-    
+
                                            ]
                                         },
                                         {

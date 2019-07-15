@@ -99,8 +99,7 @@ public class EmailSender {
             helper.setText(mapNotificationMessage);
             helper.setTo(receivers);
         } catch (MessagingException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to create and send e-mail.", e);
         }
         return message;
     }

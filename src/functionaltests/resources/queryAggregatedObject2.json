@@ -8,6 +8,6 @@
     }
   },
   "options": {
-    "object.identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"  
+    "object.identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
   }
 }

@@ -50,7 +50,7 @@ import lombok.Setter;
 
 @Component
 public class MongoDBHandler {
-    private static Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
 
     @Getter
     @Autowired
@@ -99,8 +99,7 @@ public class MongoDBHandler {
         if (collection != null) {
             final Document dbObjectInput = Document.parse(input);
             collection.insertOne(dbObjectInput);
-            LOGGER.debug("Object: " + input + "\n was inserted successfully in collection: \n" + collectionName
-                    + " and database " + dataBaseName + ".");
+            LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
         }
     }
 
@@ -122,12 +121,11 @@ public class MongoDBHandler {
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,
                     // this is normal, no need to log
-                    LOGGER.debug("getAllDocuments() :: database: " + dataBaseName + " and collection: " + collectionName
-                            + " fetched No of :" + result.size());
+                    LOGGER.debug("getAllDocuments() :: database: {} and collection: {} fetched No of : {}", dataBaseName, collectionName, result.size());
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to retrieve documents.", e);
         }
         return result;
     }
@@ -143,8 +141,7 @@ public class MongoDBHandler {
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
 
-        LOGGER.debug("Find and retrieve data from database." + "\nDatabase: " + dataBaseName + "\nCollection: "
-                + collectionName + "\nCondition/Query: " + condition);
+        LOGGER.debug("Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}", dataBaseName, collectionName, condition);
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -153,17 +150,15 @@ public class MongoDBHandler {
                     result.add(JSON.serialize(document));
                 });
                 if (result.size() != 0) {
-                    LOGGER.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
-                            + " fetched No of :" + result.size());
+                    LOGGER.debug("find() :: database: {} and collection: {} fetched No of : {}", dataBaseName, collectionName, result.size());
                 } else {
-                    LOGGER.debug("find() :: database: " + dataBaseName + " and collection: " + collectionName
-                            + " documents are not found");
+                    LOGGER.debug("find() :: database: {} and collection: {} documents are not found", dataBaseName, collectionName);
                 }
             } else {
-                LOGGER.debug("Collection " + collectionName + " is empty in database " + dataBaseName);
+                LOGGER.debug("Collection {} is empty in database {}", collectionName, dataBaseName);
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to retrieve documents.", e);
         }
 
         return result;
@@ -186,12 +181,11 @@ public class MongoDBHandler {
                 final Document dbObjectInput = Document.parse(input);
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-                LOGGER.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
-                        + " is document Updated :" + updateMany.wasAcknowledged());
+                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to update document.", e);
         }
 
         return false;
@@ -216,13 +210,12 @@ public class MongoDBHandler {
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
                 if (result != null) {
-                    LOGGER.debug("updateDocument() :: database: " + dataBaseName + " and collection: " + collectionName
-                            + " updated successfully");
+                    LOGGER.debug("updateDocument() :: database: {} and collection: {} updated successfully", dataBaseName, collectionName);
                     return result;
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to update document.", e);
         }
         return null;
     }
@@ -243,12 +236,10 @@ public class MongoDBHandler {
                 final Document dbObjectCondition = Document.parse(condition);
                 DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
                 if (deleteMany.getDeletedCount() > 0) {
-                    LOGGER.debug("database" + dataBaseName + " and collection: " + collectionName
-                            + " deleted No.of records " + deleteMany.getDeletedCount());
+                    LOGGER.debug("database: {} and collection: {} deleted No.of records {}", dataBaseName, collectionName, deleteMany.getDeletedCount());
                     return true;
                 } else {
-                    LOGGER.debug("database " + dataBaseName + " and collection: " + collectionName
-                            + " No documents found to delete");
+                    LOGGER.debug("database {} and collection: {} No documents found to delete.", dataBaseName, collectionName);
                     return false;
                 }
             }
@@ -278,14 +269,13 @@ public class MongoDBHandler {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
         List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
         if (!collectionList.contains(collectionName)) {
-            LOGGER.debug("The requested database(" + dataBaseName + ") / collection(" + collectionName
-                    + ") not available in mongodb, Creating ........");
+            LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
             try {
                 db.createCollection(collectionName);
             } catch (MongoCommandException e) {
                 String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
                 if (e.getMessage().contains(message)) {
-                    LOGGER.warn("A " + message + ".");
+                    LOGGER.warn("A {}.", message, e);
                 } else {
                     throw e;
                 }

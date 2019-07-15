@@ -74,14 +74,14 @@ public class ProcessQueryParams {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
             String options = editObjectNameInQueryParam(optionsObj);
-            LOGGER.debug("The options are: " + options);
+            LOGGER.debug("The options are: {}", options);
             String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
 
         if(hasFilterCondition(filter)) {
             JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
-            LOGGER.debug("Filtered values from resultAggregatedObject: " + filteredResults.toString());
+            LOGGER.debug("Filtered values from resultAggregatedObject: {}", filteredResults.toString());
             return filteredResults;
         }
 
@@ -126,8 +126,7 @@ public class ProcessQueryParams {
                 resultArray.put(tempJson);
             }
         } catch (JSONException e) {
-            LOGGER.error("Failed to filter an aggregated object: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Failed to filter an object.", e);
         }
         return resultArray;
     }
@@ -146,10 +145,10 @@ public class ProcessQueryParams {
         try {
             criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
         } catch (IOException e) {
-            LOGGER.error("Failed to parse freestyle query criteria field from request:\n" + request);
+            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
             return new JSONArray();
         }
-        LOGGER.debug("Freestyle criteria query:" + criteriasJsonNode.toString());
+        LOGGER.debug("Freestyle criteria query: {}", criteriasJsonNode.toString());
         return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
 

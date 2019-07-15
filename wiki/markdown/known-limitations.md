@@ -1,12 +1,12 @@
 # Known Limitations
 
-1. All events that contribute to an aggregated object are mapped to the id of 
-the event that started the aggregation. But if you have an event belonging to a 
-flow and link to an event that was skipped then we will not be able to found 
-the target aggregated object to append the extracted event data to. It is 
-therefore important that all events desired to be aggregated must link to at 
-least one previously aggregated event. In some cases you might need to 
-aggregated parts of an event, ex. the id, just to make it possible for future 
+1. All events that contribute to an aggregated object are mapped to the id of
+the event that started the aggregation. But if you have an event belonging to a
+flow and link to an event that was skipped then we will not be able to found
+the target aggregated object to append the extracted event data to. It is
+therefore important that all events desired to be aggregated must link to at
+least one previously aggregated event. In some cases you might need to
+aggregated parts of an event, ex. the id, just to make it possible for future
 events to be aggregated.
 
 We can take the following chain of events:

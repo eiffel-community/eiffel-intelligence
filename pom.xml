@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
-            <version>0.0.10</version>
+            <version>0.0.12</version>
         </dependency>
 
         <dependency>
@@ -401,7 +401,7 @@
                 <version>${springBootVersion}</version>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -550,7 +550,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <!-- site plugin requires all resources to exist 
+                            <!-- site plugin requires all resources to exist
                                 within resources/ directory -->
                             <!-- but we don't want to break links in documentation -->
                             <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
@@ -574,7 +574,7 @@
                 <configuration>
                     <!-- This is where site.xml is located -->
                     <siteDirectory>${basedir}/wiki</siteDirectory>
-                    <!-- Github pages only generates documentation from docs 
+                    <!-- Github pages only generates documentation from docs
                         directory -->
                     <outputDirectory>${basedir}/docs</outputDirectory>
                 </configuration>

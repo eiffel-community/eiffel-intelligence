@@ -63,7 +63,7 @@ public class HttpRequestTest {
     private RestPostSubscriptionObject subscription;
     private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-    final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Mock
     UrlParser urlParser;

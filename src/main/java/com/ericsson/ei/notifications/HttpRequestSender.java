@@ -73,7 +73,7 @@ public class HttpRequestSender {
 
         JsonNode body = response.getBody();
 
-        LOGGER.debug("The http post request response status code is [{}] and body: {}", status, body);
+        LOGGER.debug("The HTTP post request response status code is [{}] and body: {}", status, body);
 
         return httpStatusSuccess;
     }

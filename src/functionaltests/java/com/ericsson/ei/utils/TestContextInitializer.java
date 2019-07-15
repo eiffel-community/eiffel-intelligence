@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import com.ericsson.ei.test.utils.TestConfigs;
 
 public class TestContextInitializer extends TestConfigs
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -18,8 +19,7 @@ public class TestContextInitializer extends TestConfigs
         setRules();
 
         try {
-            createAmqpBroker();
-            startUpMongoClient();
+            init();
         } catch (Exception e) {
             LOGGER.error("Failed to startup Mongo client or AMQP broker for test");
         }

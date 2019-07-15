@@ -55,9 +55,9 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.flowtests.TestConfigs;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.testsuite.SuiteTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

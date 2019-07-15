@@ -16,6 +16,19 @@
 */
 package com.ericsson.ei.flowtests;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.junit.Before;
@@ -42,23 +55,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, SingleEventAggregationTest.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {"rules.path=src/test/resources/all_event_rules.json"})
+@TestPropertySource(properties = { "rules.path=src/test/resources/all_event_rules.json",
+        "spring.data.mongodb.database: SingleEventAggregationTest",
+        "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
+        "rabbitmq.consumerName: SingleEventAggregationTestConsumer" })
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";

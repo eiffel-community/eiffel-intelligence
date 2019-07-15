@@ -6,14 +6,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.handlers.UpStreamEventsHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,10 +26,20 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.ericsson.ei.App;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, ArrayAggregationTest.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {"rules.path=src/test/resources/arrayAggregationRules.json"})
+@TestPropertySource(properties = { "rules.path=src/test/resources/arrayAggregationRules.json",
+        "spring.data.mongodb.database: ArrayAggregationTest", "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
+        "rabbitmq.consumerName: ArrayAggregationTestConsumer" })
 public class ArrayAggregationTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "arrayAggregationUpstreamResult.json";

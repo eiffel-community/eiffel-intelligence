@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: FlowTest2", "rabbitmq.exchange.name: FlowTest2-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTest2Consumer" })
+        "rabbitmq.consumerName: FlowTest2Consumer" })
 public class FlowTest2 extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";

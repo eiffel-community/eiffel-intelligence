@@ -14,27 +14,26 @@
 package com.ericsson.ei.notifications;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doThrow;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Base64;
-
-import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
-import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
+import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -92,6 +91,32 @@ public class JenkinsCrumbTest {
 
         assertEquals("Crumb value is equal to fetched value", value,
                 responseNode.get(key).asText());
+    }
+
+    /**
+     * Jenkins returns exception with status unauthorized, thus we throw AuthenticationException.
+     *
+     * @throws Exception
+     */
+    @Test(expected = AuthenticationException.class)
+    public void fetchJenkinsCrumbThrowsAuthException() throws Exception {
+        when(httpRequestSender.makeGetRequest(any(), any())).thenThrow(
+                new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+        jenkinsCrumb.fetchJenkinsCrumb(encoding, URL);
+    }
+
+    /**
+     * Jenkins returns exception with status not found, thus we return null.
+     *
+     * @throws Exception
+     */
+    @Test(expected = AuthenticationException.class)
+    public void fetchJenkinsCrumbReturnsNull() throws Exception {
+        when(httpRequestSender.makeGetRequest(any(), any())).thenThrow(
+                new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        JsonNode responseNode = jenkinsCrumb.fetchJenkinsCrumb(encoding, URL);
+
+        assertNull(responseNode);
     }
 
 }

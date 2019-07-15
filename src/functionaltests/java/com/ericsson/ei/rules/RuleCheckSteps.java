@@ -40,12 +40,12 @@ public class RuleCheckSteps extends FunctionalTestBase {
 
     @Given("^rules checking is enabled$")
     public void rules_checking_is_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleController, "testEnable", true);
+        ReflectionTestUtils.setField(ruleController, "testEnabled", true);
     }
 
     @Given("^rules checking is not enabled$")
     public void rules_checking_is_not_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleController, "testEnable", false);
+        ReflectionTestUtils.setField(ruleController, "testEnabled", false);
     }
 
     @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")

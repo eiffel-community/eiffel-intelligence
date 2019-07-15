@@ -64,19 +64,26 @@ public class RuleControllerImpl implements RuleController{
 
     @Setter
     @Value("${testaggregated.enabled:false}")
-    private Boolean testEnable;
+    private Boolean testEnabled;
+
+    @Value("${rules.path}")
+    private String rulesPath;
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Get the active rules file content", response = String.class)
+    @ApiOperation(value = "Get the active rules from Eiffel Intelligence", response = String.class)
     public ResponseEntity<?> getRules() {
         JsonNode rulesContent = rulesHandler.getRulesContent();
         ObjectMapper objectmapper = new ObjectMapper();
         try {
             String contentAsString = objectmapper.writeValueAsString(rulesContent);
-            return new ResponseEntity<>(contentAsString, HttpStatus.OK);
+            JSONObject jsonResult = new JSONObject();
+            jsonResult.put("path", rulesPath);
+            jsonResult.put("content", contentAsString);
+            String result = jsonResult.toString();
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (JsonProcessingException e) {
-            String errorMessage = "Internal Server Error: Failed to parse the rules file.";
+            String errorMessage = "Internal Server Error: Failed to parse the rules content.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -120,7 +127,7 @@ public class RuleControllerImpl implements RuleController{
     @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Returns the aggregated object(s)", response = String.class)
     public ResponseEntity<?> createRuleCheckAggregation(
             @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body) {
-        if (testEnable) {
+        if (testEnabled) {
             try {
                 String aggregatedObject = ruleCheckService.prepareAggregatedObject(
                         new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
@@ -154,7 +161,7 @@ public class RuleControllerImpl implements RuleController{
     public ResponseEntity<?> getRuleCheckTestRulePageEnabled() {
         LOGGER.debug("Getting Enabling Status of Rules Check Service");
         try {
-            return new ResponseEntity<>(new JSONObject().put("status", testEnable).toString(), HttpStatus.OK);
+            return new ResponseEntity<>(new JSONObject().put("status", testEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to get status.";
             LOGGER.error(errorMessage, e);

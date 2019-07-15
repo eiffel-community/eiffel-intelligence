@@ -104,7 +104,7 @@ public class RulesHandler {
     }
 
     /**
-     * Gets the active rules file content.
+     * Returns the active rules used by Eiffel Intelligence.
      *
      * @return rules content
      */

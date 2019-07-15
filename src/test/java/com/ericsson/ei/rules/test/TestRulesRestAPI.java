@@ -48,7 +48,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.controller.RuleCheckControllerImpl;
+import com.ericsson.ei.controller.RuleControllerImpl;
 import com.ericsson.ei.services.IRuleCheckService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -158,7 +158,7 @@ public class TestRulesRestAPI {
     @Test
     public void testGetTestRulePageEnabledAPI_setPropertyTrue() throws Exception {
         String responseBody = new JSONObject().put("status", true).toString();
-        RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
+        RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
         ruleCheckControllerImpl.setTestEnable(true);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -169,7 +169,7 @@ public class TestRulesRestAPI {
     @Test
     public void testGetTestRulePageEnabledAPI_setPropertyFalse() throws Exception {
         String responseBody = new JSONObject().put("status", false).toString();
-        RuleCheckControllerImpl ruleCheckControllerImpl = new RuleCheckControllerImpl();
+        RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
         ruleCheckControllerImpl.setTestEnable(false);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

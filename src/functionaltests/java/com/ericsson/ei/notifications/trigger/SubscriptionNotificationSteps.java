@@ -1,4 +1,4 @@
-package com.ericsson.ei.subscriptions.trigger;
+package com.ericsson.ei.notifications.trigger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.ericsson.ei.handlers.MongoDBHandler;
+import cucumber.api.Scenario;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,9 +45,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-public class SubscriptionTriggerSteps extends FunctionalTestBase {
+public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        SubscriptionNotificationSteps.class);
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
@@ -53,7 +56,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_AUTH = "/rest/with/auth";
     private static final String REST_ENDPOINT_PARAMS = "/rest/with/params";
     private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
-    private static final String REST_ENDPOINT_ROW_BODY = "/rest/rowBody";
+    private static final String REST_ENDPOINT_RAW_BODY = "/rest/rawBody";
+    private static final String REST_ENDPOINT_BAD = "/rest/bad";
 
     private List<String> subscriptionNames = new ArrayList<>();
 
@@ -69,26 +73,46 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
+    @Value("${missedNotificationDataBaseName}")
+    private String missedNotificationDatabase;
+
+    @Value("${missedNotificationCollectionName}")
+    private String missedNotificationCollection;
+
+    @Value("${subscription.collection.name}")
+    private String subscriptionCollection;
+
     @Autowired
     private JavaMailSenderImpl mailSender;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
     private ResponseEntity response;
 
-    @Before("@SubscriptionTriggerScenario")
-    public void beforeScenario() throws IOException {
-        setupSMTPServer();
+    @Before()
+    public void beforeScenario(Scenario scenario) throws IOException {
+        System.out.println("Setting up REST endpoints");
         setupRestEndpoints();
     }
 
-    @After("@SubscriptionTriggerScenario")
+    @Before("@SubscriptionNotificationOK")
+    public void beforeOKScenario() throws IOException {
+        System.out.println("Setting up mail server");
+        setupSMTPServer();
+    }
+
+    @After()
     public void afterScenario() throws IOException {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         smtpServer.stop();
         restServer.stop();
         mockClient.close();
+        mongoDBHandler.dropCollection(database, subscriptionCollection);
+        mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
@@ -112,6 +136,22 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         validateSubscriptionsSuccessfullyAdded(endPoint);
     }
 
+    @Given("Email sender is not configured")
+    public void email_sender_is_not_configured() {
+        // Forcing a Mail Exception to occur when informing subscriber
+        System.setProperty("email.sender", "");
+        System.out.println("what is property email sender? \n " + System.getProperty("email.sender"));
+        System.out.println("what is email sender? \n " + sender);
+    }
+
+    @Given("HTTP notification endpoint is down")
+    public void HTTP_notification_endpoint_is_down() {
+        // Set up a bad response on this endpoint for notification to fail
+        mockClient.when(request().withMethod("POST").withPath(
+            REST_ENDPOINT_BAD))
+                  .respond(response().withStatusCode(401));
+    }
+
     @When("^I send Eiffel events$")
     public void send_eiffel_events() throws Throwable {
         LOGGER.debug("About to send Eiffel events.");
@@ -124,8 +164,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         LOGGER.debug("Eiffel events sent.");
     }
 
-    @When("^Wait for EI to aggregate objects and trigger subscriptions")
-    public void wait_for_ei_to_aggregate_objects_and_trigger_subscriptions() throws Throwable {
+    @When("^Wait for EI to aggregate objects")
+    public void wait_for_ei_to_aggregate_objects() throws Throwable {
         List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");
         List<String> arguments = new ArrayList<>(
@@ -135,6 +175,13 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);
         assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: "
                 + missingArguments.toString(), 0, missingArguments.size());
+    }
+
+    @When("^I send one previous event again$")
+    public void send_one_previous_event() throws Throwable {
+        List<String> eventNamesToSend = new ArrayList<>();
+        eventNamesToSend.add("event_EiffelArtifactCreatedEvent_3");
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
     @Then("^Mail subscriptions were triggered$")
@@ -154,18 +201,26 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     @Then("^Rest subscriptions were triggered$")
     public void check_rest_subscriptions_were_triggered() throws Throwable {
         restSubscriptionsTriggered(1);
-        // clean mock server information about requests
+        // clean mock server information of requests
         mockClient.reset();
     }
 
-    @When("^I send one previous event again$")
-    public void send_one_previous_event() throws Throwable {
-        List<String> eventNamesToSend = new ArrayList<>();
-        eventNamesToSend.add("event_EiffelArtifactCreatedEvent_3");
-        eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
+    @Then("Missed notifications should exist in the database")
+    public void missed_notifications_should_exist_in_database() {
+        String expectedSubscriptionName =
+            "Subscription_bad_notification_rest_endpoint";
+         String condition =
+            "{\"subscriptionName\" : \"" + expectedSubscriptionName + "\"}";
+        List<String> result = mongoDBHandler.find(missedNotificationDatabase,
+            missedNotificationCollection, condition);
+
+        assertEquals(2, result.size());
+        assertEquals("Could not find a missed notification",
+            expectedSubscriptionName,
+            dbManager.getValueFromQuery(result, "subscriptionName", 0));
     }
 
-    @When("^No subscription is retriggered$")
+    @Then("^No subscription is retriggered$")
     public void no_subscription_is_retriggered() throws Throwable {
         restSubscriptionsTriggered(0);
     }
@@ -173,7 +228,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private void restSubscriptionsTriggered(int times) throws Throwable {
         LOGGER.debug("Verifying REST requests.");
         List<String> endpointsToCheck = new ArrayList<>(Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
-                REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS, REST_ENDPOINT_ROW_BODY));
+                REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS,
+            REST_ENDPOINT_RAW_BODY));
 
         assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, times));
         if (times > 0) {
@@ -187,9 +243,8 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
      * Assemble subscription names in a list.
      *
      * @param jsonDataAsString JSON string containing subscriptions
-     * @throws Throwable
      */
-    private void readSubscriptionNames(String jsonDataAsString) throws Throwable {
+    private void readSubscriptionNames(String jsonDataAsString) {
         JSONArray jsonArray = new JSONArray(jsonDataAsString);
         for (int i = 0; i < jsonArray.length(); i++) {
             subscriptionNames.add(jsonArray.getJSONObject(i).get("subscriptionName").toString());
@@ -237,11 +292,12 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     }
 
     /**
-     * Checks that an enpoint got at least the number of calls as expected.
+     * Checks that an endpoint got at least the number of calls as expected.
      *
      * @param endpoints     List of endpoints to check.
      * @param expectedCalls Integer with the least number of calls.
-     * @return true if all endpoints had atleast the number of calls as expected.
+     * @return true if all endpoints had at least the number of calls as
+     * expected.
      * @throws JSONException
      * @throws InterruptedException
      */
@@ -300,16 +356,21 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
         LOGGER.debug("Setting up endpoints on host '" + getHostName() + "' and port '" + port + "'.");
         mockClient = new MockServerClient(getHostName(), port);
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST")
                                  .withPath(REST_ENDPOINT_AUTH)
-                                 .withHeader("Authorization", "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk"))
+                                 .withHeader("Authorization",
+                                     "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk"))
                   .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
+        mockClient.when(
+            request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
                   .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
+        mockClient.when(
+            request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
                   .respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_ROW_BODY))
+        mockClient.when(
+            request().withMethod("POST").withPath(REST_ENDPOINT_RAW_BODY))
                   .respond(response().withStatusCode(201));
     }
 
@@ -356,11 +417,14 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
     private String stringReplaceText(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getLocalPort()));
-        text = text.replaceAll("\\$\\{rest\\.row.body\\}", REST_ENDPOINT_ROW_BODY);
+        text = text.replaceAll("\\$\\{rest\\.raw.body\\}",
+            REST_ENDPOINT_RAW_BODY);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\}", REST_ENDPOINT);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\}", REST_ENDPOINT_AUTH);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.params\\}", REST_ENDPOINT_PARAMS);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\.params\\}", REST_ENDPOINT_AUTH_PARAMS);
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\.bad\\}",
+            REST_ENDPOINT_BAD);
         return text;
     }
 }

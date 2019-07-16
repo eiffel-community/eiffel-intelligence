@@ -159,7 +159,7 @@ public class TestRulesRestAPI {
     public void testGetTestRulePageEnabledAPI_setPropertyTrue() throws Exception {
         String responseBody = new JSONObject().put("status", true).toString();
         RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
-        ruleCheckControllerImpl.setTestEnable(true);
+        ruleCheckControllerImpl.setTestEnabled(true);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());
@@ -170,7 +170,7 @@ public class TestRulesRestAPI {
     public void testGetTestRulePageEnabledAPI_setPropertyFalse() throws Exception {
         String responseBody = new JSONObject().put("status", false).toString();
         RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
-        ruleCheckControllerImpl.setTestEnable(false);
+        ruleCheckControllerImpl.setTestEnabled(false);
         ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());

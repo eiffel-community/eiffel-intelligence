@@ -75,9 +75,6 @@ public class InformSubscriber {
     private JmesPathInterface jmespath;
 
     @Autowired
-    private HttpRequestSender httpRequestSender;
-
-    @Autowired
     private MongoDBHandler mongoDBHandler;
 
     @Autowired

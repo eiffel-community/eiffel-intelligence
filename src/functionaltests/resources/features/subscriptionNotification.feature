@@ -21,4 +21,3 @@ Feature: Test Subscription Trigger
     When I send Eiffel events
     And Wait for EI to aggregate objects
     And Missed notifications should exist in the database
-

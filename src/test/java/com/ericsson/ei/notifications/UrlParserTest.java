@@ -35,6 +35,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,18 +46,15 @@ public class UrlParserTest {
     private static final String BASE_URL_HTTPS = "https://www.somehost.com";
     private static final String URL_WITH_CONTEXT_PATH = "http://www.somehost.com/some-endpoint/";
     private static final String URL_WITH_HTTPS = "https://www.somehost.com/some-endpoint/";
-    private static final String URL_WITH_PARAMS = "http://www.somehost.com/some-endpoint/?param1='my_token'&param2=something_else";
+    private static final String URL_WITH_PARAMS = "http://www.somehost.com/some-endpoint/?param1='my_token'&param2=my_second_param";
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Mock
     JmesPathInterface jmesPathInterface;
 
     @InjectMocks
     UrlParser urlParser;
-
-    @Before
-    public void beforeTests() throws IOException {
-
-    }
 
     /**
      * Ensure UrlParser can parse different kinds of urls.
@@ -73,9 +71,36 @@ public class UrlParserTest {
         assertEquals(BASE_URL_HTTPS, urlParser.extractBaseUrl(URL_WITH_HTTPS));
     }
 
+    /**
+     * Test JmesPathRules on urls without params
+     *
+     * @throws Exception
+     */
     @Test
-    public void runJmesPathOnParametersTest() throws Exception {
-        // TODO: ...
+    public void runJmesPathOnParametersNoParamsTest() throws Exception {
+        assertEquals(BASE_URL, urlParser.runJmesPathOnParameters(BASE_URL, ""));
+        assertEquals(BASE_URL_HTTPS, urlParser.runJmesPathOnParameters(BASE_URL_HTTPS, ""));
+        assertEquals(URL_WITH_CONTEXT_PATH,
+                urlParser.runJmesPathOnParameters(URL_WITH_CONTEXT_PATH, ""));
     }
 
+    /**
+     * Test replace JMESPath with value.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void runJmesPathOnParametersTest() throws Exception {
+        String newValueReplaced = "my_new_value";
+        String valueToReplace = "replace_me";
+        String parameter = "?param=" + valueToReplace;
+        String urlWithParam = URL_WITH_CONTEXT_PATH + parameter;
+
+        final JsonNode responseValue = mapper.readValue("\"" + newValueReplaced + "\"", JsonNode.class);
+        when(jmesPathInterface.runRuleOnEvent(valueToReplace, "")).thenReturn(responseValue);
+
+        String expectedUrl = urlWithParam.replace(valueToReplace, newValueReplaced);
+        String parsedUrl = urlParser.runJmesPathOnParameters(urlWithParam, "");
+        assertEquals(expectedUrl, parsedUrl);
+    }
 }

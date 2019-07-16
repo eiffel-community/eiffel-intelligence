@@ -1,4 +1,13 @@
-description: This class is used to test rules on Eiffel events. Testrules must be enabled in Eiffel Intelligence.
+description: This class is used for anything rules related. It's currently used to test rules on Eiffel events
+             and to fetch the active rules file content. Test rules must be enabled in Eiffel Intelligence
+             for the /rule-check endpoints to work.
+get:
+  description: This method returns the active rules content.
+  responses:
+    200:
+      body:
+        application/string:
+
 /rule-check:
   post:
     description: This method extracts data from a single Eiffel event based on the given JMESPath expression.

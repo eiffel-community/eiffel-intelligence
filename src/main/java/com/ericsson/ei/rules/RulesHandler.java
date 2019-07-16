@@ -104,6 +104,15 @@ public class RulesHandler {
     }
 
     /**
+     * Returns the active rules used by Eiffel Intelligence.
+     *
+     * @return rules content
+     */
+    public JsonNode getRulesContent() {
+        return parsedJson;
+    }
+
+    /**
      * Reads the content of a given rules file path or URL.
      *
      * @return the rules file content

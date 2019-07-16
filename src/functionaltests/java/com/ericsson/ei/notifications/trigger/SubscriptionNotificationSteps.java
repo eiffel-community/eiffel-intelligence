@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
-import cucumber.api.Scenario;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +38,6 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 
 import cucumber.api.java.After;
-import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -51,6 +49,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         SubscriptionNotificationSteps.class);
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
+    private static final String SUBSCRIPTION_WITH_BAD_NOTIFICATION = "src/functionaltests/resources/subscription_fail_notifications.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
     private static final String REST_ENDPOINT = "/rest";
     private static final String REST_ENDPOINT_AUTH = "/rest/with/auth";
@@ -58,8 +57,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
     private static final String REST_ENDPOINT_RAW_BODY = "/rest/rawBody";
     private static final String REST_ENDPOINT_BAD = "/rest/bad";
-
-    private List<String> subscriptionNames = new ArrayList<>();
 
     @LocalServerPort
     private int applicationPort;
@@ -93,30 +90,27 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private MockServerClient mockClient;
     private ResponseEntity response;
 
-    @Before()
-    public void beforeScenario(Scenario scenario) throws IOException {
-        System.out.println("Setting up REST endpoints");
-        setupRestEndpoints();
-    }
-
-    @Before("@SubscriptionNotificationOK")
-    public void beforeOKScenario() throws IOException {
-        System.out.println("Setting up mail server");
-        setupSMTPServer();
-    }
-
     @After()
     public void afterScenario() throws IOException {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
-        smtpServer.stop();
+        if (smtpServer != null) {
+            smtpServer.stop();
+        }
         restServer.stop();
         mockClient.close();
-        mongoDBHandler.dropCollection(database, subscriptionCollection);
+
         mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
+        mongoDBHandler.dropDatabase(missedNotificationDatabase);
+        mongoDBHandler.dropCollection(database, subscriptionCollection);
+        mongoDBHandler.dropCollection(database, aggregatedCollectionName);
+        mongoDBHandler.dropDatabase(database);
     }
 
     @Given("^The REST API \"([^\"]*)\" is up and running$")
     public void the_REST_API_is_up_and_running(String endPoint) throws Exception {
+        System.out.println("Setting up REST endpoints");
+        setupRestEndpoints();
+
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
         response = getRequest.setHost(getHostName())
                              .setPort(applicationPort)
@@ -127,29 +121,32 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
+    @Given("mail server is up")
+    public void mail_server_is_up() throws IOException {
+        System.out.println("Setting up mail server");
+        setupSMTPServer();
+    }
+
     @Given("^Subscriptions are setup using REST API \"([^\"]*)\"$")
     public void subscriptions_are_setup_using_REST_API(String endPoint) throws Throwable {
         String jsonDataAsString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
         jsonDataAsString = stringReplaceText(jsonDataAsString);
-        readSubscriptionNames(jsonDataAsString);
+
+        List<String> subscriptionNames = readSubscriptionNames(jsonDataAsString);
+
         postSubscriptions(jsonDataAsString, endPoint);
-        validateSubscriptionsSuccessfullyAdded(endPoint);
+        validateSubscriptionsSuccessfullyAdded(endPoint, subscriptionNames);
     }
 
-    @Given("Email sender is not configured")
-    public void email_sender_is_not_configured() {
-        // Forcing a Mail Exception to occur when informing subscriber
-        System.setProperty("email.sender", "");
-        System.out.println("what is property email sender? \n " + System.getProperty("email.sender"));
-        System.out.println("what is email sender? \n " + sender);
-    }
+    @Given("Bad subscriptions are created using \"([^\"]*)\"")
+    public void subscription_are_created_using(String endPoint) throws Exception {
+        String jsonDataAsString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_BAD_NOTIFICATION), "UTF-8");
+        jsonDataAsString = stringReplaceText(jsonDataAsString);
 
-    @Given("HTTP notification endpoint is down")
-    public void HTTP_notification_endpoint_is_down() {
-        // Set up a bad response on this endpoint for notification to fail
-        mockClient.when(request().withMethod("POST").withPath(
-            REST_ENDPOINT_BAD))
-                  .respond(response().withStatusCode(401));
+        List<String> subscriptionNames = readSubscriptionNames(jsonDataAsString);
+
+        postSubscriptions(jsonDataAsString, endPoint);
+        validateSubscriptionsSuccessfullyAdded(endPoint, subscriptionNames);
     }
 
     @When("^I send Eiffel events$")
@@ -185,7 +182,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     @Then("^Mail subscriptions were triggered$")
-    public void check_mail_subscriptions_were_triggered() {
+    public void mail_subscriptions_were_triggered() {
         LOGGER.debug("Verifying received emails.");
         List<SmtpMessage> emails = smtpServer.getReceivedEmails();
         assert (emails.size() > 0);
@@ -207,17 +204,17 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Then("Missed notifications should exist in the database")
     public void missed_notifications_should_exist_in_database() {
-        String expectedSubscriptionName =
-            "Subscription_bad_notification_rest_endpoint";
-         String condition =
-            "{\"subscriptionName\" : \"" + expectedSubscriptionName + "\"}";
+        String expectedRestPostNotification = "Subscription_bad_notification_rest_endpoint";
+        String expectedMailNotification = "Subscription_bad_mail";
+
+        String condition =
+            "{$or:[{\"subscriptionName\": \"" + expectedRestPostNotification + "\"}"
+            + "{\"subscriptionName\": \"" + expectedMailNotification + "\"}]}";
+
         List<String> result = mongoDBHandler.find(missedNotificationDatabase,
             missedNotificationCollection, condition);
 
         assertEquals(2, result.size());
-        assertEquals("Could not find a missed notification",
-            expectedSubscriptionName,
-            dbManager.getValueFromQuery(result, "subscriptionName", 0));
     }
 
     @Then("^No subscription is retriggered$")
@@ -244,11 +241,13 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      *
      * @param jsonDataAsString JSON string containing subscriptions
      */
-    private void readSubscriptionNames(String jsonDataAsString) {
+    private List<String> readSubscriptionNames(String jsonDataAsString) {
+        List<String> subscriptionNames = new ArrayList<>();
         JSONArray jsonArray = new JSONArray(jsonDataAsString);
         for (int i = 0; i < jsonArray.length(); i++) {
             subscriptionNames.add(jsonArray.getJSONObject(i).get("subscriptionName").toString());
         }
+        return subscriptionNames;
     }
 
     /**
@@ -276,7 +275,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      * @param endPoint endpoint to use in GET
      * @throws Exception
      */
-    private void validateSubscriptionsSuccessfullyAdded(String endPoint) throws Exception {
+    private void validateSubscriptionsSuccessfullyAdded(String endPoint, List<String> subscriptionNames) throws Exception {
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
         response = getRequest.setHost(getHostName())
                              .setPort(applicationPort)
@@ -372,6 +371,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mockClient.when(
             request().withMethod("POST").withPath(REST_ENDPOINT_RAW_BODY))
                   .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(
+            REST_ENDPOINT_BAD))
+                  .respond(response().withStatusCode(401));
     }
 
     /**

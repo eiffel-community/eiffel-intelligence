@@ -218,6 +218,30 @@
     ]
   },
   {
+    "subscriptionName": "Subscription_bad_mail",
+    "ldapUserName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "MAIL",
+    "notificationMeta": "example@ericsson.com",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
+          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id == 'TC5']"}
+        ]
+      }
+    ]
+  },
+  {
     "subscriptionName": "Subscription_bad_notification_rest_endpoint",
     "userName" : "DEF",
     "repeat": false,
@@ -231,13 +255,12 @@
         "formvalue" : "@"
       }
     ],
-
     "requirements": [
       {
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
-          {"jmespath": "artifactCustomData[?name == 'ArtC2']"}
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
         ]
       }
     ]

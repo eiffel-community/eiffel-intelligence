@@ -6,7 +6,6 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
-import org.apache.commons.io.FileUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
@@ -57,6 +56,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_AUTH_PARAMS = "/rest/with/auth/params";
     private static final String REST_ENDPOINT_RAW_BODY = "/rest/rawBody";
     private static final String REST_ENDPOINT_BAD = "/rest/bad";
+    private static final String EI_SUBSCRIPTIONS_ENDPOINT = "/subscriptions";
 
     @LocalServerPort
     private int applicationPort;
@@ -106,9 +106,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mongoDBHandler.dropDatabase(database);
     }
 
-    @Given("^The REST API \"([^\"]*)\" is up and running$")
-    public void the_REST_API_is_up_and_running(String endPoint) throws Exception {
-        System.out.println("Setting up REST endpoints");
+    @Given("^The REST API is up and running$")
+    public void the_REST_API_is_up_and_running() throws Exception {
+        LOGGER.debug("Setting up REST endpoints");
         setupRestEndpoints();
 
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
@@ -116,37 +116,38 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .setPort(applicationPort)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(endPoint)
+                             .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
-    @Given("mail server is up")
+    @Given("Mail server is up")
     public void mail_server_is_up() throws IOException {
-        System.out.println("Setting up mail server");
+        LOGGER.debug("Setting up mail server");
         setupSMTPServer();
     }
 
-    @Given("^Subscriptions are setup using REST API \"([^\"]*)\"$")
-    public void subscriptions_are_setup_using_REST_API(String endPoint) throws Throwable {
-        String jsonDataAsString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_JSON_PATH), "UTF-8");
-        jsonDataAsString = stringReplaceText(jsonDataAsString);
+    @Given("Subscriptions with bad notification meta are created")
+    public void create_subscriptions_with_bad_notification_meta() throws Exception {
+        List<String> subscriptionNames = new ArrayList<>();
+        subscriptionNames.add("Subscription_bad_mail");
+        subscriptionNames.add("Subscription_bad_notification_rest_endpoint");
 
-        List<String> subscriptionNames = readSubscriptionNames(jsonDataAsString);
-
-        postSubscriptions(jsonDataAsString, endPoint);
-        validateSubscriptionsSuccessfullyAdded(endPoint, subscriptionNames);
+        createSubscriptions(subscriptionNames);
     }
 
-    @Given("Bad subscriptions are created using \"([^\"]*)\"")
-    public void subscription_are_created_using(String endPoint) throws Exception {
-        String jsonDataAsString = FileUtils.readFileToString(new File(SUBSCRIPTION_WITH_BAD_NOTIFICATION), "UTF-8");
-        jsonDataAsString = stringReplaceText(jsonDataAsString);
+    @Given("Subscriptions are created")
+    public void subscriptions_are_created() throws Exception {
+        List<String> subscriptionNames = new ArrayList<>();
+        subscriptionNames.add("Subscription_Mail");
+        subscriptionNames.add("Subscription_Rest_Params_in_Head");
+        subscriptionNames.add("Subscription_Rest_Auth_Params_in_Head");
+        subscriptionNames.add("Subscription_Rest_One_Missing_Auth_Params_in_Head");
+        subscriptionNames.add("Subscription_Rest_Params_in_Url");
+        subscriptionNames.add("Subscription_Rest_Auth_Params_in_Url");
+        subscriptionNames.add("Subscription_Raw_Body");
 
-        List<String> subscriptionNames = readSubscriptionNames(jsonDataAsString);
-
-        postSubscriptions(jsonDataAsString, endPoint);
-        validateSubscriptionsSuccessfullyAdded(endPoint, subscriptionNames);
+        createSubscriptions(subscriptionNames);
     }
 
     @When("^I send Eiffel events$")
@@ -237,33 +238,38 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     /**
-     * Assemble subscription names in a list.
-     *
-     * @param jsonDataAsString JSON string containing subscriptions
+     *  Creating subscriptions defined in a JSON file, given the list of
+     *  subscription names
      */
-    private List<String> readSubscriptionNames(String jsonDataAsString) {
-        List<String> subscriptionNames = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(jsonDataAsString);
-        for (int i = 0; i < jsonArray.length(); i++) {
-            subscriptionNames.add(jsonArray.getJSONObject(i).get("subscriptionName").toString());
+    private void createSubscriptions(List<String> subscriptionNames) throws Exception {
+        JsonNode subscriptions =
+            eventManager.getJSONFromFile(SUBSCRIPTION_WITH_JSON_PATH);
+
+        List<String> subscriptionsToSend = new ArrayList<>();
+
+        for (String subscriptionName : subscriptionNames) {
+            JsonNode subscription = subscriptions.get(subscriptionName);
+            String subscriptionString =
+                replaceTagsInNotificationMeta(subscription.toString());
+            subscriptionsToSend.add(subscriptionString);
         }
-        return subscriptionNames;
+        postSubscriptions(subscriptionsToSend.toString());
+        validateSubscriptionsSuccessfullyAdded(subscriptionNames);
     }
 
     /**
-     * POST subscriptions to endpoint.
+     * POST subscriptions to EI /subscriptions endpoint.
      *
      * @param jsonDataAsString JSON string containing subscriptions
-     * @param endPoint         endpoint to use in POST
      * @throws Exception
      */
-    private void postSubscriptions(String jsonDataAsString, String endPoint) throws Exception {
+    private void postSubscriptions(String jsonDataAsString) throws Exception {
         HttpRequest postRequest = new HttpRequest(HttpRequest.HttpMethod.POST);
         response = postRequest.setHost(getHostName())
                               .setPort(applicationPort)
                               .addHeader("content-type", "application/json")
                               .addHeader("Accept", "application/json")
-                              .setEndpoint(endPoint)
+                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                               .setBody(jsonDataAsString)
                               .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
@@ -272,16 +278,16 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     /**
      * Verify that subscriptions were successfully posted.
      *
-     * @param endPoint endpoint to use in GET
+     * @param subscriptionNames   A list containing subscription names to check
      * @throws Exception
      */
-    private void validateSubscriptionsSuccessfullyAdded(String endPoint, List<String> subscriptionNames) throws Exception {
+    private void validateSubscriptionsSuccessfullyAdded(List<String> subscriptionNames) throws Exception {
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
         response = getRequest.setHost(getHostName())
                              .setPort(applicationPort)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(endPoint)
+                             .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         LOGGER.debug("Checking that response contains all subscriptions");
@@ -411,12 +417,13 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     /**
-     * Replaces tags in the subscription JSON string with valid information.
+     * Replaces placeholder tags in notification meta in the subscription JSON
+     * string with valid notification meta.
      *
      * @param text JSON string containing replaceable tags
      * @return Processed content
      */
-    private String stringReplaceText(String text) {
+    private String replaceTagsInNotificationMeta(String text) {
         text = text.replaceAll("\\$\\{rest\\.host\\}", "localhost");
         text = text.replaceAll("\\$\\{rest\\.port\\}", String.valueOf(restServer.getLocalPort()));
         text = text.replaceAll("\\$\\{rest\\.raw.body\\}",

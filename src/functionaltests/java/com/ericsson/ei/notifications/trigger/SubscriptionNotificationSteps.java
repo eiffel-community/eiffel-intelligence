@@ -48,7 +48,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         SubscriptionNotificationSteps.class);
 
     private static final String SUBSCRIPTION_WITH_JSON_PATH = "src/functionaltests/resources/subscription_multiple.json";
-    private static final String SUBSCRIPTION_WITH_BAD_NOTIFICATION = "src/functionaltests/resources/subscription_fail_notifications.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
     private static final String REST_ENDPOINT = "/rest";
     private static final String REST_ENDPOINT_AUTH = "/rest/with/auth";
@@ -91,7 +90,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private ResponseEntity response;
 
     @After()
-    public void afterScenario() throws IOException {
+    public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         if (smtpServer != null) {
             smtpServer.stop();
@@ -99,7 +98,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         restServer.stop();
         mockClient.close();
 
-        mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
+        mongoDBHandler.dropCollection(missedNotificationDatabase,
+            missedNotificationCollection);
         mongoDBHandler.dropDatabase(missedNotificationDatabase);
         mongoDBHandler.dropCollection(database, subscriptionCollection);
         mongoDBHandler.dropCollection(database, aggregatedCollectionName);
@@ -225,9 +225,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private void restSubscriptionsTriggered(int times) throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        List<String> endpointsToCheck = new ArrayList<>(Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
+        List<String> endpointsToCheck = new ArrayList<>(
+            Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
                 REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS,
-            REST_ENDPOINT_RAW_BODY));
+                REST_ENDPOINT_RAW_BODY));
 
         assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, times));
         if (times > 0) {

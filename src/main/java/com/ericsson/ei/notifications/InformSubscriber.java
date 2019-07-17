@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,15 +31,17 @@ import org.springframework.util.MultiValueMap;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.utils.SubscriptionField;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
+import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents the notification mechanism and the alternate way to save the
@@ -55,6 +56,7 @@ public class InformSubscriber {
     private static final Logger LOGGER = LoggerFactory.getLogger(InformSubscriber.class);
     private static final String REGEX = "^\"|\"$";
 
+    @Setter
     @Getter
     @Value("${notification.failAttempt:#{0}}")
     private int failAttempt;
@@ -80,6 +82,8 @@ public class InformSubscriber {
     @Autowired
     private EmailSender emailSender;
 
+    private HttpRequestFactory httpRequestFactory;
+
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.
@@ -91,7 +95,6 @@ public class InformSubscriber {
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
             throws AuthenticationException {
         SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
-        String subscriptionName = subscriptionField.get("subscriptionName");
         String notificationType = subscriptionField.get("notificationType");
         String notificationMeta = subscriptionField.get("notificationMeta");
 
@@ -102,7 +105,7 @@ public class InformSubscriber {
             if (notificationType.trim().equals("REST_POST")) {
                 LOGGER.debug("Notification through REST_POST");
 
-                HttpRequest request = new HttpRequest();
+                HttpRequest request = httpRequestFactory.createHttpRequest();
                 request.setAggregatedObject(aggregatedObject)
                        .setMapNotificationMessage(mapNotificationMessage)
                        .setSubscriptionJson(subscriptionJson)
@@ -119,6 +122,7 @@ public class InformSubscriber {
                 emailSender.sendEmail(message);
             }
         } catch (NotificationFailureException | AuthenticationException e) {
+            String subscriptionName = subscriptionField.get("subscriptionName");
             String missedNotification = prepareMissedNotification(aggregatedObject,
                     subscriptionName, notificationMeta);
             LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
@@ -219,4 +223,5 @@ public class InformSubscriber {
         }
         return mapNotificationMessage;
     }
+
 }

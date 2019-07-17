@@ -1,7 +1,5 @@
 package com.ericsson.ei.notifications;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Base64;
 
 import org.slf4j.Logger;
@@ -22,10 +20,17 @@ import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
 public class HttpRequest {
+
+    static class HttpRequestFactory {
+        // Used to enable mocking of this class in tests.
+        HttpRequest createHttpRequest() {
+            return new HttpRequest();
+        }
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
     private static final String AUTHENTICATION_TYPE_NO_AUTH = "NO_AUTH";
-    private static final String AUTHENTICATION_TYPE_BASIC_AUTH = "BASIC_AUTH";
     private static final String AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF = "BASIC_AUTH_JENKINS_CSRF";
 
     private SubscriptionField subscriptionField;

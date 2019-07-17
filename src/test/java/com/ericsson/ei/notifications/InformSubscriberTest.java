@@ -1,5 +1,5 @@
 /*
-   Copyright 2017 Ericsson AB.
+   Copyright 2019 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +35,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,7 +53,9 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
+import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
 import com.ericsson.ei.subscription.RunSubscription;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,9 +66,7 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class })
-@AutoConfigureMockMvc
+@RunWith(MockitoJUnitRunner.class)
 public class InformSubscriberTest {
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
@@ -70,173 +77,125 @@ public class InformSubscriberTest {
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
     private static final String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
     private static final String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
-    private static final String missedNotificationDatabase = "MissedNotification";
-    private static final String missedNotificationCollection = "Notification";
-    private static final String subRepeatFlagDataBaseName = "eiffel_intelligence";
-    private static final String subRepeatFlagCollectionName = "subscription_repeat_handler";
     private static final String regex = "^\"|\"$";
-    private static final boolean statusOk = true;
 
-    private static HttpHeaders headersWithAuth = new HttpHeaders();
-    private static HttpHeaders headersWithoutAuth = new HttpHeaders();
-    private static String aggregatedObject;
-    private static String aggregatedInternalObject;
-    private static String aggregatedObjectMapNotification;
-    private static String subscriptionData;
-    private static String artifactRequirementSubscriptionData;
-    private static String subscriptionDataForAuthorization;
-    private static String url;
-    private static String urlAuthorization;
-    private static String subscriptionRepeatFlagTrueData;
-    private static String subscriptionForMapNotification;
-    private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
+    private HttpHeaders headersWithAuth = new HttpHeaders();
+    private HttpHeaders headersWithoutAuth = new HttpHeaders();
+    private String aggregatedObject;
+    private String aggregatedInternalObject;
+    private String aggregatedObjectMapNotification;
+    private String subscriptionData;
+    private String artifactRequirementSubscriptionData;
+    private String subscriptionDataForAuthorization;
+    private String url;
+    private String urlAuthorization;
+    private String subscriptionRepeatFlagTrueData;
+    private String subscriptionForMapNotification;
+    private MongodForTestsFactory testsFactory;
+    private MongoClient mongoClient = null;
     private ObjectMapper mapper = new ObjectMapper();
 
-    @Autowired
-    private RunSubscription runSubscription;
-
-    @Autowired
-    private MongoDBHandler mongoDBHandler;
-
-    @Autowired
-    private JmesPathInterface jmespath;
-
-    @Autowired
-    private InformSubscriber informSubscriber;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private HttpRequestSender httpRequestSender;
-
+    @Mock
+    MongoDBHandler mongoDBHandler;
 
     @Mock
-    private QueryResponse queryResponse;
+    JmesPathInterface jmespath;
 
-    public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
+    @Mock
+    HttpRequest httpRequest;
 
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-        aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
-        aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification),
-                "UTF-8");
+    @Mock
+    HttpRequestFactory httpRequestFactory;
 
-        artifactRequirementSubscriptionData = FileUtils.readFileToString(new File(artifactRequirementSubscriptionPath),
-                "UTF-8");
-        subscriptionRepeatFlagTrueData = FileUtils.readFileToString(new File(subscriptionRepeatFlagTruePath), "UTF-8");
-        subscriptionDataForAuthorization = FileUtils.readFileToString(new File(subscriptionPathForAuthorization),
-                "UTF-8");
-        subscriptionForMapNotification = FileUtils.readFileToString(new File(subscriptionForMapNotificationPath),
-                "UTF-8");
-
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
-        url = new JSONObject(subscriptionData).getString("notificationMeta").replaceAll(regex, "").replaceAll("'", "");
-        urlAuthorization = new JSONObject(subscriptionDataForAuthorization).getString("notificationMeta")
-                .replaceAll(regex, "");
-
-        headersWithAuth.add("Content-Type", "application/x-www-form-urlencoded");
-        headersWithAuth.add("Authorization", "Basic dGVzdFVzZXJOYW1lOnRlc3RQYXNzd29yZA==");
-        headersWithoutAuth.add("Content-Type", "application/json");
-    }
-
-    @BeforeClass
-    public static void init() throws Exception {
-        setUpEmbeddedMongo();
-        System.setProperty("notification.ttl.value", "1");
-    }
-
-    @AfterClass
-    public static void close() {
-        mongoClient.close();
-        testsFactory.shutdown();
-    }
+    @InjectMocks
+    private InformSubscriber informSubscriber;
+    private JsonNode subscriptionNode;
 
     @Before
-    public void beforeTests() {
-        mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
-    }
+    public void beforeTests() throws IOException {
+        when(jmespath.runRuleOnEvent(any(), any())).thenReturn(
+                mapper.readValue("\"mock_value\"", JsonNode.class));
+        when(httpRequestFactory.createHttpRequest()).thenReturn(httpRequest);
+        when(httpRequest.setAggregatedObject(any())).thenReturn(httpRequest);
+        when(httpRequest.setMapNotificationMessage(any())).thenReturn(httpRequest);
+        when(httpRequest.setSubscriptionJson(any())).thenReturn(httpRequest);
+        when(httpRequest.setUrl(any())).thenReturn(httpRequest);
 
-    @PostConstruct
-    public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
+        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
+        subscriptionNode = mapper.readTree(subscriptionData);
+        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+
+        //////////////////////////////
+
+//        aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath),
+//                "UTF-8");
+//        aggregatedObjectMapNotification = FileUtils.readFileToString(
+//                new File(aggregatedPathForMapNotification),
+//                "UTF-8");
+//
+//        artifactRequirementSubscriptionData = FileUtils.readFileToString(
+//                new File(artifactRequirementSubscriptionPath),
+//                "UTF-8");
+//        subscriptionRepeatFlagTrueData = FileUtils.readFileToString(
+//                new File(subscriptionRepeatFlagTruePath), "UTF-8");
+//
+//        subscriptionForMapNotification = FileUtils.readFileToString(
+//                new File(subscriptionForMapNotificationPath),
+//                "UTF-8");
+//
+//        url = new JSONObject(subscriptionData).getString("notificationMeta")
+//                                              .replaceAll(regex, "")
+//                                              .replaceAll("'", "");
+
     }
 
     @Test
-    public void testMissedNotificationExistInDatabase() throws Exception {
-        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionData));
-        Iterable<String> missedNotifications = mongoDBHandler.getAllDocuments(
-            missedNotificationDatabase, missedNotificationCollection);
-        Iterator<String> itr = missedNotifications.iterator();
-        String missedNotification = itr.next().toString();
-        JsonNode missedNotificationJSON = null;
-        JsonNode expectedOutput = null;
-        ObjectMapper mapper = new ObjectMapper();
-        expectedOutput = mapper.readTree(aggregatedObject);
-        missedNotificationJSON = mapper.readTree(missedNotification);
-
-        JsonNode output = missedNotificationJSON.get("AggregatedObject");
-        assertEquals(expectedOutput, output);
+    public void testRestPostTrigger() throws Exception {
+        when(httpRequest.perform()).thenReturn(true);
+        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+        verify(httpRequest, times(1)).perform();
     }
-
-
-//    NOT TO FORGET TO FIX TESTS!!!!!!!!!
-//    @Test
-//    public void testRestPostTrigger() throws Exception {
-//        JSONObject subscriptionDataJson = new JSONObject(subscriptionData);
-//        when(httpRequestSender.postDataMultiValue(Mockito.any(), Mockito.any())).thenReturn(statusOk);
-//
-//        String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
-//        String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
-//        String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
-//
-//        // Notify subscriber using url with jmes path
-//        subscriptionDataJson.put("notificationMeta", urlWithJmesPath);
-//        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataJson.toString()));
-//
-//        // Remove ' from url since JMESPATH does this
-//        urlWithoutJmespath = urlWithoutJmespath.replaceAll("'", "");
-//
-//        // Create expected extraction
-//        String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
-//
-//        // Verify that httpRequestSender was called with the correct url and
-//        // extracted data
-//        verify(httpRequestSender, times(1)).postDataMultiValue(
-//                urlWithoutJmespath + URLEncoder.encode(expectedExtraction, "UTF8"),
-//                mapNotificationMessage(subscriptionDataJson.toString()), headersWithoutAuth);
-//    }
-//
-//    @Test
-//    public void testRestPostTriggerForAuthorization() throws Exception {
-//        when(httpRequestSender.postDataMultiValue(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(statusOk);
-//        when(httpRequestSender.makeGetRequest(Mockito.any(), Mockito.any())).thenReturn(null);
-//        informSubscriber.informSubscriber(aggregatedObject, mapper.readTree(subscriptionDataForAuthorization));
-//        verify(httpRequestSender, times(1)).postDataMultiValue(urlAuthorization,
-//                mapNotificationMessage(subscriptionDataForAuthorization), headersWithAuth);
-//    }
-//
-//    @Test
-//    public void testRestPostTriggerFailure() throws Exception {
-//        informSubscriber.informSubscriber(aggregatedObject, new ObjectMapper().readTree(subscriptionData));
-//        verify(httpRequestSender, times(4)).postDataMultiValue(url, mapNotificationMessage(subscriptionData),
-//                headersWithoutAuth);
-//        assertFalse(mongoDBHandler.getAllDocuments(missedNotificationDatabase, missedNotificationCollection).isEmpty());
-//    }
-
 
     @Test
-    public void testMapNotificationMessage() throws Exception {
-        MultiValueMap<String, String> actual = invokeMethod(informSubscriber, "mapNotificationMessage",
-                aggregatedObjectMapNotification, mapper.readTree(subscriptionForMapNotification));
-        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
-        expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
-        assertEquals(expected, actual);
+    public void testRestPostTriggerFailure() throws Exception {
+        when(httpRequest.perform()).thenReturn(false);
+        // Setting failAttempts to 3
+        informSubscriber.setFailAttempt(3);
+        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+        // Should expect 4 tries to perform a HTTP request
+        verify(httpRequest, times(4)).perform();
+        // Should try to save missed notification to DB
+        verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
+
+    @Test
+    public void testRestPostTriggerThrowsAuthenticationException() throws Exception {
+        when(httpRequest.perform()).thenThrow(new AuthenticationException(""));
+        // Setting failAttempts to 3
+        informSubscriber.setFailAttempt(3);
+        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+        // Should expect 1 tries to perform a HTTP request since AuthenticationException should
+        // ignore failAttempt.
+        verify(httpRequest, times(1)).perform();
+        // Should try to save missed notification to DB
+        verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
+    }
+
+//    @Test
+//    public void testMapNotificationMessage() throws Exception {
+
+//
+//    String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
+//    String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
+//    String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
+//        MultiValueMap<String, String> actual = invokeMethod(informSubscriber, "mapNotificationMessage",
+//                aggregatedObjectMapNotification, mapper.readTree(subscriptionForMapNotification));
+//        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
+//        expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
+//        assertEquals(expected, actual);
+////      String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
+//
+//    }
 
     private MultiValueMap<String, String> mapNotificationMessage(String data) throws Exception {
         MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
@@ -244,23 +203,33 @@ public class InformSubscriberTest {
         ArrayNode arrNode = (ArrayNode) mapper.readTree(data).get("notificationMessageKeyValues");
         if (arrNode.isArray()) {
             for (final JsonNode objNode : arrNode) {
-                if (!objNode.get("formkey").toString().replaceAll(regex, "").equals("Authorization")) {
+                if (!objNode.get("formkey")
+                            .toString()
+                            .replaceAll(regex, "")
+                            .equals("Authorization")) {
 
-                    mapNotificationMessage.add(objNode.get("formkey").toString().replaceAll(regex, ""), jmespath
-                            .runRuleOnEvent(objNode.get("formvalue").toString().replaceAll(regex, ""), aggregatedObject)
-                            .toString().replaceAll(regex, ""));
+                    mapNotificationMessage.add(objNode.get("formkey")
+                                                      .toString()
+                                                      .replaceAll(regex, ""),
+                            jmespath
+                                    .runRuleOnEvent(objNode.get("formvalue")
+                                                           .toString()
+                                                           .replaceAll(regex, ""),
+                                            aggregatedObject)
+                                    .toString()
+                                    .replaceAll(regex, ""));
                 }
             }
         }
         return mapNotificationMessage;
     }
-
-    @Test
-    public void testPrepareMissedNotification() {
-        // TODO: test
-    }
-
-    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
-        return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
-    }
+//
+//    @Test
+//    public void testPrepareMissedNotification() {
+//        // TODO: test
+//    }
+//
+//    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
+//        return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
+//    }
 }

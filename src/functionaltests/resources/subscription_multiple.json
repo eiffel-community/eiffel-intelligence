@@ -1,5 +1,5 @@
-[
-  {
+{
+  "Subscription_Mail" : {
     "subscriptionName": "Subscription_Mail",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -30,7 +30,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Params_in_Head" : {
     "subscriptionName": "Subscription_Rest_Params_in_Head",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -61,7 +61,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Auth_Params_in_Head" : {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Head",
     "ldapUserName": "DEF",
     "userName": "myUserName",
@@ -79,7 +79,6 @@
         "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
       }
     ],
-
     "requirements": [
       {
         "type": "ARTIFACT_1",
@@ -87,7 +86,6 @@
           {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
-
       },
       {
         "type": "ARTIFACT_1",
@@ -98,7 +96,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_One_Missing_Auth_Params_in_Head" : {
     "subscriptionName": "Subscription_Rest_One_Missing_Auth_Params_in_Head",
     "ldapUserName": "DEF",
     "userName": "myUserName",
@@ -115,7 +113,6 @@
         "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
       }
     ],
-
     "requirements": [
       {
         "type": "ARTIFACT_1",
@@ -123,7 +120,6 @@
           {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
-
       },
       {
         "type": "ARTIFACT_1",
@@ -134,7 +130,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Params_in_Url": {
     "subscriptionName": "Subscription_Rest_Params_in_Url",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -159,7 +155,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Auth_Params_in_Url" : {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Url",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -185,7 +181,7 @@
       }
     ]
   },
-  {
+  "Subscription_Raw_Body" : {
     "subscriptionName": "Subscription_Raw_Body",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -217,7 +213,31 @@
       }
     ]
   },
-  {
+  "Subscription_bad_mail" : {
+    "subscriptionName": "Subscription_bad_mail",
+    "ldapUserName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "MAIL",
+    "notificationMeta": "example@ericsson.com",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
+        ]
+      }
+    ]
+  },
+  "Subscription_bad_notification_rest_endpoint" : {
     "subscriptionName": "Subscription_bad_notification_rest_endpoint",
     "userName" : "DEF",
     "repeat": false,
@@ -231,15 +251,14 @@
         "formvalue" : "@"
       }
     ],
-
     "requirements": [
       {
         "type": "ARTIFACT_1",
         "conditions": [
           {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
-          {"jmespath": "artifactCustomData[?name == 'ArtC2']"}
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
         ]
       }
     ]
   }
-]
+}

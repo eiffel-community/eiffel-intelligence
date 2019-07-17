@@ -14,85 +14,53 @@
 package com.ericsson.ei.notifications;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
-import javax.annotation.PostConstruct;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.exception.NotificationFailureException;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
-import com.ericsson.ei.subscription.RunSubscription;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.eiffelcommons.subscriptionobject.MailSubscriptionObject;
+import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
-
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InformSubscriberTest {
 
+    private static final String MOCKED_JMESPATH_RETURN_VALUE = "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}";
+    private static final int REST_POST_RETRIES = 4;
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static final String aggregatedInternalPath = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
-    private static final String aggregatedPathForMapNotification = "src/test/resources/aggregatedObjectForMapNotification.json";
-    private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
-    private static final String artifactRequirementSubscriptionPath = "src/test/resources/artifactRequirementSubscription.json";
-    private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
-    private static final String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
-    private static final String subscriptionForMapNotificationPath = "src/test/resources/subscriptionForMapNotification.json";
-    private static final String regex = "^\"|\"$";
 
-    private HttpHeaders headersWithAuth = new HttpHeaders();
-    private HttpHeaders headersWithoutAuth = new HttpHeaders();
     private String aggregatedObject;
-    private String aggregatedInternalObject;
-    private String aggregatedObjectMapNotification;
-    private String subscriptionData;
-    private String artifactRequirementSubscriptionData;
-    private String subscriptionDataForAuthorization;
-    private String url;
-    private String urlAuthorization;
-    private String subscriptionRepeatFlagTrueData;
-    private String subscriptionForMapNotification;
-    private MongodForTestsFactory testsFactory;
-    private MongoClient mongoClient = null;
+    private RestPostSubscriptionObject restPostSubscriptionObject;
+    private JsonNode restPostSubscriptionNode;
+    private MailSubscriptionObject mailSubscriptionObject;
+    private JsonNode mailSubscriptionNode;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Mock
@@ -105,75 +73,65 @@ public class InformSubscriberTest {
     HttpRequest httpRequest;
 
     @Mock
+    MimeMessage mimeMessage;
+
+    @Mock
     HttpRequestFactory httpRequestFactory;
+
+    @Mock
+    EmailSender emailSender;
 
     @InjectMocks
     private InformSubscriber informSubscriber;
-    private JsonNode subscriptionNode;
 
     @Before
     public void beforeTests() throws IOException {
-        when(jmespath.runRuleOnEvent(any(), any())).thenReturn(
-                mapper.readValue("\"mock_value\"", JsonNode.class));
-        when(httpRequestFactory.createHttpRequest()).thenReturn(httpRequest);
-        when(httpRequest.setAggregatedObject(any())).thenReturn(httpRequest);
-        when(httpRequest.setMapNotificationMessage(any())).thenReturn(httpRequest);
-        when(httpRequest.setSubscriptionJson(any())).thenReturn(httpRequest);
-        when(httpRequest.setUrl(any())).thenReturn(httpRequest);
-
-        subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
-        subscriptionNode = mapper.readTree(subscriptionData);
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-
-        //////////////////////////////
-
-//        aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath),
-//                "UTF-8");
-//        aggregatedObjectMapNotification = FileUtils.readFileToString(
-//                new File(aggregatedPathForMapNotification),
-//                "UTF-8");
-//
-//        artifactRequirementSubscriptionData = FileUtils.readFileToString(
-//                new File(artifactRequirementSubscriptionPath),
-//                "UTF-8");
-//        subscriptionRepeatFlagTrueData = FileUtils.readFileToString(
-//                new File(subscriptionRepeatFlagTruePath), "UTF-8");
-//
-//        subscriptionForMapNotification = FileUtils.readFileToString(
-//                new File(subscriptionForMapNotificationPath),
-//                "UTF-8");
-//
-//        url = new JSONObject(subscriptionData).getString("notificationMeta")
-//                                              .replaceAll(regex, "")
-//                                              .replaceAll("'", "");
-
     }
 
+    /**
+     * In a successfull rest post call there should be no retries.
+     *
+     * @throws Exception
+     */
     @Test
     public void testRestPostTrigger() throws Exception {
+        beforeRestPostTests();
         when(httpRequest.perform()).thenReturn(true);
-        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+        informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         verify(httpRequest, times(1)).perform();
     }
 
+    /**
+     * When failing to perfom a rest post call we should do retries, and if none succeed it should
+     * be saved in the missed notification DB.
+     *
+     * @throws Exception
+     */
     @Test
     public void testRestPostTriggerFailure() throws Exception {
+        beforeRestPostTests();
         when(httpRequest.perform()).thenReturn(false);
-        // Setting failAttempts to 3
-        informSubscriber.setFailAttempt(3);
-        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+
+        informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 4 tries to perform a HTTP request
-        verify(httpRequest, times(4)).perform();
+        verify(httpRequest, times(REST_POST_RETRIES + 1)).perform();
         // Should try to save missed notification to DB
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 
+    /**
+     * When an AuthenticationException is thrown we should never retry the connection even if retry
+     * is set to higher then 0. Missed notification should be saved in DB.
+     *
+     * @throws Exception
+     */
     @Test
     public void testRestPostTriggerThrowsAuthenticationException() throws Exception {
+        beforeRestPostTests();
         when(httpRequest.perform()).thenThrow(new AuthenticationException(""));
-        // Setting failAttempts to 3
-        informSubscriber.setFailAttempt(3);
-        informSubscriber.informSubscriber(aggregatedObject, subscriptionNode);
+
+        informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 1 tries to perform a HTTP request since AuthenticationException should
         // ignore failAttempt.
         verify(httpRequest, times(1)).perform();
@@ -181,55 +139,98 @@ public class InformSubscriberTest {
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 
-//    @Test
-//    public void testMapNotificationMessage() throws Exception {
-
-//
-//    String jmesPathRule = "fileInformation[?extension=='jar'] | [0]";
-//    String urlWithoutJmespath = "http://127.0.0.1:3000/ei/buildParam?token='test_token'&json=";
-//    String urlWithJmesPath = urlWithoutJmespath + jmesPathRule;
-//        MultiValueMap<String, String> actual = invokeMethod(informSubscriber, "mapNotificationMessage",
-//                aggregatedObjectMapNotification, mapper.readTree(subscriptionForMapNotification));
-//        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
-//        expected.add("", "{\"conclusion\":\"SUCCESSFUL\",\"id\":\"TC5\"}");
-//        assertEquals(expected, actual);
-////      String expectedExtraction = jmespath.runRuleOnEvent(jmesPathRule, aggregatedObject).toString();
-//
-//    }
-
-    private MultiValueMap<String, String> mapNotificationMessage(String data) throws Exception {
-        MultiValueMap<String, String> mapNotificationMessage = new LinkedMultiValueMap<>();
-
-        ArrayNode arrNode = (ArrayNode) mapper.readTree(data).get("notificationMessageKeyValues");
-        if (arrNode.isArray()) {
-            for (final JsonNode objNode : arrNode) {
-                if (!objNode.get("formkey")
-                            .toString()
-                            .replaceAll(regex, "")
-                            .equals("Authorization")) {
-
-                    mapNotificationMessage.add(objNode.get("formkey")
-                                                      .toString()
-                                                      .replaceAll(regex, ""),
-                            jmespath
-                                    .runRuleOnEvent(objNode.get("formvalue")
-                                                           .toString()
-                                                           .replaceAll(regex, ""),
-                                            aggregatedObject)
-                                    .toString()
-                                    .replaceAll(regex, ""));
-                }
-            }
-        }
-        return mapNotificationMessage;
+    /**
+     * If sedning email is successfull then there should be no tries to save massed notification to
+     * DB.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMailTrigger() throws Exception {
+        beforeEmailTests();
+        informSubscriber.informSubscriber(aggregatedObject, mailSubscriptionNode);
+        verify(emailSender, times(1)).sendEmail(mimeMessage);
+        verify(mongoDBHandler, never()).insertDocument(any(), any(), any());
     }
-//
-//    @Test
-//    public void testPrepareMissedNotification() {
-//        // TODO: test
-//    }
-//
-//    private static ResponseEntity<String> createResponseEntity(String body, HttpStatus httpStatus) {
-//        return new ResponseEntity<String>(body, new HttpHeaders(), httpStatus);
-//    }
+
+    /**
+     * When EmailSender throws a NotificationFailureException ensure that this is saved in the DB.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMailTriggerThrowsException() throws Exception {
+        beforeEmailTests();
+        doThrow(new NotificationFailureException("")).when(emailSender).sendEmail(mimeMessage);
+        informSubscriber.informSubscriber(aggregatedObject, mailSubscriptionNode);
+        // Should try to save missed notification to DB
+        verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
+    }
+
+    /**
+     * Test that MapNotificationMessage correctly extracts values from subscription and sends them
+     * to jmespath and correctly creates a MultiValueMap with the returned data.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMapNotificationMessage() throws Exception {
+        String formValue = "conclusion:testCaseExecutions";
+
+        RestPostSubscriptionObject subscriptionObject = new RestPostSubscriptionObject(
+                "Notification_Message");
+        subscriptionObject.addNotificationMessageKeyValue("", formValue);
+
+        when(jmespath.runRuleOnEvent(formValue, aggregatedObject)).thenReturn(
+                mapper.readValue(MOCKED_JMESPATH_RETURN_VALUE, JsonNode.class));
+
+        MultiValueMap<String, String> actual = invokeMethod(informSubscriber,
+                "mapNotificationMessage", aggregatedObject,
+                mapper.readTree(subscriptionObject.toString()));
+
+        MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
+        expected.add("", MOCKED_JMESPATH_RETURN_VALUE);
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Preperation before rest post subscription tests to create rest post subscription and stubb
+     * HttpRequest setters.
+     *
+     * @throws IOException
+     */
+    private void beforeRestPostTests() throws IOException {
+        when(httpRequestFactory.createHttpRequest()).thenReturn(httpRequest);
+        when(httpRequest.setAggregatedObject(any())).thenReturn(httpRequest);
+        when(httpRequest.setMapNotificationMessage(any())).thenReturn(httpRequest);
+        when(httpRequest.setSubscriptionJson(any())).thenReturn(httpRequest);
+        when(httpRequest.setUrl(any())).thenReturn(httpRequest);
+
+        restPostSubscriptionObject = new RestPostSubscriptionObject("Name");
+        restPostSubscriptionObject.setAuthenticationType("NO_AUTH").setNotificationMeta("some_url");
+        restPostSubscriptionNode = mapper.readTree(restPostSubscriptionObject.toString());
+
+        // Setting failAttempts to 3
+        informSubscriber.setFailAttempt(REST_POST_RETRIES);
+    }
+
+    /**
+     * Preperation before email subscription tests to create email subscription and stubb jmespath.
+     *
+     * @throws IOException
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     */
+    private void beforeEmailTests() throws IOException, JsonParseException, JsonMappingException {
+        when(jmespath.runRuleOnEvent(any(), any())).thenReturn(
+                mapper.readValue("\"mock_value\"", JsonNode.class));
+        when(emailSender.prepareEmailMessage(any(), any(), any())).thenReturn(mimeMessage);
+
+        mailSubscriptionObject = new MailSubscriptionObject("Name");
+        mailSubscriptionObject.setNotificationMeta("some@email.com")
+                              .addNotificationMessageKeyValue("",
+                                      "{mydata: [{ fullaggregation : to_string(@) }]}");
+        mailSubscriptionNode = mapper.readTree(mailSubscriptionObject.toString());
+    }
 }

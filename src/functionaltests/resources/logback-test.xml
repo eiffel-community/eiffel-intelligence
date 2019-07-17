@@ -4,7 +4,5 @@
     <include resource="org/springframework/boot/logging/logback/base.xml" />
 
     <!-- Reducing logs from mock requests during tests -->
-    <!-- <logger name="io.netty" level="error" /> -->
     <logger name="org.mockserver.mock" level="error" />
-
 </configuration>

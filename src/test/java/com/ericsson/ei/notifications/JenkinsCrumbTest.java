@@ -110,7 +110,7 @@ public class JenkinsCrumbTest {
      *
      * @throws Exception
      */
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void fetchJenkinsCrumbReturnsNull() throws Exception {
         when(httpRequestSender.makeGetRequest(any(), any())).thenThrow(
                 new HttpClientErrorException(HttpStatus.NOT_FOUND));

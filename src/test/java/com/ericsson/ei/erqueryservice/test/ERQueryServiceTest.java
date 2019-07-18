@@ -24,7 +24,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -58,7 +57,8 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @TestPropertySource(properties = { "spring.data.mongodb.database: ERQueryServiceTest",
-        "rabbitmq.exchange.name: ERQueryServiceTest-exchange", "rabbitmq.consumerName: ERQueryServiceTest" })
+        "rabbitmq.exchange.name: ERQueryServiceTest-exchange", "rabbitmq.consumerName: ERQueryServiceTest",
+        "er.url: http://localhost:8080/eventrepository/search/" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
@@ -76,13 +76,6 @@ public class ERQueryServiceTest {
     private int levels = 2;
     private boolean isTree = true;
 
-    @BeforeClass
-    public static void init() {
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-        System.setProperty("er.url", "http://localhost:8080/eventrepository/search/");
-    }
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -93,8 +86,8 @@ public class ERQueryServiceTest {
         erQueryService.setRest(rest);
         searchOption = SearchOption.UP_STREAM;
         given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-                Mockito.any(Class.class)))
-                        .willAnswer(returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
+                Mockito.any(Class.class))).willAnswer(
+                        returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
                                 Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
         ResponseEntity<JsonNode> result = erQueryService.getEventStreamDataById(eventId, searchOption, limitParam,
                 levels, isTree);

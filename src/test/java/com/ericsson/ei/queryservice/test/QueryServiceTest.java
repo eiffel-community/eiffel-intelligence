@@ -85,28 +85,10 @@ public class QueryServiceTest {
     private static String missedNotificationPath = "src/test/resources/MissedNotification.json";
     private static String aggregatedObject;
     private static String missedNotification;
-
-    // private static MongodForTestsFactory testsFactory;
     static MongoClient mongoClient = null;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
-
-    // public static void setUpEmbeddedMongo() throws Exception {
-    // try {
-    // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-    // mongoClient = testsFactory.newMongo();
-    // String port = "" + mongoClient.getAddress().getPort();
-    // System.setProperty("spring.data.mongodb.port", port);
-    //
-
-    // }
-
-    // @BeforeClass
-    // public static void init() throws Exception {
-    // // setUpEmbeddedMongo();
-    //
-    // }
 
     @PostConstruct
     public void initMocks() throws Exception {
@@ -166,14 +148,14 @@ public class QueryServiceTest {
     @Test
     public void deleteMissedNotificationTest() {
         Iterable<Document> responseDB = mongoClient.getDatabase(missedNotificationDataBaseName)
-            .getCollection(missedNotificationCollectionName).find();
+                .getCollection(missedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
         boolean removed = processMissedNotification.deleteMissedNotification("Subscription_1");
         assertEquals(true, removed);
         Iterable<Document> responseDBAfter = mongoClient.getDatabase(missedNotificationDataBaseName)
-            .getCollection(missedNotificationCollectionName).find();
+                .getCollection(missedNotificationCollectionName).find();
         assertEquals(false, responseDBAfter.iterator().hasNext());
     }
 
@@ -201,12 +183,4 @@ public class QueryServiceTest {
         LOG.debug("The result is : " + record.toString());
         assertEquals(record.get("aggregatedObject").toString(), actual.toString());
     }
-
-    // @AfterClass
-    // public static void tearDown() throws Exception {
-    // if (mongoClient != null)
-    // mongoClient.close();
-    // if (testsFactory != null)
-    // testsFactory.shutdown();
-    // }
 }

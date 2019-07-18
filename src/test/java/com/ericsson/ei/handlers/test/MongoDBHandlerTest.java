@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
-import com.mongodb.MongoClient;
-
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 public class MongoDBHandlerTest {
 
@@ -38,28 +35,14 @@ public class MongoDBHandlerTest {
 
     private MongoDBHandler mongoDBHandler;
 
-    private MongodForTestsFactory testsFactory;
-    private MongoClient mongoClient = null;
-
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
 
-    // public void setUpEmbeddedMongo() throws Exception {
-    // try {
-    // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-    // mongoClient = testsFactory.newMongo();
-    // } catch (Exception e) {
-    // log.error(e.getMessage(), e);
-    // e.printStackTrace();
-    // }
-    // }
-
     @Before
     public void init() throws Exception {
-        // setUpEmbeddedMongo();
         TestConfigs.init();
         mongoDBHandler = new MongoDBHandler();
         mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
@@ -78,16 +61,6 @@ public class MongoDBHandlerTest {
         assertTrue(documents.size() > 0);
     }
 
-    // @Test
-    // TODO fix this test case
-    // public void testGetDocumentOnCondition(){
-    // ArrayList<String> documents =
-    // mongoDBHandler.getDocumentsOnCondition(dataBaseName, collectionName,
-    // condition);
-    // String document = documents.get(0);
-    // assertEquals(document, input);
-    // }
-
     @Test
     public void testUpdateDocument() {
         assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, input, updateInput));
@@ -96,8 +69,5 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        // mongoClient.close();
-        // testsFactory.shutdown();
-
     }
 }

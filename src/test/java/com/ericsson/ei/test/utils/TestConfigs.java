@@ -28,8 +28,7 @@ public class TestConfigs {
     @Getter
     private static AMQPBrokerManager amqpBroker;
     private static MongodForTestsFactory testsFactory;
-//    private Queue queue = null;
-//    private RabbitAdmin admin;
+
     @Getter
     private static ConnectionFactory cf;
 
@@ -48,7 +47,7 @@ public class TestConfigs {
 
     private static synchronized void setUpMessageBus() throws Exception {
         LOGGER.debug("Debug:setting up message buss");
-  
+
         LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
         if (amqpBroker != null || conn != null || cf != null) {
             return;
@@ -60,7 +59,7 @@ public class TestConfigs {
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
-        
+
         LOGGER.debug("done setting up message buss properties");
         LOGGER.info("setting up message buss");
         String config = "src/test/resources/configs/qpidConfig.json";
@@ -102,25 +101,6 @@ public class TestConfigs {
         }
     }
 
-    public void tearDown() {
-//        if (amqpBroker != null) {
-//            amqpBroker.stopBroker();
-//        }
-//        try {
-//            conn.close();
-//        } catch (Exception e) {
-//            // We try to close the connection but if
-//            // the connection is closed we just receive the
-//            // exception and go on
-//        }
-//
-//        if (mongoClient != null)
-//            mongoClient.close();
-//        if (testsFactory != null)
-//            testsFactory.shutdown();
-
-    }
-
     public static void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
         LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
@@ -132,7 +112,7 @@ public class TestConfigs {
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
     }
-    
+
     protected static void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
         System.setProperty("ldap.password", password);

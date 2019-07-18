@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,10 +40,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "rabbitmq.exchange.name: RmqHandlerTest-exchange", "rabbitmq.consumerName: RmqHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 public class RmqHandlerTest {
 
     private Boolean queueDurable = true;
@@ -62,19 +58,13 @@ public class RmqHandlerTest {
     @Mock
     private ConnectionFactory factory;
 
-    @BeforeClass
-    public static void init() {
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-    }
-
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         initProperties();
     }
 
-    public void initProperties()
-    {
+    public void initProperties() {
         rmqHandler.setQueueDurable(queueDurable);
         rmqHandler.setHost(host);
         rmqHandler.setExchangeName(exchangeName);

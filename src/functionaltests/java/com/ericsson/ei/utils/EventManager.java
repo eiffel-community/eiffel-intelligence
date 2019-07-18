@@ -84,14 +84,8 @@ public class EventManager {
 
     /**
      * Converts a JSON string into a tree model.
-<<<<<<< HEAD
      * 
      * @param document string of json
-=======
-     *
-     * @param document
-     *            string of json
->>>>>>> 4ef18b6bcb2146c57bb4879625eedc6510399668
      * @return JsonNode tree model
      * @throws IOException
      */

@@ -65,8 +65,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
         "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange", "rabbitmq.consumerName: SubscriptionHandlerTest",
         "notification.ttl.value: 1", "missedNotificationDataBaseName: SubscriptionHandlerTestMissedNotification" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-// @TestPropertySource(properties = { "spring.data.mongodb.database:
-// SubscriptionHandlerTest" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
@@ -94,8 +92,6 @@ public class SubscriptionHandlerTest {
     private static String subscriptionDataForAuthorization;
     private static String url;
     private static String urlAuthorization;
-    // private static MongodForTestsFactory testsFactory;
-    // private static MongoClient mongoClient = null;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
@@ -131,21 +127,6 @@ public class SubscriptionHandlerTest {
     private QueryResponse queryResponse;
 
     public static void initData() throws Exception {
-
-        // System.out.println(SuiteTest.getMongoClients().isEmpty());
-
-
-        // mongoClient = TestConfigs.mongoClientInstance();
-        // if (mongoClient == null) {
-        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        // mongoClient = testsFactory.newMongo();
-        // }
-        //
-        // // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        // // mongoClient = testsFactory.newMongo();
-        // String port = "" + mongoClient.getAddress().getPort();
-        // System.setProperty("spring.data.mongodb.port", port);
-
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
         aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification),
@@ -172,24 +153,12 @@ public class SubscriptionHandlerTest {
     @BeforeClass
     public static void init() throws Exception {
         initData();
-        // System.setProperty("notification.ttl.value", "1");
     }
-
-    // @AfterClass
-    // public static void close() {
-    // mongoClient.close();
-    // // testsFactory.shutdown();
-    // }
 
     @Before
     public void beforeTests() {
         mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
-
-    // @PostConstruct
-    // public void initMocks() {
-    // mongoDBHandler.setMongoClient(mongoClient);
-    // }
 
     @Test
     public void runSubscriptionOnObjectTest() throws Exception {
@@ -321,9 +290,7 @@ public class SubscriptionHandlerTest {
                 .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
-        assertEquals(
-                "{\"queryResponseEntity\":" + input.toString() + "}",
-                response);
+        assertEquals("{\"queryResponseEntity\":" + input.toString() + "}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 

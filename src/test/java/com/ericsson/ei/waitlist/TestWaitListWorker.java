@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -62,9 +61,6 @@ public class TestWaitListWorker {
 
     private static File qpidConfig = null;
     private static String jsonFileContent;
-    // static AMQPBrokerManager amqpBrocker;
-    // static ConnectionFactory cf;
-    // static Connection conn;
 
     private List<String> list;
     private String message;
@@ -105,29 +101,13 @@ public class TestWaitListWorker {
     void setupMB() throws Exception {
         TestConfigs.init();
         jsonFileContent = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
-
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("rabbitmq.port", "" + port);
-        // System.setProperty("rabbitmq.user", "guest");
-        // System.setProperty("rabbitmq.password", "guest");
-        // String config = "src/test/resources/configs/qpidConfig.json";
-
-        // qpidConfig = new File(config);
-        // amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        // amqpBrocker.startBroker();
-        // cf = new ConnectionFactory();
-        // cf.setUsername("guest");
-        // cf.setPassword("guest");
-        // cf.setPort(port);
-        // cf.setHandshakeTimeout(60000);
-        // cf.setConnectionTimeout(60000);
-        // conn = cf.newConnection();
     }
 
     @Test
     public void testRunWithoutMatchObjects() throws JSONException {
         Mockito.when(eventToObjectMapHandler.isEventInEventObjectMap(Mockito.anyString())).thenReturn(false);
-        Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString())).thenReturn(new ArrayList<>());
+        Mockito.when(matchId.fetchObjectsById(Mockito.any(RulesObject.class), Mockito.anyString()))
+                .thenReturn(new ArrayList<>());
         try {
             waitListWorker.run();
             assertTrue(true);
@@ -166,7 +146,6 @@ public class TestWaitListWorker {
     public void testPublishAndReceiveEvent() {
         try {
             Channel channel = TestConfigs.getConn().createChannel();
-            // Channel channel = conn.createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
             String exchange = "ei-poc-4";
             createExchange(exchange, queueName);
@@ -188,22 +167,8 @@ public class TestWaitListWorker {
         }
     }
 
-    @After
-    public void tearDown() throws Exception {
-//        amqpBrocker.stopBroker();
-//        try {
-//            conn.close();
-//        } catch (Exception e) {
-//            // We try to close the connection but if
-//            // the connection is closed we just receive the
-//            // exception and go on
-//        }
-
-    }
-
     private void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(TestConfigs.getCf());
-        // final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
         RabbitAdmin admin = new RabbitAdmin(ccf);
         Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);

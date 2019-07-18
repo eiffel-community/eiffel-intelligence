@@ -25,7 +25,6 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -57,9 +56,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "rabbitmq.exchange.name: TestRulesRestAPI-exchange", "rabbitmq.consumerName: TestRulesRestAPI" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class
-        // , EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-})
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
@@ -79,12 +76,6 @@ public class TestRulesRestAPI {
     @Value("${testaggregated.enabled:false}")
     private Boolean testEnable;
 
-    @BeforeClass
-    public static void init() {
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-    }
-
     @Test
     public void testJmesPathRestApi() throws Exception {
         String jsonInput = null;
@@ -96,15 +87,11 @@ public class TestRulesRestAPI {
             LOGGER.error(e.getMessage(), e);
         }
 
-        String requestBody = new JSONObject()
-                .put("rule", new JSONObject(extractionRules_test))
-                .put("event", new JSONObject(jsonInput))
-                .toString();
+        String requestBody = new JSONObject().put("rule", new JSONObject(extractionRules_test))
+                .put("event", new JSONObject(jsonInput)).toString();
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check")
-                .accept(MediaType.ALL)
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/rules/rule-check").accept(MediaType.ALL)
+                .content(requestBody).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String resultStr = result.getResponse().getContentAsString();
         JSONObject obj = new JSONObject(resultStr);

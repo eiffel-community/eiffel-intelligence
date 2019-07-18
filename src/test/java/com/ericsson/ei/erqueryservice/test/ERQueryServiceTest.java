@@ -78,8 +78,6 @@ public class ERQueryServiceTest {
 
     @BeforeClass
     public static void init() {
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
         System.setProperty("er.url", "http://localhost:8080/eventrepository/search/");
     }
 
@@ -116,16 +114,12 @@ public class ERQueryServiceTest {
 
     public String buildUri() {
         String uri = "";
-        // example uri
-        // http://localhost:8080/eventrepository/search/01?limit=85&levels=2&tree=true
         uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree="
                 + isTree;
         return uri;
     }
 
     public void assertBody(SearchParameters body) {
-        // example body
-        // {"ult":["ALL"]}
         assertNotNull(body);
         boolean searchActionIsRight = false;
         if (searchOption == SearchOption.DOWN_STREAM) {

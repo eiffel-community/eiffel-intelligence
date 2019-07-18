@@ -50,10 +50,6 @@ public class TestExtractionHandler {
 
     static Logger log = LoggerFactory.getLogger(TestRulesHandler.class);
 
-    /*@Mock MergeHandler mergeHandler;
-    @Mock ProcessRulesHandler processRulesHandler;
-    @Mock HistoryIdRulesHandler historyIdRulesHandler;*/
-
     @Test
     public void testExtractContent() {
         try {
@@ -71,12 +67,11 @@ public class TestExtractionHandler {
         classUnderTest = new ExtractionHandler();
         JmesPathInterface jmesPathInterface = new JmesPathInterface();
         classUnderTest.setJmesPathInterface(jmesPathInterface);
-
-        // Execute private method extractContent in isolation
         try {
-            Method method = classUnderTest.getClass().getDeclaredMethod("extractContent", new Class[] {RulesObject.class, String.class});
+            Method method = classUnderTest.getClass().getDeclaredMethod("extractContent",
+                    new Class[] { RulesObject.class, String.class });
             method.setAccessible(true);
-            result = (JsonNode)method.invoke(classUnderTest, new Object[] {rulesObject, event});
+            result = (JsonNode) method.invoke(classUnderTest, new Object[] { rulesObject, event });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

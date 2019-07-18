@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.json.JSONObject;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,54 +37,34 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = { "spring.data.mongodb.database: TestAuthControllerImpl",
-        "rabbitmq.exchange.name: TestAuthControllerImpl-exchange",
-        "rabbitmq.consumerName: TestAuthControllerImpl" })
+        "rabbitmq.exchange.name: TestAuthControllerImpl-exchange", "rabbitmq.consumerName: TestAuthControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // ,
-        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class TestAuthControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeClass
-    public static void init() throws Exception {
-        // TestConfigs.init();
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-    }
-
     @Test
     public void testGetAuth() throws Exception {
         String responseBody = new JSONObject().put("security", false).toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().string(responseBody))
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
     }
 
     @Test
     public void testGetLogin() throws Exception {
         String responseBody = new JSONObject().put("user", "anonymousUser").toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/login")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().string(responseBody))
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/login").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
     }
 
     @Test
     public void testGetCheckStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/checkStatus")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/checkStatus").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andReturn();
     }
 
 }

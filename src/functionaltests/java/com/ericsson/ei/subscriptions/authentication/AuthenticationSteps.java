@@ -60,7 +60,6 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Before("@RESTWithTokenId")
     public void beforeScenarioSecond() {
-        // client_is_replaced();
     }
 
     @Given("^LDAP is activated$")
@@ -80,11 +79,8 @@ public class AuthenticationSteps extends FunctionalTestBase {
         case "POST":
             String requestBody = FileUtils.readFileToString(new File(SUBSCRIPTION), "UTF-8");
             httpRequest = new HttpRequest(HttpMethod.POST);
-            httpRequest.setHost(hostName)
-                       .setPort(applicationPort)
-                       .setEndpoint(endpoint)
-                       .addHeader("Content-type", "application/json")
-                       .setBody(requestBody);
+            httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endpoint)
+                    .addHeader("Content-type", "application/json").setBody(requestBody);
             break;
         case "GET":
             httpRequest = new HttpRequest(HttpMethod.GET);
@@ -143,11 +139,9 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Then("^client is replaced$")
     public void client_is_replaced() {
-        // httpRequest.getExecutor().recreateHttpClient();
         if (httpRequest != null) {
             HttpExecutor executor = new HttpExecutor();
             httpRequest.setExecutor(executor);
         }
-        // HttpExecutor.getInstance().recreateHttpClient();
     }
 }

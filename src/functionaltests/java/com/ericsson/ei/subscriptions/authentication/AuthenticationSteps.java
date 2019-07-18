@@ -60,7 +60,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Before("@RESTWithTokenId")
     public void beforeScenarioSecond() {
-        client_is_replaced();
+        // client_is_replaced();
     }
 
     @Given("^LDAP is activated$")
@@ -103,6 +103,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @When("^request is sent$")
     public void request_sent() throws Throwable {
         response = httpRequest.performRequest();
+        int debg = 0;
     }
 
     @When("^authentication token is attached$")
@@ -142,7 +143,11 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Then("^client is replaced$")
     public void client_is_replaced() {
-        HttpExecutor.getInstance().recreateHttpClient();
+        // httpRequest.getExecutor().recreateHttpClient();
+        if (httpRequest != null) {
+            HttpExecutor executor = new HttpExecutor();
+            httpRequest.setExecutor(executor);
+        }
+        // HttpExecutor.getInstance().recreateHttpClient();
     }
-
 }

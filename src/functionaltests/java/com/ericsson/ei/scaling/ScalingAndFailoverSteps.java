@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,9 +40,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: ScalingAndFailoverSteps",
-        "rabbitmq.exchange.name: ScalingAndFailoverSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: ScalingAndFailoverStepsConsumer" })
+@TestPropertySource(properties = { "spring.data.mongodb.database: ScalingAndFailoverSteps123",
+        "rabbitmq.exchange.name: ScalingAndFailoverSteps123-exchange",
+        "rabbitmq.consumerName: ScalingAndFailoverSteps123Consumer" })
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private static final String EVENT_DUMMY = "src/functionaltests/resources/scale_and_failover_dummy.json";
@@ -69,19 +73,20 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         numberOfInstances = multiple + 1;
 
         portList.add(this.port);
-        for (int i = 1; i < numberOfInstances; i++) {
-            portList.add(SocketUtils.findAvailableTcpPort());
-        }
+        // for (int i = 1; i < numberOfInstances; i++) {
+        // portList.add(SocketUtils.findAvailableTcpPort());
+        // }
 
         mockMvcList.add(this.mockMvc);
         for (int i = 1; i < numberOfInstances; i++) {
-            LOGGER.debug("Starting instance on port: {}", portList.get(i));
             SpringApplicationBuilder appBuilder = new SpringApplicationBuilder(App.class);
 
-            System.setProperty("server.port", String.valueOf(portList.get(i)));
-            System.setProperty("spring.jmx.default-domain", "eiffel-intelligence-" + i);
+            // System.setProperty("server.port", String.valueOf(portList.get(i)));
+            // System.setProperty("spring.jmx.default-domain", "eiffel-intelligence-" + i);
 
-            WebApplicationContext appContext = (WebApplicationContext) appBuilder.run();
+            WebApplicationContext appContext = (WebApplicationContext) appBuilder
+                    .initializers(new JsonPropertyContextInitializer()).run();
+            LOGGER.debug("Starting instance on port: {}", portList.get(i));
             appContextList.add(appContext);
 
             mockMvcList.add(webAppContextSetup(appContext).build());
@@ -110,7 +115,17 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     public void multiple_events(int multiple) throws Exception {
         LOGGER.debug("{} eiffel events will be sent", multiple);
         String event = FileUtils.readFileToString(new File(EVENT_DUMMY), "UTF-8");
-        for (int i = 0; i < multiple; i++) {
+        int eventsToSendCount = multiple;
+
+        if (isWindows()) {
+            // Events processing is very slow on windows,
+            // it is enough with 100 events then
+            if (multiple > 100) {
+                eventsToSendCount = 100;
+            }
+        }
+
+        for (int i = 0; i < eventsToSendCount; i++) {
             String uuid = UUID.randomUUID().toString();
             eventsIdList.add(uuid);
             String eventWithUUID = event;
@@ -120,7 +135,12 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     }
 
     @When("^additional instances are closed$")
-    public void additional_instances_closed() {
+    public void additional_instances_closed() throws Exception {
+        // if (isWindows()) {
+        // // Events processing is very slow on windows,
+        // // we wait with shutting down instances
+        // TimeUnit.SECONDS.sleep(240);
+        // }
         for (int i = 0; i < numberOfInstances - 1; i++) {
             ((ConfigurableApplicationContext) appContextList.get(i)).close();
             LOGGER.debug("Closed Application running on port {}", portList.get(i + 1));
@@ -129,8 +149,62 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
 
     @Then("^all event messages are processed$")
     public void messages_processed() throws Exception {
-        List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList);
+        int extraCheckDelay = 0;
+        // if (isWindows()) {
+        // // Events processing is very slow on windows,
+        // // we wait extra for events to be processed
+        // extraCheckDelay = 60000;
+        // }
+        List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList, extraCheckDelay);
+        System.out.println("dbManager db:" + dbManager.getMongoProperties().getDatabase());
         LOGGER.debug("Missing events: {}", missingEventIds.toString());
-        assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
+        assertEquals("Number of events missing in DB: " + dbManager.getMongoProperties().getDatabase()
+                + missingEventIds.size(), 0, missingEventIds.size());
+    }
+
+    public class JsonPropertyContextInitializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        // private static String CUSTOM_PREFIX = "custom.";
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            // try {
+            PropertySource ps = new MapPropertySource(
+                    "spring.data.mongodb.database",
+                    Collections.singletonMap(
+                            "spring.data.mongodb.database", "ScalingAndFailoverSteps"
+                    ));
+            configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps);
+
+            PropertySource ps1 = new MapPropertySource("rabbitmq.exchange.name",
+                    Collections.singletonMap("rabbitmq.exchange.name", "ScalingAndFailoverSteps-exchange"));
+            configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps1);
+
+            PropertySource ps2 = new MapPropertySource("rabbitmq.consumerName",
+                    Collections.singletonMap("rabbitmq.consumerName", "ScalingAndFailoverStepsConsumer"));
+            configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps2);
+
+            int port = SocketUtils.findAvailableTcpPort();
+            portList.add(port);
+            PropertySource ps3 = new MapPropertySource("server.port",
+                    Collections.singletonMap("server.port", port));
+            configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps3);
+
+            PropertySource ps4 = new MapPropertySource("spring.jmx.default-domain",
+                    Collections.singletonMap("spring.jmx.default-domain", "eiffel-intelligence-" + portList.size()));
+            configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps4);
+            // } catch (IOException e) {
+            //// throw new RuntimeException(e);
+            // }
+        }
+    }
+
+    private boolean isWindows() {
+        String operatingSystem = System.getProperty("os.name").toLowerCase();
+        if (operatingSystem.contains("win"))
+            return true;
+        return false;
     }
 }

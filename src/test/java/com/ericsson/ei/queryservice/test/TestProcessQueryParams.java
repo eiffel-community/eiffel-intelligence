@@ -15,22 +15,27 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: TestProcessQueryParams",
+        "rabbitmq.exchange.name: TestProcessQueryParams-exchange", "rabbitmq.consumerName: TestProcessQueryParams" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class,
-        EmbeddedMongoAutoConfiguration.class
+        App.class
+        // EmbeddedMongoAutoConfiguration.class
 })
 public class TestProcessQueryParams {
 
@@ -40,7 +45,7 @@ public class TestProcessQueryParams {
     private static final String QUERY_WITH_CRITERIA = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }}";
     private static final String QUERY_WITH_UNIVERSAL_OBJECT_NAME = "{\"criteria\" :{\"object.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"object.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
     private static final String QUERY_WITH_CONFIGURED_OBJECT_NAME = "{\"criteria\" :{\"aggregatedObject.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"aggregatedObject.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
-    private static final String DATA_BASE_NAME = "eiffel_intelligence";
+    private static final String DATA_BASE_NAME = "TestProcessQueryParams";
     private static final String AGGREGATION_COLLECTION_NAME = "aggregated_objects";
     private static JSONArray expected;
     private ObjectMapper mapper = new ObjectMapper();
@@ -54,8 +59,8 @@ public class TestProcessQueryParams {
     @BeforeClass
     public static void setUp() throws JSONException {
         String input = FileUtils.readFileAsString(new File(inputPath));
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("spring.data.mongodb.port", "" + port);
         expected = new JSONArray("[" + input + "]");
     }
 

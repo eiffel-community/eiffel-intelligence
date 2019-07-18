@@ -33,26 +33,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.RuleCheckControllerImpl;
 import com.ericsson.ei.services.IRuleCheckService;
+import com.ericsson.ei.utils.TestContextInitializer;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: TestRulesRestAPI",
+        "rabbitmq.exchange.name: TestRulesRestAPI-exchange", "rabbitmq.consumerName: TestRulesRestAPI" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class, EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+@SpringBootTest(classes = { App.class
+        // , EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
 })
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
@@ -75,8 +81,8 @@ public class TestRulesRestAPI {
 
     @BeforeClass
     public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("spring.data.mongodb.port", "" + port);
     }
 
     @Test

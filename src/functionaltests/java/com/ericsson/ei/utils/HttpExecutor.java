@@ -1,5 +1,7 @@
 package com.ericsson.ei.utils;
 
+import java.io.IOException;
+
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -13,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.IOException;
-
 
 public final class HttpExecutor {
 
@@ -22,12 +22,13 @@ public final class HttpExecutor {
     private CloseableHttpClient client = HttpClientBuilder.create().build();
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpExecutor.class);
 
-    private HttpExecutor() {
+    public HttpExecutor() {
 
     }
 
     public static HttpExecutor getInstance() {
-        if(instance == null) {
+        // return new HttpExecutor();
+        if (instance == null) {
             instance = new HttpExecutor();
         }
 

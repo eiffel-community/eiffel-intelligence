@@ -18,17 +18,17 @@ package com.ericsson.ei.jmespath.test;
 
 import static org.junit.Assert.assertEquals;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.io.File;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestJmesPathInterface {
     private JmesPathInterface unitUnderTest = new JmesPathInterface();

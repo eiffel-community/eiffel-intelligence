@@ -12,36 +12,42 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: UpStreamEventHandlerTest",
+        "rabbitmq.exchange.name: UpStreamEventHandlerTest-exchange",
+        "rabbitmq.consumerName: UpStreamEventHandlerTest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class,
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+        App.class
+        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 public class UpStreamEventHandlerTest {
 
     @Autowired
     private UpStreamEventsHandler classUnderTest;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
+    static Logger log = LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
 
     @BeforeClass
     public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("spring.data.mongodb.port", "" + port);
     }
 
     @Test

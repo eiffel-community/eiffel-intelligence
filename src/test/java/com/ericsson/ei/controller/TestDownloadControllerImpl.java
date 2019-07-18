@@ -39,7 +39,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = { "spring.data.mongodb.database: TestDownloadControllerImpl",
         "rabbitmq.exchange.name: TestDownloadControllerImpl-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: TestDownloadControllerImpl" })
+        "rabbitmq.consumerName: TestDownloadControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {

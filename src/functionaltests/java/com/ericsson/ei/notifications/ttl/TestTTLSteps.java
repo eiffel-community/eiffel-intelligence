@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -43,7 +44,8 @@ import cucumber.api.java.en.When;
 @TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1", "spring.data.mongodb.database: TestTTLSteps",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: TestTTLStepsConsumer" })
+        "rabbitmq.consumerName: TestTTLStepsConsumer",
+        "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })
 //@ContextConfiguration(initializers = TestContextInitializer.class)
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
@@ -63,7 +65,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     private static final String SUBSCRIPTION_FILE_PATH_CREATION = "src/functionaltests/resources/subscription_single_ttlTest.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
 
-    private static final long MAX_WAIT_TIME = 65000;
+    private static final long MAX_WAIT_TIME = 120000;
 
     private static JsonNode subscriptionObject;
 
@@ -162,7 +164,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
@@ -199,8 +201,10 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Aggregated Object document should be deleted from the database$")
     public void the_Aggregated_Object_document_should_be_deleted_from_the_database() throws Throwable {
-        LOGGER.debug("Checking delition of aggregated object in db");
+        LOGGER.debug("Checking deletion of aggregated object in db");
         List<String> allObjects = null;
+        // To be sure at least one minute has passed since creation of aggregated object
+        TimeUnit.MINUTES.sleep(1);
         allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
         assertEquals("Database is not empty.", true, allObjects.isEmpty());
     }

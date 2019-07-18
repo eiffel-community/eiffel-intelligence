@@ -18,9 +18,6 @@ package com.ericsson.ei.handlers.test;
 
 import static org.junit.Assert.assertTrue;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.mongodb.MongoClient;
-
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -29,39 +26,43 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
+import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.test.utils.TestConfigs;
+import com.mongodb.MongoClient;
+
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 public class MongoDBHandlerTest {
 
-    final Logger log = (Logger) LoggerFactory.getLogger(MongoDBHandlerTest.class);
+    final Logger log = LoggerFactory.getLogger(MongoDBHandlerTest.class);
 
     private MongoDBHandler mongoDBHandler;
 
     private MongodForTestsFactory testsFactory;
     private MongoClient mongoClient = null;
 
-    private String dataBaseName = "EventStorageDBbbb";
+    private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
 
-    public void setUpEmbeddedMongo() throws Exception {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
-    }
+    // public void setUpEmbeddedMongo() throws Exception {
+    // try {
+    // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+    // mongoClient = testsFactory.newMongo();
+    // } catch (Exception e) {
+    // log.error(e.getMessage(), e);
+    // e.printStackTrace();
+    // }
+    // }
 
     @Before
     public void init() throws Exception {
-        setUpEmbeddedMongo();
+        // setUpEmbeddedMongo();
+        TestConfigs.init();
         mongoDBHandler = new MongoDBHandler();
-        mongoDBHandler.setMongoClient(mongoClient);
+        mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
         mongoDBHandler.insertDocument(dataBaseName, collectionName, input);
     }
 
@@ -95,8 +96,8 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        mongoClient.close();
-        testsFactory.shutdown();
+        // mongoClient.close();
+        // testsFactory.shutdown();
 
     }
 }

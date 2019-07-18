@@ -30,6 +30,7 @@ public class TestConfigs {
     private static MongodForTestsFactory testsFactory;
 //    private Queue queue = null;
 //    private RabbitAdmin admin;
+    @Getter
     private static ConnectionFactory cf;
 
     final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
@@ -40,15 +41,15 @@ public class TestConfigs {
     @Getter
     private static MongoClient mongoClient = null;
 
-    public static void init() throws Exception {
+    public static synchronized void init() throws Exception {
         setUpMessageBus();
         setUpEmbeddedMongo();
     }
 
-    private static void setUpMessageBus() throws Exception {
-        LOGGER.debug("setting up message buss");
+    private static synchronized void setUpMessageBus() throws Exception {
+        LOGGER.debug("Debug:setting up message buss");
   
-        System.out.println("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
+        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
         if (amqpBroker != null || conn != null || cf != null) {
             return;
         }
@@ -60,7 +61,7 @@ public class TestConfigs {
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
         
-        System.out.println("done setting up message buss properties");
+        LOGGER.debug("done setting up message buss properties");
         LOGGER.info("setting up message buss");
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
@@ -74,7 +75,7 @@ public class TestConfigs {
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
-        System.out.println("after setting up message buss");
+        LOGGER.debug("after setting up message buss");
     }
 
     public static MongoClient mongoClientInstance() throws Exception {
@@ -85,7 +86,7 @@ public class TestConfigs {
         return mongoClient;
     }
 
-    private static void setUpEmbeddedMongo() throws IOException {
+    private static synchronized void setUpEmbeddedMongo() throws IOException {
         if (mongoClient != null) {
             return;
         }

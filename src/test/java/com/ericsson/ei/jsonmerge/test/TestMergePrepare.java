@@ -16,26 +16,25 @@
 */
 package com.ericsson.ei.jsonmerge.test;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.jsonmerge.MergePrepare;
-import org.json.*;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import static org.junit.Assert.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.io.File;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.jsonmerge.MergePrepare;
 
 @RunWith(Parameterized.class)
 public class TestMergePrepare {
@@ -47,7 +46,7 @@ public class TestMergePrepare {
     public String ruleValue;
     public String mergedObject;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(TestMergePrepare.class);
+    static Logger log = LoggerFactory.getLogger(TestMergePrepare.class);
 
     public TestMergePrepare(String originObject, String mergeObject, String mergeRule, String mergePath,
             String ruleValue, String mergedObject) {

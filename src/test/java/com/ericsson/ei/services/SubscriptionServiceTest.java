@@ -17,8 +17,8 @@
 package com.ericsson.ei.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,27 +38,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.test.utils.TestConfigs;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionServiceTest",
+        "rabbitmq.exchange.name: SubscriptionServiceTest-exchange", "rabbitmq.consumerName: SubscriptionServiceTest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 public class SubscriptionServiceTest {
@@ -88,7 +92,7 @@ public class SubscriptionServiceTest {
     @MockBean
     private SecurityContext securityContext;
 
-    private static MongodForTestsFactory testsFactory;
+    // private static MongodForTestsFactory testsFactory;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -97,16 +101,16 @@ public class SubscriptionServiceTest {
     static MongoClient mongoClient = null;
 
     @BeforeClass
-    public static void setMongoDB() throws IOException, JSONException {
-        try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("spring.data.mongodb.port", port);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
+    public static void initData() throws IOException, JSONException {
+        // try {
+        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        // mongoClient = testsFactory.newMongo();
+        // String port = "" + mongoClient.getAddress().getPort();
+        // System.setProperty("spring.data.mongodb.port", port);
+        // } catch (Exception e) {
+        // LOGGER.error(e.getMessage(), e);
+        // e.printStackTrace();
+        // }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
         String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
@@ -120,16 +124,17 @@ public class SubscriptionServiceTest {
 
     @PostConstruct
     public void init() {
+        mongoClient = TestConfigs.getMongoClient();
         mongoDBHandler.setMongoClient(mongoClient);
     }
 
-    @AfterClass
-    public static void tearDownMongoDB() throws Exception {
-        if (mongoClient != null)
-            mongoClient.close();
-        if (testsFactory != null)
-            testsFactory.shutdown();
-    }
+    // @AfterClass
+    // public static void tearDownMongoDB() throws Exception {
+    // if (mongoClient != null)
+    // mongoClient.close();
+    // if (testsFactory != null)
+    // testsFactory.shutdown();
+    // }
 
     @Test
     public void testInsertSubscription() throws Exception {

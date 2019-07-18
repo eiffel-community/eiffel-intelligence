@@ -19,27 +19,30 @@ package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.AfterClass;
+import javax.annotation.PostConstruct;
+
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-
-
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
+        "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
+        "rabbitmq.consumerName: SubscriptionRepeatDbHandlerTest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
         App.class
@@ -47,41 +50,41 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 public class SubscriptionRepeatDbHandlerTest {
 
 
-    static Logger log = (Logger) LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
+    static Logger log = LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
 
     private static SubscriptionRepeatDbHandler subsRepeatDbHandler = new SubscriptionRepeatDbHandler();
 
     @Autowired
-    private static MongoDBHandler mongoDBHandler;
+    private MongoDBHandler mongoDBHandler;
 
-    private static MongoClient mongoClient;
-    private static MongodForTestsFactory testsFactory;
+    // private static MongoClient mongoClient;
+    // private static MongodForTestsFactory testsFactory;
 
-    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagDataBaseName = "SubscriptionRepeatDbHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
 
 
 
-    @BeforeClass
-    public static void init() throws Exception {
-    testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-    mongoClient = testsFactory.newMongo();
-    mongoDBHandler = new MongoDBHandler();
-    mongoDBHandler.setMongoClient(mongoClient);
-    String port = "" + mongoClient.getAddress().getPort();
-    System.setProperty("spring.data.mongodb.port", port);
+    @PostConstruct
+    public void init() throws Exception {
+        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        // mongoClient = testsFactory.newMongo();
+        // mongoDBHandler = new MongoDBHandler();
+        // mongoDBHandler.setMongoClient(mongoClient);
+        // String port = "" + mongoClient.getAddress().getPort();
+        // System.setProperty("spring.data.mongodb.port", port);
     subsRepeatDbHandler.mongoDbHandler = mongoDBHandler;
 
     subsRepeatDbHandler.dataBaseName = subRepeatFlagDataBaseName;
     subsRepeatDbHandler.collectionName = subRepeatFlagCollectionName;
     }
 
-    @AfterClass
-    public static void close() {
-        testsFactory.shutdown();
-        mongoClient.close();
-    }
+    // @AfterClass
+    // public static void close() {
+    // testsFactory.shutdown();
+    // mongoClient.close();
+    // }
 
     @Before
     public void beforeTests() {

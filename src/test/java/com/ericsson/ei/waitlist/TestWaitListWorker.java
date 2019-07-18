@@ -16,16 +16,14 @@
 */
 package com.ericsson.ei.waitlist;
 
-import com.ericsson.ei.flowtests.AMQPBrokerManager;
-import com.ericsson.ei.handlers.EventToObjectMapHandler;
-import com.ericsson.ei.handlers.MatchIdRulesHandler;
-import com.ericsson.ei.handlers.RmqHandler;
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.rules.RulesHandler;
-import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.rabbitmq.client.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.junit.After;
@@ -40,15 +38,21 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.util.SocketUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.handlers.MatchIdRulesHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rules.RulesHandler;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.test.utils.TestConfigs;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 
 public class TestWaitListWorker {
 
@@ -58,9 +62,9 @@ public class TestWaitListWorker {
 
     private static File qpidConfig = null;
     private static String jsonFileContent;
-    static AMQPBrokerManager amqpBrocker;
-    static ConnectionFactory cf;
-    static Connection conn;
+    // static AMQPBrokerManager amqpBrocker;
+    // static ConnectionFactory cf;
+    // static Connection conn;
 
     private List<String> list;
     private String message;
@@ -99,22 +103,25 @@ public class TestWaitListWorker {
     }
 
     void setupMB() throws Exception {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("rabbitmq.port", "" + port);
-        System.setProperty("rabbitmq.user", "guest");
-        System.setProperty("rabbitmq.password", "guest");
-        String config = "src/test/resources/configs/qpidConfig.json";
+        TestConfigs.init();
         jsonFileContent = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
-        qpidConfig = new File(config);
-        amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        amqpBrocker.startBroker();
-        cf = new ConnectionFactory();
-        cf.setUsername("guest");
-        cf.setPassword("guest");
-        cf.setPort(port);
-        cf.setHandshakeTimeout(60000);
-        cf.setConnectionTimeout(60000);
-        conn = cf.newConnection();
+
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("rabbitmq.port", "" + port);
+        // System.setProperty("rabbitmq.user", "guest");
+        // System.setProperty("rabbitmq.password", "guest");
+        // String config = "src/test/resources/configs/qpidConfig.json";
+
+        // qpidConfig = new File(config);
+        // amqpBrocker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
+        // amqpBrocker.startBroker();
+        // cf = new ConnectionFactory();
+        // cf.setUsername("guest");
+        // cf.setPassword("guest");
+        // cf.setPort(port);
+        // cf.setHandshakeTimeout(60000);
+        // cf.setConnectionTimeout(60000);
+        // conn = cf.newConnection();
     }
 
     @Test
@@ -158,7 +165,8 @@ public class TestWaitListWorker {
     @Test
     public void testPublishAndReceiveEvent() {
         try {
-            Channel channel = conn.createChannel();
+            Channel channel = TestConfigs.getConn().createChannel();
+            // Channel channel = conn.createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
             String exchange = "ei-poc-4";
             createExchange(exchange, queueName);
@@ -182,19 +190,20 @@ public class TestWaitListWorker {
 
     @After
     public void tearDown() throws Exception {
-        amqpBrocker.stopBroker();
-        try {
-            conn.close();
-        } catch (Exception e) {
-            // We try to close the connection but if
-            // the connection is closed we just receive the
-            // exception and go on
-        }
+//        amqpBrocker.stopBroker();
+//        try {
+//            conn.close();
+//        } catch (Exception e) {
+//            // We try to close the connection but if
+//            // the connection is closed we just receive the
+//            // exception and go on
+//        }
 
     }
 
     private void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
+        final CachingConnectionFactory ccf = new CachingConnectionFactory(TestConfigs.getCf());
+        // final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
         RabbitAdmin admin = new RabbitAdmin(ccf);
         Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);

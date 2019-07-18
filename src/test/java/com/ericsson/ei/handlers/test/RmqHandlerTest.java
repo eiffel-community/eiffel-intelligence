@@ -27,18 +27,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: RmqHandlerTest",
+        "rabbitmq.exchange.name: RmqHandlerTest-exchange", "rabbitmq.consumerName: RmqHandlerTest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-        App.class,
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
+        App.class
+        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
     })
 public class RmqHandlerTest {
 
@@ -59,8 +64,8 @@ public class RmqHandlerTest {
 
     @BeforeClass
     public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
+        // int port = SocketUtils.findAvailableTcpPort();
+        // System.setProperty("spring.data.mongodb.port", "" + port);
     }
 
     @Before public void setUp() {

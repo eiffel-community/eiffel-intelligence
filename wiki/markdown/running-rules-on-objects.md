@@ -1,11 +1,21 @@
 # Running Rules On Objects
 
-|Method|Endpoint             |
-|------|---------------------|
-|POST |/rules/rule-check|
-|POST | /rules/rule-check/aggregation|
-|GET | /rules/rule-check/testRulePageEnabled |
+|Method|Endpoint                               |
+|------|---------------------------------------|
+|GET   | /rules                                |
+|POST  | /rules/rule-check                     |
+|POST  | /rules/rule-check/aggregation         |
+|GET   | /rules/rule-check/testRulePageEnabled |
 
+## Checking the active rules in your backend instance
+
+You can fetch the rules content from the backend to see what rules Eiffel Intelligence is currently using.
+This can give you an idea on how to write your own rules or could be saved and used
+in the /rules/rule-check endpoints to test the current rules against your events.
+
+    curl -X GET http://<host>:8090/rules
+    
+## Testing rules and events in Eiffel Intelligence
 
 Before deploying a new instance of Eiffel Intelligence it is good to test the
 desired rules that they give the desired outcome. Therefore it is possible to

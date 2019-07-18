@@ -11,21 +11,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * No description
+ * This class is used for anything rules related. It's currently used to test rules on Eiffel events and to fetch the active rules file content. Test rules must be enabled in Eiffel Intelligence for the /rule-check endpoints to work.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
 @RestController
 @Validated
-@RequestMapping(value = "/rules/rule-check", produces = "application/json")
-public interface RuleCheckController {
+@RequestMapping(value = "/rules", produces = "application/json")
+public interface RuleController {
 
+
+    /**
+     * This method returns the active rules content.
+     * 
+     */
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity<?> getRules();
 
     /**
      * This method extracts data from a single Eiffel event based on the given JMESPath expression.
      * 
      */
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @RequestMapping(value = "/rule-check", method = RequestMethod.POST)
     public ResponseEntity<?> createRulesRuleCheck(
         @javax.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
@@ -35,7 +42,7 @@ public interface RuleCheckController {
      * This method extracts data from the given list of Eiffel events, based on a set of rules and returns an aggregated object.
      * 
      */
-    @RequestMapping(value = "/aggregation", method = RequestMethod.POST)
+    @RequestMapping(value = "/rule-check/aggregation", method = RequestMethod.POST)
     public ResponseEntity<?> createRuleCheckAggregation(
         @javax.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
@@ -45,7 +52,7 @@ public interface RuleCheckController {
      * This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
      * 
      */
-    @RequestMapping(value = "/testRulePageEnabled", method = RequestMethod.GET)
+    @RequestMapping(value = "/rule-check/testRulePageEnabled", method = RequestMethod.GET)
     public ResponseEntity<?> getRuleCheckTestRulePageEnabled();
 
 }

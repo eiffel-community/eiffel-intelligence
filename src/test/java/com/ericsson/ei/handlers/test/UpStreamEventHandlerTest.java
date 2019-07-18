@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,22 +32,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "rabbitmq.consumerName: UpStreamEventHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 public class UpStreamEventHandlerTest {
 
     @Autowired
     private UpStreamEventsHandler classUnderTest;
 
     static Logger log = LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
-
-    @BeforeClass
-    public static void init() {
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-    }
 
     @Test
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {

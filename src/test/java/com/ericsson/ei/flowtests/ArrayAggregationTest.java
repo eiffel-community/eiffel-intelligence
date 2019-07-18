@@ -79,7 +79,6 @@ public class ArrayAggregationTest extends FlowTestBase {
 
     @Override
     protected int extraEventsCount() {
-        // extra events from ER upstream
         return 2;
     }
 
@@ -101,5 +100,4 @@ public class ArrayAggregationTest extends FlowTestBase {
         checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
         return checkData;
     }
-
 }

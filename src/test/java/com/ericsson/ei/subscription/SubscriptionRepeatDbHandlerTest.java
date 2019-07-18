@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.subscription;
 
-
 import static org.junit.Assert.assertEquals;
 
 import javax.annotation.PostConstruct;
@@ -44,11 +43,8 @@ import com.mongodb.util.JSON;
         "rabbitmq.consumerName: SubscriptionRepeatDbHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-    })
+@SpringBootTest(classes = { App.class })
 public class SubscriptionRepeatDbHandlerTest {
-
 
     static Logger log = LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
 
@@ -57,34 +53,15 @@ public class SubscriptionRepeatDbHandlerTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    // private static MongoClient mongoClient;
-    // private static MongodForTestsFactory testsFactory;
-
     private static String subRepeatFlagDataBaseName = "SubscriptionRepeatDbHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
-
-
-
     @PostConstruct
     public void init() throws Exception {
-        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        // mongoClient = testsFactory.newMongo();
-        // mongoDBHandler = new MongoDBHandler();
-        // mongoDBHandler.setMongoClient(mongoClient);
-        // String port = "" + mongoClient.getAddress().getPort();
-        // System.setProperty("spring.data.mongodb.port", port);
-    subsRepeatDbHandler.mongoDbHandler = mongoDBHandler;
-
-    subsRepeatDbHandler.dataBaseName = subRepeatFlagDataBaseName;
-    subsRepeatDbHandler.collectionName = subRepeatFlagCollectionName;
+        subsRepeatDbHandler.mongoDbHandler = mongoDBHandler;
+        subsRepeatDbHandler.dataBaseName = subRepeatFlagDataBaseName;
+        subsRepeatDbHandler.collectionName = subRepeatFlagCollectionName;
     }
-
-    // @AfterClass
-    // public static void close() {
-    // testsFactory.shutdown();
-    // mongoClient.close();
-    // }
 
     @Before
     public void beforeTests() {
@@ -102,13 +79,13 @@ public class SubscriptionRepeatDbHandlerTest {
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
 
         assertEquals(subscriptionId, dbResult.get("subscriptionId").toString());
 
         String actual = dbResult.get("requirements").toString();
-        String expected = "{ \"0\" : [ " +  "\"" + aggrObjId + "\"" + "]}";
-
+        String expected = "{ \"0\" : [ " + "\"" + aggrObjId + "\"" + "]}";
 
         boolean result = true;
         if (expected == actual) {
@@ -126,8 +103,8 @@ public class SubscriptionRepeatDbHandlerTest {
         int requirementId = 0;
         String aggrObjId = "99999";
 
-          String subscriptionId2 = "98754";
-          int requirementId2 = 1;
+        String subscriptionId2 = "98754";
+        int requirementId2 = 1;
         String aggrObjId2 = "45678";
 
         String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
@@ -136,13 +113,13 @@ public class SubscriptionRepeatDbHandlerTest {
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
 
         assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
 
         String actual = dbResult.get("requirements").toString();
         String expected = "{ \"" + requirementId2 + "\" : [ \"" + aggrObjId2 + "\"]}";
-
 
         String msg = "\nACTUAL  : |" + actual + "|\nEXPECTED: |" + expected + "|";
         boolean result = true;
@@ -161,12 +138,11 @@ public class SubscriptionRepeatDbHandlerTest {
         int requirementId = 0;
         String aggrObjId = "99999";
 
-          String subscriptionId2 = "12345";
-          int requirementId2 = 0;
+        String subscriptionId2 = "12345";
+        int requirementId2 = 0;
         String aggrObjId2 = "99998";
 
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-
 
         try {
             subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
@@ -182,12 +158,12 @@ public class SubscriptionRepeatDbHandlerTest {
             e.printStackTrace();
         }
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler.find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
 
         assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
         log.error("DB REQUIREMENTS: " + dbResult.get("requirements").toString());
         log.error("DB Content: " + dbResult.toString());
-
 
         String actual = dbResult.get("requirements").toString();
         String expected = "{ \"0\" : [ \"" + aggrObjId + "\" , \"" + aggrObjId2 + "\"]}";

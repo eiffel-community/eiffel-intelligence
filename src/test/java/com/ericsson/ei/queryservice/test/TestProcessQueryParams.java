@@ -33,10 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "rabbitmq.exchange.name: TestProcessQueryParams-exchange", "rabbitmq.consumerName: TestProcessQueryParams" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // EmbeddedMongoAutoConfiguration.class
-})
+@SpringBootTest(classes = { App.class })
 public class TestProcessQueryParams {
 
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
@@ -59,8 +56,6 @@ public class TestProcessQueryParams {
     @BeforeClass
     public static void setUp() throws JSONException {
         String input = FileUtils.readFileAsString(new File(inputPath));
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
         expected = new JSONArray("[" + input + "]");
     }
 
@@ -73,8 +68,8 @@ public class TestProcessQueryParams {
             String filter = null;
 
             String request = "{ \"$and\" : [ " + criteria.toString() + "," + options.toString() + " ] }";
-            when(processAggregatedObject.processQueryAggregatedObject(
-                    request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+            when(processAggregatedObject.processQueryAggregatedObject(request, DATA_BASE_NAME,
+                    AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {
@@ -89,8 +84,8 @@ public class TestProcessQueryParams {
             JSONObject criteria = (JSONObject) query.get("criteria");
             JSONObject options = null;
             String filter = null;
-            when(processAggregatedObject.processQueryAggregatedObject(
-                    criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+            when(processAggregatedObject.processQueryAggregatedObject(criteria.toString(), DATA_BASE_NAME,
+                    AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {
@@ -101,33 +96,31 @@ public class TestProcessQueryParams {
     @Test
     public void testFilterFormParamForObjectName() throws IOException {
         try {
-             JSONObject query = new JSONObject(QUERY_WITH_UNIVERSAL_OBJECT_NAME);
-             JSONObject criteria = (JSONObject) query.get("criteria");
-             JSONObject options = (JSONObject) query.get("options");
-             String filter = null;
-             JSONObject queryConf = new JSONObject(QUERY_WITH_CONFIGURED_OBJECT_NAME);
-             JSONObject criteriaConf = (JSONObject) queryConf.get("criteria");
-             JSONObject optionsConf = (JSONObject) queryConf.get("options");
+            JSONObject query = new JSONObject(QUERY_WITH_UNIVERSAL_OBJECT_NAME);
+            JSONObject criteria = (JSONObject) query.get("criteria");
+            JSONObject options = (JSONObject) query.get("options");
+            String filter = null;
+            JSONObject queryConf = new JSONObject(QUERY_WITH_CONFIGURED_OBJECT_NAME);
+            JSONObject criteriaConf = (JSONObject) queryConf.get("criteria");
+            JSONObject optionsConf = (JSONObject) queryConf.get("options");
 
-
-             String request = "{ \"$and\" : [ " + criteriaConf.toString() + "," + optionsConf.toString() + " ] }";
-             when(processAggregatedObject.processQueryAggregatedObject(
-                     request, DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
-             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
-             assertEquals(expected, result);
-         } catch (Exception e) {
-             fail(e.getMessage());
-         }
+            String request = "{ \"$and\" : [ " + criteriaConf.toString() + "," + optionsConf.toString() + " ] }";
+            when(processAggregatedObject.processQueryAggregatedObject(request, DATA_BASE_NAME,
+                    AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+            JSONArray result = processQueryParams.runQuery(criteria, options, filter);
+            assertEquals(expected, result);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     public void testFilterQueryParam() throws IOException {
         JsonNode criteria = mapper.readValue(REQUEST, JsonNode.class).get("criteria");
-        when(processAggregatedObject.processQueryAggregatedObject(
-                criteria.toString(), DATA_BASE_NAME, AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
+        when(processAggregatedObject.processQueryAggregatedObject(criteria.toString(), DATA_BASE_NAME,
+                AGGREGATION_COLLECTION_NAME)).thenReturn(expected);
         JSONArray result = processQueryParams.filterQueryParam(REQUEST);
         assertEquals(expected, result);
     }
-
 
 }

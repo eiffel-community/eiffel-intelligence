@@ -50,10 +50,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "rabbitmq.exchange.name: TestQueryControllerImpl-exchange", "rabbitmq.consumerName: TestQueryControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
@@ -66,12 +63,6 @@ public class TestQueryControllerImpl {
     @Autowired
     private MockMvc mockMvc;
 
-    // @BeforeClass
-    // public static void init() {
-    //// int port = SocketUtils.findAvailableTcpPort();
-    //// System.setProperty("spring.data.mongodb.port", "" + port);
-    // }
-
     @Before
     public void setUp() {
         input = FileUtils.readFileAsString(new File(inputPath));
@@ -81,14 +72,13 @@ public class TestQueryControllerImpl {
     public void filterFormParamTest() throws Exception {
 
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class))).thenReturn(inputObj);
+        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
+                .thenReturn(inputObj);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
-                .accept(MediaType.ALL)
-                .content(QUERY)
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query").accept(MediaType.ALL).content(QUERY)
                 .contentType(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
     }
 }

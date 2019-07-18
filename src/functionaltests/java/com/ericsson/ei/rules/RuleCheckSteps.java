@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ericsson.ei.controller.RuleCheckController;
+import com.ericsson.ei.controller.RuleController;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -34,7 +34,7 @@ public class RuleCheckSteps extends FunctionalTestBase {
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
 
     @Autowired
-    private RuleCheckController ruleCheckController;
+    private RuleController ruleController;
 
     private String rules;
     private String events;
@@ -46,12 +46,12 @@ public class RuleCheckSteps extends FunctionalTestBase {
 
     @Given("^rules checking is enabled$")
     public void rules_checking_is_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleCheckController, "testEnable", true);
+        ReflectionTestUtils.setField(ruleController, "testEnabled", true);
     }
 
     @Given("^rules checking is not enabled$")
     public void rules_checking_is_not_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleCheckController, "testEnable", false);
+        ReflectionTestUtils.setField(ruleController, "testEnabled", false);
     }
 
     @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")

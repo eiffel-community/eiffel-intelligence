@@ -30,9 +30,7 @@ import com.mongodb.MongoClient;
         "rabbitmq.exchange.name: TestRulesService-exchange", "rabbitmq.consumerName: TestRulesService" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-    })
+@SpringBootTest(classes = { App.class })
 public class TestRulesService {
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";
@@ -46,33 +44,13 @@ public class TestRulesService {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    // private static MongodForTestsFactory testsFactory;
     private static MongoClient mongoClient = null;
-
-    // @BeforeClass
-    // public static void setMongoDB() throws IOException, JSONException {
-    // try {
-    // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-    // mongoClient = testsFactory.newMongo();
-    // String port = "" + mongoClient.getAddress().getPort();
-    // System.setProperty("spring.data.mongodb.port", port);
-    // } catch (Exception e) {
-    // LOGGER.error(e.getMessage(), e);
-    // e.printStackTrace();
-    // }
-    // }
 
     @PostConstruct
     public void initMocks() {
         mongoClient = TestConfigs.getMongoClient();
         mongoDBHandler.setMongoClient(mongoClient);
     }
-
-    // @AfterClass
-    // public static void tearDownMongoDB() throws Exception {
-    // mongoClient.close();
-    // testsFactory.shutdown();
-    // }
 
     @Test
     public void prepareAggregatedObject() {
@@ -91,6 +69,5 @@ public class TestRulesService {
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());
         } catch (Exception e) {
         }
-
     }
 }

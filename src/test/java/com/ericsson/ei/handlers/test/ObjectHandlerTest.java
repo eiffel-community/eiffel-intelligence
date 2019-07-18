@@ -41,7 +41,6 @@ import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
-
 public class ObjectHandlerTest {
 
     final Logger log = LoggerFactory.getLogger(ObjectHandlerTest.class);
@@ -67,21 +66,9 @@ public class ObjectHandlerTest {
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
-    // public void setUpEmbeddedMongo() throws Exception {
-    // try {
-    // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-    // mongoClient = testsFactory.newMongo();
-    // } catch (Exception e) {
-    // log.error(e.getMessage(), e);
-    // e.printStackTrace();
-    // }
-    //
-    // }
-
     @Before
     public void init() throws Exception {
         TestConfigs.init();
-        // setUpEmbeddedMongo();
         mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
         subscriptionHandler.setMongoDBHandler(mongoDBHandler);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
@@ -107,7 +94,6 @@ public class ObjectHandlerTest {
     public void test() {
         String document = objHandler.findObjectById("eventId");
         JsonNode result = objHandler.getAggregatedObject(document);
-
         assertEquals(input, result.toString());
     }
 
@@ -118,6 +104,5 @@ public class ObjectHandlerTest {
             mongoClient.close();
         if (testsFactory != null)
             testsFactory.shutdown();
-
     }
 }

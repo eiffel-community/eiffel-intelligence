@@ -78,17 +78,9 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         });
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
-//        rmqHandler.rabbitMqTemplate();
-//        rmqHandler.bindToQueueForRecentEvents(rmqHandler.getCachingConnectionFactory(), eventHandler);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
         rmqHandler.getContainer().setQueueNames(rmqHandler.getQueueName());
-//        rmqHandler.getContainer().stop();
-//        rmqHandler.getContainer().afterPropertiesSet();
-//        rmqHandler.getContainer().start();
-
-//        rmqHandler.rabbitMqTemplate();
-//        amqpBroker = TestContextInitializer.getAmqpBroker();
         assertEquals("Expected message bus to be up", true, amqpBroker.isRunning);
     }
 
@@ -137,7 +129,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         final String exchangeName = rmqHandler.getExchangeName();
         final String queueName = rmqHandler.getQueueName();
         final CachingConnectionFactory ccf = rmqHandler.getCachingConnectionFactory();
-//        = new CachingConnectionFactory(cf);
         LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
         RabbitAdmin admin = new RabbitAdmin(ccf);
         Queue queue = new Queue(queueName, true);
@@ -152,7 +143,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         rabbitTemplate.setRoutingKey(rmqHandler.getBindingKey());
         rabbitTemplate.setQueue(queueName);
         return admin;
-//        ccf.destroy();
     }
 
 }

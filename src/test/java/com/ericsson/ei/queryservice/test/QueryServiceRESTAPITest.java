@@ -53,7 +53,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
         "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-// @ContextConfiguration(classes = {App.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
@@ -102,7 +101,8 @@ public class QueryServiceRESTAPITest {
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
+                "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -124,7 +124,8 @@ public class QueryServiceRESTAPITest {
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
+                "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());

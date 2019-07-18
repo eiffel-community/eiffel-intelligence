@@ -92,8 +92,6 @@ public class SubscriptionServiceTest {
     @MockBean
     private SecurityContext securityContext;
 
-    // private static MongodForTestsFactory testsFactory;
-
     private ObjectMapper mapper = new ObjectMapper();
 
     static JSONArray jsonArray = null;
@@ -102,15 +100,6 @@ public class SubscriptionServiceTest {
 
     @BeforeClass
     public static void initData() throws IOException, JSONException {
-        // try {
-        // testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        // mongoClient = testsFactory.newMongo();
-        // String port = "" + mongoClient.getAddress().getPort();
-        // System.setProperty("spring.data.mongodb.port", port);
-        // } catch (Exception e) {
-        // LOGGER.error(e.getMessage(), e);
-        // e.printStackTrace();
-        // }
         String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
         String readFileToString_du = FileUtils.readFileToString(new File(subscriptionJsonPath_du), "UTF-8");
@@ -127,14 +116,6 @@ public class SubscriptionServiceTest {
         mongoClient = TestConfigs.getMongoClient();
         mongoDBHandler.setMongoClient(mongoClient);
     }
-
-    // @AfterClass
-    // public static void tearDownMongoDB() throws Exception {
-    // if (mongoClient != null)
-    // mongoClient.close();
-    // if (testsFactory != null)
-    // testsFactory.shutdown();
-    // }
 
     @Test
     public void testInsertSubscription() throws Exception {

@@ -46,7 +46,6 @@ import cucumber.api.java.en.When;
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer",
         "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })
-//@ContextConfiguration(initializers = TestContextInitializer.class)
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";

@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.json.JSONObject;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,23 +41,12 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "rabbitmq.consumerName: TestDownloadControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class
-        // ,
-        // EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-})
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class TestDownloadControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeClass
-    public static void init() throws Exception {
-        // TestConfigs.init();
-        // int port = SocketUtils.findAvailableTcpPort();
-        // System.setProperty("spring.data.mongodb.port", "" + port);
-    }
 
     @Test
     public void testGetDownload() throws Exception {
@@ -66,34 +54,26 @@ public class TestDownloadControllerImpl {
         responseBody.put("subscriptions", "/download/subscriptionsTemplate");
         responseBody.put("rules", "/download/rulesTemplate");
         responseBody.put("events", "/download/eventsTemplate");
-        mockMvc.perform(MockMvcRequestBuilders.get("/download")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().string(responseBody.toString()))
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/download").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andExpect(content().string(responseBody.toString())).andReturn();
     }
 
     @Test
     public void testGetSubscriptionsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/subscriptionsTemplate")
-                .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andReturn();
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/download/subscriptionsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void testGetRulesTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void testGetEventsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andReturn();
     }
 }

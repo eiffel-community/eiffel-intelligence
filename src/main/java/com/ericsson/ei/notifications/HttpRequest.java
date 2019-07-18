@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.exception.AuthenticationException;
@@ -37,6 +38,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class HttpRequest {
 
+    @Component
     static class HttpRequestFactory {
         // Used to enable mocking of this class in tests.
         HttpRequest createHttpRequest() {

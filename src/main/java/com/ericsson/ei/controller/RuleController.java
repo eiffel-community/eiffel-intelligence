@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * This class is used for anything rules related. It's currently used to test rules on eiffel events and to fetch the active rules file content. Test rules must be enabled in Eiffel Intelligence for the /rule-check endpoints to work.
+ * This class is used for anything rules related. It's currently used to test rules on Eiffel events and to fetch the active rules file content. Test rules must be enabled in Eiffel Intelligence for the /rule-check endpoints to work.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -22,7 +22,7 @@ public interface RuleController {
 
 
     /**
-     * This method returns the active rules file content.
+     * This method returns the active rules content.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)

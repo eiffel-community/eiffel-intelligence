@@ -215,11 +215,6 @@ public class MergePrepare {
         String stringRule = "";
         JSONObject objectJSONObject = null;
         try {
-            Object mergeRuleType = new JSONTokener(mergeRule).nextValue();
-            if (mergeRuleType instanceof JSONArray) {
-                // This reduces the need of causing an exception and then try the JSONArray merge.
-                return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
-            }
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
             Object ruleJSONObject = new JSONObject(mergeRule);
@@ -228,7 +223,7 @@ public class MergePrepare {
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
         } catch (JSONException e) {
-            LOGGER.error("Failed to parse JSON.", e);
+            LOGGER.warn("Failed to parse JSON.", e);
             return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);

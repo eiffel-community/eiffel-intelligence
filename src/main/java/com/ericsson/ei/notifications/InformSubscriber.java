@@ -82,7 +82,7 @@ public class InformSubscriber {
     @Autowired
     private EmailSender emailSender;
 
-    private HttpRequestFactory httpRequestFactory;
+    private HttpRequestFactory httpRequestFactory = new HttpRequestFactory();
 
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the

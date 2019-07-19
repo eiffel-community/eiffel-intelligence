@@ -44,8 +44,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Represents the notification mechanism and the alternate way to save the
- * aggregatedObject details in the database when the notification fails.
+ * Represents the notification mechanism and the alternate way to save the aggregatedObject details
+ * in the database when the notification fails.
  *
  * @author xjibbal
  */
@@ -119,14 +119,17 @@ public class InformSubscriber {
                 LOGGER.debug("Notification through EMAIL");
                 String subject = subscriptionField.get("emailSubject");
                 String emailBody = String.valueOf((mapNotificationMessage.get("")).get(0));
-                MimeMessage message = emailSender.prepareEmailMessage(notificationMeta, emailBody, subject);
+                MimeMessage message = emailSender.prepareEmailMessage(notificationMeta, emailBody,
+                        subject);
                 emailSender.sendEmail(message);
             }
         } catch (NotificationFailureException | AuthenticationException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String missedNotification = prepareMissedNotification(aggregatedObject,
                     subscriptionName, notificationMeta);
-            LOGGER.debug("Prepared 'missed notification' document : {}", missedNotification);
+            LOGGER.debug(
+                    "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
+                    e.getMessage(), missedNotification);
             mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
                     missedNotificationCollectionName, "Time", ttlValue);
             saveMissedNotificationToDB(missedNotification);

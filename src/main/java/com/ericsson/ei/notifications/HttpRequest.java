@@ -187,7 +187,7 @@ public class HttpRequest {
             return false;
         }
 
-        if (username.equals("") && password.equals("")) {
+        if (username.isEmpty() && password.isEmpty()) {
             LOGGER.error("userName/password field in subscription is missing.");
             return false;
         }

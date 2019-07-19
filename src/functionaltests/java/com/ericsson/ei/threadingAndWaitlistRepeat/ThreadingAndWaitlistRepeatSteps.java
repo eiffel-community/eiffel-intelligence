@@ -28,7 +28,6 @@ import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG", "logging.level.com.ericsson.ei.handlers=DEBUG",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
         "rabbitmq.consumerName: rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer" })

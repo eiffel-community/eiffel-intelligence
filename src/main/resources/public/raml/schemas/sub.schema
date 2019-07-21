@@ -1,72 +1,71 @@
 {
-       "$schema":"http://json-schema.org/draft-04/schema#",
-       "javaType":"com.ericsson.ei.controller.model.Subscription",
-       "definitions":{
-       },
-       "properties":{
-          "aggregationtype":{
-             "type":"string"
-          },
-          "created":{
-             "type":"long"
-          },
-          "notificationMeta":{
-             "type":"string"
-          },
-          "notificationType":{
-             "type":"string"
-          },
-          "restPostBodyMediaType":{
-                       "type":"string"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "javaType": "com.ericsson.ei.controller.model.Subscription",
+    "definitions": {},
+    "properties": {
+        "aggregationtype": {
+            "type": "string"
+        },
+        "created": {
+            "type": "long"
+        },
+        "notificationMeta": {
+            "type": "string"
+        },
+        "notificationType": {
+            "type": "string"
+        },
+        "restPostBodyMediaType": {
+            "type": "string"
+        },
+        "notificationMessageKeyValues": {
+            "items": {
+                "properties": {
+                    "formkey": {
+                        "type": "string"
                     },
-          "notificationMessageKeyValues":{
-                       "items":{
-                              "properties":{
-                                 "formkey":{
-                                    "type":"string"
-                                 },
-                                 "formvalue":{
-                                     "type":"string"
-                                            }
-                              },
-                              "type":"object"
-                           },
-                           "type":"array"
-          },
-          "repeat":{
-             "type":"boolean"
-          },
-          "requirements":{
-             "items":{
-                "properties":{
-                   "conditions":{
-                      "items":{
-                         "properties":{
-                            "jmespath":{
-                               "type":"string"
-                            }
-                         },
-                         "type":"object"
-                      },
-                      "type":"array"
-                   }
+                    "formvalue": {
+                        "type": "string"
+                    }
                 },
-                "type":"object"
-             },
-             "type":"array"
-          },
-          "subscriptionName":{
-             "type":"string"
-          },
-          "userName":{
-             "type":"string"
-          },
-          "password":{
-             "type":"string"
-          },
-          "ldapUserName":{
-             "type":"string"
-          }
-       },
-       "type":"object"
-    }
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "repeat": {
+            "type": "boolean"
+        },
+        "requirements": {
+            "items": {
+                "properties": {
+                    "conditions": {
+                        "items": {
+                            "properties": {
+                                "jmespath": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "subscriptionName": {
+            "type": "string"
+        },
+        "userName": {
+            "type": "string"
+        },
+        "password": {
+            "type": "string"
+        },
+        "ldapUserName": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}

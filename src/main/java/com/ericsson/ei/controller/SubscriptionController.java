@@ -3,7 +3,6 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 import javax.validation.Valid;
-import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides interaction with Subscription resource
+ * Provides REST API for handling subscriptions.
  * (Generated with springmvc-raml-parser v.2.0.4)
  * 
  */
@@ -25,47 +24,47 @@ public interface SubscriptionController {
 
 
     /**
-     * Fetches all subscriptions as list.
+     * This method retrieves all subscriptions from the database.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getSubscriptions();
 
     /**
-     * Takes the subscription rules, the name for subscription and the user name of the person registering this subscription and saves the subscription in subscription database. The name needs to be unique.
+     * This method creates new subscription(s) and saves in the database. The name of a subscription must be unique.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> createSubscription(
+    public ResponseEntity<?> createSubscription(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
-     * Modify existing Subscriptions.
+     * This method modifies existing subscriptions.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> updateSubscriptions(
+    public ResponseEntity<?> updateSubscriptions(
         @Valid
         @RequestBody
         List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
-     * Returns the subscriptions for the given subscription names.
+     * This method returns the subscriptions for the given subscription names.
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
-    public ResponseEntity<GetSubscriptionResponse> getSubscriptionByNames(
+    public ResponseEntity<?> getSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 
     /**
-     * Removes the subscriptions from the database for the given subscription names.
+     * This method removes the subscriptions from the database for the given subscription names.
      * 
      */
     @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
-    public ResponseEntity<List<com.ericsson.ei.controller.model.SubscriptionResponse>> deleteSubscriptionByNames(
+    public ResponseEntity<?> deleteSubscriptionByNames(
         @PathVariable
         String subscriptionNames);
 

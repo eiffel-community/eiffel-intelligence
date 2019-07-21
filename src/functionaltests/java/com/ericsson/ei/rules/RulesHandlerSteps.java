@@ -57,11 +57,12 @@ public class RulesHandlerSteps {
     @Given("^path is made absolute$")
     public void path_is_absolute() {
         rulesPath = new File(rulesPath).getAbsolutePath();
+        rulesPath = rulesPath.replace("\\", "/");
     }
 
     @Given("^path is URI with \"([^\"]*)\" scheme$")
     public void path_is_uri(String scheme) {
-        rulesPath = scheme + "://" + rulesPath;
+        rulesPath = scheme + rulesPath;
     }
 
     @Then("^rules are loaded$")
@@ -79,8 +80,7 @@ public class RulesHandlerSteps {
     }
 
     /**
-     * Create a new instance of RulesHandler using a rules.path
-     * set by the rulesPath variable.
+     * Create a new instance of RulesHandler using a rules.path set by the rulesPath variable.
      *
      * @throws Exception
      */
@@ -100,7 +100,9 @@ public class RulesHandlerSteps {
 
         LOGGER.debug("Setting up endpoints on host '" + HOST + "' and port '" + port + "'");
         mockClient = new MockServerClient(HOST, port);
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE)).respond(response().withStatusCode(201).withBody(BODY));
-        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY)).respond(response().withStatusCode(201).withBody(EMPTY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE))
+                  .respond(response().withStatusCode(201).withBody(BODY));
+        mockClient.when(request().withMethod("GET").withPath(ROUTE_RULES_FILE_EMPTY))
+                  .respond(response().withStatusCode(201).withBody(EMPTY));
     }
 }

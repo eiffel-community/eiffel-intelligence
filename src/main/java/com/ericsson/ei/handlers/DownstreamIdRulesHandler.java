@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class DownstreamIdRulesHandler {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -62,11 +62,7 @@ public class DownstreamIdRulesHandler {
                         downstreamExtractionHandler.runExtraction(rulesObject, id, event, object);
                     }
                     if (objects.size() == 0) {
-                        try {
-                            waitListStorageHandler.addEventToWaitList(event, rulesObject);
-                        } catch (Exception e) {
-                            log.info(e.getMessage(), e);
-                        }
+                        waitListStorageHandler.addEventToWaitList(event, rulesObject);
                     }
                 }
             }
@@ -80,7 +76,7 @@ public class DownstreamIdRulesHandler {
             try {
                 ids = jmesPathInterface.runRuleOnEvent(idRule, event);
             } catch (Exception e) {
-                log.info(e.getMessage(),e);
+                LOGGER.info("Failed to get ID from event.", e);
             }
         }
 

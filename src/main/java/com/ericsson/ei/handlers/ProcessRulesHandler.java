@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class ProcessRulesHandler {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ProcessRulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRulesHandler.class);
 
     @Autowired
     private JmesPathInterface jmespath;
@@ -59,9 +59,7 @@ public class ProcessRulesHandler {
                 processRules = processRules.replace("%IdentifyRules%", id);
             }
 
-            LOGGER.info("processRules: " + processRules);
-            LOGGER.info("aggregationObject: " + aggregationObject);
-            LOGGER.info("event: " + event);
+            LOGGER.info("processRules: {}\n aggregationObject: {}\n event: {}", processRules, aggregationObject, event);
             JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
             return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
         }

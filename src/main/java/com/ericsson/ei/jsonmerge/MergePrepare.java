@@ -45,7 +45,7 @@ public class MergePrepare {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MergePrepare.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MergePrepare.class);
 
     public String getValueFromRule(String mergeRule) {
         String ruleValue = "";
@@ -66,10 +66,8 @@ public class MergePrepare {
                 JSONArray ruleJSONArray = new JSONArray(mergeRule);
                 return getValueFromRule(ruleJSONArray.get(1).toString());
             } catch (Exception ne) {
-                log.info(ne.getMessage(), ne);
+                LOGGER.info("Failed to get value from rule.", ne);
             }
-        } catch (Exception e) {
-            log.info(e.getMessage(), e);
         }
         return ruleValue;
     }
@@ -80,7 +78,7 @@ public class MergePrepare {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             stringRule = ruleJSONObject.toString();
         } catch (JSONException e) {
-            log.info(e.getMessage(), e);
+            LOGGER.info("Failed to parse JSON.", e);
         }
         String flattenRule = JsonFlattener.flatten(stringRule);
         flattenRule = destringify(flattenRule);
@@ -131,8 +129,7 @@ public class MergePrepare {
     // stringObject which are
     // different representations of the same object.
     public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
-        log.debug(" mergeRules are : " + mergeRule);
-        log.debug(" originObject is : " + originObject);
+        LOGGER.debug("mergeRules are : {}\n originObject is : {}", mergeRule, originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
             String firstRule = ruleJSONArray.get(0).toString();
@@ -166,8 +163,8 @@ public class MergePrepare {
                 String finalPath = firstPathTrimmed + "." + ruleKey;
                 return finalPath;
             }
-        } catch (Exception ne) {
-            log.error(ne.getMessage(), ne);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get merge path from merge rules.", e);
         }
         return "";
     }
@@ -200,7 +197,7 @@ public class MergePrepare {
             }
             return resembled;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error("Failed to make JMESPath array indexes.", e);
         }
 
         return path;
@@ -222,9 +219,8 @@ public class MergePrepare {
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
         } catch (JSONException e) {
+            LOGGER.error("Failed to parse JSON.", e);
             return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);
         String flattenRule = JsonFlattener.flatten(stringRule);
@@ -247,14 +243,12 @@ public class MergePrepare {
 
         if (skipPathSearch) {
             int pos = ruleKey.lastIndexOf(".");
-            if (pos > 0)
+            if (pos > 0) {
                 ruleKey = ruleKey.substring(0, pos);
-            try {
-                JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
-                if (!(jsonResult instanceof NullNode))
-                    mergePath = ruleKey;
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
+            }
+            JsonNode jsonResult = jmesPathInterface.runRuleOnEvent(ruleKey, originObject);
+            if (!(jsonResult instanceof NullNode)) {
+                mergePath = ruleKey;
             }
         } else {
             for (Map.Entry<String, Object> entry : flattenJson.entrySet()) {
@@ -338,7 +332,7 @@ public class MergePrepare {
                     mergePath = mergePath.replaceFirst("\\/", "");
                     mergePath = mergePath.replaceAll("\\/", "\\.");
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
+                    LOGGER.error("Failed to parse JSON.", e);
                 }
             }
         }
@@ -348,7 +342,7 @@ public class MergePrepare {
     /**
      * This method can not be generalized since it removes the last element in the
      * path before doing the check.
-     * 
+     *
      * @param originObject
      * @param path
      * @param targetObject
@@ -366,7 +360,7 @@ public class MergePrepare {
     /**
      * This method can not be generalized since it removes the last element in the
      * path before doing the check.
-     * 
+     *
      * @param originObject
      * @param path
      * @param targetObject
@@ -390,7 +384,7 @@ public class MergePrepare {
             }
             return jsonResult.get(firstKey);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error("Failed to get property value.", e);
         }
 
         return null;
@@ -441,12 +435,12 @@ public class MergePrepare {
                 }
             }
         } catch (Exception e) {
-            String msg = "addMissingLevels failed for arguments:\n";
-            msg += "originObject was : " + originObject + "\n";
-            msg += "objectTomerge was: " + objectToMerge + "\n";
-            msg += "mergeRule was: " + mergeRule + "\n";
-            msg += "mergePath was: " + mergePath + "\n";
-            log.error(msg, e);
+            LOGGER.error("addMissingLevels failed for arguments:\n"
+        	    	+ "originObject was : {}\n"
+        	    	+ "objectTomerge was: {}\n"
+        	    	+ "mergeRule was: {}\n"
+        	    	+ "mergePath was: {}\n",
+        	    	originObject, objectToMerge, mergeRule, mergePath, e);
         }
         return newObject.toString();
     }
@@ -481,7 +475,7 @@ public class MergePrepare {
                 return size;
             }
         } catch (JSONException e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error("Failed to get object array size.", e);
         }
 
         return size;

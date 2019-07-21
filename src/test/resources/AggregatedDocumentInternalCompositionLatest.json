@@ -69,7 +69,7 @@
                                           ]
                                        }
                                        ]
-                                       }                                       
+                                       }
                                     ]
                                  }
                               ],
@@ -79,7 +79,7 @@
                         ]
                      },
                      "id":"1100572b-c3j4-441e-abc9-b62f48080011",
-                     "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"                     
+                     "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
                   },
                   {
                      "fileInformation":[

@@ -103,7 +103,7 @@
       "type": "CAUSE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelAnnouncementPublishedEvent": {
    "meta": {
@@ -127,10 +127,10 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ] 
+  ]
   },
   "": {
-    
+
   },
   "EiffelArtifactCreatedEvent": {
    "meta": {
@@ -183,7 +183,7 @@
       "type": "ENVIRONMENT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
     }
-  ] 
+  ]
   },
   "EiffelArtifactPublishedEvent": {
    "meta": {
@@ -219,7 +219,7 @@
       "type": "ARTIFACT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ] 
+  ]
   },
   "EiffelArtifactReusedEvent": {
    "meta": {
@@ -252,7 +252,7 @@
       "type": "COMPOSITION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee3"
     }
-  ] 
+  ]
   },
   "EiffelCompositionDefinedEvent": {
    "meta": {
@@ -286,7 +286,7 @@
       "type": "PREVIOUS_VERSION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ] 
+  ]
   },
   "EiffelConfidenceLevelModifiedEvent": {
    "meta": {
@@ -330,7 +330,7 @@
       "type": "SUB_CONFIDENCE_LEVEL",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee6"
     }
-  ] 
+  ]
   },
   "EiffelEnvironmentDefinedEvent": {
     "meta": {
@@ -349,7 +349,7 @@
       "type": "PREVIOUS_VERSION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelFlowContextDefinedEvent": {
    "meta": {
@@ -366,7 +366,7 @@
     "version": "4.3.0"
   },
   "links": [
-  ] 
+  ]
   },
   "EiffelIssueVerifiedEvent": {
    "meta": {
@@ -403,7 +403,7 @@
       "type": "ENVIRONMENT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
     }
-  ] 
+  ]
   },
   "EiffelSourceChangeCreatedEvent": {
    "meta": {
@@ -460,7 +460,7 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
     }
-  ] 
+  ]
   },
   "EiffelSourceChangeSubmittedEvent": {
    "meta": {
@@ -492,7 +492,7 @@
       "type": "PREVIOUS_VERSION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ] 
+  ]
   },
   "EiffelTestCaseCanceledEvent": {
    "meta": {
@@ -513,7 +513,7 @@
       "type": "TEST_CASE_EXECUTION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ] 
+  ]
   },
   "EiffelTestCaseFinishedEvent": {
    "meta": {
@@ -558,7 +558,7 @@
       "type": "TEST_CASE_EXECUTION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelTestCaseStartedEvent": {
    "meta": {
@@ -581,7 +581,7 @@
       "type": "ENVIRONMENT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelTestCaseTriggeredEvent": {
    "meta": {
@@ -627,7 +627,7 @@
       "type": "IUT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ] 
+  ]
   },
   "EiffelTestExecutionRecipeCollectionCreatedEvent": {
    "meta": {
@@ -653,7 +653,7 @@
       "type": "CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelTestSuiteFinishedEvent": {
    "meta": {
@@ -684,7 +684,7 @@
       "type": "TEST_SUITE_EXECUTION",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelTestSuiteStartedEvent": {
    "meta": {
@@ -714,7 +714,7 @@
       "type": "CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
     }
-  ] 
+  ]
   },
   "EiffelArtifactDeployedEvent": {
     "meta": {
@@ -746,9 +746,9 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
     }
-    
-  ]   
-    
+
+  ]
+
 
   },
   "EiffelServiceAllocatedEvent": {
@@ -775,7 +775,7 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee4"
     }
-  ]    
+  ]
 
   },
   "EiffelServiceDeployedEvent": {
@@ -813,7 +813,7 @@
       "type": "SERVICE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ]    
+  ]
 
   },
   "EiffelServiceDiscontinuedEvent": {
@@ -842,7 +842,7 @@
       "type": "SERVICE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ]    
+  ]
 
   },
   "EiffelServiceReturnedEvent": {
@@ -854,8 +854,8 @@
     "source": {
             "domainId":"domain"
      }
-  }, 
-  "data": {   
+  },
+  "data": {
   },
   "links": [
      {
@@ -870,7 +870,7 @@
       "type": "SERVICE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ]    
+  ]
 
   },
   "EiffelServiceStartedEvent": {
@@ -883,8 +883,8 @@
             "domainId":"domain"
      }
   },
-  "data": {    
-    "pid": "10401"    
+  "data": {
+    "pid": "10401"
   },
   "links": [
     {
@@ -899,7 +899,7 @@
       "type": "SERVICE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ]    
+  ]
 
   },
   "EiffelServiceStoppedEvent": {
@@ -912,7 +912,7 @@
             "domainId":"domain"
      }
   },
-  "data": {    
+  "data": {
   },
   "links": [
      {
@@ -927,7 +927,7 @@
       "type": "SERVICE",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee5"
     }
-  ]    
+  ]
 
   },
   "EiffelAlertAcknowledgedEvent": {
@@ -957,7 +957,7 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ]    
+  ]
 
   },
   "EiffelAlertCeasedEvent": {
@@ -986,7 +986,7 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ]    
+  ]
 
   },
   "EiffelAlertRaisedEvent": {
@@ -1015,8 +1015,8 @@
       "type": "FLOW_CONTEXT",
       "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee2"
     }
-  ]    
+  ]
 
   }
-  
+
 }

@@ -65,6 +65,6 @@
           "ldapUserName":{
              "type":"string"
           }
-       },       
+       },
        "required": ["notificationMeta", "notificationType", "subscriptionName", "requirements"]
  }

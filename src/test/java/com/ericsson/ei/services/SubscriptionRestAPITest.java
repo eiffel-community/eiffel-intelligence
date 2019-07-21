@@ -250,10 +250,10 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONArray notFoundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(NOT_FOUND_SUBSCRIPTIONS_ARRAY);
+        String errorMessage = new JSONObject(result.getResponse().getContentAsString()).getString("message");
 
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
-        assertEquals("Subscription_Test_Not_Found", notFoundSubscriptions.get(0).toString());
+        assertEquals(true, errorMessage.contains("Subscription_Test_Not_Found"));
     }
 
     @Test

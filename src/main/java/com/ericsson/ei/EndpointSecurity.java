@@ -33,27 +33,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
-    
-    private static Logger LOGGER = (Logger) LoggerFactory.getLogger(EndpointSecurity.class);
-    
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EndpointSecurity.class);
+
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
-    
+
     @Value("${ldap.url}")
     private String ldapUrl;
-    
+
     @Value("${ldap.base.dn}")
     private String ldapBaseDn;
-    
+
     @Value("${ldap.username}")
     private String ldapUsername;
-    
+
     @Value("${ldap.password}")
     private String ldapPassword;
-    
+
     @Value("${ldap.user.filter}")
     private String ldapUserFilter;
-    
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         if(ldapEnabled) {
@@ -96,7 +96,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                     .managerPassword(decodeBase64(ldapPassword));
         }
     }
-    
+
     private String decodeBase64(String password) {
         return StringUtils.newStringUtf8(Base64.decodeBase64(password));
     }

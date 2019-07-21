@@ -46,7 +46,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     @Before("@ThreadingAndWaitlistRepeatScenario")
     public void beforeScenario() throws IOException {
         tempLogFile = File.createTempFile("logfile", ".tmp");
-        tempLogFile.deleteOnExit(); 
+        tempLogFile.deleteOnExit();
         System.setOut(new PrintStream(tempLogFile));
     }
 
@@ -76,7 +76,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
 
         for (String line : lines) {
-            Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT\\] id:([a-zA-Z\\d-]+)");
+            Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT\\] id: ([a-zA-Z\\d-]+)");
             Matcher matcher = pattern.matcher(line);
             if (matcher.find() && !matcher.group(1).equals("")) {
                 if (!resentEvents.contains(matcher.group(1))) {
@@ -84,7 +84,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
                 }
             }
         }
-        assertEquals(resentEvents.size(), getEventNamesToSend().size());
+        assertEquals(getEventNamesToSend().size(), resentEvents.size());
     }
 
     @Then("^correct amount of threads should be spawned$")

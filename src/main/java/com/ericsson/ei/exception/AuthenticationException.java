@@ -14,24 +14,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.controller;
+package com.ericsson.ei.exception;
 
-import io.swagger.annotations.ApiOperation;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+public class AuthenticationException extends Exception {
 
-/**
-*
-* This class redirects the EI root URL to swagger landing page
-*
-*/
-@Controller
-public class EIHomeController {
+    private static final long serialVersionUID = 2L;
 
-    @ApiOperation(value="", hidden = true)
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String home() {
-        return "redirect:/swagger-ui.html";
+    public AuthenticationException() {
+        super();
     }
+
+    public AuthenticationException(String message) {
+        super(message);
+    }
+
+    public AuthenticationException(String message, Throwable e) {
+        super(message, e);
+    }
+
 }

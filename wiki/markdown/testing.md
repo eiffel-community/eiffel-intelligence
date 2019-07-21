@@ -1,7 +1,7 @@
 # Running Tests
 
-Eiffel Intelligence backend has unit tests, functional tests and at the moment 
-of writing this a system tests. This page is intended for developers used with 
+Eiffel Intelligence backend has unit tests, functional tests and at the moment
+of writing this a system tests. This page is intended for developers used with
 Maven so we assume the reader has some knowledge about Java development with Maven.
 
 ## Running unit tests and functional tests
@@ -24,22 +24,22 @@ To exclude some tests and run all the others:
 
 ## Running integration test
 
-To run the integration test an instance of RabbitMQ, MongoDB and Event 
-Repository must be up, running and accessible from the machine where the test 
+To run the integration test an instance of RabbitMQ, MongoDB and Event
+Repository must be up, running and accessible from the machine where the test
 is started, often localhost.
 
-The default port for: 
+The default port for:
 
     RabbitMQ is 5672
     MongoDB is 27017
     EventRepository is 8080
 
-If the above applications are started at the default ports then the system test 
+If the above applications are started at the default ports then the system test
 can be started with.
 
     mvn verify -DskipUnitTests
 
-If the ports above are different then you need to pass them as java options to 
+If the ports above are different then you need to pass them as java options to
 maven and eventually the host to the instances if they are not started on localhost
 
     mvn verify -DskipUnitTests -Drabbitmq.host=<rabbitmq host if other than localhost> -Drabbitmq.port=<rabbitMq Port> -Dspring.data.mongodb.port=<mongodb port> -Dspring.data.mongodb.host=<mongodb host if other than localhost> -Der.url=<url to search endpoint of ER instance>

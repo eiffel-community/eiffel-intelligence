@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
+import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.slf4j.Logger;
@@ -43,42 +44,57 @@ public class HttpRequestSender {
     }
 
     /**
-     * This method is responsible to notify the subscriber through REST POST
-     * with raw body and form parameters.
+     * This method is responsible to notify the subscriber through REST POST with raw body and form
+     * parameters.
      *
-     * @param notificationMeta
-     *     A String containing the URL to send request to
-     * @param mapNotificationMessage
-     *     Contains the body of the HTTP request
+     * @param notificationMeta       A String containing the URL to send request to
+     * @param mapNotificationMessage Contains the body of the HTTP request
      * @param headers
      * @return boolean success of the request
+     * @throws AuthenticationException
      */
-    public boolean postDataMultiValue(String notificationMeta, MultiValueMap<String, String> mapNotificationMessage,
-            HttpHeaders headers) {
+    public boolean postDataMultiValue(String notificationMeta,
+            MultiValueMap<String, String> mapNotificationMessage,
+            HttpHeaders headers) throws AuthenticationException {
         ResponseEntity<JsonNode> response;
 
         try {
+            LOGGER.info("Performing HTTP request to url: {}", notificationMeta);
             boolean isApplicationXWwwFormUrlEncoded = headers.getContentType()
-                    .equals(MediaType.APPLICATION_FORM_URLENCODED);
+                                                             .equals(MediaType.APPLICATION_FORM_URLENCODED);
             if (isApplicationXWwwFormUrlEncoded) {
-                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapNotificationMessage, headers);
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(
+                        mapNotificationMessage, headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             } else {
-                HttpEntity<String> request = new HttpEntity<>(String.valueOf((mapNotificationMessage.get("")).get(0)),
+                HttpEntity<String> request = new HttpEntity<>(
+                        String.valueOf((mapNotificationMessage.get("")).get(0)),
                         headers);
                 response = rest.postForEntity(notificationMeta, request, JsonNode.class);
             }
 
         } catch (HttpClientErrorException e) {
-            LOGGER.error("HTTP-request failed, bad request!\n When trying to connect to URL: " + notificationMeta
-                    + "\n " + e.getMessage());
+            boolean unauthorizedRequest = e.getStatusCode() == HttpStatus.UNAUTHORIZED;
+            boolean badRequestForbidden = e.getStatusCode() == HttpStatus.FORBIDDEN;
+            if (unauthorizedRequest || badRequestForbidden) {
+                String message = String.format("Failed to perform HTTP request due to '%s'."
+                        + "\nEnsure that you use correct authenticationType, username and password."
+                        + "\nDue to authentication error EI will not perform retries.",
+                        e.getMessage());
+                LOGGER.error(message, e);
+                throw new AuthenticationException(message, e);
+            }
+            LOGGER.error(
+                    "HTTP request failed, bad request! When trying to connect to URL: {}\n{}\n{}",
+                    notificationMeta, e.getMessage(), e);
             return false;
         } catch (HttpServerErrorException e) {
-            LOGGER.error("HTTP-request failed, internal server error!\n When trying to connect to URL: "
-                    + notificationMeta + "\n " + e.getMessage());
+            LOGGER.error(
+                    "HTTP request failed, internal server error!\n When trying to connect to URL: {}\n{}\n{}",
+                    notificationMeta, e.getMessage(), e);
             return false;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("HTTP request failed when trying to connect to URL: {}", notificationMeta, e);
             return false;
         }
 
@@ -88,16 +104,16 @@ public class HttpRequestSender {
 
         JsonNode body = response.getBody();
         if (httpStatusSuccess) {
-            LOGGER.debug("The response status code [" + status + "] and Body: " + body);
+            LOGGER.debug("The response status code [{}] and body: {}",status, body);
         } else {
-            LOGGER.debug("POST call failed with status code [" + status + "] and Body: " + body);
+            LOGGER.debug("POST request failed with status code [{}] and body: {}",status, body);
         }
         return httpStatusSuccess;
     }
 
     /**
-     * This method performs a get request to given url and with given headers,
-     * then returns the result as a ResponseEntity<JsonNode>.
+     * This method performs a get request to given url and with given headers, then returns the
+     * result as a ResponseEntity<JsonNode>.
      *
      * @param url
      * @param headers
@@ -105,11 +121,8 @@ public class HttpRequestSender {
      */
     public ResponseEntity<JsonNode> makeGetRequest(String url, HttpHeaders headers) {
         HttpEntity<String> request = new HttpEntity<>(headers);
-        try {
-            ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request, JsonNode.class);
-            return response;
-        } catch (Exception e) {
-            return null;
-        }
+        ResponseEntity<JsonNode> response = rest.exchange(url, HttpMethod.GET, request,
+                JsonNode.class);
+        return response;
     }
 }

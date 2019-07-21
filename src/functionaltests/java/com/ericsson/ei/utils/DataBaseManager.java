@@ -153,7 +153,7 @@ public class DataBaseManager {
 
     /**
      * Retrieve a value from a database query result
-     * 
+     *
      * @param key
      * @param index
      * @return String value matching the given key

@@ -26,6 +26,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.ericsson.ei.utils.ResponseMessage;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -35,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "Auth", description = "REST endpoints for authentication and authorization")
+@Api(value = "Auth", tags = {"Authentication"})
 public class AuthControllerImpl implements AuthController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthControllerImpl.class);
@@ -50,9 +52,10 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to check if security is enabled. Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to check if security is enabled.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,9 +67,10 @@ public class AuthControllerImpl implements AuthController {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to log in user. Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to log in user.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -77,9 +81,10 @@ public class AuthControllerImpl implements AuthController {
         try {
             return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Failed to check backend status. Error message:\n" + e.getMessage();
+            String errorMessage = "Internal Server Error: Failed to check backend status.";
             LOGGER.error(errorMessage, e);
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

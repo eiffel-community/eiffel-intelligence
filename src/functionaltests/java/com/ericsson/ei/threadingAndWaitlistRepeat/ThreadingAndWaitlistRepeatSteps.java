@@ -30,7 +30,8 @@ import cucumber.api.java.en.Then;
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer" })
+        "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer",
+        "logging.level.com.ericsson.ei.waitlist=DEBUG", "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })
 
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {

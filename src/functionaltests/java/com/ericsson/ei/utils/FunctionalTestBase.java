@@ -50,7 +50,6 @@ public class FunctionalTestBase extends AbstractTestExecutionListener {
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         // Before running test.
-        int i = 0;
     }
 
     @Override

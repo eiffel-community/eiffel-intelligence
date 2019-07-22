@@ -90,7 +90,6 @@ public class RulesHandlerSteps {
      */
     private void initializeRulesHandler() throws Exception {
         LOGGER.debug("Rules Path: " + rulesPath);
-//        System.setProperty("rules.path", rulesPath);
         rulesHandler = new RulesHandler();
         rulesHandler.setRulesFilePath(rulesPath);
         rulesHandler.init();

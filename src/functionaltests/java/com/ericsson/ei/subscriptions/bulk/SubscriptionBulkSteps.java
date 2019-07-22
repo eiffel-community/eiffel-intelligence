@@ -25,7 +25,8 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionBulkSteps",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionBulkStepsConsumer" })
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
+        "logging.level.com.ericsson.ei.subscriptions.bulk=OFF" })
 public class SubscriptionBulkSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources";
@@ -48,13 +49,9 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
     public void make_a_POST_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint)
             throws Throwable {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        response = postRequest.setHost(hostName)
-                              .setPort(port)
-                              .setEndpoint(endpoint)
-                              .addHeader("content-type", "application/json")
-                              .addHeader("Accept", "application/json")
-                              .setBody(subscriptions.toString())
-                              .performRequest();
+        response = postRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
+                .setBody(subscriptions.toString()).performRequest();
     }
 
     @When("^make a GET request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
@@ -62,11 +59,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setHost(hostName)
-                             .setPort(port)
-                             .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                             .addHeader("Accept", "application/json")
-                             .performRequest();
+        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "/" + subscriptionsNamesList)
+                .addHeader("Accept", "application/json").performRequest();
     }
 
     @When("^make a DELETE request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
@@ -74,11 +68,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest deleteRequest = new HttpRequest(HttpMethod.DELETE);
-        response = deleteRequest.setHost(hostName)
-                                .setPort(port)
-                                .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                                .addHeader("Accept", "application/json")
-                                .performRequest();
+        response = deleteRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "/" + subscriptionsNamesList)
+                .addHeader("Accept", "application/json").performRequest();
     }
 
     @When("^make a PUT request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
@@ -86,13 +77,9 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             throws Throwable {
 
         HttpRequest putRequest = new HttpRequest(HttpMethod.PUT);
-        response = putRequest.setHost(hostName)
-                             .setPort(port)
-                             .setEndpoint(endpoint)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                             .setBody(subscriptions.toString())
-                             .performRequest();
+        response = putRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
+                .setBody(subscriptions.toString()).performRequest();
     }
 
     @Then("^get response code of (\\d+)$")
@@ -129,11 +116,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             throws Throwable {
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setHost(hostName)
-                             .setPort(port)
-                             .setEndpoint(endpoint)
-                             .addHeader("Accept", "application/json")
-                             .performRequest();
+        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("Accept", "application/json").performRequest();
         retrievedSubscriptions = new JSONArray(response.getBody().toString());
         assertEquals(subscriptionsNumber, retrievedSubscriptions.length());
     }

@@ -145,7 +145,6 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
         @Override
         @SuppressWarnings("unchecked")
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            // try {
             PropertySource ps = new MapPropertySource("spring.data.mongodb.database",
                     Collections.singletonMap("spring.data.mongodb.database", "ScalingAndFailoverSteps"));
             configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps);

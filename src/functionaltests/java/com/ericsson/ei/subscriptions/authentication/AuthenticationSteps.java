@@ -99,7 +99,6 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @When("^request is sent$")
     public void request_sent() throws Throwable {
         response = httpRequest.performRequest();
-        int debg = 0;
     }
 
     @When("^authentication token is attached$")

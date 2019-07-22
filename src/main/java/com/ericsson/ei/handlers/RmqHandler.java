@@ -116,7 +116,6 @@ public class RmqHandler {
 
     @Getter
     private SimpleMessageListenerContainer container;
-//    private SimpleMessageListenerContainer waitlistContainer;
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -215,7 +214,6 @@ public class RmqHandler {
 
     public void close() {
         try {
-//            waitlistContainer.destroy();
             container.destroy();
             cachingConnectionFactory.destroy();
         } catch (Exception e) {

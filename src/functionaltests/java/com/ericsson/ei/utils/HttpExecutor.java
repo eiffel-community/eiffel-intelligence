@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-
 public final class HttpExecutor {
 
     private static HttpExecutor instance;
@@ -27,7 +26,6 @@ public final class HttpExecutor {
     }
 
     public static HttpExecutor getInstance() {
-        // return new HttpExecutor();
         if (instance == null) {
             instance = new HttpExecutor();
         }
@@ -53,23 +51,24 @@ public final class HttpExecutor {
 
     /**
      * Handle the response from a HTTP request
+     *
      * @param request
-     *      A HTTP request method, e.g. httpGet, httpPost
-     * @return ResponseEntity
-     *      containing the json content of the http response and status code from request
-     * */
+     *            A HTTP request method, e.g. httpGet, httpPost
+     * @return ResponseEntity containing the json content of the http response and
+     *         status code from request
+     */
     public ResponseEntity<String> executeRequest(HttpRequestBase request) {
         int statusCode = HttpStatus.PROCESSING.value();
         String jsonContent = "";
         Header[] headers = null;
 
-        try(CloseableHttpResponse httpResponse = client.execute(request)) {
-            if(httpResponse.getEntity() != null) {
+        try (CloseableHttpResponse httpResponse = client.execute(request)) {
+            if (httpResponse.getEntity() != null) {
                 jsonContent = EntityUtils.toString(httpResponse.getEntity(), "utf-8");
             }
             statusCode = httpResponse.getStatusLine().getStatusCode();
             headers = httpResponse.getAllHeaders();
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
 

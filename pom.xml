@@ -29,7 +29,7 @@
         <springLdapVersion>2.3.2.RELEASE</springLdapVersion>
         <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
         <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
-        <forkCountTests>2C</forkCountTests>
+        <forkCountTests>1</forkCountTests>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -477,12 +477,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>2.22.2</version>
                 <configuration>
                     <skipTests>${skipUTs}</skipTests>
                     <forkCountTests>${forkCountTests}</forkCountTests>
                     <forkCount>${forkCountTests}</forkCount>
-                    <reuseForks>false</reuseForks>
+                    <reuseForks>true</reuseForks>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                         <exclude>${someModule.test.excludes}</exclude>
@@ -491,6 +491,8 @@
                     <includes>
                         <include>${someModule.test.includes}</include>
                     </includes>
+                    <parallel>classes</parallel>
+                    <threadCount>5</threadCount>
                 </configuration>
             </plugin>
 

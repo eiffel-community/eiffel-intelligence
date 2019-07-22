@@ -1,5 +1,19 @@
 package com.ericsson.ei.subscriptions.authentication;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.json.JSONObject;
+import org.junit.Ignore;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpExecutor;
@@ -12,20 +26,13 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.json.JSONObject;
-import org.junit.Ignore;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: AuthenticationSteps",
+        "rabbitmq.exchange.name: AuthenticationSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: AuthenticationStepsConsumer", "ldap.enabled: true",
+        "ldap.url: ldap://ldap.forumsys.com:389/dc=example,dc=com", "ldap.base.dn: dc=example,dc=com",
+        "ldap.username : cn=read-only-admin,dc=example,dc=com", "ldap.user.filter: uid={0}" })
 @ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
 
@@ -53,9 +60,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Before("@RESTWithTokenId")
     public void beforeScenarioSecond() {
-        client_is_replaced();
     }
-
 
     @Given("^LDAP is activated$")
     public void ldap_is_activated() throws Throwable {
@@ -133,7 +138,9 @@ public class AuthenticationSteps extends FunctionalTestBase {
 
     @Then("^client is replaced$")
     public void client_is_replaced() {
-        HttpExecutor.getInstance().recreateHttpClient();
+        if (httpRequest != null) {
+            HttpExecutor executor = new HttpExecutor();
+            httpRequest.setExecutor(executor);
+        }
     }
-
 }

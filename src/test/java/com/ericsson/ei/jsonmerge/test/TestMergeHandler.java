@@ -16,31 +16,31 @@
 */
 package com.ericsson.ei.jsonmerge.test;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.jsonmerge.MergeHandler;
-import com.ericsson.ei.jsonmerge.MergePrepare;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.jsonmerge.MergeHandler;
+import com.ericsson.ei.jsonmerge.MergePrepare;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(Parameterized.class)
 public class TestMergeHandler {
@@ -54,7 +54,7 @@ public class TestMergeHandler {
 	public String preparedObject;
 	public String mergeObjectResult;
 
-	static Logger log = (Logger) LoggerFactory.getLogger(TestMergeHandler.class);
+	static Logger log = LoggerFactory.getLogger(TestMergeHandler.class);
 
 	public TestMergeHandler(String rule, String id, String updatedRule, String event, String aggregatedObject,
 			String objectToMerge, String preparedObject, String mergeObjectResult) {
@@ -78,7 +78,7 @@ public class TestMergeHandler {
 		MergeHandler mergeHandlerObject = new MergeHandler();
 		// TODO read marker from application.properties
 		mergeHandlerObject.setMergeIdMarker("%IdentifyRules%");
-		String result = (String) mergeHandlerObject.replaceIdMarkerInRules(rule, id);
+		String result = mergeHandlerObject.replaceIdMarkerInRules(rule, id);
 		assertEquals(updatedRule, result);
 	}
 

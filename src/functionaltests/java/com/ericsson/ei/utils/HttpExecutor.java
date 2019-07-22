@@ -1,5 +1,7 @@
 package com.ericsson.ei.utils;
 
+import java.io.IOException;
+
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -13,21 +15,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.IOException;
-
-
 public final class HttpExecutor {
 
     private static HttpExecutor instance;
     private CloseableHttpClient client = HttpClientBuilder.create().build();
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpExecutor.class);
 
-    private HttpExecutor() {
+    public HttpExecutor() {
 
     }
 
     public static HttpExecutor getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new HttpExecutor();
         }
 
@@ -52,23 +51,24 @@ public final class HttpExecutor {
 
     /**
      * Handle the response from a HTTP request
+     *
      * @param request
-     *      A HTTP request method, e.g. httpGet, httpPost
-     * @return ResponseEntity
-     *      containing the json content of the http response and status code from request
-     * */
+     *            A HTTP request method, e.g. httpGet, httpPost
+     * @return ResponseEntity containing the json content of the http response and
+     *         status code from request
+     */
     public ResponseEntity<String> executeRequest(HttpRequestBase request) {
         int statusCode = HttpStatus.PROCESSING.value();
         String jsonContent = "";
         Header[] headers = null;
 
-        try(CloseableHttpResponse httpResponse = client.execute(request)) {
-            if(httpResponse.getEntity() != null) {
+        try (CloseableHttpResponse httpResponse = client.execute(request)) {
+            if (httpResponse.getEntity() != null) {
                 jsonContent = EntityUtils.toString(httpResponse.getEntity(), "utf-8");
             }
             statusCode = httpResponse.getStatusLine().getStatusCode();
             headers = httpResponse.getAllHeaders();
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
 

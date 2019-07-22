@@ -20,7 +20,7 @@ import lombok.Getter;
 
 @Component
 public class DataBaseManager {
-
+    
     @Value("${spring.data.mongodb.database}")
     private String database;
 
@@ -33,6 +33,7 @@ public class DataBaseManager {
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
 
+    @Getter
     @Autowired
     private MongoProperties mongoProperties;
 
@@ -117,8 +118,8 @@ public class DataBaseManager {
      * @return list of missing events
      * @throws InterruptedException
      */
-    public List<String> verifyEventsInDB(List<String> eventsIdList) throws InterruptedException {
-        long stopTime = System.currentTimeMillis() + 30000;
+    public List<String> verifyEventsInDB(List<String> eventsIdList, int extraCheckDelay) throws InterruptedException {
+        long stopTime = System.currentTimeMillis() + 30000 + extraCheckDelay;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
             if (eventsIdList.isEmpty()) {

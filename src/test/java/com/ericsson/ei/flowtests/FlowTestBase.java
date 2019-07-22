@@ -15,7 +15,6 @@ package com.ericsson.ei.flowtests;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +23,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
-import org.junit.After;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
@@ -35,9 +33,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,8 +76,6 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static HashMap<String, FlowTestConfigs> configsMap = new HashMap<String, FlowTestConfigs>();
-
     @Value("${systemTest:false}")
     protected boolean systemTest;
 
@@ -88,37 +85,17 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         Boolean systemTestValue = Boolean.parseBoolean(systemTestProperty);
         if (!systemTestValue) {
             System.setProperty("flow.test", "true");
-            createFlowTestConfigs();
-            getFlowTestConfigs().init();
         }
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         LOGGER.info("System Test is: " + systemTest);
         if (!systemTest) {
-            mongoDBHandler.setMongoClient(getFlowTestConfigs().getMongoClient());
+            mongoDBHandler.setMongoClient(TestConfigs.mongoClientInstance());
+            LOGGER.info("MongoDB db is: " + mongoDBHandler.getMongoProperties().getDatabase());
             waitlist.setMongoDbHandler(mongoDBHandler);
         }
-    }
-
-    @After
-    public void teardown() {
-        if (!systemTest) {
-            mongoDBHandler.setMongoClient(null);
-            getFlowTestConfigs().tearDown();
-            cleanFlowTestConfigs();
-        }
-    }
-
-    protected FlowTestConfigs getFlowTestConfigs() {
-        return configsMap.get(getClassName());
-    }
-
-    private void createFlowTestConfigs() {
-        FlowTestConfigs newConfigs = new FlowTestConfigs();
-        String className = getClassName();
-        configsMap.put(className, newConfigs);
     }
 
     private String getClassName() {
@@ -126,7 +103,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     private void cleanFlowTestConfigs() {
-        configsMap.remove(getClassName());
+        String dbName = System.getProperty("spring.data.mongodb.database");
     }
 
     // setFirstEventWaitTime: variable to set the wait time after publishing the
@@ -151,19 +128,15 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     @Test
-    public void flowTest() throws InterruptedException {
+    public void flowTest() throws Exception {
         try {
             String queueName = rmqHandler.getQueueName();
-            Channel channel = null;
-            if (!systemTest) {
-                channel = getFlowTestConfigs().getConn().createChannel();
-            } else {
+            Channel channel = TestConfigs.getConn().createChannel();
+            if (channel == null) {
                 channel = connectionFactory.createConnection().createChannel(true);
             }
-            String exchangeName = "ei-poc-4";
-            if (!systemTest) {
-                getFlowTestConfigs().createExchange(exchangeName, queueName);
-            }
+
+            String exchangeName = rmqHandler.getExchangeName();
 
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
@@ -220,10 +193,10 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     // count documents that were processed
-    private long countProcessedEvents(String database, String collection) {
+    private long countProcessedEvents(String database, String collection) throws Exception {
         MongoClient mongoClient = null;
         if (!systemTest) {
-            mongoClient = getFlowTestConfigs().getMongoClient();
+            mongoClient = TestConfigs.mongoClientInstance();
         } else {
             mongoClient = mongoDBHandler.getMongoClient();
         }
@@ -232,7 +205,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
         return table.count();
     }
 
-    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws Exception {
         // wait for all events to be processed
         long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;

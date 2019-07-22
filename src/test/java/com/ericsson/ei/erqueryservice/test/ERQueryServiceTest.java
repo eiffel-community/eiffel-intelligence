@@ -24,7 +24,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,7 +31,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -41,10 +40,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,11 +53,15 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.erqueryservice.SearchParameters;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: ERQueryServiceTest",
+        "rabbitmq.exchange.name: ERQueryServiceTest-exchange", "rabbitmq.consumerName: ERQueryServiceTest",
+        "er.url: http://localhost:8080/eventrepository/search/" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class, EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-})
+@SpringBootTest(classes = { App.class })
 public class ERQueryServiceTest {
 
     @Autowired
@@ -72,13 +76,6 @@ public class ERQueryServiceTest {
     private int levels = 2;
     private boolean isTree = true;
 
-    @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
-        System.setProperty("er.url", "http://localhost:8080/eventrepository/search/");
-    }
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -89,8 +86,8 @@ public class ERQueryServiceTest {
         erQueryService.setRest(rest);
         searchOption = SearchOption.UP_STREAM;
         given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-                Mockito.any(Class.class)))
-                        .willAnswer(returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
+                Mockito.any(Class.class))).willAnswer(
+                        returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
                                 Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
         ResponseEntity<JsonNode> result = erQueryService.getEventStreamDataById(eventId, searchOption, limitParam,
                 levels, isTree);
@@ -112,16 +109,12 @@ public class ERQueryServiceTest {
 
     public String buildUri() {
         String uri = "";
-        // example uri
-        // http://localhost:8080/eventrepository/search/01?limit=85&levels=2&tree=true
         uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree="
                 + isTree;
         return uri;
     }
 
     public void assertBody(SearchParameters body) {
-        // example body
-        // {"ult":["ALL"]}
         assertNotNull(body);
         boolean searchActionIsRight = false;
         if (searchOption == SearchOption.DOWN_STREAM) {

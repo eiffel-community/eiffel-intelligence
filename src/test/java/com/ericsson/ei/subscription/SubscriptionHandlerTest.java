@@ -27,11 +27,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,11 +37,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,16 +54,17 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionHandlerTest",
+        "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange", "rabbitmq.consumerName: SubscriptionHandlerTest",
+        "notification.ttl.value: 1", "missedNotificationDataBaseName: SubscriptionHandlerTestMissedNotification" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
@@ -75,7 +76,7 @@ public class SubscriptionHandlerTest {
     private static final String subscriptionPath = "src/test/resources/SubscriptionObject.json";
     private static final String artifactRequirementSubscriptionPath = "src/test/resources/artifactRequirementSubscription.json";
     private static final String subscriptionPathForAuthorization = "src/test/resources/SubscriptionObjectForAuthorization.json";
-    private static final String dbName = "MissedNotification";
+    private static final String dbName = "SubscriptionHandlerTestMissedNotification";
     private static final String collectionName = "Notification";
     private static final String regex = "^\"|\"$";
     private static final String missedNotificationUrl = "/queryMissedNotifications";
@@ -91,8 +92,6 @@ public class SubscriptionHandlerTest {
     private static String subscriptionDataForAuthorization;
     private static String url;
     private static String urlAuthorization;
-    private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
@@ -118,7 +117,7 @@ public class SubscriptionHandlerTest {
     @MockBean
     private HttpRequestSender httpRequestSender;
 
-    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
+    private static String subRepeatFlagDataBaseName = "SubscriptionHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
 
     @Autowired
@@ -127,12 +126,7 @@ public class SubscriptionHandlerTest {
     @Mock
     private QueryResponse queryResponse;
 
-    public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
-
+    public static void initData() throws Exception {
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
         aggregatedObjectMapNotification = FileUtils.readFileToString(new File(aggregatedPathForMapNotification),
@@ -158,24 +152,12 @@ public class SubscriptionHandlerTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        setUpEmbeddedMongo();
-        System.setProperty("notification.ttl.value", "1");
-    }
-
-    @AfterClass
-    public static void close() {
-        mongoClient.close();
-        testsFactory.shutdown();
+        initData();
     }
 
     @Before
     public void beforeTests() {
         mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
-    }
-
-    @PostConstruct
-    public void initMocks() {
-        mongoDBHandler.setMongoClient(mongoClient);
     }
 
     @Test
@@ -308,9 +290,7 @@ public class SubscriptionHandlerTest {
                 .perform(MockMvcRequestBuilders.get(missedNotificationUrl).param("SubscriptionName", subscriptionName))
                 .andReturn();
         String response = result.getResponse().getContentAsString().replace("\\", "");
-        assertEquals(
-                "{\"queryResponseEntity\":" + input.toString() + "}",
-                response);
+        assertEquals("{\"queryResponseEntity\":" + input.toString() + "}", response);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 

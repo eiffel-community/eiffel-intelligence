@@ -9,16 +9,18 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Ignore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.waitlist.WaitListWorker;
 
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
@@ -26,7 +28,10 @@ import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG" })
+        "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
+        "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
+        "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer",
+        "logging.level.com.ericsson.ei.waitlist=DEBUG", "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })
 
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
@@ -42,6 +47,12 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     private int maxPoolSize;
     @Value("${waitlist.collection.ttlValue}")
     private int waitlistTtl;
+
+    @Autowired
+    WaitListWorker waitListWorker;
+
+    @Autowired
+    Environment environment;
 
     @Before("@ThreadingAndWaitlistRepeatScenario")
     public void beforeScenario() throws IOException {
@@ -75,8 +86,10 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         List<String> resentEvents = new ArrayList<>();
         List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
 
+        int waitlistId = waitListWorker.hashCode();
+        String waitListIdPattern = "FROM WAITLIST: " + waitlistId;
+        Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT " + waitListIdPattern + "\\] id:([a-zA-Z\\d-]+)");
         for (String line : lines) {
-            Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT\\] id: ([a-zA-Z\\d-]+)");
             Matcher matcher = pattern.matcher(line);
             if (matcher.find() && !matcher.group(1).equals("")) {
                 if (!resentEvents.contains(matcher.group(1))) {
@@ -89,16 +102,23 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^correct amount of threads should be spawned$")
     public void correct_amount_of_threads_should_be_spawned() throws Throwable {
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        String port = environment.getProperty("local.server.port");
+        String eventHandlerThreadIdPattern = String.format("Thread id (\\d+) spawned for EventHandler on port: %s",
+                port);
+        Pattern pattern = Pattern.compile(eventHandlerThreadIdPattern);
+        List<String> threadIds = new ArrayList<>();
+        List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
 
-        int numberOfThreads = 0;
-        for (Thread thread : threadArray) {
-            if (thread.getName().contains("EventHandler-")) {
-                numberOfThreads += 1;
+        for (String line : lines) {
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find() && !matcher.group(0).equals("")) {
+                if (!threadIds.contains(matcher.group(1))) {
+                    threadIds.add(matcher.group(1));
+                }
             }
         }
-        assertEquals(getEventNamesToSend().size() - queueCapacity, numberOfThreads);
+
+        assertEquals(getEventNamesToSend().size() - queueCapacity, threadIds.size());
     }
 
     @Then("^after the time to live has ended, the waitlist should be empty$")

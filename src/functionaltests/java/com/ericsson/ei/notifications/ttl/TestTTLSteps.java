@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
@@ -31,7 +31,6 @@ import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,8 +42,10 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1" })
-@ContextConfiguration(initializers = TestContextInitializer.class)
+        "notification.failAttempt:1", "spring.data.mongodb.database: TestTTLSteps",
+        "rabbitmq.exchange.name: TestTTLSteps-exchange",
+        "rabbitmq.consumerName: TestTTLStepsConsumer",
+        "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
@@ -63,7 +64,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     private static final String SUBSCRIPTION_FILE_PATH_CREATION = "src/functionaltests/resources/subscription_single_ttlTest.json";
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
 
-    private static final long MAX_WAIT_TIME = 65000;
+    private static final long MAX_WAIT_TIME = 120000;
 
     private static JsonNode subscriptionObject;
 
@@ -147,9 +148,12 @@ public class TestTTLSteps extends FunctionalTestBase {
         String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH_CREATION), "UTF-8");
         JSONArray jsonArr = new JSONArray(readFileToString);
         httpRequest = new HttpRequest(HttpMethod.POST);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setBody(jsonArr.toString());
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint)
+                   .addHeader("content-type", "application/json")
+                   .addHeader("Accept", "application/json")
+                   .setBody(jsonArr.toString());
         httpRequest.performRequest();
     }
 
@@ -158,8 +162,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         LOGGER.debug("Sending an Eiffel event");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager
-                .verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+        List<String> missingEventIds = dbManager.verifyEventsInDB(
+                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
@@ -196,15 +200,17 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Aggregated Object document should be deleted from the database$")
     public void the_Aggregated_Object_document_should_be_deleted_from_the_database() throws Throwable {
-        LOGGER.debug("Checking delition of aggregated object in db");
+        LOGGER.debug("Checking deletion of aggregated object in db");
         List<String> allObjects = null;
+        // To be sure at least one minute has passed since creation of aggregated object
+        TimeUnit.MINUTES.sleep(1);
         allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
         assertEquals("Database is not empty.", true, allObjects.isEmpty());
     }
 
     /**
-     * Setting up mock server to receive calls on one endpoint and respond with
-     * 500 to trigger retries of POST request
+     * Setting up mock server to receive calls on one endpoint and respond with 500
+     * to trigger retries of POST request
      */
     private void setUpMockServer() {
         int port = SocketUtils.findAvailableTcpPort();
@@ -214,7 +220,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 
         // set up expectations on mock server to get calls on this endpoint
         mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
-                .respond(HttpResponse.response().withStatusCode(500));
+                        .respond(HttpResponse.response().withStatusCode(500));
     }
 
     /**
@@ -231,7 +237,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection,
+                    condition);
 
             if (notificationExist.size() == expectedSize) {
                 return notificationExist.size();

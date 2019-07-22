@@ -12,6 +12,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import cucumber.api.java.After;
@@ -20,6 +21,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: RulesHandlerSteps",
+        "rabbitmq.exchange.name: RulesHandlerSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: RulesHandlerStepsConsumer" })
 public class RulesHandlerSteps {
 
     private ClientAndServer restServer;
@@ -86,8 +90,8 @@ public class RulesHandlerSteps {
      */
     private void initializeRulesHandler() throws Exception {
         LOGGER.debug("Rules Path: " + rulesPath);
-        System.setProperty("rules.path", rulesPath);
         rulesHandler = new RulesHandler();
+        rulesHandler.setRulesFilePath(rulesPath);
         rulesHandler.init();
     }
 

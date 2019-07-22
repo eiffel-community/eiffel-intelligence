@@ -20,26 +20,27 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: RmqHandlerTest",
+        "rabbitmq.exchange.name: RmqHandlerTest-exchange", "rabbitmq.consumerName: RmqHandlerTest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class,
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 public class RmqHandlerTest {
 
     private Boolean queueDurable = true;
@@ -57,19 +58,13 @@ public class RmqHandlerTest {
     @Mock
     private ConnectionFactory factory;
 
-    @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
-    }
-
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         initProperties();
     }
 
-    public void initProperties()
-    {
+    public void initProperties() {
         rmqHandler.setQueueDurable(queueDurable);
         rmqHandler.setHost(host);
         rmqHandler.setExchangeName(exchangeName);

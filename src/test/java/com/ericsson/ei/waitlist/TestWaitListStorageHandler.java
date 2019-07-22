@@ -16,7 +16,8 @@
 */
 package com.ericsson.ei.waitlist;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,8 +33,8 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +45,7 @@ public class TestWaitListStorageHandler {
 
     @Mock
     MongoDBHandler mongoDBHandler;
-    static Logger log = (Logger) LoggerFactory.getLogger(TestWaitListStorageHandler.class);
+    static Logger log = LoggerFactory.getLogger(TestWaitListStorageHandler.class);
     private final String rulesPath = "src/test/resources/WaitlistStorageHandlerRule.json";
     private final String eventPath = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private final String inputJson1="src/test/resources/testWaitListinput1.json";

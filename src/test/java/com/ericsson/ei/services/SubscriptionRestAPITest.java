@@ -17,6 +17,7 @@
 package com.ericsson.ei.services;
 
 import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -45,7 +46,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.ericsson.ei.controller.SubscriptionController;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.services.ISubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)

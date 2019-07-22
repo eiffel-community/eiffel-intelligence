@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -31,6 +30,13 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCommandException;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoWriteException;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -46,6 +52,7 @@ import lombok.Setter;
 public class MongoDBHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
 
+    @Getter
     @Autowired
     private MongoProperties mongoProperties;
 
@@ -158,8 +165,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for update the document in collection and remove the lock in one query. Lock
-     * is needed for multi process execution
+     * This method is used for update the document in collection and remove the lock
+     * in one query. Lock is needed for multi process execution
      *
      * @param dataBaseName
      * @param collectionName
@@ -185,8 +192,9 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for lock and return the document that matches the input condition in one
-     * query. Lock is needed for multi process execution. This method is executed in a loop.
+     * This method is used for lock and return the document that matches the input
+     * condition in one query. Lock is needed for multi process execution. This
+     * method is executed in a loop.
      *
      * @param dataBaseName
      * @param collectionName
@@ -213,7 +221,8 @@ public class MongoDBHandler {
     }
 
     /**
-     * This method is used for the delete documents from collection using a condition
+     * This method is used for the delete documents from collection using a
+     * condition
      *
      * @param dataBaseName
      * @param collectionName

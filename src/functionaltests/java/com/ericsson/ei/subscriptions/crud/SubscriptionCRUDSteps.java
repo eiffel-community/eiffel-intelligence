@@ -1,14 +1,9 @@
 package com.ericsson.ei.subscriptions.crud;
 
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.HttpRequest;
-import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,12 +14,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
-import java.io.File;
+import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.utils.FunctionalTestBase;
+import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionCRUDSteps",
+        "rabbitmq.exchange.name: SubscriptionCRUDSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionCRUDSteps" })
 @AutoConfigureMockMvc
 public class SubscriptionCRUDSteps extends FunctionalTestBase {
 
@@ -55,9 +61,12 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "UTF-8");
         jsonArray = new JSONArray(readFileToString);
         httpRequest = new HttpRequest(HttpMethod.POST);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setBody(jsonArray.toString());
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint)
+                   .addHeader("content-type", "application/json")
+                   .addHeader("Accept", "application/json")
+                   .setBody(jsonArray.toString());
         response = httpRequest.performRequest();
     }
 
@@ -65,7 +74,8 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     public void i_get_response_code_of(int statusCode) {
         assertEquals(HttpStatus.valueOf(statusCode), response.getStatusCode());
     }
-    /// Scenario:1 ends ==================================================================
+    /// Scenario:1 ends
+    /// ==================================================================
 
     @When("^I make a GET request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
     public void i_make_a_GET_request_with_subscription_name_to_the_subscription_REST_API(String name, String endPoint)
@@ -82,7 +92,8 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         Subscription subscription = mapper.readValue(found, Subscription.class);
         assertEquals(name, subscription.getSubscriptionName());
     }
-    // Scenario:2 ends ==================================================================
+    // Scenario:2 ends
+    // ==================================================================
 
     @When("^I make a PUT request with modified \"([^\"]*)\" as \"([^\"]*)\" to REST API \"([^\"]*)\"$")
     public void i_make_a_PUT_request_with_modified_notificationType_as_to_REST_API(String key, String value,
@@ -92,9 +103,12 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         jsonArray.getJSONObject(0).put(key, value);
 
         httpRequest = new HttpRequest(HttpMethod.PUT);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setBody(jsonArray.toString());
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint)
+                   .addHeader("content-type", "application/json")
+                   .addHeader("Accept", "application/json")
+                   .setBody(jsonArray.toString());
         response = httpRequest.performRequest();
     }
 
@@ -109,14 +123,17 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         String foundValue = node.get("foundSubscriptions").get(0).get(key).asText();
         assertEquals(value, foundValue);
     }
-    // Scenario:3 ends ==================================================================
+    // Scenario:3 ends
+    // ==================================================================
 
     @When("^I make a DELETE request with subscription name \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
     public void i_make_a_DELETE_request_with_subscription_name_to_the_subscription_REST_API(String name,
             String endPoint) throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.DELETE);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint + name)
-                .addHeader("Accept", "application/json");
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint + name)
+                   .addHeader("Accept", "application/json");
         response = httpRequest.performRequest();
     }
 
@@ -124,13 +141,16 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     public void my_GET_request_with_subscription_name_at_REST_API_returns_empty_String(String name, String endPoint)
             throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint(endPoint + name)
-                .addHeader("Accept", "application/json");
+        httpRequest.setHost(hostName)
+                   .setPort(applicationPort)
+                   .setEndpoint(endPoint + name)
+                   .addHeader("Accept", "application/json");
         response = httpRequest.performRequest();
         JSONObject jsonResponse = new JSONObject(response.getBody().toString());
         String errorMessage = jsonResponse.getString("message");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(true, errorMessage.contains(name));
     }
-    // Scenario:4 ends ==================================================================
+    // Scenario:4 ends
+    // ==================================================================
 }

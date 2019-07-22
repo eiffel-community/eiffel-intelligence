@@ -52,7 +52,6 @@ public class EventHandler {
     }
 
     public void eventReceived(String event) {
-        LOGGER.debug("Thread id {} spawned", Thread.currentThread().getId());
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
         // downstreamIdRulesHandler.runIdRules(eventRules, event);
@@ -65,6 +64,7 @@ public class EventHandler {
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
         String port = environment.getProperty("local.server.port");
+        LOGGER.debug("Thread id {} spawned for EventHandler on port: {}", Thread.currentThread().getId(), port);
         LOGGER.debug("Event {} received on port {}", id, port);
 
         eventReceived(messageBody);

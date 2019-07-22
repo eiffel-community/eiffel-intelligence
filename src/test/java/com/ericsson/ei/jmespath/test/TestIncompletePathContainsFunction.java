@@ -2,15 +2,15 @@ package com.ericsson.ei.jmespath.test;
 
 import static org.junit.Assert.assertEquals;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class TestIncompletePathContainsFunction {
 

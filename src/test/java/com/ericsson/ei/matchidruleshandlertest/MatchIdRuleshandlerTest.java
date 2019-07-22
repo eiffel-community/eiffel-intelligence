@@ -34,7 +34,7 @@ public class MatchIdRuleshandlerTest {
     private final String outputFilePath = "src/test/resources/MatchIdRulesHandlerOutput.json";
     private final String id = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
 
-    static Logger log = (Logger) LoggerFactory.getLogger(MatchIdRuleshandlerTest.class);
+    static Logger log = LoggerFactory.getLogger(MatchIdRuleshandlerTest.class);
 
     @Test
     public void replaceIdInRulesTest() {

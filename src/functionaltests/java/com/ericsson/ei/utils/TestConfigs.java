@@ -1,11 +1,7 @@
 package com.ericsson.ei.utils;
 
-import com.mongodb.MongoClient;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
@@ -13,18 +9,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.SocketUtils;
 
+import com.mongodb.MongoClient;
+
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import lombok.Getter;
 
 public class TestConfigs {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
-    private MongoClient mongoClient = null;
+    private static MongoClient mongoClient = null;
 
-    protected static Map<Integer, AMQPBrokerManager> amqpBrokerMap = new HashMap<>();
+    @Getter
+    private static AMQPBrokerManager amqpBroker;
 
-    protected AMQPBrokerManager createAmqpBroker() throws Exception {
+    protected static void createAmqpBroker() throws Exception {
+        if (amqpBroker != null) {
+            return;
+        }
         // Generates a random port for amqpBroker and starts up a new broker
         int port = SocketUtils.findAvailableTcpPort();
 
@@ -36,18 +39,17 @@ public class TestConfigs {
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
-        AMQPBrokerManager amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
+        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
 
         LOGGER.debug("Started embedded message bus for tests on port: " + port);
         amqpBroker.startBroker();
-
-        // add new amqp broker to pool
-        amqpBrokerMap.put(port, amqpBroker);
-
-        return amqpBroker;
     }
 
-    protected void startUpMongoClient() throws IOException {
+    protected static void startUpMongoClient() throws IOException {
+        if (mongoClient != null) {
+            return;
+        }
+
         try {
             MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
@@ -59,27 +61,12 @@ public class TestConfigs {
         }
     }
 
-    protected void setAuthorization() {
+    protected static void setAuthorization() {
         String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
-        System.setProperty("ldap.enabled", "true");
-        System.setProperty("ldap.url", "ldap://ldap.forumsys.com:389/dc=example,dc=com");
-        System.setProperty("ldap.base.dn", "dc=example,dc=com");
-        System.setProperty("ldap.username", "cn=read-only-admin,dc=example,dc=com");
         System.setProperty("ldap.password", password);
-        System.setProperty("ldap.user.filter", "uid={0}");
     }
 
     protected void setRules() {
         System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");
-    }
-
-    public static AMQPBrokerManager getBroker(int port) {
-        return amqpBrokerMap.get(port);
-    }
-
-    public static void removeBroker(String port) {
-        AMQPBrokerManager broker = amqpBrokerMap.get(Integer.parseInt(port));
-        broker.stopBroker();
-        amqpBrokerMap.remove(port);
     }
 }

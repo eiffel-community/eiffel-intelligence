@@ -1,8 +1,10 @@
 package com.ericsson.ei.files;
 
-import java.io.File;
-import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -23,6 +26,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: DownloadFilesTestSteps",
+        "rabbitmq.exchange.name: DownloadFilesTestSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: DownloadFilesTestStepsConsumer" })
 @AutoConfigureMockMvc
 public class DownloadFilesTestSteps extends FunctionalTestBase {
 
@@ -40,14 +46,13 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     private int applicationPort;
     private String hostName = getHostName();
 
-
     @Given("^Eiffel Intelligence instance is up and running$")
     public void eiffel_intelligence_instance_is_up_and_running() throws Exception {
         LOGGER.debug("Checking if Eiffel Intelligence instance is up and running.");
         httpRequest.setHost(hostName)
-            .setPort(applicationPort)
-            .addHeader("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
-            .setEndpoint("/subscriptions");
+                   .setPort(applicationPort)
+                   .addHeader("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
+                   .setEndpoint("/subscriptions");
 
         response = httpRequest.performRequest();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
@@ -56,7 +61,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     @Then("^List available files$")
     public void list_available_files() throws Exception {
         LOGGER.debug("Listing all availble files that can be download via RestApi.");
-        String expectedSubscriptionsValue =  "/download/subscriptionsTemplate";
+        String expectedSubscriptionsValue = "/download/subscriptionsTemplate";
 
         httpRequest.setEndpoint("/download");
         response = httpRequest.performRequest();
@@ -71,7 +76,8 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
 
     @And("^Get subscription template file$")
     public void get_subscription_template_file() throws Exception {
-        String expectedSubscriptionTemplateContent = FileUtils.readFileToString(new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
+        String expectedSubscriptionTemplateContent = FileUtils.readFileToString(
+                new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
 
         httpRequest.setEndpoint("/download/subscriptionsTemplate");
         response = httpRequest.performRequest();
@@ -79,9 +85,10 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualSubscriptionTemplateContent = response.getBody();
-        assertEquals("Get SubscriptionTemplate file failed or contents is not as expected. \nExpected: "
-        + expectedSubscriptionTemplateContent + "\nActual: "+ actualSubscriptionTemplateContent,
-        expectedSubscriptionTemplateContent, actualSubscriptionTemplateContent);
+        assertEquals(
+                "Get SubscriptionTemplate file failed or contents is not as expected. \nExpected: "
+                        + expectedSubscriptionTemplateContent + "\nActual: " + actualSubscriptionTemplateContent,
+                expectedSubscriptionTemplateContent, actualSubscriptionTemplateContent);
     }
 
     @And("^Get rules template file$")
@@ -94,9 +101,10 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualRulesTemplateContent = response.getBody();
-        assertEquals("Get RulesTemplate file failed or contents is not as expected. \nExpected: "
-        + expectedRulesTemplateContent + "\nActual: "+ actualRulesTemplateContent,
-        expectedRulesTemplateContent, actualRulesTemplateContent);
+        assertEquals(
+                "Get RulesTemplate file failed or contents is not as expected. \nExpected: "
+                        + expectedRulesTemplateContent + "\nActual: " + actualRulesTemplateContent,
+                expectedRulesTemplateContent, actualRulesTemplateContent);
     }
 
     @And("^Get event template file$")
@@ -109,8 +117,9 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualEventsTemplateContent = response.getBody();
-        assertEquals("Get EventsTemplate file failed or contents is not as expected. \nExpected: "
-        + expectedEventsTemplateContent + "\nActual: "+ actualEventsTemplateContent,
-        expectedEventsTemplateContent, actualEventsTemplateContent);
+        assertEquals(
+                "Get EventsTemplate file failed or contents is not as expected. \nExpected: "
+                        + expectedEventsTemplateContent + "\nActual: " + actualEventsTemplateContent,
+                expectedEventsTemplateContent, actualEventsTemplateContent);
     }
 }

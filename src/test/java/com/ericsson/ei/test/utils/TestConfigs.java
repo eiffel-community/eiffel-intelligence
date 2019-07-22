@@ -1,8 +1,10 @@
-package com.ericsson.ei.flowtests;
+package com.ericsson.ei.test.utils;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -12,6 +14,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
+import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.mongodb.MongoClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -22,8 +25,11 @@ import lombok.Getter;
 
 public class TestConfigs {
 
+    @Getter
     private static AMQPBrokerManager amqpBroker;
     private static MongodForTestsFactory testsFactory;
+
+    @Getter
     private static ConnectionFactory cf;
 
     final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
@@ -34,13 +40,15 @@ public class TestConfigs {
     @Getter
     private static MongoClient mongoClient = null;
 
-    public static void init() throws Exception {
+    public static synchronized void init() throws Exception {
         setUpMessageBus();
         setUpEmbeddedMongo();
     }
 
-    private static void setUpMessageBus() throws Exception {
-        LOGGER.debug("setting up message buss");
+    private static synchronized void setUpMessageBus() throws Exception {
+        LOGGER.debug("Debug:setting up message buss");
+
+        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
         if (amqpBroker != null || conn != null || cf != null) {
             return;
         }
@@ -51,6 +59,8 @@ public class TestConfigs {
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
+
+        LOGGER.debug("done setting up message buss properties");
         LOGGER.info("setting up message buss");
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
@@ -64,7 +74,7 @@ public class TestConfigs {
         cf.setHandshakeTimeout(600000);
         cf.setConnectionTimeout(600000);
         conn = cf.newConnection();
-
+        LOGGER.debug("after setting up message buss");
     }
 
     public static MongoClient mongoClientInstance() throws Exception {
@@ -75,7 +85,7 @@ public class TestConfigs {
         return mongoClient;
     }
 
-    private static void setUpEmbeddedMongo() throws IOException {
+    private static synchronized void setUpEmbeddedMongo() throws IOException {
         if (mongoClient != null) {
             return;
         }
@@ -101,6 +111,15 @@ public class TestConfigs {
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
+    }
+
+    protected static void setAuthorization() {
+        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
+        System.setProperty("ldap.password", password);
+    }
+
+    protected void setRules() {
+        System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");
     }
 
 }

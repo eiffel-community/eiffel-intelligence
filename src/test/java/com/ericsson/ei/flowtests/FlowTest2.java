@@ -23,21 +23,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest2.class })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: FlowTest2", "rabbitmq.exchange.name: FlowTest2-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTest2Consumer" })
+        "rabbitmq.consumerName: FlowTest2Consumer" })
+
 public class FlowTest2 extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_events.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH_1 = "src/test/resources/AggregatedDocument.json";

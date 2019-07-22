@@ -22,6 +22,9 @@ import lombok.experimental.Accessors;
 public class HttpRequest {
 
     private HttpRequestBase request;
+    
+    @Setter
+    @Getter
     private HttpExecutor executor = HttpExecutor.getInstance();
 
     public enum HttpMethod {

@@ -68,7 +68,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            .and()
+                    .and()
                 .logout().logoutUrl("/auth/logout").logoutSuccessUrl("/").deleteCookies("SESSION").invalidateHttpSession(true)
             .and()
                 .httpBasic()

@@ -23,7 +23,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = {"logging.level.com.ericsson.ei.subscriptions.bulk=DEBUG"})
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionBulkSteps",
+        "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
+        "logging.level.com.ericsson.ei.subscriptions.bulk=OFF" })
 public class SubscriptionBulkSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources";
@@ -43,15 +46,12 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
     }
 
     @When("^make a POST request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
-    public void make_a_POST_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint) throws Throwable {
+    public void make_a_POST_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint)
+            throws Throwable {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
-        response = postRequest.setHost(hostName)
-                .setPort(port)
-                .setEndpoint(endpoint)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setBody(subscriptions.toString())
-                .performRequest();
+        response = postRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
+                .setBody(subscriptions.toString()).performRequest();
     }
 
     @When("^make a GET request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
@@ -59,11 +59,8 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setHost(hostName)
-                .setPort(port)
-                .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                .addHeader("Accept", "application/json")
-                .performRequest();
+        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "/" + subscriptionsNamesList)
+                .addHeader("Accept", "application/json").performRequest();
     }
 
     @When("^make a DELETE request with list of subscriptions names \"([^\"]*)\" to the subscription REST API \"([^\"]*)\"$")
@@ -71,25 +68,18 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest deleteRequest = new HttpRequest(HttpMethod.DELETE);
-        response = deleteRequest.setHost(hostName)
-                .setPort(port)
-                .setEndpoint(endpoint + "/" + subscriptionsNamesList)
-                .addHeader("Accept", "application/json")
-                .performRequest();
+        response = deleteRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "/" + subscriptionsNamesList)
+                .addHeader("Accept", "application/json").performRequest();
     }
 
     @When("^make a PUT request with list of subscriptions to the subscription REST API \"([^\"]*)\"$")
-    public void make_a_PUT_request_with_list_of_subscriptions_to_the_subscription_REST_API(
-            String endpoint) throws Throwable {
+    public void make_a_PUT_request_with_list_of_subscriptions_to_the_subscription_REST_API(String endpoint)
+            throws Throwable {
 
         HttpRequest putRequest = new HttpRequest(HttpMethod.PUT);
-        response = putRequest.setHost(hostName)
-                .setPort(port)
-                .setEndpoint(endpoint)
-                .addHeader("content-type", "application/json")
-                .addHeader("Accept", "application/json")
-                .setBody(subscriptions.toString())
-                .performRequest();
+        response = putRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
+                .setBody(subscriptions.toString()).performRequest();
     }
 
     @Then("^get response code of (\\d+)$")
@@ -101,13 +91,11 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
     public void get_in_response_content_found_subscriptions_and_not_found_subscription_name(
             int foundSubscriptionsNumber, String notFoundSubscriptionsName) throws Throwable {
 
-        GetSubscriptionResponse subscriptionResponse = new ObjectMapper().readValue(
-                response.getBody().toString(), GetSubscriptionResponse.class);
+        GetSubscriptionResponse subscriptionResponse = new ObjectMapper().readValue(response.getBody().toString(),
+                GetSubscriptionResponse.class);
 
-        assertEquals(foundSubscriptionsNumber,
-                subscriptionResponse.getFoundSubscriptions().size());
-        assertEquals(notFoundSubscriptionsName,
-                subscriptionResponse.getNotFoundSubscriptions().get(0));
+        assertEquals(foundSubscriptionsNumber, subscriptionResponse.getFoundSubscriptions().size());
+        assertEquals(notFoundSubscriptionsName, subscriptionResponse.getNotFoundSubscriptions().get(0));
     }
 
     @Then("^get in response content subscription \"([^\"]*)\"$")
@@ -124,15 +112,12 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
     }
 
     @Then("^number of retrieved subscriptions using REST API \"([^\"]*)\" is (\\d+)$")
-    public void number_of_retrieved_subscriptions_using_REST_API_is(
-            String endpoint, int subscriptionsNumber) throws Throwable {
+    public void number_of_retrieved_subscriptions_using_REST_API_is(String endpoint, int subscriptionsNumber)
+            throws Throwable {
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setHost(hostName)
-                .setPort(port)
-                .setEndpoint(endpoint)
-                .addHeader("Accept", "application/json")
-                .performRequest();
+        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint)
+                .addHeader("Accept", "application/json").performRequest();
         retrievedSubscriptions = new JSONArray(response.getBody().toString());
         assertEquals(subscriptionsNumber, retrievedSubscriptions.length());
     }

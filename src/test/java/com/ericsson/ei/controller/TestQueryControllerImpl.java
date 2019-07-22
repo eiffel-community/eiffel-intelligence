@@ -16,40 +16,41 @@
 */
 package com.ericsson.ei.controller;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.queryservice.ProcessQueryParams;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
 
 import org.apache.qpid.server.util.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SocketUtils;
 
-import java.io.File;
+import com.ericsson.ei.App;
+import com.ericsson.ei.queryservice.ProcessQueryParams;
+import com.ericsson.ei.utils.TestContextInitializer;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-
+@TestPropertySource(properties = { "spring.data.mongodb.database: TestQueryControllerImpl",
+        "rabbitmq.exchange.name: TestQueryControllerImpl-exchange", "rabbitmq.consumerName: TestQueryControllerImpl" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {
-        App.class,
-        EmbeddedMongoAutoConfiguration.class // <--- Don't forget THIS
-    })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class TestQueryControllerImpl {
     private static final String inputPath = "src/test/resources/AggregatedObject.json";
@@ -62,12 +63,6 @@ public class TestQueryControllerImpl {
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeClass
-    public static void init() {
-        int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("spring.data.mongodb.port", "" + port);
-    }
-
     @Before
     public void setUp() {
         input = FileUtils.readFileAsString(new File(inputPath));
@@ -77,14 +72,13 @@ public class TestQueryControllerImpl {
     public void filterFormParamTest() throws Exception {
 
         JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class))).thenReturn(inputObj);
+        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
+                .thenReturn(inputObj);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query")
-                .accept(MediaType.ALL)
-                .content(QUERY)
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/query").accept(MediaType.ALL).content(QUERY)
                 .contentType(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
     }
 }

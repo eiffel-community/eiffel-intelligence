@@ -300,7 +300,8 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeValidMessageTest() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType", MediaType.APPLICATION_FORM_URLENCODED.toString());
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType",
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -310,7 +311,8 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateRestPostMediaTypeValidMessage2Test() throws Exception {
         try {
-            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType", MediaType.APPLICATION_JSON.toString());
+            invokeMethod(SubscriptionValidator.class, "validateRestPostMediaType",
+                    MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;

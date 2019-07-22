@@ -35,9 +35,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -47,6 +49,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -54,10 +57,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: FlowTest", "rabbitmq.exchange.name: FlowTest-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTestConsumer" })
+        "rabbitmq.consumerName: FlowTestConsumer" })
+
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";

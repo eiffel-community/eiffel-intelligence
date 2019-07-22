@@ -23,17 +23,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTestTestExecution.class })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = { "rules.path=src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: FlowTestTestExecution", "rabbitmq.exchange.name: FlowTestTestExecution-exchange",

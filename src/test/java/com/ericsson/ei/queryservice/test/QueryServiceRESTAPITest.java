@@ -13,11 +13,12 @@
 */
 package com.ericsson.ei.queryservice.test;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.QueryAggregatedObjectController;
-import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,24 +30,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.QueryAggregatedObjectController;
+import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
+import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
+import com.ericsson.ei.utils.TestContextInitializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
-
-@ContextConfiguration(classes = {App.class})
+@TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
+        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
@@ -56,7 +62,7 @@ public class QueryServiceRESTAPITest {
 
     static JSONArray jsonArray = null;
 
-    static Logger log = (Logger) LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
+    static Logger log = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String missedNotificationPath = "src/test/resources/MissedNotification.json";
@@ -95,7 +101,8 @@ public class QueryServiceRESTAPITest {
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
+                "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -117,7 +124,8 @@ public class QueryServiceRESTAPITest {
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\", "");
+        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
+                "");
         log.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());

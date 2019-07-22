@@ -29,6 +29,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.dumbster.smtp.SimpleSmtpServer;
@@ -43,6 +44,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
+@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionTriggerSteps",
+        "rabbitmq.exchange.name: SubscriptionTriggerSteps-exchange",
+        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionTriggerStepsConsumer" })
 public class SubscriptionTriggerSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTriggerSteps.class);
@@ -118,7 +122,7 @@ public class SubscriptionTriggerSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");

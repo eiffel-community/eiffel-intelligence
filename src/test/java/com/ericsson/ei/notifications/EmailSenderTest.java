@@ -28,7 +28,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.ericsson.ei.exception.NotificationFailureException;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class EmailSenderTest {
 

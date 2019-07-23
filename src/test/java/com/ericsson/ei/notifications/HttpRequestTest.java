@@ -21,17 +21,22 @@ import java.util.Base64;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,9 +45,12 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
+@TestPropertySource(properties = { "spring.data.mongodb.database: HttpRequestTest",
+        "rabbitmq.exchange.name: HttpRequestTest-exchange", "rabbitmq.consumerName: HttpRequestTest",
+        "missedNotificationDataBaseName: HttpRequestTestMissedNotification" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
-@AutoConfigureMockMvc
 public class HttpRequestTest {
 
     private static final String TEST_URL = "http://www.somehot.com/some/someEndpoint?someParam=Value";
@@ -80,7 +88,7 @@ public class HttpRequestTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        setUpEmbeddedMongo();
+        //setUpEmbeddedMongo();
     }
 
     @Before

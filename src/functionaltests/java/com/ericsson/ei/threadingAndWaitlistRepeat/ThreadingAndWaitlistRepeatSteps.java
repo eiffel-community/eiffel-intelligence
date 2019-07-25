@@ -4,25 +4,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
+import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.waitlist.WaitListWorker;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
@@ -30,14 +28,16 @@ import cucumber.api.java.en.Then;
         "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
-        "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer",
-        "logging.level.com.ericsson.ei.waitlist=DEBUG", "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })
+        "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer", "logging.level.com.ericsson.ei.waitlist=OFF",
+        "logging.level.com.ericsson.ei.handlers.EventHandler=OFF" })
 
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
-
-    private File tempLogFile;
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
+    private static final String INPUT_RULES_PATH = "src/functionaltests/resources/ThreadingAndWaitlistRules.json";
+
+    // private RulesObject rulesObject;
+    // private JsonNode rulesJson;
 
     @Value("${threads.corePoolSize}")
     private int corePoolSize;
@@ -48,18 +48,12 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     @Value("${waitlist.collection.ttlValue}")
     private int waitlistTtl;
 
-    @Autowired
-    WaitListWorker waitListWorker;
+    private RulesObject rulesObject;
+
+    private JsonNode rulesJson;
 
     @Autowired
-    Environment environment;
-
-    @Before("@ThreadingAndWaitlistRepeatScenario")
-    public void beforeScenario() throws IOException {
-        tempLogFile = File.createTempFile("logfile", ".tmp");
-        tempLogFile.deleteOnExit();
-        System.setOut(new PrintStream(tempLogFile));
-    }
+    EventToObjectMapHandler eventToObjectMapHanler;
 
     @Given("^that eiffel events are sent$")
     public void that_eiffel_events_are_sent() throws Throwable {
@@ -80,45 +74,40 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
-    @Then("^the waitlist will try to resend the events at given time interval$")
-    public void the_waitlist_will_try_to_resend_the_events_at_given_time_interval() throws Throwable {
-        TimeUnit.SECONDS.sleep(5);
-        List<String> resentEvents = new ArrayList<>();
-        List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
+    @Then("^event-to-object-map is manipulated to include the sent events$")
+    public void event_to_object_map_is_manipulated_to_include_the_sent_events() throws Throwable {
+        JsonNode parsedJSON = eventManager.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+        String ruleString = FileUtils.readFileToString(new File(INPUT_RULES_PATH), "UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        rulesJson = objectMapper.readTree(ruleString);
+        rulesObject = new RulesObject(rulesJson);
 
-        int waitlistId = waitListWorker.hashCode();
-        String waitListIdPattern = "FROM WAITLIST: " + waitlistId;
-        Pattern pattern = Pattern.compile("\\[EIFFEL EVENT RESENT " + waitListIdPattern + "\\] id:([a-zA-Z\\d-]+)");
-        for (String line : lines) {
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find() && !matcher.group(1).equals("")) {
-                if (!resentEvents.contains(matcher.group(1))) {
-                    resentEvents.add(matcher.group(1));
-                }
-            }
+        String dummyObjectID = "1234abcd-12ab-12ab-12ab-123456abcdef";
+        List<String> eventNames = getEventNamesToSend();
+        for (String eventName : eventNames) {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            eventToObjectMapHanler.updateEventToObjectMapInMemoryDB(rulesObject, eventJson.toString(), dummyObjectID);
         }
-        assertEquals(getEventNamesToSend().size(), resentEvents.size());
+    }
+
+    @Then("^the next time waitlist will try to resend the events, they will get deleted$")
+    public void the_next_time_waitlist_will_try_to_resend_the_events_those_will_get_deleted() throws Throwable {
+        TimeUnit.SECONDS.sleep(2);
+        assertEquals("Waitlist resent events and due their presence in event-to-object-map, events are deleted", 0,
+                dbManager.waitListSize());
     }
 
     @Then("^correct amount of threads should be spawned$")
     public void correct_amount_of_threads_should_be_spawned() throws Throwable {
-        String port = environment.getProperty("local.server.port");
-        String eventHandlerThreadIdPattern = String.format("Thread id (\\d+) spawned for EventHandler on port: %s",
-                port);
-        Pattern pattern = Pattern.compile(eventHandlerThreadIdPattern);
-        List<String> threadIds = new ArrayList<>();
-        List<String> lines = new ArrayList<>(Files.readAllLines(tempLogFile.toPath()));
-
-        for (String line : lines) {
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find() && !matcher.group(0).equals("")) {
-                if (!threadIds.contains(matcher.group(1))) {
-                    threadIds.add(matcher.group(1));
-                }
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        int numberOfThreads = 0;
+        for (Thread thread : threadArray) {
+            if (thread.getName().contains("EventHandler-")) {
+                numberOfThreads += 1;
             }
         }
-
-        assertEquals(getEventNamesToSend().size() - queueCapacity, threadIds.size());
+        assertEquals(getEventNamesToSend().size() - queueCapacity, numberOfThreads);
     }
 
     @Then("^after the time to live has ended, the waitlist should be empty$")

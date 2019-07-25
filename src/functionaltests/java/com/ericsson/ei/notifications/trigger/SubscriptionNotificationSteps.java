@@ -43,7 +43,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionTriggerSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionTriggerSteps",
+        "missedNotificationDataBaseName: SubscriptionTriggerTest",
         "rabbitmq.exchange.name: SubscriptionTriggerSteps-exchange",
         "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionTriggerStepsConsumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
@@ -101,12 +103,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         restServer.stop();
         mockClient.close();
 
-        mongoDBHandler.dropCollection(missedNotificationDatabase,
-                missedNotificationCollection);
-        mongoDBHandler.dropDatabase(missedNotificationDatabase);
-        mongoDBHandler.dropCollection(database, subscriptionCollection);
-        mongoDBHandler.dropCollection(database, aggregatedCollectionName);
         mongoDBHandler.dropDatabase(database);
+        mongoDBHandler.dropDatabase(missedNotificationDatabase);
     }
 
     @Given("^The REST API is up and running$")
@@ -121,7 +119,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .addHeader("Accept", "application/json")
                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
     }
 
     @Given("Mail server is up")
@@ -135,17 +134,17 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> subscriptionNames = new ArrayList<>();
         subscriptionNames.add("Subscription_bad_mail");
         subscriptionNames.add("Subscription_bad_notification_rest_endpoint");
+        subscriptionNames.add("Subscription_rest_missing_token");
 
         createSubscriptions(subscriptionNames);
     }
 
     @Given("Subscriptions are created")
-    public void subscriptions_are_created() throws Exception {
+    public void subscriptions_are_created() throws Throwable {
         List<String> subscriptionNames = new ArrayList<>();
         subscriptionNames.add("Subscription_Mail");
         subscriptionNames.add("Subscription_Rest_Params_in_Head");
         subscriptionNames.add("Subscription_Rest_Auth_Params_in_Head");
-        subscriptionNames.add("Subscription_Rest_One_Missing_Auth_Params_in_Head");
         subscriptionNames.add("Subscription_Rest_Params_in_Url");
         subscriptionNames.add("Subscription_Rest_Auth_Params_in_Url");
         subscriptionNames.add("Subscription_Raw_Body");
@@ -161,8 +160,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> missingEventIds = dbManager.verifyEventsInDB(
                 eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
-                0,
-                missingEventIds.size());
+                0, missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
 
@@ -194,7 +192,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         for (SmtpMessage email : emails) {
             // assert correct sender.
-            assertEquals(email.getHeaderValue("From"), sender);
+            assertEquals("Assert correct email sender: ", email.getHeaderValue("From"), sender);
             // assert given test case exist in body.
             assert (email.getBody().contains("TC5"));
         }
@@ -207,18 +205,18 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mockClient.reset();
     }
 
-    @Then("Missed notifications should exist in the database")
-    public void missed_notifications_should_exist_in_database() {
-        String expectedRestPostNotification = "Subscription_bad_notification_rest_endpoint";
-        String expectedMailNotification = "Subscription_bad_mail";
+    @Then("Missed notification db should contain (\\d+) objects")
+    public void missed_notification_db_should_contain_x_objects(int maxObjectsInDB)
+            throws Throwable {
+        int minWaitTime = 5;
+        int maxWaittime = 20;
 
-        String condition = "{$or:[{\"subscriptionName\": \"" + expectedRestPostNotification + "\"}"
-                + "{\"subscriptionName\": \"" + expectedMailNotification + "\"}]}";
+        String condition = "{}";
+        int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB,
+                condition);
 
-        List<String> result = mongoDBHandler.find(missedNotificationDatabase,
-                missedNotificationCollection, condition);
-
-        assertEquals(2, result.size());
+        assertEquals("Missed notifications saved in the database: ", maxObjectsInDB,
+                missedNotifications);
     }
 
     @Then("^No subscription is retriggered$")
@@ -273,7 +271,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                               .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                               .setBody(jsonDataAsString)
                               .performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
     }
 
     /**
@@ -291,7 +290,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .addHeader("Accept", "application/json")
                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
         LOGGER.debug("Checking that response contains all subscriptions");
         for (String subscriptionName : subscriptionNames) {
             assertTrue(response.toString().contains(subscriptionName));
@@ -441,5 +441,35 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.bad\\}",
                 REST_ENDPOINT_BAD);
         return text;
+    }
+
+    /**
+     * Returns the content size of a DB query after a minimum time and max time unless expected size
+     * was reached after minimum time.
+     *
+     * @param minWaitTime  Seconds to wait before checking first time
+     * @param maxWaitTime  Max seconds to wait to reach expected size
+     * @param expectedSize Expected size
+     * @param condition    Condition
+     * @return
+     * @throws InterruptedException
+     */
+    private int getDbSizeForCondition(int minWaitTime, int maxWaitTime, int expectedSize,
+            String condition) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(minWaitTime);
+        long maxTime = System.currentTimeMillis() + maxWaitTime;
+        List<String> queryResult = null;
+
+        while (System.currentTimeMillis() < maxTime) {
+            queryResult = mongoDBHandler.find(missedNotificationDatabase,
+                    missedNotificationCollection,
+                    condition);
+
+            if (queryResult.size() == expectedSize) {
+                return queryResult.size();
+            }
+            TimeUnit.SECONDS.sleep(1);
+        }
+        return queryResult.size();
     }
 }

@@ -41,8 +41,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1", "spring.data.mongodb.database: TestTTLSteps",
+@TestPropertySource(properties = {
+        "notification.ttl.value:1",
+        "aggregated.collection.ttlValue:1",
+        "notification.failAttempt:1",
+        "spring.data.mongodb.database: TestTTLSteps",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer",
         "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })

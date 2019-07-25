@@ -46,9 +46,9 @@ import cucumber.api.java.en.When;
         "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1",
         "spring.data.mongodb.database: TestTTLSteps",
+        "missedNotificationDataBaseName: TestTTLSteps-missedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
-        "rabbitmq.consumerName: TestTTLStepsConsumer",
-        "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })
+        "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";

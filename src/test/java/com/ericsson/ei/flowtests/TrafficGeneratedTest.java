@@ -65,7 +65,12 @@ import com.rabbitmq.client.Channel;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json" })
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/ArtifactRules.json",
+        "spring.data.mongodb.database: TrafficGeneratedTest",
+        "missedNotificationDataBaseName: TrafficGeneratedTest-missedNotifications",
+        "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
+        "rabbitmq.consumerName: TrafficGeneratedTestConsumer"  })
 public class TrafficGeneratedTest extends FlowTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);

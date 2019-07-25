@@ -61,8 +61,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionServiceTest",
-        "rabbitmq.exchange.name: SubscriptionServiceTest-exchange", "rabbitmq.consumerName: SubscriptionServiceTest" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionServiceTest",
+        "missedNotificationDataBaseName: SubscriptionServiceTest-missedNotifications",
+        "rabbitmq.exchange.name: SubscriptionServiceTest-exchange",
+        "rabbitmq.consumerName: SubscriptionServiceTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

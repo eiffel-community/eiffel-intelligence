@@ -21,4 +21,4 @@ Feature: Test Subscription Trigger
     When I send Eiffel events
     When I send one previous event again
     And Wait for EI to aggregate objects
-    And Missed notification db should contain 3 objects
+    And Missed notification db should contain 2 objects

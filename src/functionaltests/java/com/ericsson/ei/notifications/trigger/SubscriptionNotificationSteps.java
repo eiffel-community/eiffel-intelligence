@@ -38,16 +38,17 @@ import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionTriggerSteps",
-        "missedNotificationDataBaseName: SubscriptionTriggerTest",
-        "rabbitmq.exchange.name: SubscriptionTriggerSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionTriggerStepsConsumer" })
+        "spring.data.mongodb.database: SubscriptionNotificationSteps",
+        "missedNotificationDataBaseName: SubscriptionNotificationSteps-missedNotifications",
+        "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
+        "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(SubscriptionNotificationSteps.class);
@@ -94,6 +95,12 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private MockServerClient mockClient;
     private ResponseEntity response;
 
+    @Before()
+    public void beforeScenario() {
+        mongoDBHandler.dropDatabase(database);
+        mongoDBHandler.dropDatabase(missedNotificationDatabase);
+    }
+
     @After()
     public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
@@ -102,9 +109,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         }
         restServer.stop();
         mockClient.close();
-
-        mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(missedNotificationDatabase);
     }
 
     @Given("^The REST API is up and running$")
@@ -134,7 +138,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> subscriptionNames = new ArrayList<>();
         subscriptionNames.add("Subscription_bad_mail");
         subscriptionNames.add("Subscription_bad_notification_rest_endpoint");
-        subscriptionNames.add("Subscription_rest_missing_token");
 
         createSubscriptions(subscriptionNames);
     }
@@ -470,6 +473,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
             }
             TimeUnit.SECONDS.sleep(1);
         }
+        System.out.println("##########################################################");
+        LOGGER.error("DB size did not match expected, Subsctiptions:\n{}", queryResult);
         return queryResult.size();
     }
 }

@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestExtractionHandler {
-    private ExtractionHandler classUnderTest;
+    private ExtractionHandler extractionHandler;
 
     private final String outputFilePath = "src/test/resources/ExtractedContent.json";
     private final String rulesFilePath = "src/test/resources/RulesHandlerOutput2.json";
@@ -64,14 +64,14 @@ public class TestExtractionHandler {
             log.error(e.getMessage(), e);
         }
 
-        classUnderTest = new ExtractionHandler();
+        extractionHandler = new ExtractionHandler();
         JmesPathInterface jmesPathInterface = new JmesPathInterface();
-        classUnderTest.setJmesPathInterface(jmesPathInterface);
+        extractionHandler.setJmesPathInterface(jmesPathInterface);
         try {
-            Method method = classUnderTest.getClass().getDeclaredMethod("extractContent",
+            Method method = extractionHandler.getClass().getDeclaredMethod("extractContent",
                     new Class[] { RulesObject.class, String.class });
             method.setAccessible(true);
-            result = (JsonNode) method.invoke(classUnderTest, new Object[] { rulesObject, event });
+            result = (JsonNode) method.invoke(extractionHandler, new Object[] { rulesObject, event });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

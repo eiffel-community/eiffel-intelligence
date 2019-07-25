@@ -62,8 +62,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, SingleEventAggregationTest.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/all_event_rules.json",
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/all_event_rules.json",
         "spring.data.mongodb.database: SingleEventAggregationTest",
+        "missedNotificationDataBaseName: SingleEventAggregationTest-missedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
         "rabbitmq.consumerName: SingleEventAggregationTestConsumer" })
 public class SingleEventAggregationTest extends FlowTestBase {

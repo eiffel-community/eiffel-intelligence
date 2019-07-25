@@ -33,7 +33,9 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
 import com.ericsson.ei.utils.TestContextInitializer;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: TestInformationControllerImpl",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TestInformationControllerImpl",
+        "missedNotificationDataBaseName: TestInformationControllerImpl-missedNotifications",
         "rabbitmq.exchange.name: TestInformationControllerImpl-exchange",
         "rabbitmq.consumerName: TestInformationControllerImpl" })
 @RunWith(SpringJUnit4ClassRunner.class)

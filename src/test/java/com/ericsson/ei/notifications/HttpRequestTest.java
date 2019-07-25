@@ -45,9 +45,11 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: HttpRequestTest",
-        "rabbitmq.exchange.name: HttpRequestTest-exchange", "rabbitmq.consumerName: HttpRequestTest",
-        "missedNotificationDataBaseName: HttpRequestTestMissedNotification" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: HttpRequestTest",
+        "missedNotificationDataBaseName: HttpRequestTest-missedNotifications",
+        "rabbitmq.exchange.name: HttpRequestTest-exchange",
+        "rabbitmq.consumerName: HttpRequestTestConsumer" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

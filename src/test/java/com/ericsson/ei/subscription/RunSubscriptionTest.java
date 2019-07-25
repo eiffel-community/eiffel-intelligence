@@ -17,31 +17,40 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
-
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionHandlerTest",
+        "missedNotificationDataBaseName: SubscriptionHandlerTest-missedNotifications",
+        "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange",
+        "subscription.collection.repeatFlagHandlerName: SubscriptionHandlerTestCollection",
+        "rabbitmq.consumerName: SubscriptionHandlerTest",
+        "notification.ttl.value: 1"})
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
@@ -56,8 +65,6 @@ public class RunSubscriptionTest {
     private static String aggregatedInternalObject;
     private static String subscriptionData;
     private static String artifactRequirementSubscriptionData;
-    private static MongodForTestsFactory testsFactory;
-    private static MongoClient mongoClient = null;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
@@ -69,18 +76,18 @@ public class RunSubscriptionTest {
     private static String subscriptionRepeatFlagTruePath = "src/test/resources/SubscriptionRepeatFlagTrueObject.json";
     private static String subscriptionRepeatFlagTrueData;
 
-    private static String subRepeatFlagDataBaseName = "eiffel_intelligence";
-    private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
+
+    @Value("${spring.data.mongodb.database}")
+    private String subRepeatFlagDataBaseName;
+
+    @Value("${subscription.collection.repeatFlagHandlerName}")
+    private String subRepeatFlagCollectionName;
 
     @Mock
     private QueryResponse queryResponse;
 
-    public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
-
+    @Before
+    public void beforeTests() throws IOException {
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         aggregatedInternalObject = FileUtils.readFileToString(new File(aggregatedInternalPath), "UTF-8");
 
@@ -91,22 +98,11 @@ public class RunSubscriptionTest {
         subscriptionData = FileUtils.readFileToString(new File(subscriptionPath), "UTF-8");
     }
 
-    @BeforeClass
-    public static void init() throws Exception {
-        setUpEmbeddedMongo();
-        System.setProperty("notification.ttl.value", "1");
-    }
-
-    @AfterClass
-    public static void close() {
-        mongoClient.close();
-        testsFactory.shutdown();
-    }
-
-    @Before
-    public void beforeTests() {
+    @After
+    public void afterTests() throws IOException {
         mongoDBHandler.dropCollection(subRepeatFlagDataBaseName, subRepeatFlagCollectionName);
     }
+
 
     @Test
     public void runSubscriptionOnObjectTest() throws Exception {

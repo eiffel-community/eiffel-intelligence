@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
@@ -38,6 +41,8 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     // private RulesObject rulesObject;
     // private JsonNode rulesJson;
+    @Autowired
+    private Environment environment;
 
     @Value("${threads.corePoolSize}")
     private int corePoolSize;
@@ -99,15 +104,22 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^correct amount of threads should be spawned$")
     public void correct_amount_of_threads_should_be_spawned() throws Throwable {
+        List<String> threadsSpawned = new ArrayList<>();
+        String port = environment.getProperty("local.server.port");
+        String eventHandlerThreadNamePattern = String.format("EventHandler-(\\d+)-%s", port);
+        Pattern pattern = Pattern.compile(eventHandlerThreadNamePattern);
+
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
         Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-        int numberOfThreads = 0;
         for (Thread thread : threadArray) {
-            if (thread.getName().contains("EventHandler-")) {
-                numberOfThreads += 1;
+            Matcher matcher = pattern.matcher(thread.getName());
+            if (matcher.find() && !matcher.group(1).equals("")) {
+                if (!threadsSpawned.contains(matcher.group(1))) {
+                    threadsSpawned.add(matcher.group(1));
+                }
             }
         }
-        assertEquals(getEventNamesToSend().size() - queueCapacity, numberOfThreads);
+        assertEquals(getEventNamesToSend().size() - queueCapacity, threadsSpawned.size());
     }
 
     @Then("^after the time to live has ended, the waitlist should be empty$")

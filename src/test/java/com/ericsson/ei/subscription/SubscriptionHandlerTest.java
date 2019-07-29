@@ -65,7 +65,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
         "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange", "rabbitmq.consumerName: SubscriptionHandlerTest",
         "notification.ttl.value: 1", "missedNotificationDataBaseName: SubscriptionHandlerTestMissedNotification" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc

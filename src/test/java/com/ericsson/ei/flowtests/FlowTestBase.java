@@ -137,6 +137,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
             }
 
             String exchangeName = rmqHandler.getExchangeName();
+
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();

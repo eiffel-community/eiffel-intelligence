@@ -3,7 +3,6 @@ package com.ericsson.ei.threadingAndWaitlistRepeat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,10 +35,8 @@ import cucumber.api.java.en.Then;
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
-    private static final String INPUT_RULES_PATH = "src/functionaltests/resources/ThreadingAndWaitlistRules.json";
+    private static final String idRule = "{" + "\"IdRule\": \"meta.id\"" + "}";
 
-    // private RulesObject rulesObject;
-    // private JsonNode rulesJson;
     @Autowired
     private Environment environment;
 
@@ -82,9 +78,8 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     @Then("^event-to-object-map is manipulated to include the sent events$")
     public void event_to_object_map_is_manipulated_to_include_the_sent_events() throws Throwable {
         JsonNode parsedJSON = eventManager.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
-        String ruleString = FileUtils.readFileToString(new File(INPUT_RULES_PATH), "UTF-8");
         ObjectMapper objectMapper = new ObjectMapper();
-        rulesJson = objectMapper.readTree(ruleString);
+        rulesJson = objectMapper.readTree(idRule);
         rulesObject = new RulesObject(rulesJson);
 
         String dummyObjectID = "1234abcd-12ab-12ab-12ab-123456abcdef";
@@ -95,8 +90,8 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         }
     }
 
-    @Then("^the next time waitlist will try to resend the events, they will get deleted$")
-    public void the_next_time_waitlist_will_try_to_resend_the_events_those_will_get_deleted() throws Throwable {
+    @Then("^when waitlist has resent events they should have been deleted$")
+    public void when_waitlist_has_resent_events_they_should_have_been_deleted() throws Throwable {
         TimeUnit.SECONDS.sleep(2);
         assertEquals("Waitlist resent events and due their presence in event-to-object-map, events are deleted", 0,
                 dbManager.waitListSize());

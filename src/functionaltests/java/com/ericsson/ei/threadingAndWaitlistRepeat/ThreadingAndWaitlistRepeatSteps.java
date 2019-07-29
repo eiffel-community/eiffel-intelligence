@@ -35,7 +35,7 @@ import cucumber.api.java.en.Then;
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
-    private static final String idRule = "{" + "\"IdRule\": \"meta.id\"" + "}";
+    private static final String ID_RULE = "{" + "\"IdRule\": \"meta.id\"" + "}";
 
     @Autowired
     private Environment environment;
@@ -79,7 +79,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     public void event_to_object_map_is_manipulated_to_include_the_sent_events() throws Throwable {
         JsonNode parsedJSON = eventManager.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
         ObjectMapper objectMapper = new ObjectMapper();
-        rulesJson = objectMapper.readTree(idRule);
+        rulesJson = objectMapper.readTree(ID_RULE);
         rulesObject = new RulesObject(rulesJson);
 
         String dummyObjectID = "1234abcd-12ab-12ab-12ab-123456abcdef";

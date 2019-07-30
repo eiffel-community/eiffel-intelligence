@@ -61,7 +61,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private List<RabbitMqValues> rabbitmq;
+    private List<RmqHandler> rabbitmq;
 
     @Getter
     @Autowired
@@ -136,21 +136,6 @@ public class ParseInstanceInfoEI {
 
     @Component
     private class MongoDbValues {
-        @Getter
-        @Value("${spring.data.mongodb.host}")
-        private String host;
-
-        @Getter
-        @Value("${spring.data.mongodb.port}")
-        private String port;
-
-        @Getter
-        @Value("${spring.data.mongodb.database}")
-        private String database;
-    }
-
-    @Component
-    private class RabbitMqValues {
         @Getter
         @Value("${spring.data.mongodb.host}")
         private String host;

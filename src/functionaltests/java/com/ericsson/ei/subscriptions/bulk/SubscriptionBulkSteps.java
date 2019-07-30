@@ -23,9 +23,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionBulkSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionBulkSteps",
+        "missedNotificationDataBaseName: SubscriptionBulkSteps-missedNotifications",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
+        "rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
         "logging.level.com.ericsson.ei.subscriptions.bulk=OFF" })
 public class SubscriptionBulkSteps extends FunctionalTestBase {
 

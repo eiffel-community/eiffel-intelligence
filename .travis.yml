@@ -54,8 +54,8 @@ jobs:
         #
         # Also important that the first test to be run is a Spring Boot Test since spring boot also downloads
         # another version of embedded mongo db to avoid race conditions between Spring Boot tests
-        - mvn -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
-        - mvn -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
+        - mvn -Dsurefire.rerunFailingTestsCount=2 -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
+        - mvn -Dsurefire.rerunFailingTestsCount=2 -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
     - stage: test
       name: integrationTests
       script:

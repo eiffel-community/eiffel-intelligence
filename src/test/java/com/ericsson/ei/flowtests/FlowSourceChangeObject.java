@@ -50,8 +50,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/SourceChangeObjectRules.json",
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/SourceChangeObjectRules.json",
         "spring.data.mongodb.database: FlowSourceChangeObject",
+        "missedNotificationDataBaseName: FlowSourceChangeObject-missedNotifications",
         "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
         "rabbitmq.consumerName: FlowSourceChangeObjectConsumer" })
 public class FlowSourceChangeObject extends FlowTestBase {

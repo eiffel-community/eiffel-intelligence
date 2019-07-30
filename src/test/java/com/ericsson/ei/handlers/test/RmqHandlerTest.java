@@ -36,8 +36,11 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: RmqHandlerTest",
-        "rabbitmq.exchange.name: RmqHandlerTest-exchange", "rabbitmq.consumerName: RmqHandlerTest" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: RmqHandlerTest",
+        "missedNotificationDataBaseName: RmqHandlerTest-missedNotifications",
+        "rabbitmq.exchange.name: RmqHandlerTest-exchange",
+        "rabbitmq.consumerName: RmqHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

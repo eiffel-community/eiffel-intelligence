@@ -41,8 +41,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, ArrayAggregationTest.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/arrayAggregationRules.json",
-        "spring.data.mongodb.database: ArrayAggregationTest", "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/arrayAggregationRules.json",
+        "spring.data.mongodb.database: ArrayAggregationTest",
+        "missedNotificationDataBaseName: ArrayAggregationTest-missedNotifications",
+        "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
         "rabbitmq.consumerName: ArrayAggregationTestConsumer" })
 public class ArrayAggregationTest extends FlowTestBase {
 

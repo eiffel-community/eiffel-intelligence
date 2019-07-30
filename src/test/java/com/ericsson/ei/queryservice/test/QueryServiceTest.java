@@ -50,9 +50,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceTest",
-        "rabbitmq.exchange.name: QueryServiceTest-exchange", "rabbitmq.consumerName: QueryServiceTest",
-        "missedNotificationDataBaseName: QueryServiceTestMissedNotification" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: QueryServiceTest",
+        "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
+        "missedNotificationDataBaseName: QueryServiceTestMissedNotification",
+        "rabbitmq.exchange.name: QueryServiceTest-exchange",
+        "rabbitmq.consumerName: QueryServiceTest"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)

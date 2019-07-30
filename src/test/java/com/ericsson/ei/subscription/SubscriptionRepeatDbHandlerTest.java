@@ -38,7 +38,9 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
+        "missedNotificationDataBaseName: SubscriptionRepeatDbHandlerTest-missedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
         "rabbitmq.consumerName: SubscriptionRepeatDbHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

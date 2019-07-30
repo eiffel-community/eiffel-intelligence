@@ -39,9 +39,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTestTestExecution.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/TestExecutionObjectRules.json",
-        "spring.data.mongodb.database: FlowTestTestExecution", "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: FlowTestTestExecutionConsumer" })
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/TestExecutionObjectRules.json",
+        "spring.data.mongodb.database: FlowTestTestExecution",
+        "missedNotificationDataBaseName: FlowTestTestExecution-missedNotifications",
+        "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
+        "rabbitmq.consumerName: FlowTestTestExecutionConsumer" })
 public class FlowTestTestExecution extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";

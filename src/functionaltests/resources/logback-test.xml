@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Using default log level INFO for spring dependencies -->
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <!-- Reducing logs from mock requests during tests -->
+    <logger name="org.mockserver.mock" level="error" />
+</configuration>

@@ -26,9 +26,15 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-@TestPropertySource(properties = { "threads.corePoolSize= 3", "threads.queueCapacity= 1", "threads.maxPoolSize= 4",
-        "waitlist.collection.ttlValue: 60", "waitlist.initialDelayResend= 500", "waitlist.fixedRateResend= 1000",
+@TestPropertySource(properties = {
+        "threads.corePoolSize= 3",
+        "threads.queueCapacity= 1",
+        "threads.maxPoolSize= 4",
+        "waitlist.collection.ttlValue: 60",
+        "waitlist.initialDelayResend= 500",
+        "waitlist.fixedRateResend= 1000",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
+        "missedNotificationDataBaseName: ThreadingAndWaitlistRepeatSteps-missedNotifications",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
         "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer",
         "logging.level.com.ericsson.ei.waitlist=DEBUG", "logging.level.com.ericsson.ei.handlers.EventHandler=DEBUG" })

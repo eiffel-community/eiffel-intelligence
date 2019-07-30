@@ -109,12 +109,11 @@ public class RmqHandler {
     @Value("${threads.maxPoolSize}")
     private int maxThreads;
 
-    @Setter
+    // @Setter
     private RabbitTemplate rabbitTemplate;
-    @Getter
+    // @Getter
     private CachingConnectionFactory cachingConnectionFactory;
-
-    @Getter
+    // @Getter
     private SimpleMessageListenerContainer container;
 
     @Bean

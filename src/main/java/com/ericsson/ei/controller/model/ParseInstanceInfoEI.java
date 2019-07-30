@@ -59,9 +59,9 @@ public class ParseInstanceInfoEI {
     @Value("${testaggregated.enabled:false}")
     private String testRulesEnabled;
 
-    @Getter
-    @Autowired
-    private List<RmqHandler> rabbitmq;
+//    @Getter
+//    @Autowired
+//    private List<RmqHandler> rabbitmq;
 
     @Getter
     @Autowired

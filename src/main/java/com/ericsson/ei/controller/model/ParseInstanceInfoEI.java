@@ -59,9 +59,9 @@ public class ParseInstanceInfoEI {
     @Value("${testaggregated.enabled:false}")
     private String testRulesEnabled;
 
-//    @Getter
-//    @Autowired
-//    private List<RmqHandler> rabbitmq;
+    @Getter
+    @Autowired
+    private List<RabbitMqValues> rabbitmq;
 
     @Getter
     @Autowired
@@ -136,6 +136,21 @@ public class ParseInstanceInfoEI {
 
     @Component
     private class MongoDbValues {
+        @Getter
+        @Value("${spring.data.mongodb.host}")
+        private String host;
+
+        @Getter
+        @Value("${spring.data.mongodb.port}")
+        private String port;
+
+        @Getter
+        @Value("${spring.data.mongodb.database}")
+        private String database;
+    }
+
+    @Component
+    private class RabbitMqValues {
         @Getter
         @Value("${spring.data.mongodb.host}")
         private String host;

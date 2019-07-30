@@ -26,8 +26,11 @@ import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.MongoClient;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: TestRulesService",
-        "rabbitmq.exchange.name: TestRulesService-exchange", "rabbitmq.consumerName: TestRulesService" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TestRulesService",
+        "missedNotificationDataBaseName: TestRulesService-missedNotifications",
+        "rabbitmq.exchange.name: TestRulesService-exchange",
+        "rabbitmq.consumerName: TestRulesService" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

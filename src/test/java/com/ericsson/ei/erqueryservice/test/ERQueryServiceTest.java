@@ -56,8 +56,11 @@ import com.ericsson.ei.erqueryservice.SearchParameters;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: ERQueryServiceTest",
-        "rabbitmq.exchange.name: ERQueryServiceTest-exchange", "rabbitmq.consumerName: ERQueryServiceTest",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: ERQueryServiceTest",
+        "missedNotificationDataBaseName: ERQueryServiceTest-missedNotifications",
+        "rabbitmq.exchange.name: ERQueryServiceTest-exchange",
+        "rabbitmq.consumerName: ERQueryServiceTest",
         "er.url: http://localhost:8080/eventrepository/search/" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)

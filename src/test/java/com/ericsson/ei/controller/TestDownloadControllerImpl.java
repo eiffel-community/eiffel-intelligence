@@ -36,10 +36,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: TestDownloadControllerImpl",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TestDownloadControllerImpl",
+        "missedNotificationDataBaseName: TestDownloadControllerImpl-missedNotifications",
         "rabbitmq.exchange.name: TestDownloadControllerImpl-exchange",
         "rabbitmq.consumerName: TestDownloadControllerImpl" })
-@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
+@ContextConfiguration(
+        classes = App.class,
+        loader = SpringBootContextLoader.class,
+        initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc

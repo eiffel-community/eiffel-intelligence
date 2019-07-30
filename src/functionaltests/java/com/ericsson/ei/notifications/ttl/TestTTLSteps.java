@@ -27,7 +27,7 @@ import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.subscription.InformSubscriber;
+import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -41,11 +41,14 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "notification.ttl.value:1", "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1", "spring.data.mongodb.database: TestTTLSteps",
+@TestPropertySource(properties = {
+        "notification.ttl.value:1",
+        "aggregated.collection.ttlValue:1",
+        "notification.failAttempt:1",
+        "spring.data.mongodb.database: TestTTLSteps",
+        "missedNotificationDataBaseName: TestTTLSteps-missedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
-        "rabbitmq.consumerName: TestTTLStepsConsumer",
-        "missedNotificationDataBaseName: TestTTLStepsMissedNotification" })
+        "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";

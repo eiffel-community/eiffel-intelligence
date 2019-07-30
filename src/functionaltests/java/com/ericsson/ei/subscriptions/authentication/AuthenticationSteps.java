@@ -28,11 +28,16 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: AuthenticationSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: AuthenticationSteps",
+        "missedNotificationDataBaseName: AuthenticationSteps-missedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: AuthenticationStepsConsumer", "ldap.enabled: true",
-        "ldap.url: ldap://ldap.forumsys.com:389/dc=example,dc=com", "ldap.base.dn: dc=example,dc=com",
-        "ldap.username : cn=read-only-admin,dc=example,dc=com", "ldap.user.filter: uid={0}" })
+        "rabbitmq.consumerName: AuthenticationStepsConsumer",
+        "ldap.enabled: true",
+        "ldap.url: ldap://ldap.forumsys.com:389/dc=example,dc=com",
+        "ldap.base.dn: dc=example,dc=com",
+        "ldap.username : cn=read-only-admin,dc=example,dc=com",
+        "ldap.user.filter: uid={0}" })
 @ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
 

@@ -27,7 +27,9 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: UpStreamEventHandlerTest",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: UpStreamEventHandlerTest",
+        "missedNotificationDataBaseName: UpStreamEventHandlerTest-missedNotifications",
         "rabbitmq.exchange.name: UpStreamEventHandlerTest-exchange",
         "rabbitmq.consumerName: UpStreamEventHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

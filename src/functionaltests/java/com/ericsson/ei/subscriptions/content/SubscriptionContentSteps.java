@@ -26,9 +26,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionContentSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionContentSteps",
+        "missedNotificationDataBaseName: SubscriptionContentSteps-missedNotifications",
         "rabbitmq.exchange.name: SubscriptionContentSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionContentStepsConsumer" })
+        "rabbitmq.consumerName: SubscriptionContentStepsConsumer" })
 public class SubscriptionContentSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);

@@ -29,8 +29,11 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: TestProcessQueryParams",
-        "rabbitmq.exchange.name: TestProcessQueryParams-exchange", "rabbitmq.consumerName: TestProcessQueryParams" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TestProcessQueryParams",
+        "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
+        "rabbitmq.exchange.name: TestProcessQueryParams-exchange",
+        "rabbitmq.consumerName: TestProcessQueryParams" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

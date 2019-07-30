@@ -52,8 +52,11 @@ import com.ericsson.ei.controller.RuleControllerImpl;
 import com.ericsson.ei.services.IRuleCheckService;
 import com.ericsson.ei.utils.TestContextInitializer;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: TestRulesRestAPI",
-        "rabbitmq.exchange.name: TestRulesRestAPI-exchange", "rabbitmq.consumerName: TestRulesRestAPI" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TestRulesRestAPI",
+        "missedNotificationDataBaseName: TestRulesService-missedNotifications",
+        "rabbitmq.exchange.name: TestRulesRestAPI-exchange",
+        "rabbitmq.consumerName: TestRulesRestAPI" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

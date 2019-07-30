@@ -40,9 +40,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: ScalingAndFailoverSteps123",
-        "rabbitmq.exchange.name: ScalingAndFailoverSteps123-exchange",
-        "rabbitmq.consumerName: ScalingAndFailoverSteps123Consumer" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: ScalingAndFailoverSteps",
+        "missedNotificationDataBaseName: ScalingAndFailoverSteps-missedNotifications",
+        "rabbitmq.exchange.name: ScalingAndFailoverSteps-exchange",
+        "rabbitmq.consumerName: ScalingAndFailoverStepsConsumer" })
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private static final String EVENT_DUMMY = "src/functionaltests/resources/scale_and_failover_dummy.json";

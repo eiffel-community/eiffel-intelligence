@@ -1,5 +1,5 @@
-[
-  {
+{
+  "Subscription_Mail" : {
     "subscriptionName": "Subscription_Mail",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -30,7 +30,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Params_in_Head" : {
     "subscriptionName": "Subscription_Rest_Params_in_Head",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -61,7 +61,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Auth_Params_in_Head" : {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Head",
     "ldapUserName": "DEF",
     "userName": "myUserName",
@@ -79,7 +79,6 @@
         "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
       }
     ],
-
     "requirements": [
       {
         "type": "ARTIFACT_1",
@@ -87,7 +86,6 @@
           {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
           {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
         ]
-
       },
       {
         "type": "ARTIFACT_1",
@@ -98,43 +96,7 @@
       }
     ]
   },
-  {
-    "subscriptionName": "Subscription_Rest_One_Missing_Auth_Params_in_Head",
-    "ldapUserName": "DEF",
-    "userName": "myUserName",
-    "authenticationType": "BASIC_AUTH",
-    "repeat": false,
-    "created": "data-time",
-    "notificationType": "REST_POST",
-    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
-    "restPostBodyMediaType": "application/x-www-form-urlencoded",
-    "urlParams": true,
-    "notificationMessageKeyValues" : [
-      {
-        "formkey" : "json",
-        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
-      }
-    ],
-
-    "requirements": [
-      {
-        "type": "ARTIFACT_1",
-        "conditions": [
-          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?outcome.conclusion == 'SUCCESSFUL' && outcome.id=='TC5']"}
-        ]
-
-      },
-      {
-        "type": "ARTIFACT_1",
-        "conditions": [
-          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
-          {"jmespath": "testCaseExecutions[?testCaseStartedEventId == 'cb9d64b0-a6e9-4419-8b5d-a650c27c59ca']"}
-        ]
-      }
-    ]
-  },
-  {
+  "Subscription_Rest_Params_in_Url": {
     "subscriptionName": "Subscription_Rest_Params_in_Url",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -159,7 +121,7 @@
       }
     ]
   },
-  {
+  "Subscription_Rest_Auth_Params_in_Url" : {
     "subscriptionName": "Subscription_Rest_Auth_Params_in_Url",
     "ldapUserName": "DEF",
     "repeat": false,
@@ -185,13 +147,13 @@
       }
     ]
   },
-  {
-    "subscriptionName": "Subscription_Row_Body",
+  "Subscription_Raw_Body" : {
+    "subscriptionName": "Subscription_Raw_Body",
     "ldapUserName": "DEF",
     "repeat": false,
     "created": "data-time",
     "notificationType": "REST_POST",
-    "notificationMeta": "http://${rest.host}:${rest.port}${rest.row.body}",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.raw.body}",
     "restPostBodyMediaType": "application/json",
     "notificationMessageKeyValues": [
       {
@@ -216,5 +178,80 @@
         ]
       }
     ]
+  },
+  "Subscription_bad_mail" : {
+    "subscriptionName": "Subscription_bad_mail",
+    "ldapUserName": "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "MAIL",
+    "notificationMeta": "example@ericsson.com",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+      {
+        "formkey": "",
+        "formvalue": "@"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
+        ]
+      }
+    ]
+  },
+  "Subscription_bad_notification_rest_endpoint" : {
+    "subscriptionName": "Subscription_bad_notification_rest_endpoint",
+    "userName" : "DEF",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.bad}",
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues" : [
+      {
+        "formkey" : "",
+        "formvalue" : "@"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
+        ]
+      }
+    ]
+  },
+  "Subscription_rest_missing_token" : {
+    "subscriptionName": "Subscription_rest_missing_token",
+    "ldapUserName": "DEF",
+    "userName": "myUserName",
+    "authenticationType": "BASIC_AUTH",
+    "repeat": false,
+    "created": "data-time",
+    "notificationType": "REST_POST",
+    "notificationMeta": "http://${rest.host}:${rest.port}${rest.endpoint.auth}",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "urlParams": true,
+    "notificationMessageKeyValues" : [
+      {
+        "formkey" : "json",
+        "formvalue" : "{parameter: [{ id: testCaseExecutions[0].outcome.id, value : testCaseExecutions[0].outcome.conclusion }]}"
+      }
+    ],
+    "requirements": [
+      {
+        "type": "ARTIFACT_1",
+        "conditions": [
+          {"jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"},
+          {"jmespath": "id == '6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43'" }
+        ]
+      }
+    ]
   }
-]
+}

@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class MergePrepare {
         try {
             JSONObject ruleJSONObject = new JSONObject(mergeRule);
             if (ruleJSONObject.keys().hasNext()) {
-                String ruleKey = (String) ruleJSONObject.keys().next();
+                String ruleKey = ruleJSONObject.keys().next();
                 Object value = ruleJSONObject.get(ruleKey);
                 if (value.getClass() == JSONObject.class)
                     return getValueFromRule(value.toString());
@@ -128,7 +129,8 @@ public class MergePrepare {
     // TODO fix so that we do not need to pass both originObject and
     // stringObject which are
     // different representations of the same object.
-    public String getMergePathFromArrayMergeRules(String originObject, String mergeRule, String stringObject) {
+    public String getMergePathFromArrayMergeRules(String originObject, String mergeRule,
+            String stringObject) {
         LOGGER.debug("mergeRules are : {}\n originObject is : {}", mergeRule, originObject);
         try {
             JSONArray ruleJSONArray = new JSONArray(mergeRule);
@@ -141,7 +143,8 @@ public class MergePrepare {
                 if (!firstPath.isEmpty()) {
                     String firstPathNoIndexes = removeArrayIndexes(firstPath);
                     String[] firstPathSubstrings = firstPathNoIndexes.split("\\.");
-                    ArrayList<String> fp = new ArrayList<String>(Arrays.asList(firstPathSubstrings));
+                    ArrayList<String> fp = new ArrayList<String>(
+                            Arrays.asList(firstPathSubstrings));
                     fp.remove(fp.size() - 1);
                     firstPathTrimmed = StringUtils.join(fp, ":{");
                     String secondRuleComplete = "{" + firstPathTrimmed + ":" + secondRule + "}";
@@ -205,8 +208,9 @@ public class MergePrepare {
 
     public String getMergePath(String originObject, String mergeRule, boolean skipPathSearch) {
         String mergePath = "";
-        if (mergeRule == null || mergeRule.isEmpty())
+        if (mergeRule == null || mergeRule.isEmpty()) {
             return mergePath;
+        }
         String stringObject = "";
         String stringRule = "";
         JSONObject objectJSONObject = null;
@@ -219,7 +223,7 @@ public class MergePrepare {
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
         } catch (JSONException e) {
-            LOGGER.error("Failed to parse JSON.", e);
+            LOGGER.warn("Failed to parse JSON.", e);
             return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
         }
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);
@@ -303,7 +307,8 @@ public class MergePrepare {
                     }
                 }
                 if (longestCommonString.endsWith(".")) {
-                    longestCommonString = longestCommonString.substring(0, longestCommonString.length() - 1);
+                    longestCommonString = longestCommonString.substring(0,
+                            longestCommonString.length() - 1);
                 }
                 // remove index at the end
                 String pattern = "\\.\\d*$";
@@ -340,8 +345,8 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in the
-     * path before doing the check.
+     * This method can not be generalized since it removes the last element in the path before doing
+     * the check.
      *
      * @param originObject
      * @param path
@@ -358,8 +363,8 @@ public class MergePrepare {
     }
 
     /**
-     * This method can not be generalized since it removes the last element in the
-     * path before doing the check.
+     * This method can not be generalized since it removes the last element in the path before doing
+     * the check.
      *
      * @param originObject
      * @param path
@@ -382,6 +387,13 @@ public class MergePrepare {
             } else {
                 jsonResult = jmesPathInterface.runRuleOnEvent(fixedPath, originObject);
             }
+            if (jsonResult == null) {
+                LOGGER.warn(
+                        "Failed to get property from object '{}', result is null."
+                                + "\nThis may be cause of none values in the Rules file.",
+                        originObject);
+                return null;
+            }
             return jsonResult.get(firstKey);
         } catch (Exception e) {
             LOGGER.error("Failed to get property value.", e);
@@ -390,7 +402,8 @@ public class MergePrepare {
         return null;
     }
 
-    public String addMissingLevels(String originObject, String objectToMerge, String mergeRule, String mergePath) {
+    public String addMissingLevels(String originObject, String objectToMerge, String mergeRule,
+            String mergePath) {
 
         JSONObject newObject = new JSONObject();
         try {
@@ -410,7 +423,8 @@ public class MergePrepare {
                 String pathElement = mergePathArray.get(mergePathIndex).toString();
                 if (isNumeric(pathElement)) {
                     int index = Integer.parseInt(pathElement);
-                    int arraySize = getOriginObjectArraySize(originObject, mergePathArray, mergePathIndex, pathElement);
+                    int arraySize = getOriginObjectArraySize(originObject, mergePathArray,
+                            mergePathIndex, pathElement);
                     JSONArray mergeArray = new JSONArray();
                     if (arraySize == 0 && index == 0) {
                         mergeArray.put(mergeObject);
@@ -436,11 +450,11 @@ public class MergePrepare {
             }
         } catch (Exception e) {
             LOGGER.error("addMissingLevels failed for arguments:\n"
-        	    	+ "originObject was : {}\n"
-        	    	+ "objectTomerge was: {}\n"
-        	    	+ "mergeRule was: {}\n"
-        	    	+ "mergePath was: {}\n",
-        	    	originObject, objectToMerge, mergeRule, mergePath, e);
+                    + "originObject was : {}\n"
+                    + "objectTomerge was: {}\n"
+                    + "mergeRule was: {}\n"
+                    + "mergePath was: {}\n",
+                    originObject, objectToMerge, mergeRule, mergePath, e);
         }
         return newObject.toString();
     }
@@ -449,7 +463,8 @@ public class MergePrepare {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
-    private int getOriginObjectArraySize(String originObject, JSONArray mergePathArray, int mergePathIndex,
+    private int getOriginObjectArraySize(String originObject, JSONArray mergePathArray,
+            int mergePathIndex,
             String pathElement) {
         int size = 0;
         try {

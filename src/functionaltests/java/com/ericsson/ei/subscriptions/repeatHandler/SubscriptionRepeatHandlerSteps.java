@@ -38,10 +38,12 @@ import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
-@TestPropertySource(properties = { "rules.path=src/test/resources/TestExecutionObjectRules.json",
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: SubscriptionRepeatHandlerSteps",
+        "missedNotificationDataBaseName: SubscriptionRepeatHandlerSteps-missedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatHandlerSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: SubscriptionRepeatHandlerStepsConsumer" })
+        "rabbitmq.consumerName: SubscriptionRepeatHandlerStepsConsumer" })
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";

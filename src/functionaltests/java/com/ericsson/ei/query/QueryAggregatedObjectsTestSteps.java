@@ -32,9 +32,11 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
+        "missedNotificationDataBaseName: QueryAggregatedObjectsTestSteps-missedNotifications",
         "rabbitmq.exchange.name: QueryAggregatedObjectsTestSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
+        "rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
 @AutoConfigureMockMvc
 public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 

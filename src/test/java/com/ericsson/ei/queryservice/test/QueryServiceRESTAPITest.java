@@ -50,8 +50,11 @@ import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
-        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: QueryServiceRESTAPITest",
+        "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
+        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange",
+        "rabbitmq.consumerName: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
@@ -62,7 +65,7 @@ public class QueryServiceRESTAPITest {
 
     static JSONArray jsonArray = null;
 
-    static Logger log = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
+    static Logger LOGGER = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static final String missedNotificationPath = "src/test/resources/MissedNotification.json";
@@ -81,29 +84,35 @@ public class QueryServiceRESTAPITest {
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
-        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
+        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath), "UTF-8");
     }
 
     @Test
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
+        LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
-                .thenReturn(new ResponseEntity(response, HttpStatus.OK));
+               .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
-                .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
-                .contentType(MediaType.APPLICATION_JSON);
+                                                              .accept(MediaType.APPLICATION_JSON)
+                                                              .param("ID",
+                                                                      "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
+                                                              .contentType(
+                                                                      MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
-                "");
-        log.info("The Output is : " + output);
+
+        output = output.replaceAll("(\\s\\s\\s\\s)", "")
+                       .replace("\\" + "n", "")
+                       .replace("\\" + "r", "")
+                       .replace("\\", "");
+        LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(expectedOutput, output);
@@ -113,20 +122,26 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath));
-        log.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath),
+                "UTF-8");
+        LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
-                .thenReturn(new ResponseEntity(response, HttpStatus.OK));
+               .thenReturn(new ResponseEntity(response, HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
-                .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
+                                                              .accept(MediaType.APPLICATION_JSON)
+                                                              .param("SubscriptionName",
+                                                                      "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String output = result.getResponse().getContentAsString().toString();
-        output = output.replaceAll("(\\s\\s\\s\\s)", "").replace("\\" + "n", "").replace("\\" + "r", "").replace("\\",
-                "");
-        log.info("The Output is : " + output);
+
+        output = output.replaceAll("(\\s\\s\\s\\s)", "")
+                       .replace("\\" + "n", "")
+                       .replace("\\" + "r", "")
+                       .replace("\\", "");
+        LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals(expectedOutput, output);

@@ -8,14 +8,12 @@ Feature: Test Subscription Content
   Then The subscription is created successfully
   And Valid subscription "mySubscription" exists
 
-
   @DuplicateSubscription
   Scenario: Test duplicate subscriptions are rejected
   Given Subscription "mySubscription" already exists
   When I create a duplicate subscription with "src/functionaltests/resources/ValidSubscription.json"
   Then Duplicate subscription is rejected
   And "mySubscription" is not duplicated
-
 
   @InvalidSubscription
   Scenario: Test invalid subscriptions are rejected
@@ -30,5 +28,3 @@ Feature: Test Subscription Content
   Given No subscriptions exist
   When I try to create subscription request with missing required fields"src/functionaltests/resources/missingFieldsSubscription.json"
   Then The subscription with missing field is rejected
-
-

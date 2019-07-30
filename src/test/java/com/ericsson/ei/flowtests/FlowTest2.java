@@ -39,8 +39,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest2.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path=src/test/resources/ArtifactRules.json",
-        "spring.data.mongodb.database: FlowTest2", "rabbitmq.exchange.name: FlowTest2-exchange",
+@TestPropertySource(properties = {
+        "rules.path=src/test/resources/ArtifactRules.json",
+        "spring.data.mongodb.database: FlowTest2",
+        "missedNotificationDataBaseName: FlowTest2-missedNotifications",
+        "rabbitmq.exchange.name: FlowTest2-exchange",
         "rabbitmq.consumerName: FlowTest2Consumer" })
 
 public class FlowTest2 extends FlowTestBase {

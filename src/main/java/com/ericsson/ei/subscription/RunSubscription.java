@@ -113,7 +113,7 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
-                    // the keyword 'synchronized' make it sure that this part of the code run
+                    // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
                     synchronized (this) {
                         if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(

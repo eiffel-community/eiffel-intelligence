@@ -70,21 +70,12 @@ public class RestEndpointsTestSteps extends FunctionalTestBase {
         setRequestDefaults();
     }
 
-    @Given("^Subscription with name \"([^\"]*)\" is added as body$")
-    public void subscription_with_name_is_added_as_body(String name) throws Throwable {
-        RestPostSubscriptionObject restPostSubscription = new RestPostSubscriptionObject(name);
-        restPostSubscription.setNotificationMeta("some_url")
-                            .setAuthenticationType("NO_AUTH")
-                            .setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED);
-        request.setBody(restPostSubscription.getAsSubscriptions().toString());
-    }
-
     @Given("^\"([^\"]*)\" add subscription with name \"([^\"]*)\" to the request body$")
-    public void add_subscription_with_name_to_the_request_body(String doAdd, String name) throws Throwable {
+    public void add_subscription_with_name_to_the_request_body(String doAdd, String subscriptionName) throws Throwable {
         if (doAdd.equals("do not")) {
             return;
         }
-        RestPostSubscriptionObject restPostSubscription = new RestPostSubscriptionObject(name);
+        RestPostSubscriptionObject restPostSubscription = new RestPostSubscriptionObject(subscriptionName);
         restPostSubscription.setNotificationMeta("some_url")
                             .setAuthenticationType("NO_AUTH")
                             .setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -99,16 +90,14 @@ public class RestEndpointsTestSteps extends FunctionalTestBase {
 
     @When("^Perform request on endpoint \"([^\"]*)\"$")
     public void perform_request_on_endpoint(String endpoint) throws Throwable {
-        System.out.println("############# Endpoint ::: <" + endpoint + ">");
         response = request.setEndpoint(endpoint)
                           .performRequest();
     }
 
     @Then("^Request should get response code (\\d+)$")
-    public void request_should_get_response_code(int expectedstatusCode) throws Throwable {
-        System.out.println("############# expectedstatusCode ::: " + expectedstatusCode);
+    public void request_should_get_response_code(int expectedStatusCode) throws Throwable {
         int actualStatusCode = response.getStatusCodeValue();
-        assertEquals("EI rest API status code: ", expectedstatusCode, actualStatusCode);
+        assertEquals("EI rest API status code: ", expectedStatusCode, actualStatusCode);
         response = null;
     }
 

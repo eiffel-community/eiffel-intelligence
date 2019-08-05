@@ -26,26 +26,6 @@ Feature: Test Rest Endpoints
     | 200          | /rules                                 |
     | 200          | /rules/rule-check/testRulePageEnabled  |
 
-  # This scenario and the Scenario Outline below does the same thing, keep one remove one before merge.
-  Scenario: Test POST PUT GET DELETE on /subscriptions endpoint
-    Given A POST request is prepared
-    And Subscription with name "test_subscription" is added as body
-    When Perform request on endpoint "/subscriptions"
-    Then Request should get response code 200
-    Given A PUT request is prepared
-    And Subscription with name "test_subscription" is added as body
-    When Perform request on endpoint "/subscriptions"
-    Then Request should get response code 200
-    Given A GET request is prepared
-    When Perform request on endpoint "/subscriptions/test_subscription"
-    Then Request should get response code 200
-    Given A DELETE request is prepared
-    When Perform request on endpoint "/subscriptions/test_subscription"
-    Then Request should get response code 200
-    Given A GET request is prepared
-    When Perform request on endpoint "/subscriptions/test_subscription"
-    Then Request should get response code 404
-
   @Test_Post_Put_Get_Delete_and_Get_(not_found)_subscription
   Scenario Outline: Perform <type> request on <endpoint> and expect response code <responsecode>
     Given A <type> request is prepared

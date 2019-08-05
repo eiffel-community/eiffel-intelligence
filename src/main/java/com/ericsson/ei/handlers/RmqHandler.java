@@ -69,15 +69,15 @@ public class RmqHandler {
     @Value("${rabbitmq.tlsVersion}")
     private String tlsVersion;
 
-    @JsonIgnore
     @Getter
     @Setter
+    @JsonIgnore
     @Value("${rabbitmq.user}")
     private String user;
 
-    @JsonIgnore
     @Getter
     @Setter
+    @JsonIgnore
     @Value("${rabbitmq.password}")
     private String password;
 
@@ -110,11 +110,13 @@ public class RmqHandler {
     private int maxThreads;
 
     @Setter
+    @JsonIgnore
     private RabbitTemplate rabbitTemplate;
     @Getter
+    @JsonIgnore
     private CachingConnectionFactory cachingConnectionFactory;
-
     @Getter
+    @JsonIgnore
     private SimpleMessageListenerContainer container;
 
     @Bean

@@ -123,7 +123,6 @@ public class RunSubscription {
                                     requirementIndex, id);
                         } else {
                             conditionFulfilled = false;
-                            break;
                         }
                     }
                 }

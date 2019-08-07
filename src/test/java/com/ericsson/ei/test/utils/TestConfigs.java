@@ -56,37 +56,11 @@ public class TestConfigs {
 
         int port = SocketUtils.findAvailableTcpPort();
         setSystemProperties(port);
-        
-        
-//        System.setProperty("rabbitmq.port", "" + port);
-//        System.setProperty("rabbitmq.user", "guest");
-//        System.setProperty("rabbitmq.password", "guest");
-//        System.setProperty("waitlist.initialDelayResend", "500");
-//        System.setProperty("waitlist.fixedRateResend", "100");
-//        LOGGER.debug("done setting up message buss properties");
-        
-        
-//        LOGGER.info("setting up message buss");
-        
-        
-//        String config = "src/test/resources/configs/qpidConfig.json";
-//        File qpidConfig = new File(config);
-//        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-//        amqpBroker.startBroker();
         LOGGER.info("setting up message bus...");
         setupBroker(port);
         
         setupConnectionFactory(port);
         LOGGER.debug("Setting up message bus done!");
-//        connectionFactory = new ConnectionFactory();
-//        connectionFactory.setUsername("guest");
-//        connectionFactory.setPassword("guest");
-//
-//        connectionFactory.setPort(port);
-//        connectionFactory.setHandshakeTimeout(600000);
-//        connectionFactory.setConnectionTimeout(600000);
-//        connection = connectionFactory.newConnection();
-//        LOGGER.debug("after setting up message buss");
     }
 
     public static MongoClient mongoClientInstance() throws Exception {

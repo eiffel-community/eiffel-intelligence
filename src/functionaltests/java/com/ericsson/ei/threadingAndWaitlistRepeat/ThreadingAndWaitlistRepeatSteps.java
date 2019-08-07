@@ -92,7 +92,10 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^when waitlist has resent events they should have been deleted$")
     public void when_waitlist_has_resent_events_they_should_have_been_deleted() throws Throwable {
-        TimeUnit.SECONDS.sleep(2);
+        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3);
+        while (dbManager.waitListSize() > 0 && stopTime > System.currentTimeMillis()) {
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
         assertEquals("Waitlist resent events and due their presence in event-to-object-map, events are deleted", 0,
                 dbManager.waitListSize());
     }

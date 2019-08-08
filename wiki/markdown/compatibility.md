@@ -11,7 +11,6 @@
 <br>
 <br>
 ## Back-end: 1.0.0
-***
 ### Front-end: 1.0.0
 Compatible: ✔️️ Yes
 
@@ -44,7 +43,6 @@ expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 ## Back-end: 1.0.1
-***
 ### Front-end: 1.0.0
 Compatible: ✅ Yes
 
@@ -76,7 +74,6 @@ Notes:
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 ## Back-end: 1.0.2
-***
 ### Front-end: 1.0.0
 Compatible: ❕ Yes
 

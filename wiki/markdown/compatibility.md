@@ -3,8 +3,8 @@
 |              |Front-end ➡|        |        |        |
 |-------------:|:---------:|:------:|:------:|:------:|
 |**Back-end ⬇**|       1.0.0|    1.0.1|    1.0.2|    1.0.3|
-|         1.0.0|           ✔️️|       ✅|       ✅|       ✅|
-|         1.0.1|          ✅|       ✅|       ✅|       ✅|
+|         1.0.0|           ✔️️|        ✔️️|       ✅|       ✅|
+|         1.0.1|           ✔️️|        ✔️️|       ✅|       ✅|
 |         1.0.2|          ❕|       ✅|        ✔️|        ✔️|
 
 ✔️️ Yes | ✅ Yes, minor Issue | ❕ Yes, medium Issue | ❌ No, major Issue
@@ -17,10 +17,9 @@ Compatible: ✔️️ Yes
 Notes: -
 
 ### Front-end: 1.0.1
-Compatible: ✅ Yes, minor Issue
+Compatible: ✔️️ Yes
 
 Notes:
-
 - Query integration test have a miss match in the expected result: <br/>
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 
@@ -28,7 +27,6 @@ expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 Compatible: ✅ Yes, minor Issue
 
 Notes:
-
 - Query integration test have a miss match in the expected result: <br/>
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
@@ -37,14 +35,13 @@ expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 Compatible: ✅ Yes, minor Issue
 
 Notes:
-
 - Query integration test have a miss match in the expected result: <br/>
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 ## Back-end: 1.0.1
 ### Front-end: 1.0.0
-Compatible: ✅ Yes, minor Issue
+Compatible: ✔️️ Yes
 
 Notes:
 - Subscription integration test have an error where notification meta is detected to be an invalid mail which is correct, but the test does not detect this and 2 tests will fail as a result.
@@ -52,10 +49,9 @@ Notes:
 expected:<{"[responseEntity":"[]"]}> but was:<{"[queryResponseEntity":{}]}>
 
 ### Front-end: 1.0.1
-Compatible: ✅ Yes, minor Issue
+Compatible: ✔️️ Yes
 
 Notes:
-
 - Query integration test have a miss match in the expected result: <br>
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 

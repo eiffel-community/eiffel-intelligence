@@ -70,8 +70,6 @@ public class WaitListWorker {
                     checkTargetAggregationsExistAndRepublishEvent(eventJson);
                 }
             } catch (Exception e) {
-                // LOGGER.error("Exception occured while trying to resend event: " + document,
-                // e);
                 LOGGER.error("Exception occured while trying to resend event: {}", document, e);
             }
         }

@@ -155,7 +155,8 @@ public class TrafficGeneratedTest extends FlowTestBase {
      * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
      * used.
      *
-     * @param eventNames list of events to be sent.
+     * @param eventNames
+     *            list of events to be sent.
      * @return list of ready to send events.
      */
     private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {

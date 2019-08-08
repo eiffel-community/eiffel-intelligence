@@ -7,7 +7,7 @@
 |         1.0.1|          ✅|       ✅|       ✅|       ✅|
 |         1.0.2|          ❕|       ✅|        ✔️|        ✔️|
 
-✔️️ Good | ✅ Minor Issue | ❕ Medium Issue | ❌ Major Issue
+✔️️ Yes | ✅ Yes, minor Issue | ❕ Yes, medium Issue | ❌ No, major Issue
 <br>
 <br>
 ## Back-end: 1.0.0

@@ -17,7 +17,7 @@ Compatible: ✔️️ Yes
 Notes: -
 
 ### Front-end: 1.0.1
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
@@ -25,7 +25,7 @@ Notes:
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 
 ### Front-end: 1.0.2
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
@@ -34,7 +34,7 @@ expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 ### Front-end: 1.0.3
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
@@ -44,7 +44,7 @@ expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 
 ## Back-end: 1.0.1
 ### Front-end: 1.0.0
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 - Subscription integration test have an error where notification meta is detected to be an invalid mail which is correct, but the test does not detect this and 2 tests will fail as a result.
@@ -52,7 +52,7 @@ Notes:
 expected:<{"[responseEntity":"[]"]}> but was:<{"[queryResponseEntity":{}]}>
 
 ### Front-end: 1.0.1
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
@@ -60,14 +60,14 @@ Notes:
 expected:<{"[queryResponseEntity":{}]}> but was:<{"[responseEntity":"[]"]}>
 
 ### Front-end: 1.0.2
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
 - Documentation is Agen based but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 ### Front-end: 1.0.3
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 
@@ -75,7 +75,7 @@ Notes:
 
 ## Back-end: 1.0.2
 ### Front-end: 1.0.0
-Compatible: ❕ Yes
+Compatible: ❕ Yes, medium Issue
 
 Notes:
 - Subscription integration test have an error where notification meta is detected to be an invalid mail which is correct, but the test does not detect this and 2 tests will fail as a result.
@@ -85,7 +85,7 @@ expected:<{"[responseEntity":"[]"]}> but was:<{"[queryResponseEntity":{}]}>
 - Multiple e-mail recipients are not supported through the front-end subscription form. 
 
 ### Front-end: 1.0.1
-Compatible: ✅ Yes
+Compatible: ✅ Yes, minor Issue
 
 Notes:
 

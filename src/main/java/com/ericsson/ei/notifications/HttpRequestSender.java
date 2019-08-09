@@ -25,6 +25,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestOperations;
 
 /**
@@ -61,6 +62,9 @@ public class HttpRequestSender {
             checkIfAuthenticationException(e);
             LOGGER.error("HTTP request failed, bad request! When trying to connect to URL: {}\n{}",
                     url, e);
+            return false;
+        } catch (HttpServerErrorException e) {
+            LOGGER.error("HttpServerErrorException, HTTP request to url {} failed\n", url, e);
             return false;
         } catch (Exception e) {
             LOGGER.error("HTTP request to url {} failed\n", url, e);

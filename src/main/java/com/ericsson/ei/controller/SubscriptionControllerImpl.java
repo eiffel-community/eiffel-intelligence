@@ -115,11 +115,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 LOGGER.debug("Subscription [{}] fetched successfully.", subscriptionName);
             } catch (SubscriptionNotFoundException e) {
                 LOGGER.error("Subscription not found: {}", subscriptionName);
-                LOGGER.debug("Subscription not found traceback", e);
+                LOGGER.debug("Subscription not found traceback:\n {}", e);
                 notFoundSubscriptionList.add(subscriptionName);
             } catch (Exception e) {
-                LOGGER.error("Failed to fetch subscription {}", subscriptionName, e);
-                LOGGER.debug("Failed to fetch subscription {}", e);
+                LOGGER.error("Failed to fetch subscription {}", subscriptionName);
+                LOGGER.debug("Failed to fetch subscription:\n {}", e);
 
                 notFoundSubscriptionList.add(subscriptionName);
             }

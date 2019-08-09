@@ -10,8 +10,7 @@ We recommend using the latest version of back-end and front-end whenever possibl
 |[1.0.2](#back-end-102)|[❕](#front-end-100-2)|[✅](#front-end-101-2)|[✔️️](#front-end-102-2) |[✔️️](#front-end-103-2) |
 
 ✔️️ Yes | ✅ Yes, minor Issue | ❕ Yes, medium Issue | ❌ No, major Issue
-<br>
-<br>
+
 ## Back-end: 1.0.0
 #### Front-end: 1.0.0
 Compatible: ✔️️ Yes

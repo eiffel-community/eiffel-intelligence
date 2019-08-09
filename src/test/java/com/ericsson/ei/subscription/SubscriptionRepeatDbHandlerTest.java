@@ -26,18 +26,12 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
-import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",

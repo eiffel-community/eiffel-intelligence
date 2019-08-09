@@ -64,7 +64,7 @@ Compatible: ❕ Yes, medium Issue
 
 Notes:
 - Documentation is based on the [Toulouse](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to gav package instead of purl does not change subscription structure.
-- Multiple e-mail recipients are not supported through the front-end subscription form. This becomes possible to do from front-end version 1.0.1 and forward.
+- Multiple e-mail recipients are not supported through the front-end subscription form. This becomes possible to do from front-end version [1.0.1](https://github.com/eiffel-community/eiffel-intelligence-frontend/releases/tag/1.0.1) and forward.
 
 #### Front-end: 1.0.1
 Compatible: ✅ Yes, minor Issue

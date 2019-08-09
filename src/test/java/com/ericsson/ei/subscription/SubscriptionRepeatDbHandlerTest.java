@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
@@ -43,10 +44,8 @@ import com.mongodb.util.JSON;
         "missedNotificationDataBaseName: SubscriptionRepeatDbHandlerTest-missedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
         "rabbitmq.consumerName: SubscriptionRepeatDbHandlerTest" })
-@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { App.class })
-public class SubscriptionRepeatDbHandlerTest {
+public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
     static Logger log = LoggerFactory.getLogger(SubscriptionRepeatDbHandlerTest.class);
 

@@ -275,7 +275,7 @@ public class MongoDBHandler {
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
         }
         catch (MongoCommandException e) {
-                LOGGER.error("MongoCommandException, MongoDB shudown or interrupted Error: " + e.getErrorMessage() + "\nStactrace\n" + e);
+                LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStactrace\n" + e);
                 if (mongoClient != null) {
                     mongoClient.close();
                 }
@@ -283,7 +283,7 @@ public class MongoDBHandler {
                 return null;
         }
         catch (MongoInterruptedException e) {
-            LOGGER.error(" MongoInterruptedException, MongoDB shudown or interrupted Error: " + e.getMessage() + "\nStactrace\n" + e);
+            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStactrace\n" + e);
             if (mongoClient != null) {
                 mongoClient.close();
             }
@@ -291,7 +291,7 @@ public class MongoDBHandler {
             return null;
         }
         catch (MongoSocketReadException e) {
-            LOGGER.error("MongoSocketReadException, MongoDB shudown or interrupted Error: " + e.getMessage() + "\nStactrace\n" + e);
+            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStactrace\n" + e);
             if (mongoClient != null) {
                 mongoClient.close();
             }
@@ -300,7 +300,7 @@ public class MongoDBHandler {
         }
         
         catch (IllegalStateException e) {
-            LOGGER.error("IllegalStateException, MongoDB state not good Error: " + e.getMessage() + "\nStactrace\n" + e);
+            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage() + "\nStactrace\n" + e);
             if (mongoClient != null) {
                 mongoClient.close();
             }

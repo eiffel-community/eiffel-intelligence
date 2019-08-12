@@ -19,52 +19,49 @@ before_install:
   - uname -a
   - chmod +x pom.xml
 
-
-# This is only run before integrationTests job
-# To ensure docker containers are fully up and running we sleep 60s
-before_script:
-  - source src/main/docker/env.bash
-  - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb rabbitmq eiffel-er jenkins mail-server
-  - sleep 60
-
-
-# Generate site documentation using mvn site plugin
-before_deploy:
-  - rm -rf docs
-  - mvn site -B
-
-
 # Using default stage 'test' for all our test jobs, and only running deploy stage
 # (after merge) to master branch
 stages:
+  - codacy
   - test
   - name: deploy
     if: branch = master
 
-
 # List of jobs to run, tied to specific stages
 jobs:
   include:
+    # Code quality and coverage
+    - stage: codacy
+      name: codacy
+      script:
+        - mvn cobertura:cobertura -B
+        - curl -Ls -o codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/6.0.2/codacy-coverage-reporter-6.0.2-assembly.jar
+        - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml
+    # Execute Unit and Functional tests
     - stage: test
       name: functionalTests
-      before_script: skip
       script:
-        # We will run one test using embedded mongodb first that will download the mongo instance and
-        # then the rest of the test that will no longer need to download the embedded mongo since it will exist.
-        #
-        # Also important that the first test to be run is a Spring Boot Test since spring boot also downloads
-        # another version of embedded mongo db to avoid race conditions between Spring Boot tests
-        - mvn -Dsurefire.rerunFailingTestsCount=2 -DsomeModule.test.includes="**/QueryServiceTest.java" test -DskipITs -B
-        - mvn -Dsurefire.rerunFailingTestsCount=2 -DsomeModule.test.excludes="**/QueryServiceTest.java" test -DskipITs -B
+        - mvn -Dsurefire.rerunFailingTestsCount=2 test -DskipITs -B
+    # Execute Integration tests
     - stage: test
       name: integrationTests
+      # This is only run before integrationTests job
+      # To ensure docker containers are fully up and running we sleep 60s
+      before_script:
+        - source src/main/docker/env.bash
+        - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb rabbitmq eiffel-er jenkins mail-server
+        - sleep 60
       script:
         - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
+    # Deploying documentation
     - stage: deploy
       name: deployGitHubPages
-      before_script: skip   # do not run this on deploy
       script: skip          # do not run default test scripts
       install: skip         # do not run default mvn install
+      # Generate site documentation using mvn site plugin
+      before_deploy:
+        - rm -rf docs
+        - mvn site -B
       deploy:
         provider: pages
         skip_cleanup: true

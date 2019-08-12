@@ -275,36 +275,24 @@ public class MongoDBHandler {
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
         }
         catch (MongoCommandException e) {
-                LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
-                if (mongoClient != null) {
-                    mongoClient.close();
-                }
-                mongoClient = null;
-                return null;
+            LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
         }
         catch (MongoInterruptedException e) {
             LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            if (mongoClient != null) {
-                mongoClient.close();
-            }
-            mongoClient = null;
+            closeMongoDbConecction();
             return null;
         }
         catch (MongoSocketReadException e) {
             LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            if (mongoClient != null) {
-                mongoClient.close();
-            }
-            mongoClient = null;
+            closeMongoDbConecction();
             return null;
         }
         
         catch (IllegalStateException e) {
             LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            if (mongoClient != null) {
-                mongoClient.close();
-            }
-            mongoClient = null;
+            closeMongoDbConecction();
             return null;
         }
         
@@ -326,6 +314,13 @@ public class MongoDBHandler {
         return collection;
     }
 
+    private void closeMongoDbConecction() {
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+        mongoClient = null;
+    }
+    
     /**
      * This method is used to drop a collection.
      *

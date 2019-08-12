@@ -17,8 +17,13 @@
 */
 package com.ericsson.ei.erqueryservice;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A class representation of the POST body to the search API's upstream/downstream method.
@@ -60,8 +65,41 @@ public class SearchParameters {
         this.ult = ult;
     }
 
+    /**
+     * Returns the search parameters as a json string
+     * @return String
+     * @throws IOException
+     */
+    public String getAsJsonString() throws IOException {
+        ArrayList<String> dltStringArray = convertSearchParametersToArrayList(dlt);
+        ArrayList<String> ultStringArray = convertSearchParametersToArrayList(ult);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode dltJson = mapper.readTree(dltStringArray.toString());
+        JsonNode ultJson = mapper.readTree(ultStringArray.toString());
+
+        return "{\"dlt\":" + dltJson.toString() + ",\"ult\":" + ultJson.toString() + "}";
+    }
+
     @Override
     public String toString() {
         return "SearchParameters{" + "dlt=" + dlt + ", ult=" + ult + '}';
+    }
+
+    /**
+     * Converts the searchParameters to a ArrayList with json
+     * @param searchParameters
+     * @return
+     */
+    private ArrayList<String> convertSearchParametersToArrayList(List<LinkType> searchParameters) {
+        Object[] searchParametersArray = searchParameters.toArray();
+        ArrayList<String> searchParametersJsonStringArray = new ArrayList<String>();
+
+        for(int i = 0; i < searchParametersArray.length; i++) {
+            String linkTypeValue = "\"" + searchParametersArray[i].toString() + "\"";
+            searchParametersJsonStringArray.add(linkTypeValue);
+        }
+
+        return searchParametersJsonStringArray;
     }
 }

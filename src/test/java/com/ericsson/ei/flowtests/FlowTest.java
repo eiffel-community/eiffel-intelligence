@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,8 +38,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -50,6 +49,7 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -96,8 +96,9 @@ public class FlowTest extends FlowTestBase {
             objectNode.set("upstreamLinkObjects", upstreamJson);
             objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
+            Header[] headers = {};
             when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                    anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+                    anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
         } else {
             final URL upStreamInput = this.getClass().getClassLoader().getResource(UPSTREAM_INPUT_FILE);
             ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);

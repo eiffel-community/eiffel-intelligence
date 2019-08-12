@@ -14,54 +14,49 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package com.ericsson.ei.erqueryservice;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.annotation.PostConstruct;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.ericsson.eiffelcommons.utils.HttpRequest;
+import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
+
+import lombok.Getter;
 /**
  * @author evasiba
  */
+
 @Component
 public class ERQueryService {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ERQueryService.class);
 
-    private RestOperations rest;
+    private HttpRequest request;
 
     @Getter
     @Value("${er.url}")
-    private String url;
+    private String erBaseUrl;
 
-    public ERQueryService(RestTemplateBuilder builder) {
-        rest = builder.build();
+    public ERQueryService() {
+        this.request = new HttpRequest();
     }
 
-    public void setRest(RestOperations rest) {
-        this.rest = rest;
+    public void setHttpRequest(HttpRequest request) {
+        this.request = request;
     }
 
     /**
@@ -72,21 +67,28 @@ public class ERQueryService {
      *            the id of the event.
      * @return ResponseEntity
      */
-    public ResponseEntity<String> getEventDataById(String eventId) {
-        if(StringUtils.isNotBlank(url)) {
-            final String erUrl = URI.create(url.trim() + "/" + "{id}").normalize().toString();
-            LOGGER.debug("The URL to ER is: {}", erUrl);
+    public ResponseEntity getEventDataById(String eventId) {
+        String erUrl = null;
 
-            final Map<String, String> params = Collections.singletonMap("id", eventId);
-            LOGGER.trace("The ID parameter is set");
-            try {
-                final ResponseEntity<String> response = rest.getForEntity(erUrl, String.class, params);
+        try {
+            if(StringUtils.isNotBlank(erBaseUrl)) {
+                request
+                    .setHttpMethod(HttpMethod.GET)
+                    .setBaseUrl(erBaseUrl)
+                    .setEndpoint("{id}")
+                    .addParam("id", eventId);
+
+                erUrl= request.getURI().toString();
+                LOGGER.debug("The URL to ER is: {}", erUrl);
+                ResponseEntity response = request.performRequest();
                 LOGGER.trace("The response is : {}", response.toString());
-            } catch (RestClientException e) {
-                LOGGER.error("Error occurred while executing REST GET to: {} for {}", erUrl, eventId, e);
+            } else {
+                LOGGER.info("The URL to ER is not provided");
             }
-        } else {
-            LOGGER.info("The URL to ER is not provided");
+        } catch (MalformedURLException e) {
+            LOGGER.error("Error while building the ER url. Stacktrace: {}", ExceptionUtils.getStackTrace(e));
+        } catch (Exception e) {
+            LOGGER.error("Error occurred while executing REST GET to: {} for {}", erUrl, eventId, e);
         }
 
         return null;
@@ -112,33 +114,33 @@ public class ERQueryService {
      *            whether or not to retain the tree structure in the result.
      * @return ResponseEntity
      */
-    public ResponseEntity<JsonNode> getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
+    public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) {
 
-        if(StringUtils.isNotBlank(url)) {
-            final String erUrl = URI.create(url.trim() + "/" + eventId).normalize().toString();
-            LOGGER.debug("The URL to ER is: {}", erUrl);
+        String uri = null;
+        try {
+            if(StringUtils.isNotBlank(erBaseUrl)) {
+                // Request Body parameters
+                final SearchParameters searchParameters = getSearchParameters(searchOption);
+                request
+                        .setHttpMethod(HttpMethod.POST)
+                        .setBaseUrl(erBaseUrl)
+                        .setEndpoint(eventId)
+                        .addParam("limit", Integer.toString(limit))
+                        .addParam("levels", Integer.toString(levels))
+                        .addParam("tree", Boolean.toString(tree))
+                        .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
-            // Request Body parameters
-            final SearchParameters searchParameters = getSearchParameters(searchOption);
+                uri = request.getURI().toString();
+                LOGGER.debug("The URL to ER is: {}", uri);
 
-            // Build query parameters
-            final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(erUrl).queryParam("limit", limit)
-                    .queryParam("levels", levels).queryParam("tree", tree);
-            final HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            final HttpEntity<SearchParameters> requestEntity = new HttpEntity<>(searchParameters, headers);
-            final UriComponents uriComponents = builder.buildAndExpand(searchParameters);
-            LOGGER.debug("The request is : {}", uriComponents.toUri().toString());
-
-            try {
-                return rest.exchange(uriComponents.toUri(), HttpMethod.POST, requestEntity, JsonNode.class);
-            } catch (RestClientException e) {
-                LOGGER.error("Error occurred while executing REST POST to: {} for\n{}", erUrl, requestEntity, e);
+                return request.performRequest();
+            } else {
+                LOGGER.info("The URL to ER is not provided");
             }
-        } else {
-            LOGGER.info("The URL to ER is not provided");
+        }
+        catch (Exception e) {
+            LOGGER.error("Error occurred while executing REST POST to {}, stacktrace: {}", uri, e);
         }
 
         return null;
@@ -175,6 +177,6 @@ public class ERQueryService {
     @PostConstruct
     public void init() {
         // TODO: is this needed?
-        LOGGER.debug("The url parameter is : {}", url);
+        LOGGER.debug("The url parameter is : {}", erBaseUrl);
     }
 }

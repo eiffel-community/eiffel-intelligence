@@ -124,3 +124,6 @@ our condition:
 
 These two conditions check both that the artifact name is the right one,
 and that the confidence level is what we are looking for.
+
+### Repeat handling
+See in the frontend documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)

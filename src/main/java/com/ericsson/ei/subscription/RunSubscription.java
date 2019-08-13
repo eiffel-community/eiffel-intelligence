@@ -75,7 +75,7 @@ public class RunSubscription {
                         "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
 
-            if (subscriptionRepeatFlag == "false" && id != null && subscriptionRepeatDbHandler
+            if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler
                     .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id)) {
                 LOGGER.info(
                         "Subscription has already matched with AggregatedObject Id: {}\n"

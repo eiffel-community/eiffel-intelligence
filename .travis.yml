@@ -8,7 +8,7 @@ services:
   - docker
 
 env:
-  - JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64 CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
+  - JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 # Run before every job
 before_install:
@@ -22,15 +22,16 @@ before_install:
 # Using default stage 'test' for all our test jobs, and only running deploy stage
 # (after merge) to master branch
 stages:
-  - codacy
   - test
+  - name: codacy
+    if: branch = master AND type NOT IN pull_request
   - name: deploy
     if: branch = master
 
 # List of jobs to run, tied to specific stages
 jobs:
   include:
-    # Code quality and coverage
+    # Code quality and coverage, only run on merge to master
     - stage: codacy
       name: codacy
       script:

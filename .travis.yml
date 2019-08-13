@@ -24,14 +24,14 @@ before_install:
 stages:
   - test
   - name: codacy
-    if: branch = master AND type NOT IN pull_request
+    if: repo = eiffel-community/eiffel-intelligence AND type != pull_request
   - name: deploy
     if: branch = master
 
 # List of jobs to run, tied to specific stages
 jobs:
   include:
-    # Code quality and coverage, only run on merge to master
+    # Code quality and coverage, only run on master
     - stage: codacy
       name: codacy
       script:

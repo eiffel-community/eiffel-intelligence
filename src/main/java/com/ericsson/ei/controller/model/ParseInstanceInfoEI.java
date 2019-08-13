@@ -161,22 +161,22 @@ public class ParseInstanceInfoEI {
 
         @Deprecated
         @Getter
-        @Value("${ldap.url}")
+        @Value("${ldap.url:}")
         private String url;
 
         @Deprecated
         @Getter
-        @Value("${ldap.base.dn}")
+        @Value("${ldap.base.dn:}")
         private String baseDn;
 
         @Deprecated
         @Getter
-        @Value("${ldap.user.filter}")
+        @Value("${ldap.user.filter:}")
         private String filter;
 
         @Deprecated
         @Getter
-        @Value("${ldap.username}")
+        @Value("${ldap.username:}")
         private String username;
     }
 

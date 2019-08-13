@@ -45,23 +45,23 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     private String ldapServerList;
 
     @Deprecated
-    @Value("${ldap.url}")
+    @Value("${ldap.url:}")
     private String ldapUrl;
 
     @Deprecated
-    @Value("${ldap.base.dn}")
+    @Value("${ldap.base.dn:}")
     private String ldapBaseDn;
 
     @Deprecated
-    @Value("${ldap.username}")
+    @Value("${ldap.username:}")
     private String ldapUsername;
 
     @Deprecated
-    @Value("${ldap.password}")
+    @Value("${ldap.password:}")
     private String ldapPassword;
 
     @Deprecated
-    @Value("${ldap.user.filter}")
+    @Value("${ldap.user.filter:}")
     private String ldapUserFilter;
 
     @Override

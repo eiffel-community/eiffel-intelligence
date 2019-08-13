@@ -270,37 +270,51 @@ public class MongoDBHandler {
             return null;
         MongoDatabase db;
         List<String> collectionList;
-        MongoCollection<Document> collection = null;
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
-            if (!collectionList.contains(collectionName)) {           
-                LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
-                db.createCollection(collectionName);                
-            }    
-            collection = db.getCollection(collectionName);            
         }
         catch (MongoCommandException e) {
             LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConnection();
+            closeMongoDbConecction();
+            return null;
         }
         catch (MongoInterruptedException e) {
             LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConnection();
+            closeMongoDbConecction();
+            return null;
         }
         catch (MongoSocketReadException e) {
             LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConnection();
-        }     
+            closeMongoDbConecction();
+            return null;
+        }
+        
         catch (IllegalStateException e) {
             LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConnection();
-        }                
-
+            closeMongoDbConecction();
+            return null;
+        }
+        
+        if (!collectionList.contains(collectionName)) {
+            LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
+            try {
+                db.createCollection(collectionName);
+            } catch (MongoCommandException e) {
+                String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
+                if (e.getMessage().contains(message)) {
+                    LOGGER.warn("A {}.", message, e);
+                } else {
+                    throw e;
+                }
+            }
+            LOGGER.debug("done....");
+        }
+        MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
 
-    private void closeMongoDbConnection() {
+    private void closeMongoDbConecction() {
         if (mongoClient != null) {
             mongoClient.close();
         }

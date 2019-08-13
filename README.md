@@ -76,6 +76,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Authentication**](wiki/markdown/authentication.md)
     - [**Subscriptions**](wiki/markdown/subscription-API.md)
     - [**Download files**](wiki/markdown/download-files.md)
+1. [**Compatibility**](wiki/markdown/compatibility.md)
 1. [**Known limitations**](wiki/markdown/known-limitations.md)
 
 **Eiffel Intelligence documentation** [**can be found here**](https://eiffel-community.github.io/eiffel-intelligence/)

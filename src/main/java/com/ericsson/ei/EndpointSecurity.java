@@ -44,6 +44,26 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Value("${ldap.server.list:}")
     private String ldapServerList;
 
+    @Deprecated
+    @Value("${ldap.url}")
+    private String ldapUrl;
+
+    @Deprecated
+    @Value("${ldap.base.dn}")
+    private String ldapBaseDn;
+
+    @Deprecated
+    @Value("${ldap.username}")
+    private String ldapUsername;
+
+    @Deprecated
+    @Value("${ldap.password}")
+    private String ldapPassword;
+
+    @Deprecated
+    @Value("${ldap.user.filter}")
+    private String ldapUserFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         if(ldapEnabled) {
@@ -74,9 +94,19 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        if(ldapEnabled && !ldapServerList.isEmpty()) {
+        if (ldapEnabled && !ldapServerList.isEmpty()) {
             JSONArray serverList = new JSONArray(ldapServerList);
             addLDAPServersFromList(serverList, auth);
+        } else if (ldapEnabled) {
+            auth
+            .eraseCredentials(false)
+            .ldapAuthentication()
+                .userSearchFilter(ldapUserFilter)
+                .contextSource()
+                    .url(ldapUrl)
+                    .root(ldapBaseDn)
+                    .managerDn(ldapUsername)
+                    .managerPassword(decodeBase64(ldapPassword));
         }
     }
 

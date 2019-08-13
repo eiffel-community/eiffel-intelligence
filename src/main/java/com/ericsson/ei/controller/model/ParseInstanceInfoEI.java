@@ -158,6 +158,26 @@ public class ParseInstanceInfoEI {
         @Getter
         @Value("${ldap.server.list}")
         private String servers;
+
+        @Deprecated
+        @Getter
+        @Value("${ldap.url}")
+        private String url;
+
+        @Deprecated
+        @Getter
+        @Value("${ldap.base.dn}")
+        private String baseDn;
+
+        @Deprecated
+        @Getter
+        @Value("${ldap.user.filter}")
+        private String filter;
+
+        @Deprecated
+        @Getter
+        @Value("${ldap.username}")
+        private String username;
     }
 
     @Component

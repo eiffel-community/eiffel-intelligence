@@ -41,7 +41,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
 
-    @Value("${ldap.server.list}")
+    @Value("${ldap.server.list:}")
     private String ldapServerList;
 
     @Override
@@ -76,22 +76,26 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         if(ldapEnabled && !ldapServerList.isEmpty()) {
             JSONArray serverList = new JSONArray(ldapServerList);
-            for (int i = 0; i < serverList.length(); i++) {
-                JSONObject server = (JSONObject) serverList.get(i);
-                auth
-                .eraseCredentials(false)
-                .ldapAuthentication()
-                    .userSearchFilter(server.getString("user.filter"))
-                    .contextSource()
-                        .url(server.getString("url"))
-                        .root(server.getString("base.dn"))
-                        .managerDn(server.getString("username"))
-                        .managerPassword(decodeBase64(server.getString("password")));
-            }
+            addLDAPServersFromList(serverList, auth);
         }
     }
 
     private String decodeBase64(String password) {
         return StringUtils.newStringUtf8(Base64.decodeBase64(password));
+    }
+
+    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
+        for (int i = 0; i < serverList.length(); i++) {
+            JSONObject server = (JSONObject) serverList.get(i);
+            auth
+            .eraseCredentials(false)
+            .ldapAuthentication()
+                .userSearchFilter(server.getString("user.filter"))
+                .contextSource()
+                    .url(server.getString("url"))
+                    .root(server.getString("base.dn"))
+                    .managerDn(server.getString("username"))
+                    .managerPassword(decodeBase64(server.getString("password")));
+        }
     }
 }

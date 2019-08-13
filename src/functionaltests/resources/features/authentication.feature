@@ -37,7 +37,7 @@ Feature: Test Authentication
   @RESTWithTokenId
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
-    When a GET request is prepared for REST API "/auth/logout"  
+    When a GET request is prepared for REST API "/auth/logout"
     And request is sent
     When a GET request is prepared for REST API "/auth/login"
     And request is sent
@@ -50,5 +50,33 @@ Feature: Test Authentication
     When a GET request is prepared for REST API "/auth/login"
     And client is replaced
     And authentication token is attached
+    And request is sent
+    Then response code 200 is received
+
+  @RESTWithUniqueUsersInDifferentLDAPServers
+  Scenario: Login using unique users from two different LDAP servers
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And username "gauss" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    When a GET request is prepared for REST API "/auth/logout"
+    And request is sent
+    When a GET request is prepared for REST API "/auth/login"
+    And username "einstein" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+
+  @RESTWithIdenticalUsernamesInDifferentLDAPServers
+  Scenario: Login using identical usernames with different passwords from two different LDAP servers
+    Given LDAP is activated
+    When a GET request is prepared for REST API "/auth/login"
+    And username "newton" and password "password" is used as credentials
+    And request is sent
+    Then response code 200 is received
+    When a GET request is prepared for REST API "/auth/logout"
+    And request is sent
+    When a GET request is prepared for REST API "/auth/login"
+    And username "newton" and password "password2" is used as credentials
     And request is sent
     Then response code 200 is received

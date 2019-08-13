@@ -33,11 +33,7 @@ import cucumber.api.java.en.When;
         "missedNotificationDataBaseName: AuthenticationSteps-missedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
         "rabbitmq.consumerName: AuthenticationStepsConsumer",
-        "ldap.enabled: true",
-        "ldap.url: ldap://ldap.forumsys.com:389/dc=example,dc=com",
-        "ldap.base.dn: dc=example,dc=com",
-        "ldap.username : cn=read-only-admin,dc=example,dc=com",
-        "ldap.user.filter: uid={0}" })
+        "ldap.enabled: true" })
 @ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
 

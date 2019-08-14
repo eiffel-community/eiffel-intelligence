@@ -62,7 +62,7 @@ public class DownstreamIdRulesHandler {
                         downstreamExtractionHandler.runExtraction(rulesObject, id, event, object);
                     }
                     if (objects.size() == 0) {
-                        waitListStorageHandler.addEventToWaitList(event, rulesObject);
+                        waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
                     }
                 }
             }

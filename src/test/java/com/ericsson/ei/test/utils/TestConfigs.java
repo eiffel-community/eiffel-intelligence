@@ -49,7 +49,8 @@ public class TestConfigs {
     private static synchronized void setUpMessageBus() throws Exception {
         LOGGER.debug("Debug:setting up message buss");
 
-        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + connection + ",cf:" + connectionFactory);
+        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + connection + ",cf:"
+                + connectionFactory);
         if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
         }
@@ -58,7 +59,7 @@ public class TestConfigs {
         setSystemProperties(port);
         LOGGER.info("setting up message bus...");
         setupBroker(port);
-        
+
         setupConnectionFactory(port);
         LOGGER.debug("Setting up message bus done!");
     }
@@ -88,12 +89,12 @@ public class TestConfigs {
 
     public static void createExchange(final String exchangeName, final String queueName) {
         final CachingConnectionFactory ccf = new CachingConnectionFactory(connectionFactory);
-        LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);        
-        RabbitAdmin admin = new RabbitAdmin(ccf);
-        
-        Queue queue = new Queue(queueName, false);
-        admin.declareQueue(queue);        
+        LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
+        final RabbitAdmin admin = new RabbitAdmin(ccf);
+        final Queue queue = new Queue(queueName, false);
         final TopicExchange exchange = new TopicExchange(exchangeName);
+
+        admin.declareQueue(queue);
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
@@ -107,23 +108,23 @@ public class TestConfigs {
     protected void setRules() {
         System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");
     }
-    
+
     protected static void setSystemProperties(int port) {
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
-        LOGGER.debug("done setting up message buss properties");        
+        LOGGER.debug("done setting up message buss properties");
     }
-    
-    protected static void setupBroker(int port) throws Exception {        
+
+    protected static void setupBroker(int port) throws Exception {
         String config = "src/test/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        amqpBroker.startBroker();        
+        amqpBroker.startBroker();
     }
-    
+
     protected static void setupConnectionFactory(int port) throws IOException, TimeoutException {
         connectionFactory = new ConnectionFactory();
         connectionFactory.setUsername("guest");

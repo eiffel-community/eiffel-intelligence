@@ -19,8 +19,7 @@ before_install:
   - uname -a
   - chmod +x pom.xml
 
-# Using default stage 'test' for all our test jobs, and only running deploy stage
-# (after merge) to master branch
+# Only running report_coverage and deploy stage (after merge) to master branch
 stages:
   - test
   - name: report_coverage
@@ -31,15 +30,12 @@ stages:
 # List of jobs to run, tied to specific stages
 jobs:
   include:
-    # Execute Unit and Functional tests
     - stage: test
-      name: functionalTests
+      name: unitAndFunctionalTests
       script:
         - mvn -Dsurefire.rerunFailingTestsCount=2 test -DskipITs -B
-    # Execute Integration tests
     - stage: test
       name: integrationTests
-      # This is only run before integrationTests job
       # To ensure docker containers are fully up and running we sleep 60s
       before_script:
         - source src/main/docker/env.bash
@@ -47,7 +43,6 @@ jobs:
         - sleep 60
       script:
         - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
-    # Deploying documentation
     - stage: deploy
       name: deployGitHubPages
       script: skip          # do not run default test scripts
@@ -61,9 +56,9 @@ jobs:
         skip_cleanup: true
         github-token: $GITHUB_TOKEN
         local_dir: docs/
-    # Generating test coverage report and publishing to Codacy, only run on master
     - stage: report_coverage
       name: report_coverage
+      # Generating test coverage report and publishing to Codacy
       script:
         - mvn cobertura:cobertura -B
         - curl -Ls -o codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/6.0.2/codacy-coverage-reporter-6.0.2-assembly.jar

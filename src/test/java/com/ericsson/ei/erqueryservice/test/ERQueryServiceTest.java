@@ -84,7 +84,6 @@ public class ERQueryServiceTest extends Mockito {
 
     @Test
     public void testErQueryUpstream() throws ClientProtocolException, URISyntaxException, IOException {
-//        when(httpExecutor.executeRequest(any(HttpRequestBase.class))).thenAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
         BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
         erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
     }

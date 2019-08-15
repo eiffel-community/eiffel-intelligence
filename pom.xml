@@ -72,9 +72,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.ericsson</groupId>
-            <artifactId>eiffel-commons-java</artifactId>
-            <version>0.0.15-SNAPSHOT</version>
+            <groupId>com.github.eiffel-community</groupId>
+            <artifactId>eiffel-commons</artifactId>
+            <version>0.0.15</version>
         </dependency>
 
         <dependency>
@@ -511,7 +511,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <forkCount>1</forkCount>
+                    <forkCount>3</forkCount>
                     <reuseForks>false</reuseForks>
                     <skipTests>${skipTests}</skipTests>
                     <skipITs>${skipITs}</skipITs>

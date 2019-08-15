@@ -30,15 +30,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class SearchParameters {
 
-    private List<LinkType> dlt;
-    private List<LinkType> ult;
+    private List<LinkType> downstreamLinkType;
+    private List<LinkType> upstreamLinkType;
 
     public SearchParameters() {
     }
 
-    public SearchParameters(final List<LinkType> dlt, final List<LinkType> ult) {
-        this.dlt = dlt;
-        this.ult = ult;
+    public SearchParameters(final List<LinkType> downstreamLinkType, final List<LinkType> upstreamLinkType) {
+        this.downstreamLinkType = downstreamLinkType;
+        this.upstreamLinkType = upstreamLinkType;
     }
 
     private List<LinkType> checkForAll(final List<LinkType> list) {
@@ -49,20 +49,20 @@ public class SearchParameters {
         }
     }
 
-    public List<LinkType> getDlt() {
-        return checkForAll(dlt);
+    public List<LinkType> getDownstreamLinkType() {
+        return checkForAll(downstreamLinkType);
     }
 
-    public void setDlt(final List<LinkType> dlt) {
-        this.dlt = dlt;
+    public void setDownstreamLinkType(final List<LinkType> downstreamLinkType) {
+        this.downstreamLinkType = downstreamLinkType;
     }
 
-    public List<LinkType> getUlt() {
-        return checkForAll(ult);
+    public List<LinkType> getUpstreamLinkType() {
+        return checkForAll(upstreamLinkType);
     }
 
-    public void setUlt(final List<LinkType> ult) {
-        this.ult = ult;
+    public void setUpstreamLinkType(final List<LinkType> upstreamLinkType) {
+        this.upstreamLinkType = upstreamLinkType;
     }
 
     /**
@@ -71,19 +71,19 @@ public class SearchParameters {
      * @throws IOException
      */
     public String getAsJsonString() throws IOException {
-        ArrayList<String> dltStringArray = convertSearchParametersToArrayList(dlt);
-        ArrayList<String> ultStringArray = convertSearchParametersToArrayList(ult);
+        ArrayList<String> downstreamLinkTypeStringArray = convertSearchParametersToArrayList(downstreamLinkType);
+        ArrayList<String> upstreamLinkTypeStringArray = convertSearchParametersToArrayList(upstreamLinkType);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode dltJson = mapper.readTree(dltStringArray.toString());
-        JsonNode ultJson = mapper.readTree(ultStringArray.toString());
+        JsonNode downloadLinkTypeJson = mapper.readTree(downstreamLinkTypeStringArray.toString());
+        JsonNode upstreamLinkTypeJson = mapper.readTree(upstreamLinkTypeStringArray.toString());
 
-        return "{\"dlt\":" + dltJson.toString() + ",\"ult\":" + ultJson.toString() + "}";
+        return "{\"dlt\":" + downloadLinkTypeJson.toString() + ",\"ult\":" + upstreamLinkTypeJson.toString() + "}";
     }
 
     @Override
     public String toString() {
-        return "SearchParameters{" + "dlt=" + dlt + ", ult=" + ult + '}';
+        return "SearchParameters{" + "dlt=" + downstreamLinkType + ", ult=" + upstreamLinkType + '}';
     }
 
     /**

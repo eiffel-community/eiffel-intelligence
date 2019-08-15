@@ -158,16 +158,16 @@ public class ERQueryService {
         final List<LinkType> allLinkTypes = Collections.singletonList(LinkType.ALL);
         switch (searchOption) {
         case DOWN_STREAM:
-            searchParameters.setUlt(new ArrayList<>());
-            searchParameters.setDlt(allLinkTypes);
+            searchParameters.setUpstreamLinkType(new ArrayList<>());
+            searchParameters.setDownstreamLinkType(allLinkTypes);
             break;
         case UP_STREAM:
-            searchParameters.setUlt(allLinkTypes);
-            searchParameters.setDlt(new ArrayList<>());
+            searchParameters.setUpstreamLinkType(allLinkTypes);
+            searchParameters.setDownstreamLinkType(new ArrayList<>());
             break;
         case UP_AND_DOWN_STREAM:
-            searchParameters.setUlt(allLinkTypes);
-            searchParameters.setDlt(allLinkTypes);
+            searchParameters.setUpstreamLinkType(allLinkTypes);
+            searchParameters.setDownstreamLinkType(allLinkTypes);
             break;
         }
 

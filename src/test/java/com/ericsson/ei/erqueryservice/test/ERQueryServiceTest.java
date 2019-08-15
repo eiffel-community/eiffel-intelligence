@@ -66,7 +66,6 @@ public class ERQueryServiceTest extends Mockito {
 
     @Autowired
     private ERQueryService erQueryService;
-    private HttpRequest httpRequest;
     private HttpExecutor httpExecutor;
 
     private String eventId = "01";
@@ -78,7 +77,7 @@ public class ERQueryServiceTest extends Mockito {
     @Before
     public void setUp() throws Exception {
         httpExecutor = mock(HttpExecutor.class);
-        httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
+        HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
         erQueryService.setHttpRequest(httpRequest);
     }
 
@@ -88,7 +87,7 @@ public class ERQueryServiceTest extends Mockito {
         erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
     }
 
-    Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {
+    private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {
         return invocation -> {
             DefaultHttpResponseFactory responseFactory = new DefaultHttpResponseFactory();
             HttpResponse response = responseFactory.newHttpResponse(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, ""), null);

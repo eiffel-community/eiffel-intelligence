@@ -45,7 +45,7 @@ public class UpStreamEventsHandler {
     @Autowired
     private RulesHandler rulesHandler;
 
-    public void UpstreamEventsHandler() throws URISyntaxException {
+    public void upstreamEventsHandler() throws URISyntaxException {
         eventRepositoryQueryService = new ERQueryService();
     }
 

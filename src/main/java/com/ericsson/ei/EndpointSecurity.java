@@ -20,6 +20,7 @@ package com.ericsson.ei;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,19 +95,18 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        if (ldapEnabled && !ldapServerList.isEmpty()) {
-            JSONArray serverList = new JSONArray(ldapServerList);
+        if (ldapEnabled) {
+            JSONArray serverList;
+            if (!ldapServerList.isEmpty()) {
+                try {
+                    serverList = new JSONArray(ldapServerList);
+                } catch (JSONException e) {
+                    serverList = createServerListFromProperties();
+                }
+            } else {
+                serverList = createServerListFromProperties();
+            }
             addLDAPServersFromList(serverList, auth);
-        } else if (ldapEnabled) {
-            auth
-            .eraseCredentials(false)
-            .ldapAuthentication()
-                .userSearchFilter(ldapUserFilter)
-                .contextSource()
-                    .url(ldapUrl)
-                    .root(ldapBaseDn)
-                    .managerDn(ldapUsername)
-                    .managerPassword(decodeBase64(ldapPassword));
         }
     }
 
@@ -127,5 +127,17 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                     .managerDn(server.getString("username"))
                     .managerPassword(decodeBase64(server.getString("password")));
         }
+    }
+
+    private JSONArray createServerListFromProperties() {
+        JSONArray serverList = new JSONArray();
+        JSONObject server = new JSONObject();
+        server.put("url", ldapUrl);
+        server.put("base.dn", ldapBaseDn);
+        server.put("username", ldapUsername);
+        server.put("password", ldapPassword);
+        server.put("user.filter", ldapUserFilter);
+        serverList.put(server);
+        return serverList;
     }
 }

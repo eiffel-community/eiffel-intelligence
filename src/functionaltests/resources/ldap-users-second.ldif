@@ -11,7 +11,7 @@ objectClass: top
 cn: einstein
 sn: 1
 uid: einstein
-userPassword: password
+userPassword: e=mc2
 
 dn: uid=newton,dc=example,dc=com
 objectClass: inetOrgPerson

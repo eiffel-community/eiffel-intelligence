@@ -24,8 +24,8 @@ public class TestLDAPInitializer extends TestConfigs
     }
 
     public void startLdap() throws LDAPException {
-        int ldapPort1 = TestAuthenticationRunner.embeddedLdapRule1.embeddedServerPort();
-        int ldapPort2 = TestAuthenticationRunner.embeddedLdapRule2.embeddedServerPort();
+        int ldapPort1 = TestLDAPStarter.embeddedLdapRule1.embeddedServerPort();
+        int ldapPort2 = TestLDAPStarter.embeddedLdapRule2.embeddedServerPort();
 
         System.setProperty("ldap.server.list", "[{" +
                 "\"url\":\"ldap://localhost:" + ldapPort1 + "/dc=example,dc=com\"," +

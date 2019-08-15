@@ -63,7 +63,7 @@ Feature: Test Authentication
     When a GET request is prepared for REST API "/auth/logout"
     And request is sent
     When a GET request is prepared for REST API "/auth/login"
-    And username "einstein" and password "password" is used as credentials
+    And username "einstein" and password "e=mc2" is used as credentials
     And request is sent
     Then response code 200 is received
 

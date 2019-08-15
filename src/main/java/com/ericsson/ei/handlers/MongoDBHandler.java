@@ -291,7 +291,7 @@ public class MongoDBHandler {
         }
         
         catch (IllegalStateException e) {
-            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage() + "\nStacktrace\n" + e);
+            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
             closeMongoDbConecction();
             return null;
         }

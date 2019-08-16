@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -42,8 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,6 +55,7 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -107,8 +107,9 @@ public class TrafficGeneratedTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
+        Header[] headers = {};
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+                anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
     }
 
     @Override

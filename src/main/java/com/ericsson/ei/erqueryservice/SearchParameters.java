@@ -17,23 +17,28 @@
 */
 package com.ericsson.ei.erqueryservice;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A class representation of the POST body to the search API's upstream/downstream method.
  */
 public class SearchParameters {
 
-    private List<LinkType> dlt;
-    private List<LinkType> ult;
+    private List<LinkType> downstreamLinkType;
+    private List<LinkType> upstreamLinkType;
 
     public SearchParameters() {
     }
 
-    public SearchParameters(final List<LinkType> dlt, final List<LinkType> ult) {
-        this.dlt = dlt;
-        this.ult = ult;
+    public SearchParameters(final List<LinkType> downstreamLinkType, final List<LinkType> upstreamLinkType) {
+        this.downstreamLinkType = downstreamLinkType;
+        this.upstreamLinkType = upstreamLinkType;
     }
 
     private List<LinkType> checkForAll(final List<LinkType> list) {
@@ -44,24 +49,57 @@ public class SearchParameters {
         }
     }
 
-    public List<LinkType> getDlt() {
-        return checkForAll(dlt);
+    public List<LinkType> getDownstreamLinkType() {
+        return checkForAll(downstreamLinkType);
     }
 
-    public void setDlt(final List<LinkType> dlt) {
-        this.dlt = dlt;
+    public void setDownstreamLinkType(final List<LinkType> downstreamLinkType) {
+        this.downstreamLinkType = downstreamLinkType;
     }
 
-    public List<LinkType> getUlt() {
-        return checkForAll(ult);
+    public List<LinkType> getUpstreamLinkType() {
+        return checkForAll(upstreamLinkType);
     }
 
-    public void setUlt(final List<LinkType> ult) {
-        this.ult = ult;
+    public void setUpstreamLinkType(final List<LinkType> upstreamLinkType) {
+        this.upstreamLinkType = upstreamLinkType;
+    }
+
+    /**
+     * Returns the search parameters as a json string
+     * @return String
+     * @throws IOException
+     */
+    public String getAsJsonString() throws IOException {
+        ArrayList<String> downstreamLinkTypeStringArray = convertSearchParametersToArrayList(downstreamLinkType);
+        ArrayList<String> upstreamLinkTypeStringArray = convertSearchParametersToArrayList(upstreamLinkType);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode downloadLinkTypeJson = mapper.readTree(downstreamLinkTypeStringArray.toString());
+        JsonNode upstreamLinkTypeJson = mapper.readTree(upstreamLinkTypeStringArray.toString());
+
+        return "{\"dlt\":" + downloadLinkTypeJson.toString() + ",\"ult\":" + upstreamLinkTypeJson.toString() + "}";
     }
 
     @Override
     public String toString() {
-        return "SearchParameters{" + "dlt=" + dlt + ", ult=" + ult + '}';
+        return "SearchParameters{" + "dlt=" + downstreamLinkType + ", ult=" + upstreamLinkType + '}';
+    }
+
+    /**
+     * Converts the searchParameters to a ArrayList with json
+     * @param searchParameters
+     * @return
+     */
+    private ArrayList<String> convertSearchParametersToArrayList(List<LinkType> searchParameters) {
+        Object[] searchParametersArray = searchParameters.toArray();
+        ArrayList<String> searchParametersJsonStringArray = new ArrayList<String>();
+
+        for(int i = 0; i < searchParametersArray.length; i++) {
+            String linkTypeValue = "\"" + searchParametersArray[i].toString() + "\"";
+            searchParametersJsonStringArray.add(linkTypeValue);
+        }
+
+        return searchParametersJsonStringArray;
     }
 }

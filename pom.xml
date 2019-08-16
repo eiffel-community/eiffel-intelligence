@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
-            <version>0.0.13</version>
+            <version>0.0.15</version>
         </dependency>
 
         <dependency>

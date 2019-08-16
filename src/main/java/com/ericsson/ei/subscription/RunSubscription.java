@@ -78,13 +78,13 @@ public class RunSubscription {
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
 
             if (id == null) {
-                LOGGER.error(
+                LOGGER.debug(
                         "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
 
             if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler
                     .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id)) {
-                LOGGER.info(
+                LOGGER.debug(
                         "Subscription has already matched with AggregatedObject Id: {}\n"
                                 + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
                         id, subscriptionName, subscriptionRepeatFlag);
@@ -119,7 +119,7 @@ public class RunSubscription {
 
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
-                if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
+                if (subscriptionRepeatFlag.equals("false") && id != null) {
                     // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
                     synchronized (this) {

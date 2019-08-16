@@ -47,9 +47,9 @@ public class TestConfigs {
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
-        LOGGER.debug("Debug:setting up message buss");
+        LOGGER.debug("Debug:setting up message bus");
 
-        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + connection + ",cf:"
+        LOGGER.info("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
                 + connectionFactory);
         if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
@@ -57,7 +57,6 @@ public class TestConfigs {
 
         int port = SocketUtils.findAvailableTcpPort();
         setSystemProperties(port);
-        LOGGER.info("setting up message bus...");
         setupBroker(port);
 
         setupConnectionFactory(port);
@@ -115,7 +114,8 @@ public class TestConfigs {
         System.setProperty("rabbitmq.password", "guest");
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
-        LOGGER.debug("done setting up message buss properties");
+        LOGGER.info("Message bus port:{}", port);
+        LOGGER.debug("Done setting up message bus properties");
     }
 
     protected static void setupBroker(int port) throws Exception {

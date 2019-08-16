@@ -40,10 +40,10 @@ MongoDB, RabbitMq and other Eiffel-Intelligence required components need to runn
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 
 
-# Some info about all flags to this command
+## Some info about all flags to this command
 
 
-## Eiffel Intelligence Spring Properties
+### Eiffel Intelligence Spring Properties
 
 
 <B>"-e server.port=8080"</B> - Is the Spring property setting for Eiffel-Intelligence applications web port.
@@ -58,7 +58,7 @@ It is possible to set all Spring available properties via docker envrionment "-e
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 
 
-## Docker flags
+### Docker flags
 
 
 <B>"--expose 8080"</B> - this Docker flag tells that containers internal port shall be exposed to outside of the Docker Host. This flag do not set which port that should be allocated outside Docker Host on the actual server/machine.

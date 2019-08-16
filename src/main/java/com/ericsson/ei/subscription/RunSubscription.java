@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the

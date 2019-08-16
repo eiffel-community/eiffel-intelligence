@@ -40,7 +40,7 @@ MongoDB, RabbitMq and other Eiffel-Intelligence required components need to runn
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 
 
-# Some info of all flags to this command
+# Some info about all flags to this command
 
 
 ## Eiffel Intelligence Spring Properties

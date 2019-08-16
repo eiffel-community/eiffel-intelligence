@@ -25,7 +25,6 @@ With the Docker image user can try-out the Eiffel-Intelligence on a Docker Host 
 
 This will produce a war file in the "target" folder.
 
-
 **2** Build the Docker image with the war file that was produced from previous step:
     
     docker build -t eiffel-intelligence-backend:1.0.1 --build-arg URL=./target/eiffel-intelligence-1.0.1.war -f src/main/docker/Dockerfile .
@@ -55,7 +54,6 @@ logging.level.com.ericsson.ei=DEBUG"</B> - These Spring properties set the loggi
 
 
 It is possible to set all Spring available properties via docker envrionment "-e" flag. See the application.properties file for all available Eiffel-Intelligence Spring properties:
-
 
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 

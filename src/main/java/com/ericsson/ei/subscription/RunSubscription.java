@@ -21,11 +21,15 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
@@ -45,6 +49,10 @@ public class RunSubscription {
 
     @Autowired
     private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
+    
+    @Getter
+    @Value("${spring.data.mongodb.database}")
+    public String dataBaseName;
 
     /**
      * This method matches every condition specified in the subscription Object and
@@ -118,7 +126,7 @@ public class RunSubscription {
                     synchronized (this) {
                         if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                                 subscriptionName, requirementIndex, id)) {
-                            LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
+                            LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);
                             subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
                                     requirementIndex, id);
                         } else {

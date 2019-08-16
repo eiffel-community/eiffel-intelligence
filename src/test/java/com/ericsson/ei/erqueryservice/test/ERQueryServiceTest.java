@@ -1,13 +1,10 @@
 /*
    Copyright 2017 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,44 +14,44 @@
 package com.ericsson.ei.erqueryservice.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.BDDMockito.given;
 
-import java.net.URI;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.DefaultHttpResponseFactory;
+import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.erqueryservice.SearchParameters;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.ericsson.eiffelcommons.utils.HttpExecutor;
+import com.ericsson.eiffelcommons.utils.HttpRequest;
+import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: ERQueryServiceTest",
@@ -65,13 +62,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
-public class ERQueryServiceTest {
+public class ERQueryServiceTest extends Mockito {
 
     @Autowired
     private ERQueryService erQueryService;
-
-    @Mock
-    private RestOperations rest;
+    private HttpExecutor httpExecutor;
 
     private String eventId = "01";
     private SearchOption searchOption = SearchOption.UP_STREAM;
@@ -81,83 +76,35 @@ public class ERQueryServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        httpExecutor = mock(HttpExecutor.class);
+        HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
+        erQueryService.setHttpRequest(httpRequest);
     }
 
     @Test
-    public void testErQueryUpstream() {
-        erQueryService.setRest(rest);
-        searchOption = SearchOption.UP_STREAM;
-        given(rest.exchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class),
-                Mockito.any(Class.class))).willAnswer(
-                        returnRestExchange(Mockito.any(URI.class), Mockito.any(HttpMethod.class),
-                                Mockito.any(HttpEntity.class), Mockito.any(Class.class)));
-        ResponseEntity<JsonNode> result = erQueryService.getEventStreamDataById(eventId, searchOption, limitParam,
-                levels, isTree);
+    public void testErQueryUpstream() throws ClientProtocolException, URISyntaxException, IOException {
+        BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
+        erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
     }
 
-    Answer<ResponseEntity> returnRestExchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
-            Class responseType) {
+    private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {
         return invocation -> {
-            URI arg0 = invocation.getArgument(0);
+            DefaultHttpResponseFactory responseFactory = new DefaultHttpResponseFactory();
+            HttpResponse response = responseFactory.newHttpResponse(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, ""), null);
+            HttpPost postRequest = invocation.getArgument(0);
             String expectedUri = buildUri();
-            assertEquals(expectedUri, arg0.toString());
-            HttpEntity arg2 = invocation.getArgument(2);
-            SearchParameters body = (SearchParameters) arg2.getBody();
-            assertBody(body);
-            boolean firstStop = true;
-            return new ResponseEntity(HttpStatus.OK);
+            assertEquals(expectedUri, postRequest.getURI().toString());
+            HttpEntity httpEntity = postRequest.getEntity();
+            InputStream bodyInputStream = httpEntity.getContent();
+            String bodyString = CharStreams.toString(new InputStreamReader(bodyInputStream, Charsets.UTF_8));
+            assertEquals("{\"dlt\":[],\"ult\":[\"ALL\"]}", bodyString);
+            return new ResponseEntity(response);
         };
     }
 
     public String buildUri() {
         String uri = "";
-        uri += erQueryService.getUrl().trim() + eventId + "?limit=" + limitParam + "&levels=" + levels + "&tree="
-                + isTree;
+        uri += erQueryService.getErBaseUrl().trim() + eventId + "?limit=" + limitParam + "&tree=" + isTree + "&levels=" + levels;
         return uri;
     }
-
-    public void assertBody(SearchParameters body) {
-        assertNotNull(body);
-        boolean searchActionIsRight = false;
-        if (searchOption == SearchOption.DOWN_STREAM) {
-            searchActionIsRight = body.getDlt() != null && !body.getDlt().isEmpty();
-        } else if (searchOption == SearchOption.UP_STREAM) {
-            searchActionIsRight = body.getUlt() != null && !body.getUlt().isEmpty();
-        } else if (searchOption == SearchOption.UP_AND_DOWN_STREAM) {
-            searchActionIsRight = body.getDlt() != null && !body.getDlt().isEmpty() && body.getUlt() != null
-                    && !body.getUlt().isEmpty();
-        }
-        assertEquals(searchActionIsRight, true);
-    }
-
-    @Test
-    public void queryParamsTest() throws URISyntaxException {
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap(3);
-        expectedQueryParams.add("limit", "10");
-        expectedQueryParams.add("levels", "5");
-        expectedQueryParams.add("tree", "true");
-        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-        UriComponents result = builder.queryParams(expectedQueryParams).build();
-        assertEquals("limit=10&levels=5&tree=true", result.getQuery());
-        assertEquals(expectedQueryParams, result.getQueryParams());
-    }
-
-    @Test
-    public void uriParamAndHeaderTest() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Forwarded", "proto=https; host=127.0.0.1");
-        request.setScheme("http");
-        request.setServerName("localhost");
-        request.setRequestURI("/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-
-        HttpRequest httpRequest = new ServletServerHttpRequest(request);
-        UriComponents result = UriComponentsBuilder.fromHttpRequest(httpRequest).build();
-
-        assertEquals("https", result.getScheme());
-        assertEquals("127.0.0.1", result.getHost());
-        assertEquals("/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.getPath());
-        assertEquals("https://127.0.0.1/search/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43", result.toUriString());
-    }
-
 }

@@ -11,7 +11,6 @@ import org.junit.Ignore;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
@@ -19,7 +18,6 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpExecutor;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.ericsson.ei.utils.TestLDAPInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cucumber.api.java.Before;
@@ -34,7 +32,6 @@ import cucumber.api.java.en.When;
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
         "rabbitmq.consumerName: AuthenticationStepsConsumer",
         "ldap.enabled: true" })
-@ContextConfiguration(initializers = TestLDAPInitializer.class)
 public class AuthenticationSteps extends FunctionalTestBase {
 
     private static final String SUBSCRIPTION = "src/functionaltests/resources/subscription_single.json";

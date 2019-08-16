@@ -73,6 +73,7 @@ When Eiffel-Intelligence container is running on your local Docker host, Eiffel-
 
 
 Another option to configure Eiffel-Intelligence is to provide the application properties file into the container, which can be made in two ways:
+
 **1** Put application.properties file in Tomcat Catalina config folder in container and run Eiffe-Intelligence:
     
     docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties eiffel-intelligence:0.0.19

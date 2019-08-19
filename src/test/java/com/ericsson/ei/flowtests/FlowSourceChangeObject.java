@@ -32,7 +32,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,6 +44,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
+import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +59,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "missedNotificationDataBaseName: FlowSourceChangeObject-missedNotifications",
         "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
         "rabbitmq.consumerName: FlowSourceChangeObjectConsumer" })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class FlowSourceChangeObject extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObjectEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";

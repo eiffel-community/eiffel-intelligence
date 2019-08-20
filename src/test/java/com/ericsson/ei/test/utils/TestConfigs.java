@@ -47,9 +47,7 @@ public class TestConfigs {
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
-        LOGGER.debug("Debug:setting up message bus");
-
-        LOGGER.info("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
+        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
                 + connectionFactory);
         if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
@@ -115,7 +113,6 @@ public class TestConfigs {
         System.setProperty("waitlist.initialDelayResend", "500");
         System.setProperty("waitlist.fixedRateResend", "100");
         LOGGER.info("Message bus port:{}", port);
-        LOGGER.debug("Done setting up message bus properties");
     }
 
     protected static void setupBroker(int port) throws Exception {

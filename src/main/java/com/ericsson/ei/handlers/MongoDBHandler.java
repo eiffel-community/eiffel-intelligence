@@ -35,6 +35,8 @@ import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
+import com.mongodb.MongoInterruptedException;
+import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
@@ -266,8 +268,34 @@ public class MongoDBHandler {
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {
         if (mongoClient == null)
             return null;
-        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
+        MongoDatabase db;
+        List<String> collectionList;
+        try {
+            db = mongoClient.getDatabase(dataBaseName);
+            collectionList = db.listCollectionNames().into(new ArrayList<String>());
+        }
+        catch (MongoCommandException e) {
+            LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
+        }
+        catch (MongoInterruptedException e) {
+            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
+        }
+        catch (MongoSocketReadException e) {
+            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
+        }
+        
+        catch (IllegalStateException e) {
+            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
+            closeMongoDbConecction();
+            return null;
+        }
+        
         if (!collectionList.contains(collectionName)) {
             LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
             try {
@@ -286,6 +314,13 @@ public class MongoDBHandler {
         return collection;
     }
 
+    private void closeMongoDbConecction() {
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+        mongoClient = null;
+    }
+    
     /**
      * This method is used to drop a collection.
      *

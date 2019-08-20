@@ -13,8 +13,14 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package com.ericsson.ei.handlers;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
@@ -22,10 +28,6 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ExtractionHandler {
@@ -69,21 +71,25 @@ public class ExtractionHandler {
     }
 
     public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
-        JsonNode extractedContent = extractContent(rulesObject, event);
+        try {
+            JsonNode extractedContent = extractContent(rulesObject, event);
 
-        if(aggregatedDbObject != null) {
-            LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
-            		+ "\nwith extracted content:\n{}"
-            		+ "\nfrom event:\n{}",
-            		aggregatedDbObject.toString(), extractedContent.toString(), event);
-            String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-            String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-            processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
-        } else {
-            ObjectNode objectNode = (ObjectNode) extractedContent;
-            objectNode.put("TemplateName", rulesObject.getTemplateName());
-            mergeHandler.addNewObject(event, extractedContent, rulesObject);
-            upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
+            if(aggregatedDbObject != null) {
+                LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
+                        + "\nwith extracted content:\n{}"
+                        + "\nfrom event:\n{}",
+                        aggregatedDbObject.toString(), extractedContent.toString(), event);
+                String objectId = objectHandler.extractObjectId(aggregatedDbObject);
+                String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
+                processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
+            } else {
+                ObjectNode objectNode = (ObjectNode) extractedContent;
+                objectNode.put("TemplateName", rulesObject.getTemplateName());
+                mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
         }
     }
 

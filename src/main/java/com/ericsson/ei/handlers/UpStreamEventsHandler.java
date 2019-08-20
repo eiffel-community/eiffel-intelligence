@@ -14,17 +14,21 @@
 
 package com.ericsson.ei.handlers;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The Class UpStreamEventsHandler.
@@ -41,8 +45,11 @@ public class UpStreamEventsHandler {
     @Autowired
     private RulesHandler rulesHandler;
 
-    // setters used for injecting mocks
+    public void upstreamEventsHandler() throws URISyntaxException {
+        eventRepositoryQueryService = new ERQueryService();
+    }
 
+    // setters used for injecting mocks
     public void setEventRepositoryQueryService(final ERQueryService eventRepositoryQueryService) {
         this.eventRepositoryQueryService = eventRepositoryQueryService;
     }
@@ -56,19 +63,23 @@ public class UpStreamEventsHandler {
      *
      * @param aggregatedObjectId
      *                               the aggregated object id
+     * @throws IOException
      */
-    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) {
+    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws IOException {
 
         // Use aggregatedObjectId as eventId since they are the same for start
         // events.
-        final ResponseEntity<JsonNode> responseEntity = eventRepositoryQueryService
+        final ResponseEntity responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
         if (responseEntity == null) {
             LOGGER.warn("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
             return;
         }
 
-        final JsonNode searchResult = responseEntity.getBody();
+        final String searchResultString = responseEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        final JsonNode searchResult = mapper.readTree(searchResultString);
+
         if (searchResult == null) {
             LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
             return;

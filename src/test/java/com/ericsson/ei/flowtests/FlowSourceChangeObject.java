@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -86,8 +87,10 @@ public class FlowSourceChangeObject extends FlowTestBase {
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+
+        Header[] headers = {};
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+                anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
     }
 
     @Override

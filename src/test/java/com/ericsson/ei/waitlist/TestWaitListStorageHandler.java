@@ -71,7 +71,7 @@ public class TestWaitListStorageHandler {
             ObjectMapper objectMapper = new ObjectMapper();
             eventFile = FileUtils.readFileToString(new File(eventPath), "UTF-8");
             rulesObject = new RulesObject(objectMapper.readTree(jsonRule));
-            waitListStorageHandler.addEventToWaitList(eventFile, rulesObject);
+            waitListStorageHandler.addEventToWaitListIfNotExisting(eventFile, rulesObject);
             assertTrue(true);
         } catch (Exception e) {
             assertFalse(true);

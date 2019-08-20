@@ -74,11 +74,9 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        if (ldapEnabled) {
-            if (!ldapServerList.isEmpty()) {
-                JSONArray serverList = new JSONArray(ldapServerList);
-                addLDAPServersFromList(serverList, auth);
-            }
+        if (ldapEnabled && !ldapServerList.isEmpty()) {
+            JSONArray serverList = new JSONArray(ldapServerList);
+            addLDAPServersFromList(serverList, auth);
         }
     }
 

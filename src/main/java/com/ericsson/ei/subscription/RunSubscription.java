@@ -21,11 +21,14 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import lombok.Getter;
 
 /**
  * This class represents the mechanism to fetch the rule conditions from the
@@ -45,6 +48,10 @@ public class RunSubscription {
 
     @Autowired
     private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
+    
+    @Getter
+    @Value("${spring.data.mongodb.database}")
+    public String dataBaseName;
 
     /**
      * This method matches every condition specified in the subscription Object and
@@ -71,15 +78,15 @@ public class RunSubscription {
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
 
             if (id == null) {
-                LOGGER.error(
-                    "ID has not been passed for given aggregated object. The subscription will be triggered again.");
+                LOGGER.debug(
+                        "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
 
-            if (subscriptionRepeatFlag == "false" && id != null
-                    && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
-                            subscriptionName, requirementIndex, id)) {
-                LOGGER.info("Subscription has already matched with AggregatedObject Id: {}\n"
-                        + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
+            if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler
+                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id)) {
+                LOGGER.debug(
+                        "Subscription has already matched with AggregatedObject Id: {}\n"
+                                + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
                         id, subscriptionName, subscriptionRepeatFlag);
                 break;
             }
@@ -103,8 +110,8 @@ public class RunSubscription {
                 boolean resultNotEmpty = !resultString.equals("");
                 boolean isFulfilled = resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty;
                 String fulfilledStatement = String.format("Condition was %sfulfilled.", isFulfilled ? "" : "not ");
-                LOGGER.debug("Condition: {}\nJMESPath evaluation result: {}\n{}",
-                        condition, result.toString(), fulfilledStatement);
+                LOGGER.debug("Condition: {}\nJMESPath evaluation result: {}\n{}", condition, result.toString(),
+                        fulfilledStatement);
                 if (resultNotEqualsToNull && resultNotEqualsToFalse && resultNotEmpty) {
                     count_condition_fulfillment++;
                 }
@@ -112,10 +119,19 @@ public class RunSubscription {
 
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
-                if (subscriptionJson.get("repeat").toString() == "false" && id != null) {
-                    LOGGER.debug("Adding matched AggrObj id to SubscriptionRepeatFlagHandlerDb.");
-                    subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
-                            requirementIndex, id);
+                if (subscriptionRepeatFlag.equals("false") && id != null) {
+                    // the keyword 'synchronized' ensures that this part of the code run
+                    // synchronously. Thus avoids race condition.
+                    synchronized (this) {
+                        if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
+                                subscriptionName, requirementIndex, id)) {
+                            LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);
+                            subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
+                                    requirementIndex, id);
+                        } else {
+                            conditionFulfilled = false;
+                        }
+                    }
                 }
             }
 

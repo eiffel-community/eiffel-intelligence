@@ -20,7 +20,6 @@ package com.ericsson.ei;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,26 +43,6 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${ldap.server.list:}")
     private String ldapServerList;
-
-    @Deprecated
-    @Value("${ldap.url:}")
-    private String ldapUrl;
-
-    @Deprecated
-    @Value("${ldap.base.dn:}")
-    private String ldapBaseDn;
-
-    @Deprecated
-    @Value("${ldap.username:}")
-    private String ldapUsername;
-
-    @Deprecated
-    @Value("${ldap.password:}")
-    private String ldapPassword;
-
-    @Deprecated
-    @Value("${ldap.user.filter:}")
-    private String ldapUserFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -96,17 +75,10 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         if (ldapEnabled) {
-            JSONArray serverList;
             if (!ldapServerList.isEmpty()) {
-                try {
-                    serverList = new JSONArray(ldapServerList);
-                } catch (JSONException e) {
-                    serverList = createServerListFromProperties();
-                }
-            } else {
-                serverList = createServerListFromProperties();
+                JSONArray serverList = new JSONArray(ldapServerList);
+                addLDAPServersFromList(serverList, auth);
             }
-            addLDAPServersFromList(serverList, auth);
         }
     }
 
@@ -127,17 +99,5 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                     .managerDn(server.getString("username"))
                     .managerPassword(decodeBase64(server.getString("password")));
         }
-    }
-
-    private JSONArray createServerListFromProperties() {
-        JSONArray serverList = new JSONArray();
-        JSONObject server = new JSONObject();
-        server.put("url", ldapUrl);
-        server.put("base.dn", ldapBaseDn);
-        server.put("username", ldapUsername);
-        server.put("password", ldapPassword);
-        server.put("user.filter", ldapUserFilter);
-        serverList.put(server);
-        return serverList;
     }
 }

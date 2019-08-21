@@ -37,7 +37,7 @@ Feature: Test Authentication
   @RESTWithTokenId
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
-    When a GET request is prepared for REST API "/auth/logout"  
+    When a GET request is prepared for REST API "/auth/logout"
     And request is sent
     When a GET request is prepared for REST API "/auth/login"
     And request is sent

@@ -80,7 +80,7 @@
         }
 
     ]
-}
+},
 {
     "subscriptionName" : "Subscription4_Mail_Notification",
     "ldapUserName" : "ABC",

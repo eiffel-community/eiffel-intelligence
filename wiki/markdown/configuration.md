@@ -15,13 +15,13 @@ In this case we use the same instance of RabbitMQ and MongoDB.
   - **rabbitmq.consumerName** property should be different for each rule set. Otherwise the rabbitMQ will split the events in the queue among all the instances listening to that queue.
   - MongoDb collection names should also be different for each rule set.
 
-  <img src="images/multiple_EI_instances.png"></img>
+<img src="images/multiple_EI_instances.png"></img>
 
 ### Set up multiple instances with same rule set
 
 This situation may be needed when the events throughput is very high. In this case the same configuration file is copied to the server where the extra instance will be started.
 
-  <img src="images/multiple_EI_instances_same_rule.png"></img>
+<img src="images/multiple_EI_instances_same_rule.png"></img>
 
 ## Configure Eiffel Intelligence with extraction rules for specific Eiffel protocol version
 

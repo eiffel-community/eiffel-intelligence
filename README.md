@@ -18,8 +18,8 @@
 <img src="./images/eiffel-intelligence-logo.png" alt="Eiffel Intelligence" width="350"/>
 
 [![Build Status](https://travis-ci.org/eiffel-community/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-intelligence)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f596eed2020e4340ab1d8deb2fb4c680)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eiffel-community/eiffel-intelligence&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/f596eed2020e4340ab1d8deb2fb4c680)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8600a861b2aa4770901d12a45ace3535)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eiffel-community/eiffel-intelligence&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8600a861b2aa4770901d12a45ace3535)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Coverage)
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence

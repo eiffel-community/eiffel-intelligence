@@ -1,8 +1,6 @@
 # Configuration
 
-Configuration for the message bus, MongoDB and other settings for
-Eiffel Intelligence needs to be defined in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
-for the application to run properly.
+The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties) file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
 
 ## Setting up multiple EI instances
 

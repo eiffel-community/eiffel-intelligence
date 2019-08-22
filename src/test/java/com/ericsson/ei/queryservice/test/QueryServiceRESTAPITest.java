@@ -92,11 +92,12 @@ public class QueryServiceRESTAPITest {
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutput = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
-        LOGGER.info("The expected output is : " + expectedOutput.toString());
+        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
+        String expectedOutput = (expectedOutput_with_square_brackets.substring(1,
+                expectedOutput_with_square_brackets.length() - 1)).replaceAll(("\\s"), "");
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
-               .thenReturn(new ResponseEntity(response, HttpStatus.OK));
+                .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
                                                               .accept(MediaType.APPLICATION_JSON)
@@ -108,7 +109,7 @@ public class QueryServiceRESTAPITest {
 
         String output = result.getResponse().getContentAsString().toString();
 
-        output = output.replaceAll("(\\s\\s\\s\\s)", "")
+        output = output.replaceAll(("\\s"), "")
                        .replace("\\" + "n", "")
                        .replace("\\" + "r", "")
                        .replace("\\", "");
@@ -122,12 +123,15 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutput = FileUtils.readFileToString(new File(missedNotificationOutputPath),
+        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(missedNotificationOutputPath),
                 "UTF-8");
+
+        String expectedOutput = (expectedOutput_with_square_brackets.substring(1,
+                expectedOutput_with_square_brackets.length() - 1));
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
-               .thenReturn(new ResponseEntity(response, HttpStatus.OK));
+                .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
                                                               .accept(MediaType.APPLICATION_JSON)
@@ -135,9 +139,9 @@ public class QueryServiceRESTAPITest {
                                                                       "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output = result.getResponse().getContentAsString().toString().replace(" ", "");
+        String output = result.getResponse().getContentAsString().toString().replaceAll("\\s", "");
 
-        output = output.replaceAll("(\\s\\s\\s\\s)", "")
+        output = output.replaceAll(("\\s"), "")
                        .replace("\\" + "n", "")
                        .replace("\\" + "r", "")
                        .replace("\\", "");

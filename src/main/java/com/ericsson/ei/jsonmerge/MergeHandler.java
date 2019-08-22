@@ -203,24 +203,6 @@ public class MergeHandler {
         }
     }
 
-    /**
-     *
-     * @param jsonObject the object in which the key should be gotten from.
-     * @param key
-     * @param clazz      the type we expect the key to be
-     * @param            <T> the type
-     * @return an object of type T if found in jsonObject, null otherwise.
-     * @throws JSONException
-     */
-    // private <T> T getAsT(JSONObject jsonObject, String key, Class<T> clazz)
-    // throws JSONException {
-    // Object o = jsonObject.get(key);
-    // if (clazz.isInstance(o)) {
-    // return (T) o;
-    // }
-    //
-    // return null;
-    // }
 
     /**
      * This method set lock property in document in database and returns the
@@ -236,10 +218,6 @@ public class MergeHandler {
             document = objectHandler.findObjectById(id);
         }
 
-        // JsonNode result = objectHandler.getAggregatedObject(document);
-        // if (result != null) {
-        // return result.toString();
-        // }
         return document;
     }
 

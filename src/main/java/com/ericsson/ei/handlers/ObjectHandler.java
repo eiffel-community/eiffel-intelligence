@@ -201,24 +201,6 @@ public class ObjectHandler {
         return document;
     }
 
-    /**
-     * This methods gets the aggregated objects from a database document.
-     * @param dbDocument
-     *      String representation of a document
-     * @return JsonNode objectDoc
-     *      The aggregated object from the document
-     * */
-//    public JsonNode getAggregatedObject(String dbDocument) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
-//            JsonNode objectDoc = documentJson.get("aggregatedObject");
-//            return objectDoc;
-//        } catch (Exception e) {
-//            LOGGER.error("Failed to get aggregated object.", e);
-//        }
-//        return null;
-//    }
 
     /**
      * This method gets the id from an aggregated object.

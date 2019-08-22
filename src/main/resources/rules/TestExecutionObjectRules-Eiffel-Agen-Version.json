@@ -101,7 +101,7 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules": "links | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": { "$and": [{"aggregatedObject.test_suite.test_case.test_case_triggered_event_id": "%IdentifyRules%"}]},
+    "MatchIdRules": { "$and": [{"test_suite.test_case.test_case_triggered_event_id": "%IdentifyRules%"}]},
     "ExtractionRules": "{test_case_started_event_id: meta.id, ongoing : `\"true\"`}",
     "MergeResolverRules": "[{NONEPATH:NONE}, {test_suite: [{ test_case : [{ test_case_triggered_event_id: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }]} ]}]",
     "ArrayMergeOptions": "",

@@ -13,18 +13,20 @@
 */
 package com.ericsson.ei.queryservice;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.ericsson.ei.handlers.MongoDBHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class represents the mechanism to extract the aggregated data on the
@@ -66,7 +68,7 @@ public class ProcessMissedNotification {
                 jsonCondition.toString());
         return output.stream().map(a -> {
             try {
-                return mapper.readTree(a).path("AggregatedObject").toString();
+                return mapper.readTree(a).toString();
             } catch (Exception e) {
                 LOGGER.error("Failed to parse JSON.", e);
             }

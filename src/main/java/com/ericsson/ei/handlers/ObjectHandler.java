@@ -16,15 +16,6 @@
 */
 package com.ericsson.ei.handlers;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.ei.subscription.SubscriptionHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +26,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.subscription.SubscriptionHandler;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -187,17 +187,16 @@ public class ObjectHandler {
      * sets the time to live value.
      * @return document
      * */
-    public BasicDBObject prepareDocumentForInsertion(String id, String object) {
-        BasicDBObject document = new BasicDBObject();
+    public BasicDBObject prepareDocumentForInsertion(String id, String object) {        
+        BasicDBObject document = BasicDBObject.parse(object);
         document.put("_id", id);
-        document.put("aggregatedObject", BasicDBObject.parse(object));
-
-        if (getTtl() > 0) {
-            try {
-                document.put("Time", DateUtils.getDate());
-            } catch (ParseException e) {
-                LOGGER.error("Failed to attach date to document.", e);
+        try {
+            if (getTtl() > 0) {               
+                document.put("Time", DateUtils.getDate());                
             }
+        }
+        catch (ParseException e) {
+            LOGGER.error("Failed to attach date to document.", e);
         }
         return document;
     }
@@ -209,17 +208,17 @@ public class ObjectHandler {
      * @return JsonNode objectDoc
      *      The aggregated object from the document
      * */
-    public JsonNode getAggregatedObject(String dbDocument) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
-            JsonNode objectDoc = documentJson.get("aggregatedObject");
-            return objectDoc;
-        } catch (Exception e) {
-            LOGGER.error("Failed to get aggregated object.", e);
-        }
-        return null;
-    }
+//    public JsonNode getAggregatedObject(String dbDocument) {
+//        ObjectMapper mapper = new ObjectMapper();
+//        try {
+//            JsonNode documentJson = mapper.readValue(dbDocument, JsonNode.class);
+//            JsonNode objectDoc = documentJson.get("aggregatedObject");
+//            return objectDoc;
+//        } catch (Exception e) {
+//            LOGGER.error("Failed to get aggregated object.", e);
+//        }
+//        return null;
+//    }
 
     /**
      * This method gets the id from an aggregated object.

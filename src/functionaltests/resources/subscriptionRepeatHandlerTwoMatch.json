@@ -14,7 +14,7 @@
     {
       "conditions": [
         {
-          "jmespath": "ongoing==true"
+          "jmespath": "ongoing==`true`"
         }
       ],
       "type": "ARTIFACT_1"
@@ -22,7 +22,7 @@
     {
       "conditions": [
         {
-          "jmespath": "ongoing==true"
+          "jmespath": "ongoing==`true`"
         }
       ],
       "type": "ARTIFACT_1"

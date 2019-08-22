@@ -62,7 +62,7 @@ public class ObjectHandlerTest {
 
     private String dataBaseName = "ObjectHandlerTestDB";
     private String collectionName = "SampleEvents";
-    private String input = "{\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
+    private String input = "{\"_id\":\"eventId\",\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
     private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
 
@@ -92,9 +92,8 @@ public class ObjectHandlerTest {
 
     @Test
     public void test() {
-        String document = objHandler.findObjectById("eventId");
-        JsonNode result = objHandler.getAggregatedObject(document);
-        assertEquals(input, result.toString());
+        String document = objHandler.findObjectById("eventId").replace(" ", "");
+        assertEquals(input.replace(" ", ""), document);
     }
 
     @After

@@ -16,7 +16,7 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "links | [?type=='ARTIFACT'].target",
-    "MatchIdRules": { "$and": [{"aggregatedObject.internalComposition.artifacts.actualevent.meta.id": "%IdentifyRules%"}]},
+    "MatchIdRules": { "$and": [{"internalComposition.artifacts.actualevent.meta.id": "%IdentifyRules%"}]},
     "ExtractionRules" : "{actualevent:@}",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]"
   },

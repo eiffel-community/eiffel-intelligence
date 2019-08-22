@@ -135,7 +135,7 @@ public class QueryServiceRESTAPITest {
                                                                       "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output = result.getResponse().getContentAsString().toString();
+        String output = result.getResponse().getContentAsString().toString().replace(" ", "");
 
         output = output.replaceAll("(\\s\\s\\s\\s)", "")
                        .replace("\\" + "n", "")
@@ -144,6 +144,6 @@ public class QueryServiceRESTAPITest {
         LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        assertEquals(expectedOutput, output);
+        assertEquals(expectedOutput.replace(" ", ""), output);
     }
 }

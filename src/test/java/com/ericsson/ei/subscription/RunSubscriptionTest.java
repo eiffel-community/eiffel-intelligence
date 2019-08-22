@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -121,8 +121,7 @@ public class RunSubscriptionTest {
         JsonNode aggregatedDocument = mapper.readTree(aggregatedInternalObject);
         ArrayNode requirementNode = (ArrayNode) subscriptionJson.get("requirements");
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
-        JsonNode aggregatedObject = aggregatedDocument.get("aggregatedObject");
-        String aggregationStr = aggregatedObject.toString();
+        String aggregationStr = aggregatedDocument.toString();
         boolean output = runSubscription.runSubscriptionOnObject(aggregationStr, requirementIterator, subscriptionJson,
                 "someID");
         assertTrue(output);

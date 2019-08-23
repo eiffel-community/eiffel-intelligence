@@ -14,7 +14,7 @@ latest version. Now replace the latest version in the link below:
 
 If you want to test the latest code in github clone the project and compile it
 with:
-
+    
     mvn clean install
 
 append **_-DskipTests_** if you want to skip the tests since the latest on
@@ -36,7 +36,7 @@ If running from source code, war file is generated and produced by maven command
 
     mvn package -DskipTests
 
- This command should produce an eiffel-intelligence-<version>.war file in target folder, target/eiffel-intelligence-<version>.war. 
+ This command should produce an `eiffel-intelligence-<version>.war` file in target folder, target/`eiffel-intelligence-<version>.war`. 
 
 The war file is executed by the following command and with default configuration:
 
@@ -44,7 +44,7 @@ The war file is executed by the following command and with default configuration
 
 Own configuration can be provided with
 
-    java -jar eiffel-intelligence-<version>.war --spring.config.location=file:<path to own application.properties>
+    java -jar eiffel-intelligence-<version>.war --spring.config.location=<path to own application.properties>
 
 remember to keep the name of the properties file if you are a beginner to
 Spring. More advanced Spring user can look [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
@@ -60,7 +60,7 @@ To run Eiffel Intelligence in Tomcat, the war file must be put into the webapp f
 
     (catalina home)/webapp/
 
-If Eiffel Intelligence should be run without any context-path in the url address, then overwrite ROOT.war file in webapp folder with eiffel-intelligence-<version>.war:
+If Eiffel Intelligence should be run without any context-path in the url address, then overwrite ROOT.war file in webapp folder with `eiffel-intelligence-<version>.war`:
 
     cp eiffel-intelligence-<version>.war (catalina home)/webapp/ROOT.war
 

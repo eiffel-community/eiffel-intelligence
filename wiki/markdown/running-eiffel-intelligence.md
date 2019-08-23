@@ -82,7 +82,7 @@ Start Tomcat and Eiffel-Intelligence in background/daemon mode by exectuing comm
 
 To run Tomcat and Eiffel-Intelligence with logs printed to console:
     
-    catalina home)/bin/catalina.sh run
+    (catalina home)/bin/catalina.sh run
 
 ## Eiffel-Intelligence configurations and properties
 

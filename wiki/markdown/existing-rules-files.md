@@ -1,6 +1,6 @@
 # Existing rules
 
-We have created some rules that represent some use cases triggering the development of the Eiffel Intelligence. The files containing the rules can be found [**here.**](https://github.com/Ericsson/eiffel-intelligence/tree/master/src/main/resources)
+We have created some rules that represent some use cases triggering the development of the Eiffel Intelligence. The files containing the rules can be found [**here.**](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources)
 
 We have also drawn the flows that the existing rules need to perform the aggregation. The drawings contain the events and how they are linked together.
 

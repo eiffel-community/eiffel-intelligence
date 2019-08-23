@@ -156,20 +156,8 @@ public class ParseInstanceInfoEI {
         private String enabled;
 
         @Getter
-        @Value("${ldap.url}")
-        private String url;
-
-        @Getter
-        @Value("${ldap.base.dn}")
-        private String baseDn;
-
-        @Getter
-        @Value("${ldap.user.filter}")
-        private String filter;
-
-        @Getter
-        @Value("${ldap.username}")
-        private String username;
+        @Value("${ldap.server.list}")
+        private String servers;
     }
 
     @Component

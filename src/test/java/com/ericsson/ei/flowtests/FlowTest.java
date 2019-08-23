@@ -65,6 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "missedNotificationDataBaseName: FlowTest-missedNotifications",
         "rabbitmq.exchange.name: FlowTest-exchange",
         "rabbitmq.consumerName: FlowTestConsumer" })
+
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";

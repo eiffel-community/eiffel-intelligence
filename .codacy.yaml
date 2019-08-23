@@ -1,0 +1,11 @@
+exclude_paths:
+  - '.bundle/**'
+  - 'spec/**/*'
+  - 'benchmarks/**/*'
+  - '*.min.js'
+  - '**/tests/**'
+  - '**/functionaltests/**/*'
+  - 'wiki/**'
+  - '.github/**'
+  - 'CODE_OF_CONDUCT.md'
+  - 'CONTRIBUTING.md'

@@ -145,7 +145,7 @@ public class TestWaitListWorker {
     @Test
     public void testPublishAndReceiveEvent() {
         try {
-            Channel channel = TestConfigs.getConn().createChannel();
+            Channel channel = TestConfigs.getConnection().createChannel();
             String queueName = "er001-eiffelxxx.eiffelintelligence.messageConsumer.durable";
             String exchange = "ei-poc-4";
             createExchange(exchange, queueName);
@@ -168,7 +168,7 @@ public class TestWaitListWorker {
     }
 
     private void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory ccf = new CachingConnectionFactory(TestConfigs.getCf());
+        final CachingConnectionFactory ccf = new CachingConnectionFactory(TestConfigs.getConnectionFactory());
         RabbitAdmin admin = new RabbitAdmin(ccf);
         Queue queue = new Queue(queueName, false);
         admin.declareQueue(queue);

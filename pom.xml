@@ -345,6 +345,13 @@
             <version>5.4.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.zapodot</groupId>
+            <artifactId>embedded-ldap-junit</artifactId>
+            <version>0.7</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Cucumber -->
         <dependency>
             <groupId>io.cucumber</groupId>
@@ -585,6 +592,17 @@
                         <version>1.8</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
             </plugin>
         </plugins>
     </build>

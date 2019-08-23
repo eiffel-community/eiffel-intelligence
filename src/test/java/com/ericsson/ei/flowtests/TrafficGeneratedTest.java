@@ -126,7 +126,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
             String queueName = rmqHandler.getQueueName();
             String exchange = "ei-poc-4";
             TestConfigs.createExchange(exchange, queueName);
-            Channel channel = TestConfigs.getConn().createChannel();
+            Channel channel = TestConfigs.getConnection().createChannel();
 
             long timeBefore = System.currentTimeMillis();
 

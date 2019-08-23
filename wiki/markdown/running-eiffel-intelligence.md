@@ -68,13 +68,13 @@ Remove "ROOT" folder in webapp folder:
 
     rm -rf (catalina home)/webapp/ROOT/
 
-Create "config" folder in webapp folder, if it not exists. Spring and Eiffel-Intelligence will look for the applications.properties configuration file from this config folder:
+Create "config" folder in webapp folder, if it not exists. Spring and Eiffel-Intelligence will look for the application.properties configuration file in config folder:
 
     mkdir (catalina home)/webapp/config
 
 Copy the application.properties file into the newly created config folder:
     
-    cp applications.properties (catalina home)/webapp/config
+    cp application.properties (catalina home)/webapp/config
 
 Start Tomcat and Eiffel-Intelligence in background/daemon mode by exectuing command:
 
@@ -84,7 +84,7 @@ To run Tomcat and Eiffel-Intelligence with logs printed to console:
     
     catalina home)/bin/catalina.sh run
 
-## Eiffel-Intelligence fron-tend configurations and properties
+## Eiffel-Intelligence configurations and properties
 
 All available Eiffel-Intelligence properties can be found in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties) example file.
 

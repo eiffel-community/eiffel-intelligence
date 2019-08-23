@@ -52,7 +52,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
     @Autowired
     protected MongoDBHandler mongoDBHandler;
-    @Value( "${ei.host:localhost}")
+    @Value("${ei.host:localhost}")
     protected String eiHost;
     @LocalServerPort
     protected int port;
@@ -102,7 +102,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         rabbitTemplate = createRabbitMqTemplate();
     }
 
-    private void cleanDatabases(){
+    private void cleanDatabases() {
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, waitlistCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
@@ -186,10 +186,10 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         URL eventsInput = new File(getEventsFilePath()).toURI().toURL();
         Iterator eventsIterator = objectMapper.readTree(eventsInput).fields();
 
-        while(eventsIterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)eventsIterator.next();
+        while (eventsIterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) eventsIterator.next();
             eventNames.add(pair.getKey().toString());
-            }
+        }
 
         return eventNames;
     }
@@ -208,7 +208,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     * @param eventsCount - An int which indicated how many events that should be processed.
+     * 
+     * @param eventsCount - An int which indicated how many events that should be
+     *                    processed.
      * @return
      * @throws InterruptedException
      */
@@ -225,7 +227,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Counts documents that were processed
-     * @param database - A string with the database to use
+     * 
+     * @param database   - A string with the database to use
      * @param collection - A string with the collection to use
      * @return amount of processed events
      */
@@ -239,13 +242,16 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
-     * @param expectedData - A Map<String, JsonNode> which contains the expected data
+     * 
+     * @param expectedData - A Map<String, JsonNode> which contains the expected
+     *                     data
      * @return
      * @throws URISyntaxException
      * @throws IOException
      * @throws InterruptedException
      */
-    private void checkResult(final Map<String, JsonNode> expectedData) throws IOException, URISyntaxException, InterruptedException {
+    private void checkResult(final Map<String, JsonNode> expectedData)
+            throws IOException, URISyntaxException, InterruptedException {
         Iterator iterator = expectedData.entrySet().iterator();
 
         JsonNode expectedJSON = null;
@@ -257,8 +263,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long stopTime = System.currentTimeMillis() + 120000;
-            while(!foundMatch && stopTime > System.currentTimeMillis()) {
+            long maxWaitTime = 300000;
+            long stopTime = System.currentTimeMillis() + maxWaitTime;
+            while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
 
                 /*
@@ -279,24 +286,26 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the aggregatedObject from EI by querying
+     * 
      * @param id - A string which contains the id used in the query
      * @return the responseEntity within the body.
      * @throws URISyntaxException
      * @throws IOException
      */
-    private JsonNode queryAggregatedObject(String id) throws URISyntaxException, IOException{
+    private JsonNode queryAggregatedObject(String id) throws URISyntaxException, IOException {
         HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
         String endpoint = "/queryAggregatedObject";
 
         httpRequest.setHost(eiHost)
-            .setPort(port)
-            .addHeader("Content-type", "application/json")
-            .addParam("ID", id)
-            .setEndpoint(endpoint);
+                   .setPort(port)
+                   .addHeader("Content-type", "application/json")
+                   .addParam("ID", id)
+                   .setEndpoint(endpoint);
 
-        //The response contains the aggregated object as a jsonstring. Makes it this wierd to get out.
+        // The response contains the aggregated object as a jsonstring. Makes it this
+        // wierd to get out.
         ResponseEntity<String> response = httpRequest.performRequest();
-        JsonNode body =  objectMapper.readTree(response.getBody());
+        JsonNode body = objectMapper.readTree(response.getBody());
         JsonNode responseEntity = body.get("queryResponseEntity");
 
         return responseEntity;

@@ -72,7 +72,7 @@ Create "config" folder in webapp folder, if it not exists. Spring and Eiffel-Int
 
     mkdir (catalina home)/webapp/config
 
-Copy the application.propeties file into the newly created config folder:
+Copy the application.properties file into the newly created config folder:
     
     cp applications.properties (catalina home)/webapp/config
 

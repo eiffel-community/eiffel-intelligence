@@ -61,8 +61,7 @@ Below is a document from the database which contains a unique ID and an
 aggregated object.
 
     {
-        "_id" : "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",
-        "aggregatedObject" : {
+            "_id" : "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",
             "fileInformation" : [
                 {
                     "extension" : "war",
@@ -96,7 +95,6 @@ aggregated object.
                     "time" : 1521452368758
                 }
             ]
-        }
     }
 
 Let's say we need a subscription which is triggered on when an artifact

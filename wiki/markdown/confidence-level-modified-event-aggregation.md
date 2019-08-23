@@ -78,8 +78,7 @@ the database, but it was already aggregated with some other objects. The
 fetched object looks like that:
 
     {
-        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-        "aggregatedObject": {
+          "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "fileInformation": [
             {
               "extension": "jar",
@@ -211,8 +210,7 @@ fetched object looks like that:
               ],
               "time": 1481875921763
             }
-          ]
-        }
+          ]        
       }
 
 The required content is extracted from the event as specified in the rule:
@@ -239,8 +237,7 @@ format will look like below:
 And the resulting aggregated object will be:
 
     {
-      "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-      "aggregatedObject": {
+        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "fileInformation": [
           {
             "extension": "jar",
@@ -380,7 +377,6 @@ And the resulting aggregated object will be:
             "time": 1481875921763
           }
         ]
-      }
     }
 
 ### 2) f37d59a3-069e-4f4c-8cc5-a52e73501a75
@@ -458,8 +454,7 @@ aggregations were done during the time between this and previous
 ConfidenceLevelModified event appearance. Because of that the object looks like this:
 
     {
-        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-        "aggregatedObject": {
+          "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "fileInformation": [
             {
               "extension": "jar",
@@ -607,7 +602,6 @@ ConfidenceLevelModified event appearance. Because of that the object looks like 
               "time": 1481875921763
             }
           ]
-        }
       }
 
 The required content is extracted from the event as specified in the rule:
@@ -651,8 +645,7 @@ array. New “confidenceLevels” array will look like below:
 And the resulting aggregated object will be:
 
     {
-      "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-      "aggregatedObject": {
+        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "fileInformation": [
           {
             "extension": "jar",
@@ -806,5 +799,4 @@ And the resulting aggregated object will be:
             "time": 1481875921763
           }
         ]
-      }
     }

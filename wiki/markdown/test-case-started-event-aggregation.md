@@ -64,8 +64,7 @@ Following aggregated object is extracted by using the identify rules:
 
     [
         {
-           "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-           "aggregatedObject":{
+              "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
               "fileInformation":[
                  {
                     "extension":"jar",
@@ -106,7 +105,6 @@ Following aggregated object is extracted by using the identify rules:
               "time":1481875891763,
               "type":"EiffelArtifactCreatedEvent",
               "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-           }
         }
     ]
 

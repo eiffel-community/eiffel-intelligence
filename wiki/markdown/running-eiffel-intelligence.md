@@ -60,7 +60,7 @@ To run Eiffel-Intelligence in Tomcat, the war file must be put into the webapp f
 
     (catalina home)/webapp/
 
-If Eiffel-Intelligence should be run without any conext-path in the url address, then overwrite ROOT.war file in webapp file with eiffel-intelligence-<version>.war:
+If Eiffel-Intelligence should be run without any conext-path in the url address, then overwrite ROOT.war file in webapp folder with eiffel-intelligence-<version>.war:
 
     cp eiffel-intelligence-<version>.war (catalina home)/webapp/ROOT.war
 

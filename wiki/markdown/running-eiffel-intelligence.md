@@ -84,7 +84,7 @@ To run Tomcat and Eiffel Intelligence with logs printed to console:
     
     (catalina home)/bin/catalina.sh run
 
-## Eiffel-Intelligence configurations and properties
+## Eiffel Intelligence configurations and properties
 
 All available Eiffel Intelligence properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties) example file.
 

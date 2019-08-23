@@ -90,7 +90,7 @@ StartEvent is "YES" then it will be the first processed event in the aggregation
 sequence. If StartEvent is "NO" then Eiffel event of this type will be used to
 append information to existing aggregated object. If no aggregated object exist
 then it will wait a certain time as defined by property
- _waitlist.collection.ttlValue_ in [application's properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+ _waitlist.collection.ttlValue_ in [application's properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
  until wanted aggregated object has been created. If no aggregated object is
  created in time then the event will no longer be processed and it will be
  removed from the wait list.

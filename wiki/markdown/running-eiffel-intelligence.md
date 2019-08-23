@@ -88,5 +88,5 @@ To run Tomcat and Eiffel Intelligence with logs printed to console:
 
 All available Eiffel Intelligence properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties) example file.
 
-More documentation of each Eiffel Intelligence property and configurations can be found in [Configuration page](./configuration.md)
+More documentation of each Eiffel Intelligence property and configurations can be found in [Configuration page](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md)
 

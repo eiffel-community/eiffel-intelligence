@@ -11,7 +11,7 @@ merged, can be specified with path elements. The path element needs a
 value to exist, but not all elements of a path are needed. The aggregated 
 object will be flattened and all paths that contains the path elements in 
 the given order will be collected. Then we check the value, and the path 
-with contains the value is the winning path. If no value from the paths 
+which contains the value is the winning path. If no value from the paths 
 match the given value then we take the longest path that contains the 
 given path elements.
 

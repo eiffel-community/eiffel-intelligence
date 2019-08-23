@@ -36,7 +36,7 @@ If running from source code, war file is generated and produced by maven command
 
     mvn package -DskipTests
 
- This command should produce an `eiffel-intelligence-<version>.war` file in target folder, target/`eiffel-intelligence-<version>.war`. 
+ This command should produce an `eiffel-intelligence-<version>.war` file in target folder, `target/eiffel-intelligence-<version>.war`. 
 
 The war file is executed by the following command and with default configuration:
 

@@ -48,6 +48,7 @@ import com.ericsson.ei.controller.QueryAggregatedObjectController;
 import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
 import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = {
@@ -92,9 +93,11 @@ public class QueryServiceRESTAPITest {
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
-        String expectedOutput = (expectedOutput_with_square_brackets.substring(1,
-                expectedOutput_with_square_brackets.length() - 1)).replaceAll(("\\s"), "");
+        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(aggregatedOutputPath),
+                "UTF-8");
+        String expectedOutput_string = (expectedOutput_with_square_brackets.substring(1,
+                expectedOutput_with_square_brackets.length() - 1));
+        JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
@@ -106,13 +109,8 @@ public class QueryServiceRESTAPITest {
                                                               .contentType(
                                                                       MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
-
-        String output = result.getResponse().getContentAsString().toString();
-
-        output = output.replaceAll(("\\s"), "")
-                       .replace("\\" + "n", "")
-                       .replace("\\" + "r", "")
-                       .replace("\\", "");
+        String output_string = result.getResponse().getContentAsString().toString();
+        JsonNode output = mapper.readTree(output_string);
         LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
@@ -125,9 +123,9 @@ public class QueryServiceRESTAPITest {
         response.add(missedNotification);
         String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(missedNotificationOutputPath),
                 "UTF-8");
-
-        String expectedOutput = (expectedOutput_with_square_brackets.substring(1,
+        String expectedOutput_string = (expectedOutput_with_square_brackets.substring(1,
                 expectedOutput_with_square_brackets.length() - 1));
+        JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
         Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
@@ -139,15 +137,11 @@ public class QueryServiceRESTAPITest {
                                                                       "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output = result.getResponse().getContentAsString().toString().replaceAll("\\s", "");
-
-        output = output.replaceAll(("\\s"), "")
-                       .replace("\\" + "n", "")
-                       .replace("\\" + "r", "")
-                       .replace("\\", "");
+        String output_string = result.getResponse().getContentAsString().toString();
+        JsonNode output = mapper.readTree(output_string);
         LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        assertEquals(expectedOutput.replace(" ", ""), output);
+        assertEquals(expectedOutput, output);
     }
 }

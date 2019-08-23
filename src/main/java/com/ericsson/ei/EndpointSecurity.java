@@ -19,6 +19,8 @@ package com.ericsson.ei;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,20 +41,8 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
 
-    @Value("${ldap.url}")
-    private String ldapUrl;
-
-    @Value("${ldap.base.dn}")
-    private String ldapBaseDn;
-
-    @Value("${ldap.username}")
-    private String ldapUsername;
-
-    @Value("${ldap.password}")
-    private String ldapPassword;
-
-    @Value("${ldap.user.filter}")
-    private String ldapUserFilter;
+    @Value("${ldap.server.list:}")
+    private String ldapServerList;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -84,20 +74,28 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        if(ldapEnabled) {
-            auth
-            .eraseCredentials(false)
-            .ldapAuthentication()
-                .userSearchFilter(ldapUserFilter)
-                .contextSource()
-                    .url(ldapUrl)
-                    .root(ldapBaseDn)
-                    .managerDn(ldapUsername)
-                    .managerPassword(decodeBase64(ldapPassword));
+        if (ldapEnabled && !ldapServerList.isEmpty()) {
+            JSONArray serverList = new JSONArray(ldapServerList);
+            addLDAPServersFromList(serverList, auth);
         }
     }
 
     private String decodeBase64(String password) {
         return StringUtils.newStringUtf8(Base64.decodeBase64(password));
+    }
+
+    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
+        for (int i = 0; i < serverList.length(); i++) {
+            JSONObject server = (JSONObject) serverList.get(i);
+            auth
+            .eraseCredentials(false)
+            .ldapAuthentication()
+                .userSearchFilter(server.getString("user.filter"))
+                .contextSource()
+                    .url(server.getString("url"))
+                    .root(server.getString("base.dn"))
+                    .managerDn(server.getString("username"))
+                    .managerPassword(decodeBase64(server.getString("password")));
+        }
     }
 }

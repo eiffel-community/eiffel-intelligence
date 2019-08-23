@@ -2,6 +2,7 @@ package com.ericsson.ei.test.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
@@ -30,12 +31,12 @@ public class TestConfigs {
     private static MongodForTestsFactory testsFactory;
 
     @Getter
-    private static ConnectionFactory cf;
+    private static ConnectionFactory connectionFactory;
 
     final static Logger LOGGER = LoggerFactory.getLogger(TestConfigs.class);
 
     @Getter
-    private static Connection conn;
+    private static Connection connection;
 
     @Getter
     private static MongoClient mongoClient = null;
@@ -46,42 +47,24 @@ public class TestConfigs {
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
-        LOGGER.debug("Debug:setting up message buss");
-
-        LOGGER.debug("before setting up message buss: amqpBroker: " + amqpBroker + ", conn: " + conn + ",cf:" + cf);
-        if (amqpBroker != null || conn != null || cf != null) {
+        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
+                + connectionFactory);
+        if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
         }
 
         int port = SocketUtils.findAvailableTcpPort();
-        System.setProperty("rabbitmq.port", "" + port);
-        System.setProperty("rabbitmq.user", "guest");
-        System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "500");
-        System.setProperty("waitlist.fixedRateResend", "100");
+        setSystemProperties(port);
+        setupBroker(port);
 
-        LOGGER.debug("done setting up message buss properties");
-        LOGGER.info("setting up message buss");
-        String config = "src/test/resources/configs/qpidConfig.json";
-        File qpidConfig = new File(config);
-        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
-        amqpBroker.startBroker();
-        cf = new ConnectionFactory();
-        cf.setUsername("guest");
-        cf.setPassword("guest");
-
-        cf.setPort(port);
-        cf.setHandshakeTimeout(600000);
-        cf.setConnectionTimeout(600000);
-        conn = cf.newConnection();
-        LOGGER.debug("after setting up message buss");
+        setupConnectionFactory(port);
+        LOGGER.debug("Setting up message bus done!");
     }
 
     public static MongoClient mongoClientInstance() throws Exception {
         if (mongoClient == null) {
             setUpEmbeddedMongo();
         }
-
         return mongoClient;
     }
 
@@ -102,12 +85,13 @@ public class TestConfigs {
     }
 
     public static void createExchange(final String exchangeName, final String queueName) {
-        final CachingConnectionFactory ccf = new CachingConnectionFactory(cf);
+        final CachingConnectionFactory ccf = new CachingConnectionFactory(connectionFactory);
         LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
-        RabbitAdmin admin = new RabbitAdmin(ccf);
-        Queue queue = new Queue(queueName, false);
-        admin.declareQueue(queue);
+        final RabbitAdmin admin = new RabbitAdmin(ccf);
+        final Queue queue = new Queue(queueName, false);
         final TopicExchange exchange = new TopicExchange(exchangeName);
+
+        admin.declareQueue(queue);
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
@@ -122,4 +106,29 @@ public class TestConfigs {
         System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");
     }
 
+    protected static void setSystemProperties(int port) {
+        System.setProperty("rabbitmq.port", "" + port);
+        System.setProperty("rabbitmq.user", "guest");
+        System.setProperty("rabbitmq.password", "guest");
+        System.setProperty("waitlist.initialDelayResend", "500");
+        System.setProperty("waitlist.fixedRateResend", "100");
+        LOGGER.info("Message bus port:{}", port);
+    }
+
+    protected static void setupBroker(int port) throws Exception {
+        String config = "src/test/resources/configs/qpidConfig.json";
+        File qpidConfig = new File(config);
+        amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
+        amqpBroker.startBroker();
+    }
+
+    protected static void setupConnectionFactory(int port) throws IOException, TimeoutException {
+        connectionFactory = new ConnectionFactory();
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        connectionFactory.setPort(port);
+        connectionFactory.setHandshakeTimeout(600000);
+        connectionFactory.setConnectionTimeout(600000);
+        connection = connectionFactory.newConnection();
+    }
 }

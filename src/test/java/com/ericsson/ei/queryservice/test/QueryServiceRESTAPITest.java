@@ -93,11 +93,11 @@ public class QueryServiceRESTAPITest {
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(aggregatedOutputPath),
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(aggregatedOutputPath),
                 "UTF-8");
-        String expectedOutput_string = (expectedOutput_with_square_brackets.substring(1,
-                expectedOutput_with_square_brackets.length() - 1));
-        JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
+        String expectedOutputString = (expectedOutputWithSquareBrackets.substring(1,
+                expectedOutputWithSquareBrackets.length() - 1));
+        JsonNode expectedOutput = mapper.readTree(expectedOutputString);
 
         Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
@@ -121,10 +121,10 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutput_with_square_brackets = FileUtils.readFileToString(new File(missedNotificationOutputPath),
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(missedNotificationOutputPath),
                 "UTF-8");
-        String expectedOutput_string = (expectedOutput_with_square_brackets.substring(1,
-                expectedOutput_with_square_brackets.length() - 1));
+        String expectedOutput_string = (expectedOutputWithSquareBrackets.substring(1,
+                expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
@@ -137,8 +137,8 @@ public class QueryServiceRESTAPITest {
                                                                       "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        String output_string = result.getResponse().getContentAsString().toString();
-        JsonNode output = mapper.readTree(output_string);
+        String outputString = result.getResponse().getContentAsString().toString();
+        JsonNode output = mapper.readTree(outputString);
         LOGGER.info("The Output is : " + output);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());

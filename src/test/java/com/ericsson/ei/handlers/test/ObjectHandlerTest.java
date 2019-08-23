@@ -91,7 +91,7 @@ public class ObjectHandlerTest {
     }
 
     @Test
-    public void test() {
+    public void testFindInsertedObject() {
         String document = objHandler.findObjectById("eventId").replace(" ", "");
         assertEquals(input.replace(" ", ""), document);
     }

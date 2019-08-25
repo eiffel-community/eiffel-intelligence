@@ -44,8 +44,6 @@ public class ConfigurationLogger {
                 + "spring.data.mongodb.username: " + env.getProperty("spring.data.mongodb.username") + "\n"
                 + "spring.data.mongodb.database: " + env.getProperty("spring.data.mongodb.database") + "\n"
                 + "sessions.collection.name: " + env.getProperty("sessions.collection.name") + "\n"
-                + "search.query.prefix: " + env.getProperty("search.query.prefix") + "\n"
-                + "aggregated.object.name: " + env.getProperty("aggregated.object.name") + "\n"
                 + "aggregated.collection.name: " + env.getProperty("aggregated.collection.name") + "\n"
                 + "aggregated.collection.ttlValue: " + env.getProperty("aggregated.collection.ttlValue") + "\n"
                 + "event_object_map.collection.name: " + env.getProperty("event_object_map.collection.name") + "\n"

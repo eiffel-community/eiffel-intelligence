@@ -35,13 +35,13 @@ Compatible: ✔️️ Yes
 Notes: -
 
 #### Front-end: 1.0.1
-Compatible: ✅ Yes, minor Issue
+Compatible: ✅ Yes
 
 Notes:
 - Documentation is based on the [Toulouse](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to gav package instead of purl does not change subscription structure.
 
 #### Front-end: 1.0.0
-Compatible: ❕ Yes, medium Issue
+Compatible: ❕ Yes
 
 Notes:
 - Documentation is based on the [Toulouse](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to gav package instead of purl does not change subscription structure.
@@ -49,13 +49,13 @@ Notes:
 
 ## Back-end: 1.0.1
 #### Front-end: 1.0.3
-Compatible: ✅ Yes, minor Issue
+Compatible: ✅ Yes
 
 Notes:
 - Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 #### Front-end: 1.0.2
-Compatible: ✅ Yes, minor Issue
+Compatible: ✅ Yes 
 
 Notes:
 - Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
@@ -72,13 +72,13 @@ Notes: -
 
 ## Back-end: 1.0.0
 #### Front-end: 1.0.3
-Compatible: ✅ Yes, minor Issue
+Compatible: ✅ Yes
 
 Notes:
 - Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
 
 #### Front-end: 1.0.2
-Compatible: ✅ Yes, minor Issue
+Compatible: ✅ Yes
 
 Notes:
 - Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.

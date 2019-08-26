@@ -27,7 +27,7 @@ should be set to true:
 
     testaggregated.enabled: true
 
-A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/Ericsson/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
+A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/eiffel-community/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
 
 ## Check if testRules are enabled on the selected instance
 
@@ -151,4 +151,4 @@ Examples of this endpoint using curl
 
     curl -X POST -H "Content-type: application/json"  --data @body.json  http://localhost:8090/rules/rule-check/aggregation
 
-For demo you can use following list of [events](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/AggregateListEvents.json) and list of [rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/AggregateListRules.json). They can be used to create a json with the structure as above and when send as body to the endpoint you should get following [aggregation result](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/test/resources/AggregateResultObject.json)
+For demo you can use following list of [events](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListEvents.json) and list of [rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListRules.json). They can be used to create a json with the structure as above and when send as body to the endpoint you should get following [aggregation result](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateResultObject.json)

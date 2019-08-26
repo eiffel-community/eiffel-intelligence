@@ -116,7 +116,7 @@ all aggregated objects from the database. The aggregated objects will be
 returned from specific collection (which name is defined by property
 aggregated.collection.name) that is stored in specific database (which name is
 defined by property spring.data.mongodb.database). Read more about the
-different properties in [application's properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+different properties in [application's properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 or in the [documentation](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md).
 
 Example:

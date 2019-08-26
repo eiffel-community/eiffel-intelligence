@@ -187,3 +187,7 @@ systems do not need to compute it.
 
 **History Rules** are used if you need to aggregate data from existing events
 linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
+
+**Important Note**
+The keys "_id" and "time" (at the root level of the aggregated object) are reserved and added in the mongo document by EI code. User should not use these two keys at the 
+root level of an aggregated object. Even If user add these tow keys at the root level, EI code will overwrite those.

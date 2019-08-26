@@ -60,7 +60,7 @@ written with [JMESPath syntax](http://jmespath.org/specification.html).
 Below is a document containing an aggregated object. In addition to the 
 extracted content from Eiffel events, Eiffel Intelligence has added an 
 extra _id key with the value of the start event. This _id serves as an 
-index in mongo DB and speeds up searches..
+index in mongo DB and speeds up searches.
 
     {
             "_id" : "df4cdb42-1580-4cff-b97a-4d0faa9b2b22",

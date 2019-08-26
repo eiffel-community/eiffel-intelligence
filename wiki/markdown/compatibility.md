@@ -4,14 +4,13 @@ We recommend using the latest version of back-end and front-end whenever
 possible. However, this page contains a compatibility matrix and notes 
 when pairing different versions.
 
-|                      |Front-end ➡           |
-|---------------------:|:--------------------:|
-|**Back-end ⬇**        |Recommended front-end versions  |
+|                      |Recommended front-end versions  |
+|---------------------:|:------------------------------:|
+|**Back-end ⬇**        |                                |
 |[2.0.0](#back-end-200)|Front-end 2.0.0 version         |
 |[1.0.2](#back-end-102)|Front-end 1.x versions          |
 |[1.0.1](#back-end-101)|Front-end 1.x versions          |
 |[1.0.0](#back-end-100)|Front-end 1.x versions          |
-
 
 ✔️️ Yes | ✅ Yes, minor Issue | ❕ Yes, medium Issue | ❌ No, major Issue
 

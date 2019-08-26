@@ -68,13 +68,13 @@ Remove "ROOT" folder in webapp folder:
 
     rm -rf (catalina home)/webapp/ROOT/
 
-Create "config" folder in webapp folder, if it doesn't exists. Spring and Eiffel Intelligence will look for the application.properties configuration file in config folder:
+Create "config" folder in catalina home folder, if it doesn't exist. Spring and Eiffel Intelligence will look for the application.properties configuration file in config folder:
 
-    mkdir (catalina home)/webapp/config
+    mkdir (catalina home)/config
 
 Copy the application.properties file into the newly created config folder:
     
-    cp application.properties (catalina home)/webapp/config
+    cp application.properties (catalina home)/config
 
 Start Tomcat and Eiffel Intelligence in background/daemon mode by executing command:
 

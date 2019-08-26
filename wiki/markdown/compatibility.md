@@ -1,61 +1,29 @@
 # Compatibility
 
-We recommend using the latest version of back-end and front-end whenever possible. However, this page contains a compatibility matrix and notes when pairing different versions.
+We recommend using the latest version of back-end and front-end whenever 
+possible. However, this page contains a compatibility matrix and notes 
+when pairing different versions.
 
-|                      |Front-end ➡           |                      |                      |                      |
-|---------------------:|:--------------------:|:--------------------:|:--------------------:|:--------------------:|
-|**Back-end ⬇**        |                 1.0.0|                 1.0.1|                 1.0.2|                 1.0.3|
-|[1.0.0](#back-end-100)|[✔️️](#front-end-100)   |[✔️️](#front-end-101)   |[✅](#front-end-102)  |[✅](#front-end-103)  |
-|[1.0.1](#back-end-101)|[✔️️](#front-end-100-1) |[✔️️](#front-end-101-1) |[✅](#front-end-102-1)|[✅](#front-end-103-1)|
-|[1.0.2](#back-end-102)|[❕](#front-end-100-2)|[✅](#front-end-101-2)|[✔️️](#front-end-102-2) |[✔️️](#front-end-103-2) |
+|                      |Front-end ➡           |
+|---------------------:|:--------------------:|
+|**Back-end ⬇**        |Recommended front-end versions  |
+|[2.0.0](#back-end-200)|Front-end 2.0.0 version         |
+|[1.0.2](#back-end-102)|Front-end 1.x versions          |
+|[1.0.1](#back-end-101)|Front-end 1.x versions          |
+|[1.0.0](#back-end-100)|Front-end 1.x versions          |
+
 
 ✔️️ Yes | ✅ Yes, minor Issue | ❕ Yes, medium Issue | ❌ No, major Issue
 
-## Back-end: 1.0.0
-#### Front-end: 1.0.0
+## Back-end: 2.0.0
+#### Front-end: 2.0.0
 Compatible: ✔️️ Yes
 
-Notes: -
+#### Front-end: 1.x
+Compatible: ❌  No, major Issue
 
-#### Front-end: 1.0.1
-Compatible: ✔️️ Yes
-
-Notes: -
-
-#### Front-end: 1.0.2
-Compatible: ✅ Yes, minor Issue
-
-Notes:
-- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
-
-#### Front-end: 1.0.3
-Compatible: ✅ Yes, minor Issue
-
-Notes:
-- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
-
-## Back-end: 1.0.1
-#### Front-end: 1.0.0
-Compatible: ✔️️ Yes
-
-Notes: -
-
-#### Front-end: 1.0.1
-Compatible: ✔️️ Yes
-
-Notes: -
-
-#### Front-end: 1.0.2
-Compatible: ✅ Yes, minor Issue
-
-Notes:
-- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
-
-#### Front-end: 1.0.3
-Compatible: ✅ Yes, minor Issue
-
-Notes:
-- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
+Notes: In Eiffel Intelligence 2.0.0 some new changes were introduced which
+are not backwards compatible. [See release notes](https://github.com/eiffel-community/eiffel-intelligence-frontend/releases/tag/2.0.0).
 
 ## Back-end: 1.0.2
 #### Front-end: 1.0.0
@@ -80,3 +48,49 @@ Notes: -
 Compatible: ✔️️ Yes
 
 Notes: -
+
+## Back-end: 1.0.1
+#### Front-end: 1.0.0
+Compatible: ✔️️ Yes
+
+Notes: -
+
+#### Front-end: 1.0.1
+Compatible: ✔️️ Yes
+
+Notes: -
+
+#### Front-end: 1.0.2
+Compatible: ✅ Yes, minor Issue
+
+Notes:
+- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
+
+#### Front-end: 1.0.3
+Compatible: ✅ Yes, minor Issue
+
+Notes:
+- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
+
+## Back-end: 1.0.0
+#### Front-end: 1.0.0
+Compatible: ✔️️ Yes
+
+Notes: -
+
+#### Front-end: 1.0.1
+Compatible: ✔️️ Yes
+
+Notes: -
+
+#### Front-end: 1.0.2
+Compatible: ✅ Yes, minor Issue
+
+Notes:
+- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.
+
+#### Front-end: 1.0.3
+Compatible: ✅ Yes, minor Issue
+
+Notes:
+- Documentation is based on the [Agen](https://github.com/eiffel-community/eiffel/blob/master/eiffel-syntax-and-usage/versioning.md#versioning) version of the Eiffel protocol but it’s still functional since the jmespath reference to purl package instead of gav does not change subscription structure.

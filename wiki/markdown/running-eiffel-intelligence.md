@@ -4,7 +4,7 @@
 
 Eiffel Intelligence is a Spring microservice distributed in a war file.
 
-Eiffel Intelligence front-end release war files can be downloaded from Jitpack:
+Eiffel Intelligence release war files can be downloaded from Jitpack:
 [jitpack.io](https://jitpack.io/#eiffel-community/eiffel-intelligence) and look for the
 latest version. Now replace the latest version in the link below:
 

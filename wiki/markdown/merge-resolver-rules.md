@@ -1,18 +1,28 @@
 # Merge Resolver Rules
 
-JMESPath identifier of the place where to insert the JSON object from
-_"ExtractionRules"_. If MergeResolverRules is null _"ExtractionRules"_ object
-will be inserted to the root of aggregated object.
+The **MergeResolverRules** is a JMESPath identifier which tells Eiffel 
+Intelligence the place where to insert the JSON object extracted from 
+**ExtractionRules**. If **MergeResolverRules** is null, the **ExtractionRules** 
+object will be inserted to the root of aggregated object.
 
-The location in the aggregated object where the extracted content will be merge
-can be specified with path elements and a value to exist at that, but not all
-elements of a path are needed. The aggregated object will be flattened and all
-paths that contains the path elements in the given order will be collected.
-Then we check the value and the path with the value is the winning path. If no
-value from the paths match the given value then we take the longest path that
-contains the given path elements.
+## Specifying location with MergeResolverRules
+The location in the aggregated object where the extracted content will be 
+merged, can be specified with path elements. The path element needs a 
+value to exist, but not all elements of a path are needed. The aggregated 
+object will be flattened and all paths that contains the path elements in 
+the given order will be collected. Then we check the value, and the path 
+which contains the value is the winning path. If no value from the paths 
+match the given value then we take the longest path that contains the 
+given path elements.
 
-Example object:
+If you want to place the extracted content into the root of the aggregated
+object you can choose to specify a location key which does not exist in 
+the aggregated object, and there Eiffel Intelligence will not find this
+location. In our example rules we use the non-existing key and value 
+**NONEPATH:NONE** to make Eiffel Intelligence place the content at the 
+root of the object. 
+
+Example aggregated object:
 
     {
        "id":"eventId",
@@ -63,7 +73,8 @@ Example object:
 
     "MergeResolverRules" : "{level2:{event_id: %IdentifyRules%}}"
 
-will result after replacing the marker by EI in rule:
+This rule will be interpreted by Eiffel Intelligence which replaces the 
+marker %IdentifyRules% with a processed value, resulting in the following rule:
 
     {level2:{event_id: someLevelId}}
 

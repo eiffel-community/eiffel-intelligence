@@ -60,13 +60,11 @@ public class ProcessQueryParams {
      */
     public JSONArray runQuery(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
-        // String criteria = editObjectNameInQueryParam(criteriaObj);
         String criteria = criteriaObj.toString();
 
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
-            // String options = editObjectNameInQueryParam(optionsObj);
             String options = optionsObj.toString();
             LOGGER.debug("The options are: {}", options);
             String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
@@ -145,21 +143,4 @@ public class ProcessQueryParams {
         LOGGER.debug("Freestyle criteria query: {}", criteriasJsonNode.toString());
         return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
     }
-
-    // /**
-    // * This method takes takes the text as input and replaces all the instances
-    // * of the searchQueryPrefix (defined in application.properties) with the
-    // aggregated
-    // * object name (also defined in application.properties) and return the edited
-    // text.
-    // *
-    // * @param txtObject
-    // * A JSONObject with text to be replaced
-    // * @return String text with search prefix replaced by the name for aggregated
-    // object
-    // */
-    // private String editObjectNameInQueryParam(JSONObject txtObject) {
-    // return Pattern.compile("("+ searchQueryPrefix +
-    // ".)").matcher(txtObject.toString()).replaceAll(objectName +".");
-    // }
 }

@@ -21,7 +21,8 @@ Compatible: ✔️️ Yes
 #### Front-end: 1.x
 Compatible: ❌  No, major Issue
 
-Notes: In Eiffel Intelligence 2.0.0 some new changes were introduced which
+Notes: 
+- In Eiffel Intelligence 2.0.0 some new changes were introduced which
 are not backwards compatible. [See release notes](https://github.com/eiffel-community/eiffel-intelligence-frontend/releases/tag/2.0.0).
 
 ## Back-end: 1.0.2

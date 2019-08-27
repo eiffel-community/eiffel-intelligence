@@ -63,21 +63,6 @@ Event repository. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
 
-When performing queries towards an aggregated object, **search.query.prefix**
-is used to access the aggregated object when using JMESPath expressions.
-
-Consider the following query:
-
-    {
-      "criteria": {
-        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-      }
-    }
-
-Eiffel Intelligence will replace the prefix "object." with the name of the aggregated
-object (in this case "aggregatedObject"), which is defined by **aggregated.object.name**.
-Read more examples about [queries here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/query.md).
-
 
 ### Testing aggregation rules
 

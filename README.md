@@ -59,7 +59,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)
     - [**MergeResolverRules**](wiki/markdown/merge-resolver-rules.md)
     - [**History Rules**](wiki/markdown/history-rules.md)
-    - [**Existing rules files**](wiki/markdown/existing-rules-files.md)
+    - [**Example rules**](wiki/markdown/example-rules.md)
     - [**Mapping Rules To Aggregations**](wiki/markdown/mapping-rules-to-aggregations.md)
 4. [**Step by Step Aggregation on Eiffel events**](wiki/markdown/step-by-step-aggregation.md)
     - [**ArtifactCreatedEvent Aggregation**](wiki/markdown/artifact-created-event-aggregation.md)

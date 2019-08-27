@@ -2,12 +2,12 @@
   "criteria": {
     "$or": [
       {
-        "object.testCaseExecutions.outcome.id":"TC5"
+        "testCaseExecutions.outcome.id":"TC5"
       }, {
-        "object.testCaseExecutions.outcome.id":"TC6"
+        "testCaseExecutions.outcome.id":"TC6"
       }
     ],
 
-    "object.identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+    "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
   }
 }

@@ -44,7 +44,7 @@ public class TestIncompleteJmesPathFilter {
     @Test
     public void testFilterObjectWithWholePath() throws Exception {
         JsonNode expectedResult = mapper.readTree("{\"eventId\":\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\"}");
-        String processRule = "{eventId : incomplete_path_filter(@, 'aggregatedObject.publications[0].eventId')}";
+        String processRule = "{eventId : incomplete_path_filter(@, 'publications[0].eventId')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         assertEquals(result, expectedResult);
     }
@@ -59,18 +59,18 @@ public class TestIncompleteJmesPathFilter {
 
     @Test
     public void testFilterObjectWithKey() throws Exception {
-        String expectedResult = "\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\"";
+        String expectedResult = "\"[5005, 1481875921843, 1481875988767, 2000, 1481875921763, 1481875944272, 1481875891763]\"";
         String processRule = "incomplete_path_filter(@, 'time')";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result.toString(), expectedResult);
+        assertEquals(expectedResult, result.toString());
     }
 
     @Test
     public void testFilterObjectWithManyKeys() throws Exception {
-        String expectedResult = "{\"time\":\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\",\"gitIdentifier\":\"null\"}";
+        String expectedResult = "{\"time\":\"[5005, 1481875921843, 1481875988767, 2000, 1481875921763, 1481875944272, 1481875891763]\",\"gitIdentifier\":\"null\"}";
         String processRule = "{time : incomplete_path_filter(@, 'time'), gitIdentifier : incomplete_path_filter(@, 'gitIdentifier')}";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        assertEquals(result.toString(), expectedResult);
+        assertEquals(expectedResult, result.toString());
     }
 
     @Test

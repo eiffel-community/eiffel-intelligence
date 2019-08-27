@@ -5,7 +5,7 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "event[?meta.type=='EiffelTestCaseFinishedEvent'] | [0].[links] | [] | [?type=='TEST_CASE_EXECUTION'].target",
-    "MatchIdRules": { "$and": [{"_event_object.testCaseExecutions.testCaseStartedEventId": "%IdentifyRules%"},{"_event_object.TemplateName": "ARTIFACT_1"}]},
+    "MatchIdRules": { "$and": [{"testCaseExecutions.testCaseStartedEventId": "%IdentifyRules%"},{"TemplateName": "ARTIFACT_1"}]},
     "ExtractionRules" : "{testCaseExecutions :[{ testCaseFinishEventId:meta.id, testCaseFinishedTime:meta.time, testCase:data.outcome}]}",
     "MergeResolverRules" : {"testCaseStartedEventId":"%IdentifyRules%"},
     "ArrayMergeOptions": "",

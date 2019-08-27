@@ -1,6 +1,6 @@
 {
     "criteria": {
-         "object.testCaseExecutions": {
+         "testCaseExecutions": {
              "$elemMatch": {
                  "outcome.conclusion": "SUCCESSFUL",
                  "outcome.id": "TC5"

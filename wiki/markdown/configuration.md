@@ -1,6 +1,6 @@
 # Configuration
 
-The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties) file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
+The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties) file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
 
 ## Setting up multiple EI instances
 
@@ -26,13 +26,13 @@ This situation may be needed when the events throughput is very high. In this ca
 ## Configure Eiffel Intelligence with extraction rules for specific Eiffel protocol version
 
 Extraction rules for a specific Eiffel protocol versions is configured by
-setting "rules.path" property in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+setting "rules.path" property in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 to point to the correct extraction rules json file.
 
 Eiffel Intelligence provides default extractions rules json files for
 different Eiffel protocol versions inside the war artifact file and in the
 source code repository. All default extraction rules json files can be
-found here: [extraction rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules)
+found here: [extraction rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/rules)
 
 Example of setting "rules.path" property in application.properties using default extraction rules json files provided in eiffel-intelligence war file:
 - rules.path: /rules/ArtifactRules-Eiffel-Agen-Version.json
@@ -62,21 +62,6 @@ it is recommended to set a time to live value to avoid having a copy of
 Event repository. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
-
-When performing queries towards an aggregated object, **search.query.prefix**
-is used to access the aggregated object when using JMESPath expressions.
-
-Consider the following query:
-
-    {
-      "criteria": {
-        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-      }
-    }
-
-Eiffel Intelligence will replace the prefix "object." with the name of the aggregated
-object (in this case "aggregatedObject"), which is defined by **aggregated.object.name**.
-Read more examples about [queries here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/query.md).
 
 
 ### Testing aggregation rules

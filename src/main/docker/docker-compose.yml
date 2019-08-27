@@ -108,7 +108,7 @@ services:
        - mongodb.collection=events
        - mongodb.user
        - mongodb.password
-       - mongodb.indexes=meta.id,links.target,links.type,meta.time,data.gav.groupId,data.gav.artifactId
+       - mongodb.indexes=meta.id,links.target,links.type,meta.time,data.identity
        - mongodb.externalERs
        - search.limit=100
        - search.levels=10
@@ -196,8 +196,6 @@ services:
       - spring.data.mongodb.port=${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - missedNotificationDataBaseName=eiffel2_intelligence_MissedNotification
-      - search.query.prefix=object
-      - aggregated.object.name=aggregatedObject
       - spring.mail.host=
       - spring.mail.port=
       - spring.mail.username=

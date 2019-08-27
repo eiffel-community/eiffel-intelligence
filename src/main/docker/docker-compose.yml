@@ -108,7 +108,7 @@ services:
        - mongodb.collection=events
        - mongodb.user
        - mongodb.password
-       - mongodb.indexes=meta.id,links.target,links.type,meta.time,data.gav.groupId,data.gav.artifactId
+       - mongodb.indexes=meta.id,links.target,links.type,meta.time,data.identity
        - mongodb.externalERs
        - search.limit=100
        - search.levels=10

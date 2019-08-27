@@ -196,8 +196,6 @@ services:
       - spring.data.mongodb.port=${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - missedNotificationDataBaseName=eiffel2_intelligence_MissedNotification
-      - search.query.prefix=object
-      - aggregated.object.name=aggregatedObject
       - spring.mail.host=
       - spring.mail.port=
       - spring.mail.username=

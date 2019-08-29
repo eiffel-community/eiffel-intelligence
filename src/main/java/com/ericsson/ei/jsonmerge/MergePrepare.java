@@ -72,30 +72,6 @@ public class MergePrepare {
         return ruleValue;
     }
 
-    public boolean pathContainsMergeRule(String path, String mergeRule) {
-        String stringRule = "";
-        try {
-            JSONObject ruleJSONObject = new JSONObject(mergeRule);
-            stringRule = ruleJSONObject.toString();
-        } catch (JSONException e) {
-            LOGGER.info("Failed to parse JSON.", e);
-        }
-        String flattenRule = JsonFlattener.flatten(stringRule);
-        flattenRule = destringify(flattenRule);
-        String[] rulePair = flattenRule.split(":");
-        String[] ruleKeyFactors = rulePair[0].split(".");
-        if (ruleKeyFactors.length == 0 && !rulePair[0].isEmpty())
-            ruleKeyFactors = new String[] { rulePair[0] };
-        for (String factor : ruleKeyFactors) {
-            int count = 0;
-            if (path.contains(factor))
-                count++;
-            if (count == ruleKeyFactors.length)
-                return true;
-        }
-        return false;
-    }
-
     public static String destringify(String str) {
         str = str.replaceAll("\"", "");
         str = str.replaceAll("\\{", "");
@@ -210,7 +186,7 @@ public class MergePrepare {
      * testcaseid1, test_data: testcase1data},{event_id: testcaseid2, test_data:
      * testcase2data}]}
      * 
-     * mergeRule: "{test_time: some_time, test_name: some_name}",
+     * mergeRule: "{event_id: testcaseid2}",
      * 
      * resulting path is : test_cases.1.event_id
      * 

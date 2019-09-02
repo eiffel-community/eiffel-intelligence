@@ -34,15 +34,6 @@ import com.mongodb.client.MongoDatabase;
 @RunWith(MockitoJUnitRunner.class)
 public class StatusHandlerTest {
 
-    @Mock
-    private MongoDBHandler mongoDBHandler;
-
-    @Mock
-    private RmqHandler rmqHandler;
-
-    @Mock
-    private MongoDatabase database;
-
     @InjectMocks
     private StatusHandler statusHandler;
 

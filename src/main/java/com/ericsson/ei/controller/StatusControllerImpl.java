@@ -19,6 +19,7 @@ package com.ericsson.ei.controller;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,48 +27,39 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.ericsson.ei.handlers.StatusHandler;
 import com.ericsson.ei.utils.ResponseMessage;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Endpoints /auth/login and /auth/checkStatus should be secured in case LDAP is enabled
- * Endpoint /auth should be not secured
+ * Endpoints /checkStatus should display EI back end information such as LDAP status of servers EI
+ * is dependent on.
  */
 @Component
 @CrossOrigin
-@Api(value = "Auth", tags = {"Authentication"})
-public class AuthControllerImpl implements AuthController {
+public class StatusControllerImpl implements StatusController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);
 
-    @Value("${ldap.enabled:false}")
-    private boolean ldapEnabled;
+    @Autowired
+    private StatusHandler statusHandler;
 
-    @Override
-    @CrossOrigin
-    @ApiOperation(value = "To check if security is enabled", response = String.class)
-    public ResponseEntity<?> getAuth() {
-        try {
-            return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
-        } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to check if security is enabled.";
-            LOGGER.error(errorMessage, e);
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To get login of current user", response = String.class)
-    public ResponseEntity<?> getAuthLogin() {
+    @ApiOperation(value = "To check back-end status", response = String.class)
+    public ResponseEntity<?> getStatus() {
         try {
-            String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-            return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
+            final JsonNode status = statusHandler.getCurrentStatus();
+            String statusString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(status);
+            return new ResponseEntity<>(statusString, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to log in user.";
+            String errorMessage = "Internal Server Error: Failed to check backend status.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

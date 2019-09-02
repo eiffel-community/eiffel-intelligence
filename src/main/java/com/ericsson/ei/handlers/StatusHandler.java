@@ -209,10 +209,13 @@ public class StatusHandler {
 
         boolean mongoDBAvailable = statusData.getMongoDBStatus() == Status.AVAILABLE;
         boolean rabbitMQAvailable = statusData.getRabbitMQStatus() == Status.AVAILABLE;
-        boolean eventRepositoryAvailable = statusData.getEventRepositoryStatus() != Status.DISABLED
-                && statusData.getEventRepositoryStatus() == Status.AVAILABLE;
-
         // TODO: Add check for ER status, may currently only be DISABLED or UNKNOWN.
+        // Once Event repository has a status endpoint the ER status check here should be updated
+        // and this variable added to the availability check.
+        // boolean eventRepositoryAvailable = statusData.getEventRepositoryStatus() !=
+        // Status.DISABLED
+        // && statusData.getEventRepositoryStatus() == Status.AVAILABLE;
+
         availability = mongoDBAvailable && rabbitMQAvailable;
         return availability;
     }

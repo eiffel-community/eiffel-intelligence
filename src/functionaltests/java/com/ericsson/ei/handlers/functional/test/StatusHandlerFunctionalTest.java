@@ -18,10 +18,6 @@ package com.ericsson.ei.handlers.functional.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,15 +27,8 @@ import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,13 +38,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.StatusHandler;
-import com.ericsson.ei.handlers.test.StatusHandlerTest;
 import com.ericsson.ei.status.Status;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
@@ -69,15 +55,12 @@ import com.mongodb.client.MongoDatabase;
 @SpringBootTest(classes = { App.class })
 public class StatusHandlerFunctionalTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatusHandlerFunctionalTest.class);
     private static final String CONNECTIONS_KEY_AVAILABLE = "available";
     private static final String CONNECTIONS_KEY_CURRENT = "current";
 
     private static final String EVENT_REPOSITORY_STATUS_KEY = "eventRepositoryStatus";
     private static final String MONGO_DB_STATUS_KEY = "mongoDBStatus";
     private static final String EIFFEL_INTELLIGENCE_STATUS_KEY = "eiffelIntelligenceStatus";
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Mock
     private MongoDBHandler mongoDBHandlerMock;
@@ -112,7 +95,8 @@ public class StatusHandlerFunctionalTest {
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
 
-        assertEquals("Event repository should be DISABLED", Status.DISABLED.name(), statusData.get(EVENT_REPOSITORY_STATUS_KEY).asText());
+        assertEquals("Event repository should be DISABLED", Status.DISABLED.name(),
+                statusData.get(EVENT_REPOSITORY_STATUS_KEY).asText());
     }
 
     @Test
@@ -120,8 +104,10 @@ public class StatusHandlerFunctionalTest {
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
 
-        assertEquals("MongoDB should be AVAILABLE", Status.AVAILABLE.name(), statusData.get(MONGO_DB_STATUS_KEY).asText());
-        assertEquals("EI should be AVAILABLE", Status.AVAILABLE.name(), statusData.get(EIFFEL_INTELLIGENCE_STATUS_KEY).asText());
+        assertEquals("MongoDB should be AVAILABLE", Status.AVAILABLE.name(),
+                statusData.get(MONGO_DB_STATUS_KEY).asText());
+        assertEquals("EI should be AVAILABLE", Status.AVAILABLE.name(),
+                statusData.get(EIFFEL_INTELLIGENCE_STATUS_KEY).asText());
     }
 
     @Test
@@ -132,8 +118,10 @@ public class StatusHandlerFunctionalTest {
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
 
-        assertEquals("MongoDB should be UNAVAILABLE", Status.UNAVAILABLE.name(), statusData.get(MONGO_DB_STATUS_KEY).asText());
-        assertEquals("EI should be UNAVAILABLE", Status.UNAVAILABLE.name(), statusData.get(EIFFEL_INTELLIGENCE_STATUS_KEY).asText());
+        assertEquals("MongoDB should be UNAVAILABLE", Status.UNAVAILABLE.name(),
+                statusData.get(MONGO_DB_STATUS_KEY).asText());
+        assertEquals("EI should be UNAVAILABLE", Status.UNAVAILABLE.name(),
+                statusData.get(EIFFEL_INTELLIGENCE_STATUS_KEY).asText());
     }
 
 }

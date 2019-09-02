@@ -23,15 +23,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.StatusHandler;
 import com.ericsson.ei.status.Status;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoDatabase;
 
 @RunWith(MockitoJUnitRunner.class)

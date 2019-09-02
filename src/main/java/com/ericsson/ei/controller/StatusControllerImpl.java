@@ -52,12 +52,12 @@ public class StatusControllerImpl implements StatusController {
     public ResponseEntity<?> getStatus() {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();
-            String statusString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(status);
+            final String statusString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(status);
             return new ResponseEntity<>(statusString, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to check backend status.";
+            final String errorMessage = "Internal Server Error: Failed to check backend status.";
             LOGGER.error(errorMessage, e);
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            final String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

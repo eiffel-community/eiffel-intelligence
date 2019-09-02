@@ -24,7 +24,8 @@ import lombok.Setter;
 public class StatusData {
 
     private Status eiffelIntelligenceStatus = Status.NOT_SET;
-    private Status eventRepositoryStatus = Status.NOT_SET;
+    // TODO: Implement ER status or healthCheck endpoint
+    //private Status eventRepositoryStatus = Status.NOT_SET;
     private Status rabbitMQStatus = Status.NOT_SET;
     private Status mongoDBStatus = Status.NOT_SET;
 

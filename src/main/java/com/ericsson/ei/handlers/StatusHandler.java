@@ -62,7 +62,6 @@ public class StatusHandler {
     @Scheduled(initialDelayString = INITIAL_DELAY_OF_FIRST_STATUS_UPDATE, fixedRateString = INTERVAL_TO_RUN_STATUS_UPDATES)
     public void run() {
         updateCurrentStatuses();
-        System.out.println("Executing scheduled task");
     }
 
     /**
@@ -86,8 +85,9 @@ public class StatusHandler {
         Status rabbitMQStatus = getRabbitMQStatus();
         statusData.setRabbitMQStatus(rabbitMQStatus);
 
-        Status eventRepositoryStatus = getEventRepositoryStatus();
-        statusData.setEventRepositoryStatus(eventRepositoryStatus);
+        // TODO: Implement ER status or healtCheck endpoint
+        // Status eventRepositoryStatus = getEventRepositoryStatus();
+        // statusData.setEventRepositoryStatus(eventRepositoryStatus);
 
         Status eiffelIntelligenceStatus = getEiffelIntelligenceStatus();
         statusData.setEiffelIntelligenceStatus(eiffelIntelligenceStatus);
@@ -105,12 +105,12 @@ public class StatusHandler {
             MongoDatabase database = mongoDBHandler.getMongoClient().getDatabase("admin");
             Document serverStatus = database.runCommand(new Document("serverStatus", 1));
             Map connections = (Map) serverStatus.get("connections");
-            status = evaluateAvailableConnections(connections);
+            status = evaluateAvailableMongoDBConnections(connections);
         } catch (Exception e) {
             status = Status.UNAVAILABLE;
+            LOGGER.debug("MongoDB status is {}", status);
         }
 
-        LOGGER.debug("MongoDB status is {}", status);
         return status;
     }
 
@@ -121,19 +121,18 @@ public class StatusHandler {
      * @param connections
      * @return status
      */
-    private Status evaluateAvailableConnections(Map<String, Integer> connections) {
+    private Status evaluateAvailableMongoDBConnections(Map<String, Integer> connections) {
         Status status;
-        int availableConnections = connections.get("available");
-        int current = connections.get("current");
+        int availableMongoDBConnections = connections.get("available");
+        int currentUsedMongoDBConnections = connections.get("current");
 
-        if (availableConnections >= REQUIRED_AVAILABLE_CONNECTIONS) {
+        if (availableMongoDBConnections >= REQUIRED_AVAILABLE_CONNECTIONS) {
             status = Status.AVAILABLE;
         } else {
             status = Status.UNAVAILABLE;
-
             LOGGER.error("Available connections in MongoDB is less than expected.\n"
                     + "Available connections: '{}' used connections: '{}' expected available connections: '{}'",
-                    availableConnections, current, REQUIRED_AVAILABLE_CONNECTIONS);
+                    availableMongoDBConnections, currentUsedMongoDBConnections, REQUIRED_AVAILABLE_CONNECTIONS);
         }
 
         return status;
@@ -155,9 +154,9 @@ public class StatusHandler {
             status = Status.AVAILABLE;
         } else {
             status = Status.UNAVAILABLE;
+            LOGGER.debug("RabbitMQ status is {}", status);
         }
 
-        LOGGER.debug("RabbitMQ status is {}", status);
         return status;
     }
 
@@ -174,9 +173,9 @@ public class StatusHandler {
             // /HealtCheck or /Status endpoint must be available in the service to check.
             // TODO: HTTPRequest should be made to the ER.
             status = Status.UNKNOWN;
+            LOGGER.debug("EventRepository status is {}", status);
         }
 
-        LOGGER.debug("EventRepository status is {}", status);
         return status;
     }
 
@@ -193,9 +192,9 @@ public class StatusHandler {
             status = Status.AVAILABLE;
         } else {
             status = Status.UNAVAILABLE;
+            LOGGER.debug("Eiffel Intelligence status is {}", status);
         }
 
-        LOGGER.debug("Eiffel Intelligence status is {}", status);
         return status;
     }
 

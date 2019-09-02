@@ -43,8 +43,8 @@ public class TestProcessQueryParams {
     private static final String REQUEST = "{\"criteria\":{\"testCaseExecutions.testCase.verdict\":\"PASSED\"}}";
     private static final String QUERY_WITH_CRITERIA_AND_OPTIONS = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static final String QUERY_WITH_CRITERIA = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }}";
-    private static final String QUERY_WITH_UNIVERSAL_OBJECT_NAME = "{\"criteria\" :{\"object.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"object.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
-    private static final String QUERY_WITH_CONFIGURED_OBJECT_NAME = "{\"criteria\" :{\"aggregatedObject.testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"aggregatedObject.identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
+    private static final String QUERY_WITH_UNIVERSAL_OBJECT_NAME = "{\"criteria\" :{\"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
+    private static final String QUERY_WITH_CONFIGURED_OBJECT_NAME = "{\"criteria\" :{\"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"identity\": \"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0\"} }";
     private static final String DATA_BASE_NAME = "TestProcessQueryParams";
     private static final String AGGREGATION_COLLECTION_NAME = "aggregated_objects";
     private static JSONArray expected;

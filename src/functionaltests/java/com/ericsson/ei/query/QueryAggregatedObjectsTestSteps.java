@@ -131,8 +131,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
         JsonNode responseEntityNode = jsonNodeResult.get("queryResponseEntity");
 
-        String actualTestCaseFinishedEventId = responseEntityNode.get("aggregatedObject")
-                                                                 .get("testCaseExecutions")
+        String actualTestCaseFinishedEventId = responseEntityNode.get("testCaseExecutions")
                                                                  .get(0)
                                                                  .get("testCaseFinishedEventId")
                                                                  .asText();
@@ -204,7 +203,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                     + response.getBody().toString());
 
             JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
-            JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).get("aggregatedObject").toString(),
+            JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).toString(),
                     JsonNode.class);
 
             String actualAggrObjId = aggrObjResponse.get("id").asText();
@@ -280,6 +279,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
         String actualTestCaseStartedEventId = jsonNodeResult.get("queryResponseEntity")
+                                                            .get("AggregatedObject")
                                                             .get("testCaseExecutions")
                                                             .get(0)
                                                             .get("testCaseStartedEventId")
@@ -357,7 +357,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @And("^Perform a query and filter with part of path$")
     public void perform__query_and_filter_with_part_of_path() throws Throwable {
-        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[1481875921843, 1481875988767, 1481875921763, 1481875944272, 5005, 1481875891763, 2000]\\\"\"}]";
+        final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[5005, 1481875921843, 1481875988767, 2000, 1481875921763, 1481875944272, 1481875891763]\\\"\"}]";
         final String expectedResponse2 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"null\\\"\"}]";
         final String expectedResponse3 = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"[33d05e6f-9bd9-4138-83b6-e20cc74680a3, 33d05e6f-9bd9-4138-83b6-e20cc74681b5]\\\"\"}]";
         final String entryPoint = "/query";

@@ -26,7 +26,6 @@ import com.mongodb.MongoWriteException;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,17 +62,34 @@ public class WaitListStorageHandler {
     @Autowired
     private JmesPathInterface jmesPathInterface;
 
-    public void addEventToWaitList(String event, RulesObject rulesObject) {
+    /**
+     * Adds event to the wait-list database if it does not already exists.
+     *
+     * @param event The event that will be added to database
+     * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
+     */
+    public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) {
         try {
-            String condition = "{\"_id\" : \"" + new JSONObject(event).getJSONObject("meta").getString("id") + "\"}";
-            List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
-            if (foundEventsInWaitList.isEmpty()) {
-                String input = addPropertiesToEvent(event, rulesObject);
-                mongoDbHandler.insertDocument(databaseName, collectionName, input);
+            JsonNode id = extractIdFromEventUsingRules(event, rulesObject);
+            String foundEvent = findEventInWaitList(id);
+            if (foundEvent.isEmpty()) {
+                Date date = createCurrentTimeStamp();
+                BasicDBObject document = createWaitListDocument(event, id, date);
+                mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
             }
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert event into waitlist.", e);
         }
+    }
+
+    private String findEventInWaitList(JsonNode id) {
+        String condition = "{\"_id\" : \"" + id + "\"}";
+        List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
+        if (foundEventsInWaitList.isEmpty()) {
+            return "";
+        }
+        String foundEvent = foundEventsInWaitList.get(0);
+        return foundEvent;
     }
 
     public boolean dropDocumentFromWaitList(String document) {
@@ -84,9 +100,16 @@ public class WaitListStorageHandler {
         return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
-    private String addPropertiesToEvent(String event, RulesObject rulesObject) {
-        String idRule = rulesObject.getIdRule();
-        JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
+    private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) {
+        BasicDBObject document = new BasicDBObject();
+        document.put("_id", id.textValue());
+        document.put("Time", date);
+        document.put("Event", event);
+        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        return document;
+    }
+
+    private Date createCurrentTimeStamp() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         String time = dateFormat.format(date);
@@ -95,12 +118,13 @@ public class WaitListStorageHandler {
         } catch (ParseException e) {
             LOGGER.error("Failed to parse time from date object.", e);
         }
-        BasicDBObject document = new BasicDBObject();
-        document.put("_id", id.textValue());
-        document.put("Time", date);
-        document.put("Event", event);
-        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
-        return document.toString();
+        return date;
+    }
+
+    private JsonNode extractIdFromEventUsingRules(String event, RulesObject rulesObject) {
+        String idRule = rulesObject.getIdRule();
+        JsonNode id = jmesPathInterface.runRuleOnEvent(idRule, event);
+        return id;
     }
 
 }

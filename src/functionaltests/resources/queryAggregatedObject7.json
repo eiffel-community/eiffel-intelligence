@@ -20,5 +20,5 @@
              }
          }"
     },
-    "filter": "{id:aggregatedObject.id, artifactIdentity:aggregatedObject.identity, confidenceLevels:aggregatedObject.confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
+    "filter": "{id:id, artifactIdentity:identity, confidenceLevels:confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
 }

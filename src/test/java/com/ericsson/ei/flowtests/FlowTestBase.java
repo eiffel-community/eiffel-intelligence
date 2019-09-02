@@ -131,13 +131,12 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     public void flowTest() throws Exception {
         try {
             String queueName = rmqHandler.getQueueName();
-            Channel channel = TestConfigs.getConn().createChannel();
+            Channel channel = TestConfigs.getConnection().createChannel();
             if (channel == null) {
                 channel = connectionFactory.createConnection().createChannel(true);
             }
 
             String exchangeName = rmqHandler.getExchangeName();
-
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();

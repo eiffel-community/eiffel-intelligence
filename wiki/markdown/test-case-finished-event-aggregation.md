@@ -145,8 +145,7 @@ Finally, you will be able to find the fully aggregated object that may contain
 information about one or several executed test cases:
 
     {
-      "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-      "aggregatedObject":{
+        "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "fileInformation":[
           {
             "extension":"jar",
@@ -305,5 +304,4 @@ information about one or several executed test cases:
             "identity": "pkg:maven/com.othercompany.secondproduct/other-system@1.33.0"
           }
         ]
-      }
     }

@@ -264,11 +264,7 @@ public class MergeHandler {
             document = objectHandler.findObjectById(id);
         }
 
-        JsonNode result = objectHandler.getAggregatedObject(document);
-        if (result != null) {
-            return result.toString();
-        }
-        return null;
+        return document;
     }
 
     public void addNewObject(String event, String newObject, RulesObject rulesObject) {

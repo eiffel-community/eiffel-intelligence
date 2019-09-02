@@ -152,8 +152,7 @@ before one of the above events are taken from the wait list.
 The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
 
     {
-        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-        "aggregatedObject": {
+          "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
           "fileInformation": [
             {
               "extension": "jar",
@@ -188,7 +187,6 @@ The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
           "time": 1481875891763,
           "type": "EiffelArtifactCreatedEvent",
           "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-        }
       }
 
 First event with id "6d3df0e0-404d-46ee-ab4f-3118457148f4" is aggregated. The
@@ -219,8 +217,7 @@ object with key “testsKeysExecutions”. Data in correct format will look like
 And the result object will look like below:
 
     {
-      "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-      "aggregatedObject": {
+        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "fileInformation": [
           {
             "extension": "jar",
@@ -266,7 +263,6 @@ And the result object will look like below:
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
         "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-      }
     }
 
 Then the second event with id "6d3df0e0-404d-46ee-ab4f-3118457148f5" is taken
@@ -313,8 +309,7 @@ an array. The JSON object with data will be added to existing array. New
 And the result object will look like below:
 
     {
-      "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-      "aggregatedObject": {
+        "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
         "fileInformation": [
           {
             "extension": "jar",
@@ -365,5 +360,4 @@ And the result object will look like below:
         "time": 1481875891763,
         "type": "EiffelArtifactCreatedEvent",
         "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-      }
     }

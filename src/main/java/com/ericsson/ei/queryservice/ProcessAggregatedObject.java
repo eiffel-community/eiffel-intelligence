@@ -78,7 +78,7 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
-        String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
+        String condition = "{\"id\": /.*" + templateName + "/}";
         LOGGER.debug("The JSON condition is: {}", condition);
         return mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName, condition);
     }
@@ -91,7 +91,7 @@ public class ProcessAggregatedObject {
      * @return boolean
      */
     public boolean deleteAggregatedObject(String templateName) {
-        String condition = "{\"aggregatedObject.id\": /.*" + templateName + "/}";
+        String condition = "{\"id\": /.*" + templateName + "/}";
         LOGGER.debug("The JSON condition for deleting aggregated object is: {}", condition);
         return mongoDBHandler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
     }

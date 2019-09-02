@@ -139,7 +139,7 @@ public class QueryServiceTest {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
             record.remove("_id");
-            actual = new ObjectMapper().readTree(missedNotification).path("AggregatedObject");
+            actual = new ObjectMapper().readTree(missedNotification);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -184,6 +184,6 @@ public class QueryServiceTest {
             LOG.error(e.getMessage(), e);
         }
         LOG.debug("The result is : " + record.toString());
-        assertEquals(record.get("aggregatedObject").toString(), actual.toString());
+        assertEquals(record.toString(), actual.toString());
     }
 }

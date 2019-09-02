@@ -1,8 +1,6 @@
 # Configuration
 
-Configuration for the message bus, MongoDB and other settings for
-Eiffel Intelligence needs to be defined in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
-for the application to run properly.
+The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties) file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
 
 ## Setting up multiple EI instances
 
@@ -17,26 +15,24 @@ In this case we use the same instance of RabbitMQ and MongoDB.
   - **rabbitmq.consumerName** property should be different for each rule set. Otherwise the rabbitMQ will split the events in the queue among all the instances listening to that queue.
   - MongoDb collection names should also be different for each rule set.
 
-  <img src="images/multiple_EI_instances.png">
-</img>
+<img src="images/multiple_EI_instances.png"></img>
 
 ### Set up multiple instances with same rule set
 
 This situation may be needed when the events throughput is very high. In this case the same configuration file is copied to the server where the extra instance will be started.
 
-  <img src="images/multiple_EI_instances_same_rule.png">
-</img>
+<img src="images/multiple_EI_instances_same_rule.png"></img>
 
 ## Configure Eiffel Intelligence with extraction rules for specific Eiffel protocol version
 
 Extraction rules for a specific Eiffel protocol versions is configured by
-setting "rules.path" property in [application.properties](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+setting "rules.path" property in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 to point to the correct extraction rules json file.
 
 Eiffel Intelligence provides default extractions rules json files for
 different Eiffel protocol versions inside the war artifact file and in the
 source code repository. All default extraction rules json files can be
-found here: [extraction rules](https://github.com/Ericsson/eiffel-intelligence/blob/master/src/main/resources/rules)
+found here: [extraction rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/rules)
 
 Example of setting "rules.path" property in application.properties using default extraction rules json files provided in eiffel-intelligence war file:
 - rules.path: /rules/ArtifactRules-Eiffel-Agen-Version.json
@@ -66,21 +62,6 @@ it is recommended to set a time to live value to avoid having a copy of
 Event repository. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
-
-When performing queries towards an aggregated object, **search.query.prefix**
-is used to access the aggregated object when using JMESPath expressions.
-
-Consider the following query:
-
-    {
-      "criteria": {
-        "object.identity":"pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
-      }
-    }
-
-Eiffel Intelligence will replace the prefix "object." with the name of the aggregated
-object (in this case "aggregatedObject"), which is defined by **aggregated.object.name**.
-Read more examples about [queries here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/query.md).
 
 
 ### Testing aggregation rules
@@ -159,3 +140,32 @@ For Eiffel Intelligence to search for linked events Event repository is
 used. **er.url** takes a full URL to such a repository.
 
 * er.url
+
+## Security
+
+### LDAP
+
+You can set up authentication for CRUD operations on subscriptions by configuring
+the LDAP settings.
+Multiple LDAP servers can be configured. The priority is in the order they are written.
+This means that authentication will first be tried on the first defined LDAP and if that
+fails the second will be tried and so on. LDAP is enabled with the **ldap.enabled** property
+and the settings are defined in the **ldap.server.list** property.
+
+    ldap.enabled: true
+    ldap.server.list: [\
+        {\
+            "url": "ldaps://first.com:369",\
+            "base.dn": "dc=first,dc=com",\
+            "username": "cn=admin,dc=first,dc=com",\
+            "password": "YWRtaW4=",\
+            "user.filter": "uid={0}"\
+        },\
+        {\
+            "url": "ldap://second:389/dc=example,dc=org",\
+            "base.dn": "",\
+            "username": "",\
+            "password": "",\
+            "user.filter": "uid={0}"\
+        }\
+    ]\

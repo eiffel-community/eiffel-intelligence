@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -41,9 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,6 +57,8 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
+import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -71,6 +74,7 @@ import com.rabbitmq.client.Channel;
         "missedNotificationDataBaseName: TrafficGeneratedTest-missedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
         "rabbitmq.consumerName: TrafficGeneratedTestConsumer"  })
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class TrafficGeneratedTest extends FlowTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
@@ -107,8 +111,9 @@ public class TrafficGeneratedTest extends FlowTestBase {
         objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
         objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
+        Header[] headers = {};
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity<>(objectNode, HttpStatus.OK));
+                anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
     }
 
     @Override
@@ -121,7 +126,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
             String queueName = rmqHandler.getQueueName();
             String exchange = "ei-poc-4";
             TestConfigs.createExchange(exchange, queueName);
-            Channel channel = TestConfigs.getConn().createChannel();
+            Channel channel = TestConfigs.getConnection().createChannel();
 
             long timeBefore = System.currentTimeMillis();
 

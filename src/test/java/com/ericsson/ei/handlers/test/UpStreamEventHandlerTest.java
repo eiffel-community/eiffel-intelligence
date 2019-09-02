@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.apache.http.Header;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,6 +23,7 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,12 +52,11 @@ public class UpStreamEventHandlerTest {
                 + "\t\t\t{\"_id\":\"event8_level_2\"}]]}\n";
         final JsonNode response = new ObjectMapper().readTree(upStreamString);
 
-        ResponseEntity<JsonNode> upStreamResponse = new ResponseEntity<>(response, HttpStatus.CREATED);
-
         ERQueryService mockedERQueryService = mock(ERQueryService.class);
         String aggregatedObjectId = "0123456789abcdef";
+        Header[] headers = {};
         when(mockedERQueryService.getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true))
-                .thenReturn(upStreamResponse);
+                .thenReturn(new ResponseEntity(201, response.toString(), headers));
 
         classUnderTest.runHistoryExtractionRulesOnAllUpstreamEvents("0123456789abcdef");
 

@@ -1,6 +1,6 @@
 {
   "criteria": {
-    "object.testCaseExecutions": {
+    "testCaseExecutions": {
       "$elemMatch": {
         "outcome.conclusion": "SUCCESSFUL",
         "outcome.id": "TC5"
@@ -8,6 +8,6 @@
     }
   },
   "options": {
-    "object.identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+    "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
   }
 }

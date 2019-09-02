@@ -215,7 +215,7 @@ public class MergeHandler {
     }
 
     /**
-     * Append JSON elements from preparedJsonObject element wise into
+     * Append JSON elements from preparedJsonObject element-wise into
      * aggregatedJsonObject JSON array
      * 
      * @param aggregatedJsonObject JSON array

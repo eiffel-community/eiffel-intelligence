@@ -19,13 +19,20 @@ package com.ericsson.ei.status;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * StatusData contains variables that will be converted to a JSON formatted string when a request is
+ * made to the /status endpoint. The name reflects the key element and the status value represent the
+ * value element. any variable added in this class will be converted to JSON and represented in the
+ * status information.
+ *
+ */
 @Getter
 @Setter
 public class StatusData {
 
     private Status eiffelIntelligenceStatus = Status.NOT_SET;
     // TODO: Implement ER status or healthCheck endpoint
-    //private Status eventRepositoryStatus = Status.NOT_SET;
+    // private Status eventRepositoryStatus = Status.NOT_SET;
     private Status rabbitMQStatus = Status.NOT_SET;
     private Status mongoDBStatus = Status.NOT_SET;
 

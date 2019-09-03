@@ -18,7 +18,6 @@ package com.ericsson.ei.handlers;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,25 +159,6 @@ public class StatusHandler {
         return status;
     }
 
-//    /**
-//     * Returns the status of the EventRepository service.
-//     *
-//     * @return
-//     */
-//    private Status getEventRepositoryStatus() {
-//        Status status;
-//        if (StringUtils.isEmpty(erUrl)) {
-//            status = Status.DISABLED;
-//        } else {
-//            // /HealtCheck or /Status endpoint must be available in the service to check.
-//            // TODO: HTTPRequest should be made to the ER.
-//            status = Status.UNKNOWN;
-//            LOGGER.debug("EventRepository status is {}", status);
-//        }
-//
-//        return status;
-//    }
-
     /**
      * Returns the calculated Eiffel Intelligence status.
      *
@@ -208,12 +188,6 @@ public class StatusHandler {
 
         boolean mongoDBAvailable = statusData.getMongoDBStatus() == Status.AVAILABLE;
         boolean rabbitMQAvailable = statusData.getRabbitMQStatus() == Status.AVAILABLE;
-        // TODO: Add check for ER status, may currently only be DISABLED or UNKNOWN.
-        // Once Event repository has a status endpoint the ER status check here should be updated
-        // and this variable added to the availability check.
-        // boolean eventRepositoryAvailable = statusData.getEventRepositoryStatus() !=
-        // Status.DISABLED
-        // && statusData.getEventRepositoryStatus() == Status.AVAILABLE;
 
         availability = mongoDBAvailable && rabbitMQAvailable;
         return availability;

@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(MockitoJUnitRunner.class)
 public class StatusHandlerTest {
 
+    private static final String MONGO_DB_STATUS_KEY = "mongoDBStatus";
+
     @InjectMocks
     private StatusHandler statusHandler;
 
@@ -37,6 +39,7 @@ public class StatusHandlerTest {
     public void testStatusHandlerWithStatusDataAsDefault() {
         JsonNode statusData = statusHandler.getCurrentStatus();
 
-        assertEquals("Event repository default value should be NOT_SET", Status.NOT_SET.name(), statusData.get("eventRepositoryStatus").asText());
+        assertEquals("Mongo DB default value should be NOT_SET", Status.NOT_SET.name(),
+                statusData.get(MONGO_DB_STATUS_KEY).asText());
     }
 }

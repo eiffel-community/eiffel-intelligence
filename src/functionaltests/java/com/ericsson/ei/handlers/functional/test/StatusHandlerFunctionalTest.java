@@ -58,7 +58,6 @@ public class StatusHandlerFunctionalTest {
     private static final String CONNECTIONS_KEY_AVAILABLE = "available";
     private static final String CONNECTIONS_KEY_CURRENT = "current";
 
-    private static final String EVENT_REPOSITORY_STATUS_KEY = "eventRepositoryStatus";
     private static final String MONGO_DB_STATUS_KEY = "mongoDBStatus";
     private static final String EIFFEL_INTELLIGENCE_STATUS_KEY = "eiffelIntelligenceStatus";
 
@@ -88,15 +87,6 @@ public class StatusHandlerFunctionalTest {
         when(databaseMock.runCommand(Mockito.any())).thenReturn(serverStatusMock);
         when(serverStatusMock.get(Mockito.any())).thenReturn(connections);
         statusHandler.setMongoDBHandler(mongoDBHandlerMock);
-    }
-
-    @Test
-    public void testStatusHandlerWithStatusEventRepositoryDisabled() {
-        statusHandler.run();
-        JsonNode statusData = statusHandler.getCurrentStatus();
-
-        assertEquals("Event repository should be DISABLED", Status.DISABLED.name(),
-                statusData.get(EVENT_REPOSITORY_STATUS_KEY).asText());
     }
 
     @Test

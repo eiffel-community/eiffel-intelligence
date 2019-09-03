@@ -31,7 +31,7 @@ public interface SubscriptionController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getSubscriptions(
         @RequestParam(required = false)
-        String subscriptionNames);
+        String subscriptionName);
 
     /**
      * This method creates new subscription(s) and saves in the database. The name of a subscription must be unique.
@@ -60,7 +60,7 @@ public interface SubscriptionController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteSubscriptions(
         @RequestParam
-        String subscriptionNames);
+        String subscriptionName);
 
     /**
      * This method returns the subscription for the given subscription name.

@@ -128,12 +128,12 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all or specific subscriptions")
-    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionNames) {
+    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionName) {
         LOGGER.debug("Fetching subscriptions has been initiated");
-        if(subscriptionNames == null || subscriptionNames.isEmpty()) {
+        if(subscriptionName == null || subscriptionName.isEmpty()) {
             return getAllSubscriptions();
         } else {
-            return getListedSubscriptions(subscriptionNames);
+            return getListedSubscriptions(subscriptionName);
         }
     }
 
@@ -147,8 +147,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Remove subscription(s)")
-    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames) {
-        return deleteListedSubscriptions(subscriptionNames);
+    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionName) {
+        return deleteListedSubscriptions(subscriptionName);
     }
 
     @Override
@@ -196,28 +196,28 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
     }
 
-    private ResponseEntity<?> getListedSubscriptions(String subscriptionNames) {
+    private ResponseEntity<?> getListedSubscriptions(String subscriptionName) {
         // set is used to prevent subscription names repeating
-        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
+        Set<String> subscriptionNameList = new HashSet<>(Arrays.asList(subscriptionName.split(",")));
         List<Subscription> foundSubscriptionList = new ArrayList<>();
         List<String> notFoundSubscriptionList = new ArrayList<>();
 
-        subscriptionNamesList.forEach(subscriptionName -> {
+        subscriptionNameList.forEach(name -> {
             try {
-                LOGGER.debug("Subscription fetching has been started: {}", subscriptionName);
+                LOGGER.debug("Subscription fetching has been started: {}", name);
                 // Make sure the password is not sent outside this service.
-                Subscription subscription = subscriptionService.getSubscription(subscriptionName);
+                Subscription subscription = subscriptionService.getSubscription(name);
                 subscription.setPassword("");
                 foundSubscriptionList.add(subscription);
-                LOGGER.debug("Subscription [{}] fetched successfully.", subscriptionName);
+                LOGGER.debug("Subscription [{}] fetched successfully.", name);
             } catch (SubscriptionNotFoundException e) {
-                LOGGER.error("Subscription not found: {}", subscriptionName);
+                LOGGER.error("Subscription not found: {}", name);
                 LOGGER.debug("Subscription not found traceback:\n {}", e);
-                notFoundSubscriptionList.add(subscriptionName);
+                notFoundSubscriptionList.add(name);
             } catch (Exception e) {
-                LOGGER.error("Failed to fetch subscription {}", subscriptionName);
+                LOGGER.error("Failed to fetch subscription {}", name);
                 LOGGER.debug("Failed to fetch subscription:\n {}", e);
-                notFoundSubscriptionList.add(subscriptionName);
+                notFoundSubscriptionList.add(name);
             }
         });
         GetSubscriptionResponse response = new GetSubscriptionResponse();
@@ -257,27 +257,27 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
     }
 
-    private ResponseEntity<?> deleteListedSubscriptions(String subscriptionNames) {
+    private ResponseEntity<?> deleteListedSubscriptions(String subscriptionName) {
         Map<String, String> errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
-        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
+        Set<String> subscriptionNameList = new HashSet<>(Arrays.asList(subscriptionName.split(",")));
 
-        subscriptionNamesList.forEach(subscriptionName -> {
-            LOGGER.debug("Subscription deletion has started: {}", subscriptionName);
+        subscriptionNameList.forEach(name -> {
+            LOGGER.debug("Subscription deletion has started: {}", name);
 
             try {
-                if (subscriptionService.deleteSubscription(subscriptionName)) {
-                    LOGGER.debug("Subscription was deleted successfully: {}", subscriptionName);
+                if (subscriptionService.deleteSubscription(name)) {
+                    LOGGER.debug("Subscription was deleted successfully: {}", name);
                 } else {
-                    LOGGER.error("Subscription to delete was not found: {}", subscriptionName);
-                    errorMap.put(subscriptionName, SUBSCRIPTION_NOT_FOUND);
+                    LOGGER.error("Subscription to delete was not found: {}", name);
+                    errorMap.put(name, SUBSCRIPTION_NOT_FOUND);
                 }
             } catch (AccessException e) {
-                LOGGER.error("Failed to delete subscription: {}", subscriptionName, e);
-                errorMap.put(subscriptionName, INVALID_USER);
+                LOGGER.error("Failed to delete subscription: {}", name, e);
+                errorMap.put(name, INVALID_USER);
             } catch (Exception e) {
                 LOGGER.error("Failed to delete subscriptions.", e);
-                errorMap.put(subscriptionName, e.getClass().toString() + " : " + e.getMessage());
+                errorMap.put(name, e.getClass().toString() + " : " + e.getMessage());
             }
         });
         return getDeleteResponse(errorMap);

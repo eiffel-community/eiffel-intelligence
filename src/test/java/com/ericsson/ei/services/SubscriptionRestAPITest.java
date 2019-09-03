@@ -226,7 +226,7 @@ public class SubscriptionRestAPITest {
             new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test_Not_Found"));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .get("/subscriptions?subscriptionNames=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify,Subscription_Test_Not_Found")
+            .get("/subscriptions?subscriptionName=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify,Subscription_Test_Not_Found")
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -273,7 +273,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(true);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .delete("/subscriptions?subscriptionNames=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify")
+            .delete("/subscriptions?subscriptionName=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify")
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();

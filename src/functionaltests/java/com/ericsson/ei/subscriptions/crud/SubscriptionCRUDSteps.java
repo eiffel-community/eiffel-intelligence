@@ -90,7 +90,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
     @Then("^Subscription name is \"([^\"]*)\"$")
     public void i_get_response_code_of_and_subscription_name(String name) throws Throwable {
         JsonNode node = eventManager.getJSONFromString(response.getBody());
-        String found = node.get("foundSubscriptions").get(0).toString();
+        String found = node.toString();
         Subscription subscription = mapper.readValue(found, Subscription.class);
         assertEquals(name, subscription.getSubscriptionName());
     }
@@ -122,7 +122,7 @@ public class SubscriptionCRUDSteps extends FunctionalTestBase {
         response = httpRequest.performRequest();
 
         JsonNode node = eventManager.getJSONFromString(response.getBody());
-        String foundValue = node.get("foundSubscriptions").get(0).get(key).asText();
+        String foundValue = node.get(key).asText();
         assertEquals(value, foundValue);
     }
     // Scenario:3 ends

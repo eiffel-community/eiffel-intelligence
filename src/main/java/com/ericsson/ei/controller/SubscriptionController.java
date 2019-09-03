@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -24,11 +25,13 @@ public interface SubscriptionController {
 
 
     /**
-     * This method retrieves all subscriptions from the database.
+     * This method retrieves all subscriptions from the database. Specific subscriptions can be retrieved by using the 'names' parameter.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getSubscriptions();
+    public ResponseEntity<?> getSubscriptions(
+        @RequestParam(required = false)
+        String subscriptionNames);
 
     /**
      * This method creates new subscription(s) and saves in the database. The name of a subscription must be unique.
@@ -51,21 +54,30 @@ public interface SubscriptionController {
         List<com.ericsson.ei.controller.model.Subscription> subscription);
 
     /**
-     * This method returns the subscriptions for the given subscription names.
+     * This method removes subscriptions from the database. It requires a list of names by using the 'names' parameter
      * 
      */
-    @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.GET)
-    public ResponseEntity<?> getSubscriptionByNames(
-        @PathVariable
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteSubscriptions(
+        @RequestParam
         String subscriptionNames);
 
     /**
-     * This method removes the subscriptions from the database for the given subscription names.
+     * This method returns the subscription for the given subscription name.
      * 
      */
-    @RequestMapping(value = "/{subscriptionNames}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSubscriptionByNames(
+    @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
+    public ResponseEntity<?> getSubscriptionByName(
         @PathVariable
-        String subscriptionNames);
+        String subscriptionName);
+
+    /**
+     * This method removes the subscription from the database for the given subscription name.
+     * 
+     */
+    @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteSubscriptionByName(
+        @PathVariable
+        String subscriptionName);
 
 }

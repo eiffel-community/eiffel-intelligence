@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.GetSubscriptionResponse;
@@ -97,47 +98,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Returns the subscriptions for given subscription names separated by comma")
-    public ResponseEntity<?> getSubscriptionByNames(@PathVariable String subscriptionNames) {
-        // set is used to prevent subscription names repeating
-        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
-        List<Subscription> foundSubscriptionList = new ArrayList<>();
-        List<String> notFoundSubscriptionList = new ArrayList<>();
-
-        subscriptionNamesList.forEach(subscriptionName -> {
-            try {
-                LOGGER.debug("Subscription fetching has been started: {}", subscriptionName);
-
-                // Make sure the password is not sent outside this service.
-                Subscription subscription = subscriptionService.getSubscription(subscriptionName);
-                subscription.setPassword("");
-                foundSubscriptionList.add(subscription);
-                LOGGER.debug("Subscription [{}] fetched successfully.", subscriptionName);
-            } catch (SubscriptionNotFoundException e) {
-                LOGGER.error("Subscription not found: {}", subscriptionName);
-                LOGGER.debug("Subscription not found traceback:\n {}", e);
-                notFoundSubscriptionList.add(subscriptionName);
-            } catch (Exception e) {
-                LOGGER.error("Failed to fetch subscription {}", subscriptionName);
-                LOGGER.debug("Failed to fetch subscription:\n {}", e);
-
-                notFoundSubscriptionList.add(subscriptionName);
-            }
-        });
-        GetSubscriptionResponse response = new GetSubscriptionResponse();
-        response.setFoundSubscriptions(foundSubscriptionList);
-        response.setNotFoundSubscriptions(notFoundSubscriptionList);
-        HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
-        if (httpStatus == HttpStatus.NOT_FOUND) {
-            String errorMessage = "Failed to fetch subscriptions:\n" + notFoundSubscriptionList.toString();
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, httpStatus);
-        }
-        return new ResponseEntity<>(response, httpStatus);
-    }
-
-    @Override
-    @CrossOrigin
     @ApiOperation(value = "Updates existing subscription(s)")
     public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
         Map<String, String> errorMap = new HashMap<>();
@@ -167,14 +127,143 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Removes subscription(s)")
-    public ResponseEntity<?> deleteSubscriptionByNames(@PathVariable String subscriptionNames) {
+    @ApiOperation(value = "Retrieves all or specific subscriptions")
+    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionNames) {
+        LOGGER.debug("Fetching subscriptions has been initiated");
+        if(subscriptionNames == null || subscriptionNames.isEmpty()) {
+            return getAllSubscriptions();
+        } else {
+            return getListedSubscriptions(subscriptionNames);
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Retrieve a subscription")
+    public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName) {
+        return getSingleSubscription(subscriptionName);
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Remove subscription(s)")
+    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames) {
+        return deleteListedSubscriptions(subscriptionNames);
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Remove a subscription")
+    public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName) {
+        return deleteSingleSubscription(subscriptionName);
+    }
+
+    private ResponseEntity<?> getSingleSubscription(String subscriptionName) {
+        try {
+            Subscription subscription = subscriptionService.getSubscription(subscriptionName);
+            subscription.setPassword("");
+            return new ResponseEntity<>(subscription, HttpStatus.OK);
+        } catch (SubscriptionNotFoundException e) {
+            String errorMessage = "Subscription not found: " + subscriptionName;
+            LOGGER.error(errorMessage);
+            LOGGER.debug("Subscription not found traceback:\n {}", e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            String errorMessage = "Internal Server Error: Failed to fetch subscription " + subscriptionName;
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<?> getAllSubscriptions() {
+        try {
+            List<Subscription> subscriptions = subscriptionService.getSubscriptions();
+            // Make sure the password is not sent outside this service.
+            for (Subscription subscription : subscriptions) {
+                subscription.setPassword("");
+            }
+            return new ResponseEntity<>(subscriptions, HttpStatus.OK);
+        } catch (SubscriptionNotFoundException e) {
+            LOGGER.info(e.getMessage(),e);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        } catch (Exception e) {
+            String errorMessage = "Internal Server Error: Failed to fetch subscriptions.";
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<?> getListedSubscriptions(String subscriptionNames) {
+        // set is used to prevent subscription names repeating
+        Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
+        List<Subscription> foundSubscriptionList = new ArrayList<>();
+        List<String> notFoundSubscriptionList = new ArrayList<>();
+
+        subscriptionNamesList.forEach(subscriptionName -> {
+            try {
+                LOGGER.debug("Subscription fetching has been started: {}", subscriptionName);
+                // Make sure the password is not sent outside this service.
+                Subscription subscription = subscriptionService.getSubscription(subscriptionName);
+                subscription.setPassword("");
+                foundSubscriptionList.add(subscription);
+                LOGGER.debug("Subscription [{}] fetched successfully.", subscriptionName);
+            } catch (SubscriptionNotFoundException e) {
+                LOGGER.error("Subscription not found: {}", subscriptionName);
+                LOGGER.debug("Subscription not found traceback:\n {}", e);
+                notFoundSubscriptionList.add(subscriptionName);
+            } catch (Exception e) {
+                LOGGER.error("Failed to fetch subscription {}", subscriptionName);
+                LOGGER.debug("Failed to fetch subscription:\n {}", e);
+                notFoundSubscriptionList.add(subscriptionName);
+            }
+        });
+        GetSubscriptionResponse response = new GetSubscriptionResponse();
+        response.setFoundSubscriptions(foundSubscriptionList);
+        response.setNotFoundSubscriptions(notFoundSubscriptionList);
+        HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        if (httpStatus == HttpStatus.NOT_FOUND) {
+            String errorMessage = "Failed to fetch subscriptions:\n" + notFoundSubscriptionList.toString();
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, httpStatus);
+        }
+        return new ResponseEntity<>(response, httpStatus);
+    }
+
+    private ResponseEntity<?> deleteSingleSubscription(String subscriptionName) {
+        LOGGER.debug("Subscription deletion has started: {}", subscriptionName);
+        try {
+            if (subscriptionService.deleteSubscription(subscriptionName)) {
+                LOGGER.debug("Subscription was deleted successfully: {}", subscriptionName);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                String errorMessage = "Subscription to delete was not found: " + subscriptionName;
+                LOGGER.error(errorMessage);
+                String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+                return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
+            }
+        } catch (AccessException e) {
+            String errorMessage = "Failed to delete subscription: " + subscriptionName + "\n" + INVALID_USER;
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            String errorMessage = "Failed to delete subscription: " + subscriptionName;
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<?> deleteListedSubscriptions(String subscriptionNames) {
         Map<String, String> errorMap = new HashMap<>();
         // set is used to prevent subscription names repeating
         Set<String> subscriptionNamesList = new HashSet<>(Arrays.asList(subscriptionNames.split(",")));
 
         subscriptionNamesList.forEach(subscriptionName -> {
-            LOGGER.debug("Subscription deleting has been started: {}", subscriptionName);
+            LOGGER.debug("Subscription deletion has started: {}", subscriptionName);
 
             try {
                 if (subscriptionService.deleteSubscription(subscriptionName)) {
@@ -192,30 +281,6 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             }
         });
         return getDeleteResponse(errorMap);
-    }
-
-    @Override
-    @CrossOrigin
-    @ApiOperation(value = "Retrieves all subscriptions")
-    public ResponseEntity<?> getSubscriptions() {
-        LOGGER.debug("Fetching subscriptions has been initiated");
-        try {
-            // Make sure the password is not sent outside this service.
-            List<Subscription> subscriptions = subscriptionService.getSubscriptions();
-            for (Subscription subscription : subscriptions) {
-                subscription.setPassword("");
-            }
-
-            return new ResponseEntity<>(subscriptions, HttpStatus.OK);
-        } catch (SubscriptionNotFoundException e) {
-            LOGGER.info(e.getMessage(),e);
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to fetch subscriptions.";
-            LOGGER.error(errorMessage, e);
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     private ResponseEntity<?> getPostResponse(Map<String, String> errorMap) {

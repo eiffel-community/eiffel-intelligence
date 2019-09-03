@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Endpoints /checkStatus should display EI back end information such as LDAP status of servers EI
- * is dependent on.
+ * Endpoint /status should display EI back end status and services Eiffel Intelligence is dependent
+ * on.
  */
 @Component
 @CrossOrigin
@@ -52,7 +52,8 @@ public class StatusControllerImpl implements StatusController {
     public ResponseEntity<?> getStatus() {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();
-            final String statusString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(status);
+            final String statusString = objectMapper.writerWithDefaultPrettyPrinter()
+                                                    .writeValueAsString(status);
             return new ResponseEntity<>(statusString, HttpStatus.OK);
         } catch (Exception e) {
             final String errorMessage = "Internal Server Error: Failed to check backend status.";

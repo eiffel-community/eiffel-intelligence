@@ -45,34 +45,6 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     private String ldapServerList;
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        if(ldapEnabled) {
-            LOGGER.info("LDAP security configuration is enabled");
-            http
-            .authorizeRequests()
-                .antMatchers("/auth/*").authenticated()
-                .antMatchers(HttpMethod.POST, "/subscriptions").authenticated()
-                .antMatchers(HttpMethod.PUT, "/subscriptions").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/subscriptions/*").authenticated()
-                .anyRequest().permitAll()
-            .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                    .and()
-                .logout().logoutUrl("/auth/logout").logoutSuccessUrl("/").deleteCookies("SESSION").invalidateHttpSession(true)
-            .and()
-                .httpBasic()
-            .and()
-                .csrf().disable();
-        }
-        else {
-            LOGGER.info("LDAP security configuration is disabled");
-            http
-            .csrf().disable();
-        }
-    }
-
-    @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         if (ldapEnabled && !ldapServerList.isEmpty()) {
             JSONArray serverList = new JSONArray(ldapServerList);
@@ -80,22 +52,73 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         }
     }
 
-    private String decodeBase64(String password) {
-        return StringUtils.newStringUtf8(Base64.decodeBase64(password));
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        if (ldapEnabled) {
+            LOGGER.info("LDAP security configuration is enabled");
+            configureRequestAuthorization(http);
+            configureSession(http);
+            configureLogout(http);
+            configureBasicAuth(http);
+            disableCSRF(http);
+        } else {
+            LOGGER.info("LDAP security configuration is disabled");
+            disableCSRF(http);
+        }
     }
 
-    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
+    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth)
+            throws Exception {
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
-            auth
-            .eraseCredentials(false)
-            .ldapAuthentication()
+            auth.eraseCredentials(false)
+                .ldapAuthentication()
                 .userSearchFilter(server.getString("user.filter"))
                 .contextSource()
-                    .url(server.getString("url"))
-                    .root(server.getString("base.dn"))
-                    .managerDn(server.getString("username"))
-                    .managerPassword(decodeBase64(server.getString("password")));
+                .url(server.getString("url"))
+                .root(server.getString("base.dn"))
+                .managerDn(server.getString("username"))
+                .managerPassword(decodeBase64(server.getString("password")));
         }
+    }
+
+    private void configureRequestAuthorization(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+            .antMatchers("/auth/*")
+            .authenticated()
+            .antMatchers(HttpMethod.POST, "/subscriptions")
+            .authenticated()
+            .antMatchers(HttpMethod.PUT, "/subscriptions")
+            .authenticated()
+            .antMatchers(HttpMethod.DELETE, "/subscriptions/*")
+            .authenticated()
+            .anyRequest()
+            .permitAll();
+    }
+
+    private void configureSession(HttpSecurity http) throws Exception {
+        http.sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+    }
+
+    private void configureLogout(HttpSecurity http) throws Exception {
+        http.logout()
+            .logoutUrl("/auth/logout")
+            .logoutSuccessUrl("/")
+            .deleteCookies("SESSION")
+            .invalidateHttpSession(true);
+    }
+
+    private void configureBasicAuth(HttpSecurity http) throws Exception {
+        http.httpBasic();
+    }
+
+    private void disableCSRF(HttpSecurity http) throws Exception {
+        http.csrf()
+            .disable();
+    }
+
+    private String decodeBase64(String password) {
+        return StringUtils.newStringUtf8(Base64.decodeBase64(password));
     }
 }

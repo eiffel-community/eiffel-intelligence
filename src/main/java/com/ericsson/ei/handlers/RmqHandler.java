@@ -163,7 +163,8 @@ public class RmqHandler {
     }
 
     @Bean
-    public SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory,
+    public SimpleMessageListenerContainer bindToQueueForRecentEvents(
+            ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
         String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
@@ -184,7 +185,8 @@ public class RmqHandler {
     public String getWaitlistQueueName() {
 
         String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
+                + waitlistSufix;
     }
 
     @Bean
@@ -221,6 +223,24 @@ public class RmqHandler {
         } catch (Exception e) {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
+    }
+
+    /**
+     * Return the server status of Rabbit MQ calculated on the number of active consumers.
+     *
+     * @return
+     */
+    public boolean isRabbitMQServerUp() {
+        boolean rabbitServerIsUp = false;
+
+        rabbitServerIsUp = container.getActiveConsumerCount() >= 1;
+
+        if (!rabbitServerIsUp) {
+            LOGGER.error("RabbitMQ does not have any active consumers. "
+                    + "Please check the RabbitMQ server status.");
+        }
+
+        return rabbitServerIsUp;
     }
 
 }

@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -24,8 +25,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -60,6 +63,9 @@ public class RmqHandlerTest {
 
     @Mock
     private ConnectionFactory factory;
+
+    @Mock
+    private SimpleMessageListenerContainer container;
 
     @Before
     public void setUp() {
@@ -122,5 +128,14 @@ public class RmqHandlerTest {
     public void testMessageBusConnection() {
         factory = rmqHandler.connectionFactory();
         assertNotNull(factory);
+    }
+
+    @Test
+    public void testIsRabbitMQServerUp() {
+        Mockito.when(container.getActiveConsumerCount()).thenReturn(1);
+        assertTrue(rmqHandler.isRabbitMQServerUp());
+
+        Mockito.when(container.getActiveConsumerCount()).thenReturn(0);
+        assertFalse(rmqHandler.isRabbitMQServerUp());
     }
 }

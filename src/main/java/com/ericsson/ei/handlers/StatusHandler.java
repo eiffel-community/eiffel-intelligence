@@ -16,13 +16,9 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.util.Map;
-
-import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -30,30 +26,23 @@ import com.ericsson.ei.status.Status;
 import com.ericsson.ei.status.StatusData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoDatabase;
 
-import lombok.Setter;
 
 @Component
 public class StatusHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusHandler.class);
-    private static final int REQUIRED_AVAILABLE_CONNECTIONS = 1;
     private static final String INITIAL_DELAY_OF_FIRST_STATUS_UPDATE = "1000";
     private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "30000";
 
     private StatusData statusData = new StatusData();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Setter
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
     private RmqHandler rmqHandler;
-
-    @Value("${er.url:#{null}}")
-    private String erUrl;
 
     /**
      * Scheduled method to run status update on a given interval.
@@ -93,67 +82,30 @@ public class StatusHandler {
     }
 
     /**
-     * Returns the status of the existing mongoDB connection.
+     * Returns the status of the existing mongoDB.
      *
      * @return status
      */
     private Status getMongoDBStatus() {
-        Status status;
+        Status status = Status.UNAVAILABLE;
 
-        try {
-            MongoDatabase database = mongoDBHandler.getMongoClient().getDatabase("admin");
-            Document serverStatus = database.runCommand(new Document("serverStatus", 1));
-            Map connections = (Map) serverStatus.get("connections");
-            status = evaluateAvailableMongoDBConnections(connections);
-        } catch (Exception e) {
-            status = Status.UNAVAILABLE;
-            LOGGER.debug("MongoDB status is {}", status);
-        }
-
-        return status;
-    }
-
-    /**
-     * Determines whether the number of available connections exceeds the required available
-     * connections and returns a status based on the result.
-     *
-     * @param connections
-     * @return status
-     */
-    private Status evaluateAvailableMongoDBConnections(Map<String, Integer> connections) {
-        Status status;
-        int availableMongoDBConnections = connections.get("available");
-        int currentUsedMongoDBConnections = connections.get("current");
-
-        if (availableMongoDBConnections >= REQUIRED_AVAILABLE_CONNECTIONS) {
+        if (mongoDBHandler.isMongoDBServerUp()) {
             status = Status.AVAILABLE;
-        } else {
-            status = Status.UNAVAILABLE;
-            LOGGER.error("Available connections in MongoDB is less than expected.\n"
-                    + "Available connections: '{}' used connections: '{}' expected available connections: '{}'",
-                    availableMongoDBConnections, currentUsedMongoDBConnections, REQUIRED_AVAILABLE_CONNECTIONS);
         }
 
         return status;
     }
 
     /**
-     * Returns the status of the existing rabbitMQ connection.
+     * Returns the status of the existing rabbitMQ.
      *
      * @return
      */
     private Status getRabbitMQStatus() {
-        Status status;
+        Status status= Status.UNAVAILABLE;
 
-        boolean isActive = rmqHandler.getContainer().isActive();
-        boolean isRunning = rmqHandler.getContainer().isRunning();
-        LOGGER.debug("RabbitMQ is running '{}' is active '{}'.", isRunning, isActive);
-
-        if (isActive && isRunning) {
+        if (rmqHandler.isRabbitMQServerUp()) {
             status = Status.AVAILABLE;
-        } else {
-            status = Status.UNAVAILABLE;
-            LOGGER.debug("RabbitMQ status is {}", status);
         }
 
         return status;
@@ -165,14 +117,11 @@ public class StatusHandler {
      * @return status
      */
     private Status getEiffelIntelligenceStatus() {
-        Status status;
+        Status status = Status.UNAVAILABLE;
         boolean availability = getServiceAvailability();
 
         if (availability) {
             status = Status.AVAILABLE;
-        } else {
-            status = Status.UNAVAILABLE;
-            LOGGER.debug("Eiffel Intelligence status is {}", status);
         }
 
         return status;

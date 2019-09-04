@@ -22,7 +22,7 @@ import lombok.Setter;
 /**
  * StatusData contains variables that will be converted to a JSON formatted string when a request is
  * made to the /status endpoint. The name reflects the key element and the status value represent the
- * value element. any variable added in this class will be converted to JSON and represented in the
+ * value element. Any variable added in this class will be converted to JSON and represented in the
  * status information.
  *
  */

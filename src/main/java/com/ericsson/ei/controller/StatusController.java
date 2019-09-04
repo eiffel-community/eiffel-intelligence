@@ -20,7 +20,7 @@ public interface StatusController {
 
 
     /**
-     * returns status information about Eiffel Intelligence and services Eiffel Intelligence is dependent on.
+     * Returns status information about Eiffel Intelligence and services Eiffel Intelligence is dependent on.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)

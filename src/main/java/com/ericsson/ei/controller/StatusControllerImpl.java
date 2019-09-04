@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Endpoint /status should display EI back end status and services Eiffel Intelligence is dependent
+ * Endpoint /status should display EI back-end status and services Eiffel Intelligence is dependent
  * on.
  */
 @Component
@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
 public class StatusControllerImpl implements StatusController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);
+    private static final String ERROR_MESSAGE = "Failed to check back-end status.";
 
     @Autowired
     private StatusHandler statusHandler;
@@ -56,9 +57,8 @@ public class StatusControllerImpl implements StatusController {
                                                     .writeValueAsString(status);
             return new ResponseEntity<>(statusString, HttpStatus.OK);
         } catch (Exception e) {
-            final String errorMessage = "Internal Server Error: Failed to check backend status.";
-            LOGGER.error(errorMessage, e);
-            final String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            LOGGER.error(ERROR_MESSAGE, e);
+            final String errorJsonAsString = ResponseMessage.createJsonMessage(ERROR_MESSAGE);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

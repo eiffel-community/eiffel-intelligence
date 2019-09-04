@@ -49,7 +49,7 @@ public class StatusHandler {
      */
     @Scheduled(initialDelayString = INITIAL_DELAY_OF_FIRST_STATUS_UPDATE, fixedRateString = INTERVAL_TO_RUN_STATUS_UPDATES)
     public void run() {
-        updateCurrentStatuses();
+        updateCurrentStatus();
     }
 
     /**
@@ -64,7 +64,7 @@ public class StatusHandler {
     /**
      * Method to check and update statuses of all dependent services.
      */
-    private void updateCurrentStatuses() {
+    private void updateCurrentStatus() {
         LOGGER.debug("Updating statuses.");
 
         Status mongoDBStatus = getMongoDBStatus();
@@ -72,10 +72,6 @@ public class StatusHandler {
 
         Status rabbitMQStatus = getRabbitMQStatus();
         statusData.setRabbitMQStatus(rabbitMQStatus);
-
-        // TODO: Implement ER status or healtCheck endpoint
-        // Status eventRepositoryStatus = getEventRepositoryStatus();
-        // statusData.setEventRepositoryStatus(eventRepositoryStatus);
 
         Status eiffelIntelligenceStatus = getEiffelIntelligenceStatus();
         statusData.setEiffelIntelligenceStatus(eiffelIntelligenceStatus);

@@ -231,9 +231,7 @@ public class RmqHandler {
      * @return
      */
     public boolean isRabbitMQServerUp() {
-        boolean rabbitServerIsUp = false;
-
-        rabbitServerIsUp = container.getActiveConsumerCount() >= 1;
+        boolean rabbitServerIsUp = container.getActiveConsumerCount() >= 1;
 
         if (!rabbitServerIsUp) {
             LOGGER.error("RabbitMQ does not have any active consumers. "

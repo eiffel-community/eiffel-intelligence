@@ -38,32 +38,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
 public class App extends SpringBootServletInitializer implements SchedulingConfigurer {
 
     @Autowired
-    Environment env;
-
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(App.class);
-    }
-
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(taskExecutor());
-    }
-
-    @Bean(destroyMethod="shutdown")
-    public Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(Integer.parseInt(env.getProperty("scheduled.threadpool.size")));
-    }
+    private Environment environment;
 
     public static void main(String[] args) {
-
         List<String> logLevels = new ArrayList<>();
         Collections.addAll(logLevels, "ALL", "DEBUG", "ERROR", "FATAL", "INFO", "TRACE", "WARN");
 
@@ -80,4 +63,19 @@ public class App extends SpringBootServletInitializer implements SchedulingConfi
         SpringApplication.run(App.class, args);
     }
 
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(App.class);
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(taskExecutor());
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public Executor taskExecutor() {
+        return Executors.newScheduledThreadPool(
+                Integer.parseInt(environment.getProperty("scheduled.threadpool.size")));
+    }
 }

@@ -99,7 +99,7 @@ public class QueryServiceRESTAPITest {
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutputString);
 
-        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
+        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString(), null))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
@@ -128,7 +128,7 @@ public class QueryServiceRESTAPITest {
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
+        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString(), null))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")

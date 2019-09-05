@@ -130,7 +130,8 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all or specific subscriptions")
-    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionName, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionNames,
+            HttpServletRequest httpRequest) {
         String queryString = httpRequest.getQueryString();
         List<String> unknownParameters = filterUnknownParameters(queryString);
         if (unknownParameters.size() > 0) {
@@ -140,23 +141,11 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
         }
         LOGGER.debug("Fetching subscriptions has been initiated");
-        if(subscriptionName == null || subscriptionName.isEmpty()) {
+        if(subscriptionNames == null || subscriptionNames.isEmpty()) {
             return getAllSubscriptions();
         } else {
-            return getListedSubscriptions(subscriptionName);
+            return getListedSubscriptions(subscriptionNames);
         }
-    }
-
-    public List<String> filterUnknownParameters(String queryString) {
-        List<String> parameters = new ArrayList<String>();
-        String[] keyValuePairs = queryString.split("&");
-        for(String keyValuePairString : keyValuePairs) {
-            String[] keyValuePair = keyValuePairString.split("=");
-            if(keyValuePair.length > 1 && !keyValuePair[0].equals("subscriptionName")) {
-                parameters.add(keyValuePair[0]);
-            }
-        }
-        return parameters;
     }
 
     @Override
@@ -331,5 +320,21 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public List<String> filterUnknownParameters(String queryString) {
+        List<String> knownParameters = Arrays.asList("subscriptionName","_");
+        List<String> unknownParameters = new ArrayList<String>();
+        if (queryString != null) {
+            String[] keyValuePairs = queryString.split("&");
+            for(String keyValuePairString : keyValuePairs) {
+                String[] keyValuePair = keyValuePairString.split("=");
+                String key = keyValuePair[0];
+                if(keyValuePair.length > 1 && !knownParameters.contains(key)) {
+                    unknownParameters.add(key);
+                }
+            }
+        }
+        return unknownParameters;
     }
 }

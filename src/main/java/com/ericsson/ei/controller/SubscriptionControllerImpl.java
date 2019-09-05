@@ -323,7 +323,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     }
 
     public List<String> filterUnknownParameters(String queryString) {
-        List<String> knownParameters = Arrays.asList("subscriptionName","_");
+        List<String> knownParameters = Arrays.asList("subscriptionNames","_");
         List<String> unknownParameters = new ArrayList<String>();
         if (queryString != null) {
             String[] keyValuePairs = queryString.split("&");

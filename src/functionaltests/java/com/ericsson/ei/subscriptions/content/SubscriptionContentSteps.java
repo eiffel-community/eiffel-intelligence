@@ -111,7 +111,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @And("^\"([A-Za-z0-9_]+)\" is not duplicated$")
     public void is_not_duplicated(String name) throws Throwable {
-        getRequest.setEndpoint("/subscriptions?subscriptionName=" + name);
+        getRequest.setEndpoint("/subscriptions?subscriptionNames=" + name);
         response = getRequest.performRequest();
         GetSubscriptionResponse getSubscriptionResponse = mapper.readValue(response.getBody().toString(),
                 GetSubscriptionResponse.class);

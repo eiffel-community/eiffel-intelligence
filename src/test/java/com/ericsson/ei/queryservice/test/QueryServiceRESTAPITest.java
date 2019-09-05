@@ -44,18 +44,16 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.controller.FailedNotificationControllerImpl;
 import com.ericsson.ei.controller.QueryAggregatedObjectController;
 import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.QueryMissedNotificationControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@TestPropertySource(properties = {
-        "spring.data.mongodb.database: QueryServiceRESTAPITest",
+@TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
         "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
-        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange",
-        "rabbitmq.consumerName: QueryServiceRESTAPITest" })
+        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
@@ -81,7 +79,7 @@ public class QueryServiceRESTAPITest {
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private QueryMissedNotificationControllerImpl missedNotificationController;
+    private FailedNotificationControllerImpl failedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -93,8 +91,7 @@ public class QueryServiceRESTAPITest {
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(aggregatedOutputPath),
-                "UTF-8");
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
         String expectedOutputString = (expectedOutputWithSquareBrackets.substring(1,
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutputString);
@@ -103,11 +100,8 @@ public class QueryServiceRESTAPITest {
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
-                                                              .accept(MediaType.APPLICATION_JSON)
-                                                              .param("ID",
-                                                                      "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
-                                                              .contentType(
-                                                                      MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
+                .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
         String output_string = result.getResponse().getContentAsString().toString();
         JsonNode output = mapper.readTree(output_string);
@@ -128,13 +122,21 @@ public class QueryServiceRESTAPITest {
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
+        // Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
+        // .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
+        //
+        // RequestBuilder requestBuilder =
+        // MockMvcRequestBuilders.get("/queryMissedNotifications?")
+        // .accept(MediaType.APPLICATION_JSON)
+        // .param("SubscriptionName",
+        // "Subscription_1");
+
+        Mockito.when(failedNotificationController.getFailedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
-                                                              .accept(MediaType.APPLICATION_JSON)
-                                                              .param("SubscriptionName",
-                                                                      "Subscription_1");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failedNotifications?")
+                .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
+
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String outputString = result.getResponse().getContentAsString().toString();

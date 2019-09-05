@@ -61,7 +61,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "?subscriptionName=" + subscriptionsNamesList)
+        response = getRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "?subscriptionNames=" + subscriptionsNamesList)
                 .addHeader("Accept", "application/json").performRequest();
     }
 
@@ -70,7 +70,7 @@ public class SubscriptionBulkSteps extends FunctionalTestBase {
             String subscriptionsNamesList, String endpoint) throws Throwable {
 
         HttpRequest deleteRequest = new HttpRequest(HttpMethod.DELETE);
-        response = deleteRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "?subscriptionName=" + subscriptionsNamesList)
+        response = deleteRequest.setHost(hostName).setPort(port).setEndpoint(endpoint + "?subscriptionNames=" + subscriptionsNamesList)
                 .addHeader("Accept", "application/json").performRequest();
     }
 

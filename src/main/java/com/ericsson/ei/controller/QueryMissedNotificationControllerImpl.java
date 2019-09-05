@@ -15,6 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -57,7 +59,8 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      */
     @Override
     @ApiOperation(value = "Retrieve missed notifications", response = QueryResponse.class)
-    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
+    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName,
+            HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();

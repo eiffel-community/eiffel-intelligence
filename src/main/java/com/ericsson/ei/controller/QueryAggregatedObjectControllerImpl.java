@@ -15,6 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -53,7 +55,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     @Override
     @ApiOperation(value = "")
-    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id) {
+    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id, HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();

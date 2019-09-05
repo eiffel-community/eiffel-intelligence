@@ -18,6 +18,8 @@ package com.ericsson.ei.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +74,7 @@ public class RuleControllerImpl implements RuleController{
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get the active rules from Eiffel Intelligence", response = String.class)
-    public ResponseEntity<?> getRules() {
+    public ResponseEntity<?> getRules(HttpServletRequest httpRequest) {
         JsonNode rulesContent = rulesHandler.getRulesContent();
         ObjectMapper objectmapper = new ObjectMapper();
         try {
@@ -105,7 +107,7 @@ public class RuleControllerImpl implements RuleController{
     @CrossOrigin
     @ApiOperation(value = "To execute rule on one Eiffel event", response = String.class)
     public ResponseEntity<?> createRulesRuleCheck(
-            @ApiParam(value = "JSON object", required = true) @RequestBody RuleCheckBody body) {
+            @ApiParam(value = "JSON object", required = true) @RequestBody RuleCheckBody body, HttpServletRequest httpRequest) {
         JSONObject rule = new JSONObject(body.getRule().getAdditionalProperties());
         JSONObject event = new JSONObject(body.getEvent().getAdditionalProperties());
 
@@ -126,7 +128,8 @@ public class RuleControllerImpl implements RuleController{
     @CrossOrigin
     @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Returns the aggregated object(s)", response = String.class)
     public ResponseEntity<?> createRuleCheckAggregation(
-            @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body) {
+            @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body,
+            HttpServletRequest httpRequest) {
         if (testEnabled) {
             try {
                 String aggregatedObject = ruleCheckService.prepareAggregatedObject(
@@ -158,7 +161,7 @@ public class RuleControllerImpl implements RuleController{
     @Override
     @CrossOrigin
     @ApiOperation(value = "Check if rules check service is enabled", response = String.class)
-    public ResponseEntity<?> getRuleCheckTestRulePageEnabled() {
+    public ResponseEntity<?> getRuleCheckTestRulePageEnabled(HttpServletRequest httpRequest) {
         LOGGER.debug("Getting Enabling Status of Rules Check Service");
         try {
             return new ResponseEntity<>(new JSONObject().put("status", testEnabled).toString(), HttpStatus.OK);

@@ -1,8 +1,8 @@
 description: Provides REST API for handling subscriptions.
 get:
-  description: This method retrieves all subscriptions from the database. Specific subscriptions can be retrieved by using the 'subscriptionName' parameter.
+  description: This method retrieves all subscriptions from the database. Specific subscriptions can be retrieved by using the 'subscriptionNames' parameter.
   queryParameters:
-    subscriptionName:
+    subscriptionNames:
       description: List of subscription names separated by comma
       type: string
       required: false
@@ -32,9 +32,9 @@ put:
         application/json:
 
 delete:
-  description: This method removes subscriptions from the database. It requires a list of names by using the 'subscriptionName' parameter
+  description: This method removes subscriptions from the database. It requires a list of names by using the 'subscriptionNames' parameter
   queryParameters:
-    subscriptionName:
+    subscriptionNames:
       description: List of subscription names separated by comma.
       type: string
       required: true

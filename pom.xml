@@ -18,7 +18,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <springmvcRamlVersion>2.0.4</springmvcRamlVersion>
+        <springmvcRamlVersion>2.0.5</springmvcRamlVersion>
         <outputRelativePath>src/main/java</outputRelativePath>
         <ramlPath>src/main/resources/public/raml/eiffel-intelligence.raml</ramlPath>
         <basePackage>com.ericsson.ei.controller</basePackage>
@@ -430,6 +430,7 @@
                     <generationConfig>
                         <useCommonsLang3>true</useCommonsLang3>
                     </generationConfig>
+                    <injectHttpRequestParameter>true</injectHttpRequestParameter>
                 </configuration>
                 <executions>
                     <execution>

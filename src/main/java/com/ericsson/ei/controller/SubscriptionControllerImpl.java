@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +71,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates subscription(s)")
-    public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions, HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -99,7 +101,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Updates existing subscription(s)")
-    public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions) {
+    public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions, HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -128,7 +130,15 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieves all or specific subscriptions")
-    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionName) {
+    public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionName, HttpServletRequest httpRequest) {
+        String queryString = httpRequest.getQueryString();
+        List<String> unknownParameters = filterUnknownParameters(queryString);
+        if (unknownParameters.size() > 0) {
+            String errorMessage = "Unknown parameters found: " + unknownParameters.toString();
+            LOGGER.error(errorMessage);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
+        }
         LOGGER.debug("Fetching subscriptions has been initiated");
         if(subscriptionName == null || subscriptionName.isEmpty()) {
             return getAllSubscriptions();
@@ -137,24 +147,36 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         }
     }
 
+    public List<String> filterUnknownParameters(String queryString) {
+        List<String> parameters = new ArrayList<String>();
+        String[] keyValuePairs = queryString.split("&");
+        for(String keyValuePairString : keyValuePairs) {
+            String[] keyValuePair = keyValuePairString.split("=");
+            if(keyValuePair.length > 1 && !keyValuePair[0].equals("subscriptionName")) {
+                parameters.add(keyValuePair[0]);
+            }
+        }
+        return parameters;
+    }
+
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieve a subscription")
-    public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName) {
+    public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName, HttpServletRequest httpRequest) {
         return getSingleSubscription(subscriptionName);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Remove subscription(s)")
-    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionName) {
-        return deleteListedSubscriptions(subscriptionName);
+    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames, HttpServletRequest httpRequest) {
+        return deleteListedSubscriptions(subscriptionNames);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Remove a subscription")
-    public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName) {
+    public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName, HttpServletRequest httpRequest) {
         return deleteSingleSubscription(subscriptionName);
     }
 
@@ -165,8 +187,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             return new ResponseEntity<>(subscription, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
             String errorMessage = "Subscription not found: " + subscriptionName;
-            LOGGER.error(errorMessage);
-            LOGGER.debug("Subscription not found traceback:\n {}", e);
+            LOGGER.debug(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -186,7 +207,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             }
             return new ResponseEntity<>(subscriptions, HttpStatus.OK);
         } catch (SubscriptionNotFoundException e) {
-            LOGGER.info(e.getMessage(),e);
+            LOGGER.debug(e.getMessage(), e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } catch (Exception e) {
             String errorMessage = "Internal Server Error: Failed to fetch subscriptions.";
@@ -211,19 +232,22 @@ public class SubscriptionControllerImpl implements SubscriptionController {
                 foundSubscriptionList.add(subscription);
                 LOGGER.debug("Subscription [{}] fetched successfully.", name);
             } catch (SubscriptionNotFoundException e) {
-                LOGGER.error("Subscription not found: {}", name);
-                LOGGER.debug("Subscription not found traceback:\n {}", e);
+                LOGGER.debug("Subscription not found: {}", name, e);
                 notFoundSubscriptionList.add(name);
             } catch (Exception e) {
-                LOGGER.error("Failed to fetch subscription {}", name);
-                LOGGER.debug("Failed to fetch subscription:\n {}", e);
+                LOGGER.error("Failed to fetch subscription {}", name, e);
                 notFoundSubscriptionList.add(name);
             }
         });
         GetSubscriptionResponse response = new GetSubscriptionResponse();
         response.setFoundSubscriptions(foundSubscriptionList);
         response.setNotFoundSubscriptions(notFoundSubscriptionList);
-        HttpStatus httpStatus = (!foundSubscriptionList.isEmpty()) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        HttpStatus httpStatus;
+        if (!foundSubscriptionList.isEmpty()) {
+            httpStatus = HttpStatus.OK;
+        } else {
+            httpStatus = HttpStatus.NOT_FOUND;
+        }
         if (httpStatus == HttpStatus.NOT_FOUND) {
             String errorMessage = "Failed to fetch subscriptions:\n" + notFoundSubscriptionList.toString();
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);

@@ -53,6 +53,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/*").authenticated()
                 .antMatchers(HttpMethod.POST, "/subscriptions").authenticated()
                 .antMatchers(HttpMethod.PUT, "/subscriptions").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/subscriptions").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/subscriptions/*").authenticated()
                 .anyRequest().permitAll()
             .and()

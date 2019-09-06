@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.controller.FailedNotificationControllerImpl;
+import com.ericsson.ei.controller.FailedNotificationsControllerImpl;
 import com.ericsson.ei.controller.QueryAggregatedObjectController;
 import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -79,7 +79,7 @@ public class QueryServiceRESTAPITest {
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private FailedNotificationControllerImpl failedNotificationController;
+    private FailedNotificationsControllerImpl failedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -122,19 +122,10 @@ public class QueryServiceRESTAPITest {
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        // Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
-        // .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
-        //
-        // RequestBuilder requestBuilder =
-        // MockMvcRequestBuilders.get("/queryMissedNotifications?")
-        // .accept(MediaType.APPLICATION_JSON)
-        // .param("SubscriptionName",
-        // "Subscription_1");
-
         Mockito.when(failedNotificationController.getFailedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failedNotifications?")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failed-notifications?")
                 .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();

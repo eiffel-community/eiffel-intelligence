@@ -39,10 +39,10 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "failedNotification", tags = { "Failed notifications" })
-public class FailedNotificationControllerImpl implements FailedNotificationController {
+@Api(value = "failedNotifications", tags = { "Failed notifications" })
+public class FailedNotificationsControllerImpl implements FailedNotificationsController {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationControllerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationsControllerImpl.class);
 
     @Autowired
     private ProcessMissedNotification processMissedNotification;
@@ -55,25 +55,25 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
      */
     @Override
     @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
-    public ResponseEntity<?> getFailedNotifications(@RequestParam("SubscriptionName") final String subscriptionName) {
+    public ResponseEntity<?> getFailedNotifications(@RequestParam("SubscriptionName") final String subscriptionNames) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         try {
-            List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
+            List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionNames);
             if (!response.isEmpty()) {
                 queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
             }
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is : {}", response.toString());
-            if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
-                LOGGER.debug("Failed notification with subscription name {} was successfully removed from database",
-                        subscriptionName);
+            if (processMissedNotification.deleteMissedNotification(subscriptionNames)) {
+                LOGGER.debug("Failed notification for subscription {} was successfully removed from database",
+                        subscriptionNames);
             }
             return new ResponseEntity<>(queryResponse, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to extract the data from the Failed Notification Object based on subscription name "
-                    + subscriptionName + ".";
+            String errorMessage = "Failed to extract the data from the Failed Notification Object based on subscription name "
+                    + subscriptionNames + ".";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

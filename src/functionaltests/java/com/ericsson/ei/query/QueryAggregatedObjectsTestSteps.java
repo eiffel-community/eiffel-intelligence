@@ -249,7 +249,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void perform_a_query_for_missed_notification() throws Throwable {
 
         final String subscriptionName = "Subscription_1";
-        final String entryPoint = "/failedNotifications";
+        final String entryPoint = "/failed-notifications";
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
         LOGGER.debug("Check if MissedNotification and " + subscriptionName + " exist in Database");
@@ -261,7 +261,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",
                 subscriptionName, subscriptionNameCheck);
 
-        LOGGER.debug("Trying to query /queryMissedNotifications RestApi with subscriptionName: " + subscriptionName);
+        LOGGER.debug("Trying to query /failed-notifications RestApi with subscriptionName: " + subscriptionName);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
@@ -274,7 +274,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         String responseAsString = response.getBody().toString();
         int responseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + responseStatusCode
+        LOGGER.debug("Response of /queryMissedfailed-notifications RestApi, Status Code: " + responseStatusCode
                 + "\nResponse: " + responseAsString);
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
@@ -296,9 +296,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void check_missed_notification_has_been_returned() throws Throwable {
         final String expectedResponse = "{\"queryResponseEntity\":{}}";
         final String subscriptionName = "Subscription_1";
-        final String entryPoint = "/failedNotifications";
+        final String entryPoint = "/failed-notifications";
 
-        LOGGER.debug("Trying to query /failedNotifications RestApi one more time with subscriptionName: "
+        LOGGER.debug("Trying to query /failed-notifications RestApi one more time with subscriptionName: "
                 + subscriptionName);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
@@ -312,7 +312,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         String responseAsString = response.getBody().toString();
         int responseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /failedNotifications RestApi, Status Code: " + responseStatusCode
+        LOGGER.debug("Response of /failed-notifications RestApi, Status Code: " + responseStatusCode
                 + "\nResponse: " + responseAsString);
 
         assertEquals(HttpStatus.OK.value(), responseStatusCode);

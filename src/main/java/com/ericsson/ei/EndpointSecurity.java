@@ -90,6 +90,8 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             .authenticated()
             .antMatchers(HttpMethod.PUT, "/subscriptions")
             .authenticated()
+            .antMatchers(HttpMethod.DELETE, "/subscriptions")
+            .authenticated()
             .antMatchers(HttpMethod.DELETE, "/subscriptions/*")
             .authenticated()
             .anyRequest()

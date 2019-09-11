@@ -1,12 +1,13 @@
 # Subscription API
 
-|Method|Endpoint               |Authentication|
-|------|-----------------------|--------------|
-|POST  |/subscriptions         |yes           |
-|GET   |/subscriptions/\<name\>|no            |
-|PUT   |/subscriptions         |yes           |
-|DELETE|/subscriptions/\<name\>|yes           |
-|GET   |/subscriptions         |no            |
+|Method|Endpoint                                |Authentication|
+|------|----------------------------------------|--------------|
+|POST  |/subscriptions                          |yes           |
+|GET   |/subscriptions                          |no            |
+|GET   |/subscriptions/\<name\>                 |no            |
+|PUT   |/subscriptions                          |yes           |
+|DELETE|/subscriptions                          |yes           |
+|DELETE|/subscriptions/\<name\>                 |yes           |
 
 ## Create subscriptions
 
@@ -114,17 +115,35 @@ Example of a subscription array
       }
     ]
 
-## Get subscriptions for the given names
+## Get all subscriptions
 
-Get a single specific subscription or get multiples subscriptions with a comma
-separated list to the same endpoint
+Retrieves all the subscriptions
 
-    GET /subscriptions/<name>
-    GET /subscriptions/<name>,<name>,<name>
+    GET /subscriptions
 
 Curl command example
 
-    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>,<name>,<name>
+    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions
+
+## Get multiple subscriptions
+
+Retrieves one or more subscriptions with a comma separated list
+
+    GET /subscriptions?subscriptionNames=<name1>,<name2>,...
+
+Curl command example
+
+    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
+
+## Get subscription for the given name
+
+Get a single specific subscription
+
+    GET /subscriptions/<name>
+
+Curl command example
+
+    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
 
 ## Update subscriptions
 
@@ -137,24 +156,23 @@ Curl command example
 
     curl -X PUT -H "Content-type: application/json"  --data @<path to json file> http://<host>:8090/subscriptions
 
-## Delete subscriptions for the given names
+## Delete multiple subscriptions
 
-Delete a single specific subscription or delete multiples subscriptions with a
-comma separated list to the same endpoint
+Delete one or more subscriptions with a comma separated list
+
+    DELETE /subscriptions?subscriptionNames=<name1>,<name2>,...
+
+Curl command example
+
+    curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
+
+
+## Delete subscription for the given name
+
+Delete a single specific subscription
 
     DELETE /subscriptions/<name>
-    DELETE /subscriptions/<name>,<name>,<name>
 
 Curl command example
 
     curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
-
-## Get all subscriptions
-
-Retrieves all the subscriptions
-
-    GET /subscriptions
-
-Curl command example
-
-    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions

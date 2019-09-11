@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,7 @@ public class InformationControllerImpl implements InformationController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Shows information about Eiffel Intelligence backend")
-    public ResponseEntity<?> getInformation() {
+    public ResponseEntity<?> getInformation(final HttpServletRequest httpRequest) {
         try {
             String info = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(instanceInfo);
             LOGGER.debug("EI backend information is parsed successfully");

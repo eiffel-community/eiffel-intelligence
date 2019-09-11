@@ -30,6 +30,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -41,8 +42,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Component
-public class RmqHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RmqHandler.class);
+public class RMQHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RMQHandler.class);
 
     @Getter
     @Setter
@@ -112,16 +113,23 @@ public class RmqHandler {
     @Setter
     @JsonIgnore
     private RabbitTemplate rabbitTemplate;
+
     @Getter
     @JsonIgnore
     private CachingConnectionFactory cachingConnectionFactory;
+
     @Getter
     @JsonIgnore
     private SimpleMessageListenerContainer container;
 
+    @Autowired
+    @JsonIgnore
+    private RMQConnectionListener rmqConnectionListener = new RMQConnectionListener();
+
     @Bean
     public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
+        cachingConnectionFactory.addConnectionListener(rmqConnectionListener);
 
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
             cachingConnectionFactory.setUsername(user);
@@ -224,21 +232,4 @@ public class RmqHandler {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
     }
-
-    /**
-     * Return the server status of Rabbit MQ calculated on the number of active consumers.
-     *
-     * @return
-     */
-    public boolean isRabbitMQServerUp() {
-        boolean rabbitServerIsUp = container.getActiveConsumerCount() >= 1;
-
-        if (!rabbitServerIsUp) {
-            LOGGER.error("RabbitMQ does not have any active consumers. "
-                    + "Please check the RabbitMQ server status.");
-        }
-
-        return rabbitServerIsUp;
-    }
-
 }

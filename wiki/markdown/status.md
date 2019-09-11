@@ -13,7 +13,7 @@ such as RabbitMQ and MongoDB.
 There are 3 differnt kind of status indications:
  **NOT_SET**, **AVAILABLE**, **UNAVAILABLE**
 
-Eiffel Intelligewce status reflects the dependent services statuses and will only be
+Eiffel Intelligece status reflects the status dependent services and will only be
 available if all dependent service is available.
 
 Endpoint

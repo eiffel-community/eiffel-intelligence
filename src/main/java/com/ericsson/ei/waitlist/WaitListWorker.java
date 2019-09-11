@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
@@ -42,7 +42,7 @@ public class WaitListWorker {
     private WaitListStorageHandler waitListStorageHandler;
 
     @Autowired
-    private RmqHandler rmqHandler;
+    private RMQHandler rmqHandler;
 
     @Autowired
     private RulesHandler rulesHandler;

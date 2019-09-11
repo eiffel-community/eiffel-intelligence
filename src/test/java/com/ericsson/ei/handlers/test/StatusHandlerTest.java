@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQConnectionListener;
 import com.ericsson.ei.handlers.StatusHandler;
 import com.ericsson.ei.status.Status;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +42,7 @@ public class StatusHandlerTest {
     private MongoDBHandler mongoDBHandlerMock;
 
     @Mock
-    private RmqHandler rmqHandlerMock;
+    private RMQConnectionListener rmqConnectionListener;
 
     @InjectMocks
     private StatusHandler statusHandler;
@@ -58,7 +58,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusMongoDBAvailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(true);
-        when(rmqHandlerMock.isRabbitMQServerUp()).thenReturn(true);
+        when(rmqConnectionListener.isConnected()).thenReturn(true);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
@@ -74,7 +74,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusMongoDBUnavailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(false);
-        when(rmqHandlerMock.isRabbitMQServerUp()).thenReturn(true);
+        when(rmqConnectionListener.isConnected()).thenReturn(true);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
@@ -90,7 +90,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusRabbitMQUnavailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(true);
-        when(rmqHandlerMock.isRabbitMQServerUp()).thenReturn(false);
+        when(rmqConnectionListener.isConnected()).thenReturn(false);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();

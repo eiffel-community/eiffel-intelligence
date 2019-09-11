@@ -16,8 +16,6 @@
 */
 package com.ericsson.ei.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,11 +25,14 @@ import com.ericsson.ei.status.StatusData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+/**
+ * This class updates the statuses of EI, RabbitMQ and MongoDB on a given timer interval. When
+ * requested it returns status as a JsonNode.
+ *
+ */
 @Component
 public class StatusHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatusHandler.class);
     private static final String INITIAL_DELAY_OF_FIRST_STATUS_UPDATE = "1000";
     private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "30000";
 
@@ -42,7 +43,7 @@ public class StatusHandler {
     private MongoDBHandler mongoDBHandler;
 
     @Autowired
-    private RmqHandler rmqHandler;
+    private RMQConnectionListener rmqConnectionListener = new RMQConnectionListener();
 
     /**
      * Scheduled method to run status update on a given interval.
@@ -62,11 +63,9 @@ public class StatusHandler {
     }
 
     /**
-     * Method to check and update statuses of all dependent services.
+     * Method to check and update status of all dependent services.
      */
     private void updateCurrentStatus() {
-        LOGGER.debug("Updating statuses.");
-
         Status mongoDBStatus = getMongoDBStatus();
         statusData.setMongoDBStatus(mongoDBStatus);
 
@@ -98,9 +97,9 @@ public class StatusHandler {
      * @return
      */
     private Status getRabbitMQStatus() {
-        Status status= Status.UNAVAILABLE;
+        Status status = Status.UNAVAILABLE;
 
-        if (rmqHandler.isRabbitMQServerUp()) {
+        if (rmqConnectionListener.isConnected()) {
             status = Status.AVAILABLE;
         }
 

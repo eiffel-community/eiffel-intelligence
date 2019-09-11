@@ -55,7 +55,7 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     @Override
     @ApiOperation(value = "")
-    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id, final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();

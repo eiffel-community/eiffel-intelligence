@@ -71,7 +71,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Creates subscription(s)")
-    public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions, final HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -101,7 +101,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Updates existing subscription(s)")
-    public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions, final HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 
@@ -131,7 +131,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @CrossOrigin
     @ApiOperation(value = "Retrieves all or specific subscriptions")
     public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionNames,
-            HttpServletRequest httpRequest) {
+            final HttpServletRequest httpRequest) {
         String queryString = httpRequest.getQueryString();
         List<String> unknownParameters = filterUnknownParameters(queryString);
         if (unknownParameters.size() > 0) {
@@ -151,21 +151,21 @@ public class SubscriptionControllerImpl implements SubscriptionController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Retrieve a subscription")
-    public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return getSingleSubscription(subscriptionName);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Remove subscription(s)")
-    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames, final HttpServletRequest httpRequest) {
         return deleteListedSubscriptions(subscriptionNames);
     }
 
     @Override
     @CrossOrigin
     @ApiOperation(value = "Remove a subscription")
-    public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return deleteSingleSubscription(subscriptionName);
     }
 
@@ -322,7 +322,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public List<String> filterUnknownParameters(String queryString) {
+    public List<String> filterUnknownParameters(final String queryString) {
         List<String> knownParameters = Arrays.asList("subscriptionNames","_");
         List<String> unknownParameters = new ArrayList<String>();
         if (queryString != null) {
@@ -330,7 +330,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
             for(String keyValuePairString : keyValuePairs) {
                 String[] keyValuePair = keyValuePairString.split("=");
                 String key = keyValuePair[0];
-                if(keyValuePair.length > 1 && !knownParameters.contains(key)) {
+                if (keyValuePair.length > 1 && !knownParameters.contains(key)) {
                     unknownParameters.add(key);
                 }
             }

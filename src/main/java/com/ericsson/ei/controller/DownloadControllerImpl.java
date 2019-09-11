@@ -43,7 +43,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Retrieve REST endpoints for downloading templates")
-    public ResponseEntity<?> getDownload(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getDownload(final HttpServletRequest httpRequest) {
         try {
             JSONObject response = new JSONObject();
             response.put("subscriptions", "/download/subscriptionsTemplate");
@@ -60,7 +60,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download subscription template")
-    public ResponseEntity<?> getDownloadSubscriptionsTemplate(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getDownloadSubscriptionsTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
             if (is == null) {
@@ -79,7 +79,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download rules template")
-    public ResponseEntity<?> getDownloadRulesTemplate(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getDownloadRulesTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
             if (is == null) {
@@ -98,7 +98,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download Eiffel events template")
-    public ResponseEntity<?> getDownloadEventsTemplate(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getDownloadEventsTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
             if (is == null) {

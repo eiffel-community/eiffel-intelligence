@@ -53,7 +53,7 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
-    public ResponseEntity<?> createQuery(@RequestBody final QueryBody body, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createQuery(@RequestBody final QueryBody body, final HttpServletRequest httpRequest) {
         String emptyResponseContent = "[]";
         HttpStatus httpStatus;
         try {

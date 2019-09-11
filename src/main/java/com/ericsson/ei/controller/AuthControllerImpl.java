@@ -50,7 +50,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check if security is enabled", response = String.class)
-    public ResponseEntity<?> getAuth(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAuth(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To get login of current user", response = String.class)
-    public ResponseEntity<?> getAuthLogin(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAuthLogin(final HttpServletRequest httpRequest) {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(), HttpStatus.OK);
@@ -79,7 +79,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check backend status", response = String.class)
-    public ResponseEntity<?> getAuthCheckStatus(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAuthCheckStatus(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>("Backend server is up and running", HttpStatus.OK);
         } catch (Exception e) {

@@ -41,7 +41,7 @@ public class InformationControllerImpl implements InformationController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Shows information about Eiffel Intelligence backend")
-    public ResponseEntity<?> getInformation(HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getInformation(final HttpServletRequest httpRequest) {
         try {
             String info = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(instanceInfo);
             LOGGER.debug("EI backend information is parsed successfully");

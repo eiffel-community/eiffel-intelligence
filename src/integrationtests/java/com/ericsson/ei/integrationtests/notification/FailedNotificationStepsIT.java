@@ -44,29 +44,12 @@ import util.IntegrationTestBase;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 @TestPropertySource(properties = { "spring.mail.port: 9999" })
 public class FailedNotificationStepsIT extends IntegrationTestBase {
-    private String jenkinsJobName;
-    private String jenkinsJobToken;
     private String rulesFilePath;
     private String eventsFilePath;
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
 
     private long startTime;
-
-    @Value("${jenkins.host:http}")
-    private String jenkinsProtocol;
-
-    @Value("${jenkins.host:localhost}")
-    private String jenkinsHost;
-
-    @Value("${jenkins.port:8082}")
-    private int jenkinsPort;
-
-    @Value("${jenkins.username:admin}")
-    private String jenkinsUsername;
-
-    @Value("${jenkins.password:admin}")
-    private String jenkinsPassword;
 
     private SubscriptionObject subscriptionObject;
 
@@ -92,7 +75,6 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
     public void notification_meta_is_set_in_subscription(String notificationMeta) throws Throwable {
-        notificationMeta = replaceVariablesInNotificationMeta(notificationMeta);
         subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
@@ -177,32 +159,5 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
         return eventNames;
-    }
-
-    /**
-     * Replaces given input parameters if user wishes with test defined parameters. If user want the
-     * user may specify the host, port job name and token directly in the feauture file and they
-     * will not be replaced.
-     * <p>
-     * ${jenkinsHost} is replaced with jenkins host.
-     * <p>
-     * ${jenkinsPort} is replaced with jenkins port.
-     * <p>
-     * ${jenkinsJobName} is replaced with lastcreated jenkins job name if any.
-     * <p>
-     * ${jenkinsJobToken} is replaced with last created jenkins job token if any.
-     *
-     * @param notificationMeta
-     * @return
-     */
-    private String replaceVariablesInNotificationMeta(String notificationMeta) {
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsHost\\}", jenkinsHost);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(
-                jenkinsPort));
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}",
-                this.jenkinsJobName);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}",
-                this.jenkinsJobToken);
-        return notificationMeta;
     }
 }

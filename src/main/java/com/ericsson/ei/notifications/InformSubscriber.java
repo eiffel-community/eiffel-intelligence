@@ -153,7 +153,9 @@ public class InformSubscriber {
             try {
                 success = request.perform();
             } catch (Exception e) {
-                throw new NotificationFailureException("Failed to send HTTP notification!\nMessage: " + e.getMessage());
+                String errorMessage = "Failed to send REST/POST notification!";
+                LOGGER.error(errorMessage + "\n", e);
+                throw new NotificationFailureException(errorMessage + "\nMessage: " + e.getMessage());
             }
             LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);

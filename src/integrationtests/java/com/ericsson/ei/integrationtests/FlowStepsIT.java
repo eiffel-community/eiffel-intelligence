@@ -150,7 +150,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     public void rest_post_body_media_type_is_set_to_is_set_in_subscription(
             String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
-
     }
 
     @When("^parameter form key \"([^\"]*)\" and form value \"([^\"]*)\" is added in subscription$")

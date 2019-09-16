@@ -118,6 +118,12 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         super.sendEventsAndConfirm();
     }
 
+    @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
+    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(
+            String restPostBodyMediaType) throws Throwable {
+        subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
+    }
+
     @Then("^subscription is uploaded$")
     public void subscription_is_uploaded()
             throws URISyntaxException, ClientProtocolException, IOException {

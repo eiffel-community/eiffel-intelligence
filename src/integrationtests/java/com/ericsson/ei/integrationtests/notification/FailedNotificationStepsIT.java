@@ -80,7 +80,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         this.eventsFilePath = eventsFilePath;
     }
 
-    @Given("^subscription object for \"([^\"]*)\" with name \"([^\"]*)\" is created$")
+    @Given("^subscription object of type \"([^\"]*)\" with name \"([^\"]*)\" is created$")
     public void subscription_object_for_with_name_is_created(String subscriptionType,
             String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
@@ -88,11 +88,6 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         } else {
             subscriptionObject = new RestPostSubscriptionObject(subscriptionName);
         }
-    }
-
-    @Given("^all previous steps passed$")
-    public void all_previous_steps_passed() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
     }
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
@@ -143,7 +138,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         assertEquals(200, statusCode);
     }
 
-    @Then("^failed notification for \"([^\"]*)\" should exist for subscription \"([^\"]*)\"$")
+    @Then("^failed notification of type \"([^\"]*)\" should exist for subscription \"([^\"]*)\"$")
     public void failed_notification_exists(String searchValue, String subscriptionName) throws Throwable {
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)

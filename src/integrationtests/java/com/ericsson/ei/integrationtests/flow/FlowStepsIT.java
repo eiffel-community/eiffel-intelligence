@@ -112,7 +112,7 @@ public class FlowStepsIT extends IntegrationTestBase {
         jenkinsXmlData = new JenkinsXmlData();
     }
 
-    @Given("^subscription object for \"([^\"]*)\" with name \"([^\"]*)\" is created$")
+    @Given("^subscription object of type \"([^\"]*)\" with name \"([^\"]*)\" is created$")
     public void subscription_object_for_with_name_is_created(String subscriptionType,
             String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
@@ -120,11 +120,6 @@ public class FlowStepsIT extends IntegrationTestBase {
         } else {
             subscriptionObject = new RestPostSubscriptionObject(subscriptionName);
         }
-    }
-
-    @Given("^all previous steps passed$")
-    public void all_previous_steps_passed() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
     }
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")

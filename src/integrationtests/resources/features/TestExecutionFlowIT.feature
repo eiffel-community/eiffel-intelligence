@@ -21,7 +21,7 @@ Feature: Test execution flow integrationtest
     Then jenkins is set up with job name "testExecutionTestJobParam"
 
     # Setup subscription
-    Given subscription object for "REST/POST" with name "ParameterizedTriggerSubscription" is created
+    Given subscription object of type "REST/POST" with name "ParameterizedTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/buildWithParameters?token='test-token-123'&test_key=activity_triggered_event_id" is set in subscription
     And "BASIC_AUTH_JENKINS_CSRF" authentication with username "admin" and password "admin" is set in subscription
     And rest post body media type is set to "application/x-www-form-urlencoded" is set in subscription
@@ -56,7 +56,7 @@ Feature: Test execution flow integrationtest
     Then jenkins is set up with job name "testExecutionTestJobBodyJson"
 
     # Setup subscription
-    Given subscription object for "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
+    Given subscription object of type "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/build?token='test-token-123'" is set in subscription
     And "BASIC_AUTH_JENKINS_CSRF" authentication with username "admin" and password "admin" is set in subscription
     And rest post body media type is set to "application/x-www-form-urlencoded" is set in subscription
@@ -65,9 +65,8 @@ Feature: Test execution flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    Given all previous steps passed
     When the eiffel events are sent
-    When jenkins job status data fetched
+    And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created
     And jenkins job status data has key "test_param_1" with value "test_value"
     And jenkins job status data has key "test_param_2" with value "e46ef12d-25gb-4d7y-b9fd-8763re66de47"

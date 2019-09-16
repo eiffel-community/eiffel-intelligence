@@ -21,7 +21,7 @@ Feature: Source change flow integrationtest
     Then jenkins is set up with job name "sourceChangeTestJobParam"
 
     # Setup subscription
-    Given subscription object for "REST/POST" with name "ParameterizedTriggerSubscription" is created
+    Given subscription object of type "REST/POST" with name "ParameterizedTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/buildWithParameters?token='test-token-123'&test_key=id" is set in subscription
     And "BASIC_AUTH_JENKINS_CSRF" authentication with username "admin" and password "admin" is set in subscription
     And rest post body media type is set to "application/x-www-form-urlencoded" is set in subscription
@@ -58,7 +58,7 @@ Feature: Source change flow integrationtest
     Then jenkins is set up with job name "sourceChangeTestJobBodyJson"
 
     # Setup subscription
-    Given subscription object for "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
+    Given subscription object of type "REST/POST" with name "ParameterInBodyTriggerSubscription" is created
     When notification meta "http://${jenkinsHost}:${jenkinsPort}/job/${jenkinsJobName}/build?token='test-token-123'" is set in subscription
     And "BASIC_AUTH_JENKINS_CSRF" authentication with username "admin" and password "admin" is set in subscription
     And rest post body media type is set to "application/x-www-form-urlencoded" is set in subscription
@@ -67,9 +67,8 @@ Feature: Source change flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    Given all previous steps passed
     When the upstream input events are sent
-    When the eiffel events are sent
+    And the eiffel events are sent
     And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created
     And jenkins job status data has key "test_param_1" with value "Test Input Value"

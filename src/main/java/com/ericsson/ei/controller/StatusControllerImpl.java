@@ -16,6 +16,8 @@
 */
 package com.ericsson.ei.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,7 @@ public class StatusControllerImpl implements StatusController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check back-end status", response = String.class)
-    public ResponseEntity<?> getStatus() {
+    public ResponseEntity<?> getStatus(HttpServletRequest httpRequest) {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();
             final String statusString = objectMapper.writerWithDefaultPrettyPrinter()

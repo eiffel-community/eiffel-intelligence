@@ -344,7 +344,7 @@ public class MongoDBHandler {
     }
 
     /**
-     * Returns a boolean indicating that if MongoDB is up and running or not.
+     * Returns a boolean indicating if MongoDB is up and running or not.
      *
      * @return
      */

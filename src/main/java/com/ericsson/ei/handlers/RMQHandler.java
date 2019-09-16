@@ -35,7 +35,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.listener.EIMessageListenerAdapter;
+import com.ericsson.ei.listeners.EIMessageListenerAdapter;
+import com.ericsson.ei.listeners.RMQConnectionListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;

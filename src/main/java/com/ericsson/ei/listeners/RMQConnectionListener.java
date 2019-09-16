@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers;
+package com.ericsson.ei.listeners;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class RMQConnectionListener implements ConnectionListener {
     }
 
     /**
-     * Triggered when a connection is termonated.
+     * Triggered when a connection is terminated.
      */
     @Override
     public void onShutDown(ShutdownSignalException signal) {

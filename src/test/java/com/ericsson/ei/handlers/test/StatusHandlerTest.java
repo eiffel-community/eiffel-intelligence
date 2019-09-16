@@ -26,8 +26,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.RMQConnectionListener;
 import com.ericsson.ei.handlers.StatusHandler;
+import com.ericsson.ei.listeners.RMQConnectionListener;
 import com.ericsson.ei.status.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 

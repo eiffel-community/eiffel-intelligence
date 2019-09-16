@@ -87,7 +87,7 @@ public class HttpRequest {
      * @return response     A boolean value of the request response
      * @throws AuthenticationException
      */
-    public boolean perform() throws AuthenticationException {
+    public boolean perform() throws Exception {
         boolean response = httpRequestSender.postDataMultiValue(this.url, this.request);
         return response;
     }

@@ -59,7 +59,7 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
      */
     @Override
     @ApiOperation(value = "Retrieve missed notifications", response = QueryResponse.class)
-    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam("SubscriptionName") final String subscriptionName,
+    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam(required = true) final String subscriptionName,
             final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();

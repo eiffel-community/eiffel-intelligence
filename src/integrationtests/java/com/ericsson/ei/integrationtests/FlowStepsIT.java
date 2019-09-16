@@ -9,6 +9,8 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -313,6 +315,21 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Override
     protected int extraEventsCount() {
         return extraEventsCount;
+    }
+
+    @Override
+    protected List<String> getEventNamesToSend() throws IOException {
+        ArrayList<String> eventNames = new ArrayList<>();
+
+        URL eventsInput = new File(getEventsFilePath()).toURI().toURL();
+        Iterator eventsIterator = objectMapper.readTree(eventsInput).fields();
+
+        while (eventsIterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) eventsIterator.next();
+            eventNames.add(pair.getKey().toString());
+        }
+
+        return eventNames;
     }
 
     /**

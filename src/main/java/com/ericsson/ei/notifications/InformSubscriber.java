@@ -126,7 +126,7 @@ public class InformSubscriber {
         } catch (NotificationFailureException | AuthenticationException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String missedNotification = prepareMissedNotification(aggregatedObject,
-                    subscriptionName, notificationMeta);
+                    subscriptionName, notificationMeta, e.getMessage());
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
                     e.getMessage(), missedNotification);
@@ -150,13 +150,13 @@ public class InformSubscriber {
 
         do {
             requestTries++;
-            success = request.perform();
+            try {
+                success = request.perform();
+            } catch (Exception e) {
+                throw new NotificationFailureException("Failed to send HTTP notification!\nMessage: " + e.getMessage());
+            }
             LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
-
-        if (!success) {
-            throw new NotificationFailureException("Failed to send HTTP notification!");
-        }
     }
 
     /**
@@ -181,16 +181,17 @@ public class InformSubscriber {
      * @return String
      */
     private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
-            String notificationMeta) {
+            String notificationMeta, String errorMessage) {
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);
         document.put("notificationMeta", notificationMeta);
         try {
-            document.put("Time", DateUtils.getDate());
+            document.put("time", DateUtils.getDate());
         } catch (ParseException e) {
             LOGGER.error("Failed to get date object.", e);
         }
-        document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
+        document.put("aggregatedObject", BasicDBObject.parse(aggregatedObject));
+        document.put("message", errorMessage);
         return document.toString();
     }
 

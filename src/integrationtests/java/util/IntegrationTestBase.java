@@ -180,19 +180,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return list of event names, that will be used in flow test
      * @throws IOException
      */
-    protected List<String> getEventNamesToSend() throws IOException {
-        ArrayList<String> eventNames = new ArrayList<>();
-
-        URL eventsInput = new File(getEventsFilePath()).toURI().toURL();
-        Iterator eventsIterator = objectMapper.readTree(eventsInput).fields();
-
-        while (eventsIterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) eventsIterator.next();
-            eventNames.add(pair.getKey().toString());
-        }
-
-        return eventNames;
-    }
+    protected abstract List<String> getEventNamesToSend() throws IOException;
 
     /**
      * @return map, where key - _id of expected aggregated object value - expected
@@ -254,8 +242,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             throws IOException, URISyntaxException, InterruptedException {
         Iterator iterator = expectedData.entrySet().iterator();
 
-        JsonNode expectedJSON = null;
-        JsonNode actualJSON = null;
+        JsonNode expectedJSON = objectMapper.createObjectNode();
+        JsonNode actualJSON = objectMapper.createObjectNode();
 
         boolean foundMatch = false;
         while (!foundMatch && iterator.hasNext()) {

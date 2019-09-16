@@ -50,8 +50,7 @@ public class HttpRequestSender {
      * @return boolean success of the request
      * @throws AuthenticationException
      */
-    public boolean postDataMultiValue(String url, HttpEntity<?> request)
-            throws AuthenticationException {
+    public boolean postDataMultiValue(String url, HttpEntity<?> request) throws Exception {
         ResponseEntity<JsonNode> response;
 
         try {
@@ -62,13 +61,13 @@ public class HttpRequestSender {
             checkIfAuthenticationException(e);
             LOGGER.error("HTTP request failed, bad request! When trying to connect to URL: {}\n{}",
                     url, e);
-            return false;
+            throw e;
         } catch (HttpServerErrorException e) {
             LOGGER.error("HttpServerErrorException, HTTP request to url {} failed\n", url, e);
-            return false;
+            throw e;
         } catch (Exception e) {
             LOGGER.error("HTTP request to url {} failed\n", url, e);
-            return false;
+            throw e;
         }
 
         HttpStatus status = response.getStatusCode();

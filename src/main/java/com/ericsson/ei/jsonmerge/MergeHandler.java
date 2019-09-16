@@ -61,6 +61,15 @@ public class MergeHandler {
         mergeIdMarker = marker;
     }
 
+    /**
+     * @param id            the id of the aggregated object
+     * @param mergeId       the id of the link used to identify this aggregated
+     *                      object
+     * @param rules         the current rules for the received event
+     * @param event         the received event
+     * @param objectToMerge the object to be merged
+     * @return the aggregated object updated with the objectToMerge
+     */
     public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge) {
         String mergedObject = null;
         String preparedToMergeObject;
@@ -70,8 +79,11 @@ public class MergeHandler {
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
+                // populate the rule with data from event
                 String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
+                // compute the path where to insert the object
                 String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge, false);
+                // inflate the object to be merged with levels from merge path
                 preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);
             } else {
@@ -89,6 +101,18 @@ public class MergeHandler {
         return mergedObject;
     }
 
+    /**
+     * 
+     * @param id            the id of the aggregated object
+     * @param mergeId       the id of the link used to identify this aggregated
+     *                      object
+     * @param rules         the current rules for the received event
+     * @param event         the received event
+     * @param objectToMerge the object to be merged
+     * @param mergePath     the path in the aggregated object where to merge the
+     *                      object
+     * @return the aggregated object updated with the objectToMerge
+     */
     public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge,
             String mergePath) {
         String mergedObject = null;
@@ -98,6 +122,7 @@ public class MergeHandler {
 
         // String mergeRule = getMergeRules(rules);
         if (mergePath != null && !mergePath.isEmpty()) {
+            // inflate the object to be merged with levels from merge path
             preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                     objectToMerge.toString(), "", mergePath);
         } else {
@@ -117,6 +142,15 @@ public class MergeHandler {
         return rules.getMergeRules();
     }
 
+    /**
+     * The merge rule can contain a placeholder for the ids from IdentifyRules. This
+     * placeholder need to be replaced with an id from the ones extracted with
+     * IdentifyRules before we use it in JMESPath.
+     * 
+     * @param rule string
+     * @param id   that the mergeIdMarker will be replaced with
+     * @return JSON object ready to be used in JMESPath
+     */
     public String replaceIdMarkerInRules(String rule, String id) {
 
         if (rule.contains(mergeIdMarker)) {
@@ -139,6 +173,12 @@ public class MergeHandler {
         return aggregatedJsonObject == null ? null : aggregatedJsonObject.toString();
     }
 
+    /**
+     * Append preparedJsonObject to the given aggregatedJsonObject
+     * 
+     * @param aggregatedJsonObject JSON object
+     * @param preparedJsonObject   JSON object
+     */
     private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject) {
         try {
             Iterator<String> preparedJsonKeys = preparedJsonObject != null ? preparedJsonObject.keys()
@@ -174,6 +214,13 @@ public class MergeHandler {
         }
     }
 
+    /**
+     * Append JSON elements from preparedJsonObject element-wise into
+     * aggregatedJsonObject JSON array
+     * 
+     * @param aggregatedJsonObject JSON array
+     * @param preparedJsonObject   JSON array
+     */
     private void updateJsonObject(JSONArray aggregatedJsonObject, JSONArray preparedJsonObject) {
         if (preparedJsonObject.length() > aggregatedJsonObject.length()) {
             aggregatedJsonObject.put(new JSONObject());
@@ -202,7 +249,6 @@ public class MergeHandler {
             }
         }
     }
-
 
     /**
      * This method set lock property in document in database and returns the

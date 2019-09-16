@@ -14,31 +14,52 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 public final class HeaderAndCookieHttpSessionIdResolver implements HttpSessionIdResolver {
 
     private static final String X_AUTH_TOKEN = "X-Auth-Token";
-    private static final String WRITTEN_SESSION_ID_ATTR = HeaderAndCookieHttpSessionIdResolver.class.getName()
-            .concat(".WRITTEN_SESSION_ID_ATTR");
+    private static final String WRITTEN_SESSION_ID_ATTR = getSessionIdAttributeName();
 
     private CookieSerializer cookieSerializer = new DefaultCookieSerializer();
 
     @Override
     public List<String> resolveSessionIds(HttpServletRequest request) {
+        List<String> sessionIds;
         String headerValue = request.getHeader(X_AUTH_TOKEN);
-        return (headerValue != null ? Collections.singletonList(headerValue)
-                : this.cookieSerializer.readCookieValues(request));
+        if (headerValue == null) {
+            sessionIds = this.cookieSerializer.readCookieValues(request);
+        } else {
+            sessionIds = Collections.singletonList(headerValue);
+        }
+
+        return sessionIds;
     }
 
     @Override
-    public void setSessionId(HttpServletRequest request, HttpServletResponse response, String sessionId) {
+    public void setSessionId(HttpServletRequest request, HttpServletResponse response,
+            String sessionId) {
         response.setHeader(X_AUTH_TOKEN, sessionId);
-        if (sessionId.equals(request.getAttribute(WRITTEN_SESSION_ID_ATTR))) {
+
+        if (isRequestSessionIdSet(request, sessionId)) {
             return;
         }
         request.setAttribute(WRITTEN_SESSION_ID_ATTR, sessionId);
-        this.cookieSerializer.writeCookieValue(new CookieValue(request, response, sessionId));
+        CookieValue cookieValue = new CookieValue(request, response, sessionId);
+        this.cookieSerializer.writeCookieValue(cookieValue);
     }
 
     @Override
     public void expireSession(HttpServletRequest request, HttpServletResponse response) {
         response.setHeader(X_AUTH_TOKEN, "");
-        this.cookieSerializer.writeCookieValue(new CookieValue(request, response, ""));
+        CookieValue cookieValue = new CookieValue(request, response, "");
+        this.cookieSerializer.writeCookieValue(cookieValue);
+    }
+
+    private static String getSessionIdAttributeName() {
+        final String className = HeaderAndCookieHttpSessionIdResolver.class.getName();
+        final String sessionIdAttributeName = className.concat(".WRITTEN_SESSION_ID_ATTR");
+        return sessionIdAttributeName;
+    }
+
+    private boolean isRequestSessionIdSet(HttpServletRequest request, String sessionId) {
+        Object requestSessionId = request.getAttribute(WRITTEN_SESSION_ID_ATTR);
+        boolean isRequestSessionIdSet = sessionId.equals(requestSessionId);
+        return isRequestSessionIdSet;
     }
 }

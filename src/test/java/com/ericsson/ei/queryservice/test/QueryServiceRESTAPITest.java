@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,7 +101,7 @@ public class QueryServiceRESTAPITest {
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutputString);
 
-        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString()))
+        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString(), Mockito.any(HttpServletRequest.class)))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
@@ -128,7 +130,7 @@ public class QueryServiceRESTAPITest {
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString()))
+        Mockito.when(missedNotificationController.getQueryMissedNotifications(Mockito.anyString(), Mockito.any(HttpServletRequest.class)))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")

@@ -16,6 +16,8 @@
 */
 package com.ericsson.ei.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check if security is enabled", response = String.class)
-    public ResponseEntity<?> getAuth() {
+    public ResponseEntity<?> getAuth(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(),
                     HttpStatus.OK);
@@ -63,7 +65,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To get login of current user", response = String.class)
-    public ResponseEntity<?> getAuthLogin() {
+    public ResponseEntity<?> getAuthLogin(final HttpServletRequest httpRequest) {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(),

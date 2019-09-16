@@ -40,7 +40,6 @@ import io.swagger.annotations.ApiOperation;
 public class StatusControllerImpl implements StatusController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);
-    private static final String ERROR_MESSAGE = "Failed to check back-end status.";
 
     @Autowired
     private StatusHandler statusHandler;
@@ -57,9 +56,10 @@ public class StatusControllerImpl implements StatusController {
                                                     .writeValueAsString(status);
             return new ResponseEntity<>(statusString, HttpStatus.OK);
         } catch (Exception e) {
-            LOGGER.error(ERROR_MESSAGE, e);
-            final String errorJsonAsString = ResponseMessage.createJsonMessage(ERROR_MESSAGE);
-            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+            final String errorMessage = "Failed to check back-end status.";
+            LOGGER.error(errorMessage, e);
+            final String jsonFormattedErrorMessage = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(jsonFormattedErrorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

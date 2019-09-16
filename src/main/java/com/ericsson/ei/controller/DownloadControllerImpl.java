@@ -18,6 +18,8 @@ package com.ericsson.ei.controller;
 
 import java.io.InputStream;
 
+import javax.servlet.http.HttpServletRequest;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -41,7 +43,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Retrieve REST endpoints for downloading templates")
-    public ResponseEntity<?> getDownload() {
+    public ResponseEntity<?> getDownload(final HttpServletRequest httpRequest) {
         try {
             JSONObject response = new JSONObject();
             response.put("subscriptions", "/download/subscriptionsTemplate");
@@ -58,7 +60,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download subscription template")
-    public ResponseEntity<?> getDownloadSubscriptionsTemplate() {
+    public ResponseEntity<?> getDownloadSubscriptionsTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
             if (is == null) {
@@ -77,7 +79,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download rules template")
-    public ResponseEntity<?> getDownloadRulesTemplate() {
+    public ResponseEntity<?> getDownloadRulesTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
             if (is == null) {
@@ -96,7 +98,7 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download Eiffel events template")
-    public ResponseEntity<?> getDownloadEventsTemplate() {
+    public ResponseEntity<?> getDownloadEventsTemplate(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
             if (is == null) {

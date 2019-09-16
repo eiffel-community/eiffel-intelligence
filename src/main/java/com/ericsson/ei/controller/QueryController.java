@@ -1,6 +1,7 @@
 
 package com.ericsson.ei.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import com.ericsson.ei.controller.model.QueryBody;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This class retrieves aggregated objects given a free style query. Criteria is required to have in the request body, while options and filter are optional.
- * (Generated with springmvc-raml-parser v.2.0.4)
+ * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */
 @RestController
@@ -30,6 +31,6 @@ public interface QueryController {
     public ResponseEntity<?> createQuery(
         @Valid
         @RequestBody
-        QueryBody queryBody);
+        QueryBody queryBody, HttpServletRequest httpRequest);
 
 }

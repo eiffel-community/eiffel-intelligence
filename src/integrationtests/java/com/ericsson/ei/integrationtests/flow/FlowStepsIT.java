@@ -1,4 +1,4 @@
-package com.ericsson.ei.integrationtests;
+package com.ericsson.ei.integrationtests.flow;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package com.ericsson.ei.integrationtests;
+package com.ericsson.ei.integrationtests.flow;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -8,7 +8,7 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/integrationtests/resources/features/TestExecutionFlowIT.feature", glue = {
-        "com.ericsson.ei.integrationtests" }, plugin = { "pretty",
+        "com.ericsson.ei.integrationtests.flow" }, plugin = { "pretty",
                 "html:target/cucumber-reports/TestExecutionFlowRunnerIT" })
 public class TestExecutionRunnerIT {
     @BeforeClass

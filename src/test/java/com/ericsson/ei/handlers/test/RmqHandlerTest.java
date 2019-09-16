@@ -26,7 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,9 +60,6 @@ public class RmqHandlerTest {
 
     @Mock
     private ConnectionFactory factory;
-
-    @Mock
-    private SimpleMessageListenerContainer container;
 
     @Before
     public void setUp() {

@@ -29,9 +29,8 @@ Feature: Source change flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    Given all previous steps passed
     When the upstream input events are sent
-    When the eiffel events are sent
+    And the eiffel events are sent
     And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created
     And jenkins job status data has key "test_key" with value "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"

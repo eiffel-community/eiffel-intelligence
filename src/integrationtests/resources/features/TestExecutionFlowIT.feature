@@ -29,7 +29,6 @@ Feature: Test execution flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    Given all previous steps passed
     When the eiffel events are sent
     And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created

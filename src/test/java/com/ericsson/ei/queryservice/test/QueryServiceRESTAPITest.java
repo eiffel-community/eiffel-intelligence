@@ -79,7 +79,7 @@ public class QueryServiceRESTAPITest {
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private FailedNotificationsControllerImpl failedNotificationController;
+    private FailedNotificationsControllerImpl failedNotificationsController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
@@ -122,7 +122,7 @@ public class QueryServiceRESTAPITest {
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(failedNotificationController.getFailedNotifications(Mockito.anyString()))
+        Mockito.when(failedNotificationsController.getFailedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failed-notifications?")

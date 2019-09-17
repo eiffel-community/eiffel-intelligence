@@ -19,8 +19,7 @@ Feature: Failed Notification Integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    Given all previous steps passed
-    And the eiffel events are sent
+    When the eiffel events are sent
     Then failed notification of type "MAIL" should exist for subscription "MailFailureTestSubscription"
 
   Scenario:

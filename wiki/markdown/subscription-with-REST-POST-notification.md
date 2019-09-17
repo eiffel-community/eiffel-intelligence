@@ -39,6 +39,7 @@ _**Subscription templates can be found [here](https://github.com/eiffel-communit
         "notificationType" : "REST_POST",
 
         // Which url to use for the HTTP POST request.
+        // This field requires a schema to work. That means the 'http://' part needs to be included.
         "notificationMeta" : "http://eiffel-jenkins1:8080/job/ei-artifact-triggered-job/build",
 
         // Headers for the HTTP request, can be 'application/x-www-form-urlencoded' or 'application/json'.

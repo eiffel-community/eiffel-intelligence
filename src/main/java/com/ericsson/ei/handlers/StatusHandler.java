@@ -63,9 +63,6 @@ public class StatusHandler {
         return objectMapper.valueToTree(statusData);
     }
 
-    /**
-     * Method to check and update status of all dependent services.
-     */
     private void updateCurrentStatus() {
         Status mongoDBStatus = getMongoDBStatus();
         statusData.setMongoDBStatus(mongoDBStatus);
@@ -77,11 +74,6 @@ public class StatusHandler {
         statusData.setEiffelIntelligenceStatus(eiffelIntelligenceStatus);
     }
 
-    /**
-     * Returns the status of the existing mongoDB.
-     *
-     * @return status
-     */
     private Status getMongoDBStatus() {
         Status status = Status.UNAVAILABLE;
 
@@ -92,11 +84,6 @@ public class StatusHandler {
         return status;
     }
 
-    /**
-     * Returns the status of the existing rabbitMQ.
-     *
-     * @return
-     */
     private Status getRabbitMQStatus() {
         Status status = Status.UNAVAILABLE;
 
@@ -107,11 +94,6 @@ public class StatusHandler {
         return status;
     }
 
-    /**
-     * Returns the calculated Eiffel Intelligence status.
-     *
-     * @return status
-     */
     private Status getEiffelIntelligenceStatus() {
         Status status = Status.UNAVAILABLE;
         boolean availability = getServiceAvailability();
@@ -123,11 +105,6 @@ public class StatusHandler {
         return status;
     }
 
-    /**
-     * Check availability on dependent services.
-     *
-     * @return
-     */
     private boolean getServiceAvailability() {
         boolean availability;
 

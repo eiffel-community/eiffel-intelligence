@@ -28,7 +28,7 @@ import lombok.Getter;
 
 /**
  * This class is a ConnectionListener that is added to the RMQConnectionFactory, and is there after
- * triggered by Spring RMQConnectionFactory when ever an update in the connection occurs.
+ * triggered by Spring RMQConnectionFactory whenever an update in the connection occurs.
  *
  */
 @Component
@@ -45,7 +45,6 @@ public class RMQConnectionListener implements ConnectionListener {
     public void onCreate(Connection connection) {
         LOGGER.info("RabbitMQ connection has been initiated.");
         connected = true;
-
     }
 
     /**

@@ -19,7 +19,6 @@ import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.StatusHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +33,7 @@ import cucumber.api.java.en.When;
         "missedNotificationDataBaseName: StatusSteps-missedNotifications",
         "rabbitmq.exchange.name: StatusSteps-exchange",
         "rabbitmq.consumerName: StatusSteps-Consumer" })
-public class StatusSteps extends FunctionalTestBase {
+public class StatusTestSteps extends FunctionalTestBase {
 
     private static final String RABBITMQ_KEY = "rabbitMQStatus";
     private static final String MONGODB_KEY = "mongoDBStatus";
@@ -44,17 +43,14 @@ public class StatusSteps extends FunctionalTestBase {
     @Autowired
     private StatusHandler statusHandler;
 
-    @Autowired
-    private MongoDBHandler handler;
-
-    @Given("^\"([^\"]*)\" services is unavailable$")
+    @Given("^\"([^\"]*)\" service is unavailable$")
     public void setServiceStatusUnavailable(String service) throws Throwable {
         setUnavailableService(service);
         statusHandler.run();
     }
 
-    @When("^I fetches status$")
-    public void fetchServiceStatus() throws Throwable {
+    @When("^I get status$")
+    public void getServiceStatus() throws Throwable {
         fetchedStatus = statusHandler.getCurrentStatus();
     }
 

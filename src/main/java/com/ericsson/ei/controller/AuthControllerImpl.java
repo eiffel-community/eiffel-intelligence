@@ -34,8 +34,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Endpoints /auth/login should be secured in case LDAP is enabled Endpoint
- * /auth should be not secured
+ * Endpoint /auth/login should be secured if LDAP is enabled.
+ * Endpoint /auth should never be secured.
  */
 @Component
 @CrossOrigin

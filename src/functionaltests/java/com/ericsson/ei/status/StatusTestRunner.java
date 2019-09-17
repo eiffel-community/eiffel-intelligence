@@ -13,10 +13,7 @@
 */
 package com.ericsson.ei.status;
 
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-
-import com.ericsson.ei.utils.TestLDAPStarter;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
@@ -24,6 +21,6 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(features = { "src/functionaltests/resources/features/status.feature" }, glue = {
         "com.ericsson.ei.status" }, plugin = { "pretty",
-                "html:target/cucumber-reports/TestStatusRunner" })
-public class TestStatusRunner {
+                "html:target/cucumber-reports/StatusTestRunner" })
+public class StatusTestRunner {
 }

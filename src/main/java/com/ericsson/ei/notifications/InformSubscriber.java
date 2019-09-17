@@ -131,7 +131,7 @@ public class InformSubscriber {
                     "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
                     e.getMessage(), missedNotification);
             mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, "Time", ttlValue);
+                    missedNotificationCollectionName, "time", ttlValue);
             saveMissedNotificationToDB(missedNotification);
         }
     }

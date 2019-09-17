@@ -48,7 +48,8 @@ public class HttpRequestSender {
      * @param url     A String containing the URL to send request to
      * @param request A HTTP POST request
      * @return boolean success of the request
-     * @throws AuthenticationException
+     * @throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+     *                                  Exception
      */
     public boolean postDataMultiValue(String url, HttpEntity<?> request)
             throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,

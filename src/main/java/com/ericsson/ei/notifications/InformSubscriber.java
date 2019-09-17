@@ -148,17 +148,26 @@ public class InformSubscriber {
         boolean success = false;
         int requestTries = 0;
 
+        Exception exception = null;
         do {
             requestTries++;
             try {
                 success = request.perform();
+            } catch (AuthenticationException e) {
+                exception = e;
+                break;
             } catch (Exception e) {
-                String errorMessage = "Failed to send REST/POST notification!";
-                LOGGER.error(errorMessage + "\n", e);
-                throw new NotificationFailureException(errorMessage + "\nMessage: " + e.getMessage());
+                exception = e;
             }
             LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
         } while (!success && requestTries <= failAttempt);
+
+        if (!success && exception != null) {
+            String errorMessage = "Failed to send REST/POST notification!";
+            LOGGER.error(errorMessage + "\n", exception);
+            throw new NotificationFailureException(
+                    errorMessage + "\nMessage: " + exception.getMessage());
+        }
     }
 
     /**

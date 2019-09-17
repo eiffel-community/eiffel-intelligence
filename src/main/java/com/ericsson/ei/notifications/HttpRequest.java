@@ -87,7 +87,8 @@ public class HttpRequest {
      * Perform a HTTP request to a specific url. Returns the response.
      *
      * @return response A boolean value of the request response
-     * @throws AuthenticationException
+     * @throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+     *                                  Exception
      */
     public boolean perform()
             throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,

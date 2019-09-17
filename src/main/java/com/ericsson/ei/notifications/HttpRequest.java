@@ -86,15 +86,13 @@ public class HttpRequest {
     /**
      * Perform a HTTP request to a specific url. Returns the response.
      *
-     * @return response A boolean value of the request response
      * @throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
      *                                  Exception
      */
-    public boolean perform()
+    public void perform()
             throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
             Exception {
-        boolean response = httpRequestSender.postDataMultiValue(this.url, this.request);
-        return response;
+        httpRequestSender.postDataMultiValue(this.url, this.request);
     }
 
     /**

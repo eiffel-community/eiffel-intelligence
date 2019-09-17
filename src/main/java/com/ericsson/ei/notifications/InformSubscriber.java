@@ -145,26 +145,25 @@ public class InformSubscriber {
      */
     private void makeHTTPRequests(HttpRequest request)
             throws AuthenticationException, NotificationFailureException {
-        boolean success = false;
         int requestTries = 0;
-
         Exception exception = null;
         do {
             requestTries++;
             try {
-                success = request.perform();
+                request.perform();
+                exception = null;
             } catch (AuthenticationException e) {
                 exception = e;
                 break;
             } catch (Exception e) {
                 exception = e;
             }
-            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
-        } while (!success && requestTries <= failAttempt);
+            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries,
+                    exception != null);
+        } while (exception != null && requestTries <= failAttempt);
 
-        if (!success && exception != null) {
+        if (exception != null) {
             String errorMessage = "Failed to send REST/POST notification!";
-            LOGGER.error(errorMessage + "\n", exception);
             throw new NotificationFailureException(
                     errorMessage + "\nMessage: " + exception.getMessage());
         }

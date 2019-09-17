@@ -25,6 +25,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.utils.SpringContext;
@@ -84,17 +86,19 @@ public class HttpRequest {
     /**
      * Perform a HTTP request to a specific url. Returns the response.
      *
-     * @return response     A boolean value of the request response
+     * @return response A boolean value of the request response
      * @throws AuthenticationException
      */
-    public boolean perform() throws Exception {
+    public boolean perform()
+            throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+            Exception {
         boolean response = httpRequestSender.postDataMultiValue(this.url, this.request);
         return response;
     }
 
     /**
      * Builds a HTTP request with headers.
-     * */
+     */
     public HttpRequest build() throws AuthenticationException {
         this.subscriptionField = new SubscriptionField(this.subscriptionJson);
         prepareHeaders();
@@ -105,8 +109,7 @@ public class HttpRequest {
     }
 
     /**
-     * Prepares headers to be used in a POST request.
-     * POST.
+     * Prepares headers to be used in a POST request. POST.
      *
      * @throws AuthenticationException
      */
@@ -119,17 +122,17 @@ public class HttpRequest {
     /**
      * Creates a HTTP request based on the content type.
      *
-     * */
+     */
     private void createRequest() {
         boolean isApplicationXWwwFormUrlEncoded = MediaType.valueOf(contentType)
                                                            .equals(MediaType.APPLICATION_FORM_URLENCODED);
         if (isApplicationXWwwFormUrlEncoded) {
             request = new HttpEntity<MultiValueMap<String, String>>(
-                this.mapNotificationMessage, this.headers);
+                    this.mapNotificationMessage, this.headers);
         } else {
             request = new HttpEntity<String>(
-                String.valueOf((mapNotificationMessage.get("")).get(0)),
-                this.headers);
+                    String.valueOf((mapNotificationMessage.get("")).get(0)),
+                    this.headers);
         }
     }
 
@@ -173,8 +176,7 @@ public class HttpRequest {
     }
 
     /**
-     * Returns a boolean indicating that authentication details was provided in
-     * the subscription.
+     * Returns a boolean indicating that authentication details was provided in the subscription.
      *
      * @param authType
      * @param username

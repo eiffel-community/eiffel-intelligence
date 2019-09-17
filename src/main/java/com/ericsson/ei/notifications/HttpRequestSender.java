@@ -50,7 +50,9 @@ public class HttpRequestSender {
      * @return boolean success of the request
      * @throws AuthenticationException
      */
-    public boolean postDataMultiValue(String url, HttpEntity<?> request) throws Exception {
+    public boolean postDataMultiValue(String url, HttpEntity<?> request)
+            throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+            Exception {
         ResponseEntity<JsonNode> response;
 
         try {
@@ -76,7 +78,8 @@ public class HttpRequestSender {
 
         JsonNode body = response.getBody();
 
-        LOGGER.debug("The HTTP post request response status code is [{}] and body: {}", status, body);
+        LOGGER.debug("The HTTP post request response status code is [{}] and body: {}", status,
+                body);
 
         return httpStatusSuccess;
     }

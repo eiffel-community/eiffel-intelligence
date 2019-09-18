@@ -269,7 +269,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
                              .setEndpoint(entryPoint)
-                             .addParam("SubscriptionName", subscriptionName)
+                             .addParam("subscriptionName", subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -278,8 +278,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 + "\nResponse: " + responseAsString);
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+        String test = response.getBody().toString();
         String actualTestCaseStartedEventId = jsonNodeResult.get("queryResponseEntity")
-                                                            .get("AggregatedObject")
+                                                            .get("aggregatedObject")
                                                             .get("testCaseExecutions")
                                                             .get(0)
                                                             .get("testCaseStartedEventId")
@@ -307,7 +308,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
                              .setEndpoint(entryPoint)
-                             .addParam("SubscriptionName", subscriptionName)
+                             .addParam("subscriptionName", subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

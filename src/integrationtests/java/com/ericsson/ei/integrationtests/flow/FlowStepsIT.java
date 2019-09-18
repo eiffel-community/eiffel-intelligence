@@ -124,8 +124,8 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
     public void notificationMetaIsSetInSubscription(String notificationMeta) throws Throwable {
-        notificationMeta = replaceVariablesInNotificationMeta(notificationMeta);
-        subscriptionObject.setNotificationMeta(notificationMeta);
+        String notificationMetaReplaced = replaceVariablesInNotificationMeta(notificationMeta);
+        subscriptionObject.setNotificationMeta(notificationMetaReplaced);
     }
 
     @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")

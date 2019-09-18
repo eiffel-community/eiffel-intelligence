@@ -127,9 +127,6 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
                .addParam("subscriptionName", subscriptionName);
         
         ResponseEntity response = request.performRequest();
-        System.out.println("###############################################");
-        System.out.println(response.getBody());
-        System.out.println("###############################################");
         String message = objectMapper.readTree(response.getBody()).get("queryResponseEntity").get("message").toString();
         assertEquals(true, message.contains(searchValue));
     }

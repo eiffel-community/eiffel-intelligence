@@ -48,22 +48,20 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
 
-    private long startTime;
-
     private SubscriptionObject subscriptionObject;
 
     @Given("^the rules \"([^\"]*)\"$")
-    public void the_rules(String rulesFilePath) throws Throwable {
+    public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
     }
 
     @Given("^the events \"([^\"]*)\"$")
-    public void the_events(String eventsFilePath) throws Throwable {
+    public void events(String eventsFilePath) throws Throwable {
         this.eventsFilePath = eventsFilePath;
     }
 
     @Given("^subscription object of type \"([^\"]*)\" with name \"([^\"]*)\" is created$")
-    public void subscription_object_for_with_name_is_created(String subscriptionType,
+    public void subscriptionObjectOfTypeIsCreated(String subscriptionType,
             String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
             subscriptionObject = new MailSubscriptionObject(subscriptionName);
@@ -73,40 +71,38 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     }
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
-    public void notification_meta_is_set_in_subscription(String notificationMeta) throws Throwable {
+    public void notificationMetaIsSetInSubscription(String notificationMeta) throws Throwable {
         subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
     @When("^parameter form key \"([^\"]*)\" and form value \"([^\"]*)\" is added in subscription$")
-    public void parameter_key_and_value_is_added_in_subscription(String formKey, String formValue) {
+    public void parameterKeyAndValueIsAddedInSubscription(String formKey, String formValue) {
         subscriptionObject.addNotificationMessageKeyValue(formKey, formValue);
     }
 
     @When("^condition \"([^\"]*)\" at requirement index '(\\d+)' is added in subscription$")
-    public void requirement_for_condition_is_added_in_subscription(String condition,
+    public void conditionOrRequirementIsAddedInSubscription(String condition,
             int requirementIndex) throws Throwable {
         subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put(
                 "jmespath", condition));
     }
 
     @When("^the eiffel events are sent$")
-    public void eiffel_events_are_sent() throws Throwable {
+    public void eiffelEventsAreSent() throws Throwable {
         super.sendEventsAndConfirm();
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
-    public void rest_post_body_media_type_is_set_in_subscription(
+    public void restPostBodyMediaTypeIsSetInSubscription(
             String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
     }
 
     @Then("^subscription is uploaded$")
-    public void subscription_is_uploaded()
+    public void subscriptionIsUploaded()
             throws URISyntaxException, ClientProtocolException, IOException {
         assert (subscriptionObject instanceof RestPostSubscriptionObject
                 || subscriptionObject instanceof MailSubscriptionObject) : "SubscriptionObject must have been initiated.";
-
-        startTime = System.currentTimeMillis();
 
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         postRequest.setBaseUrl("http://" + eiHost + ":" + port)
@@ -120,7 +116,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     }
 
     @Then("^failed notification of type \"([^\"]*)\" should exist for subscription \"([^\"]*)\"$")
-    public void failed_notification_exists(String searchValue, String subscriptionName) throws Throwable {
+    public void failedNotificationShouldExist(String searchValue, String subscriptionName) throws Throwable {
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
                .setEndpoint("/queryMissedNotifications")

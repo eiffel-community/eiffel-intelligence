@@ -84,22 +84,22 @@ public class FlowStepsIT extends IntegrationTestBase {
     private JSONObject jobStatusData;
 
     @Given("^the rules \"([^\"]*)\"$")
-    public void the_rules(String rulesFilePath) throws Throwable {
+    public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
     }
 
     @Given("^the events \"([^\"]*)\"$")
-    public void the_events(String eventsFilePath) throws Throwable {
+    public void events(String eventsFilePath) throws Throwable {
         this.eventsFilePath = eventsFilePath;
     }
 
     @Given("^the resulting aggregated object \"([^\"]*)\";$")
-    public void the_resulting_aggregated_object(String aggregatedObjectFilePath) throws Throwable {
+    public void resultingAggregatedObject(String aggregatedObjectFilePath) throws Throwable {
         this.aggregatedObjectFilePath = aggregatedObjectFilePath;
     }
 
     @Given("^the upstream input \"([^\"]*)\"$")
-    public void the_upstream_input(String upstreamInputFile) throws Throwable {
+    public void upstreamInput(String upstreamInputFile) throws Throwable {
         this.upstreamInputFile = upstreamInputFile;
 
         final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
@@ -108,12 +108,12 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Given("^jenkins data is prepared$")
-    public void jenkins_data_is_prepared() throws Throwable {
+    public void jenkinsDataIsPrepared() throws Throwable {
         jenkinsXmlData = new JenkinsXmlData();
     }
 
     @Given("^subscription object of type \"([^\"]*)\" with name \"([^\"]*)\" is created$")
-    public void subscription_object_for_with_name_is_created(String subscriptionType,
+    public void subscriptionObjectOfTypeIsCreated(String subscriptionType,
             String subscriptionName) throws Throwable {
         if (subscriptionType.equalsIgnoreCase("Mail")) {
             subscriptionObject = new MailSubscriptionObject(subscriptionName);
@@ -123,13 +123,13 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @When("^notification meta \"([^\"]*)\" is set in subscription$")
-    public void notification_meta_is_set_in_subscription(String notificationMeta) throws Throwable {
+    public void notificationMetaIsSetInSubscription(String notificationMeta) throws Throwable {
         notificationMeta = replaceVariablesInNotificationMeta(notificationMeta);
         subscriptionObject.setNotificationMeta(notificationMeta);
     }
 
     @When("^\"([^\"]*)\" authentication with username \"([^\"]*)\" and password \"([^\"]*)\" is set in subscription$")
-    public void basic_auth_authentication_with_username_and_password_is_set_in_subscription(
+    public void authenticationWithUsernameAndPasswordIsSetInSubscription(
             String authenticationType, String username, String password) throws Throwable {
 
         RestPostSubscriptionObject restPostSubscriptionObject = (RestPostSubscriptionObject) subscriptionObject;
@@ -142,30 +142,30 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
-    public void rest_post_body_media_type_is_set_in_subscription(
+    public void restPostBodyMediaTypeIsSetInSubscription(
             String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
     }
 
     @When("^parameter form key \"([^\"]*)\" and form value \"([^\"]*)\" is added in subscription$")
-    public void parameter_key_and_value_is_added_in_subscription(String formKey, String formValue) {
+    public void parameterKeyAndValueIsAddedInSubscription(String formKey, String formValue) {
         subscriptionObject.addNotificationMessageKeyValue(formKey, formValue);
     }
 
     @When("^condition \"([^\"]*)\" at requirement index '(\\d+)' is added in subscription$")
-    public void requirement_for_condition_is_added_in_subscription(String condition,
+    public void conditionOrRequirementIsAddedInSubscription(String condition,
             int requirementIndex) throws Throwable {
         subscriptionObject.addConditionToRequirement(requirementIndex, new JSONObject().put(
                 "jmespath", condition));
     }
 
     @When("^the eiffel events are sent$")
-    public void eiffel_events_are_sent() throws Throwable {
+    public void eiffelEventsAreSent() throws Throwable {
         super.sendEventsAndConfirm();
     }
 
     @When("^the upstream input events are sent")
-    public void upstream_input_events_are_sent() throws IOException {
+    public void upstreamInputEventsAreSent() throws IOException {
         final URL upStreamInput = new File(upstreamInputFile).toURI().toURL();
         ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
         if (upstreamJson != null) {
@@ -177,23 +177,23 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @When("^job token \"([^\"]*)\" is added to jenkins data$")
-    public void token_is_added_to_jenkins_data(String token) throws Throwable {
+    public void tokenIsAddedToJenkinsData(String token) throws Throwable {
         jenkinsXmlData.addJobToken(token);
         jenkinsJobToken = token;
     }
 
     @When("^parameter key \"([^\"]*)\" is added to jenkins data$")
-    public void parameter_key_and_value_is_added_to_jenkins_data(String key) throws Throwable {
+    public void parameterKeyAndValueIsAddedToJenkinsData(String key) throws Throwable {
         jenkinsXmlData.addBuildParameter(key);
     }
 
     @When("^bash script \"([^\"]*)\" is added to jenkins data$")
-    public void script_is_added_to_jenkins_data(String bashScript) throws Throwable {
+    public void scriptIsAddedToJenkinsData(String bashScript) throws Throwable {
         jenkinsXmlData.addBashScript(bashScript);
     }
 
     @When("^jenkins job status data fetched$")
-    public void the_jenkins_job_should_have_been_triggered() throws Throwable {
+    public void jenkinsJobStatusDataFetched() throws Throwable {
         Boolean jobStatusDataFetched = false;
         long stopTime = System.currentTimeMillis() + 30000;
         while (jobStatusDataFetched == false && stopTime > System.currentTimeMillis()) {
@@ -213,30 +213,30 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Then("^the expected aggregated object ID is \"([^\"]*)\"$")
-    public void the_expected_aggregated_object_ID_is(String aggregatedObjectID) throws Throwable {
+    public void expectedAggregatedObjectID(String aggregatedObjectID) throws Throwable {
         this.aggregatedObjectID = aggregatedObjectID;
     }
 
     @Then("^verify jenkins job data timestamp is after test subscription was created$")
-    public void verify_jenkins_job_data_timestamp_is_after_test_subscription_was_created()
+    public void verifyJenkinsJobDataTimestampIsAfterTestSubscriptionWasCreated()
             throws Throwable {
         long jenkinsTriggeredTime = jobStatusData.getLong("timestamp");
         assert (jenkinsTriggeredTime >= startTime) : "Jenkins job was triggered before execution of this test.";
     }
 
     @Then("^jenkins job status data has key \"([^\"]*)\" with value \"([^\"]*)\"$")
-    public void jenkins_job_status_data_has_key(String key, String value) throws Throwable {
+    public void jenkinsJobStatusDataHasKey(String key, String value) throws Throwable {
         String extractedValue = extractValueForKeyInJobData(key);
         assertEquals("The data jenkins recieved is not what was expected.", value, extractedValue);
     }
 
     @Then("^the jenkins job should be deleted$")
-    public void the_jenkins_job_should_be_deleted() throws Throwable {
+    public void jenkinsJobShouldBeDeleted() throws Throwable {
         jenkinsManager.deleteJob(this.jenkinsJobName);
     }
 
     @Then("^mongodb should contain \"([^\"]*)\" mails\\.$")
-    public void mongodb_should_contain_mails(int amountOfMails) throws Exception {
+    public void mongodbShouldContainMails(int amountOfMails) throws Exception {
         long stopTime = System.currentTimeMillis() + 30000;
         Boolean mailHasBeenDelivered = false;
         long createdDateInMillis = 0;
@@ -263,7 +263,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Then("^jenkins is set up with job name \"([^\"]*)\"$")
-    public void jenkins_is_set_up_with_job_name(String JobName) throws Throwable {
+    public void jenkinsIsSetUpWithJobName(String JobName) throws Throwable {
         jenkinsManager = new JenkinsManager(jenkinsProtocol, jenkinsHost, jenkinsPort,
                 jenkinsUsername, jenkinsPassword);
         jenkinsManager.forceCreateJob(JobName, jenkinsXmlData.getXmlAsString());
@@ -271,7 +271,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Then("^subscription is uploaded$")
-    public void subscription_is_uploaded() throws URISyntaxException {
+    public void subscriptionIsUploaded() throws URISyntaxException {
         assert (subscriptionObject instanceof RestPostSubscriptionObject
                 || subscriptionObject instanceof MailSubscriptionObject) : "SubscriptionObject must have been initiated.";
 

@@ -2,9 +2,8 @@
 
 Feature: Artifact flow Integrationtest
 
-  Scenario:
-    Send eiffel events for artifact flow and make sure EI is triggering
-    on mail subscriptions
+  Scenario: Send eiffel events for artifact flow and make sure EI is triggering
+  on mail subscriptions
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json"

@@ -2,10 +2,9 @@
 
 Feature: Source change flow integrationtest
 
-  Scenario:
-    Send eiffel events for source change flow and make sure EI is triggering on
-    REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
-    data to add to parameter
+  Scenario: Send eiffel events for source change flow and make sure EI is triggering on
+  REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
+  data to add to parameter
 
     Given the rules "src/main/resources/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestSourceChangeObjectEvents.json"
@@ -36,10 +35,9 @@ Feature: Source change flow integrationtest
     And jenkins job status data has key "test_key" with value "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47"
     And the jenkins job should be deleted
 
-  Scenario:
-    Send eiffel events for source change flow and make sure EI is triggering on
-    REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
-    data to add to parameter
+  Scenario: Send eiffel events for source change flow and make sure EI is triggering on
+  REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
+  data to add to parameter
 
     Given the rules "src/main/resources/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json"
     And the events "src/test/resources/TestSourceChangeObjectEvents.json"

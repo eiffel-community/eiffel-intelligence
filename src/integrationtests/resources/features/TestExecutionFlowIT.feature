@@ -2,10 +2,9 @@
 
 Feature: Test execution flow integrationtest
 
-  Scenario:
-    Send eiffel events for test execution flow and make sure EI is triggering on
-    REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
-    data to add to parameter
+  Scenario: Send eiffel events for test execution flow and make sure EI is triggering on
+  REST-POST subscriptions using buildWithParameters and JMESPATH extracted correct
+  data to add to parameter
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"
@@ -35,10 +34,9 @@ Feature: Test execution flow integrationtest
     And jenkins job status data has key "test_key" with value "e46ef12d-25gb-4d7y-b9fd-8763re66de47"
     And the jenkins job should be deleted
 
-  Scenario:
-    Send eiffel events for test execution flow and make sure EI is triggering on
-    REST-POST subscriptions using build and JMESPATH extracted correct
-    data to add as a json parameter in the body. This with multiple parameters.
+  Scenario: Send eiffel events for test execution flow and make sure EI is triggering on
+  REST-POST subscriptions using build and JMESPATH extracted correct
+  data to add as a json parameter in the body. This with multiple parameters.
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json"

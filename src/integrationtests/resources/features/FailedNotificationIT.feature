@@ -2,10 +2,9 @@
 
 Feature: Failed Notification Integrationtest
 
-  Scenario:
-    Start an artifact flow aggregation and make sure the email notification fails
-    due to incorrect SMTP server port. The port is set with @TestPropertySource
-    in the steps file.
+  Scenario: Start an artifact flow aggregation and make sure the email notification fails
+  due to incorrect SMTP server port. The port is set with @TestPropertySource
+  in the steps file.
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json"
@@ -22,9 +21,8 @@ Feature: Failed Notification Integrationtest
     When the eiffel events are sent
     Then failed notification of type "MAIL" should exist for subscription "MailFailureTestSubscription"
 
-  Scenario:
-    Start an artifact flow aggregation and make sure the REST notification fails
-    due to incorrect URL.
+  Scenario: Start an artifact flow aggregation and make sure the REST notification fails
+  due to incorrect URL.
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json"

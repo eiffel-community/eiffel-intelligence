@@ -293,36 +293,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     }
 
-    @And("^Check missed notification has been returned$")
-    public void check_missed_notification_has_been_returned() throws Throwable {
-        final String expectedResponse = "{\"queryResponseEntity\":{}}";
-        final String subscriptionName = "Subscription_1";
-        final String entryPoint = "/queryMissedNotifications";
-
-        LOGGER.debug("Trying to query /queryMissedNotifications RestApi one more time with subscriptionName: "
-                + subscriptionName);
-
-        HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
-        response = getRequest.setPort(applicationPort)
-                             .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPoint)
-                             .addParam("subscriptionName", subscriptionName)
-                             .performRequest();
-
-        String responseAsString = response.getBody().toString();
-        int responseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryMissedNotifications RestApi, Status Code: " + responseStatusCode
-                + "\nResponse: " + responseAsString);
-
-        assertEquals(HttpStatus.OK.value(), responseStatusCode);
-        assertEquals(
-                "Differences between actual Missed Notification response:\n" + responseAsString
-                        + "\nand expected  Missed Notification response:\n" + expectedResponse,
-                expectedResponse, responseAsString);
-    }
-
     @And("^Perform a query on created Aggregated object with filter$")
     public void perform_valid_query_and_filter_on_aggregated_object() throws Throwable {
         final String expectedResponse = "[{\"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\":\"\\\"33d05e6f-9bd9-4138-83b6-e20cc74680a3\\\"\"}]";

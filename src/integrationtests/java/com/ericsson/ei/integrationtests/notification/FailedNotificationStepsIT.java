@@ -95,7 +95,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")
-    public void rest_post_body_media_type_is_set_to_is_set_in_subscription(
+    public void rest_post_body_media_type_is_set_in_subscription(
             String restPostBodyMediaType) throws Throwable {
         subscriptionObject.setRestPostBodyMediaType(restPostBodyMediaType);
     }

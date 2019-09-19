@@ -33,7 +33,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
@@ -56,7 +56,7 @@ public class RmqHandlerTest {
     private String consumerName = "messageConsumer";
 
     @InjectMocks
-    private RmqHandler rmqHandler;
+    private RMQHandler rmqHandler;
 
     @Mock
     private ConnectionFactory factory;

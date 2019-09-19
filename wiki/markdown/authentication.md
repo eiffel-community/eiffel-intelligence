@@ -5,7 +5,6 @@
 |GET   |/auth            |no            |
 |GET   |/auth/login      |yes           |
 |GET   |/auth/logout     |no            |
-|GET   |/auth/checkStatus|yes           |
 
 Authentication is not a requirement but can be turned on and off in the
 application properties file with the '_ldap.enabled_' property.
@@ -83,17 +82,3 @@ Curl command with session cookie
 Curl command with token
 
     curl -X GET -H "Content-type: application/json" -H "X-Auth-Token: <uuid>" http://<host>:8090/auth/logout
-
-## Check if backend is running
-
-An arbitrary endpoint to check if backend is up and running
-
-    GET /auth/checkStatus
-
-Curl command
-
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/auth/checkStatus
-
-Example of response body
-
-    Backend server is up and running

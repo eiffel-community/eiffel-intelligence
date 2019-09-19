@@ -16,11 +16,14 @@
 */
 package com.ericsson.ei.handlers.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -28,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 
 public class MongoDBHandlerTest {
 
@@ -53,21 +58,35 @@ public class MongoDBHandlerTest {
     public void testGetDocuments() {
         ArrayList<String> documents = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         assertTrue(documents.size() > 0);
+        dropCollection();
     }
 
     @Test
     public void testGetDocumentsOnCondition() {
         ArrayList<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
         assertTrue(documents.size() > 0);
+        dropCollection();
     }
 
     @Test
     public void testUpdateDocument() {
         assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, input, updateInput));
+        dropCollection();
     }
 
-    @After
-    public void dropCollection() {
+    @Test
+    public void testIsMongoDBServerUp() {
+        MongoClient client = mock(MongoClient.class);
+        when(client.getAddress()).thenReturn(new ServerAddress());
+        mongoDBHandler.setMongoClient(client);
+        assertTrue(mongoDBHandler.isMongoDBServerUp());
+
+        doThrow(Exception.class).when(client).getAddress();
+        mongoDBHandler.setMongoClient(client);
+        assertFalse(mongoDBHandler.isMongoDBServerUp());
+    }
+
+    private void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
     }
 }

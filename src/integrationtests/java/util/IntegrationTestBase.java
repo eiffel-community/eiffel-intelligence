@@ -47,6 +47,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     protected RabbitTemplate rabbitTemplate;
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
@@ -56,9 +58,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected String eiHost;
     @LocalServerPort
     protected int port;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
-    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     @Value("${spring.data.mongodb.database}")
     private String database;
@@ -208,7 +207,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     * 
+     *
      * @param eventsCount - An int which indicated how many events that should be
      *                    processed.
      * @return
@@ -220,14 +219,14 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
-            LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
         }
     }
 
     /**
      * Counts documents that were processed
-     * 
+     *
      * @param database   - A string with the database to use
      * @param collection - A string with the collection to use
      * @return amount of processed events
@@ -242,7 +241,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
-     * 
+     *
      * @param expectedData - A Map<String, JsonNode> which contains the expected
      *                     data
      * @return
@@ -286,7 +285,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the aggregatedObject from EI by querying
-     * 
+     *
      * @param id - A string which contains the id used in the query
      * @return the responseEntity within the body.
      * @throws URISyntaxException

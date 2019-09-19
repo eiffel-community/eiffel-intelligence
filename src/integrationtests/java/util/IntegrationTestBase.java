@@ -219,7 +219,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
-            LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
         }
     }
@@ -275,7 +275,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;
                 } catch (AssertionError e) {
-                    LOGGER.error("Failed to assert JSON \n{} \n{}",expectedJSON.toString() ,actualJSON.toString() );
                     TimeUnit.SECONDS.sleep(1);
                 }
             }

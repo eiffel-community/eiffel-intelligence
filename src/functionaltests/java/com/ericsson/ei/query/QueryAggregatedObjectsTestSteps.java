@@ -78,7 +78,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
-    final static private String entryPointqueryAggregatedObject = "/queryAggregatedObject";
+    final static private String entryPointQueryAggregatedObject = "/queryAggregatedObject";
     final static private String entryPointQuery = "/query";
     final static private String entryPointFailedNotifications = "/failed-notifications";
 
@@ -124,7 +124,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointqueryAggregatedObject)
+                .setEndpoint(entryPointQueryAggregatedObject)
                              .addParam("ID", documentId)
                              .performRequest();
 
@@ -159,7 +159,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointqueryAggregatedObject)
+                .setEndpoint(entryPointQueryAggregatedObject)
                              .addParam("ID", invalidDocumentId)
                              .performRequest();
 

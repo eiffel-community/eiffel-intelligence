@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * This class searches for failed notifications in the database.
  * (Generated with springmvc-raml-parser v.2.0.4)
- *
+ * 
  */
 @RestController
 @Validated
@@ -22,11 +22,11 @@ public interface FailedNotificationsController {
 
     /**
      * This method returns failed notification(s) given a subscription name.
-     *
+     * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getFailedNotifications(
         @RequestParam
-            String subscriptionNames);
+        String subscriptionName);
 
 }

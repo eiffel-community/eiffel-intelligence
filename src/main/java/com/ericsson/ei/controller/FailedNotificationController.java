@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Validated
 @RequestMapping(value = "/failed-notifications", produces = "application/json")
-public interface FailedNotificationsController {
+public interface FailedNotificationController {
 
 
     /**

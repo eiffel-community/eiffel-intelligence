@@ -35,14 +35,14 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data
- * on the basis of the SubscriptionName from the Failed Notification Object.
+ * from the Failed Notification Object for a certain SubscriptionName.
  */
 @Component
 @CrossOrigin
 @Api(value = "failedNotifications", tags = { "Failed notifications" })
-public class FailedNotificationsControllerImpl implements FailedNotificationsController {
+public class FailedNotificationControllerImpl implements FailedNotificationController {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationsControllerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationControllerImpl.class);
 
     @Autowired
     private ProcessMissedNotification processMissedNotification;

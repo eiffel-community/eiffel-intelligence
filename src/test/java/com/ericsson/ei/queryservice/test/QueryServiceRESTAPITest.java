@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.controller.FailedNotificationsControllerImpl;
+import com.ericsson.ei.controller.FailedNotificationControllerImpl;
 import com.ericsson.ei.controller.QueryAggregatedObjectController;
 import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -79,7 +79,7 @@ public class QueryServiceRESTAPITest {
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private FailedNotificationsControllerImpl failedNotificationsController;
+    private FailedNotificationControllerImpl failedNotificationsController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {

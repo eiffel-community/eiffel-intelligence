@@ -34,8 +34,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class represents the REST GET mechanism to extract the aggregated data
- * from the Failed Notification Object for a certain SubscriptionName.
+ * This class contains logic for retrieving failed notifications for the given
+ * subscription.
  */
 @Component
 @CrossOrigin

@@ -173,8 +173,8 @@ made to resend successfully. The number of attempts are specified in the
 as “notification.failAttempt”. If message sending attempts fails for the
 specified number of time, then a failed notification is prepared and stored
 in database. The name of the database is specified in the application.properties
-file as “missedNotificationDataBaseName” and collection name as
-“missedNotificationCollectionName”. The message is stored in the database
+file as “failedNotificationDataBaseName” and collection name as
+“failedNotificationCollectionName”. The message is stored in the database
 for a certain duration before being deleted. This time can be configured in
 application.properties as “notification.ttl.value”.
 

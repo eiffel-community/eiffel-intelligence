@@ -45,7 +45,7 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionNotificationSteps",
-        "missedNotificationDataBaseName: SubscriptionNotificationSteps-missedNotifications",
+        "failedNotificationDataBaseName: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
         "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
@@ -74,11 +74,11 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDatabase;
+    @Value("${failedNotificationDataBaseName}")
+    private String failedNotificationDatabase;
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollection;
+    @Value("${failedNotificationCollectionName}")
+    private String failedNotificationCollection;
 
     @Value("${subscription.collection.name}")
     private String subscriptionCollection;
@@ -97,7 +97,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Before()
     public void beforeScenario() {
         mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(missedNotificationDatabase);
+        mongoDBHandler.dropDatabase(failedNotificationDatabase);
     }
 
     @After()
@@ -442,7 +442,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> queryResult = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            queryResult = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+            queryResult = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
 
             if (queryResult.size() == expectedSize) {
                 return queryResult.size();

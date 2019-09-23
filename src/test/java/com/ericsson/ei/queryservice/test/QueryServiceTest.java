@@ -52,8 +52,7 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryServiceTest",
-        "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
-        "missedNotificationDataBaseName: QueryServiceTestMissedNotification",
+        "failedNotificationDataBaseName: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceTest-exchange",
         "rabbitmq.consumerName: QueryServiceTest"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -69,11 +68,11 @@ public class QueryServiceTest {
     @Value("${spring.data.mongodb.database}")
     private String aggregationDataBaseName;
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollectionName;
+    @Value("${failedNotificationCollectionName}")
+    private String failedNotificationCollectionName;
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDataBaseName;
+    @Value("${failedNotificationDataBaseName}")
+    private String failedNotificationDataBaseName;
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -85,7 +84,7 @@ public class QueryServiceTest {
     private ProcessMissedNotification processMissedNotification;
 
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static String missedNotificationPath = "src/test/resources/MissedNotification.json";
+    private static String failedNotificationPath = "src/test/resources/MissedNotification.json";
     private static String aggregatedObject;
     private static String missedNotification;
     static MongoClient mongoClient = null;
@@ -104,7 +103,7 @@ public class QueryServiceTest {
                 .deleteMany(new BsonDocument());
         Document missedDocument = Document.parse(missedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
-        mongoClient.getDatabase(missedNotificationDataBaseName).getCollection(missedNotificationCollectionName)
+        mongoClient.getDatabase(failedNotificationDataBaseName).getCollection(failedNotificationCollectionName)
                 .insertOne(missedDocument);
         LOG.debug("Document Inserted in missed Notification Database");
 
@@ -119,14 +118,14 @@ public class QueryServiceTest {
     public void initializeData() throws Exception {
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
-        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath));
+        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath));
         LOG.debug("The missedNotification is : " + missedNotification);
     }
 
     @Test
     public void processMissedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(missedNotificationDataBaseName)
-                .getCollection(missedNotificationCollectionName).find();
+        Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDataBaseName)
+                .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
@@ -150,15 +149,15 @@ public class QueryServiceTest {
 
     @Test
     public void deleteMissedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(missedNotificationDataBaseName)
-                .getCollection(missedNotificationCollectionName).find();
+        Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDataBaseName)
+                .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
         boolean removed = processMissedNotification.deleteMissedNotification("Subscription_1");
         assertEquals(true, removed);
-        Iterable<Document> responseDBAfter = mongoClient.getDatabase(missedNotificationDataBaseName)
-                .getCollection(missedNotificationCollectionName).find();
+        Iterable<Document> responseDBAfter = mongoClient.getDatabase(failedNotificationDataBaseName)
+                .getCollection(failedNotificationCollectionName).find();
         assertEquals(false, responseDBAfter.iterator().hasNext());
     }
 

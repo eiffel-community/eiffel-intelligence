@@ -33,7 +33,7 @@ import cucumber.api.java.en.Then;
         "waitlist.initialDelayResend= 500",
         "waitlist.fixedRateResend= 1000",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
-        "missedNotificationDataBaseName: ThreadingAndWaitlistRepeatSteps-missedNotifications",
+        "failedNotificationDataBaseName: ThreadingAndWaitlistRepeatSteps-failedNotifications",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
         "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer", "logging.level.com.ericsson.ei.waitlist=OFF",
         "logging.level.com.ericsson.ei.handlers.EventHandler=OFF" })

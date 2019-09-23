@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
-        "missedNotificationDataBaseName: QueryServiceRESTAPITest-missedNotifications",
+        "failedNotificationDataBaseName: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -67,9 +67,9 @@ public class QueryServiceRESTAPITest {
     static Logger LOGGER = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
     private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static final String missedNotificationPath = "src/test/resources/MissedNotification.json";
+    private static final String failedNotificationPath = "src/test/resources/MissedNotification.json";
     private static final String aggregatedOutputPath = "src/test/resources/AggregatedOutput.json";
-    private static final String missedNotificationOutputPath = "src/test/resources/MissedNotificationOutput.json";
+    private static final String failedNotificationOutputPath = "src/test/resources/MissedNotificationOutput.json";
     private static String aggregatedObject;
     private static String missedNotification;
 
@@ -79,12 +79,12 @@ public class QueryServiceRESTAPITest {
     private QueryAggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
-    private FailedNotificationControllerImpl failedNotificationsController;
+    private FailedNotificationControllerImpl failedNotificationController;
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
         aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-        missedNotification = FileUtils.readFileToString(new File(missedNotificationPath), "UTF-8");
+        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath), "UTF-8");
     }
 
     @Test
@@ -115,14 +115,14 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(missedNotificationOutputPath),
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(failedNotificationOutputPath),
                 "UTF-8");
         String expectedOutput_string = (expectedOutputWithSquareBrackets.substring(1,
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutput_string);
         LOGGER.info("The expected output is : " + expectedOutput.toString());
 
-        Mockito.when(failedNotificationsController.getFailedNotifications(Mockito.anyString()))
+        Mockito.when(failedNotificationController.getFailedNotifications(Mockito.anyString()))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failed-notifications?")

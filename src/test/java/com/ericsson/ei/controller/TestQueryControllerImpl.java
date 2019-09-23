@@ -48,7 +48,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestQueryControllerImpl",
-        "missedNotificationDataBaseName: TestQueryControllerImpl-missedNotifications",
+        "failedNotificationDataBaseName: TestQueryControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestQueryControllerImpl-exchange",
         "rabbitmq.consumerName: TestQueryControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

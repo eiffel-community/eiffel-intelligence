@@ -65,7 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/all_event_rules.json",
         "spring.data.mongodb.database: SingleEventAggregationTest",
-        "missedNotificationDataBaseName: SingleEventAggregationTest-missedNotifications",
+        "failedNotificationDataBaseName: SingleEventAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
         "rabbitmq.consumerName: SingleEventAggregationTestConsumer" })
 public class SingleEventAggregationTest extends FlowTestBase {

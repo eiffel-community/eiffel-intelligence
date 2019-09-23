@@ -67,14 +67,14 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @Value("${aggregated.collection.name}")
     private String aggrCollectionName;
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollectionName;
+    @Value("${failedNotificationCollectionName}")
+    private String failedNotificationCollectionName;
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDatabaseName;
+    @Value("${failedNotificationDataBaseName}")
+    private String failedNotificationDatabaseName;
 
     private String aggrObj;
-    private String missedNotificationObj;
+    private String failedNotificationObj;
 
     private ObjectMapper objMapper;
 
@@ -88,7 +88,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         try {
             aggrObj = FileUtils.readFileToString(new File(AGGREGATED_OBJ_JSON_PATH), "UTF-8");
-            missedNotificationObj = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
+            failedNotificationObj = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
 
         } catch (IOException e) {
             LOGGER.error("Failed to open test json files for test. Error message\n: " + e.getMessage());
@@ -109,9 +109,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Given("^Missed Notification object is created$")
     public void missed_notification_object_is_created() throws Throwable {
-        LOGGER.debug("Missed Notification object has been created in MongoDb");
-        createDocumentInMongoDb(missedNotificationDatabaseName, missedNotificationCollectionName,
-                missedNotificationObj);
+        LOGGER.debug("Failed Notification object has been created in MongoDb");
+        createDocumentInMongoDb(failedNotificationDatabaseName, failedNotificationCollectionName,
+                failedNotificationObj);
     }
 
     @Then("^Perform valid query on created Aggregated object")
@@ -251,10 +251,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String subscriptionName = "Subscription_1";
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
-        LOGGER.debug("Check if MissedNotification and " + subscriptionName + " exist in Database");
+        LOGGER.debug("Check if FailedNotification and " + subscriptionName + " exist in Database");
         final String queryRequest = "{\"subscriptionName\":\"" + subscriptionName + "\"}";
         String subscriptionNameCheck = objMapper.readValue(
-                mongoDBHandler.find(missedNotificationDatabaseName, missedNotificationCollectionName, queryRequest)
+                mongoDBHandler.find(failedNotificationDatabaseName, failedNotificationCollectionName, queryRequest)
                               .get(0),
                 JsonNode.class).get("subscriptionName").asText();
         assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",
@@ -315,8 +315,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         assertEquals(HttpStatus.OK.value(), responseStatusCode);
         assertEquals(
-                "Differences between actual Missed Notification response:\n" + responseAsString
-                        + "\nand expected  Missed Notification response:\n" + expectedResponse,
+                "Differences between actual Failed Notification response:\n" + responseAsString
+                        + "\nand expected  Failed Notification response:\n" + expectedResponse,
                 expectedResponse, responseAsString);
     }
 

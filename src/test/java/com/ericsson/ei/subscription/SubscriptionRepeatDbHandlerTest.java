@@ -36,7 +36,7 @@ import com.mongodb.util.JSON;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
-        "missedNotificationDataBaseName: SubscriptionRepeatDbHandlerTest-missedNotifications",
+        "failedNotificationDataBaseName: SubscriptionRepeatDbHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
         "rabbitmq.consumerName: SubscriptionRepeatDbHandlerTest" })
 @RunWith(SpringJUnit4ClassRunner.class)

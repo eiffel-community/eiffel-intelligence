@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/arrayAggregationRules.json",
         "spring.data.mongodb.database: ArrayAggregationTest",
-        "missedNotificationDataBaseName: ArrayAggregationTest-missedNotifications",
+        "failedNotificationDataBaseName: ArrayAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
         "rabbitmq.consumerName: ArrayAggregationTestConsumer" })
 public class ArrayAggregationTest extends FlowTestBase {

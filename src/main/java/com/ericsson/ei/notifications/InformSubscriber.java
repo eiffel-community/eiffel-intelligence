@@ -62,11 +62,11 @@ public class InformSubscriber {
     private int failAttempt;
 
     @Getter
-    @Value("${missedNotificationCollectionName}")
+    @Value("${failedNotificationCollectionName}")
     private String missedNotificationCollectionName;
 
     @Getter
-    @Value("${missedNotificationDataBaseName}")
+    @Value("${failedNotificationDataBaseName}")
     private String missedNotificationDataBaseName;
 
     @Getter

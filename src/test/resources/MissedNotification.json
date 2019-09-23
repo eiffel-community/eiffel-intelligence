@@ -1,10 +1,10 @@
 {
     "subscriptionName": "Subscription_1",
     "notificationMeta": "some_url",
-    "Time": {
+    "time": {
         "$date": "2019-08-29T06:29:00.000Z"
     },
-    "AggregatedObject": {
+    "aggregatedObject": {
         "fileInformation": [
             {
                 "extension": "jar",

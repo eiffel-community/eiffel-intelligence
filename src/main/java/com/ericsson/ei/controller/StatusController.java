@@ -10,28 +10,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * This class handles requests related to authentication.
+ * This class returns status information about Eiffel Intelligence and it's dependencies.
  * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */
 @RestController
 @Validated
-@RequestMapping(value = "/auth", produces = "application/json")
-public interface AuthController {
+@RequestMapping(value = "/status", produces = "application/json")
+public interface StatusController {
 
 
     /**
-     * This method checks if security is enabled.
+     * Returns status information about Eiffel Intelligence and services Eiffel Intelligence is dependent on.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getAuth(HttpServletRequest httpRequest);
-
-    /**
-     * This method returns a logged in user.
-     * 
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<?> getAuthLogin(HttpServletRequest httpRequest);
+    public ResponseEntity<?> getStatus(HttpServletRequest httpRequest);
 
 }

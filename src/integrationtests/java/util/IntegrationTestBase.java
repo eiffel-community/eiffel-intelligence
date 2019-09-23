@@ -16,8 +16,6 @@ package util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +45,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     protected RabbitTemplate rabbitTemplate;
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
@@ -56,9 +56,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected String eiHost;
     @LocalServerPort
     protected int port;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
-    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     @Value("${spring.data.mongodb.database}")
     private String database;
@@ -180,19 +177,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return list of event names, that will be used in flow test
      * @throws IOException
      */
-    protected List<String> getEventNamesToSend() throws IOException {
-        ArrayList<String> eventNames = new ArrayList<>();
-
-        URL eventsInput = new File(getEventsFilePath()).toURI().toURL();
-        Iterator eventsIterator = objectMapper.readTree(eventsInput).fields();
-
-        while (eventsIterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) eventsIterator.next();
-            eventNames.add(pair.getKey().toString());
-        }
-
-        return eventNames;
-    }
+    protected abstract List<String> getEventNamesToSend() throws IOException;
 
     /**
      * @return map, where key - _id of expected aggregated object value - expected
@@ -208,7 +193,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     * 
+     *
      * @param eventsCount - An int which indicated how many events that should be
      *                    processed.
      * @return
@@ -220,14 +205,14 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
-            LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
         }
     }
 
     /**
      * Counts documents that were processed
-     * 
+     *
      * @param database   - A string with the database to use
      * @param collection - A string with the collection to use
      * @return amount of processed events
@@ -242,7 +227,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
-     * 
+     *
      * @param expectedData - A Map<String, JsonNode> which contains the expected
      *                     data
      * @return
@@ -254,8 +239,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             throws IOException, URISyntaxException, InterruptedException {
         Iterator iterator = expectedData.entrySet().iterator();
 
-        JsonNode expectedJSON = null;
-        JsonNode actualJSON = null;
+        JsonNode expectedJSON = objectMapper.createObjectNode();
+        JsonNode actualJSON = objectMapper.createObjectNode();
 
         boolean foundMatch = false;
         while (!foundMatch && iterator.hasNext()) {
@@ -286,7 +271,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the aggregatedObject from EI by querying
-     * 
+     *
      * @param id - A string which contains the id used in the query
      * @return the responseEntity within the body.
      * @throws URISyntaxException

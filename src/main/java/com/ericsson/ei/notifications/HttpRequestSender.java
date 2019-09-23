@@ -47,39 +47,40 @@ public class HttpRequestSender {
      *
      * @param url     A String containing the URL to send request to
      * @param request A HTTP POST request
-     * @return boolean success of the request
-     * @throws AuthenticationException
+     * @throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+     *                                  Exception
      */
-    public boolean postDataMultiValue(String url, HttpEntity<?> request)
-            throws AuthenticationException {
+    public void postDataMultiValue(String url, HttpEntity<?> request)
+            throws AuthenticationException, HttpClientErrorException, HttpServerErrorException,
+            Exception {
         ResponseEntity<JsonNode> response;
 
         try {
             LOGGER.info("Performing HTTP request to url: {}", url);
             response = rest.postForEntity(url, request, JsonNode.class);
-
         } catch (HttpClientErrorException e) {
             checkIfAuthenticationException(e);
             LOGGER.error("HTTP request failed, bad request! When trying to connect to URL: {}\n{}",
                     url, e);
-            return false;
+            throw e;
         } catch (HttpServerErrorException e) {
             LOGGER.error("HttpServerErrorException, HTTP request to url {} failed\n", url, e);
-            return false;
+            throw e;
         } catch (Exception e) {
             LOGGER.error("HTTP request to url {} failed\n", url, e);
-            return false;
+            throw e;
         }
 
         HttpStatus status = response.getStatusCode();
+        JsonNode body = response.getBody();
         boolean httpStatusSuccess = status == HttpStatus.OK || status == HttpStatus.ACCEPTED
                 || status == HttpStatus.CREATED;
-
-        JsonNode body = response.getBody();
-
-        LOGGER.debug("The HTTP post request response status code is [{}] and body: {}", status, body);
-
-        return httpStatusSuccess;
+        if (!httpStatusSuccess) {
+            Exception e = new Exception("Status: " + status + ", Body: " + body.toString());
+            LOGGER.error("HTTP request failed, response status code is [{}] and body: {}", status,
+                    body, e);
+            throw e;
+        }
     }
 
     /**

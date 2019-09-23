@@ -26,7 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.handlers.EventHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.ericsson.ei.utils.FunctionalTestBase;
 
@@ -65,7 +65,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
 
-        RmqHandler rmqHandler = eventManager.getRmqHandler();
+        RMQHandler rmqHandler = eventManager.getRmqHandler();
         rmqHandler.setPort(port);
         rmqHandler.connectionFactory();
         rmqHandler.getCachingConnectionFactory().createConnection();
@@ -127,7 +127,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         return eventNames;
     }
 
-    private RabbitAdmin createExchange(final RmqHandler rmqHandler) {
+    private RabbitAdmin createExchange(final RMQHandler rmqHandler) {
         final String exchangeName = rmqHandler.getExchangeName();
         final String queueName = rmqHandler.getQueueName();
         final CachingConnectionFactory ccf = rmqHandler.getCachingConnectionFactory();

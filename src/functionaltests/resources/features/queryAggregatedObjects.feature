@@ -10,7 +10,6 @@ Feature: Test Query Aggregated Objects
     And Perform several valid freestyle queries on created Aggregated objects
     And Perform an invalid freestyle query on Aggregated object
     And Perform a query for missed notification
-    And Check missed notification has been returned
     And Perform a query on created Aggregated object with filter
     And Perform a query and filter with part of path
 

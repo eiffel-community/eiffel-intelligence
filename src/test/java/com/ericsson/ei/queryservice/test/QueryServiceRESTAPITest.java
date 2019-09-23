@@ -135,7 +135,7 @@ public class QueryServiceRESTAPITest {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryMissedNotifications?")
                                                               .accept(MediaType.APPLICATION_JSON)
-                                                              .param("SubscriptionName",
+                                                              .param("subscriptionName",
                                                                       "Subscription_1");
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 

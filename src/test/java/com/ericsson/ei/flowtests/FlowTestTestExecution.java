@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: FlowTestTestExecution",
-        "failedNotificationDataBaseName: FlowTestTestExecution-failedNotifications",
+        "failed.notification.database-name: FlowTestTestExecution-failedNotifications",
         "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
         "rabbitmq.consumerName: FlowTestTestExecutionConsumer" })
 public class FlowTestTestExecution extends FlowTestBase {

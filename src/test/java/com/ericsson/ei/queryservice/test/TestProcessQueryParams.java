@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestProcessQueryParams",
-        "failedNotificationDataBaseName: QueryServiceRESTAPITest-failedNotifications",
+        "failed.notification.database-name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: TestProcessQueryParams-exchange",
         "rabbitmq.consumerName: TestProcessQueryParams" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

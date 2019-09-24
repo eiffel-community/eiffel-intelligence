@@ -67,10 +67,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @Value("${aggregated.collection.name}")
     private String aggrCollectionName;
 
-    @Value("${failedNotificationCollectionName}")
+    @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
 
-    @Value("${failedNotificationDataBaseName}")
+    @Value("${failed.notification.database-name}")
     private String failedNotificationDatabaseName;
 
     private String aggrObj;

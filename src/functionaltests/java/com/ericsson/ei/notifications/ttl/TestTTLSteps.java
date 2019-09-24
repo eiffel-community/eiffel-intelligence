@@ -46,7 +46,7 @@ import cucumber.api.java.en.When;
         "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1",
         "spring.data.mongodb.database: TestTTLSteps",
-        "failedNotificationDataBaseName: TestTTLSteps-failedNotifications",
+        "failed.notification.database-name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
@@ -74,10 +74,10 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    @Value("${failedNotificationDataBaseName}")
+    @Value("${failed.notification.database-name}")
     private String failedNotificationDatabase;
 
-    @Value("${failedNotificationCollectionName}")
+    @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
     @Value("${spring.data.mongodb.database}")

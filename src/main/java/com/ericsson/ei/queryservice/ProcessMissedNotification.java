@@ -37,10 +37,10 @@ public class ProcessMissedNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
 
-    @Value("${failedNotificationCollectionName}")
+    @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
 
-    @Value("${failedNotificationDataBaseName}")
+    @Value("${failed.notification.database-name}")
     private String failedNotificationDatabaseName;
 
     @Autowired

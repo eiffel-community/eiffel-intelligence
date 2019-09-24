@@ -178,7 +178,7 @@ file as “failedNotificationDataBaseName” and collection name as
 for a certain duration before being deleted. This time can be configured in
 application.properties as “notification.ttl.value”.
 
-**Failed notification in the missed notification database with TTL value:**
+**Failed notification in the failed notification database with TTL value:**
 
     {
         "subscriptionName": "Subscription_1",

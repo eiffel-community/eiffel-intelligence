@@ -186,7 +186,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         int expectedSize = 1;
         String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
 
-        LOGGER.debug("Checking presence of failnotification in db");
+        LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
         assertEquals(expectedSize, notificationExistSize);
     }

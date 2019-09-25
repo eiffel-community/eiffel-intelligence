@@ -74,7 +74,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**Authentication**](wiki/markdown/authentication.md)
     - [**Subscriptions**](wiki/markdown/subscription-API.md)
     - [**Status**](wiki/markdown/status.md)
-    - [**Download files**](wiki/markdown/download-files.md)
+    - [**Get templates**](wiki/markdown/templates.md)
 6. [**Compatibility**](wiki/markdown/compatibility.md)
 7. [**Known limitations**](wiki/markdown/known-limitations.md)
 

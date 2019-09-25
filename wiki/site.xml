@@ -69,7 +69,7 @@
                 <item name="Authentication" href="authentication.html" />
                 <item name="Subscriptions" href="subscription-API.html" />
                 <item name="Status" href="status.html" />
-                <item name="Download files" href="download-files.html" />
+                <item name="Get templates" href="templates.html" />
             </item>
             <item name="Compatibility" href="compatibility.html" />
             <item name="Known limitations" href="known-limitations.html" />

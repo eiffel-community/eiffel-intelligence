@@ -27,6 +27,7 @@ import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.RMQHandler;
+import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.ericsson.ei.utils.FunctionalTestBase;
 
@@ -66,7 +67,8 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         amqpBroker.startBroker();
 
         RMQHandler rmqHandler = eventManager.getRmqHandler();
-        rmqHandler.setPort(port);
+        RMQProperties rmqProperties = rmqHandler.getRmqProperties();
+        rmqProperties.setPort(port);
         rmqHandler.connectionFactory();
         rmqHandler.getCachingConnectionFactory().createConnection();
 
@@ -82,7 +84,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         rmqHandler.setRabbitTemplate(rabbitTemplate);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
-        rmqHandler.getContainer().setQueueNames(rmqHandler.getQueueName());
+        rmqHandler.getContainer().setQueueNames(rmqProperties.getQueueName());
         assertEquals("Expected message bus to be up", true, amqpBroker.isRunning);
     }
 
@@ -128,8 +130,9 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
     }
 
     private RabbitAdmin createExchange(final RMQHandler rmqHandler) {
-        final String exchangeName = rmqHandler.getExchangeName();
-        final String queueName = rmqHandler.getQueueName();
+        RMQProperties rmqProperties = rmqHandler.getRmqProperties();
+        final String exchangeName = rmqProperties.getExchangeName();
+        final String queueName = rmqProperties.getQueueName();
         final CachingConnectionFactory ccf = rmqHandler.getCachingConnectionFactory();
         LOGGER.info("Creating exchange: {} and queue: {}", exchangeName, queueName);
         RabbitAdmin admin = new RabbitAdmin(ccf);
@@ -142,7 +145,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         admin.getQueueProperties(queueName);
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(rmqHandler.getBindingKey());
+        rabbitTemplate.setRoutingKey(rmqProperties.getBindingKey());
         rabbitTemplate.setQueue(queueName);
         return admin;
     }

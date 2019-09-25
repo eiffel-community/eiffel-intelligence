@@ -19,6 +19,7 @@ package com.ericsson.ei.controller.model;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
+import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -37,7 +38,7 @@ import javax.annotation.PostConstruct;
 
 /**
  * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
- * Needed for generate Json file with information about backend instance.
+ * Needed for generate Json file with information about back-end instance.
  */
 @Component
 public class ParseInstanceInfoEI {
@@ -61,7 +62,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private List<RMQHandler> rabbitmq;
+    private List<RMQProperties> rmqProperties;
 
     @Getter
     @Autowired

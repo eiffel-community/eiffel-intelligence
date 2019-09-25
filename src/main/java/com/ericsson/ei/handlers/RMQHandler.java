@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -37,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listeners.EIMessageListenerAdapter;
 import com.ericsson.ei.listeners.RMQConnectionListener;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,101 +46,39 @@ import lombok.Setter;
 public class RMQHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RMQHandler.class);
 
-    @Getter
-    @Setter
-    @Value("${rabbitmq.queue.durable}")
-    private Boolean queueDurable;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.host}")
-    private String host;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.port}")
-    private Integer port;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.tlsVersion}")
-    private String tlsVersion;
-
-    @Getter
-    @Setter
-    @JsonIgnore
-    @Value("${rabbitmq.user}")
-    private String user;
-
-    @Getter
-    @Setter
-    @JsonIgnore
-    @Value("${rabbitmq.password}")
-    private String password;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.domainId}")
-    private String domainId;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.componentName}")
-    private String componentName;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.waitlist.queue.suffix}")
-    private String waitlistSufix;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.binding.key}")
-    private String bindingKey;
-
-    @Getter
-    @Setter
-    @Value("${rabbitmq.consumerName}")
-    private String consumerName;
-
     @Value("${threads.maxPoolSize}")
     private int maxThreads;
 
     @Setter
-    @JsonIgnore
     private RabbitTemplate rabbitTemplate;
 
     @Getter
-    @JsonIgnore
     private CachingConnectionFactory cachingConnectionFactory;
 
     @Getter
-    @JsonIgnore
     private SimpleMessageListenerContainer container;
 
     @Autowired
-    @JsonIgnore
     private RMQConnectionListener rmqConnectionListener = new RMQConnectionListener();
+
+    @Getter
+    @Autowired
+    private RMQProperties rmqProperties;
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        cachingConnectionFactory = new CachingConnectionFactory(host, port);
+        cachingConnectionFactory = new CachingConnectionFactory(rmqProperties.getHost(), rmqProperties.getPort());
         cachingConnectionFactory.addConnectionListener(rmqConnectionListener);
 
-        if (user != null && user.length() != 0 && password != null && password.length() != 0) {
-            cachingConnectionFactory.setUsername(user);
-            cachingConnectionFactory.setPassword(password);
+        if (isRMQCredentialsSet()) {
+            cachingConnectionFactory.setUsername(rmqProperties.getUser());
+            cachingConnectionFactory.setPassword(rmqProperties.getPassword());
         }
 
-        if (tlsVersion != null && !tlsVersion.isEmpty()) {
+        if (!StringUtils.isEmpty(rmqProperties.getTlsVersion())) {
             try {
-                LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", tlsVersion);
-                cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(tlsVersion);
+                LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", rmqProperties.getTlsVersion());
+                cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(rmqProperties.getTlsVersion());
             } catch (Exception e) {
                 LOGGER.error("Failed to set SSL/TLS version.", e);
             }
@@ -157,25 +95,10 @@ public class RMQHandler {
     }
 
     @Bean
-    Queue queue() {
-        return new Queue(getQueueName(), true);
-    }
-
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange(exchangeName);
-    }
-
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
-    }
-
-    @Bean
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
             ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
-        String queueName = getQueueName();
+        String queueName = rmqProperties.getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(springConnectionFactory);
@@ -184,18 +107,6 @@ public class RMQHandler {
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setPrefetchCount(maxThreads);
         return container;
-    }
-
-    public String getQueueName() {
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName;
-    }
-
-    public String getWaitlistQueueName() {
-
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
-                + waitlistSufix;
     }
 
     @Bean
@@ -207,9 +118,9 @@ public class RMQHandler {
                 rabbitTemplate = new RabbitTemplate(connectionFactory());
             }
 
-            rabbitTemplate.setExchange(exchangeName);
-            rabbitTemplate.setRoutingKey(bindingKey);
-            rabbitTemplate.setQueue(getQueueName());
+            rabbitTemplate.setExchange(rmqProperties.getExchangeName());
+            rabbitTemplate.setRoutingKey(rmqProperties.getBindingKey());
+            rabbitTemplate.setQueue(rmqProperties.getQueueName());
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -232,5 +143,24 @@ public class RMQHandler {
         } catch (Exception e) {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
+    }
+
+    @Bean
+    protected Queue queue() {
+        return new Queue(rmqProperties.getQueueName(), true);
+    }
+
+    @Bean
+    protected TopicExchange exchange() {
+        return new TopicExchange(rmqProperties.getExchangeName());
+    }
+
+    @Bean
+    protected Binding binding(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(rmqProperties.getBindingKey());
+    }
+
+    private boolean isRMQCredentialsSet() {
+        return !StringUtils.isEmpty(rmqProperties.getUser()) && !StringUtils.isEmpty(rmqProperties.getPassword());
     }
 }

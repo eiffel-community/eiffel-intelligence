@@ -4,7 +4,6 @@
 |------|---------------------|
 |GET   |/queryAggregatedObject|
 |POST   |/query|
-|GET   |/queryMissedNotifications|
 
 ## Perform query on created aggregated object
     GET /queryAggregatedObject
@@ -181,14 +180,4 @@ Example
         },
         "filter": "{id: id, artifactIdentity: identity, confidenceLevels: confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
     }
-
-## Query missed notifications
-    GET /queryMissedNotifications
-
-**Query parameters**:
-SubscriptionName=<Subscription Name/Subscription ID>
-
-Examples of this endpoint using curl
-
-    curl -X GET -H "Content-type: application/json" localhost:39835/queryMissedNotifications?SubscriptionName=Subscription_1
 

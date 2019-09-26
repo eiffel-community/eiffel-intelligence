@@ -49,14 +49,14 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
 
     /**
      * This method is responsible for the REST GET mechanism to extract the data on
-     * the basis of the SubscriptionName from the Failed Notification Object.
+     * the basis of the subscription name from the Failed Notification Object.
      *
      * @param subscriptionName
      */
     @Override
     @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
     public ResponseEntity<?> getFailedNotifications(
-            @RequestParam(value = "SubscriptionName", required = true) final String subscriptionName) {
+            @RequestParam(value = "subscriptionName", required = true) final String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();

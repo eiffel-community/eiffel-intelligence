@@ -126,7 +126,7 @@ public class QueryServiceRESTAPITest {
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/failed-notifications?")
-                .accept(MediaType.APPLICATION_JSON).param("SubscriptionName", "Subscription_1");
+                .accept(MediaType.APPLICATION_JSON).param("subscriptionName", "Subscription_1");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 

@@ -65,6 +65,7 @@
             </item>
             <item collapse="true" name="REST API" href="REST-API.html">
                 <item name="Query" href="query.html" />
+                <item name="Failed notifications" href="failed-notifications.html" />
                 <item name="Running rules on objects" href="running-rules-on-objects.html" />
                 <item name="Authentication" href="authentication.html" />
                 <item name="Subscriptions" href="subscription-API.html" />

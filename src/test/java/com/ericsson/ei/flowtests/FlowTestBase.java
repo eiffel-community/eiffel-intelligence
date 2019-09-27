@@ -35,7 +35,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -54,7 +54,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowTestBase.class);
 
     @Autowired
-    private RmqHandler rmqHandler;
+    private RMQHandler rmqHandler;
 
     @Autowired
     public ObjectHandler objectHandler;

@@ -54,7 +54,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -86,7 +86,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    private RmqHandler rmqHandler;
+    private RMQHandler rmqHandler;
 
     @Autowired
     private ObjectHandler objectHandler;

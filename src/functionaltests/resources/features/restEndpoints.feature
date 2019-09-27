@@ -16,7 +16,7 @@ Feature: Test Rest Endpoints
     | 200          | /information                           |
     | 200          | /auth                                  |
     | 200          | /auth/login                            |
-    | 200          | /auth/checkStatus                      |
+    | 200          | /status                                |
     | 200          | /download                              |
     | 200          | /download/eventsTemplate               |
     | 200          | /download/rulesTemplate                |

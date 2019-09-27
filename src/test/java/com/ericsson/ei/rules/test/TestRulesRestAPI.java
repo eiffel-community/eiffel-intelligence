@@ -156,7 +156,7 @@ public class TestRulesRestAPI {
         String responseBody = new JSONObject().put("status", true).toString();
         RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
         ruleCheckControllerImpl.setTestEnabled(true);
-        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled(null);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());
 
@@ -167,7 +167,7 @@ public class TestRulesRestAPI {
         String responseBody = new JSONObject().put("status", false).toString();
         RuleControllerImpl ruleCheckControllerImpl = new RuleControllerImpl();
         ruleCheckControllerImpl.setTestEnabled(false);
-        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled();
+        ResponseEntity<?> responseEntity = ruleCheckControllerImpl.getRuleCheckTestRulePageEnabled(null);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseBody, responseEntity.getBody().toString());
     }

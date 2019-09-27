@@ -15,6 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,8 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     @Override
     @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
     public ResponseEntity<?> getFailedNotifications(
-            @RequestParam(value = "subscriptionName", required = true) final String subscriptionName) {
+            @RequestParam(value = "subscriptionName", required = true) final String subscriptionName,
+            final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
@@ -80,5 +83,4 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

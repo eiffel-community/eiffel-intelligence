@@ -58,7 +58,7 @@ public final class HeaderAndCookieHttpSessionIdResolver implements HttpSessionId
     }
 
     private boolean isRequestSessionIdSet(HttpServletRequest request, String sessionId) {
-        String requestSessionId = request.getAttribute(WRITTEN_SESSION_ID_ATTR).toString();
+        Object requestSessionId = request.getAttribute(WRITTEN_SESSION_ID_ATTR);
         boolean isRequestSessionIdSet = sessionId.equals(requestSessionId);
         return isRequestSessionIdSet;
     }

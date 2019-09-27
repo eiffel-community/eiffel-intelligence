@@ -97,7 +97,6 @@ public class InformSubscriberTest {
     @Test
     public void testRestPostTrigger() throws Exception {
         beforeRestPostTests();
-        when(httpRequest.perform()).thenReturn(true);
         informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         verify(httpRequest, times(1)).perform();
     }
@@ -111,7 +110,7 @@ public class InformSubscriberTest {
     @Test
     public void testRestPostTriggerFailure() throws Exception {
         beforeRestPostTests();
-        when(httpRequest.perform()).thenReturn(false);
+        doThrow(new Exception("")).when(httpRequest).perform();
 
         informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 4 tries to perform a HTTP request
@@ -129,7 +128,7 @@ public class InformSubscriberTest {
     @Test
     public void testRestPostTriggerThrowsAuthenticationException() throws Exception {
         beforeRestPostTests();
-        when(httpRequest.perform()).thenThrow(new AuthenticationException(""));
+        doThrow(new AuthenticationException("")).when(httpRequest).perform();
 
         informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 1 tries to perform a HTTP request since AuthenticationException should

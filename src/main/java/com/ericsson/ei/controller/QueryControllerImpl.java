@@ -16,6 +16,8 @@
 */
 package com.ericsson.ei.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -51,7 +53,7 @@ public class QueryControllerImpl implements QueryController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
-    public ResponseEntity<?> createQuery(@RequestBody final QueryBody body) {
+    public ResponseEntity<?> createQuery(@RequestBody final QueryBody body, final HttpServletRequest httpRequest) {
         String emptyResponseContent = "[]";
         HttpStatus httpStatus;
         try {

@@ -100,7 +100,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         }
     }
 
-    @When("^username \"(\\w+)\" and password \"(\\w+)\" is used as credentials$")
+    @When("^username \"([^\"]*)\" and password \"([^\"]*)\" is used as credentials$")
     public void with_credentials(String username, String password) throws Throwable {
         String auth = username + ":" + password;
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
@@ -125,7 +125,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @Then("^subscription is(.*) created$")
     public void subscription_with_name_created(String check) throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions/" + SUBSCRIPTION_NAME);
+        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/subscriptions?subscriptionNames=" + SUBSCRIPTION_NAME);
 
         response = httpRequest.performRequest();
         if (!check.isEmpty()) {

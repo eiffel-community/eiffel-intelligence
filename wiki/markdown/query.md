@@ -180,4 +180,3 @@ Example
         },
         "filter": "{id: id, artifactIdentity: identity, confidenceLevels: confidenceLevels[?value=='SUCCESS'].{name: name, value: value}}"
     }
-

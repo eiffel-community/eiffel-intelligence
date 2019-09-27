@@ -126,12 +126,12 @@ public class InformSubscriber {
         } catch (NotificationFailureException | AuthenticationException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String missedNotification = prepareMissedNotification(aggregatedObject,
-                    subscriptionName, notificationMeta);
+                    subscriptionName, notificationMeta, e.getMessage());
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
                     e.getMessage(), missedNotification);
             mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, "Time", ttlValue);
+                    missedNotificationCollectionName, "time", ttlValue);
             saveMissedNotificationToDB(missedNotification);
         }
     }
@@ -145,17 +145,27 @@ public class InformSubscriber {
      */
     private void makeHTTPRequests(HttpRequest request)
             throws AuthenticationException, NotificationFailureException {
-        boolean success = false;
         int requestTries = 0;
-
+        Exception exception = null;
         do {
             requestTries++;
-            success = request.perform();
-            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries, success);
-        } while (!success && requestTries <= failAttempt);
+            try {
+                request.perform();
+                exception = null;
+            } catch (AuthenticationException e) {
+                exception = e;
+                break;
+            } catch (Exception e) {
+                exception = e;
+            }
+            LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries,
+                    exception != null);
+        } while (exception != null && requestTries <= failAttempt);
 
-        if (!success) {
-            throw new NotificationFailureException("Failed to send HTTP notification!");
+        if (exception != null) {
+            String errorMessage = "Failed to send REST/POST notification!";
+            throw new NotificationFailureException(
+                    errorMessage + "\nMessage: " + exception.getMessage());
         }
     }
 
@@ -181,16 +191,17 @@ public class InformSubscriber {
      * @return String
      */
     private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
-            String notificationMeta) {
+            String notificationMeta, String errorMessage) {
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);
         document.put("notificationMeta", notificationMeta);
         try {
-            document.put("Time", DateUtils.getDate());
+            document.put("time", DateUtils.getDate());
         } catch (ParseException e) {
             LOGGER.error("Failed to get date object.", e);
         }
-        document.put("AggregatedObject", BasicDBObject.parse(aggregatedObject));
+        document.put("aggregatedObject", BasicDBObject.parse(aggregatedObject));
+        document.put("message", errorMessage);
         return document.toString();
     }
 

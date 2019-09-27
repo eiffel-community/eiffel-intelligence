@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,7 +20,7 @@ public class EventManager {
 
     @Getter
     @Autowired
-    private RmqHandler rmqHandler;
+    private RMQHandler rmqHandler;
 
     protected List<String> getEventNamesToSend() {
         return new ArrayList<>();

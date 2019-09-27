@@ -276,26 +276,26 @@ public class MongoDBHandler {
         }
         catch (MongoCommandException e) {
             LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
+            closeMongoDbConnection();
             return null;
         }
         catch (MongoInterruptedException e) {
             LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
+            closeMongoDbConnection();
             return null;
         }
         catch (MongoSocketReadException e) {
             LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
+            closeMongoDbConnection();
             return null;
         }
-        
+
         catch (IllegalStateException e) {
             LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
-            closeMongoDbConecction();
+            closeMongoDbConnection();
             return null;
         }
-        
+
         if (!collectionList.contains(collectionName)) {
             LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
             try {
@@ -314,13 +314,13 @@ public class MongoDBHandler {
         return collection;
     }
 
-    private void closeMongoDbConecction() {
+    private void closeMongoDbConnection() {
         if (mongoClient != null) {
             mongoClient.close();
         }
         mongoClient = null;
     }
-    
+
     /**
      * This method is used to drop a collection.
      *
@@ -341,5 +341,20 @@ public class MongoDBHandler {
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);
         db.drop();
+    }
+
+    /**
+     * Returns a boolean indicating if MongoDB is up and running or not.
+     *
+     * @return
+     */
+    public boolean isMongoDBServerUp() {
+        try {
+            mongoClient.getAddress();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }

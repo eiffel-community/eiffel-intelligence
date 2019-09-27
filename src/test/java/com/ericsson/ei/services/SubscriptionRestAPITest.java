@@ -210,8 +210,8 @@ public class SubscriptionRestAPITest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        JSONArray foundSubscriptions = new JSONObject(result.getResponse().getContentAsString()).getJSONArray(FOUND_SUBSCRIPTIONS_ARRAY);
-        Subscription subscription = mapper.readValue(foundSubscriptions.get(0).toString(), Subscription.class);
+        JSONObject foundSubscription = new JSONObject(result.getResponse().getContentAsString());
+        Subscription subscription = mapper.readValue(foundSubscription.toString(), Subscription.class);
 
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         assertEquals("Subscription_Test", subscription.getSubscriptionName());
@@ -226,7 +226,7 @@ public class SubscriptionRestAPITest {
             new SubscriptionNotFoundException("No record found for the Subscription Name:Subscription_Test_Not_Found"));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .get("/subscriptions/Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify,Subscription_Test_Not_Found")
+            .get("/subscriptions?subscriptionNames=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify,Subscription_Test_Not_Found")
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -273,7 +273,7 @@ public class SubscriptionRestAPITest {
         Mockito.when(subscriptionService.deleteSubscription(Mockito.anyString())).thenReturn(true);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .delete("/subscriptions/Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify")
+            .delete("/subscriptions?subscriptionNames=Subscription_Test,Subscription_Test_Multi,Subscription_Test_Modify")
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();

@@ -18,7 +18,7 @@ package com.ericsson.ei.controller.model;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RmqHandler;
+import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -61,7 +61,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private List<RmqHandler> rabbitmq;
+    private List<RMQHandler> rabbitmq;
 
     @Getter
     @Autowired

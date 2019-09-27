@@ -10,4 +10,4 @@ the following endpoints:
 * [Authentication](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/authentication.md)
 * [Subscriptions](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md) - Manage subscriptions (Create, Read, Update, Delete) via HTTP POST requests.
 * [Download](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/download-files.md) - Download template files for Eiffel events, subscriptions and rules.
-
+* [Status](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/status.md) - Check Eiffel Intelligence status via HTTP POST requests.

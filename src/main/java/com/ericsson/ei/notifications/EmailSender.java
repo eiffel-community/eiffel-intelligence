@@ -68,8 +68,9 @@ public class EmailSender {
         try {
             emailSender.send(message);
         } catch (MailException e) {
-            LOGGER.error("Sedning email(s) failed.\n", e);
-            throw new NotificationFailureException("Failed to send notification email!");
+            String errorMessage = "Failed to send MAIL notification to SMTP server!";
+            LOGGER.error(errorMessage + "\n", e);
+            throw new NotificationFailureException(errorMessage + "\nMessage: " + e.getMessage());
         }
     }
 

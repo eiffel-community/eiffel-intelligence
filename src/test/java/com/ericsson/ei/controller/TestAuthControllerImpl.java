@@ -67,10 +67,4 @@ public class TestAuthControllerImpl {
                 .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
     }
 
-    @Test
-    public void testGetCheckStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/checkStatus").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
-    }
-
 }

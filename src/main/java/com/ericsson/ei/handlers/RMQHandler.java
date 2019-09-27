@@ -30,19 +30,21 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.listener.EIMessageListenerAdapter;
+import com.ericsson.ei.listeners.EIMessageListenerAdapter;
+import com.ericsson.ei.listeners.RMQConnectionListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Component
-public class RmqHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RmqHandler.class);
+public class RMQHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RMQHandler.class);
 
     @Getter
     @Setter
@@ -112,16 +114,23 @@ public class RmqHandler {
     @Setter
     @JsonIgnore
     private RabbitTemplate rabbitTemplate;
+
     @Getter
     @JsonIgnore
     private CachingConnectionFactory cachingConnectionFactory;
+
     @Getter
     @JsonIgnore
     private SimpleMessageListenerContainer container;
 
+    @Autowired
+    @JsonIgnore
+    private RMQConnectionListener rmqConnectionListener = new RMQConnectionListener();
+
     @Bean
     public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
+        cachingConnectionFactory.addConnectionListener(rmqConnectionListener);
 
         if (user != null && user.length() != 0 && password != null && password.length() != 0) {
             cachingConnectionFactory.setUsername(user);
@@ -163,7 +172,8 @@ public class RmqHandler {
     }
 
     @Bean
-    public SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory,
+    public SimpleMessageListenerContainer bindToQueueForRecentEvents(
+            ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
         String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
@@ -184,7 +194,8 @@ public class RmqHandler {
     public String getWaitlistQueueName() {
 
         String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
+                + waitlistSufix;
     }
 
     @Bean
@@ -222,5 +233,4 @@ public class RmqHandler {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
     }
-
 }

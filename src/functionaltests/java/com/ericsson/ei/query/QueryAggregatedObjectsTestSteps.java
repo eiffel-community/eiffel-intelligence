@@ -268,7 +268,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
                 .setEndpoint(entryPointFailedNotifications)
-                             .addParam("SubscriptionName", subscriptionName)
+                .addParam("subscriptionName", subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

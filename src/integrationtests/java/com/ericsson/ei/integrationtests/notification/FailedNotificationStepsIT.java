@@ -119,9 +119,9 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     public void failedNotificationShouldExist(String searchValue, String subscriptionName) throws Throwable {
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
-               .setEndpoint("/queryMissedNotifications")
+                .setEndpoint("/faileddNotifications")
                .addParam("subscriptionName", subscriptionName);
-        
+
         ResponseEntity response = request.performRequest();
         String message = objectMapper.readTree(response.getBody()).get("queryResponseEntity").get("message").toString();
         assertEquals(true, message.contains(searchValue));

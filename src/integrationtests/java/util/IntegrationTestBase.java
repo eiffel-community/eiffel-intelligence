@@ -86,8 +86,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String eventObjectMapCollectionName;
     @Value("${subscription.collection.repeatFlagHandlerName}")
     private String subscriptionCollectionRepatFlagHandlerName;
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollectionName;
+    @Value("${failed.notification.collection-name}")
+    private String failedNotificationCollectionName;
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
 
@@ -105,7 +105,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, eventObjectMapCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionRepatFlagHandlerName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, missedNotificationCollectionName);
+        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, failedNotificationCollectionName);
         mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, sessionsCollectionName);
     }
 

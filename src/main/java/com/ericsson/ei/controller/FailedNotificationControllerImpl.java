@@ -17,11 +17,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
-import org.hibernate.validator.constraints.SafeHtml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,29 +32,33 @@ import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
- * This class represents the REST GET mechanism to extract the aggregated data on the basis of the SubscriptionName from the Missed Notification
- * Object.
+ * This class contains logic for retrieving failed notifications for the given
+ * subscription.
  */
 @Component
 @CrossOrigin
-@Api(value = "queryMissedNotification", tags = {"Missed notifications"})
-public class QueryMissedNotificationControllerImpl implements QueryMissedNotificationController {
+@Api(value = "failedNotifications", tags = { "Failed notifications" })
+public class FailedNotificationControllerImpl implements FailedNotificationController {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(QueryMissedNotificationControllerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationControllerImpl.class);
 
     @Autowired
     private ProcessMissedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST GET mechanism to extract the data on the basis of the SubscriptionName from the Missed Notification
-     * Object.
+     * This method is responsible for the REST GET mechanism to extract the data on
+     * the basis of the subscription name from the Failed Notification Object.
      *
      * @param subscriptionName
      */
     @Override
-    @ApiOperation(value = "Retrieve missed notifications", response = QueryResponse.class)
-    public ResponseEntity<?> getQueryMissedNotifications(@RequestParam(required = true) final String subscriptionName,
+    @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
+    public ResponseEntity<?> getFailedNotifications(
+            @RequestParam(value = "subscriptionName", required = true) final String subscriptionName,
             final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponse queryResponse = new QueryResponse();
@@ -71,14 +70,17 @@ public class QueryMissedNotificationControllerImpl implements QueryMissedNotific
             }
             queryResponse.setQueryResponseEntity(queryResponseEntity);
             LOGGER.debug("The response is : {}", response.toString());
+            if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
+                LOGGER.debug("Failed notification for subscription {} was successfully removed from database",
+                        subscriptionName);
+             }
             return new ResponseEntity<>(queryResponse, HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to extract the data from the Missed Notification Object based on subscription name "
+            String errorMessage = "Failed to extract the data from the failed notification object based on subscription name "
                     + subscriptionName + ".";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

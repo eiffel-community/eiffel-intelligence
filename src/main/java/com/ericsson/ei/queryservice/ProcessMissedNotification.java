@@ -37,11 +37,11 @@ public class ProcessMissedNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollectionName;
+    @Value("${failed.notification.collection-name}")
+    private String failedNotificationCollectionName;
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDatabaseName;
+    @Value("${failed.notification.database-name}")
+    private String failedNotificationDatabaseName;
 
     @Autowired
     private MongoDBHandler handler;
@@ -64,7 +64,7 @@ public class ProcessMissedNotification {
             LOGGER.error("Failed to parse JSON.", e);
         }
         LOGGER.debug("The Json condition is : {}", jsonCondition);
-        List<String> output = handler.find(missedNotificationDatabaseName, missedNotificationCollectionName,
+        List<String> output = handler.find(failedNotificationDatabaseName, failedNotificationCollectionName,
                 jsonCondition.toString());
         return output.stream().map(a -> {
             try {
@@ -86,13 +86,13 @@ public class ProcessMissedNotification {
     public boolean deleteMissedNotification(String subscriptionName) {
         String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
         LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
-        return handler.dropDocument(missedNotificationDatabaseName, missedNotificationCollectionName, condition);
+        return handler.dropDocument(failedNotificationDatabaseName, failedNotificationCollectionName, condition);
     }
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("MissedNotification Database is : {}" + "\nMissedNotification Collection is : {}",
-        	missedNotificationDatabaseName, missedNotificationCollectionName);
+        LOGGER.debug("FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
+                failedNotificationDatabaseName, failedNotificationCollectionName);
     }
 
 }

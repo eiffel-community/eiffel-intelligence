@@ -16,7 +16,9 @@
 */
 package com.ericsson.ei.handlers.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,52 +57,52 @@ public class RmqPropertiesTest {
 
     @Test
     public void getQueueDurableTest() {
-        assertTrue(rmqProperties.getQueueDurable().equals(queueDurable));
+        assertThat(rmqProperties.getQueueDurable(), is(equalTo(queueDurable)));
     }
 
     @Test
     public void getHostTest() {
-        assertTrue(rmqProperties.getHost().equals(host));
+        assertThat(rmqProperties.getHost(), is(equalTo(host)));
     }
 
     @Test
     public void getExchangeNameTest() {
-        assertTrue(rmqProperties.getExchangeName().equals(exchangeName));
+        assertThat(rmqProperties.getExchangeName(), is(equalTo(exchangeName)));
     }
 
     @Test
     public void getPortTest() {
-        assertTrue(rmqProperties.getPort().equals(port));
+        assertThat(rmqProperties.getPort(), is(equalTo(port)));
     }
 
     @Test
     public void getDomainIdTest() {
-        assertTrue(rmqProperties.getDomainId().equals(domainId));
+        assertThat(rmqProperties.getDomainId(), is(equalTo(domainId)));
     }
 
     @Test
     public void getComponentNameTest() {
-        assertTrue(rmqProperties.getComponentName().equals(componentName));
+        assertThat(rmqProperties.getComponentName(), is(equalTo(componentName)));
     }
 
     @Test
     public void getRoutingKeyTest() {
-        assertTrue(rmqProperties.getBindingKey().equals(bindingKey));
+        assertThat(rmqProperties.getBindingKey(), is(equalTo(bindingKey)));
     }
 
     @Test
     public void getConsumerNameTest() {
-        assertTrue(rmqProperties.getConsumerName().equals(consumerName));
+        assertThat(rmqProperties.getConsumerName(), is(equalTo(consumerName)));
     }
 
     @Test
     public void getQueueNameTest() {
-        assertTrue(rmqProperties.getQueueName().equals(queueName));
+        assertThat(rmqProperties.getQueueName(), is(equalTo(queueName)));
     }
 
     @Test
     public void getWaitlistQueueNameTest() {
-        assertTrue(rmqProperties.getWaitlistQueueName().equals(waitlistQueueName));
+        assertThat(rmqProperties.getWaitlistQueueName(), is(equalTo(waitlistQueueName)));
     }
 
 }

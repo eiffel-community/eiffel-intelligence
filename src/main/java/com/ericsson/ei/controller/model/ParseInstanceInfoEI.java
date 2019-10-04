@@ -18,7 +18,6 @@ package com.ericsson.ei.controller.model;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.notifications.InformSubscriber;

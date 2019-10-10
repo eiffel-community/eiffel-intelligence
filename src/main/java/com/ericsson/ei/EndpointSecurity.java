@@ -49,7 +49,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Value("${ldap.server.list:}")
     private String ldapServerList;
     
-    @Value("${jasypt.encryptor.password}")
+    @Value("${jasypt.encryptor.password:}")
     private String jasyptEncryptorPassword;
 
     @Override

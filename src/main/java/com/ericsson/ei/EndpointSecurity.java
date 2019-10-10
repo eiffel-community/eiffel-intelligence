@@ -19,6 +19,7 @@ package com.ericsson.ei;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,6 +33,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.ericsson.ei.utils.TextFormatter;
+
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
 @Configuration
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
@@ -43,6 +48,9 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${ldap.server.list:}")
     private String ldapServerList;
+    
+    @Value("${jasypt.encryptor.password}")
+    private String jasyptEncryptorPassword;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -85,8 +93,19 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
+        TextFormatter textFormatter = new TextFormatter();
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(jasyptEncryptorPassword);
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
+            String password = server.getString("password");
+            if (password.startsWith("ENC(") && password.endsWith(")")) {
+                password = textFormatter.removeEncryptionParentheses(password);
+                password = encryptor.decrypt(password);
+            }
+            else {
+                password = decodeBase64(server.getString("password"));
+            }
             auth
             .eraseCredentials(false)
             .ldapAuthentication()
@@ -95,7 +114,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                     .url(server.getString("url"))
                     .root(server.getString("base.dn"))
                     .managerDn(server.getString("username"))
-                    .managerPassword(decodeBase64(server.getString("password")));
+                    .managerPassword(password);
         }
     }
 }

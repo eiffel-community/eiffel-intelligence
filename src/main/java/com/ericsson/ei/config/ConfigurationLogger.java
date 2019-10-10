@@ -70,7 +70,6 @@ public class ConfigurationLogger {
                 + "spring.mail.properties.mail.smtp.starttls.enable: " + env.getProperty("spring.mail.properties.mail.smtp.starttls.enable") + "\n"
                 + "er.url: " + env.getProperty("er.url") + "\n"
                 + "ldap.enabled: " + env.getProperty("ldap.enabled") + "\n"
-                + "ldap.server.list: " + env.getProperty("ldap.server.list") + "\n"
                 + "logging.level.root: " + env.getProperty("logging.level.root") + "\n"
                 + "logging.level.org.springframework.web: " + env.getProperty("logging.level.org.springframework.web") + "\n"
                 + "logging.level.com.ericsson.ei: " + env.getProperty("logging.level.com.ericsson.ei") + "\n"

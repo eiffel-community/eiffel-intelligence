@@ -169,3 +169,44 @@ and the settings are defined in the **ldap.server.list** property.
             "user.filter": "uid={0}"\
         }\
     ]\
+
+## Password encryption
+
+In a production environment and filesystem administrator most likely don't want to store passwords in clear text.
+
+These Eiffel-Intelligence password properties can be provided encrypted:
+        
+        rabbitmq.password
+        spring.data.mongodb.password
+
+
+A password property is configured by providing the encrypted password in this format.
+
+        some.component.password=ENV(<encrypted password>)
+
+How and examples of how to encrypt passwords can be found on Jasypt homepage, by using the encrypt.sh script:
+
+http://www.jasypt.org/cli.html
+
+Short guide of encrypting password.
+
+1. Encrypt actual component password with secret encrypting password.
+Encrypting password should be a secret password and is created by administator user and should not be written to application.properties or any config files in the filesystem:
+    
+        ./encrypt.sh input="<the actual component password>" password=<the secret encryptor password>
+
+2. That above step will generate the encryptor password, example:
+        
+        rv/2O+hOT4GJSPmmF/cF1w==
+
+3. Now open application.properties file and the new encrypted password for the specific component password property with "ENC(<encrypted password>)"format:
+        
+         some.component.password=ENV(rv/2O+hOT4GJSPmmF/cF1w==)
+
+Do step 1 to 3 for all component passwords and properties in application.properties. Remember to use same secret encryptor password for all components passwords.
+
+4. Now its time to run Eiffel-Intelligence with these encrypted passwords in application.properties.
+Eiffel-Intelligence will decrypt password properties with help of the provided secret encryptor password at run-time.
+Execute Eiffel-Intelligence with "jasypt.encryptor.password=<the secret encryptor password>" flag, example:
+        
+        java -jar eiffel-intelligence-<version>.war --jasypt.encryptor.password=<the secret encryptor password> --spring.config.location=/path/to/application.properties

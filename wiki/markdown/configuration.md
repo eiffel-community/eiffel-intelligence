@@ -184,6 +184,17 @@ A password property is configured by providing the encrypted password in this fo
 
         some.component.password=ENC(<encrypted password>)
 
+
+Ldap encrypted password is set inside **ldap.server.list** property according the example below:
+ 
+    ldap.server.list=[{\
+        "url": "<ldap address>",\
+        "base.dn": "<dn>",\
+        "username": "<username>",\
+        "password": "ENC(<encrypted password>)",\
+        "user.filter": "<filter>"\
+    }]
+
 How and examples of how to encrypt passwords can be found on Jasypt homepage.
 On Jasypt homepage encrypt.sh script can be downloaded, which can be used to encrypt passwords:
 

@@ -36,6 +36,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
+import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -130,13 +131,14 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Test
     public void flowTest() throws Exception {
         try {
-            String queueName = rmqHandler.getQueueName();
+            RMQProperties rmqProperties = rmqHandler.getRmqProperties();
+            String queueName = rmqProperties.getQueueName();
             Channel channel = TestConfigs.getConnection().createChannel();
             if (channel == null) {
                 channel = connectionFactory.createConnection().createChannel(true);
             }
 
-            String exchangeName = rmqHandler.getExchangeName();
+            String exchangeName = rmqProperties.getExchangeName();
             List<String> eventNames = getEventNamesToSend();
             JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
             int eventsCount = eventNames.size() + extraEventsCount();

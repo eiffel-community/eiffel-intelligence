@@ -35,7 +35,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.ericsson.ei.utils.TextFormatter;
 
-
 @Configuration
 @EnableWebSecurity
 public class EndpointSecurity extends WebSecurityConfigurerAdapter {
@@ -94,17 +93,21 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
         TextFormatter textFormatter = new TextFormatter();
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+ 
         encryptor.setPassword(jasyptEncryptorPassword);
+ 
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
-            if (password.startsWith("ENC(") && password.endsWith(")")) {
+        
+            if (checkIfPasswordEncrypted(password)) {
                 password = textFormatter.removeEncryptionParentheses(password);
                 password = encryptor.decrypt(password);
             }
             else {
                 password = decodeBase64(server.getString("password"));
             }
+            
             auth
             .eraseCredentials(false)
             .ldapAuthentication()
@@ -115,5 +118,13 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                     .managerDn(server.getString("username"))
                     .managerPassword(password);
         }
+    }
+    
+    private boolean checkIfPasswordEncrypted(final String password) {
+        
+        if (password.startsWith("ENC(") && password.endsWith(")")) {
+          return true;  
+        }
+        return false;
     }
 }

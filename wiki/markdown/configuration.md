@@ -172,7 +172,7 @@ and the settings are defined in the **ldap.server.list** property.
 
 ## Password encryption
 
-In a production environment and filesystems administrator most likely don't want to store passwords in clear text.
+In a production environment and filesystems, administrator most likely don't want to store passwords in clear text.
 
 These Eiffel-Intelligence password properties can be provided encrypted:
         

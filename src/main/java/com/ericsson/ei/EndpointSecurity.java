@@ -35,7 +35,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.ericsson.ei.utils.TextFormatter;
 
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
 @Configuration
 @EnableWebSecurity

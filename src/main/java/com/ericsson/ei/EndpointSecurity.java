@@ -121,10 +121,6 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     }
     
     private boolean checkIfPasswordEncrypted(final String password) {
-        
-        if (password.startsWith("ENC(") && password.endsWith(")")) {
-          return true;  
-        }
-        return false;
+        return (password.startsWith("ENC(") && password.endsWith(")"));
     }
 }

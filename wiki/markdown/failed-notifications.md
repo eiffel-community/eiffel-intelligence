@@ -9,7 +9,7 @@
     GET /failed-Notifications
 
 **Query parameters**:
-subscriptionName=<Subscription Name>
+subscriptionName={Subscription Name}
 
 Examples of this endpoint using curl
 

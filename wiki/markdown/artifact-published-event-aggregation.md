@@ -67,20 +67,19 @@ Following aggregated object is extracted by using the identify rules:
 
     {
         "_id":"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-        "aggregatedObject":{
-           "fileInformation":[
-              {
-                 "extension":"jar",
-                 "classifier":"debug"
-              },
-              {
-                 "extension":"txt",
-                 "classifier":"test"
-              },
-              {
-                 "extension":"exe",
-                 "classifier":"application"
-              }
+         "fileInformation":[
+            {
+               "extension":"jar",
+               "classifier":"debug"
+            },
+            {
+               "extension":"txt",
+               "classifier":"test"
+            },
+            {
+               "extension":"exe",
+               "classifier":"application"
+            }
            ],
            "buildCommand":null,
            "internalComposition":{
@@ -213,7 +212,6 @@ Following aggregated object is extracted by using the identify rules:
               }
            ]
         }
-    }
 
 Process begins to extract content from the event as specified in the extraction
 rule and puts it in the aggregated object.

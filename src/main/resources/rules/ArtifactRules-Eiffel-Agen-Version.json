@@ -41,8 +41,8 @@
     "ExtractionRules" : "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
     "ArrayMergeOptions": "",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
+    "HistoryIdentifyRules": "links | [?type=='FLOW_CONTEXT'].target",
+    "HistoryExtractionRules": "{confidenceLevels:flowContexts:[{ eventId: meta.id }]}",
     "ProcessRules":null
   },
   {
@@ -135,6 +135,20 @@
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
     "HistoryExtractionRules": "{SCSEventId: meta.id,gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
     "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
+    "ProcessRules":null
+  },
+  {
+    "TemplateName":"ARTIFACT_1",
+    "Type":"EiffelFlowContextDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules" : "",
+    "MatchIdRules": {},
+    "ExtractionRules" : "",
+    "HistoryIdentifyRules": "links | [?type=='FLOW_CONTEXT'].target",
+    "HistoryExtractionRules": "{ flowContextEventId:meta.id, product:data.product, project:data.project, program:data.program, track:data.track, version:data.version }",
+    "HistoryPathRules": "{flowContexts: [{flowContextEventId: meta.id}]}",
     "ProcessRules":null
   }
 ]

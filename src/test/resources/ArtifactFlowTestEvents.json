@@ -73,6 +73,23 @@
             ]
         }
     },
+    "event_EiffelFlowContextDefinedEvent_3": {
+        "meta": {
+            "type": "EiffelFlowContextDefinedEvent",
+            "version": "3.0.0",
+            "time": 1234567890,
+            "id": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
+        },
+        "data": {
+            "product": "MyProductA",
+            "project": "FeatureC",
+            "program": "MarketD",
+            "track": "TrackE",
+            "version": "1.2.3"
+        },
+        "links": [
+        ]
+    },
     "event_EiffelArtifactCreatedEvent_3": {
         "links": [
             {
@@ -90,6 +107,10 @@
             {
                 "target": "a04fa59a-3c36-4601-8eac-7a26b8910f08",
                 "type": "CONTEXT"
+            },
+            {
+                "target": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0",
+                "type": "FLOW_CONTEXT"
             }
         ],
         "meta": {

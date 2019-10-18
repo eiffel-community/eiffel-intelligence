@@ -263,7 +263,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 300000;
+            long maxWaitTime = 60000;
             long stopTime = System.currentTimeMillis() + maxWaitTime;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);

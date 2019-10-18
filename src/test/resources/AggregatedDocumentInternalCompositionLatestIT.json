@@ -22,7 +22,7 @@
             "program": "MarketD",
             "track": "TrackE",
             "version": "1.2.3",
-            "flowContextEventId": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
+            "eventId": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
         }
     ],
     "internalComposition": {

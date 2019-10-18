@@ -42,7 +42,7 @@
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules": "links | [?type=='FLOW_CONTEXT'].target",
-    "HistoryExtractionRules": "{confidenceLevels:flowContexts:[{ eventId: meta.id }]}",
+    "HistoryExtractionRules": "{confidenceLevels: flowContexts:[{ eventId: meta.id }]}",
     "ProcessRules":null
   },
   {
@@ -133,7 +133,7 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
-    "HistoryExtractionRules": "{SCSEventId: meta.id,gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
+    "HistoryExtractionRules": "{SCSEventId: meta.id, gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
     "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
     "ProcessRules":null
   },
@@ -146,9 +146,9 @@
     "IdentifyRules" : "",
     "MatchIdRules": {},
     "ExtractionRules" : "",
-    "HistoryIdentifyRules": "links | [?type=='FLOW_CONTEXT'].target",
-    "HistoryExtractionRules": "{ flowContextEventId:meta.id, product:data.product, project:data.project, program:data.program, track:data.track, version:data.version }",
-    "HistoryPathRules": "{flowContexts: [{flowContextEventId: meta.id}]}",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "{ eventId:meta.id, product:data.product, project:data.project, program:data.program, track:data.track, version:data.version }",
+    "HistoryPathRules": "{flowContexts: [{eventId: meta.id}]}",
     "ProcessRules":null
   }
 ]

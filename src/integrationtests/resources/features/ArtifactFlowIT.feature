@@ -8,8 +8,8 @@ Feature: Artifact flow Integrationtest
 
     # Setup Eiffel Intelligence
     Given the rules "src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json"
-    And the events "src/test/resources/ArtifactFlowTestEvents.json"
-    And the resulting aggregated object "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
+    And the events "src/integrationtests/resources/ArtifactFlowTestEvents.json"
+    And the resulting aggregated object "src/integrationtests/resources/AggregatedDocumentInternalCompositionLatestIT.json";
     And the upstream input "src/test/resources/upStreamInput.json"
     Then the expected aggregated object ID is "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
 

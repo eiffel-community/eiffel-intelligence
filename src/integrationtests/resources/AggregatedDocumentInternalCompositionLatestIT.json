@@ -15,6 +15,16 @@
         }
     ],
     "buildCommand": null,
+    "flowContexts": [
+        {
+            "product": "MyProductA",
+            "project": "FeatureC",
+            "program": "MarketD",
+            "track": "TrackE",
+            "version": "1.2.3",
+            "eventId": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
+        }
+    ],
     "internalComposition": {
         "compositions": [
             {

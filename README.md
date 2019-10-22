@@ -69,12 +69,6 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
     - [**ArtifactPublishedEvent Aggregation**](wiki/markdown/artifact-published-event-aggregation.md)
     - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/confidence-level-modified-event-aggregation.md)
 5. [**REST API**](wiki/markdown/REST-API.md)
-    - [**Query aggregated objects**](wiki/markdown/query.md)
-    - [**Running rules on objects**](wiki/markdown/running-rules-on-objects.md)
-    - [**Authentication**](wiki/markdown/authentication.md)
-    - [**Subscriptions**](wiki/markdown/subscription-API.md)
-    - [**Status**](wiki/markdown/status.md)
-    - [**Download files**](wiki/markdown/download-files.md)
 6. [**Compatibility**](wiki/markdown/compatibility.md)
 7. [**Known limitations**](wiki/markdown/known-limitations.md)
 

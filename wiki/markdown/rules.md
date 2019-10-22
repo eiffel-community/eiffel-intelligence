@@ -196,8 +196,9 @@ then you can create one more value for the computed duration so that other
 systems do not need to compute it.
 
 ### History Rules 
-are used if you need to aggregate data from existing events
-linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
+Are used if you need to aggregate data from existing events linked 
+upstream from the event which started the aggregation. 
+They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
 
 ## Reserved Key names
 The keys "_id" and "time" (at the root level of the aggregated object) are reserved and added in the mongo document by Eiffel Intelligence. User should not use these two keys at the 

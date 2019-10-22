@@ -1,16 +1,20 @@
 # History Rules
 
 **History Rules** below are used if you need to aggregate data from existing
-events linked upstream by received event.  An API to **ER (Event Repository)**
-that returns the historical events in right format must be configured in
-application.properties.
+events linked upstream by the start event of an aggregation.  An API 
+to **ER (Event Repository)** that returns the historical events in right 
+format must be configured in application.properties for these rules to apply.
+Note that the upstream search is only performed by Eiffel Intelligence when 
+it receives an Eiffel event with no ties to an existing aggregated object 
+(a start event). Following Eiffel events in the chain are only used to extract 
+data into the aggregated object - and no upstream link search is performed for these. 
 
 **HistoryExtractionRules** - JSON object of JMESPath identifier(s) which will
 create or modify the existing data in aggregated object for internal
 composition, same as "ExtractionRules".
 
 **HistoryPathRules** - JMESPath identifier of the place where to insert the
-JSON object from "HistoryExtractionRules" in aggregated object, same as
+JSON object from "HistoryExtractionRules" in the aggregated object, same as
 "MergeResolverRules" but it is relative to its position in the tree path
 returned from ER. The path for merging history data will get as long as the
 depth of the tree where your historical event exists.
@@ -18,7 +22,7 @@ depth of the tree where your historical event exists.
 A step by step example will be presented using [artifact aggregation rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 Assume that an EiffelArtifactCreatedEvent is received and the upstream response
-tree looks like [this](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/upStreamResultFile.json).
+tree contains several Eiffel events, which could look like [this](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/upStreamResultFile.json).
 
 The starting aggregated object is :
 
@@ -45,12 +49,26 @@ The starting aggregated object is :
        "buildCommand":null
     }
 
-The first event to be traversed in the tree is an EiffelCompositionDefinedEvent
+The first event to be traversed in the tree is an EiffelCompositionDefinedEvent.
+We have defined HistoryRules for this type of event, so Eiffel Intelligence 
+will know what to extract from the event based on these rules.
+
+    {
+    "TemplateName":"ARTIFACT_1",
+    "Type":"EiffelCompositionDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "HistoryExtractionRules": "{eventId: meta.id, time: meta.time,  name: data.name}",
+    "HistoryPathRules": "{internalComposition:{compositions: [{eventId: meta.id}]}}",
+    }
+
+For the EiffelCompositionDefinedEvent we have defined **HistoryExtractionRules** 
 and the JSON object extracted from it with **HistoryExtractionRules** is
 
     {"eventId":"fb6ef12d-25fb-4d77-b9fd-87688e66de47","time":2000,"name":"My composition"}
 
-and it will be appended at following location in aggregated object
+and it will be appended at following location in the aggregated object:
 
     internalComposition.compositions.0
 
@@ -107,13 +125,11 @@ with **HistoryExtractionRules** is
        ]
     }
 
-
-
-and it will be appended at following location in aggregated object
+and it will be appended at the following location in aggregated object:
 
    internalComposition.compositions.0.artifacts.0
 
-_**artifacts.0**_ is given by **HistoryPathRules** for
+**artifacts.0** is given by **HistoryPathRules** for
 EiffelArtifactCreatedEvent and has been appended to previous path.
 
 The resulting aggregated object is now:
@@ -250,7 +266,6 @@ with relative path for merge
 which will give us the absolute path for merge
 
     internalComposition.compositions.0.artifacts.0.internalComposition.compositions.0.sourceChanges.0
-
 
 and the aggregated object will now look like:
 
@@ -446,7 +461,6 @@ with relative path:
 and absolute path:
 
     internalComposition.compositions.0.artifacts.0.internalComposition.compositions.0.sourceChanges.0.sourceCreations.1.SCCEventId
-
 
 which gives us the following aggregated object:
 

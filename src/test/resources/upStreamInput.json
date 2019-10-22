@@ -80,6 +80,23 @@
       ]
    },
    {
+      "meta": {
+         "type": "EiffelFlowContextDefinedEvent",
+         "version": "3.0.0",
+         "time": 1234567890,
+         "id": "flowaaaa-bbbb-5ccc-8ddd-dkt8ejeeeee0"
+      },
+      "data": {
+         "product": "MyProduct",
+         "project": "NewImportantFeatures",
+         "program": "NewMarket",
+         "track": "CustomerXAdaptations",
+         "version": "4.3.0"
+      },
+      "links": [
+      ]
+   },
+   {
       "meta":{
          "type":"EiffelSourceChangeSubmittedEvent",
          "version":"3.0.0",
@@ -103,6 +120,10 @@
          {
             "type":"CHANGE",
             "target":"ac085e24-ac4c-41be-912d-08c7afd32285"
+         },
+         {
+            "type": "FLOW_CONTEXT",
+            "target": "flowaaaa-bbbb-5ccc-8ddd-dkt8ejeeeee0"
          }
       ]
    },

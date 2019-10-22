@@ -50,6 +50,16 @@
                                                 "email": "jane.doe@company.com"
                                             },
                                             "SCSEventId": "ace9df6e-cd45-4320-ae66-945f038caa1b",
+                                            "flowContexts" : [
+                                                {
+                                                    "eventId" : "flowaaaa-bbbb-5ccc-8ddd-dkt8ejeeeee0",
+                                                    "product" : "MyProduct",
+                                                    "project" : "NewImportantFeatures",
+                                                    "program" : "NewMarket",
+                                                    "track" : "CustomerXAdaptations",
+                                                    "version" : "4.3.0"
+                                                }
+                                            ],
                                             "gitIdentifier": null,
                                             "sourceCreations": [
                                                 {

@@ -208,7 +208,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     * 
+     *
      * @param eventsCount - An int which indicated how many events that should be
      *                    processed.
      * @return
@@ -227,7 +227,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Counts documents that were processed
-     * 
+     *
      * @param database   - A string with the database to use
      * @param collection - A string with the collection to use
      * @return amount of processed events
@@ -242,7 +242,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
-     * 
+     *
      * @param expectedData - A Map<String, JsonNode> which contains the expected
      *                     data
      * @return
@@ -263,7 +263,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 60000;
+            long maxWaitTime = 300000;
             long stopTime = System.currentTimeMillis() + maxWaitTime;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
@@ -286,7 +286,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Retrieves the aggregatedObject from EI by querying
-     * 
+     *
      * @param id - A string which contains the id used in the query
      * @return the responseEntity within the body.
      * @throws URISyntaxException

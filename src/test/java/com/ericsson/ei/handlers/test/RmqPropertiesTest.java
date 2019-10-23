@@ -22,8 +22,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -51,9 +49,6 @@ public class RmqPropertiesTest {
 
     @Autowired
     private RMQProperties rmqProperties;
-
-    @Mock
-    private ConnectionFactory factory;
 
     @Test
     public void getQueueDurableTest() {

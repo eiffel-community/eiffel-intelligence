@@ -52,6 +52,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
@@ -104,7 +105,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     private String event_map;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws PropertyNotFoundException, Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 

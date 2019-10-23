@@ -1,6 +1,5 @@
 package com.ericsson.ei.handlers.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +40,7 @@ public class UpStreamEventHandlerTest {
 
     static Logger log = LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
 
-    @Test
+    @Test(expected = PropertyNotFoundException.class)
     public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws PropertyNotFoundException, Exception {
         // TODO to complete implementation
         String upStreamString = "{\"upstreamLinkObjects\":[\n" + "\t\t{\"_id\":\"event1_level_1\"},[\n"
@@ -58,8 +57,6 @@ public class UpStreamEventHandlerTest {
                 .thenReturn(new ResponseEntity(201, response.toString(), headers));
 
         classUnderTest.runHistoryExtractionRulesOnAllUpstreamEvents("0123456789abcdef");
-
-        assertEquals("1", "1");
     }
 
 }

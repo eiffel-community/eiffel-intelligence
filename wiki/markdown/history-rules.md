@@ -1,8 +1,10 @@
 # History Rules
 
-**History Rules** below are used if you need to aggregate data from existing
-events linked upstream by the start event of an aggregation.  An API 
-to **ER (Event Repository)** that returns the historical events in right 
+**History Rules** 
+If your start event, meaning the event that starts the chain of aggregation, 
+contains links that point to upstream events, HistoryRules makes it 
+possible for these to be aggregated into the object as well. An API to 
+**ER (Event Repository)** that returns the historical events in right 
 format must be configured in application.properties for these rules to apply.
 Note that the upstream search is only performed by Eiffel Intelligence when 
 it receives an Eiffel event with no ties to an existing aggregated object 

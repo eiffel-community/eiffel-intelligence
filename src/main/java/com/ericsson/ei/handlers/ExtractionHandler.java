@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.rules.RulesObject;
@@ -88,8 +89,10 @@ public class ExtractionHandler {
                 mergeHandler.addNewObject(event, extractedContent, rulesObject);
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
             }
+        } catch (PropertyNotFoundException e) {
+            LOGGER.debug("Did not run history extraction on upstream events.", e);
         } catch (Exception e) {
-            LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
+            LOGGER.error("Failed to run extraction for event {}", event, e);
         }
     }
 

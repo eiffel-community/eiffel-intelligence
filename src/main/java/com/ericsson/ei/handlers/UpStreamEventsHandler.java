@@ -14,7 +14,6 @@
 
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.slf4j.Logger;

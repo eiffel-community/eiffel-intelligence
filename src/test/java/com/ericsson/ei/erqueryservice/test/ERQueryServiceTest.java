@@ -15,15 +15,12 @@ package com.ericsson.ei.erqueryservice.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.DefaultHttpResponseFactory;
@@ -43,6 +40,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.HttpExecutor;
@@ -82,7 +80,7 @@ public class ERQueryServiceTest extends Mockito {
     }
 
     @Test
-    public void testErQueryUpstream() throws ClientProtocolException, URISyntaxException, IOException {
+    public void testErQueryUpstream() throws PropertyNotFoundException, Exception {
         BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
         erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
     }

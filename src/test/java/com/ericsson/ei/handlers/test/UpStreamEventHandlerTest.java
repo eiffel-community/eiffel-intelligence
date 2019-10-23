@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-
 import org.apache.http.Header;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -43,8 +42,8 @@ public class UpStreamEventHandlerTest {
     static Logger log = LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
 
     @Test
-    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws IOException {
-        // TO DO to complete implementation
+    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws PropertyNotFoundException, Exception {
+        // TODO to complete implementation
         String upStreamString = "{\"upstreamLinkObjects\":[\n" + "\t\t{\"_id\":\"event1_level_1\"},[\n"
                 + "\t\t\t{\"_id\":\"event2_level_2\"},\n" + "\t\t\t{\"_id\":\"event3_level_2\"},[\n"
                 + "\t\t\t\t{\"_id\":\"event4_level_3\"},[\n" + "\t\t\t\t\t{\"_id\":\"event5_level_4\"}],\n"

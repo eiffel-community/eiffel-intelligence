@@ -16,7 +16,6 @@
  */
 package com.ericsson.ei.handlers;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

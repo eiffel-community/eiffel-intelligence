@@ -33,7 +33,7 @@ import com.ericsson.ei.handlers.RMQProperties;
 
 
 @ContextConfiguration(classes = RMQProperties.class)
-@TestPropertySource(locations = "RmqHandlerTestValues.properties")
+@TestPropertySource(locations = "classpath:RmqHandlerTestValues.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 
 public class RmqPropertiesTest {

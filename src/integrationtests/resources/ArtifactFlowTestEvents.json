@@ -1,0 +1,435 @@
+{
+    "event_EiffelConfidenceLevelModifiedEvent_3_2": {
+        "links": [
+            {
+                "target": "a0df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+                "type": "CAUSE"
+            },
+            {
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "type": "SUBJECT"
+            }
+        ],
+        "meta": {
+            "id": "a37d59a3-069e-4f4c-8cc5-a52e73501a75",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875944272,
+            "type": "EiffelConfidenceLevelModifiedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "value": "SUCCESS",
+            "customData": [
+                {
+                    "value": "CLM3",
+                    "key": "name"
+                },
+                {
+                    "value": 2,
+                    "key": "iteration"
+                }
+            ],
+            "name": "readyForDelivery"
+        }
+    },
+    "event_EiffelArtifactPublishedEvent_3": {
+        "links": [
+            {
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "type": "ARTIFACT"
+            },
+            {
+                "target": "a04fa59a-3c36-4601-8eac-7a26b8910f08",
+                "type": "CONTEXT"
+            }
+        ],
+        "meta": {
+            "id": "a3d05e6f-9bd9-4138-83b6-e20cc74680a3",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875921763,
+            "type": "EiffelArtifactPublishedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtP2",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ],
+            "locations": [
+                {
+                    "uri": "https://myrepository.com/mySubSystemArtifact",
+                    "type": "PLAIN"
+                }
+            ]
+        }
+    },
+    "event_EiffelFlowContextDefinedEvent_3": {
+        "meta": {
+            "type": "EiffelFlowContextDefinedEvent",
+            "version": "3.0.0",
+            "time": 1234567890,
+            "id": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
+        },
+        "data": {
+            "product": "MyProductA",
+            "project": "FeatureC",
+            "program": "MarketD",
+            "track": "TrackE",
+            "version": "1.2.3"
+        },
+        "links": [
+        ]
+    },
+    "event_EiffelArtifactCreatedEvent_3": {
+        "links": [
+            {
+                "target": "ab6ef12d-25fb-4d77-b9fd-87688e66de47",
+                "type": "COMPOSITION"
+            },
+            {
+                "target": "a100572b-c3b4-461e-abc9-b62f48087011",
+                "type": "PREVIOUS_VERSION"
+            },
+            {
+                "target": "a4f9565d-2382-488f-b911-e3326bce21a3",
+                "type": "ENVIRONMENT"
+            },
+            {
+                "target": "a04fa59a-3c36-4601-8eac-7a26b8910f08",
+                "type": "CONTEXT"
+            },
+            {
+                "target": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0",
+                "type": "FLOW_CONTEXT"
+            }
+        ],
+        "meta": {
+            "id": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875891763,
+            "type": "EiffelArtifactCreatedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtC2",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ],
+            "fileInformation": [
+                {
+                    "classifier": "debug",
+                    "extension": "jar"
+                },
+                {
+                    "classifier": "test",
+                    "extension": "txt"
+                },
+                {
+                    "classifier": "application",
+                    "extension": "exe"
+                }
+            ],
+            "identity":"pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+        }
+    },
+    "event_EiffelTestCaseTriggeredEvent_3": {
+        "data": {
+            "customData": [
+                {
+                    "key": "name",
+                    "value": "TCT7"
+                },
+                {
+                    "key": "iteration",
+                    "value": 1
+                }
+            ],
+            "testCase": {
+                "id": "TC5",
+                "uri": "https://other-tm.company.com/testCase/TC5",
+                "tracker": "My Other Test Management System"
+            }
+        },
+        "meta": {
+            "type": "EiffelTestCaseTriggeredEvent",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "version": "3.0.0",
+            "id": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
+            "time": 1490777327230
+        },
+        "links": [
+            {
+                "type": "CONTEXT",
+                "target": "aebdb0b7-f59e-4b77-ba8e-3912593d0153"
+            },
+            {
+                "type": "IUT",
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+            }
+        ]
+    },
+    "event_EiffelTestCaseStartedEvent_3": {
+        "links": [
+            {
+                "target": "aac05ae1-d7a2-4ef0-be0b-670ee4e8a8cf",
+                "type": "CONTEXT"
+            },
+            {
+                "target": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
+                "type": "TEST_CASE_EXECUTION"
+            }
+        ],
+        "meta": {
+            "id": "ab9d64b0-a6e9-4419-8b5d-a650c27c59ca",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875925916,
+            "type": "EiffelTestCaseStartedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "TCS5",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ]
+        }
+    },
+    "event_EiffelTestCaseFinishedEvent_3": {
+        "links": [
+            {
+                "target": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
+                "type": "TEST_CASE_EXECUTION"
+            }
+        ],
+        "meta": {
+            "id": "ab9d64b0-a6e9-4419-8b5d-a650c27c1111",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875935919,
+            "type": "EiffelTestCaseFinishedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "outcome": {
+                "verdict": "PASSED",
+                "conclusion": "SUCCESSFUL"
+            },
+            "customData": [
+                {
+                    "value": "TCF5",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ]
+        }
+    },
+    "event_EiffelArtifactPublishedEvent_3_1": {
+        "links": [
+            {
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "type": "ARTIFACT"
+            },
+            {
+                "target": "a04fa59a-3c36-4601-8eac-7a26b8910f08",
+                "type": "CONTEXT"
+            }
+        ],
+        "meta": {
+            "id": "a3d05e6f-9bd9-4138-83b6-e20cc74681b5",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875921843,
+            "type": "EiffelArtifactPublishedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "customData": [
+                {
+                    "value": "ArtP3",
+                    "key": "name"
+                },
+                {
+                    "value": 2,
+                    "key": "iteration"
+                }
+            ],
+            "locations": [
+                {
+                    "uri": "https://myrepository.com/artifactory",
+                    "type": "ARTIFACTORY"
+                }
+            ]
+        }
+    },
+    "event_EiffelConfidenceLevelModifiedEvent_3": {
+        "links": [
+            {
+                "target": "a0df7fc4-0c40-40a3-a349-9f6da0ba81c5",
+                "type": "CAUSE"
+            },
+            {
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "type": "SUBJECT"
+            }
+        ],
+        "meta": {
+            "id": "a37d59a3-069e-4f4c-8cc5-a52e73501a76",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875988767,
+            "type": "EiffelConfidenceLevelModifiedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "value": "SUCCESS",
+            "customData": [
+                {
+                    "value": "CLM2",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ],
+            "name": "performance"
+        }
+    },
+     "event_EiffelTestCaseTriggeredEvent_3_1": {
+        "data": {
+            "customData": [
+                {
+                    "key": "name",
+                    "value": "TCT7"
+                },
+                {
+                    "key": "iteration",
+                    "value": 1
+                }
+            ]
+        },
+        "meta": {
+            "type": "EiffelTestCaseTriggeredEvent",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "version": "3.0.0",
+            "id": "ad3df0e0-404d-46ee-ab4f-3118457148f5",
+            "time": 1490777357289
+        },
+        "links": [
+            {
+                "type": "CONTEXT",
+                "target": "aebdb0b7-f59e-4b77-ba8e-3912593d0153"
+            },
+            {
+                "type": "IUT",
+                "target": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+            }
+        ]
+    },
+    "event_EiffelTestCaseStartedEvent_3_1": {
+        "data": {
+            "customData": [
+                {
+                    "key": "name",
+                    "value": "TCS6"
+                },
+                {
+                    "key": "iteration",
+                    "value": 1
+                }
+            ],
+            "testCase": {
+                "id": "TC6",
+                "tracker": "My Other Test Management System",
+                "uri": "https://other-tm.company.com/testCase/TC6"
+            }
+        },
+        "links": [
+            {
+                "target": "aac05ae1-d7a2-4ef0-be0b-670ee4e8a8cf",
+                "type": "CONTEXT"
+            },
+            {
+                "target": "ad3df0e0-404d-46ee-ab4f-3118457148f5",
+                "type": "TEST_CASE_EXECUTION"
+            }
+        ],
+        "meta": {
+            "id": "a06defd8-fcf0-4e08-bf32-43bbc06cf655",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875925918,
+            "type": "EiffelTestCaseStartedEvent",
+            "version": "3.0.0"
+        }
+    },
+    "event_EiffelTestCaseFinishedEvent_3_1": {
+        "links": [
+            {
+                "target": "ad3df0e0-404d-46ee-ab4f-3118457148f5",
+                "type": "TEST_CASE_EXECUTION"
+            }
+        ],
+        "meta": {
+            "id": "a7b20d3a-23a6-41c6-8da0-a87a240b4c2f",
+            "source": {
+                "domainId": "example.domain"
+            },
+            "time": 1481875938919,
+            "type": "EiffelTestCaseFinishedEvent",
+            "version": "3.0.0"
+        },
+        "data": {
+            "outcome": {
+                "verdict": "PASSED",
+                "conclusion": "SUCCESSFUL"
+            },
+            "customData": [
+                {
+                    "value": "TCF6",
+                    "key": "name"
+                },
+                {
+                    "value": 1,
+                    "key": "iteration"
+                }
+            ]
+        }
+    }
+}

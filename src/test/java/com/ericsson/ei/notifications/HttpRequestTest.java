@@ -21,12 +21,10 @@ import java.util.Base64;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -47,7 +45,7 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: HttpRequestTest",
-        "missedNotificationDataBaseName: HttpRequestTest-missedNotifications",
+        "failed.notification.database-name: HttpRequestTest-failedNotifications",
         "rabbitmq.exchange.name: HttpRequestTest-exchange",
         "rabbitmq.consumerName: HttpRequestTestConsumer" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

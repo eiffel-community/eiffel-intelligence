@@ -25,7 +25,7 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionBulkSteps",
-        "missedNotificationDataBaseName: SubscriptionBulkSteps-missedNotifications",
+        "failed.notification.database-name: SubscriptionBulkSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
         "rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
         "logging.level.com.ericsson.ei.subscriptions.bulk=OFF" })

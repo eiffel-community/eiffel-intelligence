@@ -55,6 +55,7 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
+import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -71,7 +72,7 @@ import com.rabbitmq.client.Channel;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: TrafficGeneratedTest",
-        "missedNotificationDataBaseName: TrafficGeneratedTest-missedNotifications",
+        "failed.notification.database-name: TrafficGeneratedTest-failedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
         "rabbitmq.consumerName: TrafficGeneratedTestConsumer"  })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -123,7 +124,8 @@ public class TrafficGeneratedTest extends FlowTestBase {
             List<String> events = getPreparedEventsToSend(eventNames);
             int eventsCount = eventNames.size() * EVENT_PACKAGES;
 
-            String queueName = rmqHandler.getQueueName();
+            RMQProperties rmqProperties = rmqHandler.getRmqProperties();
+            String queueName = rmqProperties.getQueueName();
             String exchange = "ei-poc-4";
             TestConfigs.createExchange(exchange, queueName);
             Channel channel = TestConfigs.getConnection().createChannel();

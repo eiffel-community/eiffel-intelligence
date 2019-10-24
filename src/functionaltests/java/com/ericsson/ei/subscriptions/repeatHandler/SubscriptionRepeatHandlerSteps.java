@@ -41,7 +41,7 @@ import gherkin.deps.com.google.gson.JsonParser;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: SubscriptionRepeatHandlerSteps",
-        "missedNotificationDataBaseName: SubscriptionRepeatHandlerSteps-missedNotifications",
+        "failed.notification.database-name: SubscriptionRepeatHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatHandlerSteps-exchange",
         "rabbitmq.consumerName: SubscriptionRepeatHandlerStepsConsumer" })
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {

@@ -46,7 +46,7 @@ import cucumber.api.java.en.When;
         "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1",
         "spring.data.mongodb.database: TestTTLSteps",
-        "missedNotificationDataBaseName: TestTTLSteps-missedNotifications",
+        "failed.notification.database-name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
@@ -74,11 +74,11 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    @Value("${missedNotificationDataBaseName}")
-    private String missedNotificationDatabase;
+    @Value("${failed.notification.database-name}")
+    private String failedNotificationDatabase;
 
-    @Value("${missedNotificationCollectionName}")
-    private String missedNotificationCollection;
+    @Value("${failed.notification.collection-name}")
+    private String failedNotificationCollection;
 
     @Value("${spring.data.mongodb.database}")
     private String dataBase;
@@ -108,7 +108,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void create_subscription_object() throws IOException, JSONException {
 
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
-        mongoDBHandler.dropCollection(missedNotificationDatabase, missedNotificationCollection);
+        mongoDBHandler.dropCollection(failedNotificationDatabase, failedNotificationCollection);
 
         String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
@@ -135,10 +135,10 @@ public class TestTTLSteps extends FunctionalTestBase {
         assertEquals(2, requests.length());
     }
 
-    @Then("^Check missed notification is in database$")
-    public void check_missed_notification_is_in_database() {
+    @Then("^Check failed notification is in database$")
+    public void check_failed_notification_is_in_database() {
         String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
-        List<String> result = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection, condition);
+        List<String> result = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
         assertEquals("Could not find a missed notification matching the condition: " + condition,
@@ -180,13 +180,13 @@ public class TestTTLSteps extends FunctionalTestBase {
         assertEquals(1, allObjects.size());
     }
 
-    @When("^Missed notification is created$")
-    public void a_missed_notification_is_created() throws Throwable {
+    @When("^Failed notification is created$")
+    public void a_failed_notification_is_created() throws Throwable {
         // verifying that missed notification is created and present in db
         int expectedSize = 1;
         String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
 
-        LOGGER.debug("Checking presence of missnotification in db");
+        LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
         assertEquals(expectedSize, notificationExistSize);
     }
@@ -240,7 +240,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(missedNotificationDatabase, missedNotificationCollection,
+            notificationExist = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection,
                     condition);
 
             if (notificationExist.size() == expectedSize) {

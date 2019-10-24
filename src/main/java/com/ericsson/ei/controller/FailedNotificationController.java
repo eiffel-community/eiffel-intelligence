@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * This class searches for missed notifications in the database.
+ * This class searches for failed notifications in the database.
  * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */
 @RestController
 @Validated
-@RequestMapping(value = "/queryMissedNotifications", produces = "application/json")
-public interface QueryMissedNotificationController {
+@RequestMapping(value = "/failed-notifications", produces = "application/json")
+public interface FailedNotificationController {
 
 
     /**
-     * This method returns missed notification(s) given a subscription name.
+     * This method returns failed notification(s) given a subscription name.
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getQueryMissedNotifications(
+    public ResponseEntity<?> getFailedNotifications(
         @RequestParam
         String subscriptionName, HttpServletRequest httpRequest);
 

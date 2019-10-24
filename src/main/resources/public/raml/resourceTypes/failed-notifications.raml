@@ -1,0 +1,14 @@
+description: This class searches for failed notifications in the database.
+get:
+  description: This method returns failed notification(s) given a subscription name.
+  queryParameters:
+    subscriptionName:
+      displayName: subscriptionName
+      type: string
+      description: Subscription Name of the failed notification
+      example: Subscription_1
+      required: true
+  responses:
+    200:
+      body:
+        application/json:

@@ -38,7 +38,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestTemplatesControllerImpl",
-        "missedNotificationDataBaseName: TestTemplatesControllerImpl-missedNotifications",
+        "failed.notification.database-name: TestTemplatesControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestTemplatesControllerImpl-exchange",
         "rabbitmq.consumerName: TestTemplatesControllerImpl" })
 @ContextConfiguration(

@@ -63,7 +63,7 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionServiceTest",
-        "missedNotificationDataBaseName: SubscriptionServiceTest-missedNotifications",
+        "failed.notification.database-name: SubscriptionServiceTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionServiceTest-exchange",
         "rabbitmq.consumerName: SubscriptionServiceTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

@@ -165,20 +165,20 @@ complete notification message can be seen below:
         runpipeline: mybuildstep
 
 
-## Missed notifications
+## Failed notifications
 
 If the notification via REST POST fails, then a fixed number of attempts are
 made to resend successfully. The number of attempts are specified in the
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 as “notification.failAttempt”. If message sending attempts fails for the
-specified number of time, then a missed notification is prepared and stored
+specified number of time, then a failed notification is prepared and stored
 in database. The name of the database is specified in the application.properties
-file as “missedNotificationDataBaseName” and collection name as
-“missedNotificationCollectionName”. The message is stored in the database
+file as “failed.notification.database-name” and collection name as
+“failed.notification.collection-name”. The message is stored in the database
 for a certain duration before being deleted. This time can be configured in
 application.properties as “notification.ttl.value”.
 
-**Missed notification in the missed notification database with TTL value:**
+**Failed notification in the failed notification database with TTL value:**
 
     {
         "subscriptionName": "Subscription_1",

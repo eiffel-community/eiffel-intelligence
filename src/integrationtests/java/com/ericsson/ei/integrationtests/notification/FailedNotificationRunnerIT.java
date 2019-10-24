@@ -19,7 +19,7 @@ public class FailedNotificationRunnerIT {
         System.setProperty("event_object_map.collection.name", "event_object_map_failed_notification");
         System.setProperty("subscription.collection.repeatFlagHandlerName",
                 "subscription_repeat_handler_failed_notification");
-        System.setProperty("missedNotificationCollectionName", "missed_notification_failed_notification");
+        System.setProperty("failed.notification.collection-name", "missed_notification_failed_notification");
         System.setProperty("sessions.collection.name", "sessions_failed_notification");
 
         System.setProperty("rules.path", "/rules/ArtifactRules-Eiffel-Agen-Version.json");

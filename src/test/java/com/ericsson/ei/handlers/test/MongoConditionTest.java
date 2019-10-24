@@ -14,8 +14,7 @@ public class MongoConditionTest {
 
     @Test
     public void testGetIdConditionFromString() {
-        MongoCondition mongoCondition = new MongoCondition();
-        mongoCondition.setId("id-as-string");
+        MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
 
         String actual = mongoCondition.getAsJson();
         String expect = "{\"_id\":\"id-as-string\"}";
@@ -24,18 +23,23 @@ public class MongoConditionTest {
 
     @Test
     public void testGetIdConditionFromJsonNode() {
-        MongoCondition mongoCondition = new MongoCondition();
         JsonNodeFactory jsonNodeFactory = new JsonNodeFactory(false);
         JsonNode jsonNode = jsonNodeFactory.textNode("id-as-JsonNode");
-        mongoCondition.setId(jsonNode);
+        MongoCondition mongoCondition = MongoCondition.idCondition((jsonNode));
+
         String actual = mongoCondition.getAsJson();
         String expect = "{\"_id\":\"id-as-JsonNode\"}";
         assertThat(actual, is(equalTo(expect)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetIdConditionFromEmpty() {
-        MongoCondition mongoCondition = new MongoCondition();
-        mongoCondition.getAsJson();
+    @Test
+    public void testGetArbitraryConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
+                "id-as-string");
+
+        String actual = mongoCondition.getAsJson();
+        String expect = "{\"arbitraryKey\":\"id-as-string\"}";
+        assertThat(actual, is(equalTo(expect)));
     }
+
 }

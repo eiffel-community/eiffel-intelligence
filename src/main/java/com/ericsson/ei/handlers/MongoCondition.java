@@ -8,22 +8,32 @@ public class MongoCondition {
 
     private static final String ID = "_id";
 
-    private JSONObject condition = new JSONObject();;
+    private JSONObject condition;
 
-    public void setId(String string) {
-        condition.put(ID, string);
-    }
-
-    public void setId(JsonNode jsonNode) {
-        setId(jsonNode.asText());
+    MongoCondition() {
+        condition = new JSONObject();
     }
 
     public String getAsJson() {
-        boolean noConditionsSet = (condition.length() == 0);
-        if(noConditionsSet) {
-            throw new IllegalArgumentException("No condition was set");
-        }
 
         return condition.toString();
+    }
+
+    void set(String key, String value) {
+        condition.put(key, value);
+    }
+
+    public static MongoCondition idCondition(String string) {
+        return condition(ID, string);
+    }
+
+    public static MongoCondition idCondition(JsonNode jsonNode) {
+        return idCondition(jsonNode.asText());
+    }
+
+    public static MongoCondition condition(String key, String value) {
+        MongoCondition mongoCondition = new MongoCondition();
+        mongoCondition.set(key, value);
+        return mongoCondition;
     }
 }

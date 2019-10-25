@@ -119,7 +119,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         return (password.startsWith("ENC(") && password.endsWith(")"));
     }
     
-    private String decryptPassword(String password) {
+    private String decryptPassword(final String inputEncryptedPassword) {
         TextFormatter textFormatter = new TextFormatter();
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 
@@ -130,7 +130,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
         encryptor.setPassword(jasyptEncryptorPassword);
 
-        password = textFormatter.removeEncryptionParentheses(password);
-        return encryptor.decrypt(password);
+        String encryptedPassword = textFormatter.removeEncryptionParentheses(inputEncryptedPassword);
+        return encryptor.decrypt(encryptedPassword);
     }
 }

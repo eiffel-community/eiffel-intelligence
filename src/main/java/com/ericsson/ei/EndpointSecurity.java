@@ -33,6 +33,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.utils.TextFormatter;
 
 @Configuration
@@ -125,7 +126,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
         if (jasyptEncryptorPassword.isEmpty()) {
             LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
-            throw new Exception("Failed to initiate LDAP when password is encrypted. " + 
+            throw new AbortExecutionException("Failed to initiate LDAP when password is encrypted. " + 
                                 "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
         }
 

@@ -69,8 +69,7 @@ public class TemplatesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualSubscriptionsValue = objMapper.readValue(response.getBody(), JsonNode.class).get("subscriptions").asText();
-        assertEquals("List all files did not return expected subscriptions file value. "
-                + "\nExpected: " + expectedSubscriptionsValue + "\nActual: " + actualSubscriptionsValue,
+        assertEquals("List all files did not return expected subscriptions file value. ",
                 expectedSubscriptionsValue, actualSubscriptionsValue);
     }
 
@@ -85,8 +84,7 @@ public class TemplatesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualSubscriptionTemplateContent = response.getBody();
-        assertEquals("Get template file for subscriptions failed, or content is not as expected. "
-            + "\nExpected: " + expectedSubscriptionTemplateContent + "\nActual: " + actualSubscriptionTemplateContent,
+        assertEquals("Get template file for subscriptions failed, or content is not as expected. ",
             expectedSubscriptionTemplateContent, actualSubscriptionTemplateContent);
     }
 
@@ -100,8 +98,7 @@ public class TemplatesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualRulesTemplateContent = response.getBody();
-        assertEquals("Get template file for rules failed, or content is not as expected."
-                + "\nExpected: " + expectedRulesTemplateContent + "\nActual: " + actualRulesTemplateContent,
+        assertEquals("Get template file for rules failed, or content is not as expected.",
                 expectedRulesTemplateContent, actualRulesTemplateContent);
     }
 
@@ -115,8 +112,7 @@ public class TemplatesTestSteps extends FunctionalTestBase {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualEventsTemplateContent = response.getBody();
-        assertEquals("Get template file for events failed, or content is not as expected."
-                + "\nExpected: " + expectedEventsTemplateContent + "\nActual: " + actualEventsTemplateContent,
+        assertEquals("Get template file for events failed, or content is not as expected.",
                 expectedEventsTemplateContent, actualEventsTemplateContent);
     }
 }

@@ -16,7 +16,7 @@ public class MongoConditionTest {
     public void testGetIdConditionFromString() {
         MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
 
-        String actual = mongoCondition.getAsJson();
+        String actual = mongoCondition.getQueryString();
         String expect = "{\"_id\":\"id-as-string\"}";
         assertThat(actual, is(equalTo(expect)));
     }
@@ -27,8 +27,18 @@ public class MongoConditionTest {
         JsonNode jsonNode = jsonNodeFactory.textNode("id-as-JsonNode");
         MongoCondition mongoCondition = MongoCondition.idCondition((jsonNode));
 
-        String actual = mongoCondition.getAsJson();
+        String actual = mongoCondition.getQueryString();
         String expect = "{\"_id\":\"id-as-JsonNode\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testGetsubscriptionConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.subscriptionCondition(
+                "subscription-as-string");
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{\"subscriptionId\":\"subscription-as-string\"}";
         assertThat(actual, is(equalTo(expect)));
     }
 
@@ -37,8 +47,26 @@ public class MongoConditionTest {
         MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
                 "id-as-string");
 
-        String actual = mongoCondition.getAsJson();
+        String actual = mongoCondition.getQueryString();
         String expect = "{\"arbitraryKey\":\"id-as-string\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testIdConditionToString() {
+        MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
+
+        String actual = mongoCondition.toString();
+        String expect = "{\"_id\":\"id-as-string\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testEmptyCondition() {
+        MongoCondition mongoCondition = MongoCondition.emptyCondition();
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{}";
         assertThat(actual, is(equalTo(expect)));
     }
 

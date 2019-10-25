@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.mongodb.MongoClient;
@@ -44,7 +45,8 @@ public class MongoDBHandlerTest {
     private String collectionName = "SampleEvents";
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
-    private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
+    private MongoCondition condition = MongoCondition.condition("test_cases.event_id",
+            "testcaseid1");
 
     @Before
     public void init() throws Exception {

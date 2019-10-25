@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class MongoCondition {
+public class MongoCondition implements MongoQuery{
 
     private static final String ID = "_id";
     private static final String SUBSCRIPTION_ID = "subscriptionId";
@@ -73,16 +73,17 @@ public class MongoCondition {
      *
      * @return Condition as JSON
      */
-    public String getAsJson() {
+    @Override
+    public String getQueryString() {
         return condition.toString();
     }
 
     /**
-     * See {@link #getAsJson()}
+     * See {@link #getQueryString()}
      */
     @Override
     public String toString() {
-        return getAsJson();
+        return getQueryString();
     }
 
     /**
@@ -99,5 +100,6 @@ public class MongoCondition {
         condition = new JSONObject();
         condition.put(key, value);
     }
+
 
 }

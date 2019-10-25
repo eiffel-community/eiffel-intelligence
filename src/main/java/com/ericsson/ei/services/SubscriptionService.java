@@ -33,7 +33,10 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.handlers.MongoQuery;
+import com.ericsson.ei.handlers.MongoStringQuery;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +47,6 @@ public class SubscriptionService implements ISubscriptionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
 
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
-    private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'ldapUserName':'%s'}";
 
     private static final String AND = "{$and:[%s]}";
@@ -76,8 +78,8 @@ public class SubscriptionService implements ISubscriptionService {
     public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
         // empty ldapUserName means that result of query should not depend from
         // userName
-        String query = generateQuery(subscriptionName, "");
-
+        String queryString = generateQuery(subscriptionName, "");
+        MongoQuery query = new MongoStringQuery(queryString);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
@@ -101,7 +103,8 @@ public class SubscriptionService implements ISubscriptionService {
     public boolean doSubscriptionExist(String subscriptionName) {
         // empty userName means that result of query should not depend from
         // userName
-        String query = generateQuery(subscriptionName, "");
+        String queryString = generateQuery(subscriptionName, "");
+        MongoQuery  query = new MongoStringQuery(queryString);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
     }
@@ -117,7 +120,8 @@ public class SubscriptionService implements ISubscriptionService {
             query = generateQuery(subscriptionName, ldapUserName);
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
-                String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+                MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                        subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOGGER.info("Subscription  \"{}"
                             + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
@@ -137,10 +141,12 @@ public class SubscriptionService implements ISubscriptionService {
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
         String ldapUserName = getLdapUserName(subscriptionName);
-        String deleteQuery = generateQuery(subscriptionName, ldapUserName);
+        String deleteQueryString = generateQuery(subscriptionName, ldapUserName);
+        MongoQuery deleteQuery = new MongoStringQuery(deleteQueryString);
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
-            String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+            MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                    subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOGGER.info("Subscription  \"{}"
                         + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
@@ -158,7 +164,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public List<Subscription> getSubscriptions() throws SubscriptionNotFoundException {
-        String query = "{}";
+        MongoCondition query = MongoCondition.emptyCondition();
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +185,7 @@ public class SubscriptionService implements ISubscriptionService {
         return subscriptions;
     }
 
-    private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
+    private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {
         LOGGER.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}", subscriptionNameQuery);
         MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
         return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);

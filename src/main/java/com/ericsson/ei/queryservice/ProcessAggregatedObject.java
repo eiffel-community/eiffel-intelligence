@@ -25,9 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ericsson.ei.handlers.MongoQuery;
+import com.ericsson.ei.handlers.MongoStringQuery;
 
 /**
  * This class represents the mechanism to extract the aggregated object, which
@@ -55,18 +56,11 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
-        ObjectMapper mapper = new ObjectMapper();
-        String query = "{\"_id\": \"" + id + "\"}";
-        JsonNode jsonCondition = null;
-
-        try {
-            jsonCondition = mapper.readTree(query);
-        } catch (Exception e) {
-            LOGGER.error("Failed to parse JSON.", e);
-        }
-        LOGGER.debug("The JSON condition is: {}", jsonCondition);
-        ArrayList<String> response = mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName,
-                jsonCondition.toString());
+        MongoCondition condition = MongoCondition.idCondition(id);
+        LOGGER.debug("The JSON condition is: {}", condition);
+        ArrayList<String> response = mongoDBHandler.find(aggregationDataBaseName,
+                aggregationCollectionName,
+                condition);
         return response;
     }
 
@@ -78,9 +72,10 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
-        String condition = "{\"id\": /.*" + templateName + "/}";
-        LOGGER.debug("The JSON condition is: {}", condition);
-        return mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName, condition);
+        String queryString = "{\"id\": /.*" + templateName + "/}";
+        MongoQuery query = new MongoStringQuery(queryString);
+        LOGGER.debug("The JSON query is: {}", query);
+        return mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName, query);
     }
 
     /**
@@ -91,9 +86,10 @@ public class ProcessAggregatedObject {
      * @return boolean
      */
     public boolean deleteAggregatedObject(String templateName) {
-        String condition = "{\"id\": /.*" + templateName + "/}";
-        LOGGER.debug("The JSON condition for deleting aggregated object is: {}", condition);
-        return mongoDBHandler.dropDocument(aggregationDataBaseName, aggregationCollectionName, condition);
+        String queryString = "{\"id\": /.*" + templateName + "/}";
+        MongoQuery query = new MongoStringQuery(queryString);
+        LOGGER.debug("The JSON query for deleting aggregated object is: {}", query);
+        return mongoDBHandler.dropDocument(aggregationDataBaseName, aggregationCollectionName, query);
     }
 
     /**
@@ -107,7 +103,7 @@ public class ProcessAggregatedObject {
      * @param AggregationCollectionName
      * @return JSONArray
      */
-    public JSONArray processQueryAggregatedObject(String query, String AggregationDataBaseName,
+    public JSONArray processQueryAggregatedObject(MongoQuery query, String AggregationDataBaseName,
             String AggregationCollectionName) {
         List<String> allDocuments = mongoDBHandler.find(AggregationDataBaseName, AggregationCollectionName, query);
         LOGGER.debug("Number of documents returned from {} collection is : {}", AggregationCollectionName, allDocuments.size());

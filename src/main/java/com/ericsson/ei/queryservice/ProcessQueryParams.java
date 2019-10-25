@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
+import com.ericsson.ei.handlers.MongoQuery;
+import com.ericsson.ei.handlers.MongoStringQuery;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,14 +62,16 @@ public class ProcessQueryParams {
      */
     public JSONArray runQuery(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
-        String criteria = criteriaObj.toString();
+        String criteriaString = criteriaObj.toString();
+        MongoQuery criteria = new MongoStringQuery(criteriaString);
 
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
             String options = optionsObj.toString();
             LOGGER.debug("The options are: {}", options);
-            String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
+            String requestString = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
+            MongoQuery request = new MongoStringQuery(requestString);
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
         }
 
@@ -140,7 +144,8 @@ public class ProcessQueryParams {
             LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
             return new JSONArray();
         }
-        LOGGER.debug("Freestyle criteria query: {}", criteriasJsonNode.toString());
-        return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
+        MongoQuery criterias = new MongoStringQuery(criteriasJsonNode.toString());
+        LOGGER.debug("Freestyle criteria query: {}", criterias);
+        return processAggregatedObject.processQueryAggregatedObject(criterias, databaseName, aggregationCollectionName);
     }
 }

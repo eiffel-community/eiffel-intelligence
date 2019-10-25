@@ -31,7 +31,8 @@ public class MatchIdRulesHandler {
 
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
-        String fetchQuery = replaceIdInRules(matchIdString, id);
+        String fetchQueryString = replaceIdInRules(matchIdString, id);
+        MongoQuery fetchQuery = new MongoStringQuery(fetchQueryString);
         List<String> objects = objHandler.findObjectsByCondition(fetchQuery);
         return objects;
     }

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -63,8 +64,8 @@ public class ObjectHandlerTest {
     private String dataBaseName = "ObjectHandlerTestDB";
     private String collectionName = "SampleEvents";
     private String input = "{\"_id\":\"eventId\",\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
-    private String condition = "{\"_id\" : \"eventId\"}";
     private String event = "{\"meta\":{\"id\":\"eventId\"}}";
+    private MongoCondition condition = MongoCondition.idCondition("eventId");
 
     @Before
     public void init() throws Exception {

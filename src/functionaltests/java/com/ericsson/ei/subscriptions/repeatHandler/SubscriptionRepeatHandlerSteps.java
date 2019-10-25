@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.RunSubscription;
@@ -57,7 +58,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     private String subscriptionStrWithOneMatch;
     private String subscriptionStrWithTwoMatch;
     private String aggregatedObject;
-    private String subscriptionIdMatchedAggrIdObjQuery;
+    private MongoCondition subscriptionIdMatchedAggrIdObjQuery;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Value("${aggregated.collection.name}")
@@ -134,7 +135,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
         assertEquals("[]", resultRepeatFlagHandler.toString());
-        String condition = "{\"_id\": \"" + AGGREGATED_OBJECT_ID + "\"}";
+        MongoCondition condition = MongoCondition.idCondition(AGGREGATED_OBJECT_ID);
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
     }
 
@@ -142,7 +143,8 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     public void in_MongoDb_RepeatFlagHandler_collection_the_subscription_has_matched_the_AggrObjectId_at_least_two_times()
             throws IOException {
         processSubscription(subscriptionStrWithTwoMatch, subscriptionWithTwoMatch);
-        List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
+        List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName,
+                repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
         assertEquals(1, resultRepeatFlagHandler.size());
         assertEquals("\"" + AGGREGATED_OBJECT_ID + "\"", getAggregatedObjectId(resultRepeatFlagHandler, 0));
@@ -186,6 +188,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         Iterator<JsonNode> requirementIterator = requirementNode.elements();
         assertTrue(runSubscription.runSubscriptionOnObject(aggregatedObject, requirementIterator, subscriptionJson,
                 AGGREGATED_OBJECT_ID));
-        subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
+        subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
+                expectedSubscriptionName);
     }
 }

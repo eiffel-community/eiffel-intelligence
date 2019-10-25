@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -54,18 +54,12 @@ public class ProcessMissedNotification {
      * @return List
      */
     public List<String> processQueryMissedNotification(String subscriptionName) {
-        ObjectMapper mapper = new ObjectMapper();
-        String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
-        LOGGER.debug("The condition is : {}", condition);
-        JsonNode jsonCondition = null;
-        try {
-            jsonCondition = mapper.readTree(condition);
-        } catch (Exception e) {
-            LOGGER.error("Failed to parse JSON.", e);
-        }
-        LOGGER.debug("The Json condition is : {}", jsonCondition);
+        MongoCondition condition = MongoCondition.subscriptionCondition(subscriptionName);
+        LOGGER.debug("The Json condition is : {}", condition);
         List<String> output = handler.find(failedNotificationDatabaseName, failedNotificationCollectionName,
-                jsonCondition.toString());
+                condition);
+
+        ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {
             try {
                 return mapper.readTree(a).toString();
@@ -84,7 +78,7 @@ public class ProcessMissedNotification {
      * @return boolean
      */
     public boolean deleteMissedNotification(String subscriptionName) {
-        String condition = "{\"subscriptionName\" : \"" + subscriptionName + "\"}";
+        MongoCondition condition = MongoCondition.subscriptionCondition(subscriptionName);
         LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
         return handler.dropDocument(failedNotificationDatabaseName, failedNotificationCollectionName, condition);
     }

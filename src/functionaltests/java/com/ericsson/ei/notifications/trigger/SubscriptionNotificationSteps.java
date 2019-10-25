@@ -32,6 +32,7 @@ import org.springframework.util.SocketUtils;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -208,7 +209,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         int minWaitTime = 5;
         int maxWaittime = 20;
 
-        String condition = "{}";
+        MongoCondition condition = MongoCondition.emptyCondition();
         int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
         assertEquals(missedNotifications, maxObjectsInDB);
@@ -435,14 +436,15 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      * @return
      * @throws InterruptedException
      */
-    private int getDbSizeForCondition(int minWaitTime, int maxWaitTime, int expectedSize, String condition)
+    private int getDbSizeForCondition(int minWaitTime, int maxWaitTime, int expectedSize, MongoCondition condition)
             throws InterruptedException {
         TimeUnit.SECONDS.sleep(minWaitTime);
         long maxTime = System.currentTimeMillis() + maxWaitTime;
         List<String> queryResult = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            queryResult = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
+            queryResult = mongoDBHandler.find(failedNotificationDatabase,
+                    failedNotificationCollection, condition);
 
             if (queryResult.size() == expectedSize) {
                 return queryResult.size();

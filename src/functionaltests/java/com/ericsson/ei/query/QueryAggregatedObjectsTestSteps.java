@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -98,8 +99,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
+        MongoCondition condition = MongoCondition.idCondition("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         List<String> aggregatedObject = mongoDBHandler.find(eiDatabaseName, aggrCollectionName,
-                "{\"_id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}");
+                condition);
 
         boolean aggregatedObjectExists = aggregatedObject.size() > 0;
         if (!aggregatedObjectExists) {
@@ -252,9 +254,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
         LOGGER.debug("Check if FailedNotification and " + subscriptionName + " exist in Database");
-        final String queryRequest = "{\"subscriptionName\":\"" + subscriptionName + "\"}";
+        final MongoCondition queryRequest = MongoCondition.subscriptionCondition(subscriptionName);
         String subscriptionNameCheck = objMapper.readValue(
-                mongoDBHandler.find(failedNotificationDatabaseName, failedNotificationCollectionName, queryRequest)
+                mongoDBHandler.find(failedNotificationDatabaseName,
+                        failedNotificationCollectionName, queryRequest)
                               .get(0),
                 JsonNode.class).get("subscriptionName").asText();
         assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",

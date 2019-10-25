@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -94,7 +95,7 @@ public class SubscriptionRepeatDbHandler {
         LOGGER.debug(
                 "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
                 aggrObjId, subscriptionId);
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName,
                 subscriptionQuery);
         if (objArray != null && !objArray.isEmpty()) {

@@ -26,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
@@ -137,8 +138,9 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Check failed notification is in database$")
     public void check_failed_notification_is_in_database() {
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
-        List<String> result = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
+        MongoCondition condition = MongoCondition.subscriptionCondition(SUBSCRIPTION_NAME);
+        List<String> result = mongoDBHandler.find(failedNotificationDatabase,
+                failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
         assertEquals("Could not find a missed notification matching the condition: " + condition,
@@ -184,7 +186,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void a_failed_notification_is_created() throws Throwable {
         // verifying that missed notification is created and present in db
         int expectedSize = 1;
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+        MongoCondition condition = MongoCondition.subscriptionCondition(SUBSCRIPTION_NAME_3);
 
         LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -194,7 +196,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Notification document should be deleted from the database$")
     public void the_Notification_document_should_be_deleted_from_the_database() throws Throwable {
         int expectedSize = 0;
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+        MongoCondition condition = MongoCondition.subscriptionCondition(SUBSCRIPTION_NAME_3);
         LOGGER.debug("Checking deletion of notification document in db");
 
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -235,12 +237,13 @@ public class TestTTLSteps extends FunctionalTestBase {
         return eventNames;
     }
 
-    private int getNotificationForExpectedSize(int expectedSize, String condition) {
+    private int getNotificationForExpectedSize(int expectedSize, MongoCondition condition) {
         long maxTime = System.currentTimeMillis() + MAX_WAIT_TIME;
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection,
+            notificationExist = mongoDBHandler.find(failedNotificationDatabase,
+                    failedNotificationCollection,
                     condition);
 
             if (notificationExist.size() == expectedSize) {

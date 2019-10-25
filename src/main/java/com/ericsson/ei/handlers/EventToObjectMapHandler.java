@@ -119,7 +119,7 @@ public class EventToObjectMapHandler {
 
     public ArrayList<String> getEventToObjectList(String eventId) {
         ArrayList<String> list = new ArrayList<String>();
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         if (!documents.isEmpty()) {
             String mapStr = documents.get(0);
@@ -142,13 +142,14 @@ public class EventToObjectMapHandler {
      * @return boolean
      */
     public boolean deleteEventObjectMap(String templateName) {
-        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
-        LOGGER.info("The JSON condition for deleting aggregated object is : {}", condition);
-        return mongodbhandler.dropDocument(databaseName, collectionName, condition);
+        String queryString = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        MongoStringQuery query = new MongoStringQuery(queryString);
+        LOGGER.info("The JSON query for deleting aggregated object is : {}", query);
+        return mongodbhandler.dropDocument(databaseName, collectionName, query);
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        MongoCondition condition = MongoCondition.idCondition(eventId);
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }

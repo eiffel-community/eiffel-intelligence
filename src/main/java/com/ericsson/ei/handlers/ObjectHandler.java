@@ -143,12 +143,12 @@ public class ObjectHandler {
 
     /**
      * This methods searches the database for documents matching a given condition.
-     * @param condition
-     *     String condition to base search on
+     * @param query
+     *     query to base search on
      * @return List of documents
      * */
-    public List<String> findObjectsByCondition(String condition) {
-        return mongoDbHandler.find(databaseName, collectionName, condition);
+    public List<String> findObjectsByCondition(MongoQuery query) {
+        return mongoDbHandler.find(databaseName, collectionName, query);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ObjectHandler {
      * @return document
      * */
     public String findObjectById(String id) {
-        String condition = "{\"_id\" : \"" + id + "\"}";
+        MongoCondition condition = MongoCondition.idCondition(id);
         String document = "";
         List<String> documents = findObjectsByCondition(condition);
         if (!documents.isEmpty())

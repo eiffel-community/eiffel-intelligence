@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ericsson.ei.handlers.MongoCondition;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.mongodb.BasicDBObject;
@@ -71,12 +72,16 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId = 0;
         String aggrObjId = "99999";
 
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
-                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+                                                                          .find(subRepeatFlagDataBaseName,
+                                                                                  subRepeatFlagCollectionName,
+                                                                                  subscriptionQuery)
+                                                                          .get(0)
+                                                                          .toString());
 
         assertEquals(subscriptionId, dbResult.get("subscriptionId").toString());
 
@@ -103,14 +108,18 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId2 = 1;
         String aggrObjId2 = "45678";
 
-        String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
+        MongoCondition subscriptionQuery2 = MongoCondition.subscriptionCondition(subscriptionId2);
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
-                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
+                                                                          .find(subRepeatFlagDataBaseName,
+                                                                                  subRepeatFlagCollectionName,
+                                                                                  subscriptionQuery2)
+                                                                          .get(0)
+                                                                          .toString());
 
         assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
 
@@ -138,7 +147,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId2 = 0;
         String aggrObjId2 = "99998";
 
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
 
         try {
             subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
@@ -155,7 +164,11 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         }
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
-                .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
+                                                                          .find(subRepeatFlagDataBaseName,
+                                                                                  subRepeatFlagCollectionName,
+                                                                                  subscriptionQuery)
+                                                                          .get(0)
+                                                                          .toString());
 
         assertEquals(subscriptionId2, dbResult.get("subscriptionId").toString());
         log.error("DB REQUIREMENTS: " + dbResult.get("requirements").toString());

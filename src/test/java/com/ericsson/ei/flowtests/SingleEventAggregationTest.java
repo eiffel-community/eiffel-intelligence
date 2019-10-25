@@ -49,8 +49,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.services.ISubscriptionService;

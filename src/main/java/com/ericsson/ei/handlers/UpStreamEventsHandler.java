@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;

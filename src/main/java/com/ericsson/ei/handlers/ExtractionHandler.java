@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.ericsson.ei.rules.RulesObject;

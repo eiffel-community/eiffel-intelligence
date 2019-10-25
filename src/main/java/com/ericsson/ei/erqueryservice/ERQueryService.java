@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.eiffelcommons.utils.HttpRequest;
 import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
@@ -72,27 +73,22 @@ public class ERQueryService {
      *                     to include in the result.
      * @param tree         whether or not to retain the tree structure in the result.
      * @return ResponseEntity
-     * @throws PropertyNotFoundException 
+     * @throws PropertyNotFoundException
      */
     public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption,
-            int limit,
-            int levels, boolean tree) throws PropertyNotFoundException, Exception {
-
-        String uri = null;
+            int limit, int levels, boolean tree) throws PropertyNotFoundException, Exception {
         try {
-            ResponseEntity requestToER = sendRequestToER(eventId, searchOption, limit, levels, tree,
-                    uri);
+            ResponseEntity requestToER = sendRequestToER(eventId, searchOption, limit, levels,
+                    tree);
             return requestToER;
         } catch (IOException | URISyntaxException e) {
-            throw new Exception("Error occurred while executing REST POST to " + uri, e);
+            throw new Exception("Error occurred while executing REST POST", e);
         }
     }
 
     private ResponseEntity sendRequestToER(String eventId, SearchOption searchOption, int limit,
-            int levels,
-            boolean tree, String uri)
-            throws IOException, URISyntaxException, ClientProtocolException,
-            PropertyNotFoundException {
+            int levels, boolean tree) throws IOException, URISyntaxException,
+            ClientProtocolException, PropertyNotFoundException {
         if (StringUtils.isBlank(erBaseUrl)) {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
@@ -107,7 +103,7 @@ public class ERQueryService {
                .addParam("tree", Boolean.toString(tree))
                .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
-        uri = request.getURI().toString();
+        String uri = request.getURI().toString();
         LOGGER.debug("The URL to ER is: {}", uri);
 
         return request.performRequest();

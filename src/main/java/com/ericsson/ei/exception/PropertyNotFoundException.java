@@ -1,4 +1,4 @@
-package com.ericsson.ei.erqueryservice;
+package com.ericsson.ei.exception;
 
 public class PropertyNotFoundException extends Exception {
 

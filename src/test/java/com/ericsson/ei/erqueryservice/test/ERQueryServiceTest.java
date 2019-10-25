@@ -40,8 +40,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.erqueryservice.PropertyNotFoundException;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.HttpExecutor;
 import com.ericsson.eiffelcommons.utils.HttpRequest;

@@ -201,6 +201,7 @@ public class SubscriptionService implements ISubscriptionService {
      * @return a String object
      */
     private String generateQuery(String subscriptionName, String ldapUserName) {
+        //TODO: emalinn - this should be moved to MongoQueryBuilder
         String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
         if (ldapUserName != null && !ldapUserName.isEmpty()) {
             String queryUser = String.format(USER_NAME, ldapUserName);

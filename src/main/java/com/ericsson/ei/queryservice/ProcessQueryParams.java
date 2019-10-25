@@ -13,8 +13,6 @@
 */
 package com.ericsson.ei.queryservice;
 
-import java.io.IOException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +27,6 @@ import com.ericsson.ei.handlers.MongoQuery;
 import com.ericsson.ei.handlers.MongoStringQuery;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is responsible to search for an aggregatedObject in the database,
@@ -65,6 +62,8 @@ public class ProcessQueryParams {
         String criteriaString = criteriaObj.toString();
         MongoQuery criteria = new MongoStringQuery(criteriaString);
 
+        
+        //TODO: emalinn - extract this to its own class
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
         } else {
@@ -127,25 +126,4 @@ public class ProcessQueryParams {
         return resultArray;
     }
 
-    /**
-     * This method takes the parameters from the REST GET request query. If the
-     * Aggregated Object matches the condition, then it is returned.
-     *
-     * @param request
-     * @return JSONArray
-     */
-    public JSONArray filterQueryParam(String request) {
-        LOGGER.debug("The query string is : " + request);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode criteriasJsonNode;
-        try {
-            criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
-        } catch (IOException e) {
-            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
-            return new JSONArray();
-        }
-        MongoQuery criterias = new MongoStringQuery(criteriasJsonNode.toString());
-        LOGGER.debug("Freestyle criteria query: {}", criterias);
-        return processAggregatedObject.processQueryAggregatedObject(criterias, databaseName, aggregationCollectionName);
-    }
 }

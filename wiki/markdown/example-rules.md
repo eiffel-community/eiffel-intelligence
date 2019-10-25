@@ -20,5 +20,5 @@ and how they are linked together.
 
 ## Flow with the events required for TestExecution object flow.
 
-<img src="images/test-executionRules.png">
+<img src="images/TestExecutionRules.png">
 </img>

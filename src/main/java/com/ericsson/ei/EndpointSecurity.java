@@ -119,13 +119,14 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         return (password.startsWith("ENC(") && password.endsWith(")"));
     }
     
-    private String decryptPassword(final String inputEncryptedPassword) {
+    private String decryptPassword(final String inputEncryptedPassword) throws Exception {
         TextFormatter textFormatter = new TextFormatter();
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 
         if (jasyptEncryptorPassword.isEmpty()) {
             LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
-            System.exit(1);
+            throw new Exception("Failed to initiate LDAP when password is encrypted. " + 
+                                "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
         }
 
         encryptor.setPassword(jasyptEncryptorPassword);

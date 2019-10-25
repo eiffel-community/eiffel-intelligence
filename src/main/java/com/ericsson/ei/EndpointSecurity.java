@@ -92,15 +92,19 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
         TextFormatter textFormatter = new TextFormatter();
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
- 
-        encryptor.setPassword(jasyptEncryptorPassword);
  
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
         
             if (checkIfPasswordEncrypted(password)) {
+                StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+                if (jasyptEncryptorPassword.isEmpty()) {
+                    LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
+                    System.exit(1);
+                }
+                encryptor.setPassword(jasyptEncryptorPassword);
+
                 password = textFormatter.removeEncryptionParentheses(password);
                 password = encryptor.decrypt(password);
             }

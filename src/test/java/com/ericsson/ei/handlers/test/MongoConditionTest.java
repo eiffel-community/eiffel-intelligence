@@ -43,6 +43,16 @@ public class MongoConditionTest {
     }
 
     @Test
+    public void testGetsubscriptionNameConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.subscriptionNameCondition(
+                "subscription-name");
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{\"subscriptionName\":\"subscription-name\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
     public void testGetArbitraryConditionFromString() {
         MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
                 "id-as-string");

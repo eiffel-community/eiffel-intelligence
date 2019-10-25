@@ -4,10 +4,11 @@ import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class MongoCondition implements MongoQuery{
+public class MongoCondition implements MongoQuery {
 
     private static final String ID = "_id";
     private static final String SUBSCRIPTION_ID = "subscriptionId";
+    private static final String SUBSCRIPTION_NAME = "subscriptionName";
 
     private JSONObject condition;
 
@@ -36,7 +37,8 @@ public class MongoCondition implements MongoQuery{
 
     /**
      * Creates a MongoCondition to find a document containing a subscription matching the given
-     * subscription id. Called with <code>subscription-id</code> the JSON will look like:<p>
+     * subscription id. Called with <code>subscription-id</code> the JSON will look like:
+     * <p>
      * <code>{"subscriptionId":"subscription-id"}
      *
      * @param subscriptionIdValue the value of the subscription id
@@ -44,6 +46,19 @@ public class MongoCondition implements MongoQuery{
      */
     public static MongoCondition subscriptionCondition(String subscriptionIdValue) {
         return condition(SUBSCRIPTION_ID, subscriptionIdValue);
+    }
+
+    /**
+     * Creates a MongoCondition to find a document containing a subscription matching the given
+     * subscription name. Called with <code>subscription-name</code> the JSON will look like:
+     * <p>
+     * <code>{"subscriptionName":"subscription-name"}
+     *
+     * @param subscriptionName the value of the subscription name
+     * @return A MongoCondition with subscription name set
+     */
+    public static MongoCondition subscriptionNameCondition(String subscriptionName) {
+        return condition(SUBSCRIPTION_NAME, subscriptionName);
     }
 
     /**
@@ -56,7 +71,7 @@ public class MongoCondition implements MongoQuery{
      * @return
      */
     public static MongoCondition condition(String key, String value) {
-        return  new MongoCondition(key,value);
+        return new MongoCondition(key, value);
     }
 
     /**
@@ -100,6 +115,4 @@ public class MongoCondition implements MongoQuery{
         condition = new JSONObject();
         condition.put(key, value);
     }
-
-
 }

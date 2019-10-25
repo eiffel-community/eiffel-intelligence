@@ -254,7 +254,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
         LOGGER.debug("Check if FailedNotification and " + subscriptionName + " exist in Database");
-        final MongoCondition queryRequest = MongoCondition.subscriptionCondition(subscriptionName);
+        final MongoCondition queryRequest = MongoCondition.subscriptionNameCondition(subscriptionName);
         String subscriptionNameCheck = objMapper.readValue(
                 mongoDBHandler.find(failedNotificationDatabaseName,
                         failedNotificationCollectionName, queryRequest)

@@ -10,7 +10,8 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/package com.ericsson.ei.mongo;
+*/
+package com.ericsson.ei.mongo;
 
 import org.json.JSONObject;
 
@@ -21,6 +22,7 @@ public class MongoCondition implements MongoQuery {
     private static final String ID = "_id";
     private static final String SUBSCRIPTION_ID = "subscriptionId";
     private static final String SUBSCRIPTION_NAME = "subscriptionName";
+    private static final String LDAP_USER_NAME = "ldapUserName";
 
     private JSONObject condition;
 
@@ -64,13 +66,25 @@ public class MongoCondition implements MongoQuery {
      * Creates a MongoCondition to find a document containing a subscription matching the given
      * subscription name. Called with <code>subscription-name</code> the JSON will look like:
      * <p>
-     * <code>{"subscriptionName":"subscription-name"}
+     * <code>{"ldapUserName":"ldap-user-name"}
      *
      * @param subscriptionName the value of the subscription name
      * @return A MongoCondition with subscription name set
      */
     public static MongoCondition subscriptionNameCondition(String subscriptionName) {
         return condition(SUBSCRIPTION_NAME, subscriptionName);
+    }
+
+    /**
+     * Creates a MongoCondition to find a document containing a ldapUserName matching the given
+     *  name. Called with <code>ldap-user-name</code> the JSON will look like:
+     * <p>
+     * <code>{"subscriptionName":"subscription-name"}
+     * @param ldapUserName
+     * @return
+     */
+    public static MongoCondition ldapUserNameCondition(String ldapUserName) {
+        return condition(LDAP_USER_NAME, ldapUserName);
     }
 
     /**
@@ -111,6 +125,10 @@ public class MongoCondition implements MongoQuery {
      */
     protected static MongoCondition condition(String key, String value) {
         return new MongoCondition(key, value);
+    }
+
+    protected JSONObject asJSONObject() {
+        return condition;
     }
 
     /**

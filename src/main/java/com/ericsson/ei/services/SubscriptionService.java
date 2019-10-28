@@ -36,6 +36,7 @@ import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,10 +77,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
-        // empty ldapUserName means that result of query should not depend from
-        // userName
-        String queryString = generateQuery(subscriptionName, "");
-        MongoQuery query = new MongoStringQuery(queryString);
+        MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
@@ -101,10 +99,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean doSubscriptionExist(String subscriptionName) {
-        // empty userName means that result of query should not depend from
-        // userName
-        String queryString = generateQuery(subscriptionName, "");
-        MongoQuery  query = new MongoStringQuery(queryString);
+        MongoQuery  query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
     }
@@ -140,9 +135,13 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
-        String ldapUserName = getLdapUserName(subscriptionName);
-        String deleteQueryString = generateQuery(subscriptionName, ldapUserName);
-        MongoQuery deleteQuery = new MongoStringQuery(deleteQueryString);
+        MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+                subscriptionName);
+        MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+
+        MongoQuery deleteQuery = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
+                ldapUserNameCondition);
+
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
             MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
@@ -155,7 +154,8 @@ public class SubscriptionService implements ISubscriptionService {
                         subscriptionName);
             }
         } else if (doSubscriptionExist(subscriptionName)) {
-            String message = "Failed to delete subscription \"" + subscriptionName + "\" invalid ldapUserName";
+            String message = "Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName";
             throw new AccessException(message);
         }
 
@@ -248,5 +248,18 @@ public class SubscriptionService implements ISubscriptionService {
         }
 
         return ldapUserName;
+    }
+
+
+    private MongoCondition getLdapUserNameCondition(String subscriptionName) {
+        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+
+        boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
+        if (ownerExist) {
+            return MongoCondition.ldapUserNameCondition(ldapUserName);
+        } else {
+            return MongoCondition.emptyCondition();
+        }
+
     }
 }

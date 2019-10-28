@@ -312,7 +312,6 @@ public class SubscriptionServiceTest {
             subscription2 = null;
             subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
             subscriptionName = subscription2.getSubscriptionName();
-            String subscriptionUserName = subscription2.getUserName();
 
             assertEquals(subscriptionName, expectedSubscriptionName);
 

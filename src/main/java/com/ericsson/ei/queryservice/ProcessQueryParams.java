@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.controller.QueryControllerImpl;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -59,20 +60,9 @@ public class ProcessQueryParams {
      */
     public JSONArray runQuery(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
-        String criteriaString = criteriaObj.toString();
-        MongoQuery criteria = new MongoStringQuery(criteriaString);
-
-
-        //TODO: emalinn - extract this to its own class
-        if (optionsObj == null || optionsObj.toString().equals("{}")) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
-        } else {
-            String options = optionsObj.toString();
-            LOGGER.debug("The options are: {}", options);
-            String requestString = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
-            MongoQuery request = new MongoStringQuery(requestString);
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
-        }
+        MongoQuery query = MongoQueryBuilder.buildAnd(criteriaObj, optionsObj);
+        resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(query,
+                databaseName, aggregationCollectionName);
 
         if(hasFilterCondition(filter)) {
             JSONArray filteredResults = filterResult(filter, resultAggregatedObject);

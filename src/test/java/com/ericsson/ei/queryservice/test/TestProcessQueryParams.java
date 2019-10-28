@@ -68,8 +68,8 @@ public class TestProcessQueryParams {
             JSONObject options = (JSONObject) query.get("options");
             String filter = null;
 
-            String requestString = "{ \"$and\" : [ " + criteria.toString() + ","
-                    + options.toString() + " ] }";
+            String requestString = "{\"$and\":[" + criteria.toString() + ","
+                    + options.toString() + "]}";
             ArgumentMatcher<MongoQuery> requestStringMatches =  mQ -> mQ.toString().equals(requestString);
             when(processAggregatedObject.processQueryAggregatedObject(
                     ArgumentMatchers.argThat(requestStringMatches),

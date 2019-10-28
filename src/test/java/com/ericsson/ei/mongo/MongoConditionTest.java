@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.ericsson.ei.mongo.MongoCondition;
@@ -53,6 +54,16 @@ public class MongoConditionTest {
     }
 
     @Test
+    public void testLdapUserNameConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.ldapUserNameCondition(
+                "ldap-user-name");
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{\"ldapUserName\":\"ldap-user-name\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
     public void testGetArbitraryConditionFromString() {
         MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
                 "id-as-string");
@@ -69,6 +80,20 @@ public class MongoConditionTest {
         String actual = mongoCondition.toString();
         String expect = "{\"_id\":\"id-as-string\"}";
         assertThat(actual, is(equalTo(expect)));
+    }
+
+    /**
+     * Interface is only used in the package to support building queries of Mongo Conditions
+     */
+    @Test
+    public void testIdConditionAsJSONObject() {
+        String conditionString = "id-as-string";
+        MongoCondition mongoCondition = MongoCondition.idCondition(conditionString);
+
+        JSONObject asJSONObject = mongoCondition.asJSONObject();
+        Object actual = asJSONObject.get("_id");
+
+        assertThat(actual, is(equalTo(conditionString)));
     }
 
     @Test

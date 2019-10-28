@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.MongoQuery;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
 import com.mongodb.MongoWriteException;
 
 

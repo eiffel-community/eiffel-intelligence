@@ -40,9 +40,9 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.handlers.MatchIdRulesHandler;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.test.utils.TestConfigs;

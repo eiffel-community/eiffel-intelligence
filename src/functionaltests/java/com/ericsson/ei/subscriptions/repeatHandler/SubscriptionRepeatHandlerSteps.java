@@ -21,8 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.handlers.MongoCondition;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.subscription.RunSubscription;
 import com.ericsson.ei.utils.FunctionalTestBase;

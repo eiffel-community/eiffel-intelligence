@@ -26,7 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.handlers.MongoQuery;
+import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -102,6 +102,6 @@ public class TestProcessQueryParams {
         }
     }
 
-    // TODO: emalinn - Create a test to test the filter
+    // TODO: emalinn - com.ericsson.ei.queryservice.ProcessQueryParams.filterResult(String, JSONArray) is currently untested
 
 }

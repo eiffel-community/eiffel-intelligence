@@ -39,8 +39,8 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
 import com.ericsson.eiffelcommons.subscriptionobject.MailSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;

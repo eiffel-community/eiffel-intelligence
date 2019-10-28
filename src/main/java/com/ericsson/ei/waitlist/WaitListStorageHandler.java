@@ -17,10 +17,10 @@
 package com.ericsson.ei.waitlist;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.handlers.MongoCondition;
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.MongoQuery;
-import com.ericsson.ei.handlers.MongoStringQuery;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.BasicDBObject;

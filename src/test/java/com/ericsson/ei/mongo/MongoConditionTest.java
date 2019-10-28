@@ -1,4 +1,4 @@
-package com.ericsson.ei.handlers.test;
+package com.ericsson.ei.mongo;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import com.ericsson.ei.handlers.MongoCondition;
+import com.ericsson.ei.mongo.MongoCondition;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 

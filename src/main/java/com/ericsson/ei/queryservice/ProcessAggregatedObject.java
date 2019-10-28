@@ -25,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.MongoCondition;
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.ericsson.ei.handlers.MongoQuery;
-import com.ericsson.ei.handlers.MongoStringQuery;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoStringQuery;
 
 /**
  * This class represents the mechanism to extract the aggregated object, which

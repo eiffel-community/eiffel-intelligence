@@ -1,4 +1,16 @@
-package com.ericsson.ei.handlers;
+/*
+   Copyright 2019 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/package com.ericsson.ei.mongo;
 
 import org.json.JSONObject;
 
@@ -62,19 +74,6 @@ public class MongoCondition implements MongoQuery {
     }
 
     /**
-     * Creates a MongoCondition with key as <code>key</code> and value as <code>value</code>. Called
-     * with <code>my-key</code> and <code>my-value</code> the JSON will look like this:
-     * <code>{"my-key":"my-value"}</code>
-     *
-     * @param key
-     * @param value
-     * @return
-     */
-    public static MongoCondition condition(String key, String value) {
-        return new MongoCondition(key, value);
-    }
-
-    /**
      * Creates an empty MongoCondition. As JSON it will look like this: <code>{}</code>
      *
      * @return An empty MongoCondition
@@ -99,6 +98,19 @@ public class MongoCondition implements MongoQuery {
     @Override
     public String toString() {
         return getQueryString();
+    }
+
+    /**
+     * Creates a MongoCondition with key as <code>key</code> and value as <code>value</code>. Called
+     * with <code>my-key</code> and <code>my-value</code> the JSON will look like this:
+     * <code>{"my-key":"my-value"}</code>
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    protected static MongoCondition condition(String key, String value) {
+        return new MongoCondition(key, value);
     }
 
     /**

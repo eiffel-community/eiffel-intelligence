@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.controller.QueryControllerImpl;
-import com.ericsson.ei.handlers.MongoQuery;
-import com.ericsson.ei.handlers.MongoStringQuery;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -62,7 +62,7 @@ public class ProcessQueryParams {
         String criteriaString = criteriaObj.toString();
         MongoQuery criteria = new MongoStringQuery(criteriaString);
 
-        
+
         //TODO: emalinn - extract this to its own class
         if (optionsObj == null || optionsObj.toString().equals("{}")) {
             resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);

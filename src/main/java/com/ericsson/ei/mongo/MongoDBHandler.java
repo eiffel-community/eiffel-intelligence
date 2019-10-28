@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers;
+package com.ericsson.ei.mongo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,21 +74,6 @@ public class MongoDBHandler {
     @PreDestroy
     public void close() {
         mongoClient.close();
-    }
-
-    // Establishing the connection to mongodb and creating a collection
-    private void createConnection() {
-        if (!StringUtils.isBlank(mongoProperties.getUsername())
-                && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
-            ServerAddress address = new ServerAddress(mongoProperties.getHost(),
-                    mongoProperties.getPort());
-            MongoCredential credential = MongoCredential.createCredential(
-                    mongoProperties.getUsername(),
-                    mongoProperties.getDatabase(), mongoProperties.getPassword());
-            mongoClient = new MongoClient(address, Collections.singletonList(credential));
-        } else {
-            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
-        }
     }
 
     /**
@@ -156,38 +141,6 @@ public class MongoDBHandler {
             result = doFind(dataBaseName, collectionName, query);
         } catch (Exception e) {
             LOGGER.error("Failed to retrieve documents.", e);
-        }
-
-        return result;
-    }
-
-    private ArrayList<String> doFind(String dataBaseName, String collectionName,
-            MongoQuery query) {
-        LOGGER.debug(
-                "Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}",
-                dataBaseName, collectionName, query.getQueryString());
-
-        ArrayList<String> result = new ArrayList<>();
-
-        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-        if (collection == null) {
-            LOGGER.debug("Collection {} is empty in database {}", collectionName, dataBaseName);
-            return result;
-        }
-
-        BasicDBObject conditionsAsDbObject = BasicDBObject.parse(query.getQueryString());
-        FindIterable<Document> findResults = collection.find(conditionsAsDbObject);
-        for (Document document : findResults) {
-            result.add(JSON.serialize(document));
-        }
-
-        if (result.size() != 0) {
-            LOGGER.debug("find() :: database: {} and collection: {} fetched No of : {}",
-                    dataBaseName, collectionName, result.size());
-        } else {
-            LOGGER.debug(
-                    "find() :: database: {} and collection: {} documents are not found",
-                    dataBaseName, collectionName);
         }
 
         return result;
@@ -272,6 +225,106 @@ public class MongoDBHandler {
         return false;
     }
 
+    /**
+     * This method is used for the create time to live index
+     *
+     * @param dataBaseName
+     * @param collectionName
+     * @param fieldName      for index creation field
+     * @param ttlValue       seconds
+     */
+    public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
+            int ttlValue) {
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
+                TimeUnit.SECONDS);
+        collection.createIndex(Indexes.ascending(fieldName), indexOptions);
+    }
+
+    /**
+     * This method is used to drop a collection.
+     *
+     * @param dataBaseName   to know which database to drop a collection from
+     * @param collectionName to know which collection to drop
+     */
+    public void dropCollection(String dataBaseName, String collectionName) {
+        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
+        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+        mongoCollection.drop();
+    }
+
+    /**
+     * This method is used to drop a database. For example after testing.
+     *
+     * @param dataBaseName to know which database to remove
+     */
+    public void dropDatabase(String databaseName) {
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+        db.drop();
+    }
+
+    /**
+     * Returns a boolean indicating if MongoDB is up and running or not.
+     *
+     * @return
+     */
+    public boolean isMongoDBServerUp() {
+        try {
+            mongoClient.getAddress();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    // Establishing the connection to mongodb and creating a collection
+    private void createConnection() {
+        if (!StringUtils.isBlank(mongoProperties.getUsername())
+                && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
+            ServerAddress address = new ServerAddress(mongoProperties.getHost(),
+                    mongoProperties.getPort());
+            MongoCredential credential = MongoCredential.createCredential(
+                    mongoProperties.getUsername(),
+                    mongoProperties.getDatabase(), mongoProperties.getPassword());
+            mongoClient = new MongoClient(address, Collections.singletonList(credential));
+        } else {
+            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+        }
+    }
+
+    private ArrayList<String> doFind(String dataBaseName, String collectionName,
+            MongoQuery query) {
+        LOGGER.debug(
+                "Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}",
+                dataBaseName, collectionName, query.getQueryString());
+
+        ArrayList<String> result = new ArrayList<>();
+
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        if (collection == null) {
+            LOGGER.debug("Collection {} is empty in database {}", collectionName, dataBaseName);
+            return result;
+        }
+
+        BasicDBObject conditionsAsDbObject = BasicDBObject.parse(query.getQueryString());
+        FindIterable<Document> findResults = collection.find(conditionsAsDbObject);
+        for (Document document : findResults) {
+            result.add(JSON.serialize(document));
+        }
+
+        if (result.size() != 0) {
+            LOGGER.debug("find() :: database: {} and collection: {} fetched No of : {}",
+                    dataBaseName, collectionName, result.size());
+        } else {
+            LOGGER.debug(
+                    "find() :: database: {} and collection: {} documents are not found",
+                    dataBaseName, collectionName);
+        }
+
+        return result;
+    }
+
     private boolean doDrop(String dataBaseName, String collectionName, MongoQuery query) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
@@ -290,22 +343,6 @@ public class MongoDBHandler {
             return false;
         }
 
-    }
-
-    /**
-     * This method is used for the create time to live index
-     *
-     * @param dataBaseName
-     * @param collectionName
-     * @param fieldName      for index creation field
-     * @param ttlValue       seconds
-     */
-    public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
-            int ttlValue) {
-        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-        IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
-                TimeUnit.SECONDS);
-        collection.createIndex(Indexes.ascending(fieldName), indexOptions);
     }
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName,
@@ -367,42 +404,5 @@ public class MongoDBHandler {
             mongoClient.close();
         }
         mongoClient = null;
-    }
-
-    /**
-     * This method is used to drop a collection.
-     *
-     * @param dataBaseName   to know which database to drop a collection from
-     * @param collectionName to know which collection to drop
-     */
-    public void dropCollection(String dataBaseName, String collectionName) {
-        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
-        mongoCollection.drop();
-    }
-
-    /**
-     * This method is used to drop a database. For example after testing.
-     *
-     * @param dataBaseName to know which database to remove
-     */
-    public void dropDatabase(String databaseName) {
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        db.drop();
-    }
-
-    /**
-     * Returns a boolean indicating if MongoDB is up and running or not.
-     *
-     * @return
-     */
-    public boolean isMongoDBServerUp() {
-        try {
-            mongoClient.getAddress();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
     }
 }

@@ -64,6 +64,24 @@ public class MongoConditionTest {
     }
 
     @Test
+    public void testLockConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.lockCondition("0");
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{\"lock\":\"0\"}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testLockNullConditionFromString() {
+        MongoCondition mongoCondition = MongoCondition.lockNullCondition();
+
+        String actual = mongoCondition.getQueryString();
+        String expect = "{\"lock\":null}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
     public void testGetArbitraryConditionFromString() {
         MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
                 "id-as-string");

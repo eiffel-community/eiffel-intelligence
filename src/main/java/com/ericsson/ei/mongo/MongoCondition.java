@@ -20,9 +20,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class MongoCondition implements MongoQuery {
 
     private static final String ID = "_id";
+    private static final String LOCK = "lock";
     private static final String SUBSCRIPTION_ID = "subscriptionId";
     private static final String SUBSCRIPTION_NAME = "subscriptionName";
     private static final String LDAP_USER_NAME = "ldapUserName";
+    public static final Object NULL = JSONObject.NULL;
 
     private JSONObject condition;
 
@@ -66,7 +68,7 @@ public class MongoCondition implements MongoQuery {
      * Creates a MongoCondition to find a document containing a subscription matching the given
      * subscription name. Called with <code>subscription-name</code> the JSON will look like:
      * <p>
-     * <code>{"ldapUserName":"ldap-user-name"}
+     * <code>{"subscriptionName":"subscription-name"}
      *
      * @param subscriptionName the value of the subscription name
      * @return A MongoCondition with subscription name set
@@ -77,14 +79,39 @@ public class MongoCondition implements MongoQuery {
 
     /**
      * Creates a MongoCondition to find a document containing a ldapUserName matching the given
-     *  name. Called with <code>ldap-user-name</code> the JSON will look like:
+     * name. Called with <code>ldap-user-name</code> the JSON will look like:
      * <p>
-     * <code>{"subscriptionName":"subscription-name"}
+     * <code>{"ldapUserName":"ldap-user-name"}
+     *
      * @param ldapUserName
-     * @return
+     * @return A MongoCondition with ladap username set
      */
     public static MongoCondition ldapUserNameCondition(String ldapUserName) {
         return condition(LDAP_USER_NAME, ldapUserName);
+    }
+
+    /**
+     * Creates a MongoCondition to find a document containing a lock matching the given value.
+     * Called with <code>0</code> the JSON will look like:
+     * <p>
+     * <code>{"lock":"0"}
+     *
+     * @param lockValue
+     * @return A MongoCondition with lock set
+     */
+    public static MongoCondition lockCondition(String lock) {
+        return condition(LOCK, lock);
+    }
+
+    /**
+     * Creates a MongoCondition to find a document not containing a lock. The JSON will look like:
+     * <p>
+     * <code>{"lock":null}
+     *
+     * @return A MongoCondition with lock missing
+     */
+    public static MongoCondition lockNullCondition() {
+        return new MongoCondition(LOCK, NULL);
     }
 
     /**
@@ -144,5 +171,13 @@ public class MongoCondition implements MongoQuery {
     private MongoCondition(String key, String value) {
         condition = new JSONObject();
         condition.put(key, value);
+    }
+
+    /**
+     * Private constructor intended to handle the null case
+     */
+    private MongoCondition(String key, Object object) {
+        condition = new JSONObject();
+        condition.put(key, object);
     }
 }

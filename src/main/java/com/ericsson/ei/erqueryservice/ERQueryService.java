@@ -94,7 +94,7 @@ public class ERQueryService {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
 
-        prepareRequest(eventId, searchOption, levels, levels, tree);
+        prepareRequest(eventId, searchOption, limit, levels, tree);
         ResponseEntity response = sendRequest();
         return response;
     }

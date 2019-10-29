@@ -33,6 +33,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.utils.TextFormatter;
 
 @Configuration
@@ -91,21 +92,16 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
-        TextFormatter textFormatter = new TextFormatter();
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
- 
-        encryptor.setPassword(jasyptEncryptorPassword);
  
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
         
             if (checkIfPasswordEncrypted(password)) {
-                password = textFormatter.removeEncryptionParentheses(password);
-                password = encryptor.decrypt(password);
+                password = decryptPassword(password);
             }
             else {
-                password = decodeBase64(server.getString("password"));
+                password = decodeBase64(password);
             }
             
             auth
@@ -122,5 +118,21 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     
     private boolean checkIfPasswordEncrypted(final String password) {
         return (password.startsWith("ENC(") && password.endsWith(")"));
+    }
+    
+    private String decryptPassword(final String inputEncryptedPassword) throws Exception {
+        TextFormatter textFormatter = new TextFormatter();
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+
+        if (jasyptEncryptorPassword.isEmpty()) {
+            LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
+            throw new AbortExecutionException("Failed to initiate LDAP when password is encrypted. " + 
+                                "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
+        }
+
+        encryptor.setPassword(jasyptEncryptorPassword);
+
+        String encryptedPassword = textFormatter.removeEncryptionParentheses(inputEncryptedPassword);
+        return encryptor.decrypt(encryptedPassword);
     }
 }

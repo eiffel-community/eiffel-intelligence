@@ -28,7 +28,7 @@ public interface ISubscriptionRepository {
 
     ArrayList<String> getSubscription(MongoQuery query);
 
-    Document modifySubscription(String stringSubscription, String subscriptionName) throws JSONException;
+    Document modifySubscription(MongoQuery query, String subscriptionName) throws JSONException;
 
     boolean deleteSubscription(MongoQuery queary);
 

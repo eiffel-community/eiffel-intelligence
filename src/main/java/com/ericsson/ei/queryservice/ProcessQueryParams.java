@@ -26,7 +26,6 @@ import com.ericsson.ei.controller.QueryControllerImpl;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.mongo.MongoQueryBuilder;
-import com.ericsson.ei.mongo.MongoStringQuery;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**

@@ -144,14 +144,14 @@ public class SubscriptionRepeatDbHandler {
     private boolean updateExistingMatchedSubscriptionWithAggrObjId(
             String subscriptionId, int requirementId, String aggrObjId) {
 
-        JsonNode queryJsonNode = prepareSubscriptionQuery(subscriptionId);
+        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         JsonNode updateDocJsonNode = prepareQueryToUpdateAggregation(subscriptionId, requirementId,
                 aggrObjId);
 
         Document document = null;
 
         document = mongoDbHandler.findAndModify(dataBaseName, collectionName,
-                queryJsonNode.toString(), updateDocJsonNode.toString());
+                subscriptionQuery, updateDocJsonNode.toString());
         if (document != null && !document.isEmpty()) {
             LOGGER.debug(
                     "Successfully updated Matched Subscription Aggregated Object list:"
@@ -192,17 +192,6 @@ public class SubscriptionRepeatDbHandler {
         } catch (MongoWriteException e) {
             LOGGER.error("Failed to insert the document into database.", e);
         }
-    }
-
-    private JsonNode prepareSubscriptionQuery(String subscriptionId) {
-        try {
-            String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-            JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
-            return queryJsonNode;
-        } catch (Exception e) {
-            LOGGER.error("Failed to create subscription query.", e);
-        }
-        return null;
     }
 
     private JsonNode prepareQueryToUpdateAggregation(String subscriptionId,

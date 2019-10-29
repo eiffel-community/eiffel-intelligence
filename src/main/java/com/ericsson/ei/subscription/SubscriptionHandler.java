@@ -16,15 +16,12 @@ package com.ericsson.ei.subscription;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.fasterxml.jackson.databind.JsonNode;

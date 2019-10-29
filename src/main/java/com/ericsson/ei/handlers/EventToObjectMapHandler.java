@@ -86,7 +86,7 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> list =  getEventToObjectList(eventId);
         boolean firstTime = list.isEmpty();
         list = updateList(list, eventId, objectId);
@@ -94,7 +94,7 @@ public class EventToObjectMapHandler {
         JsonNode entry = null;
 
         try {
-            entry = new ObjectMapper().readValue(condition, JsonNode.class);
+            entry = new ObjectMapper().readValue(condition.toString(), JsonNode.class);
             ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
             ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
             String mapStr = entry.toString();

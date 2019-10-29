@@ -53,7 +53,7 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     }
 
     @Override
-    public Document modifySubscription(String query, String stringSubscription) throws JSONException {
+    public Document modifySubscription(MongoQuery query, String stringSubscription) throws JSONException {
         JSONObject subscriptionJson = new JSONObject(stringSubscription);
         if(subscriptionJson.has("password") && subscriptionJson.getString("password").equals("")) {
             subscriptionJson.remove("password");

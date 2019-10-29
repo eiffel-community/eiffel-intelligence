@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -37,20 +36,15 @@ import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.mongo.MongoQueryBuilder;
-import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoWriteException;
 
 @Component
 public class SubscriptionService implements ISubscriptionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
-
-    private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
-    private static final String USER_NAME = "{'ldapUserName':'%s'}";
-
-    private static final String AND = "{$and:[%s]}";
 
     @Value("${spring.application.name}")
     private String SpringApplicationName;
@@ -108,11 +102,15 @@ public class SubscriptionService implements ISubscriptionService {
     public boolean modifySubscription(Subscription subscription, String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         Document result = null;
-        String query;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = getLdapUserName(subscriptionName);
-            query = generateQuery(subscriptionName, ldapUserName);
+
+            MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+                    subscriptionName);
+            MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+            MongoQuery query = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
+                    ldapUserNameCondition);
+
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
                 MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
@@ -192,26 +190,6 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     /**
-     * This method generate query for mongoDB
-     *
-     * @param subscriptionName-
-     *            subscription name
-     * @param ldapUserName-
-     *            name of the current user
-     * @return a String object
-     */
-    private String generateQuery(String subscriptionName, String ldapUserName) {
-        //TODO: emalinn - this should be moved to MongoQueryBuilder
-        String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (ldapUserName != null && !ldapUserName.isEmpty()) {
-            String queryUser = String.format(USER_NAME, ldapUserName);
-            String queryTemp = query + "," + queryUser;
-            query = String.format(AND, queryTemp);
-        }
-        return query;
-    }
-
-    /**
      * This method finds whether a given subscription has an owner
      *
      * @param subscriptionName-
@@ -232,24 +210,6 @@ public class SubscriptionService implements ISubscriptionService {
         }
         return ownerExist;
     }
-
-    /**
-     * This method ldapUserName, if exists, otherwise return empty string
-     *
-     * @param subscriptionName-
-     *            subscription name
-     * @return a string
-     */
-    private String getLdapUserName(String subscriptionName) {
-        String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
-        boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-        if (!ownerExist) {
-            ldapUserName = "";
-        }
-
-        return ldapUserName;
-    }
-
 
     private MongoCondition getLdapUserNameCondition(String subscriptionName) {
         String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";

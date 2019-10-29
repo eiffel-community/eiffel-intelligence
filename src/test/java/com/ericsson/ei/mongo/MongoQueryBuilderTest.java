@@ -65,7 +65,7 @@ public class MongoQueryBuilderTest {
     }
 
     @Test
-    public void testAndQueryToMongoConditions() {
+    public void testAndQueryFromMongoConditions() {
         MongoCondition arg1 = MongoCondition.subscriptionNameCondition("subscription-name");
         MongoCondition arg2 = MongoCondition.ldapUserNameCondition("ldap-user-name");
 
@@ -73,6 +73,34 @@ public class MongoQueryBuilderTest {
         String expect = "{\"$and\":"
                 + "[{\"subscriptionName\":\"subscription-name\"},"
                 + "{\"ldapUserName\":\"ldap-user-name\"}]}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testOrQueryFromMongoConditions() {
+        MongoCondition arg1 = MongoCondition.lockNullCondition();
+        MongoCondition arg2 = MongoCondition.lockCondition("0");
+
+        String actual = MongoQueryBuilder.buildOr(arg1, arg2).toString();
+        String expect = "{\"$or\":"
+                + "[{\"lock\":null},"
+                + "{\"lock\":\"0\"}]}";
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testCombinedOrQueryFromMongoConditions() {
+        MongoCondition arg1 = MongoCondition.lockNullCondition();
+        MongoCondition arg2 = MongoCondition.lockCondition("0");
+        MongoQueryBuilder orQuery = MongoQueryBuilder.buildOr(arg1, arg2);
+
+        MongoCondition idCondition = MongoCondition.idCondition("id-as-string");
+
+        String actual = orQuery.append(idCondition).toString();
+        String expect = "{\"$or\":"
+                + "[{\"lock\":null},"
+                + "{\"lock\":\"0\"}],"
+                + "\"_id\":\"id-as-string\"}";
         assertThat(actual, is(equalTo(expect)));
     }
 }

@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 public class MongoQueryBuilder implements MongoQuery {
 
+    private static final String OR = "$or";
     private static final String AND = "$and";
     private JSONObject query;
 
@@ -52,18 +53,87 @@ public class MongoQueryBuilder implements MongoQuery {
      * @param jsonObjects Objects to build the "and" query with
      * @return the "and" query
      */
-    public static MongoQuery buildAnd(JSONObject... jsonObjects) {
+    public static MongoQueryBuilder buildAnd(JSONObject... jsonObjects) {
         return new MongoQueryBuilder(AND, jsonObjects);
     }
 
     /**
-     * Will build an "and" query see {@link #buildAnd(JSONObject...)} but with {@link MongoCondition}.
+     * Will build an "and" query see {@link #buildAnd(JSONObject...)} but with
+     * {@link MongoCondition}.
+     *
      * @param mongoConditions condition to build the "and" query with
      * @return the "and" query
      */
-    public static MongoQuery buildAnd(MongoCondition... mongoConditions) {
+    public static MongoQueryBuilder buildAnd(MongoCondition... mongoConditions) {
         JSONObject[] conditionsAsJSON = getJsonObjects(mongoConditions);
         return buildAnd(conditionsAsJSON);
+    }
+
+    /**
+     * Will build an "or" query of the given JSONObjects removing null and empty objects. If the
+     * user only gives one object or one object remains after filtering, the builder will return a
+     * query containing only that condition. If all objects are filtered out the build will return
+     * an empty object.
+     * <p>
+     * <code>MongoQueryBuilder.buildAnd(jsonObject1, jsonObject2).toString()</code><br/>
+     * will result in<br/>
+     * <code>{"$or":[&lt;jsonObject1&gt;,&lt;jsonObject2&gt;]}</code><br/>
+     * </p>
+     *
+     * <p>
+     * <code>MongoQueryBuilder.buildAnd(jsonObject).toString()</code><br/>
+     * will result in<br/>
+     * <code>&lt;jsonObject&gt;</code><br/>
+     * </p>
+     *
+     * <p>
+     * <code>MongoQueryBuilder.buildAnd(nullJsonObject).toString()</code><br/>
+     * will result in<br/>
+     * <code>{}</code><br/>
+     * </p>
+     *
+     * @param jsonObjects Objects to build the "or" query with
+     * @return the "or" query
+     */
+    public static MongoQueryBuilder buildOr(JSONObject... jsonObjects) {
+        return new MongoQueryBuilder(OR, jsonObjects);
+    }
+
+    /**
+     * Will build an "or" query see {@link #buildOr(JSONObject...)} but with {@link MongoCondition}.
+     *
+     * @param mongoConditions condition to build the "or" query with
+     * @return the "or" query
+     */
+    public static MongoQueryBuilder buildOr(MongoCondition... mongoConditions) {
+        JSONObject[] conditionsAsJSON = getJsonObjects(mongoConditions);
+        return buildOr(conditionsAsJSON);
+    }
+
+    /**
+     * Will Append the given {@link MongoCondition} to the query.
+     * <p>
+     * <code>MongoQueryBuilder.buildAnd(jsonObject1, jsonObject2).append(mongoCondition).toString()</code><br/>
+     * will result in<br/>
+     * <code>{"$or":[&lt;jsonObject1&gt;,&lt;jsonObject2&gt;],&lt;mongoCondition&gt;}</code><br/>
+     * </p>
+     *
+     * @param condition The {@link MongoCondition} to append
+     * @return The MongoQueryBuilder to support a fluid interface
+     */
+    public MongoQueryBuilder append(MongoCondition condition) {
+        JSONObject conditionAsJSON = condition.asJSONObject();
+        String[] conditionKeys = JSONObject.getNames(conditionAsJSON);
+        for (String conditionKey : conditionKeys) {
+            if (query.has(conditionKey)) {
+                throw new IllegalArgumentException(String.format(
+                        "Could not append the MongoCondition to the query as its keys already exists. "
+                                + "Query: %s, MongoCondition: %s",
+                        query, conditionAsJSON));
+            }
+            query.put(conditionKey, conditionAsJSON.get(conditionKey));
+        }
+        return this;
     }
 
     /**
@@ -94,9 +164,6 @@ public class MongoQueryBuilder implements MongoQuery {
 
     /**
      * Private constructor to force user to give mandatory parameters
-     *
-     * @param operand
-     * @param jsonObjects
      */
     private MongoQueryBuilder(String operand, JSONObject... jsonObjects) {
 

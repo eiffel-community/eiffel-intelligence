@@ -16,7 +16,11 @@
 */
 package com.ericsson.ei.handlers.test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -55,8 +59,6 @@ public class ObjectHandlerTest {
 
     private JmesPathInterface jmesPathInterface = new JmesPathInterface();
 
-    private SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
-
     private RulesObject rulesObject;
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     private JsonNode rulesJson;
@@ -71,14 +73,15 @@ public class ObjectHandlerTest {
     public void init() throws Exception {
         TestConfigs.init();
         mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
-        subscriptionHandler.setMongoDBHandler(mongoDBHandler);
         EventToObjectMapHandler eventToObjectMapHandler = mock(EventToObjectMapHandler.class);
+        SubscriptionHandler subscriptionHandlerMock = mock(SubscriptionHandler.class);
+
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);
         objHandler.setJmespathInterface(jmesPathInterface);
         objHandler.setCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
-        objHandler.setSubscriptionHandler(subscriptionHandler);
+        objHandler.setSubscriptionHandler(subscriptionHandlerMock);
 
         try {
             String rulesString = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
@@ -95,6 +98,21 @@ public class ObjectHandlerTest {
     public void testFindInsertedObject() {
         String document = objHandler.findObjectById("eventId").replace(" ", "");
         assertEquals(input.replace(" ", ""), document);
+    }
+
+    @Test
+    public void testLockDocument() {
+        String document = objHandler.lockDocument("eventId");
+
+        String actual = document.replaceAll(" ", "");
+        String expect = input.replaceAll(" ", "");
+        assertThat(actual, is(equalTo(expect)));
+    }
+
+    @Test
+    public void testLockDocumentInvalidId() {
+        String document = objHandler.lockDocument("nonExistingId");
+        assertThat(document, is(nullValue()));
     }
 
     @After

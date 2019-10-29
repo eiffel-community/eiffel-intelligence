@@ -100,10 +100,9 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             if (checkIfPasswordEncrypted(password)) {
                 password = decryptPassword(password);
             }
-            else {
-                password = decodeBase64(password);
-            }
-            
+
+            password = decodeBase64(password);
+
             auth
             .eraseCredentials(false)
             .ldapAuthentication()

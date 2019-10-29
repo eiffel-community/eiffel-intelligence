@@ -14,8 +14,8 @@ Feature: Test Rest Endpoints
   Examples: 
     | responsecode | endpoint                               |
     | 200          | /information                           |
-    | 200          | /auth                                  |
-    | 200          | /auth/login                            |
+    | 200          | /authentication                        |
+    | 200          | /authentication/login                  |
     | 200          | /status                                |
     | 200          | /download                              |
     | 200          | /download/eventsTemplate               |

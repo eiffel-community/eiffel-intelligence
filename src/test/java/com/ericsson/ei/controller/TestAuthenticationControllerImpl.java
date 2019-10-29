@@ -48,22 +48,22 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
-public class TestAuthControllerImpl {
+public class TestAuthenticationControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void testGetAuth() throws Exception {
+    public void testGetAuthentication() throws Exception {
         String responseBody = new JSONObject().put("security", false).toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth").accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.get("/authentication").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
     }
 
     @Test
     public void testGetLogin() throws Exception {
         String responseBody = new JSONObject().put("user", "anonymousUser").toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/login").accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.get("/authentication/login").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
     }
 

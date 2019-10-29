@@ -23,31 +23,31 @@ Feature: Test Authentication
   @RESTWithSessionCookie
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And request is sent
     Then response code 401 is received
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And username "gauss" and password "password" is used as credentials
     And request is sent
     Then response code 200 is received
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And request is sent
     Then response code 200 is received
 
   @RESTWithTokenId
   Scenario: Call an REST API with session credentials
     Given LDAP is activated
-    When a GET request is prepared for REST API "/auth/logout"
+    When a GET request is prepared for REST API "/authentication/logout"
     And request is sent
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And request is sent
     Then response code 401 is received
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And username "gauss" and password "password" is used as credentials
     And request is sent
     Then response code 200 is received
     And authentication token is saved    
-    When a GET request is prepared for REST API "/auth/login"
+    When a GET request is prepared for REST API "/authentication/login"
     And client is replaced
     And authentication token is attached
     And request is sent

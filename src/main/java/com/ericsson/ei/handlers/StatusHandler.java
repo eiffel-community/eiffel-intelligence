@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StatusHandler {
 
     private static final String INITIAL_DELAY_OF_FIRST_STATUS_UPDATE = "1000";
-    private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "30000";
+    private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "5000";
 
     private StatusData statusData = new StatusData();
     private ObjectMapper objectMapper = new ObjectMapper();

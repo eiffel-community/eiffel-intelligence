@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Validated
-@RequestMapping(value = "/auth", produces = "application/json")
-public interface AuthController {
+@RequestMapping(value = "/authentication", produces = "application/json")
+public interface AuthenticationController {
 
 
     /**
@@ -25,13 +25,13 @@ public interface AuthController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getAuth(HttpServletRequest httpRequest);
+    public ResponseEntity<?> getAuthentication(HttpServletRequest httpRequest);
 
     /**
      * This method returns a logged in user.
      * 
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<?> getAuthLogin(HttpServletRequest httpRequest);
+    public ResponseEntity<?> getAuthenticationLogin(HttpServletRequest httpRequest);
 
 }

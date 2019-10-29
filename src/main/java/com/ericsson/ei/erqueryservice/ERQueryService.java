@@ -93,6 +93,13 @@ public class ERQueryService {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
 
+        prepareRequest(eventId, searchOption, levels, levels, tree);
+        ResponseEntity response = sendRequest();
+        return response;
+    }
+
+    private void prepareRequest(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree) throws IOException, URISyntaxException {
         final SearchParameters searchParameters = getSearchParameters(searchOption);
         request
                .setHttpMethod(HttpMethod.POST)
@@ -105,7 +112,10 @@ public class ERQueryService {
 
         String uri = request.getURI().toString();
         LOGGER.debug("The URL to ER is: {}", uri);
+    }
 
+    private ResponseEntity sendRequest()
+            throws ClientProtocolException, URISyntaxException, IOException {
         return request.performRequest();
     }
 

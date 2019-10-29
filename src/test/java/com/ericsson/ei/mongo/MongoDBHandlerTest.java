@@ -72,7 +72,9 @@ public class MongoDBHandlerTest {
 
     @Test
     public void testUpdateDocument() {
-        assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, input, updateInput));
+        //TODO: emalinn - what are we actually testing here?
+        MongoStringQuery query = new MongoStringQuery(input);
+        assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
         dropCollection();
     }
 

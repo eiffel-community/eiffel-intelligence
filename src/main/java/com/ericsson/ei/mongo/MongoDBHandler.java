@@ -152,23 +152,15 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input          is a json string
+     * @param queryFilter    is a json string
      * @param updateInput    is updated document without lock
      * @return
      */
-    public boolean updateDocument(String dataBaseName, String collectionName, String input,
+    public boolean updateDocument(String dataBaseName, String collectionName,
+            MongoQuery queryFilter,
             String updateInput) {
         try {
-            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            if (collection != null) {
-                final Document dbObjectInput = Document.parse(input);
-                final Document dbObjectUpdateInput = Document.parse(updateInput);
-                UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-                LOGGER.debug(
-                        "updateDocument() :: database: {} and collection: {} is document Updated : {}",
-                        dataBaseName, collectionName, updateMany.wasAcknowledged());
-                return updateMany.wasAcknowledged();
-            }
+            return doUpdate(dataBaseName, collectionName, queryFilter, updateInput);
         } catch (Exception e) {
             LOGGER.error("Failed to update document.", e);
         }
@@ -182,28 +174,19 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input          is a condition for update documents
+     * @param queryFilter    is a condition for update documents
      * @param updateInput    is updated document without lock
      * @return
      */
-    public Document findAndModify(String dataBaseName, String collectionName, String input,
+    public Document findAndModify(String dataBaseName, String collectionName,
+            MongoQuery queryFilter,
             String updateInput) {
         try {
-            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            if (collection != null) {
-                final Document dbObjectInput = Document.parse(input);
-                final Document dbObjectUpdateInput = Document.parse(updateInput);
-                Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
-                if (result != null) {
-                    LOGGER.debug(
-                            "updateDocument() :: database: {} and collection: {} updated successfully",
-                            dataBaseName, collectionName);
-                    return result;
-                }
-            }
+            return doFindAndModify(dataBaseName, collectionName, queryFilter, updateInput);
         } catch (Exception e) {
             LOGGER.error("Failed to update document.", e);
         }
+        //TODO: emalinn - returns null
         return null;
     }
 
@@ -323,6 +306,41 @@ public class MongoDBHandler {
         }
 
         return result;
+    }
+
+    private Document doFindAndModify(String dataBaseName, String collectionName,
+            MongoQuery queryFilter,
+            String updateInput) {
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        if (collection == null) {
+            // TODO: emalinn - returns null
+            return null;
+        }
+        final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
+        final Document dbObjectUpdateInput = Document.parse(updateInput);
+        Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
+        if (result != null) {
+            LOGGER.debug(
+                    "updateDocument() :: database: {} and collection: {} updated successfully",
+                    dataBaseName, collectionName);
+        }
+        return result;
+    }
+
+    private boolean doUpdate(String dataBaseName, String collectionName, MongoQuery queryFilter,
+            String updateInput) {
+        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+        if (collection == null) {
+            return false;
+        }
+
+        final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
+        final Document dbObjectUpdateInput = Document.parse(updateInput);
+        UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+        LOGGER.debug(
+                "updateDocument() :: database: {} and collection: {} is document Updated : {}",
+                dataBaseName, collectionName, updateMany.wasAcknowledged());
+        return updateMany.wasAcknowledged();
     }
 
     private boolean doDrop(String dataBaseName, String collectionName, MongoQuery query) {

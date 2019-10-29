@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.HttpRequestFailedException;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.eiffelcommons.utils.HttpRequest;
 import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
@@ -82,7 +83,7 @@ public class ERQueryService {
                     tree);
             return requestToER;
         } catch (IOException | URISyntaxException e) {
-            throw new Exception("Error occurred while executing REST POST", e);
+            throw new HttpRequestFailedException("Error occurred while executing REST POST", e);
         }
     }
 

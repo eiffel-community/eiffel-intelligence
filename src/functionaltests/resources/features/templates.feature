@@ -1,8 +1,8 @@
-@DownloadFiles
-Feature: Test Download Files
+@Templates
+Feature: Test get templates
 
-  @DownloadFilesScenario
-  Scenario: Test DownloadFiles Entrypoints
+  @GetTemplatesScenario
+  Scenario: Test Template entry-points
     Given Eiffel Intelligence instance is up and running
     Then List available files
     And Get subscription template file

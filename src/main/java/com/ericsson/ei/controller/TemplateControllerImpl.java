@@ -36,22 +36,23 @@ import io.swagger.annotations.Api;
 
 @Component
 @CrossOrigin
-@Api(value = "Download templates", tags = {"Download"})
-public class DownloadControllerImpl implements DownloadController {
+@Api(value = "Get templates", tags = {"Templates"})
+public class TemplateControllerImpl implements TemplateController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            TemplateControllerImpl.class);
 
     @Override
     @ApiOperation(value = "Retrieve REST endpoints for downloading templates")
-    public ResponseEntity<?> getDownload(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getTemplates(final HttpServletRequest httpRequest) {
         try {
             JSONObject response = new JSONObject();
-            response.put("subscriptions", "/download/subscriptionsTemplate");
-            response.put("rules", "/download/rulesTemplate");
-            response.put("events", "/download/eventsTemplate");
+            response.put("subscriptions", "/templates/subscriptions");
+            response.put("rules", "/templates/rules");
+            response.put("events", "/templates/events");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to get information about download endpoints.";
+            String errorMessage = "Failed to get information about template endpoints.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -60,17 +61,18 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download subscription template")
-    public ResponseEntity<?> getDownloadSubscriptionsTemplate(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getTemplatesSubscriptions(final HttpServletRequest httpRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/templates/subscriptionsTemplate.json");
+            InputStream is = getClass().getResourceAsStream(
+                    "/templates/subscriptions.json");
             if (is == null) {
-                String errorMessage = "Subscriptions template file is not found.";
+                String errorMessage = "Subscriptions template file was not found.";
                 LOGGER.error(errorMessage);
                 return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to download subscriptions template file.";
+            String errorMessage = "Failed to download subscriptions template file.";
             LOGGER.error(e.getMessage(), e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,17 +81,18 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download rules template")
-    public ResponseEntity<?> getDownloadRulesTemplate(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getTemplatesRules(final HttpServletRequest httpRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/templates/rulesTemplate.json");
+            InputStream is = getClass().getResourceAsStream(
+                    "/templates/rules.json");
             if (is == null) {
-                String errorMessage = "Rules template file is not found.";
+                String errorMessage = "Rules template file was not found.";
                 LOGGER.error(errorMessage);
                 return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to download rules template file.";
+            String errorMessage = "Failed to download rules template file.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -98,17 +101,18 @@ public class DownloadControllerImpl implements DownloadController {
 
     @Override
     @ApiOperation(value = "Download Eiffel events template")
-    public ResponseEntity<?> getDownloadEventsTemplate(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getTemplatesEvents(final HttpServletRequest httpRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/templates/eventsTemplate.json");
+            InputStream is = getClass().getResourceAsStream(
+                    "/templates/events.json");
             if (is == null) {
-                String errorMessage = "Events template file is not found.";
+                String errorMessage = "Eiffel events template file was not found.";
                 LOGGER.error(errorMessage);
                 return new ResponseEntity<>(ResponseMessage.createJsonMessage(errorMessage), HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(IOUtils.toByteArray(is), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to download events template file.";
+            String errorMessage = "Failed to download Eiffel events template file.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

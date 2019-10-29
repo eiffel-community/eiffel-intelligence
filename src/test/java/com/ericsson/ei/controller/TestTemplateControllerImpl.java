@@ -37,10 +37,10 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestDownloadControllerImpl",
-        "failed.notification.database-name: TestDownloadControllerImpl-failedNotifications",
-        "rabbitmq.exchange.name: TestDownloadControllerImpl-exchange",
-        "rabbitmq.consumerName: TestDownloadControllerImpl" })
+        "spring.data.mongodb.database: TestTemplatesControllerImpl",
+        "failed.notification.database-name: TestTemplatesControllerImpl-failedNotifications",
+        "rabbitmq.exchange.name: TestTemplatesControllerImpl-exchange",
+        "rabbitmq.consumerName: TestTemplatesControllerImpl" })
 @ContextConfiguration(
         classes = App.class,
         loader = SpringBootContextLoader.class,
@@ -48,7 +48,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
-public class TestDownloadControllerImpl {
+public class TestTemplateControllerImpl {
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,29 +56,29 @@ public class TestDownloadControllerImpl {
     @Test
     public void testGetDownload() throws Exception {
         JSONObject responseBody = new JSONObject();
-        responseBody.put("subscriptions", "/download/subscriptionsTemplate");
-        responseBody.put("rules", "/download/rulesTemplate");
-        responseBody.put("events", "/download/eventsTemplate");
-        mockMvc.perform(MockMvcRequestBuilders.get("/download").accept(MediaType.APPLICATION_JSON_VALUE))
+        responseBody.put("subscriptions", "/templates/subscriptions");
+        responseBody.put("rules", "/templates/rules");
+        responseBody.put("events", "/templates/events");
+        mockMvc.perform(MockMvcRequestBuilders.get("/templates").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andExpect(content().string(responseBody.toString())).andReturn();
     }
 
     @Test
     public void testGetSubscriptionsTemplate() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/download/subscriptionsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+                MockMvcRequestBuilders.get("/templates/subscriptions").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void testGetRulesTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.get("/templates/rules").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void testGetEventsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.get("/templates/events").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
     }
 }

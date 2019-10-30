@@ -16,22 +16,14 @@
 */
 package com.ericsson.ei.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -47,38 +39,29 @@ import com.ericsson.ei.utils.TestContextInitializer;
         initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
-@AutoConfigureMockMvc
-public class TestDownloadControllerImpl {
-
-    @Autowired
-    private MockMvc mockMvc;
+public class TestDownloadControllerImpl extends ControllerTestBaseClass {
 
     @Test
-    public void testGetDownload() throws Exception {
+    public void testGetDownload() throws Throwable {
         JSONObject responseBody = new JSONObject();
         responseBody.put("subscriptions", "/download/subscriptionsTemplate");
         responseBody.put("rules", "/download/rulesTemplate");
         responseBody.put("events", "/download/eventsTemplate");
-        mockMvc.perform(MockMvcRequestBuilders.get("/download").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andExpect(content().string(responseBody.toString())).andReturn();
+        assertExpectedResponse("/download", responseBody.toString());
     }
 
     @Test
-    public void testGetSubscriptionsTemplate() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/download/subscriptionsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetSubscriptionsTemplate() throws Throwable {
+        assertOkResponseStatus("/download/subscriptionsTemplate");
     }
 
     @Test
-    public void testGetRulesTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/rulesTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetRulesTemplate() throws Throwable {
+        assertOkResponseStatus("/download/rulesTemplate");
     }
 
     @Test
-    public void testGetEventsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/eventsTemplate").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetEventsTemplate() throws Throwable {
+        assertOkResponseStatus("/download/eventsTemplate");
     }
 }

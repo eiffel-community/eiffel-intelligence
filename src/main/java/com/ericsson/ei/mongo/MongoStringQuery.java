@@ -39,11 +39,4 @@ public class MongoStringQuery implements MongoQuery {
     public String toString() {
         return getQueryString();
     }
-    
-    /*
-     * TODO: emalinn - this class should be changed so it works like below
-     * 
-     *  MongoQueryBuilder.buildAnd(first, second);
-     *  MongoQueryBuilder.buildQuery(string)
-     */
 }

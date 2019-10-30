@@ -29,39 +29,44 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestDownloadControllerImpl",
-        "failed.notification.database-name: TestDownloadControllerImpl-failedNotifications",
-        "rabbitmq.exchange.name: TestDownloadControllerImpl-exchange",
-        "rabbitmq.consumerName: TestDownloadControllerImpl" })
+        "spring.data.mongodb.database: TestTemplatesControllerImpl",
+        "failed.notification.database-name: TestTemplatesControllerImpl-failedNotifications",
+        "rabbitmq.exchange.name: TestTemplatesControllerImpl-exchange",
+        "rabbitmq.consumerName: TestTemplatesControllerImpl" })
 @ContextConfiguration(
         classes = App.class,
         loader = SpringBootContextLoader.class,
         initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
-public class TestDownloadControllerImpl extends ControllerTestBaseClass {
+public class TestTemplateControllerImpl extends ControllerTestBaseClass {
+
+    private static final String TEMPLATES_EVENTS = "/templates/events";
+    private static final String TEMPLATES_RULES = "/templates/rules";
+    private static final String TEMPLATES_SUBSCRIPTIONS = "/templates/subscriptions";
 
     @Test
     public void testGetDownload() throws Throwable {
         JSONObject responseBody = new JSONObject();
-        responseBody.put("subscriptions", "/download/subscriptionsTemplate");
-        responseBody.put("rules", "/download/rulesTemplate");
-        responseBody.put("events", "/download/eventsTemplate");
-        assertExpectedResponse("/download", responseBody.toString());
+        responseBody.put("subscriptions", TEMPLATES_SUBSCRIPTIONS);
+        responseBody.put("rules", TEMPLATES_RULES);
+        responseBody.put("events", TEMPLATES_EVENTS);
+        assertExpectedResponse("/templates", responseBody.toString());
     }
 
     @Test
     public void testGetSubscriptionsTemplate() throws Throwable {
-        assertOkResponseStatus("/download/subscriptionsTemplate");
+        assertOkResponseStatus(TEMPLATES_SUBSCRIPTIONS);
     }
 
     @Test
     public void testGetRulesTemplate() throws Throwable {
-        assertOkResponseStatus("/download/rulesTemplate");
+        assertOkResponseStatus(TEMPLATES_RULES);
     }
 
     @Test
     public void testGetEventsTemplate() throws Throwable {
-        assertOkResponseStatus("/download/eventsTemplate");
+        assertOkResponseStatus(TEMPLATES_EVENTS);
     }
+
 }

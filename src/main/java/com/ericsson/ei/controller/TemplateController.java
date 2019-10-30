@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Validated
-@RequestMapping(value = "/download", produces = "application/json")
-public interface DownloadController {
+@RequestMapping(value = "/templates", produces = "application/json")
+public interface TemplateController {
 
 
     /**
@@ -25,27 +25,27 @@ public interface DownloadController {
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getDownload(HttpServletRequest httpRequest);
+    public ResponseEntity<?> getTemplates(HttpServletRequest httpRequest);
 
     /**
-     * This method returns a subscription template.
+     * This method returns subscription templates.
      * 
      */
-    @RequestMapping(value = "/subscriptionsTemplate", method = RequestMethod.GET)
-    public ResponseEntity<?> getDownloadSubscriptionsTemplate(HttpServletRequest httpRequest);
+    @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
+    public ResponseEntity<?> getTemplatesSubscriptions(HttpServletRequest httpRequest);
 
     /**
      * This method returns a template for rules.
      * 
      */
-    @RequestMapping(value = "/rulesTemplate", method = RequestMethod.GET)
-    public ResponseEntity<?> getDownloadRulesTemplate(HttpServletRequest httpRequest);
+    @RequestMapping(value = "/rules", method = RequestMethod.GET)
+    public ResponseEntity<?> getTemplatesRules(HttpServletRequest httpRequest);
 
     /**
      * This method returns a template for Eiffel events.
      * 
      */
-    @RequestMapping(value = "/eventsTemplate", method = RequestMethod.GET)
-    public ResponseEntity<?> getDownloadEventsTemplate(HttpServletRequest httpRequest);
+    @RequestMapping(value = "/events", method = RequestMethod.GET)
+    public ResponseEntity<?> getTemplatesEvents(HttpServletRequest httpRequest);
 
 }

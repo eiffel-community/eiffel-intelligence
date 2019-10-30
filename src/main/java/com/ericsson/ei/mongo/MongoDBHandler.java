@@ -370,10 +370,6 @@ public class MongoDBHandler {
         MongoDatabase db;
         List<String> collectionList;
 
-        if (!isMongoDBServerUp()) {
-            throw new IllegalStateException("MongoDB is not available");
-        }
-
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());

@@ -186,7 +186,6 @@ public class MongoDBHandler {
         } catch (Exception e) {
             LOGGER.error("Failed to update document.", e);
         }
-        //TODO: emalinn - returns null
         return null;
     }
 
@@ -313,7 +312,6 @@ public class MongoDBHandler {
             String updateInput) {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
-            // TODO: emalinn - returns null
             return null;
         }
         final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
@@ -336,11 +334,12 @@ public class MongoDBHandler {
 
         final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
         final Document dbObjectUpdateInput = Document.parse(updateInput);
-        UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+        UpdateResult updateOne = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+        boolean updateWasPerformed = updateOne.wasAcknowledged() && updateOne.getModifiedCount() > 0;
         LOGGER.debug(
                 "updateDocument() :: database: {} and collection: {} is document Updated : {}",
-                dataBaseName, collectionName, updateMany.wasAcknowledged());
-        return updateMany.wasAcknowledged();
+                dataBaseName, collectionName, updateWasPerformed);
+        return updateWasPerformed;
     }
 
     private boolean doDrop(String dataBaseName, String collectionName, MongoQuery query) {

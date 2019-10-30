@@ -25,7 +25,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.After;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +40,15 @@ import com.mongodb.ServerAddress;
 
 public class MongoDBHandlerTest {
 
+    @Rule public TestName name = new TestName();
     final Logger log = LoggerFactory.getLogger(MongoDBHandlerTest.class);
 
     private MongoDBHandler mongoDBHandler;
 
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
-    private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
-    private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
+    private String input = "{\"_id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
+    private String updateInput = "{\"_id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private MongoCondition condition = MongoCondition.condition("test_cases.event_id",
             "testcaseid1");
 
@@ -60,22 +64,26 @@ public class MongoDBHandlerTest {
     public void testGetDocuments() {
         ArrayList<String> documents = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         assertTrue(documents.size() > 0);
-        dropCollection();
     }
 
     @Test
     public void testGetDocumentsOnCondition() {
         ArrayList<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
         assertTrue(documents.size() > 0);
-        dropCollection();
     }
 
     @Test
     public void testUpdateDocument() {
-        //TODO: emalinn - what are we actually testing here?
-        MongoStringQuery query = new MongoStringQuery(input);
-        assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
-        dropCollection();
+        MongoQuery query = MongoCondition.idCondition("eventId");
+        assertTrue("Document was not updated",
+                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
+    }
+
+    @Test
+    public void testUpdateDocumentWrongId() {
+        MongoQuery query = MongoCondition.idCondition("id-does-not-exist");
+        assertFalse("Document can't be updated",
+                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
     }
 
     @Test
@@ -88,9 +96,14 @@ public class MongoDBHandlerTest {
         doThrow(Exception.class).when(client).getAddress();
         mongoDBHandler.setMongoClient(client);
         assertFalse(mongoDBHandler.isMongoDBServerUp());
+
+        // Need to set a working client to enable cleanup
+        mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
     }
 
-    private void dropCollection() {
-        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
+    @After
+    public void dropCollection() {
+        MongoCondition idCondition = MongoCondition.idCondition("eventId");
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, idCondition));
     }
 }

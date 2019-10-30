@@ -3,6 +3,7 @@ package com.ericsson.ei.queryservice.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
@@ -61,7 +63,7 @@ public class TestProcessQueryParams {
     }
 
     @Test
-    public void testFilterFormParam() throws IOException {
+    public void testRunQuery() throws IOException {
         try {
             JSONObject query = new JSONObject(QUERY_WITH_CRITERIA_AND_OPTIONS);
             JSONObject criteria = (JSONObject) query.get("criteria");
@@ -70,7 +72,8 @@ public class TestProcessQueryParams {
 
             String requestString = "{\"$and\":[" + criteria.toString() + ","
                     + options.toString() + "]}";
-            ArgumentMatcher<MongoQuery> requestStringMatches =  mQ -> mQ.toString().equals(requestString);
+            ArgumentMatcher<MongoQuery> requestStringMatches = mQ -> mQ.toString()
+                                                                       .equals(requestString);
             when(processAggregatedObject.processQueryAggregatedObject(
                     ArgumentMatchers.argThat(requestStringMatches),
                     eq(DATA_BASE_NAME),
@@ -83,14 +86,15 @@ public class TestProcessQueryParams {
     }
 
     @Test
-    public void testFilterFormParamWithOnlyCriteria() throws IOException {
+    public void testRunQueryWithOnlyCriteria() throws IOException {
         try {
             JSONObject query = new JSONObject(QUERY_WITH_CRITERIA);
             JSONObject criteria = (JSONObject) query.get("criteria");
             JSONObject options = null;
             String filter = null;
             String criteriaString = criteria.toString();
-            ArgumentMatcher<MongoQuery> requestStringMatches = mQ -> mQ.toString().equals(criteriaString);
+            ArgumentMatcher<MongoQuery> requestStringMatches = mQ -> mQ.toString()
+                                                                       .equals(criteriaString);
             when(processAggregatedObject.processQueryAggregatedObject(
                     ArgumentMatchers.argThat(requestStringMatches),
                     eq(DATA_BASE_NAME),
@@ -102,6 +106,28 @@ public class TestProcessQueryParams {
         }
     }
 
-    // TODO: emalinn - com.ericsson.ei.queryservice.ProcessQueryParams.filterResult(String, JSONArray) is currently untested
+    @Test
+    public void testRunQueryWithFilter() {
+        JSONObject query = new JSONObject(QUERY_WITH_CRITERIA);
+        JSONObject criteria = (JSONObject) query.get("criteria");
+        JSONObject options = null;
+        String filter = "{time:time, type: type}";
 
+        when(processAggregatedObject.processQueryAggregatedObject(any(), any(), any())).thenReturn(
+                expected);
+
+        JSONArray result = processQueryParams.runQuery(criteria, options, filter);
+
+        JSONArray expectedFilterResult = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+                "{\"time\":1481875891763,\"type\":\"ARTIFACT_1\"}");
+        expectedFilterResult.put(jsonObject);
+
+        /*
+         * Comparing string values as we don't build up the structure here in the test as in
+         * filterResult
+         */
+        assertEquals(expectedFilterResult.toString(), result.toString());
+    }
 }

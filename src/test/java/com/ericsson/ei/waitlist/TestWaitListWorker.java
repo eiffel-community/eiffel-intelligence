@@ -143,6 +143,19 @@ public class TestWaitListWorker {
     }
 
     @Test
+    public void testDoNotFetchDuringShutdown() {
+        Mockito.doThrow(RuntimeException.class).when(waitListStorageHandler).getWaitList();
+        try {
+            waitListWorker.shutdownSignalSent();
+            waitListWorker.run();
+            assertTrue(true);
+        } catch (Exception e) {
+            assertFalse(true);
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testPublishAndReceiveEvent() {
         try {
             Channel channel = TestConfigs.getConnection().createChannel();

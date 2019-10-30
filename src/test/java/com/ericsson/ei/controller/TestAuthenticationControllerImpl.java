@@ -41,10 +41,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "failed.notification.database-name: TestAuthControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestAuthControllerImpl-exchange",
         "rabbitmq.consumerName: TestAuthControllerImpl" })
-@ContextConfiguration(
-        classes = App.class,
-        loader = SpringBootContextLoader.class,
-        initializers = TestContextInitializer.class)
+@ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
@@ -54,17 +51,23 @@ public class TestAuthenticationControllerImpl {
     private MockMvc mockMvc;
 
     @Test
-    public void testGetAuthentication() throws Exception {
+    public void testGetAuthentication() throws Throwable {
         String responseBody = new JSONObject().put("security", false).toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/authentication").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
+        assertExpectedResponse("/authentication", responseBody);
     }
 
     @Test
-    public void testGetLogin() throws Exception {
+    public void testGetLogin() throws Throwable {
         String responseBody = new JSONObject().put("user", "anonymousUser").toString();
-        mockMvc.perform(MockMvcRequestBuilders.get("/authentication/login").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andExpect(content().string(responseBody)).andReturn();
+        assertExpectedResponse("/authentication/login", responseBody);
+    }
+
+    private void assertExpectedResponse(String endpoint, String responseBody) throws Throwable {
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
+                                              .accept(MediaType.APPLICATION_JSON_VALUE))
+               .andExpect(status().isOk())
+               .andExpect(content().string(responseBody))
+               .andReturn();
     }
 
 }

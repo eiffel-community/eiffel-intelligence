@@ -37,6 +37,7 @@ import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoInterruptedException;
 import com.mongodb.MongoSocketReadException;
+import com.mongodb.MongoSocketWriteException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
@@ -368,23 +369,35 @@ public class MongoDBHandler {
             return null;
         MongoDatabase db;
         List<String> collectionList;
+
+        if (!isMongoDBServerUp()) {
+            throw new IllegalStateException("MongoDB is not available");
+        }
+
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
         } catch (MongoCommandException e) {
             LOGGER.error(
                     "MongoCommandException, Something went wrong with MongoDb connection. Error: "
-                            + e.getErrorMessage() + "\nStacktrace\n" + e);
+                            + e.getErrorMessage(),
+                    e);
             closeMongoDbConnection();
             return null;
         } catch (MongoInterruptedException e) {
             LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: "
-                    + e.getMessage() + "\nStacktrace\n" + e);
+                    + e.getMessage(), e);
             closeMongoDbConnection();
             return null;
         } catch (MongoSocketReadException e) {
             LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: "
-                    + e.getMessage() + "\nStacktrace\n" + e);
+                    + e.getMessage(), e);
+            closeMongoDbConnection();
+            return null;
+
+        } catch (MongoSocketWriteException e) {
+            LOGGER.error("MongoSocketWriteException, MongoDB shutdown or interrupted. Error: "
+                    + e.getMessage(), e);
             closeMongoDbConnection();
             return null;
         }

@@ -373,35 +373,12 @@ public class MongoDBHandler {
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
-        } catch (MongoCommandException e) {
-            LOGGER.error(
-                    "MongoCommandException, Something went wrong with MongoDb connection. Error: "
-                            + e.getErrorMessage(),
-                    e);
-            closeMongoDbConnection();
-            return null;
-        } catch (MongoInterruptedException e) {
-            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: "
-                    + e.getMessage(), e);
-            closeMongoDbConnection();
-            return null;
-        } catch (MongoSocketReadException e) {
-            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: "
-                    + e.getMessage(), e);
+        } catch (MongoInterruptedException | MongoSocketReadException | MongoSocketWriteException
+                | MongoCommandException | IllegalStateException e) {
+            LOGGER.error("Failed to get Mongo collection, Reason : {} ", e.getMessage(), e);
             closeMongoDbConnection();
             return null;
 
-        } catch (MongoSocketWriteException e) {
-            LOGGER.error("MongoSocketWriteException, MongoDB shutdown or interrupted. Error: "
-                    + e.getMessage(), e);
-            closeMongoDbConnection();
-            return null;
-        }
-
-        catch (IllegalStateException e) {
-            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
-            closeMongoDbConnection();
-            return null;
         }
 
         if (!collectionList.contains(collectionName)) {

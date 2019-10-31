@@ -1,10 +1,10 @@
 # Authentication
 
-|Method|Endpoint         |Authentication|
-|------|-----------------|--------------|
-|GET   |/auth            |no            |
-|GET   |/auth/login      |yes           |
-|GET   |/auth/logout     |no            |
+|Method|Endpoint                   |Authentication|
+|------|---------------------------|--------------|
+|GET   |/authentication            |no            |
+|GET   |/authentication/login      |yes           |
+|GET   |/authentication/logout     |no            |
 
 Authentication is not a requirement but can be turned on and off in the
 application properties file with the '_ldap.enabled_' property.
@@ -23,11 +23,11 @@ available to anyone to view, edit and delete.
 
 Returns the json variable '_security_' that is set to either true or false
 
-    GET /auth
+    GET /authentication
 
 Curl command
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/auth
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/authentication
 
 Example of response body
 
@@ -41,11 +41,11 @@ endpoints that require authentication. If the same client connection is used
 then session cookie is used to authenticate and 'X-Auth-Token' would not be
 needed in that case.
 
-    GET /auth/login
+    GET /authentication/login
 
 Curl command
 
-    curl -X GET -H "Content-type: application/json" -u <username>:<password> http://<host>:8090/auth/login
+    curl -X GET -H "Content-type: application/json" -u <username>:<password> http://<host>:8090/authentication/login
 
 Example of full response
 
@@ -73,12 +73,12 @@ Removes the current session bound to the client. If 'X-Auth-Token' is used to
 authenticate then the same token needs to be attached when calling the logout
 endpoint.
 
-    GET /auth/logout
+    GET /authentication/logout
 
 Curl command with session cookie
 
-    curl -X GET -H "Content-type: application/json" http://<host>:8090/auth/logout
+    curl -X GET -H "Content-type: application/json" http://<host>:8090/authentication/logout
 
 Curl command with token
 
-    curl -X GET -H "Content-type: application/json" -H "X-Auth-Token: <uuid>" http://<host>:8090/auth/logout
+    curl -X GET -H "Content-type: application/json" -H "X-Auth-Token: <uuid>" http://<host>:8090/authentication/logout

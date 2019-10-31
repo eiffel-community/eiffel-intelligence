@@ -1,0 +1,16 @@
+description: This class returns aggregated data given a specific ID of an aggregated object.
+
+/{id}:
+  uriParameters:
+    id:
+      displayName: id
+      description: Id of the aggregatedObject
+      required: true
+      type: string
+      
+  get:
+    description: This method retrieves aggregated data on a specific aggregated object, given an ID.
+    responses:
+      200:
+        body:
+          application/json:

@@ -78,7 +78,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
-    final static private String entryPointQueryAggregatedObject = "/queryAggregatedObject";
+    final static private String entryPointAggregatedObject = "/aggregated-objects";
     final static private String entryPointQuery = "/query";
     final static private String entryPointFailedNotifications = "/failed-notifications";
 
@@ -124,11 +124,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQueryAggregatedObject)
-                             .addParam("ID", documentId)
-                             .performRequest();
+                .setEndpoint(entryPointAggregatedObject + "/" + documentId).performRequest();
 
-        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + response.getStatusCodeValue()
+        LOGGER.debug("Response of /aggregated-objects RestApi, Status Code: " + response.getStatusCodeValue()
                 + "\nResponse: " + response.getBody().toString());
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
@@ -159,8 +157,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQueryAggregatedObject)
-                             .addParam("ID", invalidDocumentId)
+                .setEndpoint(entryPointAggregatedObject + "/" + invalidDocumentId)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

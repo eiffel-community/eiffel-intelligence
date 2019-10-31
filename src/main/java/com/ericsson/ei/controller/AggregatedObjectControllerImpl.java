@@ -17,8 +17,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.controller.model.QueryResponseEntity;
@@ -34,15 +32,18 @@ import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * This class represents the REST GET mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
  */
 @Component
 @CrossOrigin
-@Api(value = "queryAggregatedObject", tags = {"Query aggregated object"})
-public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjectController {
+@Api(value = "aggregatedObject", tags = { "aggregated object" })
+public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -55,7 +56,8 @@ public class QueryAggregatedObjectControllerImpl implements QueryAggregatedObjec
      */
     @Override
     @ApiOperation(value = "")
-    public ResponseEntity<?> getQueryAggregatedObject(@RequestParam("ID") final String id, final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAggregatedObjectById(@PathVariable final String id,
+            final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
         QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
         QueryResponse queryResponse = new QueryResponse();

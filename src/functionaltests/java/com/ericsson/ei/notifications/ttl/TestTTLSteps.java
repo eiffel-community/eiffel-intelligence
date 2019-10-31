@@ -138,7 +138,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Check failed notification is in database$")
     public void check_failed_notification_is_in_database() {
-        MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME);
         List<String> result = mongoDBHandler.find(failedNotificationDatabase,
                 failedNotificationCollection, condition);
 
@@ -186,7 +186,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void a_failed_notification_is_created() throws Throwable {
         // verifying that missed notification is created and present in db
         int expectedSize = 1;
-        MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
 
         LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -196,7 +196,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Notification document should be deleted from the database$")
     public void the_Notification_document_should_be_deleted_from_the_database() throws Throwable {
         int expectedSize = 0;
-        MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
         LOGGER.debug("Checking deletion of notification document in db");
 
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);

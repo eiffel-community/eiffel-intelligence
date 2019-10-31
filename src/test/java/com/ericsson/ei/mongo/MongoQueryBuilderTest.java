@@ -66,8 +66,8 @@ public class MongoQueryBuilderTest {
 
     @Test
     public void testAndQueryFromMongoConditions() {
-        MongoCondition arg1 = MongoCondition.subscriptionNameCondition("subscription-name");
-        MongoCondition arg2 = MongoCondition.ldapUserNameCondition("ldap-user-name");
+        final MongoCondition arg1 = MongoCondition.subscriptionNameCondition("subscription-name");
+        final MongoCondition arg2 = MongoCondition.ldapUserNameCondition("ldap-user-name");
 
         String actual = MongoQueryBuilder.buildAnd(arg1, arg2).toString();
         String expect = "{\"$and\":"
@@ -78,8 +78,8 @@ public class MongoQueryBuilderTest {
 
     @Test
     public void testOrQueryFromMongoConditions() {
-        MongoCondition arg1 = MongoCondition.lockNullCondition();
-        MongoCondition arg2 = MongoCondition.lockCondition("0");
+        final MongoCondition arg1 = MongoCondition.lockNullCondition();
+        final MongoCondition arg2 = MongoCondition.lockCondition("0");
 
         String actual = MongoQueryBuilder.buildOr(arg1, arg2).toString();
         String expect = "{\"$or\":"
@@ -90,11 +90,11 @@ public class MongoQueryBuilderTest {
 
     @Test
     public void testCombinedOrQueryFromMongoConditions() {
-        MongoCondition arg1 = MongoCondition.lockNullCondition();
-        MongoCondition arg2 = MongoCondition.lockCondition("0");
+        final MongoCondition arg1 = MongoCondition.lockNullCondition();
+        final MongoCondition arg2 = MongoCondition.lockCondition("0");
         MongoQueryBuilder orQuery = MongoQueryBuilder.buildOr(arg1, arg2);
 
-        MongoCondition idCondition = MongoCondition.idCondition("id-as-string");
+        final MongoCondition idCondition = MongoCondition.idCondition("id-as-string");
 
         String actual = orQuery.append(idCondition).toString();
         String expect = "{\"$or\":"

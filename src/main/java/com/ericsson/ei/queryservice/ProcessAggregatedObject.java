@@ -56,7 +56,7 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> processQueryAggregatedObject(String id) {
-        MongoCondition condition = MongoCondition.idCondition(id);
+        final MongoCondition condition = MongoCondition.idCondition(id);
         LOGGER.debug("The JSON condition is: {}", condition);
         ArrayList<String> response = mongoDBHandler.find(aggregationDataBaseName,
                 aggregationCollectionName,

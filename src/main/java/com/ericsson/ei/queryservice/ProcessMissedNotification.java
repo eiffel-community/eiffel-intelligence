@@ -54,7 +54,7 @@ public class ProcessMissedNotification {
      * @return List
      */
     public List<String> processQueryMissedNotification(String subscriptionName) {
-        MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The Json condition is : {}", condition);
         List<String> output = handler.find(failedNotificationDatabaseName, failedNotificationCollectionName,
                condition);
@@ -78,7 +78,7 @@ public class ProcessMissedNotification {
      * @return boolean
      */
     public boolean deleteMissedNotification(String subscriptionName) {
-        MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
         return handler.dropDocument(failedNotificationDatabaseName, failedNotificationCollectionName, condition);
     }

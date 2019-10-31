@@ -288,7 +288,7 @@ public class SubscriptionServiceTest {
 
             // Checking if it removes the Subscription Matched AggrObjIds
             // document from RepeatHandlerDb database collection.
-            MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
+            final MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
                     expectedSubscriptionName);
             ArrayList<String> result = mongoDBHandler.find(dataBaseName,
                     repeatFlagHandlerCollection,
@@ -336,7 +336,7 @@ public class SubscriptionServiceTest {
 
             // Checking if it removes the Subscription Matched AggrObjIds
             // document from RepeatHandlerDb database collection.
-            MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
+            final MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
                     "subscriptionName");
             List<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                     subscriptionIdMatchedAggrIdObjQuery);

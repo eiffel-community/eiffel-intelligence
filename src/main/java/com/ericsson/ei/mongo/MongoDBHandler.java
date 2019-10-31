@@ -378,7 +378,6 @@ public class MongoDBHandler {
             LOGGER.error("Failed to get Mongo collection, Reason : {} ", e.getMessage(), e);
             closeMongoDbConnection();
             return null;
-
         }
 
         if (!collectionList.contains(collectionName)) {

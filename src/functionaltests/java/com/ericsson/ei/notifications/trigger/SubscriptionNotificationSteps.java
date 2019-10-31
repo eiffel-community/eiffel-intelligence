@@ -209,7 +209,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         int minWaitTime = 5;
         int maxWaittime = 20;
 
-        MongoCondition condition = MongoCondition.emptyCondition();
+        final MongoCondition condition = MongoCondition.emptyCondition();
         int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
         assertEquals(missedNotifications, maxObjectsInDB);

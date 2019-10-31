@@ -135,7 +135,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
         List<String> resultRepeatFlagHandler = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                 subscriptionIdMatchedAggrIdObjQuery);
         assertEquals("[]", resultRepeatFlagHandler.toString());
-        MongoCondition condition = MongoCondition.idCondition(AGGREGATED_OBJECT_ID);
+        final MongoCondition condition = MongoCondition.idCondition(AGGREGATED_OBJECT_ID);
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
     }
 

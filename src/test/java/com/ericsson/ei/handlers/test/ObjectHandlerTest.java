@@ -63,11 +63,11 @@ public class ObjectHandlerTest {
     private final String inputFilePath = "src/test/resources/RulesHandlerOutput2.json";
     private JsonNode rulesJson;
 
-    private String dataBaseName = "ObjectHandlerTestDB";
-    private String collectionName = "SampleEvents";
-    private String input = "{\"_id\":\"eventId\",\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
-    private String event = "{\"meta\":{\"id\":\"eventId\"}}";
-    private MongoCondition condition = MongoCondition.idCondition("eventId");
+    private final String dataBaseName = "ObjectHandlerTestDB";
+    private final String collectionName = "SampleEvents";
+    private final String input = "{\"_id\":\"eventId\",\"TemplateName\":\"ARTIFACT_1\",\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\":[{\"event_id\":\"testcaseid1\",\"test_data\":\"testcase1data\"},{\"event_id\":\"testcaseid2\",\"test_data\":\"testcase2data\"}]}";
+    private final String event = "{\"meta\":{\"id\":\"eventId\"}}";
+    private final MongoCondition condition = MongoCondition.idCondition("eventId");
 
     @Before
     public void init() throws Exception {

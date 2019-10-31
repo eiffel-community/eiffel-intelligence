@@ -86,7 +86,7 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
-        MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> list =  getEventToObjectList(eventId);
         boolean firstTime = list.isEmpty();
         list = updateList(list, eventId, objectId);
@@ -122,7 +122,7 @@ public class EventToObjectMapHandler {
 
     public ArrayList<String> getEventToObjectList(String eventId) {
         ArrayList<String> list = new ArrayList<String>();
-        MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         if (!documents.isEmpty()) {
             String mapStr = documents.get(0);
@@ -152,7 +152,7 @@ public class EventToObjectMapHandler {
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }

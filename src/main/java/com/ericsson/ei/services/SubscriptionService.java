@@ -71,7 +71,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
-        MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
@@ -93,7 +93,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean doSubscriptionExist(String subscriptionName) {
-        MongoQuery  query = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoQuery  query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
     }
@@ -105,15 +105,15 @@ public class SubscriptionService implements ISubscriptionService {
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
 
-            MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+            final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
                     subscriptionName);
-            MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+            final MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
             MongoQuery query = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
                     ldapUserNameCondition);
 
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
-                MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
                         subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOGGER.info("Subscription  \"{}"
@@ -133,16 +133,16 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
-        MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+        final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
                 subscriptionName);
-        MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+        final MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
 
         MongoQuery deleteQuery = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
                 ldapUserNameCondition);
 
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
-            MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+            final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
                     subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOGGER.info("Subscription  \"{}"
@@ -162,7 +162,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public List<Subscription> getSubscriptions() throws SubscriptionNotFoundException {
-        MongoCondition query = MongoCondition.emptyCondition();
+        final MongoCondition query = MongoCondition.emptyCondition();
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();

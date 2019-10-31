@@ -99,7 +99,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
-        MongoCondition condition = MongoCondition.idCondition("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
+        final MongoCondition condition = MongoCondition.idCondition("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         List<String> aggregatedObject = mongoDBHandler.find(eiDatabaseName, aggrCollectionName,
                 condition);
 

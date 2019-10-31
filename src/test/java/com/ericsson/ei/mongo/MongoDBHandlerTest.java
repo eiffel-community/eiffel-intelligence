@@ -65,14 +65,14 @@ public class MongoDBHandlerTest {
 
     @Test
     public void testUpdateDocument() {
-        MongoQuery query = MongoCondition.idCondition("eventId");
+        final MongoQuery query = MongoCondition.idCondition("eventId");
         assertTrue("Document was not updated",
                 mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
     }
 
     @Test
     public void testUpdateDocumentWrongId() {
-        MongoQuery query = MongoCondition.idCondition("id-does-not-exist");
+        final MongoQuery query = MongoCondition.idCondition("id-does-not-exist");
         assertFalse("Document can't be updated",
                 mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
     }
@@ -94,7 +94,7 @@ public class MongoDBHandlerTest {
 
     @After
     public void dropCollection() {
-        MongoCondition idCondition = MongoCondition.idCondition("eventId");
+        final MongoCondition idCondition = MongoCondition.idCondition("eventId");
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, idCondition));
     }
 }

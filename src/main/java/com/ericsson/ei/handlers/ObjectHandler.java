@@ -87,7 +87,7 @@ public class ObjectHandler {
      * @param aggregatedObject String format of an aggregated object to be inserted
      * @param rulesObject      RulesObject
      * @param event            String representation of event, used to fetch id if not specified
-     * @param id               String id is stored together with aggregated object in database
+     * @param givenId          String id is stored together with aggregated object in database
      */
     public void insertObject(String aggregatedObject, RulesObject rulesObject, String event,
             String givenId) {
@@ -121,7 +121,7 @@ public class ObjectHandler {
      * @param aggregatedObject String to insert in database
      * @param rulesObject      used for fetching id
      * @param event            String to fetch id if it was not specified
-     * @param id               String
+     * @param givenId          String
      * @return true if operation succeed
      */
     public void updateObject(String aggregatedObject, RulesObject rulesObject, String event,
@@ -135,7 +135,7 @@ public class ObjectHandler {
         LOGGER.debug("ObjectHandler: Updating Aggregated Object:\n{} \nEvent:\n{}",
                 aggregatedObject, event);
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
-        MongoCondition condition = MongoCondition.idCondition(id);
+        final MongoCondition condition = MongoCondition.idCondition(id);
         String documentStr = document.toString();
         mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
         postInsertActions(aggregatedObject, rulesObject, event, id);
@@ -163,7 +163,7 @@ public class ObjectHandler {
      * @return document
      */
     public String findObjectById(String id) {
-        MongoCondition condition = MongoCondition.idCondition(id);
+        final MongoCondition condition = MongoCondition.idCondition(id);
         String document = "";
         List<String> documents = findObjectsByCondition(condition);
         if (!documents.isEmpty())
@@ -191,6 +191,8 @@ public class ObjectHandler {
      * This method creates a new document containing id, aggregated object and sets the time to live
      * value.
      *
+     * @param id
+     * @param object
      * @return document
      */
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {
@@ -230,8 +232,8 @@ public class ObjectHandler {
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();
 
-        MongoCondition lockNotSet = MongoCondition.lockCondition(NOT_LOCKED);
-        MongoCondition noLock = MongoCondition.lockNullCondition();
+        final MongoCondition lockNotSet = MongoCondition.lockCondition(NOT_LOCKED);
+        final MongoCondition noLock = MongoCondition.lockNullCondition();
         MongoQuery idAndNoLockCondition = MongoQueryBuilder.buildOr(lockNotSet, noLock)
                                                            .append(MongoCondition.idCondition(id));
 
@@ -286,7 +288,7 @@ public class ObjectHandler {
     }
 
     private boolean isInvalidId(String id) {
-        MongoCondition idCondition = MongoCondition.idCondition(id);
+        final MongoCondition idCondition = MongoCondition.idCondition(id);
         ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName, collectionName,
                 idCondition);
 

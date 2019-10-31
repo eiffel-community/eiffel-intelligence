@@ -72,7 +72,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId = 0;
         String aggrObjId = "99999";
 
-        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
@@ -108,7 +108,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId2 = 1;
         String aggrObjId2 = "45678";
 
-        MongoCondition subscriptionQuery2 = MongoCondition.subscriptionCondition(subscriptionId2);
+        final MongoCondition subscriptionQuery2 = MongoCondition.subscriptionCondition(subscriptionId2);
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
@@ -147,7 +147,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         int requirementId2 = 0;
         String aggrObjId2 = "99998";
 
-        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
 
         try {
             subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);

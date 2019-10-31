@@ -15,7 +15,7 @@ public class MongoConditionTest {
 
     @Test
     public void testGetIdConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
+        final MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
 
         String actual = mongoCondition.getQueryString();
         String expect = "{\"_id\":\"id-as-string\"}";
@@ -26,7 +26,7 @@ public class MongoConditionTest {
     public void testGetIdConditionFromJsonNode() {
         JsonNodeFactory jsonNodeFactory = new JsonNodeFactory(false);
         JsonNode jsonNode = jsonNodeFactory.textNode("id-as-JsonNode");
-        MongoCondition mongoCondition = MongoCondition.idCondition((jsonNode));
+        final MongoCondition mongoCondition = MongoCondition.idCondition((jsonNode));
 
         String actual = mongoCondition.getQueryString();
         String expect = "{\"_id\":\"id-as-JsonNode\"}";
@@ -35,7 +35,7 @@ public class MongoConditionTest {
 
     @Test
     public void testGetsubscriptionConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.subscriptionCondition(
+        final MongoCondition mongoCondition = MongoCondition.subscriptionCondition(
                 "subscription-as-string");
 
         String actual = mongoCondition.getQueryString();
@@ -45,7 +45,7 @@ public class MongoConditionTest {
 
     @Test
     public void testGetsubscriptionNameConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.subscriptionNameCondition(
+        final MongoCondition mongoCondition = MongoCondition.subscriptionNameCondition(
                 "subscription-name");
 
         String actual = mongoCondition.getQueryString();
@@ -55,7 +55,7 @@ public class MongoConditionTest {
 
     @Test
     public void testLdapUserNameConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.ldapUserNameCondition(
+        final MongoCondition mongoCondition = MongoCondition.ldapUserNameCondition(
                 "ldap-user-name");
 
         String actual = mongoCondition.getQueryString();
@@ -65,7 +65,7 @@ public class MongoConditionTest {
 
     @Test
     public void testLockConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.lockCondition("0");
+        final MongoCondition mongoCondition = MongoCondition.lockCondition("0");
 
         String actual = mongoCondition.getQueryString();
         String expect = "{\"lock\":\"0\"}";
@@ -74,7 +74,7 @@ public class MongoConditionTest {
 
     @Test
     public void testLockNullConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.lockNullCondition();
+        final MongoCondition mongoCondition = MongoCondition.lockNullCondition();
 
         String actual = mongoCondition.getQueryString();
         String expect = "{\"lock\":null}";
@@ -83,7 +83,7 @@ public class MongoConditionTest {
 
     @Test
     public void testGetArbitraryConditionFromString() {
-        MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
+        final MongoCondition mongoCondition = MongoCondition.condition("arbitraryKey",
                 "id-as-string");
 
         String actual = mongoCondition.getQueryString();
@@ -93,7 +93,7 @@ public class MongoConditionTest {
 
     @Test
     public void testIdConditionToString() {
-        MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
+        final MongoCondition mongoCondition = MongoCondition.idCondition("id-as-string");
 
         String actual = mongoCondition.toString();
         String expect = "{\"_id\":\"id-as-string\"}";
@@ -106,7 +106,7 @@ public class MongoConditionTest {
     @Test
     public void testIdConditionAsJSONObject() {
         String conditionString = "id-as-string";
-        MongoCondition mongoCondition = MongoCondition.idCondition(conditionString);
+        final MongoCondition mongoCondition = MongoCondition.idCondition(conditionString);
 
         JSONObject asJSONObject = mongoCondition.asJSONObject();
         Object actual = asJSONObject.get("_id");
@@ -116,7 +116,7 @@ public class MongoConditionTest {
 
     @Test
     public void testEmptyCondition() {
-        MongoCondition mongoCondition = MongoCondition.emptyCondition();
+        final MongoCondition mongoCondition = MongoCondition.emptyCondition();
 
         String actual = mongoCondition.getQueryString();
         String expect = "{}";

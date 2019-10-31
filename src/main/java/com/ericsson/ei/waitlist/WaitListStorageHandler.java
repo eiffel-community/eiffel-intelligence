@@ -86,7 +86,7 @@ public class WaitListStorageHandler {
     }
 
     private String findEventInWaitList(JsonNode id) {
-        MongoCondition condition = MongoCondition.idCondition(id);
+        final MongoCondition condition = MongoCondition.idCondition(id);
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
         if (foundEventsInWaitList.isEmpty()) {
             return "";

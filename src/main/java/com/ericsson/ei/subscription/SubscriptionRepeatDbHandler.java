@@ -95,7 +95,7 @@ public class SubscriptionRepeatDbHandler {
         LOGGER.debug(
                 "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
                 aggrObjId, subscriptionId);
-        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName,
                 subscriptionQuery);
         if (objArray != null && !objArray.isEmpty()) {
@@ -144,7 +144,7 @@ public class SubscriptionRepeatDbHandler {
     private boolean updateExistingMatchedSubscriptionWithAggrObjId(
             String subscriptionId, int requirementId, String aggrObjId) {
 
-        MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         JsonNode updateDocJsonNode = prepareQueryToUpdateAggregation(subscriptionId, requirementId,
                 aggrObjId);
 

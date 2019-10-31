@@ -90,7 +90,8 @@ public class ObjectHandler {
      * @param id               String id is stored together with aggregated object in database
      */
     public void insertObject(String aggregatedObject, RulesObject rulesObject, String event,
-            String id) {
+            String givenId) {
+        String id = givenId;
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);

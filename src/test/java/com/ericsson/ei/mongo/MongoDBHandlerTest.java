@@ -24,24 +24,15 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.TestName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.mongo.MongoCondition;
-import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
 public class MongoDBHandlerTest {
-
-    @Rule public TestName name = new TestName();
-    final Logger log = LoggerFactory.getLogger(MongoDBHandlerTest.class);
 
     private MongoDBHandler mongoDBHandler;
 

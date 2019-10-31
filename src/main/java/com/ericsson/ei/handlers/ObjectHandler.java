@@ -124,7 +124,8 @@ public class ObjectHandler {
      * @return true if operation succeed
      */
     public void updateObject(String aggregatedObject, RulesObject rulesObject, String event,
-            String id) {
+            final String givenId) {
+        String id = givenId;
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -243,7 +244,7 @@ public class ObjectHandler {
         }
 
         // Checking a retryCounter to prevent a infinite loop while waiting for document to unlock
-        while (documentLocked == true || returyCounter < MAX_RETRY_COUNT) {
+        while (documentLocked && returyCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 Document result = mongoDbHandler.findAndModify(databaseName, collectionName,

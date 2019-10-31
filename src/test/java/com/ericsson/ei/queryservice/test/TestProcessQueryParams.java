@@ -2,8 +2,8 @@ package com.ericsson.ei.queryservice.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -27,7 +27,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;

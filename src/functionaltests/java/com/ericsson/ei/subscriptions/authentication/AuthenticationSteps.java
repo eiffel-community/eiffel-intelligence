@@ -61,7 +61,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @Before("@RESTWithCredentials or @RESTWithSessionCookie")
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth/logout");
+        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/authentication/logout");
 
         String auth = "gauss:password";
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");

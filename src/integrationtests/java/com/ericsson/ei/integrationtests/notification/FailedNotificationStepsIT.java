@@ -1,6 +1,7 @@
 package com.ericsson.ei.integrationtests.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -8,11 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,6 +25,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.eiffelcommons.subscriptionobject.MailSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
@@ -43,12 +48,16 @@ import util.IntegrationTestBase;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 @TestPropertySource(properties = { "spring.mail.port: 9999" })
 public class FailedNotificationStepsIT extends IntegrationTestBase {
+    private static final int SECONDS_30 = 30000;
     private String rulesFilePath;
     private String eventsFilePath;
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
 
     private SubscriptionObject subscriptionObject;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
@@ -117,14 +126,29 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
 
     @Then("^failed notification of type \"([^\"]*)\" should exist for subscription \"([^\"]*)\"$")
     public void failedNotificationShouldExist(String searchValue, String subscriptionName) throws Throwable {
+        waitForDatabaseEntry(subscriptionName);
+
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
                 .setEndpoint("/failed-notifications")
                .addParam("subscriptionName", subscriptionName);
-
         ResponseEntity response = request.performRequest();
-        String message = objectMapper.readTree(response.getBody()).get("queryResponseEntity").get("message").toString();
-        assertEquals(true, message.contains(searchValue));
+
+        String body = response.getBody();
+        assertNotEquals("Performed request but body was empty", "", body);
+        String message = "";
+
+        // There was a lot errors in this area so I added more logging
+        try {
+            JsonNode messageNode = objectMapper.readTree(body).get("queryResponseEntity").get("message");
+            assertNotEquals("No failed notficitaions found for " + subscriptionName, null,
+                    messageNode);
+            message = messageNode.toString();
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("Tried to parse json of "+ body);
+        }
+
+        assertEquals("Did not contain a failed notification", true, message.contains(searchValue));
     }
 
     @Override
@@ -155,4 +179,18 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
         return eventNames;
     }
+
+    private void waitForDatabaseEntry(String subscriptionName) throws InterruptedException {
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
+
+        long stopTime = System.currentTimeMillis() + SECONDS_30;
+        ArrayList<String> find = new ArrayList<>(0);
+        do {
+            TimeUnit.MILLISECONDS.sleep(1000);
+            find = mongoDBHandler.find("FailedNotification", "missed_notification_failed_notification", condition);
+
+        } while (find.isEmpty() && stopTime > System.currentTimeMillis());
+    }
+
+
 }

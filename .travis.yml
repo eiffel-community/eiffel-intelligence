@@ -40,7 +40,8 @@ jobs:
       before_script:
         - source src/main/docker/env.bash
         - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb rabbitmq eiffel-er jenkins mail-server
-        - sleep 60
+        - echo 'Sleeping until Jenkins has started.'
+        - timeout 90 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:$JENKINS_PORT/login)" != "200" ]]; do sleep 3; done' || false
       script:
         - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
     - stage: deploy

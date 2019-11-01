@@ -2,9 +2,12 @@
 package com.ericsson.ei.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import com.ericsson.ei.controller.model.QueryBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,5 +32,15 @@ public interface AggregatedObjectController {
     public ResponseEntity<?> getAggregatedObjectById(
         @PathVariable
         String id, HttpServletRequest httpRequest);
+
+    /**
+     * The REST POST method is used to query aggregated objects with the requested criteria, which are present in the request body.
+     * 
+     */
+    @RequestMapping(value = "/query", method = RequestMethod.POST)
+    public ResponseEntity<?> createAggregatedObjectsQuery(
+        @Valid
+        @RequestBody
+        QueryBody queryBody, HttpServletRequest httpRequest);
 
 }

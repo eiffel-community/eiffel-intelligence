@@ -79,7 +79,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private ObjectMapper objMapper;
 
     final static private String entryPointAggregatedObject = "/aggregated-objects";
-    final static private String entryPointQuery = "/query";
+    final static private String entryPointQuery = "/aggregated-objects/query";
     final static private String entryPointFailedNotifications = "/failed-notifications";
 
     public QueryAggregatedObjectsTestSteps() {

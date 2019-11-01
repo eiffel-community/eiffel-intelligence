@@ -14,3 +14,15 @@ description: This class returns aggregated data given a specific ID of an aggreg
       200:
         body:
           application/json:
+          
+/query:
+  post:
+    description: The REST POST method is used to query aggregated objects with the
+                 requested criteria, which are present in the request body.
+    body:
+      application/json:
+        schema: queryBody
+    responses:
+      200:
+        body:
+          application/json:

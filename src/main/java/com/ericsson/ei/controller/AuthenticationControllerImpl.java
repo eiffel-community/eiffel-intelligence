@@ -1,5 +1,5 @@
 /*
-   Copyright 2018 Ericsson AB.
+authentication   Copyright 2018 Ericsson AB.
    For a full list of individual contributors, please see the commit history.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,15 +34,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Endpoint /auth/login should be secured if LDAP is enabled.
- * Endpoint /auth should never be secured.
+ * Endpoint /authentication/login should be secured if LDAP is enabled.
+ * Endpoint /authentication should never be secured.
  */
 @Component
 @CrossOrigin
 @Api(value = "Auth", tags = { "Authentication" })
-public class AuthControllerImpl implements AuthController {
+public class AuthenticationControllerImpl implements AuthenticationController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationControllerImpl.class);
 
     @Value("${ldap.enabled:false}")
     private boolean ldapEnabled;
@@ -50,7 +50,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To check if security is enabled", response = String.class)
-    public ResponseEntity<?> getAuth(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAuthentication(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(),
                     HttpStatus.OK);
@@ -65,7 +65,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @CrossOrigin
     @ApiOperation(value = "To get login of current user", response = String.class)
-    public ResponseEntity<?> getAuthLogin(final HttpServletRequest httpRequest) {
+    public ResponseEntity<?> getAuthenticationLogin(final HttpServletRequest httpRequest) {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
             return new ResponseEntity<>(new JSONObject().put("user", currentUser).toString(),

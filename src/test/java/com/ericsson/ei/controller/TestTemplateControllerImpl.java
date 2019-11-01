@@ -16,22 +16,14 @@
 */
 package com.ericsson.ei.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.utils.TestContextInitializer;
@@ -47,38 +39,34 @@ import com.ericsson.ei.utils.TestContextInitializer;
         initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
-@AutoConfigureMockMvc
-public class TestTemplateControllerImpl {
+public class TestTemplateControllerImpl extends ControllerTestBaseClass {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private static final String TEMPLATES_EVENTS = "/templates/events";
+    private static final String TEMPLATES_RULES = "/templates/rules";
+    private static final String TEMPLATES_SUBSCRIPTIONS = "/templates/subscriptions";
 
     @Test
-    public void testGetDownload() throws Exception {
+    public void testGetDownload() throws Throwable {
         JSONObject responseBody = new JSONObject();
-        responseBody.put("subscriptions", "/templates/subscriptions");
-        responseBody.put("rules", "/templates/rules");
-        responseBody.put("events", "/templates/events");
-        mockMvc.perform(MockMvcRequestBuilders.get("/templates").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andExpect(content().string(responseBody.toString())).andReturn();
+        responseBody.put("subscriptions", TEMPLATES_SUBSCRIPTIONS);
+        responseBody.put("rules", TEMPLATES_RULES);
+        responseBody.put("events", TEMPLATES_EVENTS);
+        assertExpectedResponse("/templates", responseBody.toString());
     }
 
     @Test
-    public void testGetSubscriptionsTemplate() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/templates/subscriptions").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetSubscriptionsTemplate() throws Throwable {
+        assertOkResponseStatus(TEMPLATES_SUBSCRIPTIONS);
     }
 
     @Test
-    public void testGetRulesTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/templates/rules").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetRulesTemplate() throws Throwable {
+        assertOkResponseStatus(TEMPLATES_RULES);
     }
 
     @Test
-    public void testGetEventsTemplate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/templates/events").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk()).andReturn();
+    public void testGetEventsTemplate() throws Throwable {
+        assertOkResponseStatus(TEMPLATES_EVENTS);
     }
+
 }

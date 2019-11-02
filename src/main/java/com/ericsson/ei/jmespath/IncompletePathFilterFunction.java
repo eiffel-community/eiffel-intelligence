@@ -39,11 +39,11 @@ import io.burt.jmespath.function.FunctionArgument;
 
 public class IncompletePathFilterFunction extends BaseFunction {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncompletePathFilterFunction.class);
+
     public IncompletePathFilterFunction() {
         super(ArgumentConstraints.listOf(ArgumentConstraints.typeOf(JmesPathType.OBJECT), ArgumentConstraints.typeOf(JmesPathType.STRING)));
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncompletePathFilterFunction.class);
 
     /*
      * (non-Javadoc)

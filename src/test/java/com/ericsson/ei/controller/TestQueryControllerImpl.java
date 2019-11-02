@@ -78,7 +78,7 @@ public class TestQueryControllerImpl {
         when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
                 .thenReturn(inputObj);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("aggregated-objects/query").accept(MediaType.ALL)
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/aggregated-objects/query").accept(MediaType.ALL)
                 .content(QUERY)
                 .contentType(MediaType.APPLICATION_JSON);
 

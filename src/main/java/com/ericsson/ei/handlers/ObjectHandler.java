@@ -226,7 +226,7 @@ public class ObjectHandler {
      * @return String aggregated document
      */
     public String lockDocument(String id) {
-        int returyCounter = 0;
+        int retryCounter = 0;
         boolean documentLocked = true;
 
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
@@ -247,7 +247,7 @@ public class ObjectHandler {
         }
 
         // Checking a retryCounter to prevent a infinite loop while waiting for document to unlock
-        while (documentLocked && returyCounter < MAX_RETRY_COUNT) {
+        while (documentLocked && retryCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 Document result = mongoDbHandler.findAndModify(databaseName, collectionName,
@@ -263,7 +263,7 @@ public class ObjectHandler {
             } catch (Exception e) {
                 LOGGER.error("Could not lock document", e);
             } finally {
-                returyCounter++;
+                retryCounter++;
             }
         }
         return null;

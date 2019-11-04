@@ -48,6 +48,8 @@ import util.IntegrationTestBase;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 @TestPropertySource(properties = { "spring.mail.port: 9999" })
 public class FailedNotificationStepsIT extends IntegrationTestBase {
+    private static final int SECONDS_1 = 1000;
+    private static final String FAILED_NOTIFICATION_DATABASE = "FailedNotification";
     private static final int SECONDS_30 = 30000;
     private String rulesFilePath;
     private String eventsFilePath;
@@ -141,7 +143,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         // There was a lot errors in this area so I added more logging
         try {
             JsonNode messageNode = objectMapper.readTree(body).get("queryResponseEntity").get("message");
-            assertNotEquals("No failed notficitaions found for " + subscriptionName, null,
+            assertNotEquals("No failed notifications found for " + subscriptionName, null,
                     messageNode);
             message = messageNode.toString();
         } catch (NullPointerException e) {
@@ -186,9 +188,9 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         long stopTime = System.currentTimeMillis() + SECONDS_30;
         ArrayList<String> find = new ArrayList<>(0);
         do {
-            TimeUnit.MILLISECONDS.sleep(1000);
-            find = mongoDBHandler.find("FailedNotification", "missed_notification_failed_notification", condition);
-
+            TimeUnit.MILLISECONDS.sleep(SECONDS_1);
+            find = mongoDBHandler.find(FAILED_NOTIFICATION_DATABASE,
+                    FailedNotificationRunnerIT.FAILED_NOTIFICATION_COLLECTION, condition);
         } while (find.isEmpty() && stopTime > System.currentTimeMillis());
     }
 

@@ -1,14 +1,16 @@
 # Query Aggregated Objects
 
-Query aggregated objects can be done using two endpoints.
+Query aggregated objects can be done using the following endpoint.
+     
+    http://<host address>:<host port>/aggregated-objects/
 
-## The first endpoint uses several criteria
+## The first  option uses several criteria with the endpoint
 
-    http://<host adress>:<host port>/query
+    http://<host address>:<host port>/aggregated-objects/query
 
 1. The criteria can be passed as URL parameter in a get request
 
-        http://<host adress>:<host port>/query?request="testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
+        http://<host adress>:<host port>/aggregated-objects/query?request="testCaseExecutions.testCase.verdict:PASSED,testCaseExecutions.testCase.id:TC5,id:6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"
 
 2. The criteria can be passed as form body in a post request, example of body
 is presented below. _Options_ section is optional.
@@ -43,6 +45,6 @@ is presented below. _Options_ section is optional.
        }
     }
 
-## The second endpoint is more strict and the user must provide the id of the event that started the aggregated object.
+## The second option is more strict and the user must provide the id of the event that started the aggregated object.
 
-    http://<host adress>:<host port>/queryAggregatedObject?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
+    http://<host adress>:<host port>/aggregated-objects/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43

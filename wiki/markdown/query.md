@@ -2,24 +2,24 @@
 
 |Method|Endpoint             |
 |------|---------------------|
-|GET   |/queryAggregatedObject|
-|POST   |/query|
+|GET   |/aggregated-objects|
+|POST  |/aggregated-objects/query|
 
 ## Perform query on created aggregated object
-    GET /queryAggregatedObject
+    GET /aggregated-objects
 
-**Query parameters**:
-ID=\<documentID\>
+**URI parameters**:
+\{documentID\}
 
-Examples of this endpoint using curl
+Examples of this endpoint using curl with an a given id = 6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
 
-    curl -X GET -H "Content-type: application/json"  http://localhost:8090/queryAggregatedObject?ID=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
+    curl -X GET -H "Content-type: application/json"  http://localhost:8090/aggregated-objects/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
 
 ## Perform freestyle query on created aggregated object
 It is possible to make queries on aggregated objects using freestyle queries. These freestyle
 queries are plain Mongo DB queries, you can read more about that [here](https://docs.mongodb.com/manual/tutorial/query-documents/).
 
-    POST /query
+    POST /aggregated-objects/query
 
 **Body (application/json)**:
 
@@ -31,7 +31,7 @@ queries are plain Mongo DB queries, you can read more about that [here](https://
 
 Examples of this endpoint using curl
 
-    curl -X POST -H "Content-type: application/json"  --data @Body.json http://localhost:34911/query
+    curl -X POST -H "Content-type: application/json"  --data @Body.json http://localhost:34911/aggregated-objects/query
 
 Examples of criterias:
 

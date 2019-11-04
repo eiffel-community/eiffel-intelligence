@@ -62,7 +62,7 @@ public class ERQueryService {
     }
 
     /**
-     * This method is used to fetch only the upstream or downstream or both event information from
+     * This method is used to fetch only the upstream or downstream or both event information for
      * ER based on the eventID and searchOption conditions.
      *
      * @param eventId      the id of the event.
@@ -79,9 +79,9 @@ public class ERQueryService {
     public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption,
             int limit, int levels, boolean tree) throws PropertyNotFoundException, Exception {
         try {
-            ResponseEntity requestToER = sendRequestToER(eventId, searchOption, limit, levels,
+            ResponseEntity responseFromEr = sendRequestToER(eventId, searchOption, limit, levels,
                     tree);
-            return requestToER;
+            return responseFromEr;
         } catch (IOException | URISyntaxException e) {
             throw new HttpRequestFailedException("Error occurred while executing REST POST", e);
         }
@@ -95,8 +95,7 @@ public class ERQueryService {
         }
 
         prepareRequest(eventId, searchOption, limit, levels, tree);
-        ResponseEntity response = sendRequest();
-        return response;
+        return request.performRequest();
     }
 
     private void prepareRequest(String eventId, SearchOption searchOption, int limit,
@@ -113,11 +112,6 @@ public class ERQueryService {
 
         String uri = request.getURI().toString();
         LOGGER.debug("The URL to ER is: {}", uri);
-    }
-
-    private ResponseEntity sendRequest()
-            throws ClientProtocolException, URISyntaxException, IOException {
-        return request.performRequest();
     }
 
     /**

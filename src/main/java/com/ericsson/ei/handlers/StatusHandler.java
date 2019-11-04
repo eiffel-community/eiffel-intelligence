@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listeners.RMQConnectionListener;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.status.Status;
 import com.ericsson.ei.status.StatusData;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StatusHandler {
 
     private static final String INITIAL_DELAY_OF_FIRST_STATUS_UPDATE = "1000";
-    private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "30000";
+    private static final String INTERVAL_TO_RUN_STATUS_UPDATES = "5000";
 
     private StatusData statusData = new StatusData();
     private ObjectMapper objectMapper = new ObjectMapper();

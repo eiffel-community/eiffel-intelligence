@@ -16,7 +16,8 @@
 */
 package com.ericsson.ei.subscription;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,7 +95,7 @@ public class SubscriptionRepeatDbHandler {
         LOGGER.debug(
                 "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
                 aggrObjId, subscriptionId);
-        String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName,
                 subscriptionQuery);
         if (objArray != null && !objArray.isEmpty()) {
@@ -143,14 +144,14 @@ public class SubscriptionRepeatDbHandler {
     private boolean updateExistingMatchedSubscriptionWithAggrObjId(
             String subscriptionId, int requirementId, String aggrObjId) {
 
-        JsonNode queryJsonNode = prepareSubscriptionQuery(subscriptionId);
+        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
         JsonNode updateDocJsonNode = prepareQueryToUpdateAggregation(subscriptionId, requirementId,
                 aggrObjId);
 
         Document document = null;
 
         document = mongoDbHandler.findAndModify(dataBaseName, collectionName,
-                queryJsonNode.toString(), updateDocJsonNode.toString());
+                subscriptionQuery, updateDocJsonNode.toString());
         if (document != null && !document.isEmpty()) {
             LOGGER.debug(
                     "Successfully updated Matched Subscription Aggregated Object list:"
@@ -191,17 +192,6 @@ public class SubscriptionRepeatDbHandler {
         } catch (MongoWriteException e) {
             LOGGER.error("Failed to insert the document into database.", e);
         }
-    }
-
-    private JsonNode prepareSubscriptionQuery(String subscriptionId) {
-        try {
-            String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
-            JsonNode queryJsonNode = mapper.readValue(subscriptionQuery, JsonNode.class);
-            return queryJsonNode;
-        } catch (Exception e) {
-            LOGGER.error("Failed to create subscription query.", e);
-        }
-        return null;
     }
 
     private JsonNode prepareQueryToUpdateAggregation(String subscriptionId,

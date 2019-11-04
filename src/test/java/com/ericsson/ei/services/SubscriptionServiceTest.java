@@ -52,7 +52,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
@@ -287,8 +288,10 @@ public class SubscriptionServiceTest {
 
             // Checking if it removes the Subscription Matched AggrObjIds
             // document from RepeatHandlerDb database collection.
-            String subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + expectedSubscriptionName + "\"}";
-            ArrayList<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
+            final MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
+                    expectedSubscriptionName);
+            ArrayList<String> result = mongoDBHandler.find(dataBaseName,
+                    repeatFlagHandlerCollection,
                     subscriptionIdMatchedAggrIdObjQuery);
 
             assertEquals("[]", result.toString());
@@ -309,7 +312,6 @@ public class SubscriptionServiceTest {
             subscription2 = null;
             subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
             subscriptionName = subscription2.getSubscriptionName();
-            String subscriptionUserName = subscription2.getUserName();
 
             assertEquals(subscriptionName, expectedSubscriptionName);
 
@@ -334,7 +336,8 @@ public class SubscriptionServiceTest {
 
             // Checking if it removes the Subscription Matched AggrObjIds
             // document from RepeatHandlerDb database collection.
-            String subscriptionIdMatchedAggrIdObjQuery = "{ \"subscriptionId\" : \"" + subscriptionName + "\"}";
+            final MongoCondition subscriptionIdMatchedAggrIdObjQuery = MongoCondition.subscriptionCondition(
+                    "subscriptionName");
             List<String> result = mongoDBHandler.find(dataBaseName, repeatFlagHandlerCollection,
                     subscriptionIdMatchedAggrIdObjQuery);
 

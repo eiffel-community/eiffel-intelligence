@@ -30,6 +30,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
@@ -61,7 +62,7 @@ public class ArrayAggregationTest extends FlowTestBase {
     private ERQueryService erQueryService;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws PropertyNotFoundException, Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 

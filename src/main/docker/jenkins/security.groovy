@@ -1,8 +1,9 @@
 #!groovy
+// Add the user admin explicitly to jenkins
+// Strategy is set to give full access to logged in user
 
 import jenkins.model.*
 import hudson.security.*
-import jenkins.security.s2m.AdminWhitelistRule
 
 def instance = Jenkins.getInstance()
 
@@ -13,5 +14,3 @@ instance.setSecurityRealm(hudsonRealm)
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 instance.setAuthorizationStrategy(strategy)
 instance.save()
-
-Jenkins.instance.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)

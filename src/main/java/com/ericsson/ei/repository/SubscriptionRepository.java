@@ -18,7 +18,6 @@ package com.ericsson.ei.repository;
 
 import java.util.ArrayList;
 
-import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.mongodb.MongoWriteException;
 
 
 @Component
@@ -47,12 +48,12 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     }
 
     @Override
-    public ArrayList<String> getSubscription(String getQuery) {
+    public ArrayList<String> getSubscription(MongoQuery getQuery) {
         return mongoDBHandler.find(dataBaseName, collectionName, getQuery);
     }
 
     @Override
-    public Document modifySubscription(String query, String stringSubscription) throws JSONException {
+    public Document modifySubscription(MongoQuery query, String stringSubscription) throws JSONException {
         JSONObject subscriptionJson = new JSONObject(stringSubscription);
         if(subscriptionJson.has("password") && subscriptionJson.getString("password").equals("")) {
             subscriptionJson.remove("password");
@@ -64,7 +65,7 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     }
 
     @Override
-    public boolean deleteSubscription(String query) {
+    public boolean deleteSubscription(MongoQuery query) {
         return mongoDBHandler.dropDocument(dataBaseName, collectionName, query);
     }
 

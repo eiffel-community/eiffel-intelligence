@@ -21,15 +21,16 @@ import java.util.ArrayList;
 import org.bson.Document;
 import org.json.JSONException;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
 
 public interface ISubscriptionRepository {
 
-    ArrayList<String> getSubscription(String name);
+    ArrayList<String> getSubscription(MongoQuery query);
 
-    Document modifySubscription(String stringSubscription, String subscriptionName) throws JSONException;
+    Document modifySubscription(MongoQuery query, String subscriptionName) throws JSONException;
 
-    boolean deleteSubscription(String name);
+    boolean deleteSubscription(MongoQuery queary);
 
     void addSubscription(String subscription);
 

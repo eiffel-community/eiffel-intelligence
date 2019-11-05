@@ -1,4 +1,4 @@
-package com.ericsson.ei.files;
+package com.ericsson.ei.templates;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,17 +26,17 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: DownloadFilesTestSteps",
-        "rabbitmq.exchange.name: DownloadFilesTestSteps-exchange",
-        "rabbitmq.consumerName: rabbitmq.consumerName: DownloadFilesTestStepsConsumer" })
+@TestPropertySource(properties = {"spring.data.mongodb.database: TemplatesTestSteps",
+        "rabbitmq.exchange.name: TemplatesTestSteps-exchange",
+        "rabbitmq.consumerName: TemplatesTestStepsConsumer" })
 @AutoConfigureMockMvc
-public class DownloadFilesTestSteps extends FunctionalTestBase {
+public class TemplatesTestSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadFilesTestSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemplatesTestSteps.class);
 
-    private static final String SUBSCRIPTIONS_TEMPLATE_FILEPATH = "src/main/resources/templates/subscriptionsTemplate.json";
-    private static final String RULES_TEMPLATE_FILEPATH = "src/main/resources/templates/rulesTemplate.json";
-    private static final String EVENTS_TEMPLATE_FILEPATH = "src/main/resources/templates/eventsTemplate.json";
+    private static final String SUBSCRIPTIONS_TEMPLATE_FILEPATH = "src/main/resources/templates/subscriptions.json";
+    private static final String RULES_TEMPLATE_FILEPATH = "src/main/resources/templates/rules.json";
+    private static final String EVENTS_TEMPLATE_FILEPATH = "src/main/resources/templates/events.json";
 
     private ObjectMapper objMapper = new ObjectMapper();
     private HttpRequest httpRequest = new HttpRequest(HttpMethod.GET);
@@ -51,7 +51,7 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         LOGGER.debug("Checking if Eiffel Intelligence instance is up and running.");
         httpRequest.setHost(hostName)
                    .setPort(applicationPort)
-                   .addHeader("Content-type:", MediaType.APPLICATION_JSON_VALUE.toString())
+                   .addHeader("Content-type:", MediaType.APPLICATION_JSON_VALUE)
                    .setEndpoint("/subscriptions");
 
         response = httpRequest.performRequest();
@@ -60,18 +60,17 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
 
     @Then("^List available files$")
     public void list_available_files() throws Exception {
-        LOGGER.debug("Listing all availble files that can be download via RestApi.");
-        String expectedSubscriptionsValue = "/download/subscriptionsTemplate";
+        LOGGER.debug("Listing all available template files that can be downloaded via REST API.");
+        String expectedSubscriptionsValue = "/templates/subscriptions";
 
-        httpRequest.setEndpoint("/download");
+        httpRequest.setEndpoint("/templates");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualSubscriptionsValue = objMapper.readValue(response.getBody(), JsonNode.class).get("subscriptions").asText();
-        assertEquals("List all files don't return expected subscriptions file value. \nExpected: "
-        + expectedSubscriptionsValue + "\nActual: "+ actualSubscriptionsValue,
-        expectedSubscriptionsValue, actualSubscriptionsValue);
+        assertEquals("Template endpoints did not return expected subscriptions endpoint.",
+                expectedSubscriptionsValue, actualSubscriptionsValue);
     }
 
     @And("^Get subscription template file$")
@@ -79,31 +78,27 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
         String expectedSubscriptionTemplateContent = FileUtils.readFileToString(
                 new File(SUBSCRIPTIONS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/subscriptionsTemplate");
+        httpRequest.setEndpoint("/templates/subscriptions");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualSubscriptionTemplateContent = response.getBody();
-        assertEquals(
-                "Get SubscriptionTemplate file failed or contents is not as expected. \nExpected: "
-                        + expectedSubscriptionTemplateContent + "\nActual: " + actualSubscriptionTemplateContent,
-                expectedSubscriptionTemplateContent, actualSubscriptionTemplateContent);
+        assertEquals("Failed to get template file for subscriptions. ",
+            expectedSubscriptionTemplateContent, actualSubscriptionTemplateContent);
     }
 
     @And("^Get rules template file$")
     public void get_rules_template_file() throws Exception {
         String expectedRulesTemplateContent = FileUtils.readFileToString(new File(RULES_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/rulesTemplate");
+        httpRequest.setEndpoint("/templates/rules");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualRulesTemplateContent = response.getBody();
-        assertEquals(
-                "Get RulesTemplate file failed or contents is not as expected. \nExpected: "
-                        + expectedRulesTemplateContent + "\nActual: " + actualRulesTemplateContent,
+        assertEquals("Failed to get template file for rules.",
                 expectedRulesTemplateContent, actualRulesTemplateContent);
     }
 
@@ -111,15 +106,13 @@ public class DownloadFilesTestSteps extends FunctionalTestBase {
     public void get_event_template_file() throws Exception {
         String expectedEventsTemplateContent = FileUtils.readFileToString(new File(EVENTS_TEMPLATE_FILEPATH), "UTF-8");
 
-        httpRequest.setEndpoint("/download/eventsTemplate");
+        httpRequest.setEndpoint("/templates/events");
         response = httpRequest.performRequest();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String actualEventsTemplateContent = response.getBody();
-        assertEquals(
-                "Get EventsTemplate file failed or contents is not as expected. \nExpected: "
-                        + expectedEventsTemplateContent + "\nActual: " + actualEventsTemplateContent,
+        assertEquals("Failed to get template file for events.",
                 expectedEventsTemplateContent, actualEventsTemplateContent);
     }
 }

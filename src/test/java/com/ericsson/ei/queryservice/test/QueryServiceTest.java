@@ -38,8 +38,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessMissedNotification;
 import com.ericsson.ei.test.utils.TestConfigs;
@@ -107,7 +107,8 @@ public class QueryServiceTest {
                 .insertOne(missedDocument);
         LOG.debug("Document Inserted in missed Notification Database");
 
-        BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(aggDocument.getString("id"),
+        BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
+                aggDocument.getString("_id"),
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
@@ -176,13 +177,12 @@ public class QueryServiceTest {
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
-            record.remove("_id");
             actual = new ObjectMapper().readTree(aggregatedObject);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
         LOG.debug("The result is : " + record.toString());
-        assertEquals(record.toString(), actual.toString());
+        assertEquals(record, actual);
     }
 }

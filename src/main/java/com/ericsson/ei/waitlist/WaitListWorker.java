@@ -19,6 +19,8 @@ package com.ericsson.ei.waitlist;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.PreDestroy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +58,13 @@ public class WaitListWorker {
     @Autowired
     private EventToObjectMapHandler eventToObjectMapHandler;
 
+    private boolean shutdownInProgress = false;
+
     @Scheduled(initialDelayString = "${waitlist.initialDelayResend}", fixedRateString = "${waitlist.fixedRateResend}")
     public void run() {
+        if(shutdownInProgress) {
+            return;
+        }
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
             try {
@@ -98,5 +105,10 @@ public class WaitListWorker {
                 }
             }
         }
+    }
+
+    @PreDestroy
+    public void shutdownSignalSent() {
+        shutdownInProgress = true;
     }
 }

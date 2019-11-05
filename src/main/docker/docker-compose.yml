@@ -135,13 +135,10 @@ services:
     depends_on:
       - rabbitmq
       - mongodb
+    volumes:
+      - "./jenkins/security.groovy:/usr/share/jenkins/ref/init.groovy.d/security.groovy"
     environment:
-      - JENKINS_USERNAME=admin
-      - JENKINS_PASSWORD=admin
-      - DISABLE_JENKINS_INITIALIZATION=yes
-      #     - JENKINS_HOME=                      # JENKINS_HOME: Jenkins home directory. Default: /opt/bitnami/jenkins/jenkins_home
-      #     - DISABLE_JENKINS_INITIALIZATION=yes    # DISABLE_JENKINS_INITIALIZATION: Allows to disable the initial Bitnami configuration for Jenkins. Default: no
-      #     - JAVA_OPTS=                         # JAVA_OPTS: Customize JVM parameters. No defaults.
+      - JAVA_OPTS="-Djenkins.install.runSetupWizard=false" # To make sure unlock screen and plug-in install is skipped on start up
     networks:
       eiffel_2.0_1:
         aliases:

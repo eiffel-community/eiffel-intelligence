@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers.test;
+package com.ericsson.ei.mongo;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -24,27 +24,24 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
 public class MongoDBHandlerTest {
 
-    final Logger log = LoggerFactory.getLogger(MongoDBHandlerTest.class);
-
     private MongoDBHandler mongoDBHandler;
 
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
-    private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
-    private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
-    private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
+    private String input = "{\"_id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
+    private String updateInput = "{\"_id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
+    private MongoCondition condition = MongoCondition.condition("test_cases.event_id",
+            "testcaseid1");
 
     @Before
     public void init() throws Exception {
@@ -58,20 +55,26 @@ public class MongoDBHandlerTest {
     public void testGetDocuments() {
         ArrayList<String> documents = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         assertTrue(documents.size() > 0);
-        dropCollection();
     }
 
     @Test
     public void testGetDocumentsOnCondition() {
         ArrayList<String> documents = mongoDBHandler.find(dataBaseName, collectionName, condition);
         assertTrue(documents.size() > 0);
-        dropCollection();
     }
 
     @Test
     public void testUpdateDocument() {
-        assertTrue(mongoDBHandler.updateDocument(dataBaseName, collectionName, input, updateInput));
-        dropCollection();
+        final MongoQuery query = MongoCondition.idCondition("eventId");
+        assertTrue("Document was not updated",
+                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
+    }
+
+    @Test
+    public void testUpdateDocumentWrongId() {
+        final MongoQuery query = MongoCondition.idCondition("id-does-not-exist");
+        assertFalse("Document can't be updated",
+                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
     }
 
     @Test
@@ -84,9 +87,14 @@ public class MongoDBHandlerTest {
         doThrow(Exception.class).when(client).getAddress();
         mongoDBHandler.setMongoClient(client);
         assertFalse(mongoDBHandler.isMongoDBServerUp());
+
+        // Need to set a working client to enable cleanup
+        mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
     }
 
-    private void dropCollection() {
-        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
+    @After
+    public void dropCollection() {
+        final MongoCondition idCondition = MongoCondition.idCondition("eventId");
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, idCondition));
     }
 }

@@ -2,7 +2,7 @@
 Feature: Test Rest Endpoints
 
 # Note: /query is not tested since it has its own test.
-# /rules/rule-check/aggregation is not tested since it performs an agregation.
+# /rules/rule-check/aggregation is not tested since it performs an aggregation.
 
   Scenario Outline: Perform GET request on <endpoint> and expect response code <responsecode>
     Given A GET request is prepared
@@ -10,17 +10,17 @@ Feature: Test Rest Endpoints
     Then Request should get response code <responsecode>
 
   # Note: 404 responses are when no data in database was found,
-  # since this scenario is not about fetching data. 
-  Examples: 
+  # since this scenario is not about fetching data.
+  Examples:
     | responsecode | endpoint                               |
     | 200          | /information                           |
-    | 200          | /auth                                  |
-    | 200          | /auth/login                            |
+    | 200          | /authentication                        |
+    | 200          | /authentication/login                  |
     | 200          | /status                                |
-    | 200          | /download                              |
-    | 200          | /download/eventsTemplate               |
-    | 200          | /download/rulesTemplate                |
-    | 200          | /download/subscriptionsTemplate        |
+    | 200          | /templates                             |
+    | 200          | /templates/events                      |
+    | 200          | /templates/rules                       |
+    | 200          | /templates/subscriptions               |
     | 404          | /queryMissedNotifications/subs_name    |
     | 404          | /queryAggregatedObject/id              |
     | 200          | /rules                                 |
@@ -33,7 +33,7 @@ Feature: Test Rest Endpoints
     When Perform request on endpoint "<endpoint>"
     Then Request should get response code <responsecode>
 
-  Examples: 
+  Examples:
     | responsecode | type   | add_sub | endpoint                         |
     | 200          | POST   | do      | /subscriptions                   |
     | 200          | PUT    | do      | /subscriptions                   |
@@ -46,4 +46,3 @@ Feature: Test Rest Endpoints
     And Event rule json data is added as body
     When Perform request on endpoint "/rules/rule-check"
     Then Request should get response code 200
- 

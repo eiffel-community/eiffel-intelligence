@@ -41,7 +41,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
-import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.ericsson.ei.queryservice.ProcessFailedNotification;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -81,7 +81,7 @@ public class QueryServiceTest {
     private ObjectHandler objectHandler;
 
     @Autowired
-    private ProcessMissedNotification processMissedNotification;
+    private ProcessFailedNotification processMissedNotification;
 
     private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
     private static String failedNotificationPath = "src/test/resources/MissedNotification.json";
@@ -117,9 +117,9 @@ public class QueryServiceTest {
     }
 
     public void initializeData() throws Exception {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath));
+        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
-        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath));
+        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath), "UTF-8");
         LOG.debug("The missedNotification is : " + missedNotification);
     }
 
@@ -130,7 +130,7 @@ public class QueryServiceTest {
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
-        List<String> result = processMissedNotification.processQueryMissedNotification("Subscription_1");
+        List<String> result = processMissedNotification.processQueryFailedNotification("Subscription_1");
         LOG.debug("The retrieved data is : " + result.toString());
         ObjectNode record = null;
         JsonNode actual = null;
@@ -155,7 +155,7 @@ public class QueryServiceTest {
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
-        boolean removed = processMissedNotification.deleteMissedNotification("Subscription_1");
+        boolean removed = processMissedNotification.deleteFailedNotification("Subscription_1");
         assertEquals(true, removed);
         Iterable<Document> responseDBAfter = mongoClient.getDatabase(failedNotificationDatabaseName)
                 .getCollection(failedNotificationCollectionName).find();

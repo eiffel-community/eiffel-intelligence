@@ -13,10 +13,16 @@
 */
 package com.ericsson.ei.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,31 +33,29 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.controller.model.QueryResponse;
-import com.ericsson.ei.controller.model.QueryResponseEntity;
-import com.ericsson.ei.queryservice.ProcessMissedNotification;
+import com.ericsson.ei.queryservice.ProcessFailedNotification;
 import com.ericsson.ei.utils.ResponseMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class contains logic for retrieving failed notifications for the given
- * subscription.
+ * This class contains logic for retrieving failed notifications for the given subscription.
  */
 @Component
 @CrossOrigin
 @Api(value = "failedNotifications", tags = { "Failed notifications" })
 public class FailedNotificationControllerImpl implements FailedNotificationController {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FailedNotificationControllerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(
+            FailedNotificationControllerImpl.class);
 
     @Autowired
-    private ProcessMissedNotification processMissedNotification;
+    private ProcessFailedNotification processMissedNotification;
 
     /**
-     * This method is responsible for the REST GET mechanism to extract the data on
-     * the basis of the subscription name from the Failed Notification Object.
+     * This method is responsible for the REST GET mechanism to extract the data on the basis of the
+     * subscription name from the Failed Notification Object.
      *
      * @param subscriptionName
      */
@@ -60,27 +64,38 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionName", required = true) final String subscriptionName,
             final HttpServletRequest httpRequest) {
-        ObjectMapper mapper = new ObjectMapper();
-        QueryResponse queryResponse = new QueryResponse();
-        QueryResponseEntity queryResponseEntity = new QueryResponseEntity();
-        try {
-            List<String> response = processMissedNotification.processQueryMissedNotification(subscriptionName);
-            if (!response.isEmpty()) {
-                queryResponseEntity = mapper.readValue(response.get(0), QueryResponseEntity.class);
+        Set<String> subscriptionNameList = new HashSet<>(
+                Arrays.asList(subscriptionName.split(",")));
+        JSONArray foundArray = new JSONArray();
+        List<String> notFoundList = new ArrayList<>();
+
+        subscriptionNameList.forEach(name -> {
+            try {
+                List<String> response = processMissedNotification.processQueryFailedNotification(
+                        name);
+                if (!response.isEmpty()) {
+                    JSONObject object = new JSONObject(response.get(0));
+                    foundArray.put(object);
+                    LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
+                            name);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to fetch failed notification for subscription {}", name, e);
+                notFoundList.add(name);
             }
-            queryResponse.setQueryResponseEntity(queryResponseEntity);
-            LOGGER.debug("The response is : {}", response.toString());
-            if (processMissedNotification.deleteMissedNotification(subscriptionName)) {
-                LOGGER.debug("Failed notification for subscription {} was successfully removed from database",
-                        subscriptionName);
-             }
-            return new ResponseEntity<>(queryResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            String errorMessage = "Failed to extract the data from the failed notification object based on subscription name "
-                    + subscriptionName + ".";
-            LOGGER.error(errorMessage, e);
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
+        });
+        HttpStatus httpStatus;
+        if (foundArray.length() > 0) {
+            httpStatus = HttpStatus.OK;
+        } else {
+            httpStatus = HttpStatus.NOT_FOUND;
         }
+        if (httpStatus == HttpStatus.NOT_FOUND) {
+            String errorMessage = "Failed to fetch failed notifications for subscriptions:\n"
+                    + notFoundList.toString();
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, httpStatus);
+        }
+        return new ResponseEntity<>(foundArray.toString(), httpStatus);
     }
 }

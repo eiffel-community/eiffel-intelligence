@@ -29,13 +29,13 @@ import com.ericsson.ei.mongo.MongoDBHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class represents the mechanism to extract the aggregated data on the
- * basis of the SubscriptionName from the Missed Notification Object.
+ * This class represents the mechanism to extract information regarding a failed notification by
+ * using the subscriptionName key.
  */
 @Component
-public class ProcessMissedNotification {
+public class ProcessFailedNotification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessFailedNotification.class);
 
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
@@ -47,17 +47,17 @@ public class ProcessMissedNotification {
     private MongoDBHandler handler;
 
     /**
-     * The method is responsible to extract the data on the basis of the
-     * subscriptionName from the Missed Notification Object.
+     * Get a failed notification object by using the subscriptionName key.
      *
      * @param subscriptionName
      * @return List
      */
-    public List<String> processQueryMissedNotification(String subscriptionName) {
+    public List<String> processQueryFailedNotification(String subscriptionName) {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The Json condition is : {}", condition);
-        List<String> output = handler.find(failedNotificationDatabaseName, failedNotificationCollectionName,
-               condition);
+        List<String> output = handler.find(failedNotificationDatabaseName,
+                failedNotificationCollectionName,
+                condition);
 
         ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {
@@ -72,20 +72,22 @@ public class ProcessMissedNotification {
     }
 
     /**
-     * The method is responsible for the delete the missed notification using subscription name
+     * Delete a failed notification object by using the subscriptionName key.
      *
      * @param subscriptionName
      * @return boolean
      */
-    public boolean deleteMissedNotification(String subscriptionName) {
+    public boolean deleteFailedNotification(String subscriptionName) {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
-        return handler.dropDocument(failedNotificationDatabaseName, failedNotificationCollectionName, condition);
+        return handler.dropDocument(failedNotificationDatabaseName,
+                failedNotificationCollectionName, condition);
     }
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
+        LOGGER.debug(
+                "FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
                 failedNotificationDatabaseName, failedNotificationCollectionName);
     }
 

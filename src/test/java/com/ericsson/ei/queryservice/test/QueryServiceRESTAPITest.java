@@ -68,10 +68,10 @@ public class QueryServiceRESTAPITest {
 
     static Logger LOGGER = LoggerFactory.getLogger(QueryServiceRESTAPITest.class);
 
-    private static final String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static final String failedNotificationPath = "src/test/resources/MissedNotification.json";
-    private static final String aggregatedOutputPath = "src/test/resources/AggregatedOutput.json";
-    private static final String failedNotificationOutputPath = "src/test/resources/MissedNotificationOutput.json";
+    private static final String AGGREGATED_PATH = "src/test/resources/AggregatedObject.json";
+    private static final String FAILED_NOTIFICATION_PATH = "src/test/resources/FailedNotification.json";
+    private static final String AGGREGATED_OUTPUT_PATH = "src/test/resources/AggregatedOutput.json";
+    private static final String FAILED_NOTIFICATION_OUTPUT_PATH = "src/test/resources/FailedNotificationOutput.json";
     private static String aggregatedObject;
     private static String missedNotification;
 
@@ -85,15 +85,15 @@ public class QueryServiceRESTAPITest {
 
     @BeforeClass
     public static void init() throws IOException, JSONException {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
-        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath), "UTF-8");
+        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
+        missedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
     }
 
     @Test
     public void getQueryAggregatedObjectTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(aggregatedObject);
-        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(aggregatedOutputPath), "UTF-8");
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(AGGREGATED_OUTPUT_PATH), "UTF-8");
         String expectedOutputString = (expectedOutputWithSquareBrackets.substring(1,
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutputString);
@@ -117,7 +117,7 @@ public class QueryServiceRESTAPITest {
     public void getQueryMissedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
         response.add(missedNotification);
-        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(failedNotificationOutputPath),
+        String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_OUTPUT_PATH),
                 "UTF-8");
         String expectedOutput_string = (expectedOutputWithSquareBrackets.substring(1,
                 expectedOutputWithSquareBrackets.length() - 1));

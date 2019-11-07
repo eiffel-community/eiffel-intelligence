@@ -81,12 +81,12 @@ public class QueryServiceTest {
     private ObjectHandler objectHandler;
 
     @Autowired
-    private ProcessFailedNotification processMissedNotification;
+    private ProcessFailedNotification processFailedNotification;
 
-    private static String aggregatedPath = "src/test/resources/AggregatedObject.json";
-    private static String failedNotificationPath = "src/test/resources/MissedNotification.json";
+    private final static String AGGREGATED_PATH = "src/test/resources/AggregatedObject.json";
+    private final static String FAILED_NOTIFICATION_PATH = "src/test/resources/FailedNotification.json";
     private static String aggregatedObject;
-    private static String missedNotification;
+    private static String failedNotification;
     static MongoClient mongoClient = null;
 
     @Autowired
@@ -101,11 +101,11 @@ public class QueryServiceTest {
         // deleting all documents before inserting
         mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
                 .deleteMany(new BsonDocument());
-        Document missedDocument = Document.parse(missedNotification);
+        Document missedDocument = Document.parse(failedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
         mongoClient.getDatabase(failedNotificationDatabaseName).getCollection(failedNotificationCollectionName)
                 .insertOne(missedDocument);
-        LOG.debug("Document Inserted in missed Notification Database");
+        LOG.debug("Document Inserted in failed notification Database");
 
         BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
                 aggDocument.getString("_id"),
@@ -117,20 +117,20 @@ public class QueryServiceTest {
     }
 
     public void initializeData() throws Exception {
-        aggregatedObject = FileUtils.readFileToString(new File(aggregatedPath), "UTF-8");
+        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
-        missedNotification = FileUtils.readFileToString(new File(failedNotificationPath), "UTF-8");
-        LOG.debug("The missedNotification is : " + missedNotification);
+        failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
+        LOG.debug("The failed notification is : " + failedNotification);
     }
 
     @Test
-    public void processMissedNotificationTest() {
+    public void processFailedNotificationTest() {
         Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDatabaseName)
                 .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
-        List<String> result = processMissedNotification.processQueryFailedNotification("Subscription_1");
+        List<String> result = processFailedNotification.processQueryFailedNotification("Subscription_1");
         LOG.debug("The retrieved data is : " + result.toString());
         ObjectNode record = null;
         JsonNode actual = null;
@@ -139,7 +139,7 @@ public class QueryServiceTest {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
             record.remove("_id");
-            actual = new ObjectMapper().readTree(missedNotification);
+            actual = new ObjectMapper().readTree(failedNotification);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -149,13 +149,13 @@ public class QueryServiceTest {
     }
 
     @Test
-    public void deleteMissedNotificationTest() {
+    public void deleteFailedNotificationTest() {
         Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDatabaseName)
                 .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
-        boolean removed = processMissedNotification.deleteFailedNotification("Subscription_1");
+        boolean removed = processFailedNotification.deleteFailedNotification("Subscription_1");
         assertEquals(true, removed);
         Iterable<Document> responseDBAfter = mongoClient.getDatabase(failedNotificationDatabaseName)
                 .getCollection(failedNotificationCollectionName).find();

@@ -35,7 +35,7 @@ import cucumber.api.java.en.Then;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
-        "missedNotificationDataBaseName: QueryAggregatedObjectsTestSteps-missedNotifications",
+        "failed.notification.database-name: QueryAggregatedObjectsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: QueryAggregatedObjectsTestSteps-exchange",
         "rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
 @AutoConfigureMockMvc
@@ -45,7 +45,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             QueryAggregatedObjectsTestSteps.class);
 
     private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
-    private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
+    private static final String FAILED_NOTIFICATION_JSON_PATH = "src/test/resources/FailedNotification.json";
     private static final String QUERY_1_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject1.json";
     private static final String QUERY_2_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject2.json";
     private static final String QUERY_3_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject3.json";
@@ -54,6 +54,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private static final String QUERY_6_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject6.json";
     private static final String QUERY_7_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject7.json";
     private static final String QUERY_8_FILE_NAME = "src/functionaltests/resources/queryAggregatedObject8.json";
+
+    final static private String ENDPOINT_QUERY_AGGREGATED_OBJECT = "/queryAggregatedObject";
+    final static private String ENDPOINT_QUERY = "/query";
+    final static private String ENDPOINT_FAILED_NOTIFICATIONS = "/failed-notifications";
 
     @LocalServerPort
     private int applicationPort;
@@ -80,10 +84,6 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
-    final static private String entryPointQueryAggregatedObject = "/queryAggregatedObject";
-    final static private String entryPointQuery = "/query";
-    final static private String entryPointFailedNotifications = "/failed-notifications";
-
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
         objMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
@@ -91,7 +91,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         try {
             aggrObj = FileUtils.readFileToString(new File(AGGREGATED_OBJ_JSON_PATH), "UTF-8");
             failedNotificationObj = FileUtils.readFileToString(
-                    new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
+                    new File(FAILED_NOTIFICATION_JSON_PATH), "UTF-8");
 
         } catch (IOException e) {
             LOGGER.error(
@@ -113,8 +113,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         }
     }
 
-    @Given("^Missed Notification object is created$")
-    public void missed_notification_object_is_created() throws Throwable {
+    @Given("^Failed Notification object is created$")
+    public void failed_notification_object_is_created() throws Throwable {
         LOGGER.debug("Failed Notification object has been created in MongoDb");
         createDocumentInMongoDb(failedNotificationDatabaseName, failedNotificationCollectionName,
                 failedNotificationObj);
@@ -130,7 +130,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointQueryAggregatedObject)
+                             .setEndpoint(ENDPOINT_QUERY_AGGREGATED_OBJECT)
                              .addParam("ID", documentId)
                              .performRequest();
 
@@ -169,7 +169,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointQueryAggregatedObject)
+                             .setEndpoint(ENDPOINT_QUERY_AGGREGATED_OBJECT)
                              .addParam("ID", invalidDocumentId)
                              .performRequest();
 
@@ -209,7 +209,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setHost(hostName)
                                   .addHeader("content-type", "application/json")
                                   .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery)
+                                  .setEndpoint(ENDPOINT_QUERY)
                                   .setBody(formattedQuery)
                                   .performRequest();
 
@@ -248,7 +248,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointQuery)
+                             .setEndpoint(ENDPOINT_QUERY)
                              .setBody(queryAggrObj)
                              .performRequest();
 
@@ -264,13 +264,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                 responseAsString);
     }
 
-    @And("^Perform a query for missed notification$")
-    public void perform_a_query_for_missed_notification() throws Throwable {
+    @And("^Perform a query for failed notification$")
+    public void perform_a_query_for_failed_notification() throws Throwable {
 
         final String subscriptionName = "Subscription_1";
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
-        LOGGER.debug("Check if FailedNotification and " + subscriptionName + " exist in Database");
+        LOGGER.debug("Check if Failed Notification and " + subscriptionName + " exist in Database");
         final MongoCondition queryRequest = MongoCondition.subscriptionNameCondition(
                 subscriptionName);
         String subscriptionNameCheck = objMapper.readValue(
@@ -279,7 +279,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                               .get(0),
                 JsonNode.class).get("subscriptionName").asText();
         assertEquals(
-                "Expected subscriptionName in missed notification in Database is not as expected.",
+                "Expected subscriptionName in failed notification in Database is not as expected.",
                 subscriptionName, subscriptionNameCheck);
 
         LOGGER.debug("Trying to query /failed-notifications RestApi with subscriptionName: "
@@ -290,8 +290,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointFailedNotifications)
-                             .addParam("subscriptionName", subscriptionName)
+                             .setEndpoint(ENDPOINT_FAILED_NOTIFICATIONS)
+                             .addParam("subscriptionNames", subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -309,16 +309,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                                             .asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
         assertEquals(
-                "Differences between actual Missed Notification response TestCaseStartedEventId:\n"
+                "Differences between actual Failed Notification response TestCaseStartedEventId:\n"
                         + actualTestCaseStartedEventId
-                        + "\nand expected  Missed Notification response TestCaseStartedEventId:\n"
+                        + "\nand expected  Failed Notification response TestCaseStartedEventId:\n"
                         + expectedTestCaseStartedEventId,
                 expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
 
     }
 
-    @And("^Check missed notification has been returned$")
-    public void check_missed_notification_has_been_returned() throws Throwable {
+    @And("^Check failed notification has been returned$")
+    public void check_failed_notification_has_been_returned() throws Throwable {
         final String expectedResponse = "{\"queryResponseEntity\":{}}";
         final String subscriptionName = "Subscription_1";
 
@@ -331,7 +331,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointFailedNotifications)
+                             .setEndpoint(ENDPOINT_FAILED_NOTIFICATIONS)
                              .addParam("SubscriptionName", subscriptionName)
                              .performRequest();
 
@@ -363,7 +363,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setHost(hostName)
                                   .addHeader("content-type", "application/json")
                                   .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery)
+                                  .setEndpoint(ENDPOINT_QUERY)
                                   .setBody(query)
                                   .performRequest();
 
@@ -409,7 +409,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setHost(hostName)
                                   .addHeader("content-type", "application/json")
                                   .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery)
+                                  .setEndpoint(ENDPOINT_QUERY)
                                   .setBody(query)
                                   .performRequest();
 
@@ -447,7 +447,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                               .setHost(hostName)
                               .addHeader("content-type", "application/json")
                               .addHeader("Accept", "application/json")
-                              .setEndpoint(entryPointQuery)
+                              .setEndpoint(ENDPOINT_QUERY)
                               .setBody(formattedQuery)
                               .performRequest();
 

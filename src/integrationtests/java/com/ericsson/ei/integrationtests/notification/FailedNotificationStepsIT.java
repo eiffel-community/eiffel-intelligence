@@ -133,7 +133,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
                 .setEndpoint("/failed-notifications")
-               .addParam("subscriptionName", subscriptionName);
+               .addParam("subscriptionNames", subscriptionName);
         ResponseEntity response = request.performRequest();
 
         String body = response.getBody();

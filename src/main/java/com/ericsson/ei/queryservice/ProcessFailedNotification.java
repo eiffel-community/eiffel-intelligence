@@ -14,6 +14,7 @@
 package com.ericsson.ei.queryservice;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -50,15 +51,18 @@ public class ProcessFailedNotification {
      * Get a failed notification object by using the subscriptionName key.
      *
      * @param subscriptionName
-     * @return List
+     * @return
+     * @throws NoSuchElementException
      */
-    public List<String> processQueryFailedNotification(String subscriptionName) {
+    public List<String> processQueryFailedNotification(String subscriptionName) throws NoSuchElementException {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The Json condition is : {}", condition);
         List<String> output = handler.find(failedNotificationDatabaseName,
                 failedNotificationCollectionName,
                 condition);
-
+        if (output == null || output.isEmpty()) {
+            throw new NoSuchElementException("No failed notifications found for the Subscription Name: " + subscriptionName);
+        }
         ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {
             try {
@@ -68,7 +72,6 @@ public class ProcessFailedNotification {
             }
             return null;
         }).collect(Collectors.toList());
-
     }
 
     /**

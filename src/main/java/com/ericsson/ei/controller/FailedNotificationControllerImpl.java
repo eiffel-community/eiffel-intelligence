@@ -15,9 +15,8 @@ package com.ericsson.ei.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,7 +50,7 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             FailedNotificationControllerImpl.class);
 
     @Autowired
-    private ProcessFailedNotification processMissedNotification;
+    private ProcessFailedNotification processFailedNotification;
 
     /**
      * This method is responsible for the REST GET mechanism to extract the data on the basis of the
@@ -64,26 +63,25 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
-        Set<String> subscriptionNameList = new HashSet<>(
-                Arrays.asList(subscriptionNames.split(",")));
+        List<String> subscriptionNameList = Arrays.asList(subscriptionNames.split(","));
         JSONArray foundArray = new JSONArray();
         List<String> notFoundList = new ArrayList<>();
 
-        subscriptionNameList.forEach(name -> {
+        for (String name : subscriptionNameList) {
+            List<String> response = null;
             try {
-                List<String> response = processMissedNotification.processQueryFailedNotification(
-                        name);
-                if (!response.isEmpty()) {
-                    JSONObject object = new JSONObject(response.get(0));
-                    foundArray.put(object);
-                    LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
-                            name);
-                }
-            } catch (Exception e) {
+                response = processFailedNotification.processQueryFailedNotification(name);
+            } catch(NoSuchElementException e) {
                 LOGGER.error("Failed to fetch failed notification for subscription {}", name, e);
                 notFoundList.add(name);
             }
-        });
+            if (response != null && !response.isEmpty()) {
+                JSONObject object = new JSONObject(response.get(0));
+                foundArray.put(object);
+                LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
+                        name);
+            }
+        }
         HttpStatus httpStatus;
         if (foundArray.length() > 0) {
             httpStatus = HttpStatus.OK;

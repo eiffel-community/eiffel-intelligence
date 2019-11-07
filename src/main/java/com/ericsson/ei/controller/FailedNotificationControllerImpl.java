@@ -62,10 +62,10 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     @Override
     @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
     public ResponseEntity<?> getFailedNotifications(
-            @RequestParam(value = "subscriptionName", required = true) final String subscriptionName,
+            @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
         Set<String> subscriptionNameList = new HashSet<>(
-                Arrays.asList(subscriptionName.split(",")));
+                Arrays.asList(subscriptionNames.split(",")));
         JSONArray foundArray = new JSONArray();
         List<String> notFoundList = new ArrayList<>();
 

@@ -41,7 +41,8 @@ import cucumber.api.java.en.Then;
 @AutoConfigureMockMvc
 public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            QueryAggregatedObjectsTestSteps.class);
 
     private static final String AGGREGATED_OBJ_JSON_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatest.json";
     private static final String MISSED_NOTIFICATION_JSON_PATH = "src/test/resources/MissedNotification.json";
@@ -89,17 +90,20 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         try {
             aggrObj = FileUtils.readFileToString(new File(AGGREGATED_OBJ_JSON_PATH), "UTF-8");
-            failedNotificationObj = FileUtils.readFileToString(new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
+            failedNotificationObj = FileUtils.readFileToString(
+                    new File(MISSED_NOTIFICATION_JSON_PATH), "UTF-8");
 
         } catch (IOException e) {
-            LOGGER.error("Failed to open test json files for test. Error message\n: " + e.getMessage());
+            LOGGER.error(
+                    "Failed to open test json files for test. Error message\n: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @Given("^Aggregated object is created$")
     public void aggregated_object_is_created() throws Throwable {
-        final MongoCondition condition = MongoCondition.idCondition("6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
+        final MongoCondition condition = MongoCondition.idCondition(
+                "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
         List<String> aggregatedObject = mongoDBHandler.find(eiDatabaseName, aggrCollectionName,
                 condition);
 
@@ -126,14 +130,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQueryAggregatedObject)
+                             .setEndpoint(entryPointQueryAggregatedObject)
                              .addParam("ID", documentId)
                              .performRequest();
 
-        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + response.getStatusCodeValue()
+        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: "
+                + response.getStatusCodeValue()
                 + "\nResponse: " + response.getBody().toString());
 
-        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(),
+                JsonNode.class);
         JsonNode responseEntityNode = jsonNodeResult.get("queryResponseEntity");
 
         String actualTestCaseFinishedEventId = responseEntityNode.get("testCaseExecutions")
@@ -143,7 +149,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals(
-                "Failed to compare actual Aggregated Object TestCaseFinishedEventId:\n" + actualTestCaseFinishedEventId
+                "Failed to compare actual Aggregated Object TestCaseFinishedEventId:\n"
+                        + actualTestCaseFinishedEventId
                         + "\nwith expected Aggregated Object TestCaseFinishedEventId:\n"
                         + expectedTestCaseFinishedEventId,
                 expectedTestCaseFinishedEventId, actualTestCaseFinishedEventId);
@@ -154,29 +161,33 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String invalidDocumentId = "6acc3c87-75e0-4aaa-88f5-b1a5d4e6cccc";
         final String expectedResponse = "";
 
-        LOGGER.debug("Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: "
-                + invalidDocumentId);
+        LOGGER.debug(
+                "Trying an invalid query on /queryAggregatedObject RestApi with invalid documentId: "
+                        + invalidDocumentId);
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQueryAggregatedObject)
+                             .setEndpoint(entryPointQueryAggregatedObject)
                              .addParam("ID", invalidDocumentId)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
         int responseStatusCode = response.getStatusCodeValue();
-        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: " + responseStatusCode + "\nResponse: "
+        LOGGER.debug("Response of /queryAggregatedObject RestApi, Status Code: "
+                + responseStatusCode + "\nResponse: "
                 + responseAsString);
 
         assertEquals(HttpStatus.NO_CONTENT.value(), responseStatusCode);
         assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
-                + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
+                + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse,
+                responseAsString);
     }
 
     @Then("^Perform several valid freestyle queries on created Aggregated objects$")
-    public void perform_several_valid_freestyle_queries_on_created_Aggregated_objects() throws Throwable {
+    public void perform_several_valid_freestyle_queries_on_created_Aggregated_objects()
+            throws Throwable {
 
         final String expectedAggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
@@ -198,14 +209,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setHost(hostName)
                                   .addHeader("content-type", "application/json")
                                   .addHeader("Accept", "application/json")
-                    .setEndpoint(entryPointQuery)
+                                  .setEndpoint(entryPointQuery)
                                   .setBody(formattedQuery)
                                   .performRequest();
 
-            LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: "
+            LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue()
+                    + "\nResponse: "
                     + response.getBody().toString());
 
-            JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+            JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(),
+                    JsonNode.class);
             JsonNode aggrObjResponse = objMapper.readValue(jsonNodeResult.get(0).toString(),
                     JsonNode.class);
 
@@ -223,28 +236,32 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @And("^Perform an invalid freestyle query on Aggregated object$")
     public void perform_invalid_freestyle_query_on_created_aggregated_object() throws Throwable {
         final String invalidAggrId = "6acc3c87-75e0-4b6d-88f5-b1aee4e62b43";
-        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId + "\" }}";
+        final String queryAggrObj = "{\"criteria\" :{\"aggregatedObject.id\" : \"" + invalidAggrId
+                + "\" }}";
         final String expectedResponse = "";
 
-        LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: " + queryAggrObj);
+        LOGGER.debug("Trying an invalid query on /query RestApi with invalid criteria query: "
+                + queryAggrObj);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.POST);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQuery)
+                             .setEndpoint(entryPointQuery)
                              .setBody(queryAggrObj)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
         int responseStatusCode = response.getStatusCodeValue();
         LOGGER.debug(
-                "Response of /query RestApi, Status Code: " + responseStatusCode + "\nResponse: " + responseAsString);
+                "Response of /query RestApi, Status Code: " + responseStatusCode + "\nResponse: "
+                        + responseAsString);
 
         assertEquals(HttpStatus.NO_CONTENT.value(), responseStatusCode);
         assertEquals("Differences between actual Aggregated Object:\n" + responseAsString
-                + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse, responseAsString);
+                + "\nand expected Aggregated Object:\n" + expectedResponse, expectedResponse,
+                responseAsString);
     }
 
     @And("^Perform a query for missed notification$")
@@ -254,24 +271,27 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String expectedTestCaseStartedEventId = "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca";
 
         LOGGER.debug("Check if FailedNotification and " + subscriptionName + " exist in Database");
-        final MongoCondition queryRequest = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoCondition queryRequest = MongoCondition.subscriptionNameCondition(
+                subscriptionName);
         String subscriptionNameCheck = objMapper.readValue(
                 mongoDBHandler.find(failedNotificationDatabaseName,
                         failedNotificationCollectionName, queryRequest)
                               .get(0),
                 JsonNode.class).get("subscriptionName").asText();
-        assertEquals("Expected subscriptionName in missed notification in Database is not as expected.",
+        assertEquals(
+                "Expected subscriptionName in missed notification in Database is not as expected.",
                 subscriptionName, subscriptionNameCheck);
 
-        LOGGER.debug("Trying to query /failed-notifications RestApi with subscriptionName: " + subscriptionName);
+        LOGGER.debug("Trying to query /failed-notifications RestApi with subscriptionName: "
+                + subscriptionName);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
                              .addHeader("content-type", "application/json")
                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointFailedNotifications)
-                .addParam("subscriptionName", subscriptionName)
+                             .setEndpoint(entryPointFailedNotifications)
+                             .addParam("subscriptionName", subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -279,19 +299,21 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         LOGGER.debug("Response of /failed-notifications RestApi, Status Code: " + responseStatusCode
                 + "\nResponse: " + responseAsString);
 
-        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
-        String test = response.getBody().toString();
-        String actualTestCaseStartedEventId = jsonNodeResult.get("queryResponseEntity")
+        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(),
+                JsonNode.class);
+        String actualTestCaseStartedEventId = jsonNodeResult.get(0)
                                                             .get("aggregatedObject")
                                                             .get("testCaseExecutions")
                                                             .get(0)
                                                             .get("testCaseStartedEventId")
                                                             .asText();
         assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
-        assertEquals("Differences between actual Missed Notification response TestCaseStartedEventId:\n"
-                + actualTestCaseStartedEventId
-                + "\nand expected  Missed Notification response TestCaseStartedEventId:\n"
-                + expectedTestCaseStartedEventId, expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
+        assertEquals(
+                "Differences between actual Missed Notification response TestCaseStartedEventId:\n"
+                        + actualTestCaseStartedEventId
+                        + "\nand expected  Missed Notification response TestCaseStartedEventId:\n"
+                        + expectedTestCaseStartedEventId,
+                expectedTestCaseStartedEventId, actualTestCaseStartedEventId);
 
     }
 
@@ -300,8 +322,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final String expectedResponse = "{\"queryResponseEntity\":{}}";
         final String subscriptionName = "Subscription_1";
 
-        LOGGER.debug("Trying to query /failed-notifications RestApi one more time with subscriptionName: "
-                + subscriptionName);
+        LOGGER.debug(
+                "Trying to query /failed-notifications RestApi one more time with subscriptionName: "
+                        + subscriptionName);
 
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
@@ -344,14 +367,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setBody(query)
                                   .performRequest();
 
-            LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: "
+            LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue()
+                    + "\nResponse: "
                     + response.getBody().toString());
 
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
             assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
-            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
+            assertEquals("Failed to compare actual response:\n" + responseAsString
+                    + "\nwith expected response:\n"
                     + expectedResponse, expectedResponse, responseAsString);
         }
     }
@@ -384,25 +409,30 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                   .setHost(hostName)
                                   .addHeader("content-type", "application/json")
                                   .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery )
+                                  .setEndpoint(entryPointQuery)
                                   .setBody(query)
                                   .performRequest();
 
-            LOGGER.debug("Response of /query RestApi, Status : " + response.getStatusCodeValue() + "\nResponse: "
+            LOGGER.debug("Response of /query RestApi, Status : " + response.getStatusCodeValue()
+                    + "\nResponse: "
                     + response.getBody().toString());
 
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
             assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
-            assertEquals("Failed to compare actual response:\n" + responseAsString + "\nwith expected response:\n"
-                    + expectedResponses.get(pos), expectedResponses.get(pos), responseAsString);
+            assertEquals(
+                    "Failed to compare actual response:\n" + responseAsString
+                            + "\nwith expected response:\n"
+                            + expectedResponses.get(pos),
+                    expectedResponses.get(pos), responseAsString);
             pos++;
         }
     }
 
     @Then("^perform query to retrieve and filter out confidence level information$")
-    public void perform_query_to_retrieve_and_filter_out_confidence_level_information() throws Throwable {
+    public void perform_query_to_retrieve_and_filter_out_confidence_level_information()
+            throws Throwable {
         final String aggrId = "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
         String query = FileUtils.readFileToString(new File(QUERY_7_FILE_NAME), "UTF-8");
@@ -417,14 +447,16 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                               .setHost(hostName)
                               .addHeader("content-type", "application/json")
                               .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQuery)
+                              .setEndpoint(entryPointQuery)
                               .setBody(formattedQuery)
                               .performRequest();
 
-        LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: "
+        LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue()
+                + "\nResponse: "
                 + response.getBody().toString());
 
-        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);
+        JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(),
+                JsonNode.class);
         JsonNode aggrObjResponse = objMapper.readTree(jsonNodeResult.get(0).get(aggrId).asText());
 
         JsonNode confidenceLevels = aggrObjResponse.get("confidenceLevels").get(1);
@@ -443,12 +475,14 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
      * @param collectionName  - Name of the collection in MongoDb to use.
      * @param objToBeInserted - Object in string format to be inserted to database.
      *
-     * @return boolean - Returns true or false depending if object/document was
-     *         successfully created in database.
+     * @return boolean - Returns true or false depending if object/document was successfully created
+     *         in database.
      *
      */
-    private void createDocumentInMongoDb(String databaseName, String collectionName, String objToBeInserted) {
-        LOGGER.debug("Inserting Object to MongoDb.\nDatabase: " + databaseName + "\nCollection: " + collectionName
+    private void createDocumentInMongoDb(String databaseName, String collectionName,
+            String objToBeInserted) {
+        LOGGER.debug("Inserting Object to MongoDb.\nDatabase: " + databaseName + "\nCollection: "
+                + collectionName
                 + "\nDocument to be inserted\n: " + objToBeInserted);
         mongoDBHandler.insertDocument(databaseName, collectionName, objToBeInserted);
     }

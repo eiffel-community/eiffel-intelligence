@@ -84,7 +84,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     private void configureRequestAuthorization(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers("/auth/*")
+            .antMatchers("/authentication/*")
             .authenticated()
             .antMatchers(HttpMethod.POST, "/subscriptions")
             .authenticated()
@@ -105,7 +105,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     private void configureLogout(HttpSecurity http) throws Exception {
         http.logout()
-            .logoutUrl("/auth/logout")
+            .logoutUrl("/authentication/logout")
             .logoutSuccessUrl("/")
             .deleteCookies("SESSION")
             .invalidateHttpSession(true);

@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listeners.RMQConnectionListener;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.status.Status;
 import com.ericsson.ei.status.StatusData;
 import com.fasterxml.jackson.databind.JsonNode;

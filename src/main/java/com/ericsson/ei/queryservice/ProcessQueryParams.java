@@ -13,8 +13,6 @@
 */
 package com.ericsson.ei.queryservice;
 
-import java.io.IOException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,8 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is responsible to search for an aggregatedObject in the database,
@@ -59,16 +58,9 @@ public class ProcessQueryParams {
      */
     public JSONArray runQuery(JSONObject criteriaObj, JSONObject optionsObj, String filter) {
         JSONArray resultAggregatedObject;
-        String criteria = criteriaObj.toString();
-
-        if (optionsObj == null || optionsObj.toString().equals("{}")) {
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(criteria, databaseName, aggregationCollectionName);
-        } else {
-            String options = optionsObj.toString();
-            LOGGER.debug("The options are: {}", options);
-            String request = "{ \"$and\" : [ " + criteria + "," + options + " ] }";
-            resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(request, databaseName, aggregationCollectionName);
-        }
+        MongoQuery query = MongoQueryBuilder.buildAnd(criteriaObj, optionsObj);
+        resultAggregatedObject = processAggregatedObject.processQueryAggregatedObject(query,
+                databaseName, aggregationCollectionName);
 
         if(hasFilterCondition(filter)) {
             JSONArray filteredResults = filterResult(filter, resultAggregatedObject);
@@ -122,24 +114,4 @@ public class ProcessQueryParams {
         return resultArray;
     }
 
-    /**
-     * This method takes the parameters from the REST GET request query. If the
-     * Aggregated Object matches the condition, then it is returned.
-     *
-     * @param request
-     * @return JSONArray
-     */
-    public JSONArray filterQueryParam(String request) {
-        LOGGER.debug("The query string is : " + request);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode criteriasJsonNode;
-        try {
-            criteriasJsonNode = mapper.readValue(request, JsonNode.class).get("criteria");
-        } catch (IOException e) {
-            LOGGER.error("Failed to parse FreeStyle query critera field from request:\n{}", request, e);
-            return new JSONArray();
-        }
-        LOGGER.debug("Freestyle criteria query: {}", criteriasJsonNode.toString());
-        return processAggregatedObject.processQueryAggregatedObject(criteriasJsonNode.toString(), databaseName, aggregationCollectionName);
-    }
 }

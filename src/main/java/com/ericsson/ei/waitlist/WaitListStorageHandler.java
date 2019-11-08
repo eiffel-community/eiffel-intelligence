@@ -17,7 +17,10 @@
 package com.ericsson.ei.waitlist;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.BasicDBObject;
@@ -83,7 +86,7 @@ public class WaitListStorageHandler {
     }
 
     private String findEventInWaitList(JsonNode id) {
-        String condition = "{\"_id\" : \"" + id + "\"}";
+        final MongoCondition condition = MongoCondition.idCondition(id);
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
         if (foundEventsInWaitList.isEmpty()) {
             return "";
@@ -93,7 +96,8 @@ public class WaitListStorageHandler {
     }
 
     public boolean dropDocumentFromWaitList(String document) {
-        return mongoDbHandler.dropDocument(databaseName, collectionName, document);
+       MongoQuery query = new MongoStringQuery(document);
+        return mongoDbHandler.dropDocument(databaseName, collectionName, query);
     }
 
     public List<String> getWaitList() {

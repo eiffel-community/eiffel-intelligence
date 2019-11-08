@@ -1,10 +1,10 @@
 package com.ericsson.ei.controller;
 
-public final class EntryPointConstants {
+public final class EntryPointConstantsUtils {
 
     public static final String AGGREGATED_OBJECTS = "/aggregated-objects";
 
-    private EntryPointConstants() {
+    private EntryPointConstantsUtils() {
         throw new AssertionError();
     }
 }

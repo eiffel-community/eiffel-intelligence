@@ -48,7 +48,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.AggregatedObjectController;
 import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
-import com.ericsson.ei.controller.EntryPointConstants;
+import com.ericsson.ei.controller.EntryPointConstantsUtils;
 import com.ericsson.ei.controller.FailedNotificationControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -104,7 +104,7 @@ public class QueryServiceRESTAPITest {
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(EntryPointConstants.AGGREGATED_OBJECTS + "/" + "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
+                .get(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
                 .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String output_string = result.getResponse().getContentAsString().toString();

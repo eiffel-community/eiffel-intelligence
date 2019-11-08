@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
-import com.ericsson.ei.controller.EntryPointConstants;
+import com.ericsson.ei.controller.EntryPointConstantsUtils;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -126,7 +126,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", CONTENT_TYPE)
                              .addHeader("Accept", CONTENT_TYPE)
-                .setEndpoint(EntryPointConstants.AGGREGATED_OBJECTS + "/" + documentId).performRequest();
+                .setEndpoint(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + documentId).performRequest();
 
         LOGGER.debug("Response of /aggregated-objects RestApi, Status Code: " + response.getStatusCodeValue()
                 + "\nResponse: " + response.getBody().toString());
@@ -159,7 +159,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .setHost(hostName)
                              .addHeader("content-type", CONTENT_TYPE)
                              .addHeader("Accept", CONTENT_TYPE)
-                .setEndpoint(EntryPointConstants.AGGREGATED_OBJECTS + "/" + invalidDocumentId)
+                .setEndpoint(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + invalidDocumentId)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

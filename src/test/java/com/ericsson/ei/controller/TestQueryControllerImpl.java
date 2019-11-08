@@ -70,7 +70,7 @@ public class TestQueryControllerImpl extends ControllerTestBaseClass {
         when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
                 .thenReturn(inputObj);
 
-        MvcResult result = performMockMvcRequest(EntryPointConstants.AGGREGATED_OBJECTS + QUERY_ENDPOINT, QUERY);
+        MvcResult result = performMockMvcRequest(EntryPointConstantsUtils.AGGREGATED_OBJECTS + QUERY_ENDPOINT, QUERY);
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
 
 

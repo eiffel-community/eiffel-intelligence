@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * This class returns aggregated data given a specific ID of an aggregated object.
+ * This class returns aggregated data given a specific ID of an aggregated object and can perform free style query as well..
  * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */

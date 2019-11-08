@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import com.ericsson.ei.controller.EntryPointConstants;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -39,6 +40,8 @@ import cucumber.api.java.en.Then;
         "rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
 @AutoConfigureMockMvc
 public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
+
+    private static final String CONTENT_TYPE = "application/json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAggregatedObjectsTestSteps.class);
 
@@ -78,9 +81,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
-    final static private String entryPointAggregatedObject = "/aggregated-objects";
-    final static private String entryPointQuery = "/aggregated-objects/query";
-    final static private String entryPointFailedNotifications = "/failed-notifications";
+    final static private String ENTRY_POINT_QUERY = "/aggregated-objects/query";
+    final static private String ENTRY_POINT_FAILED_NOTIFICATIONS = "/failed-notifications";
 
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
@@ -122,9 +124,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointAggregatedObject + "/" + documentId).performRequest();
+                             .addHeader("content-type", CONTENT_TYPE)
+                             .addHeader("Accept", CONTENT_TYPE)
+                .setEndpoint(EntryPointConstants.AGGREGATED_OBJECTS + "/" + documentId).performRequest();
 
         LOGGER.debug("Response of /aggregated-objects RestApi, Status Code: " + response.getStatusCodeValue()
                 + "\nResponse: " + response.getBody().toString());
@@ -155,9 +157,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointAggregatedObject + "/" + invalidDocumentId)
+                             .addHeader("content-type", CONTENT_TYPE)
+                             .addHeader("Accept", CONTENT_TYPE)
+                .setEndpoint(EntryPointConstants.AGGREGATED_OBJECTS + "/" + invalidDocumentId)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();
@@ -191,9 +193,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
             response = postRequest.setPort(applicationPort)
                                   .setHost(hostName)
-                                  .addHeader("content-type", "application/json")
-                                  .addHeader("Accept", "application/json")
-                    .setEndpoint(entryPointQuery)
+                                  .addHeader("content-type", CONTENT_TYPE)
+                                  .addHeader("Accept", CONTENT_TYPE)
+                    .setEndpoint(ENTRY_POINT_QUERY)
                                   .setBody(formattedQuery)
                                   .performRequest();
 
@@ -226,9 +228,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.POST);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQuery)
+                             .addHeader("content-type", CONTENT_TYPE)
+                             .addHeader("Accept", CONTENT_TYPE)
+                .setEndpoint(ENTRY_POINT_QUERY)
                              .setBody(queryAggrObj)
                              .performRequest();
 
@@ -262,9 +264,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointFailedNotifications)
+                             .addHeader("content-type", CONTENT_TYPE)
+                             .addHeader("Accept", CONTENT_TYPE)
+                .setEndpoint(ENTRY_POINT_FAILED_NOTIFICATIONS)
                 .addParam("subscriptionName", subscriptionName)
                              .performRequest();
 
@@ -300,9 +302,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                             .setEndpoint(entryPointFailedNotifications)
+                             .addHeader("content-type", CONTENT_TYPE)
+                             .addHeader("Accept", CONTENT_TYPE)
+                             .setEndpoint(ENTRY_POINT_FAILED_NOTIFICATIONS)
                              .addParam("SubscriptionName", subscriptionName)
                              .performRequest();
 
@@ -332,9 +334,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
             response = postRequest.setPort(applicationPort)
                                   .setHost(hostName)
-                                  .addHeader("content-type", "application/json")
-                                  .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery)
+                                  .addHeader("content-type", CONTENT_TYPE)
+                                  .addHeader("Accept", CONTENT_TYPE)
+                    .setEndpoint(ENTRY_POINT_QUERY)
                                   .setBody(query)
                                   .performRequest();
 
@@ -376,9 +378,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
             response = postRequest.setPort(applicationPort)
                                   .setHost(hostName)
-                                  .addHeader("content-type", "application/json")
-                                  .addHeader("Accept", "application/json")
-                                  .setEndpoint(entryPointQuery )
+                                  .addHeader("content-type", CONTENT_TYPE)
+                                  .addHeader("Accept", CONTENT_TYPE)
+                    .setEndpoint(ENTRY_POINT_QUERY)
                                   .setBody(query)
                                   .performRequest();
 
@@ -409,13 +411,14 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest postRequest = new HttpRequest(HttpMethod.POST);
         response = postRequest.setPort(applicationPort)
                               .setHost(hostName)
-                              .addHeader("content-type", "application/json")
-                              .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointQuery)
+                              .addHeader("content-type", CONTENT_TYPE)
+                              .addHeader("Accept", CONTENT_TYPE)
+                .setEndpoint(ENTRY_POINT_QUERY)
                               .setBody(formattedQuery)
                               .performRequest();
 
-        LOGGER.debug("Response of /query RestApi, Status Code: " + response.getStatusCodeValue() + "\nResponse: "
+        LOGGER.debug("Response of /aggregated-objects/query RestApi, Status Code: " + response.getStatusCodeValue()
+                + "\nResponse: "
                 + response.getBody().toString());
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(), JsonNode.class);

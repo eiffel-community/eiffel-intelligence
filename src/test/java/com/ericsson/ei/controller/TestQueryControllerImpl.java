@@ -33,14 +33,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
@@ -55,10 +52,11 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
-public class TestQueryControllerImpl {
-    private static final String inputPath = "src/test/resources/AggregatedObject.json";
+public class TestQueryControllerImpl extends ControllerTestBaseClass {
+    private static final String INPUT_PATH = "src/test/resources/AggregatedObject.json";
     private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
-    private static String input;
+    private static String INPUT;
+    private final String QUERY_ENDPOINT = "/query";
 
     @MockBean
     private ProcessQueryParams unitUnderTest;
@@ -68,21 +66,18 @@ public class TestQueryControllerImpl {
 
     @Before
     public void setUp() {
-        input = FileUtils.readFileAsString(new File(inputPath));
+        INPUT = FileUtils.readFileAsString(new File(INPUT_PATH));
     }
 
     @Test
-    public void filterFormParamTest() throws Exception {
-
-        JSONArray inputObj = new JSONArray("[" + input + "]");
+    public void filterFormParamTest() throws Throwable {
+        JSONArray inputObj = new JSONArray("[" + INPUT + "]");
         when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
                 .thenReturn(inputObj);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/aggregated-objects/query").accept(MediaType.ALL)
-                .content(QUERY)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult result = performMockMvcRequest(EntryPointConstants.AGGREGATED_OBJECTS + QUERY_ENDPOINT, QUERY);
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
+
+
     }
 }

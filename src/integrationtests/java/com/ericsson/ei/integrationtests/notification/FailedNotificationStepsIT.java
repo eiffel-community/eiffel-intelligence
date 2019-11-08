@@ -142,7 +142,8 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
 
         // There was a lot errors in this area so I added more logging
         try {
-            JsonNode messageNode = objectMapper.readTree(body).get(0).get("message");
+            JsonNode messageNode = objectMapper.readTree(body)
+                                               .get("foundFailedNotifications").get(0).get("message");
             assertNotEquals("No failed notifications found for " + subscriptionName, null,
                     messageNode);
             message = messageNode.toString();

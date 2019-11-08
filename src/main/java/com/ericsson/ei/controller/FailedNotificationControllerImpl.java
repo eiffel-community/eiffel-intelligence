@@ -13,7 +13,6 @@
 */
 package com.ericsson.ei.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,6 +48,9 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     private final static Logger LOGGER = LoggerFactory.getLogger(
             FailedNotificationControllerImpl.class);
 
+    private final static String FOUND_NOTIFICATIONS = "foundFailedNotifications";
+    private final static String NOT_FOUND_NOTIFICATIONS = "notFoundFailedNotifications";
+
     @Autowired
     private ProcessFailedNotification processFailedNotification;
 
@@ -64,24 +66,10 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
         List<String> subscriptionNameList = Arrays.asList(subscriptionNames.split(","));
-        JSONArray foundArray = new JSONArray();
-        List<String> notFoundList = new ArrayList<>();
 
-        for (String name : subscriptionNameList) {
-            List<String> response = null;
-            try {
-                response = processFailedNotification.processQueryFailedNotification(name);
-            } catch(NoSuchElementException e) {
-                LOGGER.error("Failed to fetch failed notification for subscription {}", name, e);
-                notFoundList.add(name);
-            }
-            if (response != null && !response.isEmpty()) {
-                JSONObject object = new JSONObject(response.get(0));
-                foundArray.put(object);
-                LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
-                        name);
-            }
-        }
+        JSONObject response = fetchFailedNotifications(subscriptionNameList);
+        JSONArray foundArray = response.getJSONArray(FOUND_NOTIFICATIONS);
+        JSONArray notFoundArray = response.getJSONArray(NOT_FOUND_NOTIFICATIONS);
         HttpStatus httpStatus;
         if (foundArray.length() > 0) {
             httpStatus = HttpStatus.OK;
@@ -90,10 +78,36 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
         }
         if (httpStatus == HttpStatus.NOT_FOUND) {
             String errorMessage = "Failed to fetch failed notifications for subscriptions:\n"
-                    + notFoundList.toString();
+                    + notFoundArray.toString();
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, httpStatus);
         }
-        return new ResponseEntity<>(foundArray.toString(), httpStatus);
+        return new ResponseEntity<>(response.toString(), httpStatus);
+    }
+
+    private JSONObject fetchFailedNotifications(List<String> subscriptionNameList) {
+        JSONObject response = new JSONObject();
+        JSONArray foundArray = new JSONArray();
+        JSONArray notFoundArray = new JSONArray();
+
+        for (String name : subscriptionNameList) {
+            List<String> notifications = null;
+            try {
+                notifications = processFailedNotification.processQueryFailedNotification(name);
+            } catch (NoSuchElementException e) {
+                LOGGER.error("Failed to fetch failed notification for subscription {}", name, e);
+                notFoundArray.put(name);
+            }
+            if (notifications != null && !notifications.isEmpty()) {
+                for (String notification : notifications) {
+                    foundArray.put(new JSONObject(notification));
+                    LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
+                            name);
+                }
+            }
+        }
+        response.put(FOUND_NOTIFICATIONS, foundArray);
+        response.put(NOT_FOUND_NOTIFICATIONS, notFoundArray);
+        return response;
     }
 }

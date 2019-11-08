@@ -38,7 +38,7 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RabbitMQTestConnectionSteps",
-        "failed.notification.database-name: RabbitMQTestConnectionSteps-failedNotifications",
+        "failed.notification.collection-name: RabbitMQTestConnectionSteps-failedNotifications",
         "rabbitmq.exchange.name: RabbitMQTestConnectionSteps-exchange",
         "rabbitmq.consumerName: RabbitMQTestConnectionStepsConsumer" })
 public class RabbitMQTestConnectionSteps extends FunctionalTestBase {

@@ -53,7 +53,7 @@ import com.google.common.io.CharStreams;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: ERQueryServiceTest",
-        "failed.notification.database-name: ERQueryServiceTest-failedNotifications",
+        "failed.notification.collection-name: ERQueryServiceTest-failedNotifications",
         "rabbitmq.exchange.name: ERQueryServiceTest-exchange",
         "rabbitmq.consumerName: ERQueryServiceTest",
         "er.url: http://localhost:8080/eventrepository/search/" })

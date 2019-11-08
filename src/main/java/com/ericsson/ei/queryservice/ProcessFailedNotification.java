@@ -41,7 +41,7 @@ public class ProcessFailedNotification {
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
 
-    @Value("${failed.notification.database-name}")
+    @Value("${spring.data.mongodb.database}")
     private String failedNotificationDatabaseName;
 
     @Autowired

@@ -47,7 +47,7 @@ import cucumber.api.java.en.When;
         "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1",
         "spring.data.mongodb.database: TestTTLSteps",
-        "failed.notification.database-name: TestTTLSteps-failedNotifications",
+        "failed.notification.collection-name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
@@ -75,14 +75,11 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabase;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
     @Value("${spring.data.mongodb.database}")
-    private String dataBase;
+    private String database;
 
     @Value("${aggregated.collection.name}")
     private String collection;
@@ -109,7 +106,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void create_subscription_object() throws IOException, JSONException {
 
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
-        mongoDBHandler.dropCollection(failedNotificationDatabase, failedNotificationCollection);
+        mongoDBHandler.dropCollection(database, failedNotificationCollection);
 
         String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
@@ -139,7 +136,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Check failed notification is in database$")
     public void check_failed_notification_is_in_database() {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME);
-        List<String> result = mongoDBHandler.find(failedNotificationDatabase,
+        List<String> result = mongoDBHandler.find(database,
                 failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
@@ -178,7 +175,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void aggregated_object_is_created() throws Throwable {
         // verify that aggregated object is created and present in db
         LOGGER.debug("Checking presence of aggregated Object");
-        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+        List<String> allObjects = mongoDBHandler.getAllDocuments(database, collection);
         assertEquals(1, allObjects.size());
     }
 
@@ -209,7 +206,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> allObjects = null;
         // To be sure at least one minute has passed since creation of aggregated object
         TimeUnit.MINUTES.sleep(1);
-        allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+        allObjects = mongoDBHandler.getAllDocuments(database, collection);
         assertEquals("Database is not empty.", true, allObjects.isEmpty());
     }
 
@@ -242,7 +239,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(failedNotificationDatabase,
+            notificationExist = mongoDBHandler.find(database,
                     failedNotificationCollection,
                     condition);
 

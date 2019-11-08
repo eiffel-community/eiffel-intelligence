@@ -46,7 +46,7 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionNotificationSteps",
-        "failed.notification.database-name: SubscriptionNotificationSteps-failedNotifications",
+        "failed.notification.collection-name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
         "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
@@ -75,9 +75,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabase;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
@@ -98,7 +95,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Before()
     public void beforeScenario() {
         mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(failedNotificationDatabase);
+        mongoDBHandler.dropDatabase(database);
     }
 
     @After()
@@ -443,7 +440,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> queryResult = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            queryResult = mongoDBHandler.find(failedNotificationDatabase,
+            queryResult = mongoDBHandler.find(database,
                     failedNotificationCollection, condition);
 
             if (queryResult.size() == expectedSize) {

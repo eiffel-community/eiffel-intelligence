@@ -119,16 +119,14 @@ for each subscription. Note that these two properties are mandatory to set.
 
 ### Failed notifications
 
-Should the subscription notification for some reason fail, the notification
-is stored in a database, and **failed.notification.database-name** property
-defines what that database should be called. It is also possible to configure
-what the collection name for failed notifications should be. **notification.ttl.value** tells
+Should the subscription notification for some reason fail. It is possible to configure
+what the collection name for failed notifications should be in the property
+**failed.notification.collection-name**. **notification.ttl.value** tells
 Eiffel Intelligence how long a failed notification will be stored in the
 database before deletion. With **notification.failAttempt** property, it
 is possible to configure the number of attempts Eiffel Intelligence will
 retry to make a REST POST notification when a subscription is triggered.
 
-* failed.notification.database-name
 * failed.notification.collection-name
 * notification.ttl.value
 * notification.failAttempt

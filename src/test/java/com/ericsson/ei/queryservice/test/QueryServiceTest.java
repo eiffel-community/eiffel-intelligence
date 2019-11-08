@@ -52,7 +52,7 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryServiceTest",
-        "failed.notification.database-name: QueryServiceRESTAPITest-failedNotifications",
+        "failed.notification.collection-name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceTest-exchange",
         "rabbitmq.consumerName: QueryServiceTest"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -62,17 +62,14 @@ public class QueryServiceTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryServiceTest.class);
 
+    @Value("${spring.data.mongodb.database}")
+    private String database;
+
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${spring.data.mongodb.database}")
-    private String aggregationDataBaseName;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
-
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabaseName;
 
     @Autowired
     private ProcessAggregatedObject processAggregatedObject;
@@ -99,11 +96,11 @@ public class QueryServiceTest {
         mongoDBHandler.setMongoClient(mongoClient);
         LOG.debug("Database connected");
         // deleting all documents before inserting
-        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
+        mongoClient.getDatabase(database).getCollection(aggregationCollectionName)
                 .deleteMany(new BsonDocument());
         Document missedDocument = Document.parse(failedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
-        mongoClient.getDatabase(failedNotificationDatabaseName).getCollection(failedNotificationCollectionName)
+        mongoClient.getDatabase(database).getCollection(failedNotificationCollectionName)
                 .insertOne(missedDocument);
         LOG.debug("Document Inserted in failed notification Database");
 
@@ -111,7 +108,7 @@ public class QueryServiceTest {
                 aggDocument.getString("_id"),
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
-        mongoClient.getDatabase(aggregationDataBaseName).getCollection(aggregationCollectionName)
+        mongoClient.getDatabase(database).getCollection(aggregationCollectionName)
                 .insertOne(aggDocument);
         LOG.debug("Document Inserted in Aggregated Object Database");
     }
@@ -125,7 +122,7 @@ public class QueryServiceTest {
 
     @Test
     public void processFailedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDatabaseName)
+        Iterable<Document> responseDB = mongoClient.getDatabase(database)
                 .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
@@ -150,21 +147,21 @@ public class QueryServiceTest {
 
     @Test
     public void deleteFailedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(failedNotificationDatabaseName)
+        Iterable<Document> responseDB = mongoClient.getDatabase(database)
                 .getCollection(failedNotificationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();
         LOG.debug("The inserted doc is : " + response);
         boolean removed = processFailedNotification.deleteFailedNotification("Subscription_1");
         assertEquals(true, removed);
-        Iterable<Document> responseDBAfter = mongoClient.getDatabase(failedNotificationDatabaseName)
+        Iterable<Document> responseDBAfter = mongoClient.getDatabase(database)
                 .getCollection(failedNotificationCollectionName).find();
         assertEquals(false, responseDBAfter.iterator().hasNext());
     }
 
     @Test
     public void processAggregatedObjectTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(aggregationDataBaseName)
+        Iterable<Document> responseDB = mongoClient.getDatabase(database)
                 .getCollection(aggregationCollectionName).find();
         Iterator itr = responseDB.iterator();
         String response = itr.next().toString();

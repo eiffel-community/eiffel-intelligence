@@ -35,7 +35,7 @@ import cucumber.api.java.en.Then;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
-        "failed.notification.database-name: QueryAggregatedObjectsTestSteps-failedNotifications",
+        "failed.notification.collection-name: QueryAggregatedObjectsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: QueryAggregatedObjectsTestSteps-exchange",
         "rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
 @AutoConfigureMockMvc
@@ -68,16 +68,13 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     private MongoDBHandler mongoDBHandler;
 
     @Value("${spring.data.mongodb.database}")
-    private String eiDatabaseName;
+    private String database;
 
     @Value("${aggregated.collection.name}")
     private String aggrCollectionName;
 
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
-
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabaseName;
 
     private String aggrObj;
     private String failedNotificationObj;
@@ -104,19 +101,19 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     public void aggregated_object_is_created() throws Throwable {
         final MongoCondition condition = MongoCondition.idCondition(
                 "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
-        List<String> aggregatedObject = mongoDBHandler.find(eiDatabaseName, aggrCollectionName,
+        List<String> aggregatedObject = mongoDBHandler.find(database, aggrCollectionName,
                 condition);
 
         boolean aggregatedObjectExists = aggregatedObject.size() > 0;
         if (!aggregatedObjectExists) {
-            createDocumentInMongoDb(eiDatabaseName, aggrCollectionName, aggrObj);
+            createDocumentInMongoDb(database, aggrCollectionName, aggrObj);
         }
     }
 
     @Given("^Failed Notification object is created$")
     public void failed_notification_object_is_created() throws Throwable {
         LOGGER.debug("Failed Notification object has been created in MongoDb");
-        createDocumentInMongoDb(failedNotificationDatabaseName, failedNotificationCollectionName,
+        createDocumentInMongoDb(database, failedNotificationCollectionName,
                 failedNotificationObj);
     }
 
@@ -274,7 +271,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         final MongoCondition queryRequest = MongoCondition.subscriptionNameCondition(
                 subscriptionName);
         String subscriptionNameCheck = objMapper.readValue(
-                mongoDBHandler.find(failedNotificationDatabaseName,
+                mongoDBHandler.find(database,
                         failedNotificationCollectionName, queryRequest)
                               .get(0),
                 JsonNode.class).get("subscriptionName").asText();

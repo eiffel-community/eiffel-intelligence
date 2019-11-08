@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionHandlerTest",
-        "failed.notification.database-name: SubscriptionHandlerTest-failedNotifications",
+        "failed.notification.collection-name: SubscriptionHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange",
         "subscription.collection.repeatFlagHandlerName: SubscriptionHandlerTestCollection",
         "rabbitmq.consumerName: SubscriptionHandlerTest",

@@ -301,7 +301,8 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
         JsonNode jsonNodeResult = objMapper.readValue(response.getBody().toString(),
                 JsonNode.class);
-        String actualTestCaseStartedEventId = jsonNodeResult.get(0)
+        String actualTestCaseStartedEventId = jsonNodeResult.get("foundFailedNotifications")
+                                                            .get(0)
                                                             .get("aggregatedObject")
                                                             .get("testCaseExecutions")
                                                             .get(0)

@@ -82,7 +82,7 @@ public class ProcessFailedNotification {
      */
     public boolean deleteFailedNotification(String subscriptionName) {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
-        LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
+        LOGGER.debug("The JSON condition for delete failed notification is : {}", condition);
         return handler.dropDocument(failedNotificationDatabaseName,
                 failedNotificationCollectionName, condition);
     }

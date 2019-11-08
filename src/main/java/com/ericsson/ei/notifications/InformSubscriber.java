@@ -125,14 +125,14 @@ public class InformSubscriber {
             }
         } catch (NotificationFailureException | AuthenticationException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
-            String missedNotification = prepareMissedNotification(aggregatedObject,
+            String failedNotification = prepareFailedNotification(aggregatedObject,
                     subscriptionName, notificationMeta, e.getMessage());
             LOGGER.debug(
-                    "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
-                    e.getMessage(), missedNotification);
+                    "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
+                    e.getMessage(), failedNotification);
             mongoDBHandler.createTTLIndex(failedNotificationDataBaseName,
                     failedNotificationCollectionName, "time", ttlValue);
-            saveMissedNotificationToDB(missedNotification);
+            saveFailedNotificationToDB(failedNotification);
         }
     }
 
@@ -170,12 +170,12 @@ public class InformSubscriber {
     }
 
     /**
-     * Saves the missed Notification into a single document in the database.
+     * Saves the failed Notification into a single document in the database.
      */
-    private void saveMissedNotificationToDB(String missedNotification) {
+    private void saveFailedNotificationToDB(String failedNotification) {
         try {
             mongoDBHandler.insertDocument(failedNotificationDataBaseName,
-                    failedNotificationCollectionName, missedNotification);
+                    failedNotificationCollectionName, failedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the notification into database.", e);
@@ -183,14 +183,14 @@ public class InformSubscriber {
     }
 
     /**
-     * Prepares the document to be saved in the missed notification database.
+     * Prepares the document to be saved in the failed notification database.
      *
      * @param aggregatedObject
      * @param subscriptionName
      * @param notificationMeta
      * @return String
      */
-    private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
+    private String prepareFailedNotification(String aggregatedObject, String subscriptionName,
             String notificationMeta, String errorMessage) {
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);

@@ -98,10 +98,10 @@ public class QueryServiceTest {
         // deleting all documents before inserting
         mongoClient.getDatabase(database).getCollection(aggregationCollectionName)
                 .deleteMany(new BsonDocument());
-        Document missedDocument = Document.parse(failedNotification);
+        Document failedDocument = Document.parse(failedNotification);
         Document aggDocument = Document.parse(aggregatedObject);
         mongoClient.getDatabase(database).getCollection(failedNotificationCollectionName)
-                .insertOne(missedDocument);
+                .insertOne(failedDocument);
         LOG.debug("Document Inserted in failed notification Database");
 
         BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(

@@ -201,17 +201,17 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mockClient.reset();
     }
 
-    @Then("Missed notification db should contain (\\d+) objects")
-    public void missed_notification_db_should_contain_x_objects(int maxObjectsInDB) throws Throwable {
+    @Then("Failed notification db should contain (\\d+) objects")
+    public void failed_notification_db_should_contain_x_objects(int maxObjectsInDB) throws Throwable {
         int minWaitTime = 5;
         int maxWaittime = 20;
 
         final MongoCondition condition = MongoCondition.emptyCondition();
-        int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
+        int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
-        assertEquals(missedNotifications, maxObjectsInDB);
-        assertEquals("Number of missed notifications saved in the database: " + missedNotifications, maxObjectsInDB,
-                missedNotifications);
+        assertEquals(failedNotifications, maxObjectsInDB);
+        assertEquals("Number of missed notifications saved in the database: " + failedNotifications, maxObjectsInDB,
+                failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")

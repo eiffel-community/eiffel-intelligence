@@ -28,7 +28,7 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestRulesService",
-        "missedNotificationDataBaseName: TestRulesService-missedNotifications",
+        "failed.notification.collection-name: TestRulesService-missedNotifications",
         "rabbitmq.exchange.name: TestRulesService-exchange",
         "rabbitmq.consumerName: TestRulesService" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

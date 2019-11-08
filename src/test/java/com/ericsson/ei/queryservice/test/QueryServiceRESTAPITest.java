@@ -73,7 +73,7 @@ public class QueryServiceRESTAPITest {
     private static final String AGGREGATED_OUTPUT_PATH = "src/test/resources/AggregatedOutput.json";
     private static final String FAILED_NOTIFICATION_OUTPUT_PATH = "src/test/resources/FailedNotificationOutput.json";
     private static String aggregatedObject;
-    private static String missedNotification;
+    private static String failedNotification;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -86,7 +86,7 @@ public class QueryServiceRESTAPITest {
     @BeforeClass
     public static void init() throws IOException, JSONException {
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
-        missedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
+        failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
     }
 
     @Test
@@ -114,9 +114,9 @@ public class QueryServiceRESTAPITest {
     }
 
     @Test
-    public void getQueryMissedNotificationsTest() throws Exception {
+    public void getQueryFailedNotificationsTest() throws Exception {
         ArrayList<String> response = new ArrayList<String>();
-        response.add(missedNotification);
+        response.add(failedNotification);
         String expectedOutputWithSquareBrackets = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_OUTPUT_PATH),
                 "UTF-8");
         String expectedOutput_string = (expectedOutputWithSquareBrackets.substring(1,

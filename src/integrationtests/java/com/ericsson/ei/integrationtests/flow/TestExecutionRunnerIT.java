@@ -18,7 +18,7 @@ public class TestExecutionRunnerIT {
         System.setProperty("subscription.collection.name", "subscription_test_execution_flow");
         System.setProperty("event_object_map.collection.name", "event_object_map_test_execution_flow");
         System.setProperty("subscription.collection.repeatFlagHandlerName", "subscription_repeat_handler_test_execution_flow");
-        System.setProperty("failed.notification.collection-name", "missed_notification_test_execution_change_flow");
+        System.setProperty("failed.notification.collection-name", "failed_notification_test_execution_change_flow");
         System.setProperty("sessions.collection.name", "sessions_test_execution_flow");
 
         System.setProperty("rules.path", "/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json");

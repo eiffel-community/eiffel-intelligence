@@ -53,7 +53,7 @@ import cucumber.api.java.en.When;
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
-    private static final String ENDPOINT = "/missed_notification";
+    private static final String ENDPOINT = "/failed-notifications";
     private static final String SUBSCRIPTION_NAME = "Subscription_1";
 
     private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";
@@ -140,7 +140,7 @@ public class TestTTLSteps extends FunctionalTestBase {
                 failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
-        assertEquals("Could not find a missed notification matching the condition: " + condition,
+        assertEquals("Could not find a failed notification matching the condition: " + condition,
                 "\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
     }
 
@@ -181,7 +181,7 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @When("^Failed notification is created$")
     public void a_failed_notification_is_created() throws Throwable {
-        // verifying that missed notification is created and present in db
+        // verifying that failed notification is created and present in db
         int expectedSize = 1;
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
 

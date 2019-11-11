@@ -1,40 +1,6 @@
-description: This class is used for anything rules related. It's currently used to test rules on Eiffel events
-             and to fetch the active rules file content. Test rules must be enabled in Eiffel Intelligence
-             for the /rule-check endpoints to work.
 get:
   description: This method returns the active rules content.
   responses:
     200:
       body:
         application/string:
-
-/rule-check:
-  post:
-    description: This method extracts data from a single Eiffel event based on the given JMESPath expression.
-    body:
-      application/json:
-        schema: ruleCheckBody
-    responses:
-      200:
-        body:
-          application/string:
-
-  /aggregation:
-    post:
-      description: This method extracts data from the given list of Eiffel events, based on a set of rules and returns an aggregated object.
-      body:
-        application/json:
-          schema: rulesCheckBody
-      responses:
-        200:
-          body:
-            application/string:
-
-  /testRulePageEnabled:
-    get:
-      description: This method checks if the possibility to test rules has been enabled in Eiffel Intelligence.
-      responses:
-        200:
-          body:
-            application/string:
-               example: "status: false"

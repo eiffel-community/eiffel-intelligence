@@ -3,15 +3,15 @@
 |Method|Endpoint                               |
 |------|---------------------------------------|
 |GET   | /rules                                |
-|POST  | /rules/rule-check                     |
-|POST  | /rules/rule-check/aggregation         |
-|GET   | /rules/rule-check/testRulePageEnabled |
+|POST  | /rule-test/run-single-rule                     |
+|POST  | /rule-test/run-full-aggregation         |
+|GET   | /rule-test |
 
 ## Checking the active rules in your backend instance
 
 You can fetch the rules content from the backend to see what rules Eiffel Intelligence is currently using.
 This can give you an idea on how to write your own rules or could be saved and used
-in the /rules/rule-check endpoints to test the current rules against your events.
+in the /rule-test/run-single-rule endpoints to test the current rules against your events.
 
     curl -X GET http://<host>:8090/rules
     
@@ -31,9 +31,9 @@ A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/e
 
 ## Check if testRules are enabled on the selected instance
 
-Using this arbitrary endpoint one can use check if testRules are enabled in this EI instance.
+Using the following endpoint one can check if rule tests are enabled in the EI instance.
 
-    curl -X GET http://<host>:8090/rules/rule-check/testRulePageEnabled
+    curl -X GET http://<host>:8090/rule-test
 
 
 
@@ -41,7 +41,7 @@ Using this arbitrary endpoint one can use check if testRules are enabled in this
 
 This endpoint allows to test the result of a JMESPath expression of an event.
 
-    POST /rules/rule-check
+    POST /rule-test/run-single-rule
 
 **Body (application/json)**
 
@@ -52,7 +52,7 @@ This endpoint allows to test the result of a JMESPath expression of an event.
 
 Examples of this endpoint using curl
 
-    curl -X POST -H "Content-type:application/json" --data @body.json http://localhost:8090/rules/rule-check
+    curl -X POST -H "Content-type:application/json" --data @body.json http://localhost:8090/rule-test/run-single-rule
 
 For example if we run the following JMESPath expression:
 
@@ -137,7 +137,7 @@ event you need to be aggregated. And a list of events. The result is the
 aggregated object containing the desired information from the events as you
 have specified in the rules.
 
-    POST /rules/rule-check/aggregation
+    POST /rule-test/run-full-aggregation
 
 
 **Body (application/json)**
@@ -149,6 +149,6 @@ have specified in the rules.
 
 Examples of this endpoint using curl
 
-    curl -X POST -H "Content-type: application/json"  --data @body.json  http://localhost:8090/rules/rule-check/aggregation
+    curl -X POST -H "Content-type: application/json"  --data @body.json  http://localhost:8090/rule-test/run-full-aggregation
 
 For demo you can use following list of [events](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListEvents.json) and list of [rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListRules.json). They can be used to create a json with the structure as above and when send as body to the endpoint you should get following [aggregation result](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateResultObject.json)

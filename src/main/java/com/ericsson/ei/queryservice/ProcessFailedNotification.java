@@ -61,7 +61,7 @@ public class ProcessFailedNotification {
         List<String> output = handler.find(database, failedNotificationCollectionName, condition);
         if (output == null || output.isEmpty()) {
             throw new NoSuchElementException(
-                    "No failed notifications found for the Subscription Name: " + subscriptionName);
+                    "No failed notifications found for subscription " + subscriptionName);
         }
         ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {

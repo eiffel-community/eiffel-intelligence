@@ -67,9 +67,14 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             final HttpServletRequest httpRequest) {
         List<String> subscriptionNameList = Arrays.asList(subscriptionNames.split(","));
 
-        JSONObject response = fetchFailedNotifications(subscriptionNameList);
-        JSONArray foundArray = response.getJSONArray(FOUND_NOTIFICATIONS);
-        JSONArray notFoundArray = response.getJSONArray(NOT_FOUND_NOTIFICATIONS);
+        JSONObject notifications = fetchFailedNotifications(subscriptionNameList);
+        ResponseEntity<?> response = createResponse(notifications);
+        return response;
+    }
+
+    private ResponseEntity<?> createResponse(JSONObject notifications) {
+        JSONArray foundArray = notifications.getJSONArray(FOUND_NOTIFICATIONS);
+        JSONArray notFoundArray = notifications.getJSONArray(NOT_FOUND_NOTIFICATIONS);
         HttpStatus httpStatus;
         if (foundArray.length() > 0) {
             httpStatus = HttpStatus.OK;
@@ -82,32 +87,32 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, httpStatus);
         }
-        return new ResponseEntity<>(response.toString(), httpStatus);
+        return new ResponseEntity<>(notifications.toString(), httpStatus);
     }
 
     private JSONObject fetchFailedNotifications(List<String> subscriptionNameList) {
-        JSONObject response = new JSONObject();
+        JSONObject notifications = new JSONObject();
         JSONArray foundArray = new JSONArray();
         JSONArray notFoundArray = new JSONArray();
 
         for (String name : subscriptionNameList) {
-            List<String> notifications = null;
+            List<String> results = null;
             try {
-                notifications = processFailedNotification.processQueryFailedNotification(name);
+                results = processFailedNotification.processQueryFailedNotification(name);
             } catch (NoSuchElementException e) {
-                LOGGER.error("Failed to fetch failed notification for subscription {}", name, e);
+                LOGGER.debug("", e);
                 notFoundArray.put(name);
             }
-            if (notifications != null && !notifications.isEmpty()) {
-                for (String notification : notifications) {
-                    foundArray.put(new JSONObject(notification));
-                    LOGGER.debug("Successfully fetched failed notification for subscription [{}]",
+            if (results != null && !results.isEmpty()) {
+                for (String result : results) {
+                    foundArray.put(new JSONObject(result));
+                    LOGGER.debug("Successfully fetched failed notification for subscription {}",
                             name);
                 }
             }
         }
-        response.put(FOUND_NOTIFICATIONS, foundArray);
-        response.put(NOT_FOUND_NOTIFICATIONS, notFoundArray);
-        return response;
+        notifications.put(FOUND_NOTIFICATIONS, foundArray);
+        notifications.put(NOT_FOUND_NOTIFICATIONS, notFoundArray);
+        return notifications;
     }
 }

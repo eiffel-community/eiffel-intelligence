@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ericsson.ei.controller.RuleController;
+import com.ericsson.ei.controller.RuleTestController;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -27,16 +27,16 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: RuleCheckSteps",
-        "failed.notification.database-name: RuleCheckSteps-failedNotifications",
-        "rabbitmq.exchange.name: RuleCheckSteps-exchange",
-        "rabbitmq.consumerName: RuleCheckStepsConsumer" })
-public class RuleCheckSteps extends FunctionalTestBase {
+        "spring.data.mongodb.database: RuleTestSteps",
+        "failed.notification.database-name: RuleTestSteps-failedNotifications",
+        "rabbitmq.exchange.name: RuleTestSteps-exchange",
+        "rabbitmq.consumerName: RuleTestStepsConsumer" })
+public class RuleTestSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
 
     @Autowired
-    private RuleController ruleController;
+    private RuleTestController ruleTestController;
 
     private String rules;
     private String events;
@@ -48,12 +48,12 @@ public class RuleCheckSteps extends FunctionalTestBase {
 
     @Given("^rules checking is enabled$")
     public void rules_checking_is_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleController, "testEnabled", true);
+        ReflectionTestUtils.setField(ruleTestController, "testEnabled", true);
     }
 
     @Given("^rules checking is not enabled$")
     public void rules_checking_is_not_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleController, "testEnabled", false);
+        ReflectionTestUtils.setField(ruleTestController, "testEnabled", false);
     }
 
     @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")

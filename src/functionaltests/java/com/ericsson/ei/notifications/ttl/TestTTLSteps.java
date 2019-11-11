@@ -53,7 +53,7 @@ import cucumber.api.java.en.When;
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
-    private static final String ENDPOINT = "/failed-notifications";
+    private static final String ENDPOINT = "/notification-endpoint";
     private static final String SUBSCRIPTION_NAME = "Subscription_1";
 
     private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";

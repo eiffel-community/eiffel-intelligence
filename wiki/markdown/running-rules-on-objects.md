@@ -5,7 +5,7 @@
 |GET   | /rules                                |
 |POST  | /rule-test/run-single-rule                     |
 |POST  | /rule-test/run-full-aggregation         |
-|GET   | /rule-test/enabled |
+|GET   | /rule-test |
 
 ## Checking the active rules in your backend instance
 

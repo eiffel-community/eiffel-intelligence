@@ -127,12 +127,13 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     }
 
     @Then("^failed notification of type \"([^\"]*)\" should exist for subscription \"([^\"]*)\"$")
-    public void failedNotificationShouldExist(String searchValue, String subscriptionName) throws Throwable {
+    public void failedNotificationShouldExist(String searchValue, String subscriptionName)
+            throws Throwable {
         waitForDatabaseEntry(subscriptionName);
 
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
-                .setEndpoint("/failed-notifications")
+               .setEndpoint("/failed-notifications")
                .addParam("subscriptionNames", subscriptionName);
         ResponseEntity response = request.performRequest();
 
@@ -143,12 +144,14 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         // There was a lot errors in this area so I added more logging
         try {
             JsonNode messageNode = objectMapper.readTree(body)
-                                               .get("foundFailedNotifications").get(0).get("message");
+                                               .get("foundFailedNotifications")
+                                               .get(0)
+                                               .get("message");
             assertNotEquals("No failed notifications found for " + subscriptionName, null,
                     messageNode);
             message = messageNode.toString();
         } catch (NullPointerException e) {
-            throw new IllegalArgumentException("Tried to parse json of "+ body);
+            throw new IllegalArgumentException("Tried to parse json of " + body);
         }
 
         assertEquals("Did not contain a failed notification", true, message.contains(searchValue));
@@ -194,6 +197,5 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
                     FailedNotificationRunnerIT.FAILED_NOTIFICATION_COLLECTION, condition);
         } while (find.isEmpty() && stopTime > System.currentTimeMillis());
     }
-
 
 }

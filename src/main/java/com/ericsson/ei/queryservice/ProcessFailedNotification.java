@@ -42,7 +42,7 @@ public class ProcessFailedNotification {
     private String failedNotificationCollectionName;
 
     @Value("${spring.data.mongodb.database}")
-    private String failedNotificationDatabaseName;
+    private String database;
 
     @Autowired
     private MongoDBHandler handler;
@@ -54,14 +54,14 @@ public class ProcessFailedNotification {
      * @return
      * @throws NoSuchElementException
      */
-    public List<String> processQueryFailedNotification(String subscriptionName) throws NoSuchElementException {
+    public List<String> processQueryFailedNotification(String subscriptionName)
+            throws NoSuchElementException {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The Json condition is : {}", condition);
-        List<String> output = handler.find(failedNotificationDatabaseName,
-                failedNotificationCollectionName,
-                condition);
+        List<String> output = handler.find(database, failedNotificationCollectionName, condition);
         if (output == null || output.isEmpty()) {
-            throw new NoSuchElementException("No failed notifications found for the Subscription Name: " + subscriptionName);
+            throw new NoSuchElementException(
+                    "No failed notifications found for the Subscription Name: " + subscriptionName);
         }
         ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {
@@ -74,24 +74,11 @@ public class ProcessFailedNotification {
         }).collect(Collectors.toList());
     }
 
-    /**
-     * Delete a failed notification object by using the subscriptionName key.
-     *
-     * @param subscriptionName
-     * @return boolean
-     */
-    public boolean deleteFailedNotification(String subscriptionName) {
-        final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
-        LOGGER.debug("The JSON condition for delete failed notification is : {}", condition);
-        return handler.dropDocument(failedNotificationDatabaseName,
-                failedNotificationCollectionName, condition);
-    }
-
     @PostConstruct
     public void init() {
         LOGGER.debug(
                 "FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
-                failedNotificationDatabaseName, failedNotificationCollectionName);
+                database, failedNotificationCollectionName);
     }
 
 }

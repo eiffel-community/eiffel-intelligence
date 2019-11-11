@@ -67,7 +67,7 @@ public class InformSubscriber {
 
     @Getter
     @Value("${spring.data.mongodb.database}")
-    private String failedNotificationDataBaseName;
+    private String database;
 
     @Getter
     @Value("${notification.ttl.value}")
@@ -130,7 +130,7 @@ public class InformSubscriber {
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
-            mongoDBHandler.createTTLIndex(failedNotificationDataBaseName,
+            mongoDBHandler.createTTLIndex(database,
                     failedNotificationCollectionName, "time", ttlValue);
             saveFailedNotificationToDB(failedNotification);
         }
@@ -174,7 +174,7 @@ public class InformSubscriber {
      */
     private void saveFailedNotificationToDB(String failedNotification) {
         try {
-            mongoDBHandler.insertDocument(failedNotificationDataBaseName,
+            mongoDBHandler.insertDocument(database,
                     failedNotificationCollectionName, failedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {

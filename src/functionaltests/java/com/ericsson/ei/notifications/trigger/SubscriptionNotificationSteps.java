@@ -95,7 +95,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Before()
     public void beforeScenario() {
         mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(database);
     }
 
     @After()
@@ -209,9 +208,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         final MongoCondition condition = MongoCondition.emptyCondition();
         int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
-        assertEquals(failedNotifications, maxObjectsInDB);
-        assertEquals("Number of missed notifications saved in the database: " + failedNotifications, maxObjectsInDB,
-                failedNotifications);
+        assertEquals(maxObjectsInDB, failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")

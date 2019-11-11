@@ -146,20 +146,6 @@ public class QueryServiceTest {
     }
 
     @Test
-    public void deleteFailedNotificationTest() {
-        Iterable<Document> responseDB = mongoClient.getDatabase(database)
-                .getCollection(failedNotificationCollectionName).find();
-        Iterator itr = responseDB.iterator();
-        String response = itr.next().toString();
-        LOG.debug("The inserted doc is : " + response);
-        boolean removed = processFailedNotification.deleteFailedNotification("Subscription_1");
-        assertEquals(true, removed);
-        Iterable<Document> responseDBAfter = mongoClient.getDatabase(database)
-                .getCollection(failedNotificationCollectionName).find();
-        assertEquals(false, responseDBAfter.iterator().hasNext());
-    }
-
-    @Test
     public void processAggregatedObjectTest() {
         Iterable<Document> responseDB = mongoClient.getDatabase(database)
                 .getCollection(aggregationCollectionName).find();

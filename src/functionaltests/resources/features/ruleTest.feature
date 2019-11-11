@@ -1,7 +1,7 @@
 #Author: valentin.tyhonov@ericsson.com
 
 @RuleCheck
-Feature: Test Rules Checker
+Feature: Test rule test feature
 
   @ExecuteRuleSingle
   Scenario: Execute JMESPath rule on JSON object
@@ -32,7 +32,7 @@ Feature: Test Rules Checker
     When make a POST request to the REST API "/rule-test/run-full-aggregation"
     Then get response code of 503
 
-  @RuleCheckStatus
+  @RuleTestStatus
   Scenario: Check status of test rule page using REST API
     When rules checking is enabled
     Then get request from REST API "/rule-test" return response code of 200 and status as "true"

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Using the root endpoint one can check if rule tests are enabled in the EI instance.
+ * This class is used for anything rule test related. It's currently used to test rules on Eiffel events. Test rules must be enabled in Eiffel Intelligence for the /rule-test endpoints to work.
  * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */

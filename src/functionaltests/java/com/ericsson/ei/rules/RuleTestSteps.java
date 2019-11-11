@@ -27,11 +27,11 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: RuleCheckSteps",
-        "failed.notification.database-name: RuleCheckSteps-failedNotifications",
-        "rabbitmq.exchange.name: RuleCheckSteps-exchange",
-        "rabbitmq.consumerName: RuleCheckStepsConsumer" })
-public class RuleCheckSteps extends FunctionalTestBase {
+        "spring.data.mongodb.database: RuleTestSteps",
+        "failed.notification.database-name: RuleTestSteps-failedNotifications",
+        "rabbitmq.exchange.name: RuleTestSteps-exchange",
+        "rabbitmq.consumerName: RuleTestStepsConsumer" })
+public class RuleTestSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
 

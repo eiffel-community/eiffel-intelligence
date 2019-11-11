@@ -31,7 +31,7 @@ A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/e
 
 ## Check if testRules are enabled on the selected instance
 
-Using this arbitrary endpoint one can use check if testRules are enabled in this EI instance.
+Using the following endpoint one can check if rule tests are enabled in the EI instance.
 
     curl -X GET http://<host>:8090/rule-test
 

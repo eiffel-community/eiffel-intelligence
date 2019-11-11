@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessFailedNotification;
-import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,9 +47,6 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     private final static Logger LOGGER = LoggerFactory.getLogger(
             FailedNotificationControllerImpl.class);
 
-    private final static String FOUND_NOTIFICATIONS = "foundFailedNotifications";
-    private final static String NOT_FOUND_NOTIFICATIONS = "notFoundFailedNotifications";
-
     @Autowired
     private ProcessFailedNotification processFailedNotification;
 
@@ -65,54 +61,35 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
-        List<String> subscriptionNameList = Arrays.asList(subscriptionNames.split(","));
-
-        JSONObject notifications = fetchFailedNotifications(subscriptionNameList);
+        String[] subscriptionArray = subscriptionNames.replaceAll("\\s+", "").split(",");
+        JSONArray notifications = fetchFailedNotifications(subscriptionArray);
         ResponseEntity<?> response = createResponse(notifications);
         return response;
     }
 
-    private ResponseEntity<?> createResponse(JSONObject notifications) {
-        JSONArray foundArray = notifications.getJSONArray(FOUND_NOTIFICATIONS);
-        JSONArray notFoundArray = notifications.getJSONArray(NOT_FOUND_NOTIFICATIONS);
-        HttpStatus httpStatus;
-        if (foundArray.length() > 0) {
-            httpStatus = HttpStatus.OK;
-        } else {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        if (httpStatus == HttpStatus.NOT_FOUND) {
-            String errorMessage = "Failed to fetch failed notifications for subscriptions:\n"
-                    + notFoundArray.toString();
-            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, httpStatus);
-        }
-        return new ResponseEntity<>(notifications.toString(), httpStatus);
+    private ResponseEntity<?> createResponse(JSONArray notifications) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        String jsonResponse = notifications.toString();
+        return new ResponseEntity<>(jsonResponse, httpStatus);
     }
 
-    private JSONObject fetchFailedNotifications(List<String> subscriptionNameList) {
-        JSONObject notifications = new JSONObject();
-        JSONArray foundArray = new JSONArray();
-        JSONArray notFoundArray = new JSONArray();
-
-        for (String name : subscriptionNameList) {
+    private JSONArray fetchFailedNotifications(String[] subscriptionArray) {
+        JSONArray notifications = new JSONArray();
+        for (String name : subscriptionArray) {
             List<String> results = null;
             try {
                 results = processFailedNotification.processQueryFailedNotification(name);
             } catch (NoSuchElementException e) {
                 LOGGER.debug("", e);
-                notFoundArray.put(name);
             }
             if (results != null && !results.isEmpty()) {
                 for (String result : results) {
-                    foundArray.put(new JSONObject(result));
-                    LOGGER.debug("Successfully fetched failed notification for subscription {}",
+                    notifications.put(new JSONObject(result));
+                    LOGGER.debug("Completed query for failed notification for subscription(s): {}",
                             name);
                 }
             }
         }
-        notifications.put(FOUND_NOTIFICATIONS, foundArray);
-        notifications.put(NOT_FOUND_NOTIFICATIONS, notFoundArray);
         return notifications;
     }
 }

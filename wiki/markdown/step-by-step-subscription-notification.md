@@ -179,20 +179,17 @@ application.properties as “notification.ttl.value”.
 
 **Failed notification in the failed notification database with TTL value:**
 
-    {
-        "notFoundFailedNotifications": [],
-        "foundFailedNotifications": [
-            {
-                "subscriptionName": "Sub1",
-                "aggregatedObject": {},
-                "notificationMeta": "http://localhost:9999/some-endpoint",
-                "_id": {
-                    "$oid": "5d807a1d821b960af311fab3"
-                },
-                "time": {
-                    "$date": "2019-09-17T06:15:57.000Z"
-                },
-                "message": "Failed to send REST/POST notification!\nMessage: I/O error on POST request for \"http://localhost:9999/some-endpoint\": Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused); nested exception is org.apache.http.conn.HttpHostConnectException: Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused)"
-            }
-        ]
-    }
+    [
+        {
+            "subscriptionName": "Sub1",
+            "aggregatedObject": {},
+            "notificationMeta": "http://localhost:9999/some-endpoint",
+            "_id": {
+                "$oid": "5d807a1d821b960af311fab3"
+            },
+            "time": {
+                "$date": "2020-10-17T06:15:57.000Z"
+            },
+            "message": "Failed to send REST/POST notification!\nMessage: I/O error on POST request for \"http://localhost:9999/some-endpoint\": Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused); nested exception is org.apache.http.conn.HttpHostConnectException: Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused)"
+        }
+    ]

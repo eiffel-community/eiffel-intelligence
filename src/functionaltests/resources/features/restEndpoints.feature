@@ -21,8 +21,6 @@ Feature: Test Rest Endpoints
     | 200          | /templates/events                      |
     | 200          | /templates/rules                       |
     | 200          | /templates/subscriptions               |
-    | 200          | /failed-notifications/subs_name        |
-    | 404          | /aggregated-objects/id                 |
     | 200          | /rules                                 |
     | 200          | /rule-test  |
 

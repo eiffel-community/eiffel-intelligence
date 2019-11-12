@@ -4,7 +4,7 @@
         "repeat": false,
         "created": "data-time",
         "notificationType": "REST_POST",
-        "notificationMeta": "http://localhost:{port}/notification-endpoint",
+        "notificationMeta": "http://localhost:{port}/invalid-endpoint",
         "restPostBodyMediaType": "application/json",
         "notificationMessageKeyValues" : [
           {

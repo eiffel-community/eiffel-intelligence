@@ -53,7 +53,7 @@ import cucumber.api.java.en.When;
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
-    private static final String ENDPOINT = "/notification-endpoint";
+    private static final String INVALID_ENDPOINT = "/invalid-endpoint";
     private static final String SUBSCRIPTION_NAME = "Subscription_1";
 
     private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";
@@ -126,7 +126,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Verify that request has been retried")
     public void verify_request_has_been_made() throws JSONException {
 
-        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
+        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(INVALID_ENDPOINT), Format.JSON);
         JSONArray requests = new JSONArray(retrievedRequests);
 
         // received requests include number of retries
@@ -221,7 +221,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         mockServerClient = new MockServerClient(BASE_URL, port);
 
         // set up expectations on mock server to get calls on this endpoint
-        mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
+        mockServerClient.when(request().withMethod("POST").withPath(INVALID_ENDPOINT))
                         .respond(HttpResponse.response().withStatusCode(500));
     }
 

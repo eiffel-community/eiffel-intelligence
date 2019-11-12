@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessFailedNotification;
+import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,10 +61,17 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
-        String[] subscriptionArray = subscriptionNames.replaceAll("\\s+", "").split(",");
-        JSONArray notifications = fetchFailedNotifications(subscriptionArray);
-        ResponseEntity<?> response = createResponse(notifications);
-        return response;
+        try {
+            String[] subscriptionArray = subscriptionNames.replaceAll("\\s+", "").split(",");
+            JSONArray notifications = fetchFailedNotifications(subscriptionArray);
+            ResponseEntity<?> response = createResponse(notifications);
+            return response;
+        } catch (Exception e) {
+            String errorMessage = "Failed to fetch failed notifications for subscription(s): " + subscriptionNames;
+            LOGGER.error(errorMessage, e);
+            String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR); 
+        }
     }
 
     private ResponseEntity<?> createResponse(JSONArray notifications) {

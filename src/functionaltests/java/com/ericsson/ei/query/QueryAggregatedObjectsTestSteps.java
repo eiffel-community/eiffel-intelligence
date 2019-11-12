@@ -85,6 +85,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     final static private String ENTRY_POINT_QUERY = "/aggregated-objects/query";
     final static private String ENTRY_POINT_FAILED_NOTIFICATIONS = "/failed-notifications";
+    final static private String FAILED_NOTIFICATIONS_PARAM = "subscriptionNames";
 
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
@@ -289,7 +290,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                              .addHeader("content-type", CONTENT_TYPE)
                              .addHeader("Accept", CONTENT_TYPE)
                              .setEndpoint(ENTRY_POINT_FAILED_NOTIFICATIONS)
-                             .addParam("subscriptionName", subscriptionName)
+                             .addParam(FAILED_NOTIFICATIONS_PARAM, subscriptionName)
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

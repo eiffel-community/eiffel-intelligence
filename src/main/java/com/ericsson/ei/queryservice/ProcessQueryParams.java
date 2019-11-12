@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.controller.QueryControllerImpl;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.mongo.MongoQueryBuilder;
@@ -36,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class ProcessQueryParams {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessQueryParams.class);
 
     @Value("${aggregated.collection.name}")
     private String aggregationCollectionName;

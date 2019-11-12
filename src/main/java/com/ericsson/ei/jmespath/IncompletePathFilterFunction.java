@@ -31,8 +31,6 @@ import org.skyscreamer.jsonassert.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.controller.QueryControllerImpl;
-
 import io.burt.jmespath.Adapter;
 import io.burt.jmespath.JmesPathType;
 import io.burt.jmespath.function.ArgumentConstraints;
@@ -41,11 +39,11 @@ import io.burt.jmespath.function.FunctionArgument;
 
 public class IncompletePathFilterFunction extends BaseFunction {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncompletePathFilterFunction.class);
+
     public IncompletePathFilterFunction() {
         super(ArgumentConstraints.listOf(ArgumentConstraints.typeOf(JmesPathType.OBJECT), ArgumentConstraints.typeOf(JmesPathType.STRING)));
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryControllerImpl.class);
 
     /*
      * (non-Javadoc)

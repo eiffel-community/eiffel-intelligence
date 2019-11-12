@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,27 +49,30 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
+@AutoConfigureMockMvc
 public class TestQueryControllerImpl extends ControllerTestBaseClass {
-    private static final String inputPath = "src/test/resources/AggregatedObject.json";
+    private static final String INPUT_PATH = "src/test/resources/AggregatedObject.json";
     private static final String QUERY = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
-    private static String input;
+    private static String INPUT;
+    private final String QUERY_ENDPOINT = "/query";
 
     @MockBean
     private ProcessQueryParams unitUnderTest;
 
     @Before
     public void setUp() {
-        input = FileUtils.readFileAsString(new File(inputPath));
+        INPUT = FileUtils.readFileAsString(new File(INPUT_PATH));
     }
 
     @Test
     public void filterFormParamTest() throws Throwable {
-        JSONArray inputObj = new JSONArray("[" + input + "]");
-        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class),
-                any(String.class))).thenReturn(inputObj);
+        JSONArray inputObj = new JSONArray("[" + INPUT + "]");
+        when(unitUnderTest.runQuery(any(JSONObject.class), any(JSONObject.class), any(String.class)))
+                .thenReturn(inputObj);
 
-        MvcResult result = performMockMvcRequest("/query", QUERY);
-
+        MvcResult result = performMockMvcRequest(EntryPointConstantsUtils.AGGREGATED_OBJECTS + QUERY_ENDPOINT, QUERY);
         assertEquals(inputObj.toString(), result.getResponse().getContentAsString());
+
+
     }
 }

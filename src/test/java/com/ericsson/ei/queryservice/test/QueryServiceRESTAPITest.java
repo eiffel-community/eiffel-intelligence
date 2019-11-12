@@ -46,9 +46,10 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.controller.AggregatedObjectController;
+import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
+import com.ericsson.ei.controller.EntryPointConstantsUtils;
 import com.ericsson.ei.controller.FailedNotificationControllerImpl;
-import com.ericsson.ei.controller.QueryAggregatedObjectController;
-import com.ericsson.ei.controller.QueryAggregatedObjectControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = QueryAggregatedObjectController.class, secure = false)
+@WebMvcTest(value = AggregatedObjectController.class, secure = false)
 public class QueryServiceRESTAPITest {
 
     @Autowired
@@ -78,7 +79,7 @@ public class QueryServiceRESTAPITest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    private QueryAggregatedObjectControllerImpl aggregatedObjectController;
+    private AggregatedObjectControllerImpl aggregatedObjectController;
 
     @MockBean
     private FailedNotificationControllerImpl failedNotificationController;
@@ -98,13 +99,14 @@ public class QueryServiceRESTAPITest {
                 expectedOutputWithSquareBrackets.length() - 1));
         JsonNode expectedOutput = mapper.readTree(expectedOutputString);
 
-        Mockito.when(aggregatedObjectController.getQueryAggregatedObject(Mockito.anyString(), Mockito.any(HttpServletRequest.class)))
+        Mockito.when(aggregatedObjectController.getAggregatedObjectById(Mockito.anyString(),
+                Mockito.any(HttpServletRequest.class)))
                 .thenReturn(new ResponseEntity(response.get(0), HttpStatus.OK));
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/queryAggregatedObject")
-                .accept(MediaType.APPLICATION_JSON).param("ID", "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
-                .contentType(MediaType.APPLICATION_JSON);
-        MvcResult result = result = mockMvc.perform(requestBuilder).andReturn();
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43")
+                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String output_string = result.getResponse().getContentAsString().toString();
         JsonNode output = mapper.readTree(output_string);
         LOGGER.info("The Output is : " + output);

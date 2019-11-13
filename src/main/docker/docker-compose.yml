@@ -193,7 +193,7 @@ services:
       - spring.data.mongodb.host=mongodb
       - spring.data.mongodb.port=${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
-      - missedNotificationDataBaseName=eiffel2_intelligence_MissedNotification
+      - failed.notification.collection-name=eiffel2_FailedNotification
       - spring.mail.host=
       - spring.mail.port=
       - spring.mail.username=

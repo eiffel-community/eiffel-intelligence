@@ -172,42 +172,24 @@ made to resend successfully. The number of attempts are specified in the
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
 as “notification.failAttempt”. If message sending attempts fails for the
 specified number of time, then a failed notification is prepared and stored
-in database. The name of the database is specified in the application.properties
-file as “failed.notification.database-name” and collection name as
-“failed.notification.collection-name”. The message is stored in the database
+in database. The name of the collection is specified in the application.properties
+file as “failed.notification.collection-name”. The message is stored in the database
 for a certain duration before being deleted. This time can be configured in
 application.properties as “notification.ttl.value”.
 
 **Failed notification in the failed notification database with TTL value:**
 
-    {
-        "subscriptionName": "Subscription_1",
-        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
-        "Time": {
-            "$date": "2018-11-10T20:21:56.000Z"
-        },
-        "AggregatedObject": {
-            "fileInformation": [{
-                "extension": "jar",
-                "classifier": ""
-            }],
-            "buildCommand": null,
-            "testCaseExecutions": [{
-                "testCaseFinishEventId": "11109351-41e0-474a-bc1c-f6e81e58a1c9",
-                "testCaseStartedTime": 1481875925916,
-                "testCaseStartedEventId": "cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
-                "testCaseFinishedTime": 1481875935919,
-                "testCase": {
-                    "conclusion": "SUCCESSFUL",
-                    "verdict": "PASSED",
-                    "tracker": "My Other Test Management System",
-                    "id": "TC5",
-                    "uri": "https://other-tm.company.com/testCase/TC5"
-                }
-            }],
-            "id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
-            "time": 1481875891763,
-            "type": "ARTIFACT_1",
-            "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
+    [
+        {
+            "subscriptionName": "Sub1",
+            "aggregatedObject": {},
+            "notificationMeta": "http://localhost:9999/some-endpoint",
+            "_id": {
+                "$oid": "5d807a1d821b960af311fab3"
+            },
+            "time": {
+                "$date": "2020-10-17T06:15:57.000Z"
+            },
+            "message": "Failed to send REST/POST notification!\nMessage: I/O error on POST request for \"http://localhost:9999/some-endpoint\": Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused); nested exception is org.apache.http.conn.HttpHostConnectException: Connect to localhost:9999 [localhost/127.0.0.1] failed: Connection refused (Connection refused)"
         }
-    }
+    ]

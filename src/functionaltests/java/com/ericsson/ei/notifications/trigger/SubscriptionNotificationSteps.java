@@ -46,7 +46,7 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionNotificationSteps",
-        "failed.notification.database-name: SubscriptionNotificationSteps-failedNotifications",
+        "failed.notification.collection-name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
         "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
@@ -75,9 +75,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabase;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
@@ -98,7 +95,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Before()
     public void beforeScenario() {
         mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(failedNotificationDatabase);
     }
 
     @After()
@@ -204,17 +200,15 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mockClient.reset();
     }
 
-    @Then("Missed notification db should contain (\\d+) objects")
-    public void missed_notification_db_should_contain_x_objects(int maxObjectsInDB) throws Throwable {
+    @Then("Failed notification db should contain (\\d+) objects")
+    public void failed_notification_db_should_contain_x_objects(int maxObjectsInDB) throws Throwable {
         int minWaitTime = 5;
         int maxWaittime = 20;
 
         final MongoCondition condition = MongoCondition.emptyCondition();
-        int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
+        int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
-        assertEquals(missedNotifications, maxObjectsInDB);
-        assertEquals("Number of missed notifications saved in the database: " + missedNotifications, maxObjectsInDB,
-                missedNotifications);
+        assertEquals(maxObjectsInDB, failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")
@@ -443,7 +437,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> queryResult = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            queryResult = mongoDBHandler.find(failedNotificationDatabase,
+            queryResult = mongoDBHandler.find(database,
                     failedNotificationCollection, condition);
 
             if (queryResult.size() == expectedSize) {

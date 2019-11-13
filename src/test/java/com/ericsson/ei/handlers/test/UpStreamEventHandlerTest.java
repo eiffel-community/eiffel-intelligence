@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: UpStreamEventHandlerTest",
-        "failed.notification.database-name: UpStreamEventHandlerTest-failedNotifications",
+        "failed.notification.collection-name: UpStreamEventHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: UpStreamEventHandlerTest-exchange",
         "rabbitmq.consumerName: UpStreamEventHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

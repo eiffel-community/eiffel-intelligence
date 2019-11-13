@@ -63,11 +63,11 @@ public class InformSubscriber {
 
     @Getter
     @Value("${failed.notification.collection-name}")
-    private String missedNotificationCollectionName;
+    private String failedNotificationCollectionName;
 
     @Getter
-    @Value("${failed.notification.database-name}")
-    private String missedNotificationDataBaseName;
+    @Value("${spring.data.mongodb.database}")
+    private String database;
 
     @Getter
     @Value("${notification.ttl.value}")
@@ -125,14 +125,14 @@ public class InformSubscriber {
             }
         } catch (NotificationFailureException | AuthenticationException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
-            String missedNotification = prepareMissedNotification(aggregatedObject,
+            String failedNotification = prepareFailedNotification(aggregatedObject,
                     subscriptionName, notificationMeta, e.getMessage());
             LOGGER.debug(
-                    "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
-                    e.getMessage(), missedNotification);
-            mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, "time", ttlValue);
-            saveMissedNotificationToDB(missedNotification);
+                    "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
+                    e.getMessage(), failedNotification);
+            mongoDBHandler.createTTLIndex(database,
+                    failedNotificationCollectionName, "time", ttlValue);
+            saveFailedNotificationToDB(failedNotification);
         }
     }
 
@@ -170,12 +170,12 @@ public class InformSubscriber {
     }
 
     /**
-     * Saves the missed Notification into a single document in the database.
+     * Saves the failed Notification into a single document in the database.
      */
-    private void saveMissedNotificationToDB(String missedNotification) {
+    private void saveFailedNotificationToDB(String failedNotification) {
         try {
-            mongoDBHandler.insertDocument(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, missedNotification);
+            mongoDBHandler.insertDocument(database,
+                    failedNotificationCollectionName, failedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the notification into database.", e);
@@ -183,14 +183,14 @@ public class InformSubscriber {
     }
 
     /**
-     * Prepares the document to be saved in the missed notification database.
+     * Prepares the document to be saved in the failed notification database.
      *
      * @param aggregatedObject
      * @param subscriptionName
      * @param notificationMeta
      * @return String
      */
-    private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
+    private String prepareFailedNotification(String aggregatedObject, String subscriptionName,
             String notificationMeta, String errorMessage) {
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);

@@ -14,6 +14,7 @@
 package com.ericsson.ei.queryservice;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -29,36 +30,39 @@ import com.ericsson.ei.mongo.MongoDBHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class represents the mechanism to extract the aggregated data on the
- * basis of the SubscriptionName from the Missed Notification Object.
+ * This class represents the mechanism to extract information regarding a failed notification by
+ * using the subscriptionName key.
  */
 @Component
-public class ProcessMissedNotification {
+public class ProcessFailedNotification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMissedNotification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessFailedNotification.class);
 
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollectionName;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabaseName;
+    @Value("${spring.data.mongodb.database}")
+    private String database;
 
     @Autowired
     private MongoDBHandler handler;
 
     /**
-     * The method is responsible to extract the data on the basis of the
-     * subscriptionName from the Missed Notification Object.
+     * Get a failed notification object by using the subscriptionName key.
      *
      * @param subscriptionName
-     * @return List
+     * @return
+     * @throws NoSuchElementException
      */
-    public List<String> processQueryMissedNotification(String subscriptionName) {
+    public List<String> processQueryFailedNotification(String subscriptionName)
+            throws NoSuchElementException {
         final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
         LOGGER.debug("The Json condition is : {}", condition);
-        List<String> output = handler.find(failedNotificationDatabaseName, failedNotificationCollectionName,
-               condition);
-
+        List<String> output = handler.find(database, failedNotificationCollectionName, condition);
+        if (output == null || output.isEmpty()) {
+            throw new NoSuchElementException(
+                    "No failed notifications found for subscription " + subscriptionName);
+        }
         ObjectMapper mapper = new ObjectMapper();
         return output.stream().map(a -> {
             try {
@@ -68,25 +72,13 @@ public class ProcessMissedNotification {
             }
             return null;
         }).collect(Collectors.toList());
-
-    }
-
-    /**
-     * The method is responsible for the delete the missed notification using subscription name
-     *
-     * @param subscriptionName
-     * @return boolean
-     */
-    public boolean deleteMissedNotification(String subscriptionName) {
-        final MongoCondition condition = MongoCondition.subscriptionNameCondition(subscriptionName);
-        LOGGER.debug("The JSON condition for delete missed notification is : {}", condition);
-        return handler.dropDocument(failedNotificationDatabaseName, failedNotificationCollectionName, condition);
     }
 
     @PostConstruct
     public void init() {
-        LOGGER.debug("FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
-                failedNotificationDatabaseName, failedNotificationCollectionName);
+        LOGGER.debug(
+                "FaildNotification Database is : {}" + "\nFailedNotification Collection is : {}",
+                database, failedNotificationCollectionName);
     }
 
 }

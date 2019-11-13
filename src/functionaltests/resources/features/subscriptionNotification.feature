@@ -12,13 +12,13 @@ Feature: Test Subscription Trigger
     And Rest subscriptions were triggered
     When I send one previous event again
     And No subscription is retriggered
-    And Missed notification db should contain 0 objects
+    And Failed notification db should contain 0 objects
 
   @FailedSubscriptionNotification
-  Scenario: Test missed notifications are created when notifications fail
+  Scenario: Test failed notifications are created
     Given The REST API is up and running
     And Subscriptions with bad notification meta are created
     When I send Eiffel events
     When I send one previous event again
     And Wait for EI to aggregate objects
-    And Missed notification db should contain 2 objects
+    And Failed notification db should contain 2 objects

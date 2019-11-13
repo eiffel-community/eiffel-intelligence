@@ -18,7 +18,7 @@ public class SourceChangeFlowRunnerIT {
         System.setProperty("subscription.collection.name", "subscription_source_change_flow");
         System.setProperty("event_object_map.collection.name", "event_object_map_source_change_flow");
         System.setProperty("subscription.collection.repeatFlagHandlerName", "subscription_repeat_handler_source_change_flow");
-        System.setProperty("failed.notification.collection-name", "missed_notification_source_change_flow");
+        System.setProperty("failed.notification.collection-name", "failed_notification_source_change_flow");
         System.setProperty("sessions.collection.name", "sessions_source_change_flow");
 
         System.setProperty("rules.path", "/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json");

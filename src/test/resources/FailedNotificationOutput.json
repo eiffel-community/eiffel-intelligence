@@ -32,6 +32,7 @@
             "time": 1481875891763,
             "type": "ARTIFACT_1",
             "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-        }
+        },
+        "message": "something"
     }
 ]

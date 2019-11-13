@@ -11,7 +11,7 @@ Feature: Test TTL
     And Check failed notification is in database
 
   @TestTTLforAutomaticSubscriptionTrigger
-  Scenario: Test time to live for missed notification and aggregated object with an automatic subscription trigger flow setup
+  Scenario: Test time to live for failed notification and aggregated object with an automatic subscription trigger flow setup
     Given A subscription is created using "/subscriptions" with non-working notification meta
     And I send an Eiffel event
     When Aggregated object is created

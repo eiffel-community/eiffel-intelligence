@@ -58,7 +58,6 @@ public class ConfigurationLogger {
                 + "threads.queueCapacity: " + environment.getProperty("threads.queueCapacity") + "\n"
                 + "threads.maxPoolSize: " + environment.getProperty("threads.maxPoolSize") + "\n"
                 + "failed.notification.collection-name: " + environment.getProperty("failed.notification.collection-name") + "\n"
-                + "failed.notification.database-name: " + environment.getProperty("failed.notification.database-name") + "\n"
                 + "email.sender: " + environment.getProperty("email.sender") + "\n"
                 + "email.subject: " + environment.getProperty("email.subject") + "\n"
                 + "notification.failAttempt: " + environment.getProperty("notification.failAttempt") + "\n"

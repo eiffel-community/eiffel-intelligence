@@ -14,7 +14,6 @@
 package com.ericsson.ei.mongo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +32,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientException;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoInterruptedException;
@@ -69,7 +71,7 @@ public class MongoDBHandler {
     // based on connection data in properties file
     @PostConstruct
     public void init() {
-        createConnection();
+        createMongoClient();
     }
 
     @PreDestroy
@@ -112,6 +114,8 @@ public class MongoDBHandler {
                 collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
                     result.add(JSON.serialize(document));
                 });
+
+                LOGGER.debug("######## result  === " + result.toString());
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,
                     // this is normal, no need to log
@@ -261,18 +265,42 @@ public class MongoDBHandler {
 
     }
 
-    // Establishing the connection to mongodb and creating a collection
-    private void createConnection() {
+    private void createMongoClient() {
+        if (!StringUtils.isBlank(mongoProperties.getUri())) {
+            createMongoDBBasedOnUri();
+            return;
+        }
+
+        if (!StringUtils.isBlank(mongoProperties.getHost())
+                && !StringUtils.isBlank(String.valueOf(mongoProperties.getPort()))) {
+            createMongoDBBasedOnHostAndPort();
+            return;
+        }
+
+        throw new MongoClientException(
+                "Failure when creating MongoClient, missing host, port or uri.");
+    }
+
+    private void createMongoDBBasedOnUri() {
+        MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
+        mongoClient = new MongoClient(uri);
+    }
+
+    private void createMongoDBBasedOnHostAndPort() {
+        ServerAddress address = new ServerAddress(mongoProperties.getHost(),
+                mongoProperties.getPort());
+
         if (!StringUtils.isBlank(mongoProperties.getUsername())
                 && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
-            ServerAddress address = new ServerAddress(mongoProperties.getHost(),
-                    mongoProperties.getPort());
             MongoCredential credential = MongoCredential.createCredential(
                     mongoProperties.getUsername(),
-                    mongoProperties.getDatabase(), mongoProperties.getPassword());
-            mongoClient = new MongoClient(address, Collections.singletonList(credential));
+                    mongoProperties.getDatabase(),
+                    mongoProperties.getPassword());
+
+            mongoClient = new MongoClient(address, credential,
+                    MongoClientOptions.builder().build());
         } else {
-            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+            mongoClient = new MongoClient(address);
         }
     }
 
@@ -336,7 +364,8 @@ public class MongoDBHandler {
         final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
         final Document dbObjectUpdateInput = Document.parse(updateInput);
         UpdateResult updateOne = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-        boolean updateWasPerformed = updateOne.wasAcknowledged() && updateOne.getModifiedCount() > 0;
+        boolean updateWasPerformed = updateOne.wasAcknowledged()
+                && updateOne.getModifiedCount() > 0;
         LOGGER.debug(
                 "updateDocument() :: database: {} and collection: {} is document Updated : {}",
                 dataBaseName, collectionName, updateWasPerformed);
@@ -363,42 +392,61 @@ public class MongoDBHandler {
 
     }
 
-    private MongoCollection<Document> getMongoCollection(String dataBaseName,
+    private MongoCollection<Document> getMongoCollection(String databaseName,
             String collectionName) {
-        if (mongoClient == null)
+        if (mongoClient == null) {
             return null;
-        MongoDatabase db;
+        }
+
+        try {
+            List<String> collectionList = getCollectionList(databaseName);
+            if (!collectionList.contains(collectionName)) {
+                createCollection(databaseName, collectionName);
+            }
+        } catch (MongoClientException e) {
+            LOGGER.error("Failure when handling Mongo collection: {} ", e.getMessage(), e);
+            return null;
+        }
+
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+        MongoCollection<Document> collection = db.getCollection(collectionName);
+        return collection;
+    }
+
+    private List<String> getCollectionList(String databaseName) {
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
         List<String> collectionList;
 
         try {
-            db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
         } catch (MongoInterruptedException | MongoSocketReadException | MongoSocketWriteException
                 | MongoCommandException | IllegalStateException e) {
-            LOGGER.error("Failed to get Mongo collection, Reason : {} ", e.getMessage(), e);
+            String message = "Failed to get Mongo collection list, Reason: " + e.getMessage();
             closeMongoDbConnection();
-            return null;
+            throw new MongoClientException(message, e);
         }
 
-        if (!collectionList.contains(collectionName)) {
-            LOGGER.debug(
-                    "The requested database({}) / collection({}) not available in mongodb, Creating ........",
-                    dataBaseName, collectionName);
-            try {
-                db.createCollection(collectionName);
-            } catch (MongoCommandException e) {
-                String message = "collection '" + dataBaseName + "." + collectionName
-                        + "' already exists";
-                if (e.getMessage().contains(message)) {
-                    LOGGER.warn("A {}.", message, e);
-                } else {
-                    throw e;
-                }
+        return collectionList;
+    }
+
+    private void createCollection(String databaseName, String collectionName) {
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+        LOGGER.debug("The requested database({}) / collection({}) not found in mongodb, Creating.",
+                databaseName, collectionName);
+        try {
+            db.createCollection(collectionName);
+        } catch (MongoCommandException e) {
+            String collectionExistsError = String.format("collection '%s.%s' already exists",
+                    databaseName, collectionName);
+            if (e.getMessage().contains(collectionExistsError)) {
+                // When multiple operations try to create the same collection a collection may already exist.
+                LOGGER.warn("A {}.", collectionExistsError, e);
+            } else {
+                String message = "Failed to create Mongo collection, Reason: " + e.getMessage();
+                throw new MongoClientException(message, e);
             }
-            LOGGER.debug("done....");
         }
-        MongoCollection<Document> collection = db.getCollection(collectionName);
-        return collection;
+        LOGGER.debug("done....");
     }
 
     private void closeMongoDbConnection() {

@@ -76,7 +76,9 @@ public class TestConfigs {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
+            String port = String.valueOf(mongoClient.getAddress().getPort());
+            System.setProperty("spring.data.mongodb.uri", "");
+            System.setProperty("spring.data.mongodb.host", "localhost");
             System.setProperty("spring.data.mongodb.port", port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

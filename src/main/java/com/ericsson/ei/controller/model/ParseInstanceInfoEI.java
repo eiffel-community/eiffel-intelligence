@@ -32,6 +32,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
@@ -136,17 +138,42 @@ public class ParseInstanceInfoEI {
 
     @Component
     private class MongoDbValues {
-//        @Getter
-//        @Value("${spring.data.mongodb.host}")
-//        private String host;
-//
-//        @Getter
-//        @Value("${spring.data.mongodb.port}")
-//        private String port;
+        @Getter
+        @Value("${spring.data.mongodb.uri}")
+        private String uri;
 
         @Getter
         @Value("${spring.data.mongodb.database}")
         private String database;
+
+        @PostConstruct
+        public void init() throws IOException {
+            if (uri != null) {
+                String secret = extractSecretFromUri(uri);
+                String modifiedUri = uri.replaceFirst(secret, "hidden_secret");
+                uri = modifiedUri;
+            }
+        }
+
+        /**
+         * This method should be moved to decrypt library once EI 2.0.2 is merget to master
+         *
+         * @param uri
+         * @return
+         */
+        private String extractSecretFromUri(String uri) {
+            String secret = "";
+            // Matcher that match string between : and @
+            Matcher matcher = Pattern.compile("(?<=:)(.*)(?=@)").matcher(uri);
+            if (matcher.find()) {
+                String authenticationDetails = matcher.group(0).replace("//", "");
+                if (authenticationDetails.contains(":")) {
+                    String[] authenticationDetailsList = authenticationDetails.split(":");
+                    secret = authenticationDetailsList[1];
+                }
+            }
+            return secret;
+        }
     }
 
     @Component

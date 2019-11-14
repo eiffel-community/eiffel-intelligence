@@ -33,15 +33,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
-import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCommandException;
-import com.mongodb.MongoCredential;
+import com.mongodb.MongoConfigurationException;
 import com.mongodb.MongoInterruptedException;
 import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoSocketWriteException;
 import com.mongodb.MongoWriteException;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -266,42 +264,13 @@ public class MongoDBHandler {
     }
 
     private void createMongoClient() {
-        if (!StringUtils.isBlank(mongoProperties.getUri())) {
-            createMongoDBBasedOnUri();
-            return;
+        if (StringUtils.isBlank(mongoProperties.getUri())) {
+            throw new MongoConfigurationException(
+                    "Failure to createg MongoClient, missing config for spring.data.mongodb.uri:");
         }
 
-        if (!StringUtils.isBlank(mongoProperties.getHost())
-                && !StringUtils.isBlank(String.valueOf(mongoProperties.getPort()))) {
-            createMongoDBBasedOnHostAndPort();
-            return;
-        }
-
-        throw new MongoClientException(
-                "Failure when creating MongoClient, missing host, port or uri.");
-    }
-
-    private void createMongoDBBasedOnUri() {
         MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
         mongoClient = new MongoClient(uri);
-    }
-
-    private void createMongoDBBasedOnHostAndPort() {
-        ServerAddress address = new ServerAddress(mongoProperties.getHost(),
-                mongoProperties.getPort());
-
-        if (!StringUtils.isBlank(mongoProperties.getUsername())
-                && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
-            MongoCredential credential = MongoCredential.createCredential(
-                    mongoProperties.getUsername(),
-                    mongoProperties.getDatabase(),
-                    mongoProperties.getPassword());
-
-            mongoClient = new MongoClient(address, credential,
-                    MongoClientOptions.builder().build());
-        } else {
-            mongoClient = new MongoClient(address);
-        }
     }
 
     private ArrayList<String> doFind(String dataBaseName, String collectionName,
@@ -439,7 +408,8 @@ public class MongoDBHandler {
             String collectionExistsError = String.format("collection '%s.%s' already exists",
                     databaseName, collectionName);
             if (e.getMessage().contains(collectionExistsError)) {
-                // When multiple operations try to create the same collection a collection may already exist.
+                // When multiple operations try to create the same collection a collection may
+                // already exist.
                 LOGGER.warn("A {}.", collectionExistsError, e);
             } else {
                 String message = "Failed to create Mongo collection, Reason: " + e.getMessage();

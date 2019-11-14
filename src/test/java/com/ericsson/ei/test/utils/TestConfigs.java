@@ -47,7 +47,8 @@ public class TestConfigs {
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
-        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
+        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: "
+                + connection + ",connection factory:"
                 + connectionFactory);
         if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
@@ -77,9 +78,7 @@ public class TestConfigs {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = String.valueOf(mongoClient.getAddress().getPort());
-            System.setProperty("spring.data.mongodb.uri", "");
-            System.setProperty("spring.data.mongodb.host", "localhost");
-            System.setProperty("spring.data.mongodb.port", port);
+            setNewPortToMongoDBUriProperty(port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
@@ -132,5 +131,13 @@ public class TestConfigs {
         connectionFactory.setHandshakeTimeout(600000);
         connectionFactory.setConnectionTimeout(600000);
         connection = connectionFactory.newConnection();
+    }
+
+    private static void setNewPortToMongoDBUriProperty(String port) {
+        String propertyUri = System.getProperty("spring.data.mongodb.uri");
+        String modifiedUri = propertyUri.replace("[0-9]{4,5}", port);
+        System.setProperty("spring.data.mongodb.uri", modifiedUri);
+        LOGGER.info("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
+                propertyUri, modifiedUri);
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.mongodb.MongoWriteException;
 import org.bson.Document;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.config.HttpSessionConfig;
+import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
@@ -46,6 +48,7 @@ public class SubscriptionService implements ISubscriptionService {
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'ldapUserName':'%s'}";
+    private static final String ENCODED_PASSWORD = "ENC(%s)";
 
     private static final String AND = "{$and:[%s]}";
 
@@ -61,11 +64,26 @@ public class SubscriptionService implements ISubscriptionService {
     @Value("${ldap.enabled}")
     private boolean ldapEnabled;
 
+    @Value("${jasypt.encryptor.password:}")
+    private String jasyptEncryptorPassword;
+
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
 
     @Override
-    public void addSubscription(Subscription subscription) throws JsonProcessingException, MongoWriteException {
+    public void addSubscription(Subscription subscription)
+            throws JsonProcessingException, MongoWriteException {
+        String authType = subscription.getAuthenticationType();
+        if (!jasyptEncryptorPassword.isEmpty()
+                && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
+            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword(jasyptEncryptorPassword);
+            String subscriptionPassword = subscription.getPassword();
+            String encryptedPassword = String.format(ENCODED_PASSWORD,
+                    encryptor.encrypt(subscriptionPassword));
+            subscription.setPassword(encryptedPassword);
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
         stringSubscription = mapper.writeValueAsString(subscription);
@@ -73,7 +91,8 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
+    public Subscription getSubscription(String subscriptionName)
+            throws SubscriptionNotFoundException {
         // empty ldapUserName means that result of query should not depend from
         // userName
         String query = generateQuery(subscriptionName, "");
@@ -81,7 +100,8 @@ public class SubscriptionService implements ISubscriptionService {
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
-            throw new SubscriptionNotFoundException("No record found for the Subscription Name: " + subscriptionName);
+            throw new SubscriptionNotFoundException(
+                    "No record found for the Subscription Name: " + subscriptionName);
         }
         for (String input : list) {
             Subscription subscription;
@@ -149,7 +169,8 @@ public class SubscriptionService implements ISubscriptionService {
                         subscriptionName);
             }
         } else if (doSubscriptionExist(subscriptionName)) {
-            String message = "Failed to delete subscription \"" + subscriptionName + "\" invalid ldapUserName";
+            String message = "Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName";
             throw new AccessException(message);
         }
 
@@ -180,18 +201,19 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
-        LOGGER.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}", subscriptionNameQuery);
+        LOGGER.debug(
+                "Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}",
+                subscriptionNameQuery);
         MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
+        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection,
+                subscriptionNameQuery);
     }
 
     /**
      * This method generate query for mongoDB
      *
-     * @param subscriptionName-
-     *            subscription name
-     * @param ldapUserName-
-     *            name of the current user
+     * @param subscriptionName subscription name
+     * @param ldapUserName name of the current user
      * @return a String object
      */
     private String generateQuery(String subscriptionName, String ldapUserName) {
@@ -207,8 +229,7 @@ public class SubscriptionService implements ISubscriptionService {
     /**
      * This method finds whether a given subscription has an owner
      *
-     * @param subscriptionName-
-     *            subscription name
+     * @param subscriptionName subscription name
      * @return a boolean
      * @throws SubscriptionNotFoundException
      */
@@ -229,8 +250,7 @@ public class SubscriptionService implements ISubscriptionService {
     /**
      * This method ldapUserName, if exists, otherwise return empty string
      *
-     * @param subscriptionName-
-     *            subscription name
+     * @param subscriptionName subscription name
      * @return a string
      */
     private String getLdapUserName(String subscriptionName) {

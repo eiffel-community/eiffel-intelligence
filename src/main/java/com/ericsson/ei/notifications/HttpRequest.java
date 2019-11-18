@@ -30,9 +30,9 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.utils.EncryptionFormatter;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
-import com.ericsson.ei.utils.TextFormatter;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.Getter;
@@ -50,6 +50,9 @@ public class HttpRequest {
         }
     }
 
+    @Value("${jasypt.encryptor.password:}")
+    private String jasyptEncryptorPassword;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
     private SubscriptionField subscriptionField;
@@ -58,9 +61,6 @@ public class HttpRequest {
     private HttpRequestSender httpRequestSender = SpringContext.getBean(HttpRequestSender.class);
     private JenkinsCrumb jenkinsCrumb = SpringContext.getBean(JenkinsCrumb.class);
     private UrlParser urlParser = SpringContext.getBean(UrlParser.class);
-
-    @Value("${jasypt.encryptor.password:}")
-    private String jasyptEncryptorPassword;
 
     @Getter
     @Setter
@@ -157,11 +157,10 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        if (!jasyptEncryptorPassword.isEmpty() && checkIfPasswordEncrypted(password)) {
-            TextFormatter textFormatter = new TextFormatter();
+        if (!jasyptEncryptorPassword.isEmpty() && EncryptionFormatter.isEncrypted(password)) {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
-            String encryptedPassword = textFormatter.removeEncryptionParentheses(password);
+            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
             password = encryptor.decrypt(encryptedPassword);
         }
 
@@ -221,9 +220,5 @@ public class HttpRequest {
             LOGGER.info("Successfully added header: " + String.format("'%s':'%s'", crumbKey,
                     crumbValue));
         }
-    }
-
-    private boolean checkIfPasswordEncrypted(final String password) {
-        return (password.startsWith("ENC(") && password.endsWith(")"));
     }
 }

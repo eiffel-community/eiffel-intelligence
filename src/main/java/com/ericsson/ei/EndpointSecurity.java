@@ -34,7 +34,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.ericsson.ei.exception.AbortExecutionException;
-import com.ericsson.ei.utils.TextFormatter;
+import com.ericsson.ei.utils.EncryptionFormatter;
 
 @Configuration
 @EnableWebSecurity
@@ -97,7 +97,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
         
-            if (checkIfPasswordEncrypted(password)) {
+            if (EncryptionFormatter.isEncrypted(password)) {
                 password = decryptPassword(password);
             }
             else {
@@ -116,12 +116,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         }
     }
     
-    private boolean checkIfPasswordEncrypted(final String password) {
-        return (password.startsWith("ENC(") && password.endsWith(")"));
-    }
-    
     private String decryptPassword(final String inputEncryptedPassword) throws Exception {
-        TextFormatter textFormatter = new TextFormatter();
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 
         if (jasyptEncryptorPassword.isEmpty()) {
@@ -132,7 +127,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
         encryptor.setPassword(jasyptEncryptorPassword);
 
-        String encryptedPassword = textFormatter.removeEncryptionParentheses(inputEncryptedPassword);
+        String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(inputEncryptedPassword);
         return encryptor.decrypt(encryptedPassword);
     }
 }

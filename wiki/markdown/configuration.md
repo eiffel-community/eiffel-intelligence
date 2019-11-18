@@ -48,6 +48,12 @@ Examples of setting "rules.path" property to an external rules file:
 - rules.path: http://somehost.com/full/path/to/ExtractionRules.json
 - rules.path: https://somehost.com/full/path/to/ExtractionRules.json
 
+
+## Defining keys to use in rule sets
+
+mergeidmarker is a property which can be used to define a keyword to use in the rule sets.
+
+
 ## Configuring aggregations
 
 Eiffel Intelligence saves aggregated objects in a database. It is possible
@@ -57,9 +63,9 @@ aggregated object using the below properties:
 * aggregated.object.name
 * aggregated.collection.name
 
-If Eiffel Intelligence is set up with [all_event_rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/all_event_rules.json)
-it is recommended to set a time to live value to avoid having a copy of
-Event repository. Recommended settings is 10 minutes.
+If Eiffel Intelligence is set up with [AllEventRules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/AllEventsRules-Eiffel-Agen-Version.json)
+it is recommended to set a time to live value on the aggregated objects, 
+to avoid having the collection growing too large. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
 

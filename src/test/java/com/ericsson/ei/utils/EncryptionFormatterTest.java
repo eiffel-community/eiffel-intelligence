@@ -20,9 +20,7 @@ package com.ericsson.ei.utils;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import com.ericsson.ei.utils.TextFormatter;
-
-public class TextFormatterTest {
+public class EncryptionFormatterTest {
     
     @Test
     public void testRemoveEncryptionParentheses() {
@@ -31,7 +29,7 @@ public class TextFormatterTest {
         
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                new TextFormatter().removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
     
     @Test
@@ -41,6 +39,6 @@ public class TextFormatterTest {
         
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                new TextFormatter().removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
 }

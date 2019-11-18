@@ -49,9 +49,15 @@ Examples of setting "rules.path" property to an external rules file:
 - rules.path: https://somehost.com/full/path/to/ExtractionRules.json
 
 
-## Defining keys to use in rule sets
+## Define placeholder in rules
 
-mergeidmarker is a property which can be used to define a keyword to use in the rule sets.
+If you wish to re-use the extracted value from IdentifyRules field in the 
+MatchIdRules field in your specific rule set, it is possible to define a 
+placeholder. Eiffel Intelligence will find and replace the placeholder with the 
+wanted value extracted from IdentifyRules. This placeholder can be defined 
+with the property **mergeidmarker**. You can see example usages of it in 
+the [example rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules) 
+and [read more about it's usage here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#Rule-set-up).
 
 
 ## Configuring aggregations

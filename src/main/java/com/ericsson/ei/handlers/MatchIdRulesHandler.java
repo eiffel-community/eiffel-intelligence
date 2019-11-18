@@ -29,12 +29,16 @@ import com.ericsson.ei.rules.RulesObject;
 @Component
 public class MatchIdRulesHandler {
 
-    @Value("mergeidmarker")
-    private String mergeIDmarker;
+    @Value("${mergeidmarker:%IdentifyRules%}")
+    private String mergeIdMarker;
 
     @Autowired
     private ObjectHandler objHandler;
 
+    /**
+     * This method searches the database for any aggregated objects matching the search condition
+     * written in the rules MatchIdRules.
+     * */
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
         String fetchQueryString = replaceIdInRules(matchIdString, id);
@@ -43,11 +47,21 @@ public class MatchIdRulesHandler {
         return objects;
     }
 
-    public static String replaceIdInRules(String matchIdString, String id) {
-        if (matchIdString.contains("%IdentifyRules%")) {
-            return matchIdString.replace("%IdentifyRules%", id);
-        } else if (matchIdString.contains("%IdentifyRules_objid%")) {
-            return matchIdString.replace("%IdentifyRules_objid%", id);
+    /**
+     * This method replaces the 'mergeidmarker' placeholder in MatchIdRules with a given
+     * Eiffel event id. The 'mergeidmarker' property is defined in application.properties.
+     *
+     * If 'mergeidmarker' is defined as:'%myPlaceHolderId%', and this method is called with the
+     * matchIdString: {"_id": "%myPlaceHolderId%"} and the id: aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0
+     * the updated string will look like: {"_id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"}
+     *
+     * @param matchIdString  the string containing a placeholder key to be replaced
+     * @param id             the Eiffel event id to replace placeholder with
+     * @return
+     * */
+    public String replaceIdInRules(String matchIdString, String id) {
+        if (matchIdString.contains(mergeIdMarker)) {
+            return matchIdString.replace(mergeIdMarker, id);
         } else {
             return null;
         }

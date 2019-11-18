@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.MongoWriteException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.json.JSONException;
@@ -74,15 +76,20 @@ public class SubscriptionService implements ISubscriptionService {
     public void addSubscription(Subscription subscription)
             throws JsonProcessingException, MongoWriteException {
         String authType = subscription.getAuthenticationType();
-        if (!jasyptEncryptorPassword.isEmpty()
+        String username = subscription.getUserName();
+        String password = subscription.getPassword();
+        boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
+                password);
+        if (authenticationDetailsProvided && !StringUtils.isEmpty(jasyptEncryptorPassword)
                 && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
+            System.out.println("AUTH EXISTS");
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
-            String subscriptionPassword = subscription.getPassword();
-            String encryptedPassword = String.format(ENCODED_PASSWORD,
-                    encryptor.encrypt(subscriptionPassword));
+            String encryptedPassword = String.format(ENCODED_PASSWORD, encryptor.encrypt(password));
             subscription.setPassword(encryptedPassword);
         }
+
+        System.out.println("SUBSCRIPTION: " + subscription.toString());
 
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
@@ -200,6 +207,30 @@ public class SubscriptionService implements ISubscriptionService {
         return subscriptions;
     }
 
+    /**
+     * Returns a boolean indicating that authentication details was provided in the subscription.
+     *
+     * @param authType
+     * @param username
+     * @param password
+     * @return
+     */
+    private boolean isAuthenticationDetailsProvided(String authType, String username,
+            String password) {
+
+        if (StringUtils.isEmpty(authType)
+                || authType.equals(AuthenticationType.NO_AUTH.getValue())) {
+            return false;
+        }
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            LOGGER.error("userName/password field in subscription is missing.");
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
         LOGGER.debug(
                 "Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}",
@@ -213,7 +244,7 @@ public class SubscriptionService implements ISubscriptionService {
      * This method generate query for mongoDB
      *
      * @param subscriptionName subscription name
-     * @param ldapUserName name of the current user
+     * @param ldapUserName     name of the current user
      * @return a String object
      */
     private String generateQuery(String subscriptionName, String ldapUserName) {

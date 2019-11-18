@@ -18,6 +18,7 @@ package com.ericsson.ei.notifications;
 
 import java.util.Base64;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,17 +158,17 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        if (!jasyptEncryptorPassword.isEmpty() && EncryptionFormatter.isEncrypted(password)) {
-            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-            encryptor.setPassword(jasyptEncryptorPassword);
-            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
-            password = encryptor.decrypt(encryptedPassword);
-        }
-
         boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
                 password);
         if (!authenticationDetailsProvided) {
             return;
+        }
+
+        if (StringUtils.isEmpty(jasyptEncryptorPassword) && EncryptionFormatter.isEncrypted(password)) {
+            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword(jasyptEncryptorPassword);
+            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
+            password = encryptor.decrypt(encryptedPassword);
         }
 
         String encoding = Base64.getEncoder()
@@ -175,8 +176,7 @@ public class HttpRequest {
         this.headers.add("Authorization", "Basic " + encoding);
         LOGGER.debug("Successfully added header for 'Authorization'");
 
-        if (AuthenticationType.valueOf(authType)
-                              .equals(AuthenticationType.BASIC_AUTH_JENKINS_CSRF)) {
+        if (authType.equals(AuthenticationType.BASIC_AUTH_JENKINS_CSRF.getValue())) {
             JsonNode crumb = jenkinsCrumb.fetchJenkinsCrumb(encoding, this.url);
             addJenkinsCrumbData(crumb);
         }
@@ -194,12 +194,11 @@ public class HttpRequest {
     private boolean isAuthenticationDetailsProvided(String authType, String username,
             String password) {
 
-        if (authType.isEmpty()
-                || AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
+        if (authType.isEmpty() || authType.equals(AuthenticationType.NO_AUTH.getValue())) {
             return false;
         }
 
-        if (username.isEmpty() && password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             LOGGER.error("userName/password field in subscription is missing.");
             return false;
         }

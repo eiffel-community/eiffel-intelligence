@@ -53,6 +53,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.handlers.RMQProperties;
@@ -72,7 +73,7 @@ import com.rabbitmq.client.Channel;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: TrafficGeneratedTest",
-        "failed.notification.database-name: TrafficGeneratedTest-failedNotifications",
+        "failed.notification.collection-name: TrafficGeneratedTest-failedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
         "rabbitmq.consumerName: TrafficGeneratedTestConsumer"  })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -104,7 +105,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     private String event_map;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws PropertyNotFoundException, Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 

@@ -2,7 +2,7 @@
 Feature: Test Rest Endpoints
 
 # Note: /query is not tested since it has its own test.
-# /rules/rule-check/aggregation is not tested since it performs an aggregation.
+# /rule-test/run-full-aggregation is not tested since it performs an aggregation.
 
   Scenario Outline: Perform GET request on <endpoint> and expect response code <responsecode>
     Given A GET request is prepared
@@ -21,10 +21,8 @@ Feature: Test Rest Endpoints
     | 200          | /templates/events                      |
     | 200          | /templates/rules                       |
     | 200          | /templates/subscriptions               |
-    | 404          | /queryMissedNotifications/subs_name    |
-    | 404          | /queryAggregatedObject/id              |
     | 200          | /rules                                 |
-    | 200          | /rules/rule-check/testRulePageEnabled  |
+    | 200          | /rule-test  |
 
   @Test_Post_Put_Get_Delete_and_Get_(not_found)_subscription
   Scenario Outline: Perform <type> request on <endpoint> and expect response code <responsecode>
@@ -41,8 +39,8 @@ Feature: Test Rest Endpoints
     | 200          | DELETE | do not  | /subscriptions/test_subscription |
     | 404          | GET    | do not  | /subscriptions/test_subscription |
 
-  Scenario: Test POST on /rules/rule-check endpoint
+  Scenario: Test POST on /rule-test/run-single-rule endpoint
     Given A POST request is prepared
     And Event rule json data is added as body
-    When Perform request on endpoint "/rules/rule-check"
+    When Perform request on endpoint "/rule-test/run-single-rule"
     Then Request should get response code 200

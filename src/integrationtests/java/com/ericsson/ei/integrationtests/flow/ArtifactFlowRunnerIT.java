@@ -18,7 +18,7 @@ public class ArtifactFlowRunnerIT {
         System.setProperty("subscription.collection.name", "subscription_artifact_flow");
         System.setProperty("event_object_map.collection.name", "event_object_map_artifact_flow");
         System.setProperty("subscription.collection.repeatFlagHandlerName", "subscription_repeat_handler_artifact_flow");
-        System.setProperty("failed.notification.collection-name", "missed_notification_artifact_flow");
+        System.setProperty("failed.notification.collection-name", "failed_notification_artifact_flow");
         System.setProperty("sessions.collection.name", "sessions_artifact_flow");
 
         System.setProperty("rules.path", "/rules/ArtifactRules-Eiffel-Agen-Version.json");

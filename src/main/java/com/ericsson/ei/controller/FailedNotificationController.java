@@ -22,12 +22,12 @@ public interface FailedNotificationController {
 
 
     /**
-     * This method returns failed notification(s) given a subscription name.
+     * This method returns failed notification(s) given the subscription name(s).
      * 
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getFailedNotifications(
         @RequestParam
-        String subscriptionName, HttpServletRequest httpRequest);
+        String subscriptionNames, HttpServletRequest httpRequest);
 
 }

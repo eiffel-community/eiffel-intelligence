@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import com.ericsson.ei.controller.model.QueryBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,22 +14,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * This class retrieves aggregated objects given a free style query. Criteria is required to have in the request body, while options and filter are optional.
+ * This class returns aggregated data given a specific ID of an aggregated object and can perform free style query as well..
  * (Generated with springmvc-raml-parser v.2.0.5)
  * 
  */
 @RestController
 @Validated
-@RequestMapping(value = "/query", produces = "application/json")
-public interface QueryController {
+@RequestMapping(value = "/aggregated-objects", produces = "application/json")
+public interface AggregatedObjectController {
 
+
+    /**
+     * This method retrieves aggregated data on a specific aggregated object, given an ID.
+     * 
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getAggregatedObjectById(
+        @PathVariable
+        String id, HttpServletRequest httpRequest);
 
     /**
      * The REST POST method is used to query aggregated objects with the requested criteria, which are present in the request body.
      * 
      */
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createQuery(
+    @RequestMapping(value = "/query", method = RequestMethod.POST)
+    public ResponseEntity<?> createAggregatedObjectsQuery(
         @Valid
         @RequestBody
         QueryBody queryBody, HttpServletRequest httpRequest);

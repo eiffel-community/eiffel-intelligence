@@ -1,0 +1,28 @@
+description: This class returns aggregated data given a specific ID of an aggregated object and can perform free style query as well..
+
+/{id}:
+  uriParameters:
+    id:
+      displayName: id
+      description: Id of the aggregatedObject
+      required: true
+      type: string
+      
+  get:
+    description: This method retrieves aggregated data on a specific aggregated object, given an ID.
+    responses:
+      200:
+        body:
+          application/json:
+          
+/query:
+  post:
+    description: The REST POST method is used to query aggregated objects with the
+                 requested criteria, which are present in the request body.
+    body:
+      application/json:
+        schema: queryBody
+    responses:
+      200:
+        body:
+          application/json:

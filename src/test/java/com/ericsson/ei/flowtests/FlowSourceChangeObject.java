@@ -43,6 +43,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
@@ -56,7 +57,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/SourceChangeObjectRules.json",
         "spring.data.mongodb.database: FlowSourceChangeObject",
-        "failed.notification.database-name: FlowSourceChangeObject-failedNotifications",
+        "failed.notification.collection-name: FlowSourceChangeObject-failedNotifications",
         "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
         "rabbitmq.consumerName: FlowSourceChangeObjectConsumer" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -78,7 +79,7 @@ public class FlowSourceChangeObject extends FlowTestBase {
     private ERQueryService erQueryService;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws PropertyNotFoundException, Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
         final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_FILE);

@@ -42,7 +42,7 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: ScalingAndFailoverSteps",
-        "failed.notification.database-name: ScalingAndFailoverSteps-failedNotifications",
+        "failed.notification.collection-name: ScalingAndFailoverSteps-failedNotifications",
         "rabbitmq.exchange.name: ScalingAndFailoverSteps-exchange",
         "rabbitmq.consumerName: ScalingAndFailoverStepsConsumer" })
 @AutoConfigureMockMvc

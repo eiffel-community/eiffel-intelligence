@@ -21,7 +21,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +31,19 @@ import com.ericsson.ei.handlers.MatchIdRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MatchIdRuleshandlerTest {
-    private final String inputFilePath = "src/test/resources/MatchIdRulesHandlerInput.json";
-    private final String outputFilePath = "src/test/resources/MatchIdRulesHandlerOutput.json";
-    private final String id = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
+public class MatchIdRulesHandlerTest {
+    private final String INPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerInput.json";
+    private final String OUTPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerOutput.json";
+    private final String EVENT_ID = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
 
-    static Logger log = LoggerFactory.getLogger(MatchIdRuleshandlerTest.class);
+    static Logger LOGGER = LoggerFactory.getLogger(MatchIdRulesHandlerTest.class);
+    MatchIdRulesHandler matchIdRulesHandler;
+
+    @Before
+    public void setProperties() {
+        matchIdRulesHandler = new MatchIdRulesHandler();
+        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker", "%IdentifyRulesEventId%");
+    }
 
     @Test
     public void replaceIdInRulesTest() {
@@ -42,16 +51,16 @@ public class MatchIdRuleshandlerTest {
         String jsonOutput = null;
         RulesObject ruleObject = null;
         try {
-            jsonInput = FileUtils.readFileToString(new File(inputFilePath), "UTF-8");
-            jsonOutput = FileUtils.readFileToString(new File(outputFilePath), "UTF-8");
+            jsonInput = FileUtils.readFileToString(new File(INPUT_FILE_PATH), "UTF-8");
+            jsonOutput = FileUtils.readFileToString(new File(OUTPUT_FILE_PATH), "UTF-8");
             ObjectMapper objectmapper = new ObjectMapper();
             ruleObject = new RulesObject(objectmapper.readTree(jsonInput));
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         String matchIdString = ruleObject.getMatchIdRules();
-        String replacedId = MatchIdRulesHandler.replaceIdInRules(matchIdString, id);
-        assertEquals(replacedId.toString(), jsonOutput.toString());
+        String replacedId = matchIdRulesHandler.replaceIdInRules(matchIdString, EVENT_ID);
+        assertEquals(replacedId, jsonOutput);
     }
 
 }

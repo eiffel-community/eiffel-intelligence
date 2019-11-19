@@ -51,13 +51,13 @@ Examples of setting "rules.path" property to an external rules file:
 
 ## Define placeholder in rules
 
-If you wish to re-use the extracted value from IdentifyRules field in the 
-MatchIdRules field in your specific rule set, it is possible to define a 
-placeholder. Eiffel Intelligence will find and replace the placeholder with the 
-wanted value extracted from IdentifyRules. This placeholder can be defined 
-with the property **mergeidmarker**. You can see example usages of it in 
-the [example rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules) 
-and [read more about it's usage here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#Rule-set-up).
+If you wish to re-use the extracted value from IdentifyRules field 
+somewhere else in your rule set for a particular event, it is possible 
+to define a placeholder marker. Eiffel Intelligence will find and replace 
+this marker in your rules with the wanted value extracted from IdentifyRules. 
+This marker can be defined with the property **rules.replacement.marker**. 
+You can see example usages of it in the [example rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules) 
+and [read more about it's usage here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#using-placeholders-in-rules).
 
 
 ## Configuring aggregations

@@ -29,8 +29,8 @@ import com.ericsson.ei.rules.RulesObject;
 @Component
 public class MatchIdRulesHandler {
 
-    @Value("${mergeidmarker:%IdentifyRules%}")
-    private String mergeIdMarker;
+    @Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
+    private String replacementMarker;
 
     @Autowired
     private ObjectHandler objHandler;
@@ -48,20 +48,23 @@ public class MatchIdRulesHandler {
     }
 
     /**
-     * This method replaces the 'mergeidmarker' placeholder in MatchIdRules with a given
-     * Eiffel event id. The 'mergeidmarker' property is defined in application.properties.
+     * This method replaces the 'replacementMarker' placeholder in MatchIdRules with a given Eiffel
+     * event id. The 'replacementMarker' property is defined in application.properties.
      *
-     * If 'mergeidmarker' is defined as:'%myPlaceHolderId%', and this method is called with the
-     * matchIdString: {"_id": "%myPlaceHolderId%"} and the id: aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0
-     * the updated string will look like: {"_id": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"}
+     * <p>
+     * If 'replacementMarker' is defined as:'%myPlaceHolderId%', <br />
+     * and this method is called with the matchIdString: {"_id": "%myPlaceHolderId%"} <br />
+     * and the id: aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0 <br />
+     * the updated string will look like: {"_id":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"}
+     * </p>
      *
-     * @param matchIdString  the string containing a placeholder key to be replaced
-     * @param id             the Eiffel event id to replace placeholder with
-     * @return
-     * */
+     * @param matchIdString the string containing a placeholder key to be replaced
+     * @param id            the Eiffel event id to replace placeholder with
+     * @return an updated matchIdString
+     */
     public String replaceIdInRules(String matchIdString, String id) {
-        if (matchIdString.contains(mergeIdMarker)) {
-            return matchIdString.replace(mergeIdMarker, id);
+        if (matchIdString.contains(replacementMarker)) {
+            return matchIdString.replace(replacementMarker, id);
         } else {
             return null;
         }

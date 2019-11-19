@@ -37,7 +37,7 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "links | [?type=='SUBJECT'].target",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
     "ArrayMergeOptions": "",

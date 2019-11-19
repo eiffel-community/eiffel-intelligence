@@ -82,7 +82,6 @@ public class SubscriptionService implements ISubscriptionService {
                 password);
         if (authenticationDetailsProvided && !StringUtils.isEmpty(jasyptEncryptorPassword)
                 && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
-            System.out.println("AUTH EXISTS");
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
             String encryptedPassword = String.format(ENCODED_PASSWORD, encryptor.encrypt(password));

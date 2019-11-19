@@ -164,7 +164,7 @@ public class HttpRequest {
             return;
         }
 
-        if (StringUtils.isEmpty(jasyptEncryptorPassword) && EncryptionFormatter.isEncrypted(password)) {
+        if (!StringUtils.isEmpty(jasyptEncryptorPassword) && EncryptionFormatter.isEncrypted(password)) {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
             String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);

@@ -1,0 +1,28 @@
+{
+    "_id": "5dcbf35d9e3c403fe812dd0e",
+    "created": 1573647197525,
+    "notificationMeta": "http://localhost:{port}/notify-me",
+    "notificationType": "REST_POST",
+    "restPostBodyMediaType": "application/x-www-form-urlencoded",
+    "notificationMessageKeyValues": [
+        {
+            "formkey": "json",
+            "formvalue": "{parameter: [{ name: jsonparams, value : to_string(@) }, { name: alert, value : 'warning' }]}"
+        }
+    ],
+    "repeat": false,
+    "requirements": [
+        {
+            "conditions": [
+                {
+                    "jmespath": "split(identity, '/') | [1] =='com.mycompany.myproduct'"
+                }
+            ]
+        }
+    ],
+    "subscriptionName": "MySubscription",
+    "userName": "username",
+    "password": "password",
+    "ldapUserName": "",
+    "authenticationType": "BASIC_AUTH"
+}

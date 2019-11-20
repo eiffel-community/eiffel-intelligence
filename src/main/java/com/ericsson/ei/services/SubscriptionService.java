@@ -87,9 +87,6 @@ public class SubscriptionService implements ISubscriptionService {
             String encryptedPassword = String.format(ENCODED_PASSWORD, encryptor.encrypt(password));
             subscription.setPassword(encryptedPassword);
         }
-
-        System.out.println("SUBSCRIPTION: " + subscription.toString());
-
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
         stringSubscription = mapper.writeValueAsString(subscription);

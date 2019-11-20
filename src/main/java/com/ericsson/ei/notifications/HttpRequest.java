@@ -51,7 +51,8 @@ public class HttpRequest {
         }
     }
 
-    @Value("${jasypt.encryptor.password:}")
+    @Getter
+    @Setter
     private String jasyptEncryptorPassword;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
@@ -163,7 +164,6 @@ public class HttpRequest {
         if (!authenticationDetailsProvided) {
             return;
         }
-
         if (!StringUtils.isEmpty(jasyptEncryptorPassword) && EncryptionFormatter.isEncrypted(password)) {
             StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);

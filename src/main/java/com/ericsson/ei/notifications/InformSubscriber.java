@@ -73,6 +73,9 @@ public class InformSubscriber {
     @Value("${notification.ttl.value}")
     private int ttlValue;
 
+    @Value("${jasypt.encryptor.password:}")
+    private String jasyptEncryptorPassword;
+
     @Autowired
     private JmesPathInterface jmespath;
 
@@ -107,6 +110,7 @@ public class InformSubscriber {
                 LOGGER.debug("Notification through REST_POST");
 
                 HttpRequest request = httpRequestFactory.createHttpRequest();
+                request.setJasyptEncryptorPassword(jasyptEncryptorPassword);
                 request.setAggregatedObject(aggregatedObject)
                        .setMapNotificationMessage(mapNotificationMessage)
                        .setSubscriptionJson(subscriptionJson)

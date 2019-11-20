@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
@@ -32,6 +34,9 @@ public class DataBaseManager {
 
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
+
+    @Value("${subscription.collection.name}")
+    private String subscriptionCollectionName;
 
     @Getter
     @Autowired
@@ -177,5 +182,20 @@ public class DataBaseManager {
         MongoCollection<Document> table = db.getCollection(waitlistCollectionName);
         List<Document> documents = table.find().into(new ArrayList<>());
         return documents.size();
+    }
+
+    /**
+     * Get a specific subscription from the database based on the subscription name.
+     *
+     * @param subscriptionName
+     * @return the document as JSON string
+     */
+    public String getSubscription(String subscriptionName) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> table = db.getCollection(subscriptionCollectionName);
+        Bson filter = Filters.eq("subscriptionName", subscriptionName);
+        Document document = table.find(filter).first();
+        return document.toJson();
     }
 }

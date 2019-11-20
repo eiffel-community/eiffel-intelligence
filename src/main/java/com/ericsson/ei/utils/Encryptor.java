@@ -41,9 +41,11 @@ public class Encryptor {
 
     @PostConstruct
     public void init() {
-        jasyptEncryptorPassword = password;
-        encryptor = new StandardPBEStringEncryptor();
-        encryptor.setPassword(jasyptEncryptorPassword);
+        if (!StringUtils.isEmpty(password)) {
+            jasyptEncryptorPassword = password;
+            encryptor = new StandardPBEStringEncryptor();
+            encryptor.setPassword(jasyptEncryptorPassword);
+        }
     }
 
     private Encryptor() {
@@ -56,6 +58,9 @@ public class Encryptor {
      * @return
      */
     public static String encrypt(String message) {
+        if (encryptor == null) {
+            return null;
+        }
         return encryptor.encrypt(message);
     }
 
@@ -66,6 +71,9 @@ public class Encryptor {
      * @return
      */
     public static String decrypt(String message) {
+        if (encryptor == null) {
+            return null;
+        }
         return encryptor.decrypt(message);
     }
 

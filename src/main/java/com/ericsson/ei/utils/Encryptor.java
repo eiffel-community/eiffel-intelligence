@@ -17,14 +17,56 @@
 
 package com.ericsson.ei.utils;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.controller.model.AuthenticationType;
+
 /**
  * An encryption formatter helper class.
  *
  */
-public class EncryptionFormatter {
+@Component
+public class Encryptor {
 
-    private EncryptionFormatter() {
-        throw new AssertionError();
+    @Value("${jasypt.encryptor.password:}")
+    private String password;
+
+    private static String jasyptEncryptorPassword;
+    private static StandardPBEStringEncryptor encryptor;
+
+    @PostConstruct
+    public void init() {
+        jasyptEncryptorPassword = password;
+        encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(jasyptEncryptorPassword);
+    }
+
+    private Encryptor() {
+    }
+
+    /**
+     * Encrypts a message.
+     *
+     * @param message
+     * @return
+     */
+    public static String encrypt(String message) {
+        return encryptor.encrypt(message);
+    }
+
+    /**
+     * Decrypts a message.
+     *
+     * @param message
+     * @return
+     */
+    public static String decrypt(String message) {
+        return encryptor.decrypt(message);
     }
 
     /**
@@ -58,5 +100,31 @@ public class EncryptionFormatter {
      */
     public static boolean isEncrypted(final String password) {
         return (password.startsWith("ENC(") && password.endsWith(")"));
+    }
+
+    /**
+     * Returns a boolean indicating that authentication details are provided.
+     *
+     * @param authType
+     * @param username
+     * @param password
+     * @return
+     */
+    public static boolean verifyAuthenticationDetails(String authType, String username,
+            String password) {
+        if (StringUtils.isEmpty(authType)
+                || authType.equals(AuthenticationType.NO_AUTH.getValue())) {
+            return false;
+        }
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isJasyptPasswordSet() {
+        return !StringUtils.isEmpty(jasyptEncryptorPassword);
     }
 }

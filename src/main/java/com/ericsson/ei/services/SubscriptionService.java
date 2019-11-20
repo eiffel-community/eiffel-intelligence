@@ -20,11 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.MongoWriteException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +35,10 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
+import com.ericsson.ei.utils.Encryptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoWriteException;
 
 @Component
 public class SubscriptionService implements ISubscriptionService {
@@ -50,7 +48,7 @@ public class SubscriptionService implements ISubscriptionService {
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'ldapUserName':'%s'}";
-    private static final String ENCODED_PASSWORD = "ENC(%s)";
+    private static final String ENCODED_WRAPPER = "ENC(%s)";
 
     private static final String AND = "{$and:[%s]}";
 
@@ -78,13 +76,11 @@ public class SubscriptionService implements ISubscriptionService {
         String authType = subscription.getAuthenticationType();
         String username = subscription.getUserName();
         String password = subscription.getPassword();
-        boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
-                password);
-        if (authenticationDetailsProvided && !StringUtils.isEmpty(jasyptEncryptorPassword)
+        boolean authenticationDetailsProvided = Encryptor.verifyAuthenticationDetails(authType,
+                username, password);
+        if (authenticationDetailsProvided && Encryptor.isJasyptPasswordSet()
                 && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
-            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-            encryptor.setPassword(jasyptEncryptorPassword);
-            String encryptedPassword = String.format(ENCODED_PASSWORD, encryptor.encrypt(password));
+            String encryptedPassword = String.format(ENCODED_WRAPPER, Encryptor.encrypt(password));
             subscription.setPassword(encryptedPassword);
         }
         ObjectMapper mapper = new ObjectMapper();
@@ -201,30 +197,6 @@ public class SubscriptionService implements ISubscriptionService {
             }
         }
         return subscriptions;
-    }
-
-    /**
-     * Returns a boolean indicating that authentication details was provided in the subscription.
-     *
-     * @param authType
-     * @param username
-     * @param password
-     * @return
-     */
-    private boolean isAuthenticationDetailsProvided(String authType, String username,
-            String password) {
-
-        if (StringUtils.isEmpty(authType)
-                || authType.equals(AuthenticationType.NO_AUTH.getValue())) {
-            return false;
-        }
-
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            LOGGER.error("userName/password field in subscription is missing.");
-            return false;
-        }
-
-        return true;
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {

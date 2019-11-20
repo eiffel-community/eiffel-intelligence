@@ -19,10 +19,8 @@ package com.ericsson.ei.notifications;
 import java.util.Base64;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,7 +29,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.utils.EncryptionFormatter;
+import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -159,16 +157,15 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
+        boolean authenticationDetailsProvided = Encryptor.verifyAuthenticationDetails(authType,
+                username,
                 password);
         if (!authenticationDetailsProvided) {
             return;
         }
-        if (!StringUtils.isEmpty(jasyptEncryptorPassword) && EncryptionFormatter.isEncrypted(password)) {
-            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-            encryptor.setPassword(jasyptEncryptorPassword);
-            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
-            password = encryptor.decrypt(encryptedPassword);
+        if (!StringUtils.isEmpty(jasyptEncryptorPassword) && Encryptor.isEncrypted(password)) {
+            String encryptedPassword = Encryptor.removeEncryptionParentheses(password);
+            password = Encryptor.decrypt(encryptedPassword);
         }
 
         String encoding = Base64.getEncoder()
@@ -181,29 +178,6 @@ public class HttpRequest {
             addJenkinsCrumbData(crumb);
         }
 
-    }
-
-    /**
-     * Returns a boolean indicating that authentication details was provided in the subscription.
-     *
-     * @param authType
-     * @param username
-     * @param password
-     * @return
-     */
-    private boolean isAuthenticationDetailsProvided(String authType, String username,
-            String password) {
-
-        if (authType.isEmpty() || authType.equals(AuthenticationType.NO_AUTH.getValue())) {
-            return false;
-        }
-
-        if (username.isEmpty() || password.isEmpty()) {
-            LOGGER.error("userName/password field in subscription is missing.");
-            return false;
-        }
-
-        return true;
     }
 
     /**

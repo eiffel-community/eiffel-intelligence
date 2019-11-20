@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
-import com.ericsson.ei.utils.EncryptionFormatter;
+import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -99,7 +99,7 @@ public class EncryptionSteps extends FunctionalTestBase {
         String json = dbManager.getSubscription(subscriptionName);
         JSONObject subscription = new JSONObject(json);
         String password = subscription.getString("password");
-        assertTrue(EncryptionFormatter.isEncrypted(password));
+        assertTrue(Encryptor.isEncrypted(password));
     }
 
     @Then("^the subscription should trigger$")

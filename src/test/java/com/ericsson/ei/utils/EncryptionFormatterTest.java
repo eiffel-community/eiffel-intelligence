@@ -29,7 +29,7 @@ public class EncryptionFormatterTest {
         
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
+                Encryptor.removeEncryptionParentheses(encryptedPassword));
     }
     
     @Test
@@ -39,6 +39,6 @@ public class EncryptionFormatterTest {
         
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
+                Encryptor.removeEncryptionParentheses(encryptedPassword));
     }
 }

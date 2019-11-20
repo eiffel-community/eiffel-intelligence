@@ -34,7 +34,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.ericsson.ei.exception.AbortExecutionException;
-import com.ericsson.ei.utils.EncryptionFormatter;
+import com.ericsson.ei.utils.Encryptor;
 
 @Configuration
 @EnableWebSecurity
@@ -97,7 +97,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
         
-            if (EncryptionFormatter.isEncrypted(password)) {
+            if (Encryptor.isEncrypted(password)) {
                 password = decryptPassword(password);
             }
             else {
@@ -117,17 +117,13 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     }
     
     private String decryptPassword(final String inputEncryptedPassword) throws Exception {
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-
-        if (jasyptEncryptorPassword.isEmpty()) {
+        if (Encryptor.isJasyptPasswordSet()) {
             LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
             throw new AbortExecutionException("Failed to initiate LDAP when password is encrypted. " + 
                                 "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
         }
 
-        encryptor.setPassword(jasyptEncryptorPassword);
-
-        String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(inputEncryptedPassword);
-        return encryptor.decrypt(encryptedPassword);
+        String encryptedPassword = Encryptor.removeEncryptionParentheses(inputEncryptedPassword);
+        return Encryptor.decrypt(encryptedPassword);
     }
 }

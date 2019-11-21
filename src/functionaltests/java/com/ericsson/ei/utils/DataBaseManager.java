@@ -5,12 +5,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.flowtests.FlowTestBase;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -20,12 +24,16 @@ import lombok.Getter;
 
 @Component
 public class DataBaseManager {
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseManager.class);
+
     @Value("${spring.data.mongodb.database}")
     private String database;
 
+//    @Value("${spring.data.mongodb.uri}")
+//    private String mongoUri;
+
     @Value("${event_object_map.collection.name}")
-    private String collection;
+    private String eventObjectCollectionName;
 
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
@@ -37,15 +45,7 @@ public class DataBaseManager {
     @Autowired
     private MongoProperties mongoProperties;
 
-    private MongoClient mongoClient;
-
-    public int getMongoDbPort() {
-        return mongoProperties.getPort();
-    }
-
-    public String getMongoDbHost() {
-        return mongoProperties.getHost();
-    }
+    MongoClient mongoClient;
 
     /**
      * Verify that aggregated object contains the expected information.
@@ -76,9 +76,7 @@ public class DataBaseManager {
     public boolean verifyAggregatedObjectExistsInDB() throws InterruptedException {
         long stopTime = System.currentTimeMillis() + 30000;
         while (stopTime > System.currentTimeMillis()) {
-            mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-            MongoDatabase db = mongoClient.getDatabase(database);
-            MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
+            MongoCollection<Document> table = getCollection(aggregatedCollectionName);
             List<Document> documents = table.find().into(new ArrayList<>());
             TimeUnit.MILLISECONDS.sleep(1000);
             if (!documents.isEmpty()) {
@@ -96,9 +94,7 @@ public class DataBaseManager {
      * @return list of missing arguments
      */
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
+        MongoCollection<Document> table = getCollection(aggregatedCollectionName);
         List<Document> documents = table.find().into(new ArrayList<>());
         for (Document document : documents) {
             for (String expectedValue : new ArrayList<>(checklist)) {
@@ -138,16 +134,19 @@ public class DataBaseManager {
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(collection);
-        List<Document> documents = table.find().into(new ArrayList<>());
-        for (Document document : documents) {
-            for (String expectedID : new ArrayList<>(checklist)) {
-                if (expectedID.equals(document.get("_id").toString())) {
-                    checklist.remove(expectedID);
+        MongoCollection<Document> table = getCollection(eventObjectCollectionName);
+        try {
+            List<Document> documents = table.find().into(new ArrayList<>());
+
+            for (Document document : documents) {
+                for (String expectedID : new ArrayList<>(checklist)) {
+                    if (expectedID.equals(document.get("_id").toString())) {
+                        checklist.remove(expectedID);
+                    }
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("Failed to get documents ", e);
         }
         return checklist;
     }
@@ -172,10 +171,16 @@ public class DataBaseManager {
      * @return int of the size of the waitlist.
      */
     public int waitListSize() {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(waitlistCollectionName);
+        MongoCollection<Document> table = getCollection(waitlistCollectionName);
         List<Document> documents = table.find().into(new ArrayList<>());
         return documents.size();
+    }
+
+    private MongoCollection<Document> getCollection(String collection) {
+        MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
+        mongoClient = new MongoClient(uri);
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> table = db.getCollection(collection);
+        return table;
     }
 }

@@ -26,6 +26,7 @@ import lombok.Getter;
 
 public class TestConfigs {
 
+    private static final String DEFAULT_MONGO_URI = "mongodb://localhost:27017";
     @Getter
     private static AMQPBrokerManager amqpBroker;
     private static MongodForTestsFactory testsFactory;
@@ -43,7 +44,7 @@ public class TestConfigs {
 
     public static synchronized void init() throws Exception {
         setUpMessageBus();
-        setUpEmbeddedMongo();
+        setUpEmbeddedMongo(DEFAULT_MONGO_URI);
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
@@ -62,14 +63,14 @@ public class TestConfigs {
         LOGGER.debug("Setting up message bus done!");
     }
 
-    public static MongoClient mongoClientInstance() throws Exception {
+    public static MongoClient mongoClientInstance(String mongoUri) throws Exception {
         if (mongoClient == null) {
-            setUpEmbeddedMongo();
+            setUpEmbeddedMongo(mongoUri);
         }
         return mongoClient;
     }
 
-    private static synchronized void setUpEmbeddedMongo() throws IOException {
+    private static synchronized void setUpEmbeddedMongo(String mongoUri) throws IOException {
         if (mongoClient != null) {
             return;
         }
@@ -78,10 +79,9 @@ public class TestConfigs {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
             String port = String.valueOf(mongoClient.getAddress().getPort());
-            setNewPortToMongoDBUriProperty(port);
+            setNewPortToMongoDBUriProperty(mongoUri, port);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
+            LOGGER.error("Error setting new mongoDB uri property {}", e.getMessage(), e);
         }
     }
 
@@ -98,10 +98,10 @@ public class TestConfigs {
         ccf.destroy();
     }
 
-    protected static void setAuthorization() {
-        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
-        System.setProperty("ldap.password", password);
-    }
+//    protected static void setAuthorization() {
+//        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
+//        System.setProperty("ldap.password", password);
+//    }
 
     protected void setRules() {
         System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");
@@ -133,11 +133,10 @@ public class TestConfigs {
         connection = connectionFactory.newConnection();
     }
 
-    private static void setNewPortToMongoDBUriProperty(String port) {
-        String propertyUri = System.getProperty("spring.data.mongodb.uri");
-        String modifiedUri = propertyUri.replace("[0-9]{4,5}", port);
+    private static void setNewPortToMongoDBUriProperty(String mongoUri, String port) {
+        String modifiedUri = mongoUri.replaceAll("[0-9]{4,5}", port);
         System.setProperty("spring.data.mongodb.uri", modifiedUri);
-        LOGGER.info("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
+        LOGGER.error("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
                 propertyUri, modifiedUri);
     }
 }

@@ -34,6 +34,7 @@ import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
+import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -88,6 +89,9 @@ public class InformSubscriber {
     @Autowired
     private HttpRequestFactory httpRequestFactory;
 
+    @Autowired
+    private Encryptor encryptor;
+
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.
@@ -110,7 +114,7 @@ public class InformSubscriber {
                 LOGGER.debug("Notification through REST_POST");
 
                 HttpRequest request = httpRequestFactory.createHttpRequest();
-                request.setJasyptEncryptorPassword(jasyptEncryptorPassword);
+                request.setEncryptor(encryptor);
                 request.setAggregatedObject(aggregatedObject)
                        .setMapNotificationMessage(mapNotificationMessage)
                        .setSubscriptionJson(subscriptionJson)

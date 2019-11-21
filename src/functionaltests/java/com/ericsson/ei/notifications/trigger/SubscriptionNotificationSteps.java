@@ -211,7 +211,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         String condition = "{}";
         int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
 
-        assertEquals(missedNotifications, maxObjectsInDB);
         assertEquals("Number of missed notifications saved in the database: " + missedNotifications, maxObjectsInDB,
                 missedNotifications);
     }
@@ -451,6 +450,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         }
         System.out.println("##########################################################");
         LOGGER.error("DB size did not match expected, Subsctiptions:\n{}", queryResult);
+
         return queryResult.size();
     }
 }

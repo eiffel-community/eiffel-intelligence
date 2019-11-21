@@ -16,11 +16,13 @@ import org.junit.Ignore;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import com.ericsson.ei.utils.EncryptionFormatter;
 import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -48,6 +50,9 @@ public class EncryptionSteps extends FunctionalTestBase {
     private static final String MOCK_ENDPOINT = "/notify-me";
     private static final String AUTH_HEADER_NAME = "Authorization";
     private static final String AUTH_HEADER_VALUE = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+
+    @Autowired
+    private Encryptor encryptor;
 
     @LocalServerPort
     private int applicationPort;
@@ -98,7 +103,7 @@ public class EncryptionSteps extends FunctionalTestBase {
         String json = dbManager.getSubscription(subscriptionName);
         JSONObject subscription = new JSONObject(json);
         String password = subscription.getString("password");
-        assertTrue(Encryptor.isEncrypted(password));
+        assertTrue(EncryptionFormatter.isEncrypted(password));
     }
 
     @Then("^the subscription should trigger$")

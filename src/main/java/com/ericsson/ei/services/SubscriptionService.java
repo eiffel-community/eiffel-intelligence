@@ -35,6 +35,7 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
+import com.ericsson.ei.utils.EncryptionFormatter;
 import com.ericsson.ei.utils.Encryptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,17 +71,20 @@ public class SubscriptionService implements ISubscriptionService {
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private Encryptor encryptor;
+
     @Override
     public void addSubscription(Subscription subscription)
             throws JsonProcessingException, MongoWriteException {
         String authType = subscription.getAuthenticationType();
         String username = subscription.getUserName();
         String password = subscription.getPassword();
-        boolean authenticationDetailsProvided = Encryptor.verifyAuthenticationDetails(authType,
+        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(authType,
                 username, password);
-        if (authenticationDetailsProvided && Encryptor.isJasyptPasswordSet()
+        if (authenticationDetailsProvided && encryptor.isJasyptPasswordSet()
                 && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
-            String encryptedPassword = String.format(ENCODED_WRAPPER, Encryptor.encrypt(password));
+            String encryptedPassword = String.format(ENCODED_WRAPPER, encryptor.encrypt(password));
             subscription.setPassword(encryptedPassword);
         }
         ObjectMapper mapper = new ObjectMapper();

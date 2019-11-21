@@ -18,27 +18,28 @@
 package com.ericsson.ei.utils;
 
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-public class EncryptionFormatterTest {
-    
+public class EncryptorTest {
+
     @Test
     public void testRemoveEncryptionParentheses() {
         final String encryptedPassword = "ENC(m0++Ua2Pe1j/5X/x8NpKsQ==)";
         final String expectedEncryptedPassword = "m0++Ua2Pe1j/5X/x8NpKsQ==";
-        
+
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                Encryptor.removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
-    
+
     @Test
     public void testRemoveEncryptionParenthesesWithMissingEndParentheses() {
         final String encryptedPassword = "ENC(m0++Ua2Pe1j/5X/x8NpKsQ==";
         final String expectedEncryptedPassword = "m0++Ua2Pe1j/5X/x8NpKsQ==";
-        
+
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                Encryptor.removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
 }

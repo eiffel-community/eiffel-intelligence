@@ -18,7 +18,6 @@ package com.ericsson.ei.notifications;
 
 import java.util.Base64;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -29,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.utils.EncryptionFormatter;
 import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
@@ -48,10 +48,6 @@ public class HttpRequest {
             return new HttpRequest();
         }
     }
-
-    @Getter
-    @Setter
-    private String jasyptEncryptorPassword;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -84,6 +80,9 @@ public class HttpRequest {
     private String contentType;
     @Getter
     private HttpHeaders headers;
+
+    @Setter
+    private Encryptor encryptor;
 
     /**
      * Perform a HTTP request to a specific url. Returns the response.
@@ -157,15 +156,15 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        boolean authenticationDetailsProvided = Encryptor.verifyAuthenticationDetails(authType,
-                username,
-                password);
+        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(
+                authType, username, password);
         if (!authenticationDetailsProvided) {
             return;
         }
-        if (!StringUtils.isEmpty(jasyptEncryptorPassword) && Encryptor.isEncrypted(password)) {
-            String encryptedPassword = Encryptor.removeEncryptionParentheses(password);
-            password = Encryptor.decrypt(encryptedPassword);
+        if (encryptor != null && encryptor.isJasyptPasswordSet()
+                && EncryptionFormatter.isEncrypted(password)) {
+            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
+            password = encryptor.decrypt(encryptedPassword);
         }
 
         String encoding = Base64.getEncoder()

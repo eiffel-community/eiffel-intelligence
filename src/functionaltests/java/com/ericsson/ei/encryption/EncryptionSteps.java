@@ -36,8 +36,7 @@ import cucumber.api.java.en.When;
         "missedNotificationDataBaseName: EncryptionSteps-missedNotifications",
         "rabbitmq.exchange.name: EncryptionSteps-exchange",
         "rabbitmq.consumerName: EncryptionSteps-consumer",
-        "jasypt.encryptor.password: secret",
-        "logging.level.com.ericsson.ei.encryption: DEBUG" })
+        "jasypt.encryptor.password: secret" })
 public class EncryptionSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(EncryptionSteps.class);

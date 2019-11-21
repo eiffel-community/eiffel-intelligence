@@ -10,6 +10,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -50,6 +51,7 @@ public class EncryptionSteps extends FunctionalTestBase {
     private static final String MOCK_ENDPOINT = "/notify-me";
     private static final String AUTH_HEADER_NAME = "Authorization";
     private static final String AUTH_HEADER_VALUE = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+    private static final int NOTIFICATION_SLEEP = 5;
 
     @Autowired
     private Encryptor encryptor;
@@ -107,8 +109,9 @@ public class EncryptionSteps extends FunctionalTestBase {
     }
 
     @Then("^the subscription should trigger$")
-    public void subscriptionShouldTrigger() {
+    public void subscriptionShouldTrigger() throws InterruptedException {
         LOGGER.info("Verifying that subscription was triggered");
+        TimeUnit.SECONDS.sleep(NOTIFICATION_SLEEP);
         clientAndServer.verify(request().withPath(MOCK_ENDPOINT).withBody(""),
                 VerificationTimes.atLeast(1));
     }

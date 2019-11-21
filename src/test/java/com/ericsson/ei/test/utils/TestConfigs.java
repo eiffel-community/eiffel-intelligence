@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -97,11 +95,6 @@ public class TestConfigs {
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
     }
-
-//    protected static void setAuthorization() {
-//        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
-//        System.setProperty("ldap.password", password);
-//    }
 
     protected void setRules() {
         System.setProperty("rules", " /rules/ArtifactRules-Eiffel-Agen-Version.json");

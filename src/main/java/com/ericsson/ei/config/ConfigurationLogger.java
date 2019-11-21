@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.utils.MongoUri;
+
 @Component
 public class ConfigurationLogger {
 
@@ -23,6 +25,8 @@ public class ConfigurationLogger {
     }
 
     private void logConfiguration() {
+        final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+        final String safeUri = MongoUri.getSafeUri(unsafeUri);
         LOGGER.debug("EI Backend started with following configurations:\n"
                 + "server.port: " + environment.getProperty("server.port") + "\n"
                 + "server.session-timeout: " + environment.getProperty("server.session-timeout") + "\n"
@@ -39,9 +43,7 @@ public class ConfigurationLogger {
                 + "rabbitmq.binding.key: " + environment.getProperty("rabbitmq.binding.key") + "\n"
                 + "rabbitmq.waitlist.queue.suffix: " + environment.getProperty("rabbitmq.waitlist.queue.suffix") + "\n"
                 + "mergeidmarker: " + environment.getProperty("mergeidmarker") + "\n"
-                + "spring.data.mongodb.host: " + environment.getProperty("spring.data.mongodb.host") + "\n"
-                + "spring.data.mongodb.port: " + environment.getProperty("spring.data.mongodb.port") + "\n"
-                + "spring.data.mongodb.username: " + environment.getProperty("spring.data.mongodb.username") + "\n"
+                + "spring.data.mongodb.uri: " + safeUri + "\n"
                 + "spring.data.mongodb.database: " + environment.getProperty("spring.data.mongodb.database") + "\n"
                 + "sessions.collection.name: " + environment.getProperty("sessions.collection.name") + "\n"
                 + "aggregated.collection.name: " + environment.getProperty("aggregated.collection.name") + "\n"

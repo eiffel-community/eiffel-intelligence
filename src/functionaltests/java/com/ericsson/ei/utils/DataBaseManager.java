@@ -44,7 +44,7 @@ public class DataBaseManager {
     @Autowired
     private MongoProperties mongoProperties;
 
-    MongoClient mongoClient;
+    private MongoClient mongoClient;
 
     /**
      * Verify that aggregated object contains the expected information.

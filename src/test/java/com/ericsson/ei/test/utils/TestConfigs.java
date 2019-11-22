@@ -129,7 +129,7 @@ public class TestConfigs {
     private static void setNewPortToMongoDBUriProperty(String mongoUri, String port) {
         String modifiedUri = mongoUri.replaceAll("[0-9]{4,5}", port);
         System.setProperty("spring.data.mongodb.uri", modifiedUri);
-        LOGGER.error("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
+        LOGGER.debug("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
                 mongoUri, modifiedUri);
     }
 }

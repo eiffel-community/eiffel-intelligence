@@ -77,7 +77,7 @@ public class TestMergeHandler {
     public void replaceIdMarkerInRules() {
         MergeHandler mergeHandlerObject = new MergeHandler();
         // TODO read marker from application.properties
-        mergeHandlerObject.setMergeIdMarker("%IdentifyRules%");
+        mergeHandlerObject.setReplacementMarker("%IdentifyRules%");
         String result = mergeHandlerObject.replaceIdMarkerInRules(rule, id);
         assertEquals(updatedRule, result);
     }

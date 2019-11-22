@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
-import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoClientURI;
@@ -109,13 +108,10 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
-//                FindIterable<Document> foundResults = collection.find();
-//                for (Document document : foundResults) {
-//                    result.add(document.toJson());
-//                }
-                collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
+                FindIterable<Document> foundResults = collection.find();
+                for (Document document : foundResults) {
                     result.add(document.toJson());
-                });
+                }
 
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,

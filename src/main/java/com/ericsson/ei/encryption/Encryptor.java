@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-package com.ericsson.ei.utils;
+package com.ericsson.ei.encryption;
 
 import javax.annotation.PostConstruct;
 
@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.exception.EncryptorException;
 
 /**
  * An encryption formatter helper class.
@@ -38,7 +40,7 @@ public class Encryptor {
 
     @PostConstruct
     private void init() {
-        if (!StringUtils.isEmpty(jasyptEncryptorPassword)) {
+        if (isJasyptPasswordSet()) {
             encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
         }
@@ -49,11 +51,10 @@ public class Encryptor {
      *
      * @param message
      * @return
+     * @throws EncryptorException
      */
-    public String encrypt(String message) {
-        if (encryptor == null) {
-            return null;
-        }
+    public String encrypt(String message) throws EncryptorException {
+        isInitialized();
         return encryptor.encrypt(message);
     }
 
@@ -62,15 +63,20 @@ public class Encryptor {
      *
      * @param message
      * @return
+     * @throws EncryptorException
      */
-    public String decrypt(String message) {
-        if (encryptor == null) {
-            return null;
-        }
+    public String decrypt(String message) throws EncryptorException {
+        isInitialized();
         return encryptor.decrypt(message);
     }
 
     public boolean isJasyptPasswordSet() {
         return !StringUtils.isEmpty(jasyptEncryptorPassword);
+    }
+
+    private void isInitialized() throws EncryptorException {
+        if (encryptor == null) {
+            throw new EncryptorException("Encryptor has not been initialized.");
+        }
     }
 }

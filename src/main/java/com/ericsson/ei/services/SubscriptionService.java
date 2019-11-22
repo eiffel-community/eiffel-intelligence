@@ -32,11 +32,12 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.Encryptor;
+import com.ericsson.ei.exception.EncryptorException;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
-import com.ericsson.ei.utils.EncryptionFormatter;
-import com.ericsson.ei.utils.Encryptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoWriteException;
@@ -49,7 +50,6 @@ public class SubscriptionService implements ISubscriptionService {
     private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
     private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
     private static final String USER_NAME = "{'ldapUserName':'%s'}";
-    private static final String ENCODED_WRAPPER = "ENC(%s)";
 
     private static final String AND = "{$and:[%s]}";
 
@@ -65,9 +65,6 @@ public class SubscriptionService implements ISubscriptionService {
     @Value("${ldap.enabled}")
     private boolean ldapEnabled;
 
-    @Value("${jasypt.encryptor.password:}")
-    private String jasyptEncryptorPassword;
-
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
 
@@ -80,12 +77,12 @@ public class SubscriptionService implements ISubscriptionService {
         String authType = subscription.getAuthenticationType();
         String username = subscription.getUserName();
         String password = subscription.getPassword();
-        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(authType,
+        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(
+                authType,
                 username, password);
         if (authenticationDetailsProvided && encryptor.isJasyptPasswordSet()
                 && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
-            String encryptedPassword = String.format(ENCODED_WRAPPER, encryptor.encrypt(password));
-            subscription.setPassword(encryptedPassword);
+            subscription = doEncryption(subscription);
         }
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
@@ -201,6 +198,18 @@ public class SubscriptionService implements ISubscriptionService {
             }
         }
         return subscriptions;
+    }
+
+    private Subscription doEncryption(Subscription subscription) {
+        String password = subscription.getPassword();
+        try {
+            String encryptedPassword = EncryptionFormatter.addEncryptionParentheses(
+                    encryptor.encrypt(password));
+            subscription.setPassword(encryptedPassword);
+        } catch (EncryptorException e) {
+            LOGGER.error("", e);
+        }
+        return subscription;
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {

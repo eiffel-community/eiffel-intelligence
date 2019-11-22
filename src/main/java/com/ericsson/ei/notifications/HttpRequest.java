@@ -27,9 +27,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
+import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.utils.EncryptionFormatter;
-import com.ericsson.ei.utils.Encryptor;
+import com.ericsson.ei.exception.EncryptorException;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -163,8 +164,7 @@ public class HttpRequest {
         }
         if (encryptor != null && encryptor.isJasyptPasswordSet()
                 && EncryptionFormatter.isEncrypted(password)) {
-            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
-            password = encryptor.decrypt(encryptedPassword);
+            password = doDecryption(password);
         }
 
         String encoding = Base64.getEncoder()
@@ -177,6 +177,16 @@ public class HttpRequest {
             addJenkinsCrumbData(crumb);
         }
 
+    }
+
+    private String doDecryption(String password) {
+        try {
+            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
+            password = encryptor.decrypt(encryptedPassword);
+        } catch (EncryptorException e) {
+            LOGGER.error("", e);
+        }
+        return password;
     }
 
     /**

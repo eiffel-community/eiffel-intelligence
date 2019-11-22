@@ -28,13 +28,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
-import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -73,9 +73,6 @@ public class InformSubscriber {
     @Getter
     @Value("${notification.ttl.value}")
     private int ttlValue;
-
-    @Value("${jasypt.encryptor.password:}")
-    private String jasyptEncryptorPassword;
 
     @Autowired
     private JmesPathInterface jmespath;

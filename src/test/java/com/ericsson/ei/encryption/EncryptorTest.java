@@ -15,11 +15,13 @@
    limitations under the License.
 */
 
-package com.ericsson.ei.utils;
+package com.ericsson.ei.encryption;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import com.ericsson.ei.encryption.EncryptionFormatter;
 
 public class EncryptorTest {
 

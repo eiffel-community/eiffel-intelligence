@@ -33,9 +33,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AbortExecutionException;
-import com.ericsson.ei.utils.EncryptionFormatter;
-import com.ericsson.ei.utils.Encryptor;
 
 @Configuration
 @EnableWebSecurity

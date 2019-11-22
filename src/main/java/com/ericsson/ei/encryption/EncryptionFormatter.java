@@ -1,30 +1,38 @@
-package com.ericsson.ei.utils;
+package com.ericsson.ei.encryption;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
 
 public class EncryptionFormatter {
+    private static final String ENCRYPTION_WRAPPER = "ENC(%s)";
+    private static final String ENCRYPTION_REMOVAL_PATTERN = "[eE][nN][cC]\\(([^\\)]*)";
+
     /**
      * Function that removes ENC parentheses from encrypted string. Commonly used for password
-     * properties that has a format "ENC(d23d2ferwf4t55)" This function removes "ENC(" text and end
-     * ")" parentheses and return only the encryption as string.
+     * properties that has a format "ENC(d23d2ferwf4t55)" This function matches the "ENC(password)"
+     * pattern and returns the password string.
      * 
-     * Function handle also "ENC(<encrypted password>" with missing end , ')', parentheses.
+     * Function handle also "ENC(password" with missing ')' parentheses.
      * 
      * @param stringWithEncryptionParantheses The string that contains the ENC() string.
      * 
-     * @return Then string formatted encrypted password without ENC().
+     * @return the password string
      */
-    public static String removeEncryptionParentheses(String stringWithEncryptionParantheses) {
-        String formattedEncryptionString = stringWithEncryptionParantheses.replace("ENC(", "");
-        int lastParanthesesOccurenxeIndex = formattedEncryptionString.lastIndexOf(")");
-        if (lastParanthesesOccurenxeIndex == -1) {
-            return formattedEncryptionString;
+    public static String removeEncryptionParentheses(String encryptedString) {
+        Pattern pattern = Pattern.compile(ENCRYPTION_REMOVAL_PATTERN);
+        Matcher matcher = pattern.matcher(encryptedString);
+        if (matcher.lookingAt()) {
+            return matcher.group(1);
         }
-        formattedEncryptionString = formattedEncryptionString.subSequence(0,
-                lastParanthesesOccurenxeIndex).toString();
-        return formattedEncryptionString;
+        return encryptedString;
+    }
+
+    public static String addEncryptionParentheses(String encryptedString) {
+        return String.format(ENCRYPTION_WRAPPER, encryptedString);
     }
 
     /**

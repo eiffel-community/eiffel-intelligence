@@ -23,8 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
-import com.ericsson.ei.utils.EncryptionFormatter;
-import com.ericsson.ei.utils.Encryptor;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;

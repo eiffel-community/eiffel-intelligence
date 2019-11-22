@@ -38,7 +38,7 @@ public class ConfigurationLogger {
                 + "rabbitmq.queue.durable: " + environment.getProperty("rabbitmq.queue.durable") + "\n"
                 + "rabbitmq.binding.key: " + environment.getProperty("rabbitmq.binding.key") + "\n"
                 + "rabbitmq.waitlist.queue.suffix: " + environment.getProperty("rabbitmq.waitlist.queue.suffix") + "\n"
-                + "mergeidmarker: " + environment.getProperty("mergeidmarker") + "\n"
+                + "rules.replacement.marker: " + environment.getProperty("rules.replacement.marker") + "\n"
                 + "spring.data.mongodb.host: " + environment.getProperty("spring.data.mongodb.host") + "\n"
                 + "spring.data.mongodb.port: " + environment.getProperty("spring.data.mongodb.port") + "\n"
                 + "spring.data.mongodb.username: " + environment.getProperty("spring.data.mongodb.username") + "\n"

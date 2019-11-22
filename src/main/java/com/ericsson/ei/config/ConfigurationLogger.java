@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.utils.MongoUri;
+import com.ericsson.ei.mongo.MongoUri;
 
 @Component
 public class ConfigurationLogger {
@@ -26,7 +26,7 @@ public class ConfigurationLogger {
 
     private void logConfiguration() {
         final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
-        final String safeUri = MongoUri.getSafeUri(unsafeUri);
+        final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
         LOGGER.debug("EI Backend started with following configurations:\n"
                 + "server.port: " + environment.getProperty("server.port") + "\n"
                 + "server.session-timeout: " + environment.getProperty("server.session-timeout") + "\n"

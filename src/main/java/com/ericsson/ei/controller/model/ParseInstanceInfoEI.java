@@ -16,28 +16,27 @@
 */
 package com.ericsson.ei.controller.model;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RMQProperties;
-import com.ericsson.ei.notifications.EmailSender;
-import com.ericsson.ei.notifications.InformSubscriber;
-import com.ericsson.ei.subscription.SubscriptionHandler;
-import com.ericsson.ei.utils.MongoUri;
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import lombok.Getter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.RMQProperties;
+import com.ericsson.ei.mongo.MongoUri;
+import com.ericsson.ei.notifications.EmailSender;
+import com.ericsson.ei.notifications.InformSubscriber;
+import com.ericsson.ei.subscription.SubscriptionHandler;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
 
-import javax.annotation.PostConstruct;
+import lombok.Getter;
 
 /**
  * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
@@ -153,7 +152,7 @@ public class ParseInstanceInfoEI {
         @PostConstruct
         public void init() throws IOException {
             final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
-            uri = MongoUri.getSafeUri(unsafeUri);
+            uri = MongoUri.getUriWithHiddenPassword(unsafeUri);
         }
 
     }

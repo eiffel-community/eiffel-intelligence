@@ -109,11 +109,14 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
+//                FindIterable<Document> foundResults = collection.find();
+//                for (Document document : foundResults) {
+//                    result.add(document.toJson());
+//                }
                 collection.find(new BasicDBObject()).forEach((Block<Document>) document -> {
-                    result.add(JSON.serialize(document));
+                    result.add(document.toJson());
                 });
 
-                LOGGER.debug("######## result  === " + result.toString());
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,
                     // this is normal, no need to log
@@ -266,7 +269,7 @@ public class MongoDBHandler {
     private void createMongoClient() {
         if (StringUtils.isBlank(mongoProperties.getUri())) {
             throw new MongoConfigurationException(
-                    "Failure to createg MongoClient, missing config for spring.data.mongodb.uri:");
+                    "Failure to create MongoClient, missing config for spring.data.mongodb.uri:");
         }
 
         MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
@@ -288,8 +291,11 @@ public class MongoDBHandler {
         }
 
         BasicDBObject conditionsAsDbObject = BasicDBObject.parse(query.getQueryString());
-        FindIterable<Document> findResults = collection.find(conditionsAsDbObject);
-        for (Document document : findResults) {
+        FindIterable<Document> foundResults = collection.find(conditionsAsDbObject);
+        for (Document document : foundResults) {
+            // Currently document.toJson() does not work here since something will add \\\ before
+            // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
+            // String.
             result.add(JSON.serialize(document));
         }
 
@@ -368,55 +374,75 @@ public class MongoDBHandler {
         }
 
         try {
-            List<String> collectionList = getCollectionList(databaseName);
-            if (!collectionList.contains(collectionName)) {
-                createCollection(databaseName, collectionName);
-            }
+            verifyExistanceOfCollection(databaseName, collectionName);
+
+            MongoDatabase db = mongoClient.getDatabase(databaseName);
+            MongoCollection<Document> collection = db.getCollection(collectionName);
+            return collection;
         } catch (MongoClientException e) {
             LOGGER.error("Failure when handling Mongo collection: {} ", e.getMessage(), e);
             return null;
         }
 
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        MongoCollection<Document> collection = db.getCollection(collectionName);
-        return collection;
+    }
+
+    private void verifyExistanceOfCollection(String databaseName, String collectionName) {
+        List<String> collectionList = getCollectionList(databaseName);
+        if (!collectionList.contains(collectionName)) {
+            createCollection(databaseName, collectionName);
+        }
     }
 
     private List<String> getCollectionList(String databaseName) {
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        List<String> collectionList;
-
         try {
-            collectionList = db.listCollectionNames().into(new ArrayList<String>());
+            MongoDatabase db = mongoClient.getDatabase(databaseName);
+            List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
+            return collectionList;
         } catch (MongoInterruptedException | MongoSocketReadException | MongoSocketWriteException
                 | MongoCommandException | IllegalStateException e) {
-            String message = "Failed to get Mongo collection list, Reason: " + e.getMessage();
+            String message = String.format("Failed to get Mongo collection list, Reason: %s",
+                    e.getMessage());
             closeMongoDbConnection();
             throw new MongoClientException(message, e);
         }
-
-        return collectionList;
     }
 
     private void createCollection(String databaseName, String collectionName) {
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        LOGGER.debug("The requested database({}) / collection({}) not found in mongodb, Creating.",
-                databaseName, collectionName);
         try {
-            db.createCollection(collectionName);
-        } catch (MongoCommandException e) {
-            String collectionExistsError = String.format("collection '%s.%s' already exists",
+            LOGGER.debug(
+                    "The requested database({}) / collection({}) not found in mongodb, Creating.",
                     databaseName, collectionName);
-            if (e.getMessage().contains(collectionExistsError)) {
-                // When multiple operations try to create the same collection a collection may
-                // already exist.
-                LOGGER.warn("A {}.", collectionExistsError, e);
-            } else {
-                String message = "Failed to create Mongo collection, Reason: " + e.getMessage();
-                throw new MongoClientException(message, e);
-            }
+
+            MongoDatabase db = mongoClient.getDatabase(databaseName);
+            db.createCollection(collectionName);
+
+            LOGGER.debug("done....");
+        } catch (MongoCommandException e) {
+            checkIfCollectionExistError(databaseName, collectionName, e);
         }
-        LOGGER.debug("done....");
+    }
+
+    /**
+     * When multiple request on a collection is done within a short period of time a collection migh
+     * already have been created between the time MongoDBHandler checked if it existed to the
+     * creation of the collection. If so we ignore the error when trying to creeate a collection..
+     *
+     * @param databaseName
+     * @param collectionName
+     * @param e
+     */
+    private void checkIfCollectionExistError(String databaseName, String collectionName,
+            MongoCommandException e) {
+        String collectionExistsError = String.format("collection '%s.%s' already exists",
+                databaseName, collectionName);
+
+        if (e.getMessage().contains(collectionExistsError)) {
+            LOGGER.warn("A {}.", collectionExistsError, e);
+        } else {
+            String message = String.format("Failed to create Mongo collection, Reason: %s",
+                    e.getMessage());
+            throw new MongoClientException(message, e);
+        }
     }
 
     private void closeMongoDbConnection() {

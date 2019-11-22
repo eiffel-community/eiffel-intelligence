@@ -9,7 +9,7 @@ import com.ericsson.ei.controller.model.AuthenticationType;
 
 public class EncryptionFormatter {
     private static final String ENCRYPTION_WRAPPER = "ENC(%s)";
-    private static final String ENCRYPTION_REMOVAL_PATTERN = "[eE][nN][cC]\\(([^\\)]*)";
+    private static final String ENCRYPTION_PATTERN = "[eE][nN][cC]\\(([^\\)]*)";
 
     /**
      * Function that removes ENC parentheses from encrypted string. Commonly used for password
@@ -18,12 +18,12 @@ public class EncryptionFormatter {
      * 
      * Function handle also "ENC(password" with missing ')' parentheses.
      * 
-     * @param stringWithEncryptionParantheses The string that contains the ENC() string.
+     * @param encryptedString The string that contains the ENC() string.
      * 
      * @return the password string
      */
     public static String removeEncryptionParentheses(String encryptedString) {
-        Pattern pattern = Pattern.compile(ENCRYPTION_REMOVAL_PATTERN);
+        Pattern pattern = Pattern.compile(ENCRYPTION_PATTERN);
         Matcher matcher = pattern.matcher(encryptedString);
         if (matcher.lookingAt()) {
             return matcher.group(1);
@@ -31,19 +31,27 @@ public class EncryptionFormatter {
         return encryptedString;
     }
 
+    /**
+     * Wrap the string around the ENC(password) pattern.
+     *
+     * @param encryptedString
+     * @return the wrapped password string
+     */
     public static String addEncryptionParentheses(String encryptedString) {
         return String.format(ENCRYPTION_WRAPPER, encryptedString);
     }
 
     /**
      * Checks if the provided password string contains the encryption wrapper. The encryption
-     * wrapper should look like this: ENC(myEncryptedPassword)
+     * wrapper should look like this: ENC(password)
      *
      * @param password
      * @return true if password is tagged as encryped, false otherwise
      */
     public static boolean isEncrypted(final String password) {
-        return (password.startsWith("ENC(") && password.endsWith(")"));
+        Pattern pattern = Pattern.compile(ENCRYPTION_PATTERN);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.lookingAt();
     }
 
     /**

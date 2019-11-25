@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
@@ -44,7 +45,8 @@ public class SubscriptionValidatorTest {
         subscriptionValid.setSubscriptionName("Kalle1");
 
         // new stuff
-        subscriptionValid.setRestPostBodyMediaType(MediaType.APPLICATION_FORM_URLENCODED.toString());
+        subscriptionValid.setRestPostBodyMediaType(
+                MediaType.APPLICATION_FORM_URLENCODED.toString());
 
         NotificationMessageKeyValue notificationMessageKeyValuevalid = new NotificationMessageKeyValue();
         notificationMessageKeyValuevalid.setFormkey("jsontest");
@@ -71,64 +73,52 @@ public class SubscriptionValidatorTest {
         NotificationMessageKeyValue notificationMessageKeyValueinvalid = new NotificationMessageKeyValue();
         notificationMessageKeyValueinvalid.setFormkey("");
         notificationMessageKeyValueinvalid.setFormvalue("@");
-        subscriptionInvalid.getNotificationMessageKeyValues().add(notificationMessageKeyValueinvalid);
+        subscriptionInvalid.getNotificationMessageKeyValues()
+                           .add(notificationMessageKeyValueinvalid);
 
         subscriptionInvalid.setNotificationMeta("kalle1.kal  le2@domain.com");
         subscriptionInvalid.setNotificationType("MAIL");
         subscriptionInvalid.setRepeat(true);
         Requirement requirementInvalid = new Requirement();
         Condition conditionInvalid = new Condition();
-        conditionInvalid.setJmespath("split(data.identity', '/') | [2] =='com.mycompany.myproduct'");
+        conditionInvalid.setJmespath(
+                "split(data.identity', '/') | [2] =='com.mycompany.myproduct'");
         requirementInvalid.getConditions().add(conditionInvalid);
         subscriptionInvalid.getRequirements().add(requirementInvalid);
     }
 
     /**
-     * Validator unit tests for SubscriptionName parameter in Subscription. Valid
-     * "SubscriptionName" values: - All letters and numbers: [A-Za-z0-9_].
+     * Validator unit tests for SubscriptionName parameter in Subscription. Valid "SubscriptionName"
+     * values: - All letters and numbers: [A-Za-z0-9_].
      */
     @Test
     public void validateSubscriptionNameValidNameTest() throws Exception {
-        String subscriptionName = "Kalle1";
-        try {
-            invokeMethod(SubscriptionValidator.class, "validateSubscriptionName", subscriptionName);
-        } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), false);
-            return;
+        String[] validSubscriptionNameList = { "Kalle", "kalle", "KALLE", "kall_e", "Kalle1",
+                "KAlle_123" };
+        for (String subscriptionName : validSubscriptionNameList) {
+            try {
+                invokeMethod(SubscriptionValidator.class, "validateSubscriptionName",
+                        subscriptionName);
+            } catch (SubscriptionValidationException e) {
+                assertTrue(e.getMessage(), false);
+            }
         }
     }
 
     @Test
-    public void validateSubscriptionNameValidNameTest2() throws Exception {
-        String subscriptionName = "Kalle_1";
-        try {
-            invokeMethod(SubscriptionValidator.class, "validateSubscriptionName", subscriptionName);
-        } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), false);
-            return;
+    public void validateSubscriptionNameInvalidNamesTest() throws Exception {
+        String[] invalidSubscriptionNameList = { "@Kalle", "Kal@le", "<Kalle", "Kall<e", "Kal*le",
+                "*Kalle", "Kall||e", "Ka\\lle", "\\Kalle", "\\\\Kalle", "-K-a-l-l-e-", ",Kalle" };
+        for (String subscriptionName : invalidSubscriptionNameList) {
+            try {
+                invokeMethod(SubscriptionValidator.class, "validateSubscriptionName",
+                        subscriptionName);
+                assertFalse(String.format("%s should be an invalid name but was valid.",
+                        subscriptionName), true);
+            } catch (SubscriptionValidationException e) {
+                assertTrue(true);
+            }
         }
-    }
-
-    @Test
-    public void validateSubscriptionNameInvalidNameTest() throws Exception {
-        String subscriptionName = "Kal--l[[e1";
-        try {
-            invokeMethod(SubscriptionValidator.class, "validateSubscriptionName", subscriptionName);
-        } catch (SubscriptionValidationException e) {
-            return;
-        }
-        assertTrue(true);
-    }
-
-    @Test
-    public void validateSubscriptionNameInvalidName2Test() throws Exception {
-        String subscriptionName = "@Kal$le´1";
-        try {
-            invokeMethod(SubscriptionValidator.class, "validateSubscriptionName", subscriptionName);
-        } catch (SubscriptionValidationException e) {
-            return;
-        }
-        assertTrue(true);
     }
 
     @Test
@@ -157,7 +147,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_JSON.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -174,7 +165,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -196,7 +188,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -213,11 +206,10 @@ public class SubscriptionValidatorTest {
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
                     subscription.getNotificationMessageKeyValues(), "");
+            assertFalse("Validation did not throw exception when validating message", true);
         } catch (SubscriptionValidationException e) {
-            assertTrue(e.getMessage(), true);
             return;
         }
-        assertTrue(false);
     }
 
     @Test
@@ -230,11 +222,12 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_JSON.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_JSON.toString());
+            assertFalse("Validation did not throw exception when validating message", true);
         } catch (SubscriptionValidationException e) {
             return;
         }
-        assertTrue(false);
     }
 
     @Test
@@ -247,7 +240,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             return;
         }
@@ -269,7 +263,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             return;
         }
@@ -290,7 +285,8 @@ public class SubscriptionValidatorTest {
         subscription.getNotificationMessageKeyValues().add(notificationMessageKeyValue2);
         try {
             invokeMethod(SubscriptionValidator.class, "validateNotificationMessageKeyValues",
-                    subscription.getNotificationMessageKeyValues(), MediaType.APPLICATION_FORM_URLENCODED.toString());
+                    subscription.getNotificationMessageKeyValues(),
+                    MediaType.APPLICATION_FORM_URLENCODED.toString());
         } catch (SubscriptionValidationException e) {
             return;
         }
@@ -341,16 +337,16 @@ public class SubscriptionValidatorTest {
     }
 
     /**
-     * Validator unit tests for NotificationMeta parameter in Subscription. Valid
-     * "NotificationMeta" value: - "http://127.0.0.1:3000/ei/test_subscription_rest"
-     * - "kalle.kalle@domain.com"
+     * Validator unit tests for NotificationMeta parameter in Subscription. Valid "NotificationMeta"
+     * value: - "http://127.0.0.1:3000/ei/test_subscription_rest" - "kalle.kalle@domain.com"
      */
     @Test
     public void validateNotificationMetaValidMailMetaTest() throws Exception {
         String notificationMeta = "kalle.kalle@domain.com";
         String notificationType = "MAIL";
         try {
-            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta, notificationType);
+            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta,
+                    notificationType);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
@@ -359,10 +355,26 @@ public class SubscriptionValidatorTest {
 
     @Test
     public void validateNotificationMetaInvalidMailMetaTest() throws Exception {
-        String notificationMeta = "kalle.kall  e@domain.com";
         String notificationType = "MAIL";
+        String[] invalidNotificationMeta = { "kalle. kalle@domain.com", "kalle.kalledomain.com",
+                "kalle@kalle@domain.com", "kalle.kalle@domain", "kalle.kalle@" };
+
+        for (String notificationMeta : invalidNotificationMeta) {
+            try {
+                invokeMethod(SubscriptionValidator.class, "validateNotificationMeta",
+                        notificationMeta, notificationType);
+
+                assertFalse(String.format("%s should be invalid but was valid.",
+                        notificationMeta), true);
+            } catch (SubscriptionValidationException e) {
+                assertTrue(true);
+            }
+        }
+
+        String notificationMeta = "kalle.kall  e@domain.com";
         try {
-            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta, notificationType);
+            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta,
+                    notificationType);
         } catch (SubscriptionValidationException e) {
             return;
         }
@@ -374,7 +386,8 @@ public class SubscriptionValidatorTest {
         String notificationMeta = "";
         String notificationType = "REST_POST";
         try {
-            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta, notificationType);
+            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta,
+                    notificationType);
         } catch (SubscriptionValidationException e) {
             return;
         }
@@ -386,15 +399,17 @@ public class SubscriptionValidatorTest {
         String notificationMeta = "http://127.0.0.1:3000/ei/test_subscription_rest?json=links[?type=='SUBJECT'].target | [0]";
         String notificationType = "REST_POST";
         try {
-            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta, notificationType);
+            invokeMethod(SubscriptionValidator.class, "validateNotificationMeta", notificationMeta,
+                    notificationType);
         } catch (SubscriptionValidationException e) {
             assertTrue(e.getMessage(), false);
             return;
         }
     }
+
     /**
-     * Validator unit tests for NotificationType parameter in Subscription. Valid
-     * "NotificationType" value: true or false
+     * Validator unit tests for NotificationType parameter in Subscription. Valid "NotificationType"
+     * value: true or false
      */
     @Test
     public void validateNotificationTypeValidTypeMAILTest() throws Exception {
@@ -433,8 +448,7 @@ public class SubscriptionValidatorTest {
     // implemented here.
 
     /**
-     * Unit tests for testing a whole Subscription Json object. Valid Result: true
-     * or false
+     * Unit tests for testing a whole Subscription Json object. Valid Result: true or false
      */
     @Test
     public void validateFullSubscriptionWithValidSubscriptionParameters() {
@@ -470,7 +484,8 @@ public class SubscriptionValidatorTest {
     @Test
     public void validateSubscriptionWithoutName() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        Subscription subscriptionValidCopy = objectMapper.readValue(objectMapper.writeValueAsString(subscriptionValid),
+        Subscription subscriptionValidCopy = objectMapper.readValue(
+                objectMapper.writeValueAsString(subscriptionValid),
                 Subscription.class);
 
         subscriptionValidCopy.setSubscriptionName(null);

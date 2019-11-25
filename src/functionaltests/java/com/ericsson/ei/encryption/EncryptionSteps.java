@@ -114,7 +114,7 @@ public class EncryptionSteps extends FunctionalTestBase {
                 VerificationTimes.atLeast(1));
     }
 
-    @Then("^the notification should be sent with a decrypted password in base64$")
+    @Then("^the notification should be sent with a decrypted password$")
     public void notificationShouldBeSentWithDecryptedPassword() {
         LOGGER.info("Verifying that notification contains decrypted password");
         clientAndServer.verify(

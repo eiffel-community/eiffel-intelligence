@@ -30,7 +30,6 @@ import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.encryption.EncryptionFormatter;
 import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.exception.EncryptorException;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -180,12 +179,8 @@ public class HttpRequest {
     }
 
     private String doDecryption(String password) {
-        try {
-            String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
-            password = encryptor.decrypt(encryptedPassword);
-        } catch (EncryptorException e) {
-            LOGGER.error("", e);
-        }
+        String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
+        password = encryptor.decrypt(encryptedPassword);
         return password;
     }
 

@@ -34,7 +34,6 @@ import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.encryption.EncryptionFormatter;
 import com.ericsson.ei.encryption.Encryptor;
-import com.ericsson.ei.exception.EncryptorException;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.repository.ISubscriptionRepository;
@@ -202,13 +201,9 @@ public class SubscriptionService implements ISubscriptionService {
 
     private Subscription doEncryption(Subscription subscription) {
         String password = subscription.getPassword();
-        try {
-            String encryptedPassword = EncryptionFormatter.addEncryptionParentheses(
-                    encryptor.encrypt(password));
-            subscription.setPassword(encryptedPassword);
-        } catch (EncryptorException e) {
-            LOGGER.error("", e);
-        }
+        String encryptedPassword = EncryptionFormatter.addEncryptionParentheses(
+                encryptor.encrypt(password));
+        subscription.setPassword(encryptedPassword);
         return subscription;
     }
 

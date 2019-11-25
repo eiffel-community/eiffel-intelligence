@@ -24,10 +24,8 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.exception.EncryptorException;
-
 /**
- * An encryption formatter helper class.
+ * Used for encryption/decryption of strings.
  *
  */
 @Component
@@ -40,8 +38,8 @@ public class Encryptor {
 
     @PostConstruct
     private void init() {
+        encryptor = new StandardPBEStringEncryptor();
         if (isJasyptPasswordSet()) {
-            encryptor = new StandardPBEStringEncryptor();
             encryptor.setPassword(jasyptEncryptorPassword);
         }
     }
@@ -51,10 +49,8 @@ public class Encryptor {
      *
      * @param message
      * @return
-     * @throws EncryptorException
      */
-    public String encrypt(String message) throws EncryptorException {
-        isInitialized();
+    public String encrypt(String message) {
         return encryptor.encrypt(message);
     }
 
@@ -63,20 +59,12 @@ public class Encryptor {
      *
      * @param message
      * @return
-     * @throws EncryptorException
      */
-    public String decrypt(String message) throws EncryptorException {
-        isInitialized();
+    public String decrypt(String message) {
         return encryptor.decrypt(message);
     }
 
     public boolean isJasyptPasswordSet() {
         return !StringUtils.isEmpty(jasyptEncryptorPassword);
-    }
-
-    private void isInitialized() throws EncryptorException {
-        if (encryptor == null) {
-            throw new EncryptorException("Encryptor has not been initialized.");
-        }
     }
 }

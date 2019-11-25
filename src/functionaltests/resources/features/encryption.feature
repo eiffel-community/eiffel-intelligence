@@ -7,4 +7,4 @@ Feature: Test Encryption on subscription passwords
     Then the password should be encrypted in the database
     When eiffel events are sent
     Then the subscription should trigger
-    And the notification should be sent with a decrypted password in base64
+    And the notification should be sent with a decrypted password

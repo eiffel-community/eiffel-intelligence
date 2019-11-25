@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.mongodb.MongoClientURI;
+
 public class MongoUri {
 
     private static final String HIDDEN_PASSWORD = "********";
@@ -82,25 +84,12 @@ public class MongoUri {
      * @param uri
      * @return
      */
-    public static String extractPasswordFromUri(String uri) {
+    public static String extractPasswordFromUri(String inputUri) {
         String password = "";
-        /**
-         * Matcher that match string between first : and @.
-         *
-         * Example uri: mongodb://username:mypasswd@hostname1:27017,hostname2:27017
-         *
-         * The first match would be [//username:mypasswd] After removing the // we split the string
-         * at the : character. This gives authenticationDetailsList[0] as username and
-         * authenticationDetailsList[1] as password.
-         *
-         */
-        Matcher matcher = Pattern.compile("(?<=:)(.*)(?=@)").matcher(uri);
-        if (matcher.find()) {
-            String authenticationDetails = matcher.group(0).replace("//", "");
-            if (authenticationDetails.contains(":")) {
-                String[] authenticationDetailsList = authenticationDetails.split(":");
-                password = authenticationDetailsList[1];
-            }
+        MongoClientURI uri = new MongoClientURI(inputUri);
+        char[] passwordCharList = uri.getPassword();
+        if (passwordCharList != null) {
+            password =  new String(passwordCharList);
         }
         return password;
     }

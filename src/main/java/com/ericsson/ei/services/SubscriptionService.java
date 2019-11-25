@@ -76,11 +76,7 @@ public class SubscriptionService implements ISubscriptionService {
         String authType = subscription.getAuthenticationType();
         String username = subscription.getUserName();
         String password = subscription.getPassword();
-        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(
-                authType,
-                username, password);
-        if (authenticationDetailsProvided && encryptor.isJasyptPasswordSet()
-                && !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH)) {
+        if (isEncryptionReady(authType, username, password)) {
             subscription = doEncryption(subscription);
         }
         ObjectMapper mapper = new ObjectMapper();
@@ -197,6 +193,15 @@ public class SubscriptionService implements ISubscriptionService {
             }
         }
         return subscriptions;
+    }
+
+    private boolean isEncryptionReady(String authType, String username, String password) {
+        boolean authDetailsSet = EncryptionFormatter.verifyAuthenticationDetails(authType, username,
+                password);
+        boolean jasyptPasswordSet = encryptor.isJasyptPasswordSet();
+        boolean authTypeSet = !AuthenticationType.valueOf(authType)
+                                                 .equals(AuthenticationType.NO_AUTH);
+        return authDetailsSet && jasyptPasswordSet && authTypeSet;
     }
 
     private Subscription doEncryption(Subscription subscription) {

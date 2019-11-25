@@ -16,8 +16,6 @@
 */
 package com.ericsson.ei.subscription;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 

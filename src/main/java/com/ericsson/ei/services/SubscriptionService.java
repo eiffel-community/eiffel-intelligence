@@ -196,11 +196,14 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     private boolean isEncryptionReady(String authType, String username, String password) {
+        boolean jasyptPasswordSet = false;
+        boolean authTypeSet = false;
         boolean authDetailsSet = EncryptionFormatter.verifyAuthenticationDetails(authType, username,
                 password);
-        boolean jasyptPasswordSet = encryptor.isJasyptPasswordSet();
-        boolean authTypeSet = !AuthenticationType.valueOf(authType)
-                                                 .equals(AuthenticationType.NO_AUTH);
+        if (authDetailsSet) {
+            jasyptPasswordSet = encryptor.isJasyptPasswordSet();
+            authTypeSet = !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH);
+        }
         return authDetailsSet && jasyptPasswordSet && authTypeSet;
     }
 

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
@@ -87,9 +86,6 @@ public class InformSubscriber {
     @Autowired
     private HttpRequestFactory httpRequestFactory;
 
-    @Autowired
-    private Encryptor encryptor;
-
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.
@@ -112,7 +108,6 @@ public class InformSubscriber {
                 LOGGER.debug("Notification through REST_POST");
 
                 HttpRequest request = httpRequestFactory.createHttpRequest();
-                request.setEncryptor(encryptor);
                 request.setAggregatedObject(aggregatedObject)
                        .setMapNotificationMessage(mapNotificationMessage)
                        .setSubscriptionJson(subscriptionJson)

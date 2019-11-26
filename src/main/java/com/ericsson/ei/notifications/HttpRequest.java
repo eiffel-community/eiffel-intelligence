@@ -57,6 +57,7 @@ public class HttpRequest {
     private HttpRequestSender httpRequestSender = SpringContext.getBean(HttpRequestSender.class);
     private JenkinsCrumb jenkinsCrumb = SpringContext.getBean(JenkinsCrumb.class);
     private UrlParser urlParser = SpringContext.getBean(UrlParser.class);
+    private Encryptor encryptor = SpringContext.getBean(Encryptor.class);
 
     @Getter
     @Setter
@@ -80,9 +81,6 @@ public class HttpRequest {
     private String contentType;
     @Getter
     private HttpHeaders headers;
-
-    @Setter
-    private Encryptor encryptor;
 
     /**
      * Perform a HTTP request to a specific url. Returns the response.
@@ -179,9 +177,7 @@ public class HttpRequest {
     }
 
     private String doDecryption(String password) {
-        String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(password);
-        password = encryptor.decrypt(encryptedPassword);
-        return password;
+        return encryptor.decrypt(password);
     }
 
     /**

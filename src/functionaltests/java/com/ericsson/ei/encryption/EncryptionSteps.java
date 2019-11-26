@@ -17,7 +17,6 @@ import org.junit.Ignore;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
@@ -43,7 +41,6 @@ public class EncryptionSteps extends FunctionalTestBase {
     private static final Logger LOGGER = getLogger(EncryptionSteps.class);
 
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_test.json";
-    private static final String SUBSCRIPTION_PATH = "src/functionaltests/resources/subscription_auth.json";
     private static final String SUBSCRIPTION_GET_ENDPOINT = "/subscriptions/<name>";
     private static final String SUBSCRIPTION_ROOT_ENDPOINT = "/subscriptions";
     private static final String MOCK_ENDPOINT = "/notify-me";
@@ -51,13 +48,18 @@ public class EncryptionSteps extends FunctionalTestBase {
     private static final String AUTH_HEADER_VALUE = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
     private static final int NOTIFICATION_SLEEP = 5;
 
-    @Autowired
-    private Encryptor encryptor;
+    private static final String SUBSCRIPTION_NAME = "MySubscription";
+    private static final String MEDIA_TYPE = "application/x-www-form-urlencoded";
+    private static final String NOTIFICATION_META = "http://localhost:{port}/notify-me";
+    private static final String CONDITION_KEY = "jmespath";
+    private static final String CONDITION_VALUE = "split(identity, '/') | [1] =='com.mycompany.myproduct'";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String AUTH_TYPE = "BASIC_AUTH";
 
     @LocalServerPort
     private int applicationPort;
 
-    private String subscriptionName;
     private ResponseEntity response;
     private String mockServerPort;
     private ClientAndServer clientAndServer;
@@ -72,11 +74,15 @@ public class EncryptionSteps extends FunctionalTestBase {
     @When("^a subscription is created$")
     public void subscriptionIsCreated() throws Exception {
         LOGGER.debug("Creating a subscription.");
-        JsonNode subscription = eventManager.getJSONFromFile(SUBSCRIPTION_PATH);
-        String notificationMeta = subscription.get("notificationMeta").asText();
-        notificationMeta = notificationMeta.replace("{port}", mockServerPort);
-        ((ObjectNode) subscription).put("notificationMeta", notificationMeta);
-        subscriptionName = subscription.get("subscriptionName").asText();
+        RestPostSubscriptionObject subscription = new RestPostSubscriptionObject(SUBSCRIPTION_NAME);
+        subscription.setNotificationMeta(NOTIFICATION_META.replace("{port}", mockServerPort));
+        subscription.setRestPostBodyMediaType(MEDIA_TYPE);
+        subscription.addNotificationMessageKeyValue("json", "dummy");
+        JSONObject condition = new JSONObject().put(CONDITION_KEY, CONDITION_VALUE);
+        subscription.addConditionToRequirement(0, condition);
+        subscription.setUsername(USERNAME);
+        subscription.setPassword(PASSWORD);
+        subscription.setAuthenticationType(AUTH_TYPE);
 
         List<String> subscriptionsToSend = new ArrayList<>();
         subscriptionsToSend.add(subscription.toString());
@@ -100,7 +106,7 @@ public class EncryptionSteps extends FunctionalTestBase {
     @Then("^the password should be encrypted in the database$")
     public void passwordShouldBeEncrypted() {
         LOGGER.debug("Verifying encoded password in subscription.");
-        String json = dbManager.getSubscription(subscriptionName);
+        String json = dbManager.getSubscription(SUBSCRIPTION_NAME);
         JSONObject subscription = new JSONObject(json);
         String password = subscription.getString("password");
         assertTrue(EncryptionFormatter.isEncrypted(password));
@@ -137,7 +143,7 @@ public class EncryptionSteps extends FunctionalTestBase {
 
     private void validateSubscriptionsSuccessfullyAdded()
             throws Exception {
-        String endpoint = SUBSCRIPTION_GET_ENDPOINT.replaceAll("<name>", subscriptionName);
+        String endpoint = SUBSCRIPTION_GET_ENDPOINT.replaceAll("<name>", SUBSCRIPTION_NAME);
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
         response = getRequest.setHost(getHostName())
                              .setPort(applicationPort)

@@ -124,7 +124,6 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
                                 "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
         }
 
-        String encryptedPassword = EncryptionFormatter.removeEncryptionParentheses(inputEncryptedPassword);
-        return encryptor.decrypt(encryptedPassword);
+        return encryptor.decrypt(inputEncryptedPassword);
     }
 }

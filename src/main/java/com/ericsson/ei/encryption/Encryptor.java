@@ -45,23 +45,24 @@ public class Encryptor {
     }
 
     /**
-     * Encrypts a message.
+     * Encrypts a value.
      *
-     * @param message
+     * @param value
      * @return
      */
-    public String encrypt(String message) {
-        return encryptor.encrypt(message);
+    public String encrypt(String value) {
+        return encryptor.encrypt(value);
     }
 
     /**
-     * Decrypts a message.
+     * Decrypts a value.
      *
-     * @param message
+     * @param value
      * @return
      */
-    public String decrypt(String message) {
-        return encryptor.decrypt(message);
+    public String decrypt(String value) {
+        String encrypted = EncryptionFormatter.removeEncryptionParentheses(value);
+        return encryptor.decrypt(encrypted);
     }
 
     public boolean isJasyptPasswordSet() {

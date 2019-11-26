@@ -18,12 +18,10 @@ package com.ericsson.ei.mongo;
 
 import static org.junit.Assert.assertFalse;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoConfigurationException;
 
 public class MongoUri {
 
@@ -41,13 +39,14 @@ public class MongoUri {
      * @return
      */
     public static String getUriWithHiddenPassword(String uri) {
-        if (StringUtils.isBlank(uri)) {
-            return "";
+        uriIsSet(uri);
+
+        final String oldPassword = extractPasswordFromUri(uri);
+        if (StringUtils.isBlank(oldPassword)) {
+            return uri;
         }
 
-        String oldPassword = extractPasswordFromUri(uri);
-        String modifiedUri = replacePassword(uri, oldPassword, HIDDEN_PASSWORD);
-
+        final String modifiedUri = replacePassword(uri, oldPassword, HIDDEN_PASSWORD);
         final String oldPasswordField = String.format(":%s", oldPassword);
         assertFalse("URI contains old password.", modifiedUri.contains(oldPasswordField));
 
@@ -67,12 +66,14 @@ public class MongoUri {
      * @return
      */
     public static String getUriWithNewPassword(String uri, String newPassword) {
-        if (StringUtils.isBlank(uri)) {
-            return "";
+        uriIsSet(uri);
+
+        final String oldPassword = extractPasswordFromUri(uri);
+        if (StringUtils.isBlank(oldPassword)) {
+            return uri;
         }
 
-        String oldPassword = extractPasswordFromUri(uri);
-        String modifiedUri = replacePassword(uri, oldPassword, newPassword);
+        final String modifiedUri = replacePassword(uri, oldPassword, newPassword);
         return modifiedUri;
     }
 
@@ -86,12 +87,23 @@ public class MongoUri {
      */
     public static String extractPasswordFromUri(String inputUri) {
         String password = "";
-        MongoClientURI uri = new MongoClientURI(inputUri);
-        char[] passwordCharList = uri.getPassword();
+        final MongoClientURI uri = new MongoClientURI(inputUri);
+        final char[] passwordCharList = uri.getPassword();
         if (passwordCharList != null) {
             password =  new String(passwordCharList);
         }
         return password;
+    }
+
+    /**
+     * Throw exception if uri parameter is not configured.
+     *
+     * @param uri
+     */
+    private static void uriIsSet(String uri) {
+        if (StringUtils.isBlank(uri)) {
+            throw new MongoConfigurationException("No configuration for spring.data.mongodb.uri was found");
+        }
     }
 
     /**

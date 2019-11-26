@@ -1,6 +1,7 @@
 package com.ericsson.ei.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,15 +50,15 @@ public class DataBaseManager {
     /**
      * Verify that aggregated object contains the expected information.
      *
-     * @param checklist
-     *            list of checklist to check
+     * @param checklist list of checklist to check
      * @return list of missing checklist
      * @throws InterruptedException
      */
-    public List<String> verifyAggregatedObjectInDB(List<String> checklist) throws InterruptedException {
+    public List<String> verifyAggregatedObjectInDB(List<String> checklist)
+            throws InterruptedException {
         long stopTime = System.currentTimeMillis() + MAX_WAIT_TIME_MILLISECONDS;
         while (!checklist.isEmpty() && stopTime > System.currentTimeMillis()) {
-            checklist = compareArgumentsWithAggregatedObjectInDB(checklist);
+            checklist = getListOfArgumentsNotFoundInDatabase(checklist);
             if (checklist.isEmpty()) {
                 break;
             }
@@ -75,8 +76,7 @@ public class DataBaseManager {
     public boolean verifyAggregatedObjectExistsInDB() throws InterruptedException {
         long stopTime = System.currentTimeMillis() + MAX_WAIT_TIME_MILLISECONDS;
         while (stopTime > System.currentTimeMillis()) {
-            MongoCollection<Document> collection = getCollection(aggregatedCollectionName);
-            List<Document> documents = collection.find().into(new ArrayList<>());
+            List<Document> documents = getDocumentsFromCollection(aggregatedCollectionName);
             TimeUnit.MILLISECONDS.sleep(RETRY_EVERY_X_MILLISECONDS);
             if (!documents.isEmpty()) {
                 return true;
@@ -86,34 +86,14 @@ public class DataBaseManager {
     }
 
     /**
-     * Checks that aggregated object contains specified arguments.
-     *
-     * @param checklist
-     *            list of arguments
-     * @return list of missing arguments
-     */
-    private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
-        MongoCollection<Document> collection = getCollection(aggregatedCollectionName);
-        List<Document> documents = collection.find().into(new ArrayList<>());
-        for (Document document : documents) {
-            for (String expectedValue : new ArrayList<>(checklist)) {
-                if (document.toString().contains(expectedValue)) {
-                    checklist.remove(expectedValue);
-                }
-            }
-        }
-        return checklist;
-    }
-
-    /**
      * Verify that events are located in the database collection.
      *
-     * @param eventsIdList
-     *            list of events IDs
+     * @param eventsIdList list of events IDs
      * @return list of missing events
      * @throws InterruptedException
      */
-    public List<String> verifyEventsInDB(List<String> eventsIdList, int extraCheckDelay) throws InterruptedException {
+    public List<String> verifyEventsInDB(List<String> eventsIdList, int extraCheckDelay)
+            throws InterruptedException {
         long stopTime = System.currentTimeMillis() + MAX_WAIT_TIME_MILLISECONDS + extraCheckDelay;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
@@ -125,29 +105,50 @@ public class DataBaseManager {
         return eventsIdList;
     }
 
+    private List<String> getListOfArgumentsNotFoundInDatabase(final List<String> checklist) {
+        final List<Document> documents = getDocumentsFromCollection(aggregatedCollectionName);
+
+        List<String> foundValues = new ArrayList<>();
+        for (Document document : documents) {
+            final List<String> valuesFoundInDocument = getValuesFoundInDocument(checklist,
+                    document);
+            foundValues.addAll(valuesFoundInDocument);
+        }
+
+        List<String> result = new ArrayList<>(checklist);
+        result.removeAll(foundValues);
+        return result;
+    }
+
+    private List<String> getValuesFoundInDocument(final List<String> checklist,
+            final Document document) {
+        List<String> foundValues = new ArrayList<>();
+        for (final String expectedValue : checklist) {
+            if (document.toString().contains(expectedValue)) {
+                foundValues.add(expectedValue);
+            }
+        }
+        return foundValues;
+    }
+
     /**
      * Checks collection of events against event list.
      *
-     * @param checklist
-     *            list of event IDs
+     * @param checklist list of event IDs
      * @return list of missing events
      */
-    private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
-        try {
-            MongoCollection<Document> collection = getCollection(eventObjectCollectionName);
-            List<Document> documents = collection.find().into(new ArrayList<>());
+    private List<String> compareSentEventsWithEventsInDB(final List<String> checklist) {
+        final List<Document> documents = getDocumentsFromCollection(eventObjectCollectionName);
 
-            for (Document document : documents) {
-                for (String expectedID : new ArrayList<>(checklist)) {
-                    if (expectedID.equals(document.get("_id").toString())) {
-                        checklist.remove(expectedID);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to get documents ", e);
+        List<String> foundIDs = new ArrayList<>();
+        for (Document document : documents) {
+            final String documentId = document.get("_id").toString();
+            foundIDs.add(documentId);
         }
-        return checklist;
+
+        List<String> result = new ArrayList<>(checklist);
+        result.removeAll(foundIDs);
+        return result;
     }
 
     /**
@@ -170,9 +171,14 @@ public class DataBaseManager {
      * @return int of the size of the waitlist.
      */
     public int waitListSize() {
-        MongoCollection<Document> collection = getCollection(waitlistCollectionName);
-        List<Document> documents = collection.find().into(new ArrayList<>());
+        List<Document> documents = getDocumentsFromCollection(waitlistCollectionName);
         return documents.size();
+    }
+
+    private List<Document> getDocumentsFromCollection(String collectionName) {
+        MongoCollection<Document> collection = getCollection(collectionName);
+        List<Document> documents = collection.find().into(new ArrayList<>());
+        return documents;
     }
 
     private MongoCollection<Document> getCollection(String collectionName) {

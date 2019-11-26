@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.ericsson.ei.mongo.MongoUri;
+import com.mongodb.MongoConfigurationException;
 
 public class MongoUriTest {
 
@@ -36,6 +37,13 @@ public class MongoUriTest {
     public void testGetSafeUri() throws Exception {
         String safeUri = MongoUri.getUriWithHiddenPassword(URI);
         assertFalse("safeUri should not contain password", safeUri.contains(PASSWORD));
+    }
+
+    @Test
+    public void testGetSafeUriNoUsernameAndPassword() throws Exception {
+        String uriNoUserPass = "mongodb://hostname1:27017,hostname2:27017";
+        String safeUri = MongoUri.getUriWithHiddenPassword(uriNoUserPass);
+        assertEquals("Uri should be unchanged when no username or password is given", uriNoUserPass, safeUri);
     }
 
     @Test
@@ -65,6 +73,11 @@ public class MongoUriTest {
     public void testGetSecret() throws Exception {
         String password = MongoUri.extractPasswordFromUri(URI);
         assertEquals("Extracted correct secret", PASSWORD, password);
+    }
+
+    @Test(expected = MongoConfigurationException.class)
+    public void exceptionThrownWhenNoUri() throws Exception {
+        MongoUri.getUriWithHiddenPassword("");
     }
 
 }

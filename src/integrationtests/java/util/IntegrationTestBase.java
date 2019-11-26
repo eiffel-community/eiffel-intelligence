@@ -100,13 +100,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     }
 
     private void cleanDatabases() {
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, waitlistCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, eventObjectMapCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionRepatFlagHandlerName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, failedNotificationCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, sessionsCollectionName);
+        mongoDBHandler.dropCollection(database, aggregatedCollectionName);
+        mongoDBHandler.dropCollection(database, waitlistCollectionName);
+        mongoDBHandler.dropCollection(database, subscriptionCollectionName);
+        mongoDBHandler.dropCollection(database, eventObjectMapCollectionName);
+        mongoDBHandler.dropCollection(database, subscriptionCollectionRepatFlagHandlerName);
+        mongoDBHandler.dropCollection(database, failedNotificationCollectionName);
+        mongoDBHandler.dropCollection(database, sessionsCollectionName);
     }
 
     /*
@@ -217,12 +217,11 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @param collection - A string with the collection to use
      * @return amount of processed events
      */
-    private long countProcessedEvents(String database, String collection) {
-        MongoClient mongoClient = null;
-        mongoClient = mongoDBHandler.getMongoClient();
+    private long countProcessedEvents(String database, String collectionName) {
+        MongoClient mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection table = db.getCollection(collection);
-        return table.count();
+        MongoCollection collection = db.getCollection(collectionName);
+        return collection.count();
     }
 
     /**

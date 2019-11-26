@@ -21,7 +21,6 @@ import java.util.List;
 import org.springframework.expression.AccessException;
 
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.exception.EncryptorException;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.MongoWriteException;

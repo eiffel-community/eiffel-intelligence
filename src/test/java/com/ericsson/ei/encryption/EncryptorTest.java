@@ -15,32 +15,33 @@
    limitations under the License.
 */
 
-package com.ericsson.ei.utils;
+package com.ericsson.ei.encryption;
 
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import com.ericsson.ei.utils.TextFormatter;
+import com.ericsson.ei.encryption.EncryptionFormatter;
 
-public class TextFormatterTest {
-    
+public class EncryptorTest {
+
     @Test
     public void testRemoveEncryptionParentheses() {
         final String encryptedPassword = "ENC(m0++Ua2Pe1j/5X/x8NpKsQ==)";
         final String expectedEncryptedPassword = "m0++Ua2Pe1j/5X/x8NpKsQ==";
-        
+
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                new TextFormatter().removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
-    
+
     @Test
     public void testRemoveEncryptionParenthesesWithMissingEndParentheses() {
         final String encryptedPassword = "ENC(m0++Ua2Pe1j/5X/x8NpKsQ==";
         final String expectedEncryptedPassword = "m0++Ua2Pe1j/5X/x8NpKsQ==";
-        
+
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                new TextFormatter().removeEncryptionParentheses(encryptedPassword));
+                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
     }
 }

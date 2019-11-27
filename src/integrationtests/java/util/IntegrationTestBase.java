@@ -107,6 +107,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropCollection(database, subscriptionCollectionRepatFlagHandlerName);
         mongoDBHandler.dropCollection(database, failedNotificationCollectionName);
         mongoDBHandler.dropCollection(database, sessionsCollectionName);
+        mongoDBHandler.dropCollection("eiffel", "events");
     }
 
     /*
@@ -205,7 +206,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
-            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.error("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
         }
     }
@@ -247,7 +248,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 300000;
+            long maxWaitTime = 30000;
             long stopTime = System.currentTimeMillis() + maxWaitTime;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
@@ -260,11 +261,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;
                 } catch (AssertionError e) {
-                    TimeUnit.SECONDS.sleep(1);
+                    System.out.println("##### ID " + id);
+                    System.out.println("###### Expected JSON ::::::" + expectedJSON.toString());
+                    System.out.println("###### Actual   JSON ::::::" + actualJSON.toString());
+                    TimeUnit.SECONDS.sleep(10);
                 }
             }
         }
-
         JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
     }
 

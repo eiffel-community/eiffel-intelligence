@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -86,6 +87,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
+        Thread.sleep(20000);
     }
 
     @Given("^the events \"([^\"]*)\"$")
@@ -161,6 +163,7 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^the eiffel events are sent$")
     public void eiffelEventsAreSent() throws Throwable {
+        Thread.sleep(1000);
         super.sendEventsAndConfirm();
     }
 
@@ -239,7 +242,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     public void mongodbShouldContainMails(int amountOfMails) throws Exception {
         long stopTime = System.currentTimeMillis() + 30000;
         Boolean mailHasBeenDelivered = false;
-        long createdDateInMillis = 0;
 
         while (mailHasBeenDelivered == false && stopTime > System.currentTimeMillis()) {
             JsonNode newestMailJson = getNewestMailFromDatabase();
@@ -250,9 +252,7 @@ public class FlowStepsIT extends IntegrationTestBase {
                         amountOfMails, to.size());
 
                 String createdDate = newestMailJson.get("created").get("$date").asText();
-
-                createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
-                mailHasBeenDelivered = createdDateInMillis >= startTime;
+                mailHasBeenDelivered = Long.valueOf(createdDate) >= startTime;
             }
 
             if (!mailHasBeenDelivered) {

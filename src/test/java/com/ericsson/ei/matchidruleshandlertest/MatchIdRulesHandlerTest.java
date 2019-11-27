@@ -32,12 +32,12 @@ import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MatchIdRulesHandlerTest {
-    private final String INPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerInput.json";
-    private final String OUTPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerOutput.json";
-    private final String EVENT_ID = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
+    private static final String INPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerInput.json";
+    private static final String OUTPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerOutput.json";
+    private static final String EVENT_ID = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatchIdRulesHandlerTest.class);
 
-    static Logger LOGGER = LoggerFactory.getLogger(MatchIdRulesHandlerTest.class);
-    MatchIdRulesHandler matchIdRulesHandler;
+    private MatchIdRulesHandler matchIdRulesHandler;
 
     @Before
     public void setProperties() {

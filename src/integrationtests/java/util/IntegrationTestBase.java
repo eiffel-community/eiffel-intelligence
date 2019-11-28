@@ -13,6 +13,8 @@
 */
 package util;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,8 +47,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
+    private static final int DEFAULT_DELAY_BETWEEN_SENDING_EVENTS = 350;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
-    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     protected RabbitTemplate rabbitTemplate;
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
@@ -100,19 +103,18 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     }
 
     private void cleanDatabases() {
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, aggregatedCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, waitlistCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, eventObjectMapCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, subscriptionCollectionRepatFlagHandlerName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, failedNotificationCollectionName);
-        mongoDBHandler.dropCollection(EIFFEL_INTELLIGENCE_DATABASE_NAME, sessionsCollectionName);
+        mongoDBHandler.dropCollection(database, aggregatedCollectionName);
+        mongoDBHandler.dropCollection(database, waitlistCollectionName);
+        mongoDBHandler.dropCollection(database, subscriptionCollectionName);
+        mongoDBHandler.dropCollection(database, eventObjectMapCollectionName);
+        mongoDBHandler.dropCollection(database, subscriptionCollectionRepatFlagHandlerName);
+        mongoDBHandler.dropCollection(database, failedNotificationCollectionName);
+        mongoDBHandler.dropCollection(database, sessionsCollectionName);
     }
 
     /*
-     * setFirstEventWaitTime: variable to set the wait time after publishing the
-     * first event. So any thread looking for the events don't do it before actually
-     * populating events in the database
+     * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
+     * thread looking for the events don't do it before actually populating events in the database
      */
     private int firstEventWaitTime = 0;
 
@@ -121,9 +123,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     }
 
     /**
-     * Override this if you have more events that will be registered to event to
-     * object map but it is not visible in the test. For example from upstream or
-     * downstream from event repository
+     * Override this if you have more events that will be registered to event to object map but it
+     * is not visible in the test. For example from upstream or downstream from event repository
      *
      * @return
      */
@@ -153,9 +154,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                     TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     alreadyExecuted = true;
                 }
+                /**
+                 * Without a small delay between the sending of 2 events, one may risk to be lost in
+                 * an empty void of not received by EI
+                 */
+                TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
             }
 
-            // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
             checkResult(getCheckData());
         } catch (IOException e) {
@@ -180,8 +185,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected abstract List<String> getEventNamesToSend() throws IOException;
 
     /**
-     * @return map, where key - _id of expected aggregated object value - expected
-     *         aggregated object
+     * @return map, where key - _id of expected aggregated object value - expected aggregated object
      *
      */
     protected abstract Map<String, JsonNode> getCheckData() throws IOException;
@@ -194,42 +198,47 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     /**
      * Wait for certain amount of events to be processed.
      *
-     * @param eventsCount - An int which indicated how many events that should be
-     *                    processed.
+     * @param eventsCount - An int which indicated how many events that should be processed.
      * @return
      * @throws InterruptedException
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
-        long stopTime = System.currentTimeMillis() + 60000;
+        long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            System.out.println("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(1000);
+        }
+
+        if (processedEvents < eventsCount) {
+            fail(String.format(
+                    "IE did not process all sent events. Processed '%s' events out of '%s' sent.",
+                    processedEvents, eventsCount));
         }
     }
 
     /**
      * Counts documents that were processed
      *
-     * @param database   - A string with the database to use
-     * @param collection - A string with the collection to use
+     * @param database       - A string with the database to use
+     * @param collectionName - A string with the collection to use
      * @return amount of processed events
      */
-    private long countProcessedEvents(String database, String collection) {
+    private long countProcessedEvents(String database, String collectionName) {
         MongoClient mongoClient = null;
         mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection table = db.getCollection(collection);
-        return table.count();
+        MongoCollection collection = db.getCollection(collectionName);
+        return collection.count();
     }
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
      *
-     * @param expectedData - A Map<String, JsonNode> which contains the expected
-     *                     data
+     * @param expectedData - A Map<String, JsonNode> which contains the expected data
      * @return
      * @throws URISyntaxException
      * @throws IOException
@@ -248,14 +257,14 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 300000;
+            long maxWaitTime = 30000;
             long stopTime = System.currentTimeMillis() + maxWaitTime;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
 
                 /*
-                 * This is a workaround for expectedJSON.equals(acutalJSON) as that does not
-                 * work with strict equalization
+                 * This is a workaround for expectedJSON.equals(acutalJSON) as that does not work
+                 * with strict equalization
                  */
                 try {
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
@@ -265,7 +274,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                 }
             }
         }
-
         JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
     }
 

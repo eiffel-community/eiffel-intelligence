@@ -164,7 +164,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             waitForEventsToBeProcessed(eventsCount);
             checkResult(getCheckData());
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            String message = String.format("Failed to send Eiffel messages. Reason: %s", e.getMessage());
+            LOGGER.error(message, e);
+            fail(message);
         }
     }
 
@@ -227,8 +229,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return amount of processed events
      */
     private long countProcessedEvents(String database, String collectionName) {
-        MongoClient mongoClient = null;
-        mongoClient = mongoDBHandler.getMongoClient();
+        MongoClient mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection collection = db.getCollection(collectionName);
         return collection.count();

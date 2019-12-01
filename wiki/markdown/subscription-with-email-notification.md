@@ -10,48 +10,62 @@ contains comments like below.**_
 _**Subscription templates can be found [here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).**_
 
     {
-        // The name of the subscription to make it easy to search for it.
+        // The name of the subscription to make it easy to search for.
         // Only numbers, letters and underscore allowed.
         "subscriptionName" : "Subscription3_Mail_Notification",
 
         // The name of the logged in user creating or updating the subscription
-        // added by Eiffel Intelligence if LDAP is enabled. Defaults to an empty string.
+        // added by Eiffel Intelligence if LDAP is enabled. Not required. Defaults to an empty string.
         "ldapUserName" : "ABC",
 
-        // Instructs whether same subscription should be re-triggered for new additions
-        // to the aggregated object. If false only first time the conditions are fulfilled
-        // a notification will be triggered. No matter how many times the aggregated object
-        // is updated.
+        // Instructs whether the same subscription should be re-triggered
+        // for new additions to the aggregated object. If this is set to
+        // false, only the first time the conditions are fulfilled, a
+        // notification will be triggered. No matter how many times the
+        // aggregated object is updated.
         "repeat" : false,
 
         // Creation time in system time, added by Eiffel Intelligence.
         "created" : 1542802953782,
 
+        // If any authentication is needed by Eiffel Intelligence to send 
+        // the notification email.
         "authenticationType" : "NO_AUTH",
 
-        // How to notify when a subscription is triggered.
+        // How to notify when a subscription is fulfilled.
         "notificationType" : "MAIL",
-        "notificationMeta" : "mymail@company.com",
+        
+        // The recipient of the email. One or several email addresses can 
+        // be defined with a comma separated list.
+        "notificationMeta" : "mymail@company.com, another@email.com",
+        
+        // It is possible to define an email subject per subscription, or
+        // use the email subject which is configured in Eiffel Intelligence 
+        // application.properties. Not required.
         "emailSubject" : "My Email Subject",
 
         // Content of the email message.
         "notificationMessageKeyValues" : [
             {
-                // Form key should always be an empty string for email messages.
-                // Form value will be run through JMESPATH engine to extract
-                // content from aggregated object.
+                // The form key should always be an empty string for email messages.
+                // The form value will be run through JMESPATH engine so
+                // it is possible to use JMESPATH expressions to extract
+                // content from the aggregated object.
 
                 "formkey" : "",
                 "formvalue" : "{mydata: [{ fullaggregation : to_string(@) }]}"
             }
         ],
 
-        // An array of requirements. At least one requirement should be fulfilled to
-        // trigger this subscription.
+        /// An array of one or several requirements. At least one requirement 
+        // should be fulfilled to trigger this subscription. A requirement 
+        // can have several conditions.
         "requirements" : [
             {
-                // Array of conditions. Here we use JMESPATH condition based on content in
-                // aggregated object. All conditions needs to be fulfilled in order for
+                // Array of conditions. The key in the condition object must 
+                // be "jmespath". The value can be any JMESPATH expression to 
+                // extract data from the aggregated object. 
+                // All conditions needs to be fulfilled in order for
                 // a requirement to be fulfilled.
 
                 "conditions" : [

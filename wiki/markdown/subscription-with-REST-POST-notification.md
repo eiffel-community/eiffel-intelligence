@@ -51,6 +51,9 @@ contains comments like below.**_
         // The data to send in the HTTP POST request body.
         "notificationMessageKeyValues" : [
             {
+                // The form key should match the external API to which 
+                // Eiffel Intelligence will send the notification of a 
+                // fulfilled subscription.
                 // The form value will be run through JMESPATH engine so
                 // it is possible to use JMESPATH expressions to extract
                 // content from the aggregated object.

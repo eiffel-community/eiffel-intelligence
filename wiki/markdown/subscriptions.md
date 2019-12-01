@@ -88,7 +88,7 @@ conditions inside them. Each requirement group is separated with an 'OR',
 while the conditions inside a requirement are connected with an 'AND'. This
 means all the conditions in a requirement group must be fulfilled, while
 only one of the requirement groups needs to be fulfilled, for the
-subscription to trigger. Subscription templates [can be found here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).
+subscription to trigger. 
 
 Let's say we need a subscription which is triggered on when an artifact
 has been published to a location of type "NEXUS". This subscription wants
@@ -96,12 +96,12 @@ to listen for when an Eiffel ArtifactPublished event is aggregated by
 Eiffel Intelligence.
 
 Conditions in subscriptions are written in [JMESPath syntax](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#What-is-JMESPath?). 
-The JSON structure of the subscription condition contains a key "jmespath" 
-and the value is your JMESPATH expression. In the example below, we want 
-to know when Eiffel Intelligence has aggregated information about an artifact 
-being published in Nexus. A subscription with only this condition will be 
-fulfilled as soon as Eiffel Intelligence aggregates data from an 
-ArtifactPublished event. 
+The JSON structure of the subscription condition always contains a key 
+"jmespath" and the value is a JMESPATH expression. In the example below, 
+we want to know when Eiffel Intelligence has aggregated information about 
+an artifact being published in Nexus. A subscription with only this condition 
+will be fulfilled as soon as Eiffel Intelligence aggregates data from an 
+ArtifactPublished event with the correct data. 
 
     "requirements" : [
         {
@@ -113,19 +113,23 @@ ArtifactPublished event.
         }
     ]
 
-If we instead want to trigger a subscription based on when an artifact has reached
-the confidence level of 'SUCCESS' we can write the below expression for
-our condition:
+If we instead want to trigger a subscription based on when an artifact has 
+reached the confidence level of 'SUCCESS' we can write the below expression 
+for our condition:
 
-    confidenceLevels[?name=='dummy_1_stable'] && confidenceLevels[?value=='SUCCESS']
+    {
+        "jmespath": "confidenceLevels[?name=='dummy_1_stable'] && confidenceLevels[?value=='SUCCESS']"
+    }
 
 the exact same condition can also be written like below:
 
-    confidenceLevels[?name=='dummy_1_stable' && value=='SUCCESS']
+    {
+        "jmespath": "confidenceLevels[?name=='dummy_1_stable' && value=='SUCCESS']"
+    }
 
 If you want to include both of these conditions in the same subscription, 
 (i.e. you want to know when the aggregation contains information about both
-published artifact locations and have reached the specified confidence 
+published artifact locations AND have reached the specified confidence 
 level) the subscription will look like the below json structure:
 
     "requirements" : [
@@ -141,8 +145,31 @@ level) the subscription will look like the below json structure:
         }
     ]
 
-These two conditions check both that the artifact name is the right one,
-and that the confidence level is what we are looking for.
+This subscription now contains the requirement with two conditions: 1) the 
+artifact name is the right one AND 2) the confidence level is what we are 
+looking for. If we instead would like the subscription to check for the 
+first condition OR the second one, the syntax would look like below:
+
+    "requirements": [
+        {
+            "conditions": [
+                {
+                    "jmespath": "publications[?locations[?type=='NEXUS']]"
+                }
+            ]
+        },
+        {
+            "conditions": [
+                {
+                    "jmespath": "confidenceLevels[?name=='dummy_1_stable' && value=='SUCCESS']"
+                }
+            ]
+        }
+    ]
+
+This subscription describes two requirements and as soon as one of them 
+has been fulfilled, Eiffel Intelligence would perform a notification.
+More subscription templates [can be found here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).
 
 ### Repeat handling
 See in the frontend documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)

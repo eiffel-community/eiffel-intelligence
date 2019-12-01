@@ -1,7 +1,7 @@
 # Subscription with REST POST notification
 
-A valid subscription for REST POST notification is provided below with comments
-for each field.
+Valid subscriptions for REST POST notification are provided below with 
+comments for each field.
 
 _**OBS! Comments are only for documentation purposes and a subscription should
 not contain them. The subscription will be rejected at this moment if it
@@ -56,7 +56,8 @@ contains comments like below.**_
                 // fulfilled subscription.
                 // The form value will be run through JMESPATH engine so
                 // it is possible to use JMESPATH expressions to extract
-                // content from the aggregated object.
+                // content from the aggregated object. The form value can
+                // only be one JSON object.
 
                 "formkey" : "json",
                 "formvalue" : "{parameter: [{ name: 'jsonparams', value : to_string(@) }]}"
@@ -84,6 +85,100 @@ contains comments like below.**_
                 ]
             }
 
+        ]
+    }
+
+
+Additional examples of how to write subscription requirements and conditions:
+
+
+    {
+        "subscriptionName": "Subscription1",
+        "repeat": false,
+        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+        "notificationType": "REST_POST",
+        "restPostBodyMediaType": "application/x-www-form-urlencoded",
+        "notificationMessageKeyValues": [
+            {
+                // The form key should match the external API to which 
+                // Eiffel Intelligence will send the notification of a 
+                // fulfilled subscription.
+                // The form value will be run through JMESPATH engine so
+                // it is possible to use JMESPATH expressions to extract
+                // content from the aggregated object. The form value can
+                // only be one JSON object.
+                
+                "formkey": "data",
+                "formvalue": "{parameters: [{ name: 'full_aggregation', value : to_string(@) }, { name: 'artifact_identity', value : '@.identity' }]}"
+            }
+        ],
+        "requirements": [
+        
+            // This subscription contains 2 requirements. To trigger a notification
+            // an aggregation should contain a successful test case execution OR 
+            // an artifact with a given identity AND a specific flowContext 
+            // should be found in the aggregation.
+        
+            {
+                "conditions": [
+                    {
+                        // Array of conditions. The key in the condition object must 
+                        // be "jmespath". The value can be any JMESPATH expression to 
+                        // extract data from the aggregated object. 
+                        // All conditions needs to be fulfilled in order for
+                        // a requirement to be fulfilled.
+                
+                        // Notice the single quotes surrounding the value to be checked.
+                        // This tells jmespath that this is a constant and not
+                        // an object from the aggregated object.
+                
+                        "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
+                    }
+                ]
+            },
+            {
+                "conditions": [
+                    {
+                        "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
+                    },
+                    {
+                        "jmespath": "flowContexts[?product == 'my/product/flow']"
+                    }
+                ]
+            }
+        ]
+    }
+
+The below subscription will trigger a REST POST CALL when an artifact for 
+issue JIRA-1234 has passed testcase TC5 successfully.
+
+
+    {
+        "subscriptionName": "artifactRequirementSubscription",
+        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+        "notificationType": "REST_POST",
+        "restPostBodyMediaType": "application/json",
+        "notificationMessageKeyValues": [
+            {
+                "formkey": "",
+                "formvalue": "@"
+            }
+        ],
+        "repeat": false,
+        "requirements": [
+            {
+                // This subscription will notify when an artifact for given 
+                // issue id, has passed a certain test successfully.
+                // The method 'incomplete_path_contains()' is predefined.
+                "conditions": [
+                    {
+                        "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
+                    },
+                    {
+                        "jmespath": "(length(testCaseExecutions[?(outcome.id == 'TC5' && outcome.conclusion == 'SUCCESSFUL')]) > `0`)"
+                    }
+                ]
+            }
         ]
     }
 

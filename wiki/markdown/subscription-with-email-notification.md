@@ -50,7 +50,8 @@ _**Subscription templates can be found [here](https://github.com/eiffel-communit
                 // The form key should always be an empty string for email messages.
                 // The form value will be run through JMESPATH engine so
                 // it is possible to use JMESPATH expressions to extract
-                // content from the aggregated object.
+                // content from the aggregated object. The form value can
+                // only be one JSON object.
 
                 "formkey" : "",
                 "formvalue" : "{mydata: [{ fullaggregation : to_string(@) }]}"

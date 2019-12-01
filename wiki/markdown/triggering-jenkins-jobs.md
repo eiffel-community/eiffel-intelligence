@@ -139,7 +139,8 @@ now use the build endpoint and we send the parameters in a json form using REST 
             {
                 // The form value will be run through JMESPATH engine so
                 // it is possible to use JMESPATH expressions to extract
-                // content from the aggregated object.
+                // content from the aggregated object. The form value can
+                // only be one JSON object.
 
                 "formkey" : "json",
                 "formvalue" : "{parameter: [{ name: 'object', value : to_string(@) }]}"

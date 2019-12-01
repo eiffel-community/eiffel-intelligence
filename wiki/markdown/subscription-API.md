@@ -11,100 +11,19 @@
 
 ## Create subscriptions
 
-Takes the subscription rules, the name for subscription and the user name of
-the person registering this subscription and saves the subscription in
-subscription database. The subscription name needs to be unique. Multiple
-subscriptions may be sent through a json array.
+Takes one or several subscriptions in a JSON array as input. If LDAP is 
+activated, the username of the person registering this subscription is 
+included when saving the subscription in the database. The subscription 
+name needs to be unique. 
 
     POST /subscriptions
 
-Curl command example
+**Curl command example:**
 
     curl -X POST -H "Content-type: application/json" --data @<path to file> http://<host>:8090/subscriptions
 
-Example subscriptions
-
-    [
-      {
-        "subscriptionName": "Subscription_Test",
-        "ldapUserName": "ABC",
-        "created": "2018-08-13",
-        "repeat": false,
-        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
-        "notificationType": "REST_POST",
-        "restPostBodyMediaType": "application/x-www-form-urlencoded",
-        "notificationMessageKeyValues": [
-          {
-            "formkey": "e",
-            "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'runpipeline', value : 'mybuildstep' }]}"
-          }
-        ],
-        "requirements": [
-          {
-            "type": "ARTIFACT_1",
-            "conditions": [
-              {
-               // notice single quotes surrounds the value to be checked
-               // this tells jmespath that this is a constant and not
-               // an object from the aggregated object
-                "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
-              },
-              {
-                "jmespath": "testCaseExecutions[?testCase.conclusion == 'SUCCESSFUL' && testCase.id=='TC5']"
-              }
-            ]
-          },
-          {
-            "type": "ARTIFACT_1",
-            "conditions": [
-              {
-                "jmespath": "identity=='pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0'"
-              },
-              {
-                "jmespath": "testCaseExecutions[?testCaseStartedEventId == '13af4a14-f951-4346-a1ba-624c79f10e98']"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-
-
-    // this subscription will trigger a REST POST CALL
-    // when an artifact for issue JIRA-1234
-    // has passed testcase TC5 successfully
-    {
-        "created": "2017-07-26",
-        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
-        "notificationType": "REST_POST",
-        "restPostBodyMediaType": "application/json",
-        "notificationMessageKeyValues": [
-          {
-            "formkey": "",
-            "formvalue": "@"
-          }
-        ],
-        "repeat": false,
-        "requirements": [
-          {
-            "description" : "A subscription that will notify when an artifact for given issue id, has passed a certain test successfully",
-            "conditions": [
-              {
-                "jmespath": "incomplete_path_contains(@, 'issues.id','JIRA-1234')"
-              },
-              {
-                "jmespath": "(length(testCaseExecutions[?(outcome.id == 'TC5' && outcome.conclusion == 'SUCCESSFUL')]) > `0`)"
-              }
-            ],
-            "type": "ARTIFACT_1"
-          }
-        ],
-        "subscriptionName": "artifactRequirementSubscription",
-        "ldapUserName": "ABC"
-    }
-
-
-Example of a subscription array
+Eiffel Intelligence takes a JSON list of one or several subscription objects. 
+Example of a subscription array input:
 
     [
       {
@@ -114,6 +33,8 @@ Example of a subscription array
         ..Subscription 2..
       }
     ]
+
+
 
 ## Get all subscriptions
 

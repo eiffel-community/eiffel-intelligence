@@ -1,10 +1,10 @@
 # Subscriptions
 When the desired Eiffel events have been aggregated a user would like to be
-notified and there is a possibility to register a subscription that will 
-be run on each save of an aggregated object in the database.
+notified. It is possible to create a subscription which Eiffel Intelligence 
+will match against the saved aggregations. 
 
 Whenever an aggregated object is created or modified, it is evaluated against
-all registered subscriptions to find out whether the aggregated object 
+all existing subscriptions to find out whether the aggregated object 
 meets any subscription requirements. If it fulfills a subscription requirement 
 then a notification is sent to the subscriber as specified in that subscription. 
 For further explanation of the process, [consider the following example](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/step-by-step-subscription-notification.md).
@@ -172,14 +172,39 @@ has been fulfilled, Eiffel Intelligence would perform a notification.
 More subscription templates [can be found here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).
 
 ### Repeat handling
-See in the frontend documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)
+See in the front-end documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)
 
 ### Adding comments inside subscription
 
 It is possible for users to add comments, at any level, in subscriptions. These
 comments should be a new field in the given subscription, following the json format.
+They will not be seen in the front-end GUI but only in the JSON structure if 
+downloaded from Eiffel Intelligence.
 
     {
         "description": "It is my comment"
     }
 
+### Pre-defined JMESPath methods to use in subscriptions
+
+Eiffel Intelligence supports several pre-defined methods in the JMESPath 
+expressions inside a subscription. For example it is possible to include
+the entire aggregation (or parts of it) in the notification Eiffel 
+Intelligence sends when a subscription is fulfilled.
+
+If Eiffel Intelligence should send a HTTP POST request somewhere with the 
+complete aggregation it could look like this:
+
+    "restPostBodyMediaType": "application/json",
+    "notificationMessageKeyValues": [
+        {
+            "formkey": "",
+            "formvalue": "@"
+        }
+    ],
+
+The form key should match the external API to which Eiffel Intelligence 
+will send the notification of a fulfilled subscription. The form value 
+will be run through JMESPATH engine so it is possible to use JMESPATH 
+expressions to extract content from the aggregated object. The form value 
+can only be one JSON object.

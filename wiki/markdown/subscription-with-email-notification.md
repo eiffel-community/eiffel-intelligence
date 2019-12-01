@@ -36,7 +36,7 @@ _**Subscription templates can be found [here](https://github.com/eiffel-communit
         "notificationType" : "MAIL",
         
         // The recipient of the email. One or several email addresses can 
-        // be defined with a comma separated list.
+        // be defined, separated with a comma.
         "notificationMeta" : "mymail@company.com, another@email.com",
         
         // It is possible to define an email subject per subscription, or

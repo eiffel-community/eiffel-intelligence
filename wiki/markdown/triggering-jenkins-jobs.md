@@ -32,8 +32,6 @@ Observe that we use buildWithParameters and empty notificationMessageKeyValues.
         // Creation time in system time, added by Eiffel Intelligence.
         "created" : 1542117412833,
 
-        "notificationMessageKeyValuesAuth" : [],
-        
         // If any authentication is needed by Eiffel Intelligence to send 
         // the notification HTTP request. 
         // This authentication type is "Jenkins CSRF Protection (crumb)", 
@@ -122,14 +120,14 @@ now use the build endpoint and we send the parameters in a json form using REST 
         // type works. BASIC_AUTH can also be used.
         "authenticationType" : "BASIC_AUTH_JENKINS_CSRF",
 
-        // How to notify when a subscription is fulfilled.
-        "notificationType" : "REST_POST",
-
         // The username and password Eiffel Intelligence will use in headers 
         // of the HTTP request when sending a notification via HTTP POST.
         "userName" : "functionalUser",
         "password" : "functionalUserPassword",
 
+        // How to notify when a subscription is fulfilled.
+        "notificationType" : "REST_POST",
+        
         // Which url to use for the HTTP POST request.
         "notificationMeta" : "http://eiffel-jenkins1:8080/job/ei-artifact-triggered-job/build?token='TOKEN'",
 

@@ -79,7 +79,7 @@ contains comments like below.**_
                         "jmespath" : "identity=='pkg:maven/com.othercompany.library/artifact-name@1.0.0'"
                     },
                     {
-                        "jmespath" : "confidenceLevels[?name=='my_confidence_level']"
+                        "jmespath" : "flowContexts[?product == 'myProduct' && track == 'myTrack']"
                     }
                 ]
             }

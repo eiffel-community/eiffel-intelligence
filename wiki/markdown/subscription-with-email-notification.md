@@ -47,9 +47,11 @@ _**Subscription templates can be found [here](https://github.com/eiffel-communit
         // Content of the email message.
         "notificationMessageKeyValues" : [
             {
-                // The form key should always be an empty string for email messages.
-                // The form value will be run through JMESPATH engine so
-                // it is possible to use JMESPATH expressions to extract
+                // The form key should always be an empty string for email 
+                // messages. Only one key/value pair is allowed for email 
+                // message body, since only the first value will be used.
+                // The form value will be run through JMESPath engine so
+                // it is possible to use JMESPath expressions to extract
                 // content from the aggregated object. The form value can
                 // only be one JSON object.
 
@@ -64,7 +66,7 @@ _**Subscription templates can be found [here](https://github.com/eiffel-communit
         "requirements" : [
             {
                 // Array of conditions. The key in the condition object must 
-                // be "jmespath". The value can be any JMESPATH expression to 
+                // be "jmespath". The value can be any JMESPath expression to 
                 // extract data from the aggregated object. 
                 // All conditions needs to be fulfilled in order for
                 // a requirement to be fulfilled.

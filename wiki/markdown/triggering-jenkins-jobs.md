@@ -70,7 +70,7 @@ Observe that we use buildWithParameters and empty notificationMessageKeyValues.
         "requirements" : [
             {
                 // Array of conditions. The key in the condition object must 
-                // be "jmespath". The value can be any JMESPATH expression to 
+                // be "jmespath". The value can be any JMESPath expression to 
                 // extract data from the aggregated object. 
                 // All conditions needs to be fulfilled in order for
                 // a requirement to be fulfilled.
@@ -137,12 +137,14 @@ now use the build endpoint and we send the parameters in a json form using REST 
         // The data to send with the HTTP POST request.
         "notificationMessageKeyValues" : [
             {
-                // The form value will be run through JMESPATH engine so
-                // it is possible to use JMESPATH expressions to extract
+                // When using 'application/json' the form key should be 
+                // left empty.
+                // The form value will be run through JMESPath engine so
+                // it is possible to use JMESPath expressions to extract
                 // content from the aggregated object. The form value can
                 // only be one JSON object.
 
-                "formkey" : "json",
+                "formkey" : "",
                 "formvalue" : "{parameter: [{ name: 'object', value : to_string(@) }]}"
             }
         ],
@@ -153,7 +155,7 @@ now use the build endpoint and we send the parameters in a json form using REST 
         "requirements" : [
             {
                 // Array of conditions. The key in the condition object must 
-                // be "jmespath". The value can be any JMESPATH expression to 
+                // be "jmespath". The value can be any JMESPath expression to 
                 // extract data from the aggregated object. 
                 // All conditions needs to be fulfilled in order for
                 // a requirement to be fulfilled.

@@ -185,7 +185,7 @@ downloaded from Eiffel Intelligence.
         "description": "It is my comment"
     }
 
-### Pre-defined JMESPath methods to use in subscriptions
+### Using JMESPath in subscriptions
 
 Eiffel Intelligence supports several pre-defined methods in the JMESPath 
 expressions inside a subscription. For example it is possible to include
@@ -206,7 +206,7 @@ complete aggregation it could look like this:
 
 The form key should match the external API to which Eiffel Intelligence 
 will send the notification of a fulfilled subscription. The form value 
-will be run through JMESPATH engine so it is possible to use JMESPATH 
+will be run through JMESPath engine so it is possible to use JMESPath 
 expressions to extract content from the aggregated object. The form value 
 can only be one JSON object. In the above example the full aggregation can 
 be sent using the '@' character. To access parts of the aggregation it is 

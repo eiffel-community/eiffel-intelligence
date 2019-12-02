@@ -88,7 +88,7 @@ the subscription.
 
 ## Notify via REST POST
 In the example subscription above, the notification is sent as **REST POST** 
-to the url "http://127.0.0.1:3000/ei/test_subscription_rest". The notification 
+to the url `http://127.0.0.1:3000/ei/test_subscription_rest`. The notification 
 message in this subscription is prepared as key value pairs in the request body.
 
     "notificationMessageKeyValues": [{

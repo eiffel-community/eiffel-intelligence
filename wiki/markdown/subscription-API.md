@@ -18,7 +18,7 @@ name needs to be unique.
 
     POST /subscriptions
 
-**Curl command example:**
+### Curl command example:
 
     curl -X POST -H "Content-type: application/json" --data @<path to file> http://<host>:8090/subscriptions
 

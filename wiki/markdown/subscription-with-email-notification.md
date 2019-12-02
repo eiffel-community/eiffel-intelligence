@@ -1,76 +1,79 @@
 # Subscription with EMAIL notification
 
-A valid subscription for email notification is provided below with comments for
-each field.
-
-_**OBS! Comments are only for documentation purposes and a subscription should
-not contain them. The subscription will be rejected at this moment if it
-contains comments like below.**_
+A valid subscription for email notification is provided below with each 
+field explained.
 
 _**Subscription templates can be found [here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).**_
 
+## subscriptionName
+The name of the subscription to make it easy to search for. Only numbers, letters and underscore allowed.
+
+## ldapUserName
+The name of the logged in user creating or updating the subscription. Added 
+by Eiffel Intelligence if LDAP is enabled. Not required. Defaults to an empty string.
+
+## repeat
+Instructs whether the same subscription should be re-triggered for new 
+additions to the aggregated object. If this is set to false, only the first 
+time the conditions are fulfilled, a notification will be triggered. No 
+matter how many times the aggregated object is updated.
+
+## created
+Creation time in system time, added by Eiffel Intelligence.
+
+## notificationType
+How Eiffel Intelligence should notify when a subscription is fulfilled.
+
+## notificationMeta
+The recipient of the email notification. One or several email addresses can 
+be defined, separated with a comma.
+
+## emailSubject
+It is possible to define an email subject per subscription, or use the email 
+subject which is configured in Eiffel Intelligence application.properties. Not required.
+
+## authenticationType
+If any authentication is needed by Eiffel Intelligence to send the notification email.
+
+## notificationMessageKeyValues
+Content of the email message. The form key should always be an empty string 
+for email messages. Only one key/value pair is allowed for email message body, 
+since only the first value will be used. 
+
+The form value will be run through JMESPath engine so it is possible to use 
+JMESPath expressions to extract content from the aggregated object. The 
+form value can only be one JSON object.
+
+## requirements
+An array of one or several requirements. At least one requirement should be 
+fulfilled to trigger this subscription. A requirement can have several conditions.
+
+## conditions
+Array of conditions. The key in the condition object must be "jmespath". 
+The value can be any JMESPath expression to extract data from the aggregated 
+object. All conditions needs to be fulfilled in order for a requirement to 
+be fulfilled.
+
     {
-        // The name of the subscription to make it easy to search for.
-        // Only numbers, letters and underscore allowed.
         "subscriptionName" : "Subscription3_Mail_Notification",
-
-        // The name of the logged in user creating or updating the subscription
-        // added by Eiffel Intelligence if LDAP is enabled. Not required. Defaults to an empty string.
         "ldapUserName" : "ABC",
-
-        // Instructs whether the same subscription should be re-triggered
-        // for new additions to the aggregated object. If this is set to
-        // false, only the first time the conditions are fulfilled, a
-        // notification will be triggered. No matter how many times the
-        // aggregated object is updated.
         "repeat" : false,
-
-        // Creation time in system time, added by Eiffel Intelligence.
         "created" : 1542802953782,
 
-        // If any authentication is needed by Eiffel Intelligence to send 
-        // the notification email.
-        "authenticationType" : "NO_AUTH",
-
-        // How to notify when a subscription is fulfilled.
         "notificationType" : "MAIL",
-        
-        // The recipient of the email. One or several email addresses can 
-        // be defined, separated with a comma.
         "notificationMeta" : "mymail@company.com, another@email.com",
-        
-        // It is possible to define an email subject per subscription, or
-        // use the email subject which is configured in Eiffel Intelligence 
-        // application.properties. Not required.
         "emailSubject" : "My Email Subject",
 
-        // Content of the email message.
+        "authenticationType" : "NO_AUTH",
+
         "notificationMessageKeyValues" : [
             {
-                // The form key should always be an empty string for email 
-                // messages. Only one key/value pair is allowed for email 
-                // message body, since only the first value will be used.
-                // The form value will be run through JMESPath engine so
-                // it is possible to use JMESPath expressions to extract
-                // content from the aggregated object. The form value can
-                // only be one JSON object.
-
                 "formkey" : "",
                 "formvalue" : "{mydata: [{ fullaggregation : to_string(@) }]}"
             }
         ],
-
-        /// An array of one or several requirements. At least one requirement 
-        // should be fulfilled to trigger this subscription. A requirement 
-        // can have several conditions.
         "requirements" : [
             {
-                // Array of conditions. The key in the condition object must 
-                // be "jmespath". The value can be any JMESPath expression to 
-                // extract data from the aggregated object. 
-                // All conditions needs to be fulfilled in order for
-                // a requirement to be fulfilled.
-
                 "conditions" : [
                     {
                         "jmespath" : "identity=='pkg:maven/com.othercompany.library/artifact-name@1.0.0'"

@@ -6,12 +6,12 @@ and [adding subscriptions via Eiffel Intelligence frontend GUI](https://github.c
 
     {
         "created": "2017-07-26",
-        "notificationMeta": "http://127.0.0.1:3000/ei/test_subscription_rest",
+        "notificationMeta": "http://127.0.0.1:3000/api/send",
         "notificationType": "REST_POST",
         "restPostBodyMediaType": "application/x-www-form-urlencoded",
         "notificationMessageKeyValues": [{
             "formkey": "data",
-            "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'artifact_identity', value : @.identity }]}"
+            "formvalue": "{parameters: [{ name: 'jsonparams', value : to_string(@) }, { name: 'artifact_identity', value : @.identity }]}"
         }],
         "repeat": false,
         "requirements": [{
@@ -93,17 +93,17 @@ message in this subscription is prepared as key value pairs in the request body.
 
     "notificationMessageKeyValues": [{
         "formkey": "data",
-        "formvalue": "{parameter: [{ name: 'jsonparams', value : to_string(@) }, { name: 'artifact_identity', value : @.identity }]}"
+        "formvalue": "{parameters: [{ name: 'jsonparams', value : to_string(@) }, { name: 'artifact_identity', value : @.identity }]}"
     }]
 
 The key is 'jsonparams' and the value is the full aggregated object. The 
 second parameter is the artifact identity which is extracted from the 
 aggregation, These are part of the notification message for this particular 
-subscription. Below is a list of the key value pairs which will be sent 
-for this subscription.
+subscription. Below is a list of the parameters defined in the above notification 
+message which will be sent for this subscription.
 
     parameters:
-        jsonparameters: {full aggregated object}
+        jsonparams: {full aggregated object}
         artifact_identity: pkg:maven/com.mycompany.myproduct/sub-system@1.1.0
 
 If it was sent as raw JSON body, the first parameter of the notification 
@@ -153,7 +153,7 @@ notification could be to send data extracted from the aggregated object.
 We could for example use the below JMESPath expression in the subscription 
 notification message:
 
-    "{parameter: [{ name: 'artifactIdentity', value : to_string(@.identity) }, { name: 'testCase', value: to_string(@.testCaseExecutions[0].testCase.id) }]}"
+    "{parameters: [{ name: 'artifactIdentity', value : to_string(@.identity) }, { name: 'testCase', value: to_string(@.testCaseExecutions[0].testCase.id) }]}"
 
 This expression selects the field identity from the aggregated object
 and this is used as value for the parameter "artifactIdentity". The second 

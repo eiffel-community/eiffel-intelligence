@@ -39,8 +39,8 @@ have reached confidence level X_".
 We will go through how to write some example requirements in a subscription
 based on the below aggregated object. What you see in the aggregation is 
 the extracted content from Eiffel events. Aside from that Eiffel Intelligence 
-has also added an extra "_id" key with the value of the start event. 
-This "_id" serves as an index in Mongo DB to speed up searches in the database. 
+has also added an extra _id key with the value of the start event. 
+This _id serves as an index in Mongo DB to speed up searches in the database. 
 The below aggregation is based on the [Artifact rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 **Aggregation from several Eiffel events:**
@@ -97,7 +97,7 @@ Eiffel Intelligence.
 
 Conditions in subscriptions are written in [JMESPath syntax](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#What-is-JMESPath?). 
 The JSON structure of the subscription condition always contains a key 
-"jmespath" and the value is a JMESPATH expression. In the example below, 
+"jmespath" and the value is a JMESPath expression. In the example below, 
 we want to know when Eiffel Intelligence has aggregated information about 
 an artifact being published in Nexus. A subscription with only this condition 
 will be fulfilled as soon as Eiffel Intelligence aggregates data from an 

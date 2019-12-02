@@ -46,13 +46,17 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import lombok.Setter;
+
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
+    private static final int SECONDS_1 = 1000;
+    private static final int SECONDS_30 = 30000;
     private static final int DEFAULT_DELAY_BETWEEN_SENDING_EVENTS = 350;
+    protected static final String MAILHOG_DATABASE_NAME = "mailhog";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
 
     protected RabbitTemplate rabbitTemplate;
-    protected static final String MAILHOG_DATABASE_NAME = "mailhog";
     @Autowired
     protected MongoDBHandler mongoDBHandler;
     @Value("${ei.host:localhost}")
@@ -94,6 +98,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
 
+    /*
+     * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
+     * thread looking for the events don't do it before actually populating events in the database
+     */
+    @Setter
+    private int firstEventWaitTime = 0;
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -110,16 +121,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropCollection(database, subscriptionCollectionRepatFlagHandlerName);
         mongoDBHandler.dropCollection(database, failedNotificationCollectionName);
         mongoDBHandler.dropCollection(database, sessionsCollectionName);
-    }
-
-    /*
-     * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
-     * thread looking for the events don't do it before actually populating events in the database
-     */
-    private int firstEventWaitTime = 0;
-
-    public void setFirstEventWaitTime(int value) {
-        firstEventWaitTime = value;
     }
 
     /**
@@ -206,12 +207,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            TimeUnit.MILLISECONDS.sleep(1000);
+            TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
 
         if (processedEvents < eventsCount) {
@@ -257,8 +258,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 30000;
-            long stopTime = System.currentTimeMillis() + maxWaitTime;
+            long stopTime = System.currentTimeMillis() + SECONDS_30;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
 
@@ -270,7 +270,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;
                 } catch (AssertionError e) {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.MILLISECONDS.sleep(SECONDS_1);
                 }
             }
         }

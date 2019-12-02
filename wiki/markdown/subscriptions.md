@@ -196,9 +196,10 @@ If Eiffel Intelligence should send a HTTP POST request somewhere with the
 complete aggregation it could look like this:
 
     "restPostBodyMediaType": "application/json",
+    "notificationMeta": "some-external-api/endpoint"
     "notificationMessageKeyValues": [
         {
-            "formkey": "",
+            "formkey": "external-api-parameter-name",
             "formvalue": "@"
         }
     ],
@@ -207,4 +208,9 @@ The form key should match the external API to which Eiffel Intelligence
 will send the notification of a fulfilled subscription. The form value 
 will be run through JMESPATH engine so it is possible to use JMESPATH 
 expressions to extract content from the aggregated object. The form value 
-can only be one JSON object.
+can only be one JSON object. In the above example the full aggregation can 
+be sent using the '@' character. To access parts of the aggregation it is 
+possible to define like the below examples:
+
+    @.identity         // represents the identity string from the aggregation
+    @.some_array       // it is possible to extract an array from the aggregation

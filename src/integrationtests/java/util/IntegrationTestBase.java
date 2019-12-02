@@ -157,7 +157,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                 }
                 /**
                  * Without a small delay between the sending of 2 events, one may risk to be lost in
-                 * an empty void of not received by EI
+                 * an empty void if not received by EI
                  */
                 TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
             }
@@ -217,7 +217,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
         if (processedEvents < eventsCount) {
             fail(String.format(
-                    "IE did not process all sent events. Processed '%s' events out of '%s' sent.",
+                    "EI did not process all sent events. Processed '%s' events out of '%s' sent.",
                     processedEvents, eventsCount));
         }
     }

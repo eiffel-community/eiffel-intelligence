@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -239,19 +240,16 @@ public class FlowStepsIT extends IntegrationTestBase {
     public void mongodbShouldContainMails(int amountOfMails) throws Exception {
         long stopTime = System.currentTimeMillis() + 30000;
         Boolean mailHasBeenDelivered = false;
-        long createdDateInMillis = 0;
 
         while (mailHasBeenDelivered == false && stopTime > System.currentTimeMillis()) {
             JsonNode newestMailJson = getNewestMailFromDatabase();
 
             if (newestMailJson != null) {
-                JsonNode to = newestMailJson.get("to");
-                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails,
-                        amountOfMails, to.size());
+                JsonNode recipients = newestMailJson.get("to");
+                assertEquals("Number of recipients for test email",
+                        amountOfMails, recipients.size());
 
-                String createdDate = newestMailJson.get("created").get("$date").asText();
-
-                createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
+                long createdDateInMillis = getDateAsEpochMillis(newestMailJson);
                 mailHasBeenDelivered = createdDateInMillis >= startTime;
             }
 
@@ -348,6 +346,17 @@ public class FlowStepsIT extends IntegrationTestBase {
             }
         }
         return value;
+    }
+
+    private long getDateAsEpochMillis(JsonNode newestMailJson) {
+        long createdDateInMillis = 0;
+        String createdDate = newestMailJson.get("created").get("$date").asText();
+        if (StringUtils.isNumeric(createdDate)) {
+            createdDateInMillis = Long.parseLong(createdDate);
+        } else {
+            createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
+        }
+        return createdDateInMillis;
     }
 
     /**

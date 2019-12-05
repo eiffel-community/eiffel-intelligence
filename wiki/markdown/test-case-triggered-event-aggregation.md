@@ -199,7 +199,7 @@ And is put in to the object in the way as it is specified in this rule:
     "MergeResolverRules": "[ {NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: meta.id }]} ]"
 
 JSON object with requested data will be put into array and stored in aggregated
-object with key “testsKeysExecutions”. Data in correct format will look like:
+object with key “testsCaseExecutions”. Data in correct format will look like:
 
     "testCaseExecutions": [
 

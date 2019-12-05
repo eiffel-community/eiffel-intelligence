@@ -87,18 +87,22 @@ public class SubscriptionValidator {
      */
     private static void validateSubscriptionName(String subscriptionName)
             throws SubscriptionValidationException {
-        String invalidSubscriptionNameRegex = null;
-        invalidSubscriptionNameRegex = RegExProvider.SUBSCRIPTION_NAME;
+        String invalidSubscriptionNameRegex = RegExProvider.SUBSCRIPTION_NAME;
 
         if (subscriptionName == null) {
             throw new SubscriptionValidationException(
                     "Required field SubscriptionName has not been set.");
-        } else if (invalidSubscriptionNameRegex == null
+        }
+
+        if (invalidSubscriptionNameRegex == null
                 || invalidSubscriptionNameRegex.isEmpty()) {
             throw new SubscriptionValidationException(
                     "A valid regular expression for validating subscription name is not provided.");
-        } else if (Pattern.matches(invalidSubscriptionNameRegex,
-                subscriptionName)) {
+        }
+
+        Pattern pattern = Pattern.compile(invalidSubscriptionNameRegex);
+        Matcher matcher = pattern.matcher(subscriptionName);
+        if (matcher.find()) {
             throw new SubscriptionValidationException(
                     "Wrong format of SubscriptionName: " + subscriptionName);
         }
@@ -224,8 +228,7 @@ public class SubscriptionValidator {
      */
     public static void validateEmail(String email)
             throws SubscriptionValidationException {
-        String validEmailRegEx = null;
-        validEmailRegEx = RegExProvider.NOTIFICATION_META;
+        String validEmailRegEx = RegExProvider.NOTIFICATION_META;
 
         if (validEmailRegEx == null || validEmailRegEx.isEmpty()) {
             throw new SubscriptionValidationException(

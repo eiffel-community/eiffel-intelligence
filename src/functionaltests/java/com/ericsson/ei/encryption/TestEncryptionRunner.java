@@ -2,9 +2,6 @@ package com.ericsson.ei.encryption;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.TestPropertySource;
-
-import com.ericsson.ei.utils.TestLDAPStarter;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;

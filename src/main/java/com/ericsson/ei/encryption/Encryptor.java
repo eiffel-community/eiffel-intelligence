@@ -37,7 +37,7 @@ public class Encryptor {
     private StandardPBEStringEncryptor encryptor;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         encryptor = new StandardPBEStringEncryptor();
         if (isJasyptPasswordSet()) {
             encryptor.setPassword(jasyptEncryptorPassword);

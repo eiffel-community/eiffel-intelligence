@@ -74,7 +74,8 @@ public class SubscriptionService implements ISubscriptionService {
         String username = subscription.getUserName();
         String password = subscription.getPassword();
         if (isEncryptionReady(authType, username, password)) {
-            subscription = doEncryption(subscription);
+            String encryptedPassword = encryptPassword(password);
+            subscription.setPassword(encryptedPassword);
         }
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
@@ -83,7 +84,8 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
+    public Subscription getSubscription(String subscriptionName)
+            throws SubscriptionNotFoundException {
         final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
 
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
@@ -210,12 +212,9 @@ public class SubscriptionService implements ISubscriptionService {
         return authDetailsSet && jasyptPasswordSet && authTypeSet;
     }
 
-    private Subscription doEncryption(Subscription subscription) {
-        String password = subscription.getPassword();
-        String encryptedPassword = EncryptionFormatter.addEncryptionParentheses(
-                encryptor.encrypt(password));
-        subscription.setPassword(encryptedPassword);
-        return subscription;
+    private String encryptPassword(String password) {
+        String encryptedPassword = encryptor.encrypt(password);
+        return EncryptionFormatter.addEncryptionParentheses(encryptedPassword);
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {

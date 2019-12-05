@@ -43,23 +43,15 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class HttpRequest {
 
-    @Component
-    static class HttpRequestFactory {
-        // Used to enable mocking of this class in tests.
-        HttpRequest createHttpRequest() {
-            return new HttpRequest();
-        }
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
-
-    private SubscriptionField subscriptionField;
 
     // Manual wired
     private HttpRequestSender httpRequestSender = SpringContext.getBean(HttpRequestSender.class);
     private JenkinsCrumb jenkinsCrumb = SpringContext.getBean(JenkinsCrumb.class);
     private UrlParser urlParser = SpringContext.getBean(UrlParser.class);
     private Encryptor encryptor = SpringContext.getBean(Encryptor.class);
+
+    private SubscriptionField subscriptionField;
 
     @Getter
     @Setter
@@ -83,6 +75,14 @@ public class HttpRequest {
     private String contentType;
     @Getter
     private HttpHeaders headers;
+
+    @Component
+    static class HttpRequestFactory {
+        // Used to enable mocking of this class in tests.
+        HttpRequest createHttpRequest() {
+            return new HttpRequest();
+        }
+    }
 
     /**
      * Perform a HTTP request to a specific url. Returns the response.

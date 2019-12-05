@@ -68,7 +68,7 @@ public class SafeLdapServerTest {
 
     @Test
     public void testInputValueNull() throws Exception {
-        final JSONArray serverList = SafeLdapServer.createLdapSettingsArray("");
+        final JSONArray serverList = SafeLdapServer.createLdapSettingsArray(null);
         assertEquals("Safe LDAP server list should be empty", 0, serverList.length());
     }
 

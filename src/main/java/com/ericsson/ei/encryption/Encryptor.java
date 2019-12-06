@@ -61,7 +61,7 @@ public class Encryptor {
      * @return
      */
     public String decrypt(String value) {
-        String encrypted = EncryptionFormatter.removeEncryptionParentheses(value);
+        String encrypted = EncryptionUtils.removeEncryptionParentheses(value);
         return encryptor.decrypt(encrypted);
     }
 

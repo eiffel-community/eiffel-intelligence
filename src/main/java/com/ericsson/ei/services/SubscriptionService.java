@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.EncryptionUtils;
 import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongo.MongoCondition;
@@ -203,7 +203,7 @@ public class SubscriptionService implements ISubscriptionService {
     private boolean isEncryptionReady(String authType, String username, String password) {
         boolean jasyptPasswordSet = false;
         boolean authTypeSet = false;
-        boolean authDetailsSet = EncryptionFormatter.verifyAuthenticationDetails(authType, username,
+        boolean authDetailsSet = EncryptionUtils.verifyAuthenticationDetails(authType, username,
                 password);
         if (authDetailsSet) {
             jasyptPasswordSet = encryptor.isJasyptPasswordSet();
@@ -214,7 +214,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     private String encryptPassword(String password) {
         String encryptedPassword = encryptor.encrypt(password);
-        return EncryptionFormatter.addEncryptionParentheses(encryptedPassword);
+        return EncryptionUtils.addEncryptionParentheses(encryptedPassword);
     }
 
     private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {

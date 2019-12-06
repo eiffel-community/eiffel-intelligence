@@ -107,7 +107,7 @@ public class EncryptionSteps extends FunctionalTestBase {
         String json = dbManager.getSubscription(SUBSCRIPTION_NAME);
         JSONObject subscription = new JSONObject(json);
         String password = subscription.getString("password");
-        assertTrue(EncryptionFormatter.isEncrypted(password));
+        assertTrue(EncryptionUtils.isEncrypted(password));
     }
 
     @Then("^the subscription should trigger$")

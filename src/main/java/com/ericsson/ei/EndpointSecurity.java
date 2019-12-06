@@ -33,7 +33,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.EncryptionUtils;
 import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AbortExecutionException;
 
@@ -81,7 +81,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
             JSONObject server = (JSONObject) serverList.get(i);
             String password = server.getString("password");
 
-            if (EncryptionFormatter.isEncrypted(password)) {
+            if (EncryptionUtils.isEncrypted(password)) {
                 password = decryptPassword(password);
             }
             else {

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.EncryptionUtils;
 
 public class EncryptorTest {
 
@@ -32,7 +32,7 @@ public class EncryptorTest {
 
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
+                EncryptionUtils.removeEncryptionParentheses(encryptedPassword));
     }
 
     @Test
@@ -42,6 +42,6 @@ public class EncryptorTest {
 
         assertEquals("Failed to remove ENC() from encrypted password property string.",
                 expectedEncryptedPassword,
-                EncryptionFormatter.removeEncryptionParentheses(encryptedPassword));
+                EncryptionUtils.removeEncryptionParentheses(encryptedPassword));
     }
 }

@@ -29,7 +29,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import com.ericsson.ei.controller.model.AuthenticationType;
-import com.ericsson.ei.encryption.EncryptionFormatter;
+import com.ericsson.ei.encryption.EncryptionUtils;
 import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.utils.SpringContext;
@@ -157,13 +157,13 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        boolean authenticationDetailsProvided = EncryptionFormatter.verifyAuthenticationDetails(
+        boolean authenticationDetailsProvided = EncryptionUtils.verifyAuthenticationDetails(
                 authType, username, password);
         if (!authenticationDetailsProvided) {
             return;
         }
         if (encryptor != null && encryptor.isJasyptPasswordSet()
-                && EncryptionFormatter.isEncrypted(password)) {
+                && EncryptionUtils.isEncrypted(password)) {
             password = doDecryption(password);
         }
 

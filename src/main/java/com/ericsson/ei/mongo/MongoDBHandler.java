@@ -110,7 +110,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 FindIterable<Document> foundResults = collection.find();
                 for (Document document : foundResults) {
-                    result.add(document.toJson());
+                    result.add(JSON.serialize(document));
                 }
 
                 if (result.size() != 0) {

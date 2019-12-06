@@ -31,6 +31,45 @@
 ##################################################################################################
 version: "2.1"
 services:
+  replica1:
+    container_name: replica1
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27001:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica1
+  replica2:
+    container_name: replica2
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27002:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica3
+  replica3:
+    container_name: replica3
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27003:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica3
   mongodb:
     restart: always
     image: ${MONGODB_IMAGE}

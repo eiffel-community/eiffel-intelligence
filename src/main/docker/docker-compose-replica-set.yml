@@ -1,0 +1,75 @@
+#################################################################################################
+#
+# Copyright 2019 Ericsson AB.
+# For a full list of individual contributors, please see the commit history.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+##################################################################################################
+# docker-compose commands
+#
+# run:         docker-compose up
+# stop:        docker-compose stop
+# stop/remove: docker-compose down --volumes
+#
+# Cleanup/Remove (if needed):
+#     Dangling Volumes:   docker volume rm `docker volume ls -q -f dangling=true`
+#     Unused Images:      docker images -q | xargs docker rmi
+#     Stopped containers: docker rm `docker ps -a -q`
+#
+# Maintainer: Eiffel-Community
+##################################################################################################
+version: "2.1"
+services:
+  replica1:
+    container_name: replica1
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27001:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica1
+  replica2:
+    container_name: replica2
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27002:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica3
+  replica3:
+    container_name: replica3
+    image: mongo:latest
+    expose:
+      - "27017"
+    ports:
+      - "27003:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      eiffel_2.0_1:
+        aliases:
+          - replica3
+
+networks:
+  eiffel_2.0_1:

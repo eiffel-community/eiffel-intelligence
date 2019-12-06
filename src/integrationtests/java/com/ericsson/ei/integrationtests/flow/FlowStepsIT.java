@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.JenkinsManager;
@@ -39,6 +40,8 @@ import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -51,6 +54,25 @@ import util.IntegrationTestBase;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class })
 public class FlowStepsIT extends IntegrationTestBase {
+    private MongoDBHandler mailhogMongoDBHandler;
+
+    @Value("${jenkins.protocol:http}")
+    public String jenkinsProtocol;
+    @Value("${jenkins.host:localhost}")
+    public String jenkinsHost;
+    @Value("${jenkins.port:8082}")
+    public int jenkinsPort;
+    @Value("${jenkins.username:admin}")
+    public String jenkinsUsername;
+    @Value("${jenkins.password:admin}")
+    public String jenkinsPassword;
+
+    @Value("${mailhog.uri:mongodb://localhost:27017}")
+    public String mailHogUri;
+    @Value("${mailhog.collection:messages}")
+    public String mailhogCollectionName;
+    @Value("${mailhog.database:mailhog}")
+    public String mailhogDatabaseName;
 
     private String jenkinsJobName;
     private String jenkinsJobToken;
@@ -61,24 +83,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     private String upstreamInputFile;
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
-
     private long startTime;
-
-    @Value("${jenkins.host:http}")
-    private String jenkinsProtocol;
-
-    @Value("${jenkins.host:localhost}")
-    private String jenkinsHost;
-
-    @Value("${jenkins.port:8082}")
-    private int jenkinsPort;
-
-    @Value("${jenkins.username:admin}")
-    private String jenkinsUsername;
-
-    @Value("${jenkins.password:admin}")
-    private String jenkinsPassword;
-
     private JenkinsManager jenkinsManager;
     private JenkinsXmlData jenkinsXmlData;
     private SubscriptionObject subscriptionObject;
@@ -87,7 +92,6 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
-        Thread.sleep(20000);
     }
 
     @Given("^the events \"([^\"]*)\"$")
@@ -163,7 +167,6 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^the eiffel events are sent$")
     public void eiffelEventsAreSent() throws Throwable {
-        Thread.sleep(1000);
         super.sendEventsAndConfirm();
     }
 
@@ -247,12 +250,12 @@ public class FlowStepsIT extends IntegrationTestBase {
             JsonNode newestMailJson = getNewestMailFromDatabase();
 
             if (newestMailJson != null) {
-                JsonNode to = newestMailJson.get("to");
-                assertEquals("Sent mails " + to.size() + ". Expected " + amountOfMails,
-                        amountOfMails, to.size());
+                JsonNode recipients = newestMailJson.get("to");
+                assertEquals("Number of recipients for test email",
+                        amountOfMails, recipients.size());
 
-                String createdDate = newestMailJson.get("created").get("$date").asText();
-                mailHasBeenDelivered = Long.valueOf(createdDate) >= startTime;
+                long createdDateInMillis = getDateAsEpochMillis(newestMailJson);
+                mailHasBeenDelivered = createdDateInMillis >= startTime;
             }
 
             if (!mailHasBeenDelivered) {
@@ -350,6 +353,17 @@ public class FlowStepsIT extends IntegrationTestBase {
         return value;
     }
 
+    private long getDateAsEpochMillis(JsonNode newestMailJson) {
+        long createdDateInMillis = 0;
+        String createdDate = newestMailJson.get("created").get("$date").asText();
+        if (StringUtils.isNumeric(createdDate)) {
+            createdDateInMillis = Long.parseLong(createdDate);
+        } else {
+            createdDateInMillis = ZonedDateTime.parse(createdDate).toInstant().toEpochMilli();
+        }
+        return createdDateInMillis;
+    }
+
     /**
      * Iterates the parameter array and returns the value if the key is found in given parameter
      * array.
@@ -373,8 +387,11 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     private JsonNode getNewestMailFromDatabase() throws Exception {
-        ArrayList<String> allMails = mongoDBHandler.getAllDocuments(MAILHOG_DATABASE_NAME,
-                "messages");
+        if (mailhogMongoDBHandler == null) {
+            setupMailhogMongoDBHandler();
+        }
+        ArrayList<String> allMails = mailhogMongoDBHandler.getAllDocuments(mailhogDatabaseName,
+                mailhogCollectionName);
 
         if (allMails.size() > 0) {
             String mailString = allMails.get(allMails.size() - 1);
@@ -382,6 +399,13 @@ public class FlowStepsIT extends IntegrationTestBase {
         } else {
             return null;
         }
+    }
+
+    private void setupMailhogMongoDBHandler() {
+        MongoClientURI uri = new MongoClientURI(mailHogUri);
+        MongoClient mongoClient = new MongoClient(uri);
+        mailhogMongoDBHandler = new MongoDBHandler();
+        mailhogMongoDBHandler.setMongoClient(mongoClient);
     }
 
     /**
@@ -402,12 +426,10 @@ public class FlowStepsIT extends IntegrationTestBase {
      */
     private String replaceVariablesInNotificationMeta(String notificationMeta) {
         notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsHost\\}", jenkinsHost);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}", String.valueOf(
-                jenkinsPort));
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}",
-                this.jenkinsJobName);
-        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}",
-                this.jenkinsJobToken);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsPort\\}",
+                String.valueOf(jenkinsPort));
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobName\\}", jenkinsJobName);
+        notificationMeta = notificationMeta.replaceAll("\\$\\{jenkinsJobToken\\}", jenkinsJobToken);
         return notificationMeta;
     }
 }

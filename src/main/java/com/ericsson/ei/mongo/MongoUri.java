@@ -28,7 +28,7 @@ public class MongoUri {
     private static final String HIDDEN_PASSWORD = "********";
 
     /**
-     * The input uri will have it´s password replaced wit stars and returned uri is validated not to
+     * The input uri will have it´s password replaced with stars and returned uri is validated not to
      * contain the password.
      *
      * Example input uri: mongodb://username:password@hostname1:27017,hostname2:27017

@@ -165,7 +165,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             waitForEventsToBeProcessed(eventsCount);
             checkResult(getCheckData());
         } catch (IOException e) {
-            String message = String.format("Failed to send Eiffel messages. Reason: %s", e.getMessage());
+            String message = String.format("Failed to send Eiffel messages. Reason: %s",
+                    e.getMessage());
             LOGGER.error(message, e);
             fail(message);
         }

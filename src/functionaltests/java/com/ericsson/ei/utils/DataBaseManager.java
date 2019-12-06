@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
@@ -25,13 +27,16 @@ public class DataBaseManager {
     private String database;
 
     @Value("${event_object_map.collection.name}")
-    private String collection;
+    private String eventMapCollection;
 
     @Value("${aggregated.collection.name}")
     private String aggregatedCollectionName;
 
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
+
+    @Value("${subscription.collection.name}")
+    private String subscriptionCollectionName;
 
     @Getter
     @Autowired
@@ -78,8 +83,8 @@ public class DataBaseManager {
         while (stopTime > System.currentTimeMillis()) {
             mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
             MongoDatabase db = mongoClient.getDatabase(database);
-            MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
-            List<Document> documents = table.find().into(new ArrayList<>());
+            MongoCollection<Document> collection = db.getCollection(aggregatedCollectionName);
+            List<Document> documents = collection.find().into(new ArrayList<>());
             TimeUnit.MILLISECONDS.sleep(1000);
             if (!documents.isEmpty()) {
                 return true;
@@ -98,8 +103,8 @@ public class DataBaseManager {
     private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(aggregatedCollectionName);
-        List<Document> documents = table.find().into(new ArrayList<>());
+        MongoCollection<Document> collection = db.getCollection(aggregatedCollectionName);
+        List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
             for (String expectedValue : new ArrayList<>(checklist)) {
                 if (document.toString().contains(expectedValue)) {
@@ -140,8 +145,8 @@ public class DataBaseManager {
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(collection);
-        List<Document> documents = table.find().into(new ArrayList<>());
+        MongoCollection<Document> collection = db.getCollection(eventMapCollection);
+        List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
             for (String expectedID : new ArrayList<>(checklist)) {
                 if (expectedID.equals(document.get("_id").toString())) {
@@ -174,8 +179,23 @@ public class DataBaseManager {
     public int waitListSize() {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection<Document> table = db.getCollection(waitlistCollectionName);
-        List<Document> documents = table.find().into(new ArrayList<>());
+        MongoCollection<Document> collection = db.getCollection(waitlistCollectionName);
+        List<Document> documents = collection.find().into(new ArrayList<>());
         return documents.size();
+    }
+
+    /**
+     * Get a specific subscription from the database based on the subscription name.
+     *
+     * @param subscriptionName
+     * @return the document as JSON string
+     */
+    public String getSubscription(String subscriptionName) {
+        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+        MongoDatabase db = mongoClient.getDatabase(database);
+        MongoCollection<Document> collection = db.getCollection(subscriptionCollectionName);
+        Bson filter = Filters.eq("subscriptionName", subscriptionName);
+        Document document = collection.find(filter).first();
+        return document.toJson();
     }
 }

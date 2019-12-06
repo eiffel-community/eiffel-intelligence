@@ -30,7 +30,10 @@ import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.config.HttpSessionConfig;
+import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.encryption.EncryptionUtils;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
@@ -61,8 +64,19 @@ public class SubscriptionService implements ISubscriptionService {
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private Encryptor encryptor;
+
     @Override
-    public void addSubscription(Subscription subscription) throws JsonProcessingException, MongoWriteException {
+    public void addSubscription(Subscription subscription)
+            throws JsonProcessingException, MongoWriteException {
+        String authType = subscription.getAuthenticationType();
+        String username = subscription.getUserName();
+        String password = subscription.getPassword();
+        if (isEncryptionReady(authType, username, password)) {
+            String encryptedPassword = encryptPassword(password);
+            subscription.setPassword(encryptedPassword);
+        }
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
         stringSubscription = mapper.writeValueAsString(subscription);
@@ -70,12 +84,15 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
+    public Subscription getSubscription(String subscriptionName)
+            throws SubscriptionNotFoundException {
         final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
+
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
-            throw new SubscriptionNotFoundException("No record found for the Subscription Name: " + subscriptionName);
+            throw new SubscriptionNotFoundException(
+                    "No record found for the Subscription Name: " + subscriptionName);
         }
         for (String input : list) {
             Subscription subscription;
@@ -93,7 +110,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean doSubscriptionExist(String subscriptionName) {
-        final MongoQuery  query = MongoCondition.subscriptionNameCondition(subscriptionName);
+        final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
     }
@@ -183,17 +200,36 @@ public class SubscriptionService implements ISubscriptionService {
         return subscriptions;
     }
 
+    private boolean isEncryptionReady(String authType, String username, String password) {
+        boolean jasyptPasswordSet = false;
+        boolean authTypeSet = false;
+        boolean authDetailsSet = EncryptionUtils.verifyAuthenticationDetails(authType, username,
+                password);
+        if (authDetailsSet) {
+            jasyptPasswordSet = encryptor.isJasyptPasswordSet();
+            authTypeSet = !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH);
+        }
+        return authDetailsSet && jasyptPasswordSet && authTypeSet;
+    }
+
+    private String encryptPassword(String password) {
+        String encryptedPassword = encryptor.encrypt(password);
+        return EncryptionUtils.addEncryptionParentheses(encryptedPassword);
+    }
+
     private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {
-        LOGGER.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}", subscriptionNameQuery);
+        LOGGER.debug(
+                "Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}",
+                subscriptionNameQuery);
         MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
+        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection,
+                subscriptionNameQuery);
     }
 
     /**
      * This method finds whether a given subscription has an owner
      *
-     * @param subscriptionName-
-     *            subscription name
+     * @param subscriptionName subscription name
      * @return a boolean
      * @throws SubscriptionNotFoundException
      */
@@ -211,6 +247,12 @@ public class SubscriptionService implements ISubscriptionService {
         return ownerExist;
     }
 
+    /**
+     * This method ldapUserName, if exists, otherwise return empty string
+     *
+     * @param subscriptionName subscription name
+     * @return a MongoCondition
+     */
     private MongoCondition getLdapUserNameCondition(String subscriptionName) {
         String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
 

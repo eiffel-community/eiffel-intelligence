@@ -1,6 +1,6 @@
 [
   [
-    "{event_id:%IdentifyRules%}",
+    "{event_id:%IdentifyRulesEventId%}",
     "testcaseid2",
     "`{event_id:\"testcaseid2\"}`",
     "{}",
@@ -11,7 +11,7 @@
 
   ],
   [
-    "{event_id:%IdentifyRules%}",
+    "{event_id:%IdentifyRulesEventId%}",
     "testcaseid2",
     "`{event_id:\"testcaseid2\"}`",
     "{}",
@@ -21,7 +21,7 @@
     "{id:eventId,type:eventType,test_cases:[{event_id:testcaseid1,test_data:testcase1data},{event_id:`testcaseid2`,test_data:testcase2data,test_time:some_time,test_name:some_name}],artifacts:[{event_id:artifact_id_1,artifact_data:artifact1data},{event_id:artifact_id_2,artifact_data:artifact2data}]}"
   ],
   [
-    "{test_cases:{event_id:%IdentifyRules%}}",
+    "{test_cases:{event_id:%IdentifyRulesEventId%}}",
     "testcaseid3",
     "`{test_cases:{event_id:\"testcaseid3\"}}`",
     "{}",

@@ -71,40 +71,43 @@ these keys, that have not null or empty values. Explicit list of rule keys are
 below:
 
 ### TemplateName 
-used for specifying a template group, any string you like to
-name your template
+This field is used for specifying a group for your set of rules. It can be 
+any string you like to name your rule set.
 
 ### Type 
-Eiffel event type, which will be used to find the matching rule set
-for the received Eiffel event while creating aggregated object. Example:
-"EiffelConfidenceLevelModifiedEvent"
+This field indicates the Eiffel event type. It will be used to find the 
+matching rule set for the received Eiffel event while creating the aggregated 
+object. Example: `"Type": "EiffelConfidenceLevelModifiedEvent"`
 
 ### TypeRule 
-JMESPath identifier for the location of Eiffel event type in
-received Eiffel event. Example: "meta.type".
+JMESPath identifier for the location of where to find the Eiffel event type 
+in a received Eiffel event. Example: "meta.type". 
+[Example Eiffel events can be found here](https://github.com/eiffel-community/eiffel/tree/master/examples/events).
 
 ### IdRule 
-JMESPath identifier for the location of the Eiffel event id in a
-received Eiffel event. Example: "meta.id". Used as fall back when storing in
-database and no id is provided or to link id of aggregated objects to events
+JMESPath identifier to find the location of the Eiffel event id in a
+received Eiffel event. Example: `meta.id`. Used as fall back when storing in
+database and no id is provided or to link id's of aggregated objects to events
 that contributed to the aggregated object.
 
 ### StartEvent
-denotes if this event type starts the object aggregation. If
+This field denotes if this event type starts the object aggregation. If
 StartEvent is "YES" then it will be the first processed event in the aggregation
-sequence. If StartEvent is "NO" then Eiffel event of this type will be used to
+sequence. If StartEvent is "NO" then Eiffel events of this type will be used to
 append information to existing aggregated object. If no aggregated object exist
 then it will wait a certain time as defined by property
- _waitlist.collection.ttlValue_ in [application's properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
- until wanted aggregated object has been created. If no aggregated object is
- created in time then the event will no longer be processed and it will be
- removed from the wait list.
+_waitlist.collection.ttlValue_ in [application's properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+until wanted aggregated object has been created. If no aggregated object is
+created in time then the event will no longer be processed and it will be
+removed from the wait list.
 
 ### IdentifyRules
 JMESPath identifier of ids that will be used to search in the database 
-for an existing aggregated object. Should produce a JSON array.
+for an existing aggregated object. This describes how Eiffel events of 
+a certain type should link to an existing aggregation. If using a JMESPath 
+expression it should produce a JSON array with an Eiffel event id.
 
-"[meta.id]" will return the specified field in an array, like this:
+`"IdentifyRules" : [meta.id]` will return the specified field in an array, like this:
 
     ["sb6e51h0-25ch-4dh7-b9sd-876g8e6kde47"].
 

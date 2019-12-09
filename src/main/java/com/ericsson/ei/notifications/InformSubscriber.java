@@ -20,6 +20,7 @@ import java.text.ParseException;
 
 import javax.mail.internet.MimeMessage;
 
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ import org.springframework.util.MultiValueMap;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,11 +64,11 @@ public class InformSubscriber {
 
     @Getter
     @Value("${failed.notification.collection-name}")
-    private String missedNotificationCollectionName;
+    private String failedNotificationCollectionName;
 
     @Getter
-    @Value("${failed.notification.database-name}")
-    private String missedNotificationDataBaseName;
+    @Value("${spring.data.mongodb.database}")
+    private String database;
 
     @Getter
     @Value("${notification.ttl.value}")
@@ -123,16 +124,16 @@ public class InformSubscriber {
                         subject);
                 emailSender.sendEmail(message);
             }
-        } catch (NotificationFailureException | AuthenticationException e) {
+        } catch (NotificationFailureException | AuthenticationException | EncryptionOperationNotPossibleException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
-            String missedNotification = prepareMissedNotification(aggregatedObject,
+            String failedNotification = prepareFailedNotification(aggregatedObject,
                     subscriptionName, notificationMeta, e.getMessage());
             LOGGER.debug(
-                    "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
-                    e.getMessage(), missedNotification);
-            mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, "time", ttlValue);
-            saveMissedNotificationToDB(missedNotification);
+                    "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
+                    e.getMessage(), failedNotification);
+            mongoDBHandler.createTTLIndex(database,
+                    failedNotificationCollectionName, "time", ttlValue);
+            saveFailedNotificationToDB(failedNotification);
         }
     }
 
@@ -170,12 +171,12 @@ public class InformSubscriber {
     }
 
     /**
-     * Saves the missed Notification into a single document in the database.
+     * Saves the failed Notification into a single document in the database.
      */
-    private void saveMissedNotificationToDB(String missedNotification) {
+    private void saveFailedNotificationToDB(String failedNotification) {
         try {
-            mongoDBHandler.insertDocument(missedNotificationDataBaseName,
-                    missedNotificationCollectionName, missedNotification);
+            mongoDBHandler.insertDocument(database,
+                    failedNotificationCollectionName, failedNotification);
             LOGGER.debug("Notification saved in the database");
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the notification into database.", e);
@@ -183,14 +184,14 @@ public class InformSubscriber {
     }
 
     /**
-     * Prepares the document to be saved in the missed notification database.
+     * Prepares the document to be saved in the failed notification database.
      *
      * @param aggregatedObject
      * @param subscriptionName
      * @param notificationMeta
      * @return String
      */
-    private String prepareMissedNotification(String aggregatedObject, String subscriptionName,
+    private String prepareFailedNotification(String aggregatedObject, String subscriptionName,
             String notificationMeta, String errorMessage) {
         BasicDBObject document = new BasicDBObject();
         document.put("subscriptionName", subscriptionName);

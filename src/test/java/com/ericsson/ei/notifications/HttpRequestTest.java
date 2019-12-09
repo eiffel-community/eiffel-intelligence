@@ -45,7 +45,7 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: HttpRequestTest",
-        "failed.notification.database-name: HttpRequestTest-failedNotifications",
+        "failed.notification.collection-name: HttpRequestTest-failedNotifications",
         "rabbitmq.exchange.name: HttpRequestTest-exchange",
         "rabbitmq.consumerName: HttpRequestTestConsumer" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)

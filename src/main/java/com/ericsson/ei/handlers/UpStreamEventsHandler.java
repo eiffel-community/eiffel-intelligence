@@ -14,7 +14,6 @@
 
 package com.ericsson.ei.handlers;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
@@ -63,18 +63,15 @@ public class UpStreamEventsHandler {
      *
      * @param aggregatedObjectId
      *                               the aggregated object id
-     * @throws IOException
+     * @throws Exception 
+     * @throws PropertyNotFoundException 
      */
-    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws IOException {
+    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws PropertyNotFoundException, Exception {
 
         // Use aggregatedObjectId as eventId since they are the same for start
         // events.
         final ResponseEntity responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
-        if (responseEntity == null) {
-            LOGGER.warn("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
-            return;
-        }
 
         final String searchResultString = responseEntity.getBody();
         ObjectMapper mapper = new ObjectMapper();

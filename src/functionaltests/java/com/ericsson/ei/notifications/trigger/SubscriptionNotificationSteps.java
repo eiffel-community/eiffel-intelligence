@@ -32,7 +32,8 @@ import org.springframework.util.SocketUtils;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +46,7 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionNotificationSteps",
-        "failed.notification.database-name: SubscriptionNotificationSteps-failedNotifications",
+        "failed.notification.collection-name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
         "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
@@ -74,9 +75,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabase;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
@@ -97,7 +95,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Before()
     public void beforeScenario() {
         mongoDBHandler.dropDatabase(database);
-        mongoDBHandler.dropDatabase(failedNotificationDatabase);
     }
 
     @After()
@@ -116,10 +113,14 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         setupRestEndpoints();
 
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
-        response = getRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT).performRequest();
-        assertEquals("EI rest API status code: ", HttpStatus.OK.value(), response.getStatusCodeValue());
+        response = getRequest.setHost(getHostName())
+                             .setPort(applicationPort)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
+                             .performRequest();
+        assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
     }
 
     @Given("Mail server is up")
@@ -156,8 +157,11 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager
-                .verifyEventsInDB(eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
-        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+                                                .verifyEventsInDB(eventManager.getEventsIdList(
+                                                        EIFFEL_EVENTS_JSON_PATH, eventNamesToSend),
+                                                        0);
+        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
+                0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
@@ -203,17 +207,18 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         mockClient.reset();
     }
 
-    @Then("Missed notification db should contain (\\d+) objects")
-    public void missed_notification_db_should_contain_x_objects(int maxObjectsInDB) throws Throwable {
+    @Then("Failed notification db should contain (\\d+) objects")
+    public void failed_notification_db_should_contain_x_objects(int maxObjectsInDB)
+            throws Throwable {
         int minWaitTime = 5;
         int maxWaittime = 20;
 
-        String condition = "{}";
-        int missedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB, condition);
+        final MongoCondition condition = MongoCondition.emptyCondition();
+        int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB,
+                condition);
 
-        assertEquals(missedNotifications, maxObjectsInDB);
-        assertEquals("Number of missed notifications saved in the database: " + missedNotifications, maxObjectsInDB,
-                missedNotifications);
+        assertEquals("Missed notifications saved in the database.", maxObjectsInDB,
+                failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")
@@ -223,8 +228,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private void restSubscriptionsTriggered(int times) throws Throwable {
         LOGGER.debug("Verifying REST requests.");
-        List<String> endpointsToCheck = new ArrayList<>(Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
-                REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS, REST_ENDPOINT_RAW_BODY));
+        List<String> endpointsToCheck = new ArrayList<>(
+                Arrays.asList(REST_ENDPOINT, REST_ENDPOINT_AUTH,
+                        REST_ENDPOINT_PARAMS, REST_ENDPOINT_AUTH_PARAMS, REST_ENDPOINT_RAW_BODY));
 
         assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, times));
         if (times > 0) {
@@ -235,8 +241,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     /**
-     * Creating subscriptions defined in a JSON file, given the list of subscription
-     * names
+     * Creating subscriptions defined in a JSON file, given the list of subscription names
      */
     private void createSubscriptions(List<String> subscriptionNames) throws Exception {
         JsonNode subscriptions = eventManager.getJSONFromFile(SUBSCRIPTION_WITH_JSON_PATH);
@@ -255,31 +260,39 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     /**
      * POST subscriptions to EI /subscriptions endpoint.
      *
-     * @param jsonDataAsString
-     *            JSON string containing subscriptions
+     * @param jsonDataAsString JSON string containing subscriptions
      * @throws Exception
      */
     private void postSubscriptions(String jsonDataAsString) throws Exception {
         HttpRequest postRequest = new HttpRequest(HttpRequest.HttpMethod.POST);
-        response = postRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT).setBody(jsonDataAsString).performRequest();
-        assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(), response.getStatusCodeValue());
+        response = postRequest.setHost(getHostName())
+                              .setPort(applicationPort)
+                              .addHeader("content-type", "application/json")
+                              .addHeader("Accept", "application/json")
+                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
+                              .setBody(jsonDataAsString)
+                              .performRequest();
+        assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
     }
 
     /**
      * Verify that subscriptions were successfully posted.
      *
-     * @param subscriptionNames
-     *            A list containing subscription names to check
+     * @param subscriptionNames A list containing subscription names to check
      * @throws Exception
      */
-    private void validateSubscriptionsSuccessfullyAdded(List<String> subscriptionNames) throws Exception {
+    private void validateSubscriptionsSuccessfullyAdded(List<String> subscriptionNames)
+            throws Exception {
         HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
-        response = getRequest.setHost(getHostName()).setPort(applicationPort)
-                .addHeader("content-type", "application/json").addHeader("Accept", "application/json")
-                .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT).performRequest();
-        assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(), response.getStatusCodeValue());
+        response = getRequest.setHost(getHostName())
+                             .setPort(applicationPort)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
+                             .performRequest();
+        assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
         LOGGER.debug("Checking that response contains all subscriptions");
         for (String subscriptionName : subscriptionNames) {
             assertTrue(response.toString().contains(subscriptionName));
@@ -289,10 +302,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     /**
      * Checks that an endpoint got at least the number of calls as expected.
      *
-     * @param endpoints
-     *            List of endpoints to check.
-     * @param expectedCalls
-     *            Integer with the least number of calls.
+     * @param endpoints     List of endpoints to check.
+     * @param expectedCalls Integer with the least number of calls.
      * @return true if all endpoints had at least the number of calls as expected.
      * @throws JSONException
      * @throws InterruptedException
@@ -304,7 +315,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         long stopTime = System.currentTimeMillis() + 30000;
         while (!endpointsToCheck.isEmpty() && stopTime > System.currentTimeMillis()) {
             for (String endpoint : endpoints) {
-                String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
+                String restBodyData = mockClient.retrieveRecordedRequests(
+                        request().withPath(endpoint), Format.JSON);
                 int actualRestCalls = new JSONArray(restBodyData).length();
                 if (actualRestCalls >= expectedCalls) {
                     endpointsToCheck.remove(endpoint);
@@ -318,14 +330,14 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     /**
      * Verify that request made to endpoint contains the correct information.
      *
-     * @param endpoint
-     *            endpoint to check
+     * @param endpoint endpoint to check
      * @return true if verification was successful, false otherwise
      * @throws JSONException
      */
     private boolean requestBodyContainsStatedValues(String endpoint) throws JSONException {
         int tc5 = 0, successfull = 0;
-        String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint), Format.JSON);
+        String restBodyData = mockClient.retrieveRecordedRequests(request().withPath(endpoint),
+                Format.JSON);
         if (restBodyData == null) {
             LOGGER.error("No calls made to rest endpoint '" + endpoint + "'.");
             return false;
@@ -351,19 +363,24 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         int port = SocketUtils.findAvailableTcpPort();
         restServer = startClientAndServer(port);
 
-        LOGGER.debug("Setting up endpoints on host '" + getHostName() + "' and port '" + port + "'.");
+        LOGGER.debug(
+                "Setting up endpoints on host '" + getHostName() + "' and port '" + port + "'.");
         mockClient = new MockServerClient(getHostName(), port);
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT)).respond(response().withStatusCode(201));
-        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH).withHeader("Authorization",
-                "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk")).respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT))
+                  .respond(response().withStatusCode(201));
+        mockClient.when(request().withMethod("POST")
+                                 .withPath(REST_ENDPOINT_AUTH)
+                                 .withHeader("Authorization",
+                                         "Basic bXlVc2VyTmFtZTpteVBhc3N3b3Jk"))
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_PARAMS))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_AUTH_PARAMS))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_RAW_BODY))
-                .respond(response().withStatusCode(201));
+                  .respond(response().withStatusCode(201));
         mockClient.when(request().withMethod("POST").withPath(REST_ENDPOINT_BAD))
-                .respond(response().withStatusCode(401));
+                  .respond(response().withStatusCode(401));
     }
 
     /**
@@ -401,11 +418,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     /**
-     * Replaces placeholder tags in notification meta in the subscription JSON
-     * string with valid notification meta.
+     * Replaces placeholder tags in notification meta in the subscription JSON string with valid
+     * notification meta.
      *
-     * @param text
-     *            JSON string containing replaceable tags
+     * @param text JSON string containing replaceable tags
      * @return Processed content
      */
     private String replaceTagsInNotificationMeta(String text) {
@@ -415,42 +431,42 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         text = text.replaceAll("\\$\\{rest\\.endpoint\\}", REST_ENDPOINT);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\}", REST_ENDPOINT_AUTH);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.params\\}", REST_ENDPOINT_PARAMS);
-        text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\.params\\}", REST_ENDPOINT_AUTH_PARAMS);
+        text = text.replaceAll("\\$\\{rest\\.endpoint\\.auth\\.params\\}",
+                REST_ENDPOINT_AUTH_PARAMS);
         text = text.replaceAll("\\$\\{rest\\.endpoint\\.bad\\}", REST_ENDPOINT_BAD);
         return text;
     }
 
     /**
-     * Returns the content size of a DB query after a minimum time and max time
-     * unless expected size was reached after minimum time.
+     * Returns the content size of a DB query after a minimum time and max time unless expected size
+     * was reached after minimum time.
      *
-     * @param minWaitTime
-     *            Seconds to wait before checking first time
-     * @param maxWaitTime
-     *            Max seconds to wait to reach expected size
-     * @param expectedSize
-     *            Expected size
-     * @param condition
-     *            Condition
+     * @param minWaitTime  Seconds to wait before checking first time
+     * @param maxWaitTime  Max seconds to wait to reach expected size
+     * @param expectedSize Expected size
+     * @param condition    Condition
      * @return
      * @throws InterruptedException
      */
-    private int getDbSizeForCondition(int minWaitTime, int maxWaitTime, int expectedSize, String condition)
+    private int getDbSizeForCondition(int minWaitTime, int maxWaitTime, int expectedSize,
+            MongoCondition condition)
             throws InterruptedException {
         TimeUnit.SECONDS.sleep(minWaitTime);
         long maxTime = System.currentTimeMillis() + maxWaitTime;
         List<String> queryResult = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            queryResult = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
+            queryResult = mongoDBHandler.find(database,
+                    failedNotificationCollection, condition);
 
             if (queryResult.size() == expectedSize) {
                 return queryResult.size();
             }
             TimeUnit.SECONDS.sleep(1);
         }
-        System.out.println("##########################################################");
+
         LOGGER.error("DB size did not match expected, Subsctiptions:\n{}", queryResult);
+
         return queryResult.size();
     }
 }

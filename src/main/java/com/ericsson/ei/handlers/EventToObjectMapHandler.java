@@ -26,6 +26,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -83,7 +86,7 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> list =  getEventToObjectList(eventId);
         boolean firstTime = list.isEmpty();
         list = updateList(list, eventId, objectId);
@@ -91,7 +94,7 @@ public class EventToObjectMapHandler {
         JsonNode entry = null;
 
         try {
-            entry = new ObjectMapper().readValue(condition, JsonNode.class);
+            entry = new ObjectMapper().readValue(condition.toString(), JsonNode.class);
             ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
             ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
             String mapStr = entry.toString();
@@ -119,7 +122,7 @@ public class EventToObjectMapHandler {
 
     public ArrayList<String> getEventToObjectList(String eventId) {
         ArrayList<String> list = new ArrayList<String>();
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         ArrayList<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         if (!documents.isEmpty()) {
             String mapStr = documents.get(0);
@@ -142,13 +145,14 @@ public class EventToObjectMapHandler {
      * @return boolean
      */
     public boolean deleteEventObjectMap(String templateName) {
-        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
-        LOGGER.info("The JSON condition for deleting aggregated object is : {}", condition);
-        return mongodbhandler.dropDocument(databaseName, collectionName, condition);
+        String queryString = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        MongoStringQuery query = new MongoStringQuery(queryString);
+        LOGGER.info("The JSON query for deleting aggregated object is : {}", query);
+        return mongodbhandler.dropDocument(databaseName, collectionName, query);
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }

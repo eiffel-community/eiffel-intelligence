@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+
+import com.ericsson.ei.encryption.EncryptionUtils;
+import com.ericsson.ei.encryption.Encryptor;
+import com.ericsson.ei.exception.AbortExecutionException;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +48,9 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${ldap.server.list:}")
     private String ldapServerList;
+
+    @Autowired
+    private Encryptor encryptor;;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -67,24 +75,44 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         }
     }
 
-    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth)
-            throws Exception {
+    private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
+
         for (int i = 0; i < serverList.length(); i++) {
             JSONObject server = (JSONObject) serverList.get(i);
-            auth.eraseCredentials(false)
-                .ldapAuthentication()
+            String password = server.getString("password");
+
+            if (EncryptionUtils.isEncrypted(password)) {
+                password = decryptPassword(password);
+            }
+            else {
+                password = decodeBase64(password);
+            }
+
+            auth
+            .eraseCredentials(false)
+            .ldapAuthentication()
                 .userSearchFilter(server.getString("user.filter"))
                 .contextSource()
-                .url(server.getString("url"))
-                .root(server.getString("base.dn"))
-                .managerDn(server.getString("username"))
-                .managerPassword(decodeBase64(server.getString("password")));
+                    .url(server.getString("url"))
+                    .root(server.getString("base.dn"))
+                    .managerDn(server.getString("username"))
+                    .managerPassword(password);
         }
+    }
+
+    private String decryptPassword(final String inputEncryptedPassword) throws Exception {
+        if (encryptor.isJasyptPasswordSet()) {
+            LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
+            throw new AbortExecutionException("Failed to initiate LDAP when password is encrypted. " +
+                                "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
+        }
+
+        return encryptor.decrypt(inputEncryptedPassword);
     }
 
     private void configureRequestAuthorization(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers("/auth/*")
+            .antMatchers("/authentication/*")
             .authenticated()
             .antMatchers(HttpMethod.POST, "/subscriptions")
             .authenticated()
@@ -105,7 +133,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
 
     private void configureLogout(HttpSecurity http) throws Exception {
         http.logout()
-            .logoutUrl("/auth/logout")
+            .logoutUrl("/authentication/logout")
             .logoutSuccessUrl("/")
             .deleteCookies("SESSION")
             .invalidateHttpSession(true);

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.MongoWriteException;
 import org.bson.Document;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -31,23 +30,24 @@ import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.config.HttpSessionConfig;
+import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.encryption.EncryptionUtils;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoWriteException;
 
 @Component
 public class SubscriptionService implements ISubscriptionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
-
-    private static final String SUBSCRIPTION_NAME = "{'subscriptionName':'%s'}";
-    private static final String SUBSCRIPTION_ID = "{'subscriptionId':'%s'}";
-    private static final String USER_NAME = "{'ldapUserName':'%s'}";
-
-    private static final String AND = "{$and:[%s]}";
 
     @Value("${spring.application.name}")
     private String SpringApplicationName;
@@ -64,8 +64,19 @@ public class SubscriptionService implements ISubscriptionService {
     @Autowired
     private ISubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private Encryptor encryptor;
+
     @Override
-    public void addSubscription(Subscription subscription) throws JsonProcessingException, MongoWriteException {
+    public void addSubscription(Subscription subscription)
+            throws JsonProcessingException, MongoWriteException {
+        String authType = subscription.getAuthenticationType();
+        String username = subscription.getUserName();
+        String password = subscription.getPassword();
+        if (isEncryptionReady(authType, username, password)) {
+            String encryptedPassword = encryptPassword(password);
+            subscription.setPassword(encryptedPassword);
+        }
         ObjectMapper mapper = new ObjectMapper();
         String stringSubscription;
         stringSubscription = mapper.writeValueAsString(subscription);
@@ -73,15 +84,15 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Subscription getSubscription(String subscriptionName) throws SubscriptionNotFoundException {
-        // empty ldapUserName means that result of query should not depend from
-        // userName
-        String query = generateQuery(subscriptionName, "");
+    public Subscription getSubscription(String subscriptionName)
+            throws SubscriptionNotFoundException {
+        final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
 
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         ObjectMapper mapper = new ObjectMapper();
         if (list == null || list.isEmpty()) {
-            throw new SubscriptionNotFoundException("No record found for the Subscription Name: " + subscriptionName);
+            throw new SubscriptionNotFoundException(
+                    "No record found for the Subscription Name: " + subscriptionName);
         }
         for (String input : list) {
             Subscription subscription;
@@ -99,9 +110,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean doSubscriptionExist(String subscriptionName) {
-        // empty userName means that result of query should not depend from
-        // userName
-        String query = generateQuery(subscriptionName, "");
+        final MongoQuery query = MongoCondition.subscriptionNameCondition(subscriptionName);
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         return !list.isEmpty();
     }
@@ -110,14 +119,19 @@ public class SubscriptionService implements ISubscriptionService {
     public boolean modifySubscription(Subscription subscription, String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
         Document result = null;
-        String query;
         try {
             String stringSubscription = mapper.writeValueAsString(subscription);
-            String ldapUserName = getLdapUserName(subscriptionName);
-            query = generateQuery(subscriptionName, ldapUserName);
+
+            final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+                    subscriptionName);
+            final MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+            MongoQuery query = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
+                    ldapUserNameCondition);
+
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
-                String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+                final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                        subscriptionName);
                 if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                     LOGGER.info("Subscription  \"{}"
                             + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
@@ -136,11 +150,17 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
-        String ldapUserName = getLdapUserName(subscriptionName);
-        String deleteQuery = generateQuery(subscriptionName, ldapUserName);
+        final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
+                subscriptionName);
+        final MongoCondition ldapUserNameCondition = getLdapUserNameCondition(subscriptionName);
+
+        MongoQuery deleteQuery = MongoQueryBuilder.buildAnd(subscriptionNameCondition,
+                ldapUserNameCondition);
+
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
-            String subscriptionIdQuery = String.format(SUBSCRIPTION_ID, subscriptionName);
+            final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                    subscriptionName);
             if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
                 LOGGER.info("Subscription  \"{}"
                         + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
@@ -149,7 +169,8 @@ public class SubscriptionService implements ISubscriptionService {
                         subscriptionName);
             }
         } else if (doSubscriptionExist(subscriptionName)) {
-            String message = "Failed to delete subscription \"" + subscriptionName + "\" invalid ldapUserName";
+            String message = "Failed to delete subscription \"" + subscriptionName
+                    + "\" invalid ldapUserName";
             throw new AccessException(message);
         }
 
@@ -158,7 +179,7 @@ public class SubscriptionService implements ISubscriptionService {
 
     @Override
     public List<Subscription> getSubscriptions() throws SubscriptionNotFoundException {
-        String query = "{}";
+        final MongoCondition query = MongoCondition.emptyCondition();
         ArrayList<String> list = subscriptionRepository.getSubscription(query);
         List<Subscription> subscriptions = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -179,36 +200,36 @@ public class SubscriptionService implements ISubscriptionService {
         return subscriptions;
     }
 
-    private boolean cleanSubscriptionRepeatFlagHandlerDb(String subscriptionNameQuery) {
-        LOGGER.debug("Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}", subscriptionNameQuery);
-        MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection, subscriptionNameQuery);
+    private boolean isEncryptionReady(String authType, String username, String password) {
+        boolean jasyptPasswordSet = false;
+        boolean authTypeSet = false;
+        boolean authDetailsSet = EncryptionUtils.verifyAuthenticationDetails(authType, username,
+                password);
+        if (authDetailsSet) {
+            jasyptPasswordSet = encryptor.isJasyptPasswordSet();
+            authTypeSet = !AuthenticationType.valueOf(authType).equals(AuthenticationType.NO_AUTH);
+        }
+        return authDetailsSet && jasyptPasswordSet && authTypeSet;
     }
 
-    /**
-     * This method generate query for mongoDB
-     *
-     * @param subscriptionName-
-     *            subscription name
-     * @param ldapUserName-
-     *            name of the current user
-     * @return a String object
-     */
-    private String generateQuery(String subscriptionName, String ldapUserName) {
-        String query = String.format(SUBSCRIPTION_NAME, subscriptionName);
-        if (ldapUserName != null && !ldapUserName.isEmpty()) {
-            String queryUser = String.format(USER_NAME, ldapUserName);
-            String queryTemp = query + "," + queryUser;
-            query = String.format(AND, queryTemp);
-        }
-        return query;
+    private String encryptPassword(String password) {
+        String encryptedPassword = encryptor.encrypt(password);
+        return EncryptionUtils.addEncryptionParentheses(encryptedPassword);
+    }
+
+    private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {
+        LOGGER.debug(
+                "Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}",
+                subscriptionNameQuery);
+        MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
+        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection,
+                subscriptionNameQuery);
     }
 
     /**
      * This method finds whether a given subscription has an owner
      *
-     * @param subscriptionName-
-     *            subscription name
+     * @param subscriptionName subscription name
      * @return a boolean
      * @throws SubscriptionNotFoundException
      */
@@ -229,17 +250,18 @@ public class SubscriptionService implements ISubscriptionService {
     /**
      * This method ldapUserName, if exists, otherwise return empty string
      *
-     * @param subscriptionName-
-     *            subscription name
-     * @return a string
+     * @param subscriptionName subscription name
+     * @return a MongoCondition
      */
-    private String getLdapUserName(String subscriptionName) {
+    private MongoCondition getLdapUserNameCondition(String subscriptionName) {
         String ldapUserName = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
+
         boolean ownerExist = doSubscriptionOwnerExist(subscriptionName);
-        if (!ownerExist) {
-            ldapUserName = "";
+        if (ownerExist) {
+            return MongoCondition.ldapUserNameCondition(ldapUserName);
+        } else {
+            return MongoCondition.emptyCondition();
         }
 
-        return ldapUserName;
     }
 }

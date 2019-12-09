@@ -16,28 +16,32 @@
 */
 package com.ericsson.ei.controller.model;
 
-import com.ericsson.ei.erqueryservice.ERQueryService;
-import com.ericsson.ei.handlers.ObjectHandler;
-import com.ericsson.ei.handlers.RMQProperties;
-import com.ericsson.ei.notifications.EmailSender;
-import com.ericsson.ei.notifications.InformSubscriber;
-import com.ericsson.ei.subscription.SubscriptionHandler;
-import com.ericsson.ei.waitlist.WaitListStorageHandler;
-import lombok.Getter;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.erqueryservice.ERQueryService;
+import com.ericsson.ei.handlers.ObjectHandler;
+import com.ericsson.ei.handlers.RMQProperties;
+import com.ericsson.ei.notifications.EmailSender;
+import com.ericsson.ei.notifications.InformSubscriber;
+import com.ericsson.ei.subscription.SubscriptionHandler;
+import com.ericsson.ei.utils.SafeLdapServer;
+import com.ericsson.ei.waitlist.WaitListStorageHandler;
+
+import lombok.Getter;
+
 /**
- * Parsing all classes which contains value annotation in eiffel-intelligence plugin.
- * Needed for generate Json file with information about back-end instance.
+ * Parsing all classes which contains value annotation in eiffel-intelligence plugin. Needed for
+ * generate Json file with information about backend instance.
  */
 @Component
 public class ParseInstanceInfoEI {
@@ -106,7 +110,8 @@ public class ParseInstanceInfoEI {
     @PostConstruct
     public void init() throws IOException {
         Properties properties = new Properties();
-        properties.load(ParseInstanceInfoEI.class.getResourceAsStream("/default-application.properties"));
+        properties.load(
+                ParseInstanceInfoEI.class.getResourceAsStream("/default-application.properties"));
         version = properties.getProperty("version");
         applicationName = properties.getProperty("artifactId");
     }
@@ -156,8 +161,23 @@ public class ParseInstanceInfoEI {
         private String enabled;
 
         @Getter
-        @Value("${ldap.server.list}")
-        private String servers;
+        private String ldapServerList;
+
+        @Autowired
+        private Environment env;
+
+        /**
+         * Extracts ldap.server.list content and creates a new safe to display ldap server list.
+         *
+         * @throws IOException
+         */
+        @PostConstruct
+        public void init() throws IOException {
+            final String ldapServers = env.getProperty("ldap.server.list");
+            final JSONArray serverList = SafeLdapServer.createLdapSettingsArray(ldapServers);
+            ldapServerList = serverList.toString(2);
+        }
+
     }
 
     @Component

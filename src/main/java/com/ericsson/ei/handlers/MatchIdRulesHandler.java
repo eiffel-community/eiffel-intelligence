@@ -21,6 +21,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
 
 @Component
@@ -31,7 +33,8 @@ public class MatchIdRulesHandler {
 
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
-        String fetchQuery = replaceIdInRules(matchIdString, id);
+        String fetchQueryString = replaceIdInRules(matchIdString, id);
+        MongoQuery fetchQuery = new MongoStringQuery(fetchQueryString);
         List<String> objects = objHandler.findObjectsByCondition(fetchQuery);
         return objects;
     }

@@ -47,6 +47,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.ResponseEntity;
@@ -62,7 +63,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: FlowTest",
-        "failed.notification.database-name: FlowTest-failedNotifications",
+        "failed.notification.collection-name: FlowTest-failedNotifications",
         "rabbitmq.exchange.name: FlowTest-exchange",
         "rabbitmq.consumerName: FlowTestConsumer" })
 public class FlowTest extends FlowTestBase {
@@ -70,7 +71,7 @@ public class FlowTest extends FlowTestBase {
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
     private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
     private static final String EVENTS_FILE_PATH = "src/test/resources/ArtifactFlowTestEvents.json";
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestUnitTest.json";
     private static final String AGGREGATED_OBJECT_ID = "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
     @Autowired
@@ -83,7 +84,7 @@ public class FlowTest extends FlowTestBase {
     private RabbitTemplate rabbitMqTemplate;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws PropertyNotFoundException, Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
         if (!systemTest) {

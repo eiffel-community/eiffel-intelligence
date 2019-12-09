@@ -23,7 +23,7 @@ import cucumber.api.java.en.Then;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RulesHandlerSteps",
-        "failed.notification.database-name: RulesHandlerSteps-failedNotifications",
+        "failed.notification.collection-name: RulesHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: RulesHandlerSteps-exchange",
         "rabbitmq.consumerName: RulesHandlerStepsConsumer" })
 public class RulesHandlerSteps {

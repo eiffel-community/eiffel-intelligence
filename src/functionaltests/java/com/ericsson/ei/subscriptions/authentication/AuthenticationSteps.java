@@ -41,7 +41,7 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: AuthenticationSteps",
-        "failed.notification.database-name: AuthenticationSteps-failedNotifications",
+        "failed.notification.collection-name: AuthenticationSteps-failedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
         "rabbitmq.consumerName: AuthenticationStepsConsumer",
         "ldap.enabled: true" })
@@ -61,7 +61,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @Before("@RESTWithCredentials or @RESTWithSessionCookie")
     public void beforeScenario() throws Throwable {
         httpRequest = new HttpRequest(HttpMethod.GET);
-        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/auth/logout");
+        httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/authentication/logout");
 
         String auth = "gauss:password";
         String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");

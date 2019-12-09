@@ -50,6 +50,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
+import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.services.ISubscriptionService;
@@ -65,7 +66,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestPropertySource(properties = {
         "rules.path=src/test/resources/all_event_rules.json",
         "spring.data.mongodb.database: SingleEventAggregationTest",
-        "failed.notification.database-name: SingleEventAggregationTest-failedNotifications",
+        "failed.notification.collection-name: SingleEventAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
         "rabbitmq.consumerName: SingleEventAggregationTestConsumer" })
 public class SingleEventAggregationTest extends FlowTestBase {
@@ -91,7 +92,7 @@ public class SingleEventAggregationTest extends FlowTestBase {
     }
 
     @Before
-    public void before() {
+    public void before() throws PropertyNotFoundException, Exception {
 
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);

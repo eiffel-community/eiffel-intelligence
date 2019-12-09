@@ -39,8 +39,8 @@ import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.NotificationFailureException;
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.HttpRequest.HttpRequestFactory;
 import com.ericsson.eiffelcommons.subscriptionobject.MailSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
@@ -103,7 +103,7 @@ public class InformSubscriberTest {
 
     /**
      * When failing to perfom a rest post call we should do retries, and if none succeed it should
-     * be saved in the missed notification DB.
+     * be saved in the failed notification collection.
      *
      * @throws Exception
      */
@@ -115,13 +115,13 @@ public class InformSubscriberTest {
         informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 4 tries to perform a HTTP request
         verify(httpRequest, times(REST_POST_RETRIES + 1)).perform();
-        // Should try to save missed notification to DB
+        // Should try to save failed notification to DB
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 
     /**
      * When an AuthenticationException is thrown we should never retry the connection even if retry
-     * is set to higher then 0. Missed notification should be saved in DB.
+     * is set to higher then 0. Failed notification should be saved in DB.
      *
      * @throws Exception
      */
@@ -134,7 +134,7 @@ public class InformSubscriberTest {
         // Should expect 1 tries to perform a HTTP request since AuthenticationException should
         // ignore failAttempt.
         verify(httpRequest, times(1)).perform();
-        // Should try to save missed notification to DB
+        // Should try to save failed notification to DB
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 
@@ -162,7 +162,7 @@ public class InformSubscriberTest {
         beforeEmailTests();
         doThrow(new NotificationFailureException("")).when(emailSender).sendEmail(mimeMessage);
         informSubscriber.informSubscriber(aggregatedObject, mailSubscriptionNode);
-        // Should try to save missed notification to DB
+        // Should try to save failed notification to DB
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 

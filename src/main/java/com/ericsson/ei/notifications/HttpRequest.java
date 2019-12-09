@@ -28,6 +28,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import com.ericsson.ei.controller.model.AuthenticationType;
+import com.ericsson.ei.encryption.EncryptionUtils;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.utils.SpringContext;
 import com.ericsson.ei.utils.SubscriptionField;
@@ -40,25 +43,15 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class HttpRequest {
 
-    @Component
-    static class HttpRequestFactory {
-        // Used to enable mocking of this class in tests.
-        HttpRequest createHttpRequest() {
-            return new HttpRequest();
-        }
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
-
-    private static final String AUTHENTICATION_TYPE_NO_AUTH = "NO_AUTH";
-    private static final String AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF = "BASIC_AUTH_JENKINS_CSRF";
-
-    private SubscriptionField subscriptionField;
 
     // Manual wired
     private HttpRequestSender httpRequestSender = SpringContext.getBean(HttpRequestSender.class);
     private JenkinsCrumb jenkinsCrumb = SpringContext.getBean(JenkinsCrumb.class);
     private UrlParser urlParser = SpringContext.getBean(UrlParser.class);
+    private Encryptor encryptor = SpringContext.getBean(Encryptor.class);
+
+    private SubscriptionField subscriptionField;
 
     @Getter
     @Setter
@@ -82,6 +75,14 @@ public class HttpRequest {
     private String contentType;
     @Getter
     private HttpHeaders headers;
+
+    @Component
+    static class HttpRequestFactory {
+        // Used to enable mocking of this class in tests.
+        HttpRequest createHttpRequest() {
+            return new HttpRequest();
+        }
+    }
 
     /**
      * Perform a HTTP request to a specific url. Returns the response.
@@ -156,10 +157,14 @@ public class HttpRequest {
         String username = subscriptionField.get("userName");
         String password = subscriptionField.get("password");
 
-        boolean authenticationDetailsProvided = isAuthenticationDetailsProvided(authType, username,
-                password);
+        boolean authenticationDetailsProvided = EncryptionUtils.verifyAuthenticationDetails(
+                authType, username, password);
         if (!authenticationDetailsProvided) {
             return;
+        }
+        if (encryptor != null && encryptor.isJasyptPasswordSet()
+                && EncryptionUtils.isEncrypted(password)) {
+            password = doDecryption(password);
         }
 
         String encoding = Base64.getEncoder()
@@ -167,33 +172,15 @@ public class HttpRequest {
         this.headers.add("Authorization", "Basic " + encoding);
         LOGGER.debug("Successfully added header for 'Authorization'");
 
-        if (authType.equals(AUTHENTICATION_TYPE_BASIC_AUTH_JENKINS_CSRF)) {
+        if (authType.equals(AuthenticationType.BASIC_AUTH_JENKINS_CSRF.getValue())) {
             JsonNode crumb = jenkinsCrumb.fetchJenkinsCrumb(encoding, this.url);
             addJenkinsCrumbData(crumb);
         }
 
     }
 
-    /**
-     * Returns a boolean indicating that authentication details was provided in the subscription.
-     *
-     * @param authType
-     * @param username
-     * @param password
-     * @return
-     */
-    private boolean isAuthenticationDetailsProvided(String authType, String username,
-            String password) {
-        if (authType.isEmpty() || authType.equals(AUTHENTICATION_TYPE_NO_AUTH)) {
-            return false;
-        }
-
-        if (username.isEmpty() && password.isEmpty()) {
-            LOGGER.error("userName/password field in subscription is missing.");
-            return false;
-        }
-
-        return true;
+    private String doDecryption(String password) {
+        return encryptor.decrypt(password);
     }
 
     /**
@@ -210,5 +197,4 @@ public class HttpRequest {
                     crumbValue));
         }
     }
-
 }

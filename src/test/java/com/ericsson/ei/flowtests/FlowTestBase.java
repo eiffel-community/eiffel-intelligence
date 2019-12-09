@@ -33,10 +33,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.handlers.RMQProperties;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;

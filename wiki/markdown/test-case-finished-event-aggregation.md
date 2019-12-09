@@ -122,12 +122,12 @@ Here we also have some processRules:
     "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}",
 
 The processRules in this case makes a calculation where id calculates the
-difference from testCasestartedTime and testCaseFinishedTime this calculated
+difference from testCaseStartedTime and testCaseFinishedTime this calculated
 time is the time it took for the test case to execute and is put in a key
 called testCaseDuration.
 
 JSON object with requested data will be put into array and stored in aggregated
-object with key “testsKeysExecutions”. Data in correct format will look like:
+object with key “testCaseExecutions”. Data in correct format will look like:
 
     {
       "testCaseStartedTime":1481875925916,

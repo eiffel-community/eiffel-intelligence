@@ -26,7 +26,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.exception.AuthenticationException;
-import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
@@ -46,13 +47,13 @@ import cucumber.api.java.en.When;
         "aggregated.collection.ttlValue:1",
         "notification.failAttempt:1",
         "spring.data.mongodb.database: TestTTLSteps",
-        "failed.notification.database-name: TestTTLSteps-failedNotifications",
+        "failed.notification.collection-name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
         "rabbitmq.consumerName: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
-    private static final String ENDPOINT = "/missed_notification";
+    private static final String INVALID_ENDPOINT = "/invalid-endpoint";
     private static final String SUBSCRIPTION_NAME = "Subscription_1";
 
     private static final String SUBSCRIPTION_NAME_3 = "Subscription_Test_3";
@@ -74,14 +75,11 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    @Value("${failed.notification.database-name}")
-    private String failedNotificationDatabase;
-
     @Value("${failed.notification.collection-name}")
     private String failedNotificationCollection;
 
     @Value("${spring.data.mongodb.database}")
-    private String dataBase;
+    private String database;
 
     @Value("${aggregated.collection.name}")
     private String collection;
@@ -108,7 +106,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void create_subscription_object() throws IOException, JSONException {
 
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
-        mongoDBHandler.dropCollection(failedNotificationDatabase, failedNotificationCollection);
+        mongoDBHandler.dropCollection(database, failedNotificationCollection);
 
         String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
 
@@ -128,7 +126,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Verify that request has been retried")
     public void verify_request_has_been_made() throws JSONException {
 
-        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(ENDPOINT), Format.JSON);
+        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(INVALID_ENDPOINT), Format.JSON);
         JSONArray requests = new JSONArray(retrievedRequests);
 
         // received requests include number of retries
@@ -137,11 +135,12 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Check failed notification is in database$")
     public void check_failed_notification_is_in_database() {
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME + "\"}";
-        List<String> result = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection, condition);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME);
+        List<String> result = mongoDBHandler.find(database,
+                failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
-        assertEquals("Could not find a missed notification matching the condition: " + condition,
+        assertEquals("Could not find a failed notification matching the condition: " + condition,
                 "\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
     }
 
@@ -176,15 +175,15 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void aggregated_object_is_created() throws Throwable {
         // verify that aggregated object is created and present in db
         LOGGER.debug("Checking presence of aggregated Object");
-        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+        List<String> allObjects = mongoDBHandler.getAllDocuments(database, collection);
         assertEquals(1, allObjects.size());
     }
 
     @When("^Failed notification is created$")
     public void a_failed_notification_is_created() throws Throwable {
-        // verifying that missed notification is created and present in db
+        // verifying that failed notification is created and present in db
         int expectedSize = 1;
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
 
         LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -194,7 +193,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Notification document should be deleted from the database$")
     public void the_Notification_document_should_be_deleted_from_the_database() throws Throwable {
         int expectedSize = 0;
-        String condition = "{\"subscriptionName\" : \"" + SUBSCRIPTION_NAME_3 + "\"}";
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
         LOGGER.debug("Checking deletion of notification document in db");
 
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -207,7 +206,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> allObjects = null;
         // To be sure at least one minute has passed since creation of aggregated object
         TimeUnit.MINUTES.sleep(1);
-        allObjects = mongoDBHandler.getAllDocuments(dataBase, collection);
+        allObjects = mongoDBHandler.getAllDocuments(database, collection);
         assertEquals("Database is not empty.", true, allObjects.isEmpty());
     }
 
@@ -222,7 +221,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         mockServerClient = new MockServerClient(BASE_URL, port);
 
         // set up expectations on mock server to get calls on this endpoint
-        mockServerClient.when(request().withMethod("POST").withPath(ENDPOINT))
+        mockServerClient.when(request().withMethod("POST").withPath(INVALID_ENDPOINT))
                         .respond(HttpResponse.response().withStatusCode(500));
     }
 
@@ -235,12 +234,13 @@ public class TestTTLSteps extends FunctionalTestBase {
         return eventNames;
     }
 
-    private int getNotificationForExpectedSize(int expectedSize, String condition) {
+    private int getNotificationForExpectedSize(int expectedSize, MongoCondition condition) {
         long maxTime = System.currentTimeMillis() + MAX_WAIT_TIME;
         List<String> notificationExist = null;
 
         while (System.currentTimeMillis() < maxTime) {
-            notificationExist = mongoDBHandler.find(failedNotificationDatabase, failedNotificationCollection,
+            notificationExist = mongoDBHandler.find(database,
+                    failedNotificationCollection,
                     condition);
 
             if (notificationExist.size() == expectedSize) {

@@ -83,15 +83,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
     private ObjectMapper objMapper;
 
-<<<<<<< HEAD
-    final static private String entryPointAggregatedObject = "/aggregated-objects";
-    final static private String entryPointQuery = "/aggregated-objects/query";
-    final static private String entryPointFailedNotifications = "/failed-notifications";
-=======
+
     final static private String ENTRY_POINT_QUERY = "/aggregated-objects/query";
     final static private String ENTRY_POINT_FAILED_NOTIFICATIONS = "/failed-notifications";
     final static private String FAILED_NOTIFICATIONS_PARAM = "subscriptionNames";
->>>>>>> c16d99f8edfde217707161e12af7f1ad3bff9196
 
     public QueryAggregatedObjectsTestSteps() {
         objMapper = new ObjectMapper();
@@ -137,15 +132,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-<<<<<<< HEAD
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointAggregatedObject + "/" + documentId).performRequest();
-=======
                              .addHeader("content-type", CONTENT_TYPE)
                              .addHeader("Accept", CONTENT_TYPE)
                              .setEndpoint(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + documentId).performRequest();
->>>>>>> c16d99f8edfde217707161e12af7f1ad3bff9196
 
         LOGGER.debug("Response of /aggregated-objects RestApi, Status Code: " + response.getStatusCodeValue()
                 + "\nResponse: " + response.getBody().toString());
@@ -179,15 +168,9 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
         HttpRequest getRequest = new HttpRequest(HttpMethod.GET);
         response = getRequest.setPort(applicationPort)
                              .setHost(hostName)
-<<<<<<< HEAD
-                             .addHeader("content-type", "application/json")
-                             .addHeader("Accept", "application/json")
-                .setEndpoint(entryPointAggregatedObject + "/" + invalidDocumentId)
-=======
                              .addHeader("content-type", CONTENT_TYPE)
                              .addHeader("Accept", CONTENT_TYPE)
                              .setEndpoint(EntryPointConstantsUtils.AGGREGATED_OBJECTS + "/" + invalidDocumentId)
->>>>>>> c16d99f8edfde217707161e12af7f1ad3bff9196
                              .performRequest();
 
         String responseAsString = response.getBody().toString();

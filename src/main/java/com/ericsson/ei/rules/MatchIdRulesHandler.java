@@ -14,10 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers;
+package com.ericsson.ei.rules;
 
 import java.util.List;
 
+import com.ericsson.ei.handlers.ObjectHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

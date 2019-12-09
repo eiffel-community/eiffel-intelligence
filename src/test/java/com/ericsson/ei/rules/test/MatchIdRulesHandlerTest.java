@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.matchidruleshandlertest;
+package com.ericsson.ei.rules.test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,7 +27,7 @@ import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ericsson.ei.handlers.MatchIdRulesHandler;
+import com.ericsson.ei.rules.MatchIdRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

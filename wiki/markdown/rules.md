@@ -187,12 +187,12 @@ parts of the path to where the extracted content will be stored. More detailed
 explanation can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/merge-resolver-rules.md)
 
 ### ProcessRules 
-This rule is used to append (_only additions or modifications,
-no deletions, of existing content at time rule is applied_) new key value pairs
-in the aggregated object based on existing values in the aggregation object.
-For example if you have aggregated the job finished time and job started time
-then you can create one more value for the computed duration so that other
-systems do not need to compute it.
+This rule is used to append new key value pairs in the aggregated object 
+based on existing values in the aggregation object. Eiffel Intelligence will 
+only perform additions or modifications or existing content in the aggregation, 
+no delete operations will be performed. For example if you have aggregated 
+the job finished time and job started time then you can create one more value 
+for the computed duration so that other systems do not need to compute it.
 
 ### History Rules 
 are used if you need to aggregate data from existing events
@@ -201,7 +201,8 @@ linked upstream by received event. They are explained [**here**](https://github.
 ## Using placeholders in rules
 When you want to write a condition including an unknown Eiffel event id, 
 it is possible to use a placeholder to let Eiffel Intelligence inject the 
-Eiffel event ids extracted from **_IdentifyRules_**.
+Eiffel event ids extracted from **_IdentifyRules_**. The use of this placeholder
+value can only be used for **MatchIdRules** and **ProcessRules**. 
  
 The placeholder is defined as a property called [**rules.replacement.marker**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md#define-placeholder-in-rules) 
 in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties).

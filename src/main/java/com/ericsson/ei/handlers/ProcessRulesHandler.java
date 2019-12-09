@@ -20,6 +20,7 @@ import com.ericsson.ei.rules.RulesHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -31,6 +32,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class ProcessRulesHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRulesHandler.class);
+
+    @Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
+    private String replacementMarker;
 
     @Autowired
     private JmesPathInterface jmespath;
@@ -55,8 +59,8 @@ public class ProcessRulesHandler {
             String identifyRule = rulesHandler.getRulesForEvent(event).getIdentifyRules();
             String id = jmespath.runRuleOnEvent(identifyRule, event).get(0).textValue();
 
-            if(processRules.contains("%IdentifyRules%")) {
-                processRules = processRules.replace("%IdentifyRules%", id);
+            if(processRules.contains(replacementMarker)) {
+                processRules = processRules.replace(replacementMarker, id);
             }
 
             LOGGER.info("processRules: {}\n aggregationObject: {}\n event: {}", processRules, aggregationObject, event);

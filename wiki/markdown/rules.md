@@ -235,7 +235,7 @@ usage can be found in [the template rules](https://github.com/eiffel-community/e
  
 ## Reserved Key names
 The keys "_id" and "time" (at the root level of the aggregated object) are 
-reserved and added in the Mongo document by Eiffel Intelligence. User 
+reserved and added in the MongoDB document by Eiffel Intelligence. User 
 should not use these two keys at the root level of an aggregated object. 
 Even if the user adds these two keys at the root level, Eiffel Intelligence 
 will overwrite those.

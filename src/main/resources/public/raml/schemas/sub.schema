@@ -57,6 +57,9 @@
         "subscriptionName": {
             "type": "string"
         },
+        "authenticationType":{
+             "type":"string"
+        },
         "userName": {
             "type": "string"
         },

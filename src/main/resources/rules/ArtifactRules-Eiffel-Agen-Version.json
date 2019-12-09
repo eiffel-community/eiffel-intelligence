@@ -26,8 +26,6 @@
     "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "{ eventId : meta.id, time : meta.time, locations : data.locations }",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
     "ProcessRules":null
   },
   {
@@ -41,8 +39,6 @@
     "ExtractionRules" : "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
     "ArrayMergeOptions": "",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
     "ProcessRules":null
   },
   {
@@ -56,8 +52,6 @@
     "ExtractionRules" : "{ testCaseTriggeredEventId:meta.id, testCaseTriggeredTime:meta.time, outcome:data.testCase }",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: meta.id }]} ]",
     "ArrayOptions": "",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
     "ProcessRules":null
   },
   {
@@ -71,8 +65,6 @@
     "ExtractionRules" : "{testCaseStartedEventId:meta.id, testCaseStartedTime:meta.time, outcome:data.testCase }",
     "MergeResolverRules": "[{NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }] }]",
     "ArrayOptions": "",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
     "ProcessRules":null
   },
   {
@@ -86,8 +78,6 @@
     "ExtractionRules" : "{ testCaseFinishedEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}",
     "MergeResolverRules" : "{\"testCaseTriggeredEventId\":%IdentifyRulesEventId%}",
     "ArrayMergeOptions": "",
-    "HistoryIdentifyRules": "",
-    "HistoryExtractionRules": "",
     "ProcessRules": "{testCaseDuration : diff(testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRulesEventId%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseTriggeredEventId=='%IdentifyRulesEventId%'].testCaseStartedTime | [0])}"
   },
   {
@@ -133,8 +123,22 @@
     "ExtractionRules" : "",
     "ArrayMergeOptions": "",
     "HistoryIdentifyRules":"links | [?type=='CHANGE'].target",
-    "HistoryExtractionRules": "{SCSEventId: meta.id,gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
+    "HistoryExtractionRules": "{SCSEventId: meta.id, gitIdentifier:data.gitIdentifier, submitter:data.submitter}",
     "HistoryPathRules": "{sourceChanges: [{SCSEventId: meta.id}]}",
+    "ProcessRules":null
+  },
+  {
+    "TemplateName":"ARTIFACT_1",
+    "Type":"EiffelFlowContextDefinedEvent",
+    "TypeRule": "meta.type",
+    "IdRule": "meta.id",
+    "StartEvent": "NO",
+    "IdentifyRules" : "",
+    "MatchIdRules": {},
+    "ExtractionRules" : "",
+    "HistoryIdentifyRules": "",
+    "HistoryExtractionRules": "{ eventId:meta.id, product:data.product, project:data.project, program:data.program, track:data.track, version:data.version }",
+    "HistoryPathRules": "{flowContexts: [{eventId: meta.id}]}",
     "ProcessRules":null
   }
 ]

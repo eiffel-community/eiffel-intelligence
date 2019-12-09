@@ -195,8 +195,10 @@ the job finished time and job started time then you can create one more value
 for the computed duration so that other systems do not need to compute it.
 
 ### History Rules 
-are used if you need to aggregate data from existing events
-linked upstream by received event. They are explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
+If your start event, meaning the event that starts the chain of aggregation, 
+contains links that point to upstream events, HistoryRules makes it 
+possible for these to be aggregated into the object as well. They are 
+explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
 
 ## Using placeholders in rules
 When you want to write a condition including an unknown Eiffel event id, 

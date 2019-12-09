@@ -20,6 +20,7 @@ import java.text.ParseException;
 
 import javax.mail.internet.MimeMessage;
 
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,7 @@ public class InformSubscriber {
                         subject);
                 emailSender.sendEmail(message);
             }
-        } catch (NotificationFailureException | AuthenticationException e) {
+        } catch (NotificationFailureException | AuthenticationException | EncryptionOperationNotPossibleException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String failedNotification = prepareFailedNotification(aggregatedObject,
                     subscriptionName, notificationMeta, e.getMessage());

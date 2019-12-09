@@ -13,6 +13,8 @@
 */
 package util;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -44,12 +46,17 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import lombok.Setter;
+
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
+    private static final int SECONDS_1 = 1000;
+    private static final int SECONDS_30 = 30000;
+    private static final int DEFAULT_DELAY_BETWEEN_SENDING_EVENTS = 350;
+    protected static final String MAILHOG_DATABASE_NAME = "mailhog";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
-    private static final String EIFFEL_INTELLIGENCE_DATABASE_NAME = "eiffel_intelligence";
 
     protected RabbitTemplate rabbitTemplate;
-    protected static final String MAILHOG_DATABASE_NAME = "mailhog";
     @Autowired
     protected MongoDBHandler mongoDBHandler;
     @Value("${ei.host:localhost}")
@@ -91,6 +98,13 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
 
+    /*
+     * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
+     * thread looking for the events don't do it before actually populating events in the database
+     */
+    @Setter
+    private int firstEventWaitTime = 0;
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -107,24 +121,15 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropCollection(database, subscriptionCollectionRepatFlagHandlerName);
         mongoDBHandler.dropCollection(database, failedNotificationCollectionName);
         mongoDBHandler.dropCollection(database, sessionsCollectionName);
-        mongoDBHandler.dropCollection("eiffel", "events");
     }
-
-    /*
-     * setFirstEventWaitTime: variable to set the wait time after publishing the
-     * first event. So any thread looking for the events don't do it before actually
-     * populating events in the database
-     */
-    private int firstEventWaitTime = 0;
 
     public void setFirstEventWaitTime(int value) {
         firstEventWaitTime = value;
     }
 
     /**
-     * Override this if you have more events that will be registered to event to
-     * object map but it is not visible in the test. For example from upstream or
-     * downstream from event repository
+     * Override this if you have more events that will be registered to event to object map but it
+     * is not visible in the test. For example from upstream or downstream from event repository
      *
      * @return
      */
@@ -150,17 +155,25 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                 String event = eventJson.toString();
 
                 rabbitTemplate.convertAndSend(event);
+                System.out.println("## Send event ::: " + event);
                 if (!alreadyExecuted) {
                     TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     alreadyExecuted = true;
                 }
+                /**
+                 * Without a small delay between the sending of 2 events, one may risk to be lost in
+                 * an empty void if not received by EI
+                 */
+                TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
             }
 
-            // wait for all events to be processed
             waitForEventsToBeProcessed(eventsCount);
             checkResult(getCheckData());
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            String message = String.format("Failed to send Eiffel messages. Reason: %s",
+                    e.getMessage());
+            LOGGER.error(message, e);
+            fail(message);
         }
     }
 
@@ -181,8 +194,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     protected abstract List<String> getEventNamesToSend() throws IOException;
 
     /**
-     * @return map, where key - _id of expected aggregated object value - expected
-     *         aggregated object
+     * @return map, where key - _id of expected aggregated object value - expected aggregated object
      *
      */
     protected abstract Map<String, JsonNode> getCheckData() throws IOException;
@@ -195,27 +207,32 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     /**
      * Wait for certain amount of events to be processed.
      *
-     * @param eventsCount - An int which indicated how many events that should be
-     *                    processed.
+     * @param eventsCount - An int which indicated how many events that should be processed.
      * @return
      * @throws InterruptedException
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
-        long stopTime = System.currentTimeMillis() + 60000;
+        long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, event_map);
-            LOGGER.error("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            TimeUnit.MILLISECONDS.sleep(1000);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            TimeUnit.MILLISECONDS.sleep(SECONDS_1);
+        }
+
+        if (processedEvents < eventsCount) {
+            fail(String.format(
+                    "EI did not process all sent events. Processed '%s' events out of '%s' sent.",
+                    processedEvents, eventsCount));
         }
     }
 
     /**
      * Counts documents that were processed
      *
-     * @param database   - A string with the database to use
-     * @param collection - A string with the collection to use
+     * @param database       - A string with the database to use
+     * @param collectionName - A string with the collection to use
      * @return amount of processed events
      */
     private long countProcessedEvents(String database, String collectionName) {
@@ -228,8 +245,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
      *
-     * @param expectedData - A Map<String, JsonNode> which contains the expected
-     *                     data
+     * @param expectedData - A Map<String, JsonNode> which contains the expected data
      * @return
      * @throws URISyntaxException
      * @throws IOException
@@ -248,23 +264,19 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String id = (String) pair.getKey();
             expectedJSON = (JsonNode) pair.getValue();
 
-            long maxWaitTime = 30000;
-            long stopTime = System.currentTimeMillis() + maxWaitTime;
+            long stopTime = System.currentTimeMillis() + SECONDS_30;
             while (!foundMatch && stopTime > System.currentTimeMillis()) {
                 actualJSON = queryAggregatedObject(id);
 
                 /*
-                 * This is a workaround for expectedJSON.equals(acutalJSON) as that does not
-                 * work with strict equalization
+                 * This is a workaround for expectedJSON.equals(acutalJSON) as that does not work
+                 * with strict equalization
                  */
                 try {
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;
                 } catch (AssertionError e) {
-                    System.out.println("##### ID " + id);
-                    System.out.println("###### Expected JSON ::::::" + expectedJSON.toString());
-                    System.out.println("###### Actual   JSON ::::::" + actualJSON.toString());
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.MILLISECONDS.sleep(SECONDS_1);
                 }
             }
         }

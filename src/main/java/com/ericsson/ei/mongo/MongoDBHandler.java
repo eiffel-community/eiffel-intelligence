@@ -28,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.encryption.EncryptionUtils;
+import com.ericsson.ei.encryption.Encryptor;
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -55,6 +58,9 @@ import lombok.Setter;
 public class MongoDBHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
 
+    @Autowired
+    private Encryptor encryptor;
+
     @Getter
     @Autowired
     private MongoProperties mongoProperties;
@@ -67,7 +73,7 @@ public class MongoDBHandler {
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
-    public void init() {
+    public void init() throws AbortExecutionException {
         createMongoClient();
     }
 
@@ -262,7 +268,7 @@ public class MongoDBHandler {
 
     }
 
-    private void createMongoClient() {
+    private void createMongoClient() throws AbortExecutionException {
         if (StringUtils.isBlank(mongoProperties.getUri())) {
             throw new MongoConfigurationException(
                     "Failure to create MongoClient, missing config for spring.data.mongodb.uri:");

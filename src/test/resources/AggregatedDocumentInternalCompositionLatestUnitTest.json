@@ -1,5 +1,7 @@
 {
     "_id": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
+    "buildCommand": null,
+    "type": "EiffelArtifactCreatedEvent",
     "fileInformation": [
         {
             "extension": "jar",
@@ -12,17 +14,6 @@
         {
             "extension": "exe",
             "classifier": "application"
-        }
-    ],
-    "buildCommand": null,
-    "flowContexts": [
-        {
-            "product": "MyProductA",
-            "project": "FeatureC",
-            "program": "MarketD",
-            "track": "TrackE",
-            "version": "1.2.3",
-            "eventId": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
         }
     ],
     "internalComposition": {
@@ -49,20 +40,16 @@
                                                 "name": "Jane Doe",
                                                 "email": "jane.doe@company.com"
                                             },
-                                            "SCSEventId": "ace9df6e-cd45-4320-ae66-945f038caa1b",
-                                            "flowContexts" : [
-                                                {
-                                                    "eventId" : "flowaaaa-bbbb-5ccc-8ddd-dkt8ejeeeee0",
-                                                    "product" : "MyProduct",
-                                                    "project" : "NewImportantFeatures",
-                                                    "program" : "NewMarket",
-                                                    "track" : "CustomerXAdaptations",
-                                                    "version" : "4.3.0"
-                                                }
-                                            ],
                                             "gitIdentifier": null,
+                                            "SCSEventId": "ace9df6e-cd45-4320-ae66-945f038caa1b",
                                             "sourceCreations": [
                                                 {
+                                                    "gitIdentifier": {
+                                                        "repoName": "myPrivateRepo",
+                                                        "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
+                                                        "commitId": "ad090b60a4aedc5161da9c035a49b14a319829b4",
+                                                        "branch": "myBranch"
+                                                    },
                                                     "SCCEventId": "ac085e24-ac4c-41be-912d-08c7afd32285",
                                                     "author": {
                                                         "name": "John Doe",
@@ -70,10 +57,14 @@
                                                         "email": "john.doe@company.com",
                                                         "group": "Team Gophers"
                                                     },
-                                                    "issues": [
-                                                    ],
                                                     "sourceCreations": [
                                                         {
+                                                            "gitIdentifier": {
+                                                                "repoName": "myPrivateRepo",
+                                                                "repoUri": "https://github.com/johndoe/myPrivateRepo.git",
+                                                                "commitId": "ad090b60a4aedc5161da9c035a49b14a319829b4",
+                                                                "branch": "myBranch"
+                                                            },
                                                             "SCCEventId": "a52ad6a4-c522-47e2-9195-0481930979e4",
                                                             "author": null,
                                                             "issues": [
@@ -86,7 +77,8 @@
                                                                 }
                                                             ]
                                                         }
-                                                    ]
+                                                    ],
+                                                    "issues": []
                                                 }
                                             ]
                                         }
@@ -96,8 +88,8 @@
                                 }
                             ]
                         },
-                        "id": "a100572b-c3j4-441e-abc9-b62f48080011",
-                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
+                        "id": "a100572b-c3j4-441e-abc9-b62f48080011"
                     },
                     {
                         "fileInformation": [
@@ -106,30 +98,29 @@
                                 "classifier": "debug"
                             }
                         ],
-                        "id": "a400572b-c3j4-441e-abc9-b62f48080033",
-                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
+                        "id": "a400572b-c3j4-441e-abc9-b62f48080033"
                     }
                 ]
             }
         ]
     },
-    "testCaseExecutions": [
+    "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
+    "confidenceLevels": [
         {
-            "testCaseStartedTime": 1481875925916,
-            "testCaseFinishedEventId": "ab9d64b0-a6e9-4419-8b5d-a650c27c1111",
-            "testCaseStartedEventId": "ab9d64b0-a6e9-4419-8b5d-a650c27c59ca",
-            "testCaseFinishedTime": 1481875935919,
-            "testCaseTriggeredTime": 1490777327230,
-            "testCaseDuration": 10003,
-            "testCaseTriggeredEventId": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
-            "outcome": {
-                "conclusion": "SUCCESSFUL",
-                "verdict": "PASSED",
-                "tracker": "My Other Test Management System",
-                "id": "TC5",
-                "uri": "https://other-tm.company.com/testCase/TC5"
-            }
+            "eventId": "a37d59a3-069e-4f4c-8cc5-a52e73501a75",
+            "name": "readyForDelivery",
+            "time": 1481875944272,
+            "value": "SUCCESS"
         },
+        {
+            "eventId": "a37d59a3-069e-4f4c-8cc5-a52e73501a76",
+            "name": "performance",
+            "time": 1481875988767,
+            "value": "SUCCESS"
+        }
+    ],
+    "testCaseExecutions": [
         {
             "testCaseStartedTime": 1481875925918,
             "testCaseFinishedEventId": "a7b20d3a-23a6-41c6-8da0-a87a240b4c2f",
@@ -145,50 +136,28 @@
                 "id": "TC6",
                 "uri": "https://other-tm.company.com/testCase/TC6"
             }
-        }
-    ],
-    "confidenceLevels": [
-        {
-            "eventId": "a37d59a3-069e-4f4c-8cc5-a52e73501a76",
-            "name": "performance",
-            "time": 1481875988767,
-            "value": "SUCCESS"
         },
         {
-            "eventId": "a37d59a3-069e-4f4c-8cc5-a52e73501a75",
-            "name": "readyForDelivery",
-            "time": 1481875944272,
-            "value": "SUCCESS"
+            "testCaseStartedTime": 1481875925916,
+            "testCaseFinishedEventId": "ab9d64b0-a6e9-4419-8b5d-a650c27c1111",
+            "testCaseStartedEventId": "ab9d64b0-a6e9-4419-8b5d-a650c27c59ca",
+            "testCaseFinishedTime": 1481875935919,
+            "testCaseTriggeredTime": 1490777327230,
+            "testCaseDuration": 10003,
+            "testCaseTriggeredEventId": "ad3df0e0-404d-46ee-ab4f-3118457148f4",
+            "outcome": {
+                "conclusion": "SUCCESSFUL",
+                "verdict": "PASSED",
+                "tracker": "My Other Test Management System",
+                "id": "TC5",
+                "uri": "https://other-tm.company.com/testCase/TC5"
+            }
         }
     ],
     "TemplateName": "ARTIFACT_1",
     "id": "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
     "time": 1481875891763,
-    "type": "EiffelArtifactCreatedEvent",
-    "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
-    "artifacts": [
-        {
-            "fileInformation": [
-                {
-                    "extension": "jar",
-                    "classifier": "debug"
-                }
-            ],
-            "id": "a100572b-c3b4-461e-abc9-b62f48087011",
-            "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-        }
-    ],
     "publications": [
-        {
-            "eventId": "a3d05e6f-9bd9-4138-83b6-e20cc74680a3",
-            "locations": [
-                {
-                    "type": "PLAIN",
-                    "uri": "https://myrepository.com/mySubSystemArtifact"
-                }
-            ],
-            "time": 1481875921763
-        },
         {
             "eventId": "a3d05e6f-9bd9-4138-83b6-e20cc74681b5",
             "locations": [
@@ -198,6 +167,28 @@
                 }
             ],
             "time": 1481875921843
+        },
+        {
+            "eventId": "a3d05e6f-9bd9-4138-83b6-e20cc74680a3",
+            "locations": [
+                {
+                    "type": "PLAIN",
+                    "uri": "https://myrepository.com/mySubSystemArtifact"
+                }
+            ],
+            "time": 1481875921763
+        }
+    ],
+    "artifacts": [
+        {
+            "fileInformation": [
+                {
+                    "extension": "jar",
+                    "classifier": "debug"
+                }
+            ],
+            "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
+            "id": "a100572b-c3b4-461e-abc9-b62f48087011"
         }
     ]
 }

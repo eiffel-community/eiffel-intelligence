@@ -1,13 +1,11 @@
 package com.ericsson.ei.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -17,6 +15,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import gherkin.deps.com.google.gson.JsonObject;
 import gherkin.deps.com.google.gson.JsonParser;
@@ -24,8 +23,6 @@ import lombok.Getter;
 
 @Component
 public class DataBaseManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseManager.class);
-
     private static final int MAX_WAIT_TIME_MILLISECONDS = 30000;
     private static final int RETRY_EVERY_X_MILLISECONDS = 1000;
 
@@ -33,6 +30,7 @@ public class DataBaseManager {
     private String database;
 
     @Value("${event_object_map.collection.name}")
+
     private String eventObjectCollectionName;
 
     @Value("${aggregated.collection.name}")
@@ -40,6 +38,9 @@ public class DataBaseManager {
 
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
+
+    @Value("${subscription.collection.name}")
+    private String subscriptionCollectionName;
 
     @Getter
     @Autowired
@@ -77,13 +78,32 @@ public class DataBaseManager {
         long stopTime = System.currentTimeMillis() + MAX_WAIT_TIME_MILLISECONDS;
         while (stopTime > System.currentTimeMillis()) {
             List<Document> documents = getDocumentsFromCollection(aggregatedCollectionName);
-            TimeUnit.MILLISECONDS.sleep(RETRY_EVERY_X_MILLISECONDS);
             if (!documents.isEmpty()) {
                 return true;
             }
+            TimeUnit.MILLISECONDS.sleep(RETRY_EVERY_X_MILLISECONDS);
         }
         return false;
     }
+
+//    /**
+//     * Checks that aggregated object contains specified arguments.
+//     *
+//     * @param checklist
+//     *            list of arguments
+//     * @return list of missing arguments
+//     */
+//    private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
+//        List<Document> documents = getDocumentsFromCollection(aggregatedCollectionName);
+//        for (Document document : documents) {
+//            for (String expectedValue : new ArrayList<>(checklist)) {
+//                if (document.toString().contains(expectedValue)) {
+//                    checklist.remove(expectedValue);
+//                }
+//            }
+//        }
+//        return checklist;
+//    }
 
     /**
      * Verify that events are located in the database collection.
@@ -166,6 +186,19 @@ public class DataBaseManager {
     }
 
     /**
+     * Get a specific subscription from the database based on the subscription name.
+     *
+     * @param subscriptionName
+     * @return the document as JSON string
+     */
+    public String getSubscription(String subscriptionName) {
+        MongoCollection<Document> collection = getCollection(subscriptionCollectionName);
+        Bson filter = Filters.eq("subscriptionName", subscriptionName);
+        Document document = collection.find(filter).first();
+        return document.toJson();
+    }
+
+    /**
      * Returns the size of the waitlist.
      *
      * @return int of the size of the waitlist.
@@ -188,4 +221,5 @@ public class DataBaseManager {
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
+
 }

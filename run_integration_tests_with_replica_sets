@@ -1,7 +1,7 @@
 #! /bin/bash
 # docker-compose -f src/main/docker/docker-compose.yml up -d replica1 replica2 replica3
 
-mongodb_uri="mongodb://mongodb:27017"
+mongodb_uri="mongodb://replica1:27017,replica2:27017,replica3:27017"
 mongodb_database="ei-test-db"
 mailhog_uri="mongodb://mongodb:27017"
 rabbitmg_host="rabbitmq"
@@ -24,14 +24,14 @@ test_command="mvn verify \
     -Dspring.mail.port=1025 \
     -Dwaitlist.fixedRateResend=1 -B"
 
-# echo 'rs.initiate( {
-#    _id : "rs0",
-#    members: [
-#       { _id: 0, host: "replica1:27017" },
-#       { _id: 1, host: "replica2:27017" },
-#       { _id: 2, host: "replica3:27017" }
-#    ]
-# } )' | mongo localhost:27001 --quiet
+echo 'rs.initiate( {
+   _id : "rs0",
+   members: [
+      { _id: 0, host: "replica1:27017" },
+      { _id: 1, host: "replica2:27017" },
+      { _id: 2, host: "replica3:27017" }
+   ]
+} )' | mongo localhost:27001 --quiet
 
 docker run -it --rm --network=$docker_network -v $PWD:$PWD -v ~/.m2:/root/.m2 \
    -w $PWD maven:3.6-jdk-8 $test_command

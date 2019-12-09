@@ -229,8 +229,7 @@ services:
       - rabbitmq.exchange.name=ei-exchange
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser
-      - spring.data.mongodb.host=mongodb
-      - spring.data.mongodb.port=${MONGODB_PORT}
+      - spring.data.mongodb.uri=mongodb://mongodb:${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - failed.notification.collection-name=eiffel2_FailedNotification
       - spring.mail.host=

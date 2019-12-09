@@ -21,5 +21,5 @@ We have also drawn the flows that the existing rules need to perform the aggrega
 ## Flow with the events required for TestExecution object flow.
 
 
-<img src="images/test-executionRules.png">
+<img src="images/TestExecutionRules.png">
 </img>

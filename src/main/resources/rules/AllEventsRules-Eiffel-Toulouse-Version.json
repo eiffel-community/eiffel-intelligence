@@ -6,7 +6,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -16,7 +16,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -26,7 +26,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -36,7 +36,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -46,7 +46,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -56,7 +56,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -66,7 +66,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -76,7 +76,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -86,7 +86,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -96,7 +96,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -106,7 +106,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -116,7 +116,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -126,7 +126,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -136,7 +136,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -146,7 +146,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -156,7 +156,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -166,7 +166,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },{
     "TemplateName":"Event_copy",
@@ -175,7 +175,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -185,7 +185,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -195,7 +195,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -205,7 +205,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -215,7 +215,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -225,7 +225,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -235,7 +235,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -245,7 +245,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -255,7 +255,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -265,7 +265,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -275,7 +275,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -285,7 +285,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -295,7 +295,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -305,7 +305,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   },
   {
@@ -315,7 +315,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "@"
   }
 ]

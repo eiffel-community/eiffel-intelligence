@@ -5,7 +5,7 @@
   "IdRule": "meta.id",
   "StartEvent": "YES",
   "IdentifyRules" : "event[?meta.type=='EiffelArtifactCreatedEvent'].meta.id",
-  "MatchIdRules": {"objid": "%IdentifyRules_objid%"},
+  "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
   "ExtractionRules" : "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
   "MergeResolverRules" : "root",
   "ArrayMergeOptions": "",

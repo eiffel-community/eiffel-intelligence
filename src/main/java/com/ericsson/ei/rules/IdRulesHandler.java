@@ -14,10 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers;
+package com.ericsson.ei.rules;
 
+import com.ericsson.ei.handlers.ExtractionHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;

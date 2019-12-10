@@ -28,7 +28,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
-import com.ericsson.ei.handlers.MatchIdRulesHandler;
+import com.ericsson.ei.rules.MatchIdRulesHandler;
 import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesHandler;

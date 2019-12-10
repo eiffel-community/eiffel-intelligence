@@ -6,7 +6,7 @@
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules" : "[meta.id]",
-    "MatchIdRules": {"_id": "%IdentifyRules_objid%"},
+    "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
     "ExtractionRules" : "{eventId: meta.id, actualevent:@}"
   },
   {
@@ -16,7 +16,7 @@
     "IdRule": "meta.id",
     "StartEvent": "NO",
     "IdentifyRules" : "links | [?type=='ARTIFACT'].target",
-    "MatchIdRules": { "$and": [{"internalComposition.artifacts.actualevent.meta.id": "%IdentifyRules%"}]},
+    "MatchIdRules": { "$and": [{"internalComposition.artifacts.actualevent.meta.id": "%IdentifyRulesEventId%"}]},
     "ExtractionRules" : "{actualevent:@}",
     "MergeResolverRules": "[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]"
   },

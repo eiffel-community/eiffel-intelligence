@@ -49,6 +49,7 @@ public class UrlParser {
      * the url containing the new parameters.
      *
      * @param url
+     * @param aggregatedObject
      *
      * @return String
      */
@@ -87,7 +88,6 @@ public class UrlParser {
      * @param url A String containing a URL
      * @return The base url, which excludes context path and parameters.
      * @throws MalformedURLException
-     * @throws URISyntaxException
      */
     public String extractBaseUrl(String url) throws MalformedURLException {
         URL absoluteUrl = new URL(url);
@@ -117,8 +117,7 @@ public class UrlParser {
      * @return
      * @throws MalformedURLException
      */
-    private List<NameValuePair> extractUrlParameters(String url)
-            throws MalformedURLException {
+    private List<NameValuePair> extractUrlParameters(String url) throws MalformedURLException {
         URL absoluteUrl = new URL(url);
         String query = absoluteUrl.getQuery();
         List<NameValuePair> params = splitQuery(query);

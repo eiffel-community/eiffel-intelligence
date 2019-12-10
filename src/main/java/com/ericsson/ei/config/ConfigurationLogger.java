@@ -42,7 +42,7 @@ public class ConfigurationLogger {
                 + "rabbitmq.queue.durable: " + environment.getProperty("rabbitmq.queue.durable") + "\n"
                 + "rabbitmq.binding.key: " + environment.getProperty("rabbitmq.binding.key") + "\n"
                 + "rabbitmq.waitlist.queue.suffix: " + environment.getProperty("rabbitmq.waitlist.queue.suffix") + "\n"
-                + "mergeidmarker: " + environment.getProperty("mergeidmarker") + "\n"
+                + "rules.replacement.marker: " + environment.getProperty("rules.replacement.marker") + "\n"
                 + "spring.data.mongodb.uri: " + safeUri + "\n"
                 + "spring.data.mongodb.database: " + environment.getProperty("spring.data.mongodb.database") + "\n"
                 + "sessions.collection.name: " + environment.getProperty("sessions.collection.name") + "\n"

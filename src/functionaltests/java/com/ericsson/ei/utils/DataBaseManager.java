@@ -86,25 +86,6 @@ public class DataBaseManager {
         return false;
     }
 
-//    /**
-//     * Checks that aggregated object contains specified arguments.
-//     *
-//     * @param checklist
-//     *            list of arguments
-//     * @return list of missing arguments
-//     */
-//    private List<String> compareArgumentsWithAggregatedObjectInDB(List<String> checklist) {
-//        List<Document> documents = getDocumentsFromCollection(aggregatedCollectionName);
-//        for (Document document : documents) {
-//            for (String expectedValue : new ArrayList<>(checklist)) {
-//                if (document.toString().contains(expectedValue)) {
-//                    checklist.remove(expectedValue);
-//                }
-//            }
-//        }
-//        return checklist;
-//    }
-
     /**
      * Verify that events are located in the database collection.
      *

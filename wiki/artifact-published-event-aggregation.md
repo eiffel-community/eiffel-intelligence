@@ -1,4 +1,4 @@
-# ArtifactPublishedEvent Aggregation
+# ArtifactPublishedEvent aggregation
 
 ## Eiffel events are sent
 Consider an artifact has been published and ArtifactPublishedEvent is
@@ -54,9 +54,7 @@ In the next step rules for this event are extracted:
         "IdRule":"meta.id",
         "StartEvent":"NO",
         "IdentifyRules":"links | [?type=='ARTIFACT'].target",
-        "MatchIdRules":{
-          "_id":"%IdentifyRules_objid%"
-        },
+        "MatchIdRules":{ "_id":"%IdentifyRulesEventId%" },
         "ExtractionRules":"{ eventId : meta.id, time : meta.time, locations : data.locations }",
         "MergeResolverRules":"[ {NONEPATH:NONE}, {publications: [{ eventId: meta.id }]} ]",
         "HistoryIdentifyRules":"",
@@ -65,7 +63,8 @@ In the next step rules for this event are extracted:
         "ProcessFunction":null
     }
 
-Following aggregated object is extracted by using the identify rules:
+## Current aggregation
+Following aggregated object is extracted by using the IdentifyRules:
 
       {
          "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",
@@ -216,7 +215,6 @@ Following aggregated object is extracted by using the identify rules:
       }
 
 ## Data extraction from event 
-
 Process begins to extract content from the event as specified in the extraction
 rule and puts it in the aggregated object.
 
@@ -237,7 +235,7 @@ And Extracted contents are:
         ]
     }
 
-Next the merge rules template is extracted as:
+Next the merge rules is extracted as:
 
     [{NONEPATH:NONE}, {publications: [{ eventId: meta.id }]}]
 

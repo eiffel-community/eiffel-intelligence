@@ -77,18 +77,15 @@ application.properties file as “rules.path”.
     "IdRule": "meta.id",
     "StartEvent": "YES",
     "IdentifyRules": "[meta.id]",
-    "MatchIdRules": {
-        "_id": "%IdentifyRules_objid%"
-    },
+    "MatchIdRules": { "_id": "%IdentifyRulesEventId%" },
     "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
     "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
-    "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
+    "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRulesEventId%}}",
     "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",
     "HistoryIdentifyRules": "links | [?type=='COMPOSITION'].target",
     "HistoryExtractionRules": "{id : meta.id, identity : data.identity, fileInformation : data.fileInformation}",
     "HistoryPathRules": "{artifacts: [{id: meta.id}]}",
     "ProcessRules": null,
-    "ProcessFunction": null
     }
 
 If no event-linked aggregated object is found, then next step is to check

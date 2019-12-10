@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.encryption.EncryptionUtils;
-import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.AbortExecutionException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
@@ -57,9 +55,6 @@ import lombok.Setter;
 @Component
 public class MongoDBHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);
-
-    @Autowired
-    private Encryptor encryptor;
 
     @Getter
     @Autowired

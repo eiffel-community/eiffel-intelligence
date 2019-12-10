@@ -318,7 +318,6 @@ public class MongoDBHandler {
         if (mongoClient != null) {
             mongoClient.close();
         }
-        mongoClient = null;
     }
     
     /**

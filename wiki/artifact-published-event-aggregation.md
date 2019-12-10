@@ -1,6 +1,7 @@
 # ArtifactPublishedEvent Aggregation
 
-Consider an artifact has been published and EiffelArtifactPublished event is
+## Eiffel events are sent
+Consider an artifact has been published and ArtifactPublishedEvent is
 generated as follow:
 
     {
@@ -43,6 +44,7 @@ generated as follow:
         }
     }
 
+## Extract data from Eiffel event based on rules
 In the next step rules for this event are extracted:
 
     {
@@ -213,6 +215,8 @@ Following aggregated object is extracted by using the identify rules:
          ]
       }
 
+## Data extraction from event 
+
 Process begins to extract content from the event as specified in the extraction
 rule and puts it in the aggregated object.
 
@@ -262,7 +266,8 @@ Contents are prepared to merge in the object:
         ]
     }
 
-Finally, after merging the content, the merged object looks like this:
+## Updated aggregation
+Finally, after merging the content, the aggregated object looks like this:
 
     {
         "fileInformation":[
@@ -423,9 +428,8 @@ Finally, after merging the content, the merged object looks like this:
         ]
     }
 
+Next step is to apply the ProcessRules on the aggregated object, but in 
+this case no ProcessRules are defined for this Eiffel event, so this step is skipped.
 
-Next step is to extract the process rules apply on the aggregated object:
-
-In this case, since there are no process rules provided, this step is skipped.
-
+#### [**Next: Aggregating an ConfidenceLevelModified event**](confidence-level-modified-event-aggregation.md)
 

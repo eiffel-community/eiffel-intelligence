@@ -1,5 +1,6 @@
-# ArtifactCreatedEvent Aggregation
+# ArtifactCreatedEvent aggregation
 
+## Eiffel events are sent
 Suppose, we publish an “EiffelArtifactCreatedEvent” (given below) on the
 message bus.
 
@@ -57,7 +58,6 @@ message bus.
     }
     }
 
-
 When this message is received at EI, processing begins for possible aggregation
 and notification. In the next step a rules object for the message is extracted.
 The rules object is a set of rules in JSON format that helps extract required
@@ -68,7 +68,7 @@ used to search for all existing aggregated objects linked to the event under
 process. Here it should be noted that rules object path is configured in the
 application.properties file as “rules.path”.
 
-### Rule object extracted from the event under consideration: ###
+## Extract data from Eiffel event based on rules
 
     {
     "TemplateName": "ARTIFACT_1",
@@ -108,12 +108,13 @@ aggregated object. It should be noted that this event has no links to any
 aggregated object. However, as it is a start event so a new aggregated object
 is created by extracting information from this event.
 
-### Information Extraction from an Event: ###
-In this step, information from a given event is extracted. This information will then be added into a relevant
-aggregated object. This is what the term aggregation comes from. What
-information is extracted from a given event is encoded in the extraction rules.
-Extraction rules are represented in the rules object with a key named
-“ExtractionRules”. For example, for the current event and rule object,
+## Data extraction from event 
+
+In this step, information from a given event is extracted. This information will 
+then be added into a relevant aggregated object. This is what the term aggregation 
+comes from. What information is extracted from a given event is encoded in the 
+extraction rules. Extraction rules are represented in the rules object with a key 
+named “ExtractionRules”. For example, for the current event and rule object,
 following information will be extracted:
 
     {
@@ -151,5 +152,7 @@ the aggregated object is processed together with this event. The contents of
 the event to be merged into the aggregated object are extracted and added to
 the aggregated object using “MergeResolverRules”. More about
 “MergeResolverRules” can be found [here](rules.md). Next, “ProcessRules”
-(if exist) are applied on the aggregated object and the resulting modified
+(if they exist) are applied on the aggregated object and the resulting modified
 aggregated object is updated in the database.
+
+#### [**Next: Aggregating a TestCaseTriggered event**](test-case-triggered-event-aggregation.md)

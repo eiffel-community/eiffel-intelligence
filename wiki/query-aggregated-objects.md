@@ -172,7 +172,7 @@ Then it filters those objects and returns all values that has "gitIdentifier" as
       "filter" : "incomplete_path_filter(@, 'gitIdentifier')"
     }
 
-As the filter functionality takes a plain jmespath expression it can be a more
+As the filter functionality takes a plain JMESPath expression it can be a more
 complex expression as well. In the case below we retrieve all aggregated objects
 that contains a certain commit using the criteria(MongoDB query) and then filter
 out which confidence levels the artifact has succeeded on. NOTE that the Mongo

@@ -1,7 +1,7 @@
-# TestCaseStartedEvent Aggregation
+# TestCaseStartedEvent aggregation
 
-Suppose that the test has started and as a result an EiffelTestCaseStarted
-event is received as follow:
+## Eiffel events are sent
+Suppose that the test has started and as a result an TestCaseStartedEvent is received as follow:
 
     {
         "links":[
@@ -37,6 +37,7 @@ event is received as follow:
         }
     }
 
+## Extract data from Eiffel event based on rules
 In the next step rules for this event are extracted:
 
     {
@@ -138,6 +139,7 @@ Contents are prepared to merge in the object:
 
     {"testCaseExecutions":[{"testCaseStartedTime":1481875925916,"testCaseStartedEventId":"cb9d64b0-a6e9-4419-8b5d-a650c27c59ca","testCaseTriggeredEventId":"6d3df0e0-404d-46ee-ab4f-3118457148f4","outcome":null}]}
 
+## Updated aggregation
 Finally, after merging the content, the merged object looks like this:
 
     {
@@ -187,5 +189,7 @@ Finally, after merging the content, the merged object looks like this:
 
 Next step is to extract the process rules apply on the aggregated object:
 
-In this case, since there are no process rules are provided so this step is
+In this case, since there are no ProcessRules defined for this event so this step is
 skipped.
+
+#### [**Next: Aggregating a TestCaseFinished event**](test-case-finished-event-aggregation.md)

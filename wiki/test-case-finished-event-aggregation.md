@@ -1,7 +1,8 @@
-# TestCaseFinishedEvent Aggregation
+# TestCaseFinishedEvent aggregation
 
+## Eiffel events are sent
 Suppose that and artifact has been build, published and uploaded and all tests
-in a test case has finished and as a result an EiffelTestCaseFinished event is
+in a test case has finished and as a result an TestCaseFinishedEvent is
 received as follow:
 
     {
@@ -38,6 +39,7 @@ received as follow:
        }
     }
 
+## Extract data from Eiffel event based on rules
 The next step is to fetch the rules for this event and they are:
 
     {
@@ -140,6 +142,7 @@ object with key “testCaseExecutions”. Data in correct format will look like:
       }
     }
 
+## Updated aggregation
 Finally, you will be able to find the fully aggregated object that may contain
 information about one or several executed test cases:
 
@@ -304,3 +307,5 @@ information about one or several executed test cases:
           }
         ]
     }
+
+#### [**Next: Aggregating an ArtifactPublished event**](artifact-published-event-aggregation.md)

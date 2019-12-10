@@ -1,7 +1,8 @@
 # ConfidenceLevelModified event Aggregation
 
-### 1) f37d59a3-069e-4f4c-8cc5-a52e73501a76
+## Eiffel events are sent
 
+### 1) f37d59a3-069e-4f4c-8cc5-a52e73501a76
 Suppose an EiffelConfidenceLevelModified event is received:
 
     {
@@ -40,6 +41,7 @@ Suppose an EiffelConfidenceLevelModified event is received:
       }
     }
 
+## Extract data from Eiffel event based on rules
 Next the specific rule for this event is found and extracted:
 
     {
@@ -234,6 +236,7 @@ format will look like below:
       }
     ]
 
+## Updated aggregation
 And the resulting aggregated object will be:
 
     {
@@ -379,8 +382,9 @@ And the resulting aggregated object will be:
         ]
     }
 
-### 2) f37d59a3-069e-4f4c-8cc5-a52e73501a75
+## Eiffel events are sent
 
+### 2) f37d59a3-069e-4f4c-8cc5-a52e73501a75
 Then a new ConfidenceLevelModified event arrives:
 
     {
@@ -419,29 +423,11 @@ Then a new ConfidenceLevelModified event arrives:
       }
     }
 
+## Extract data from Eiffel event based on rules
 The whole process with finding the configured rule is repeated for this
-Eiffel event and the rule looks like below:
+Eiffel event and the rule is the same as above.
 
-    {
-      "TemplateName": "ARTIFACT_1",
-      "Type": "EiffelConfidenceLevelModifiedEvent",
-      "TypeRule": "meta.type",
-      "IdRule": "meta.id",
-      "StartEvent": "NO",
-      "IdentifyRules": "links | [?type=='SUBJECT'].target",
-      "MatchIdRules": {
-        "_id": "%IdentifyRules_objid%"
-      },
-      "ExtractionRules": "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
-      "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
-      "ArrayMergeOptions": "",
-      "HistoryIdentifyRules": "",
-      "HistoryExtractionRules": "",
-      "ProcessRules": null,
-      "ProcessFunction": null
-    }
-
-With help of identifyRule:
+With help of IdentifyRule:
 
     links | [?type=='SUBJECT'].target
 
@@ -449,6 +435,8 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
+
+## Current aggregation 
 It is the same event id as in the previous aggregation but some other
 aggregations were done during the time between this and previous
 ConfidenceLevelModified event appearance. Because of that the object looks like this:
@@ -602,8 +590,9 @@ ConfidenceLevelModified event appearance. Because of that the object looks like 
               "time": 1481875921763
             }
           ]
-      }
+    }
 
+## Data extraction from event 
 The required content is extracted from the event as specified in the rule:
 
     "ExtractionRules": "{  eventId:meta.id,  time:meta.time,  name:data.name,  value:data.value }"
@@ -642,7 +631,9 @@ array. New “confidenceLevels” array will look like below:
           }
         ]
 
-And the resulting aggregated object will be:
+## Updated aggregation
+And the resulting aggregated object will include two JSON objects in the array
+called confidenceLevels.
 
     {
         "_id": "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43",

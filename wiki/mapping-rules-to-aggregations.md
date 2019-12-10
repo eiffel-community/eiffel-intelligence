@@ -1,4 +1,5 @@
-When writing subscriptions it is important that you know the structure of the aggregated object. In this section we present how example aggregated objects look like in relation to our existing rules.
+When writing subscriptions it is important that you know the structure of the aggregated object. 
+In this section we present how example aggregated objects look like in relation to our existing rules.
 
 [**Artifact Rules**](../src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json) 
 will result in an [**Artifact Object**](../src/test/resources/AggregatedDocumentInternalCompositionLatestIT.json) 

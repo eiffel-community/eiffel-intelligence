@@ -2,7 +2,7 @@
 
 Suppose a subscription is created (as shown below) by a user and then that is
 stored in the subscription database. Read more about the [subscription REST API](subscription-API.md)
-and [adding subscriptions via Eiffel Intelligence frontend GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
+and [adding subscriptions via Eiffel Intelligence frontend GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md).
 
     {
         "created": "2017-07-26",

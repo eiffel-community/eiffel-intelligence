@@ -11,7 +11,7 @@ For further explanation of the process, [consider the following example](step-by
 
 ### Adding subscriptions
 It is possible to add subscriptions using the [Eiffel Intelligence
-front-end GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
+front-end GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md).
 It is also possible to manage subscriptions [using the REST API](subscription-API.md).
 
 ### Types of notifications for subscriptions
@@ -24,7 +24,7 @@ can be found in the below links:
 * [Subscription with E-mail notification](subscription-with-email-notification.md)
 
 The different fields in a subscription are also described in the 
-[front-end documentation](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
+[front-end documentation](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md).
 
 ### Writing requirements and conditions
 When writing subscription requirements, they are referencing the structure
@@ -172,7 +172,7 @@ has been fulfilled, Eiffel Intelligence would perform a notification.
 More subscription templates [can be found here](../src/main/resources/templates).
 
 ### Repeat handling
-See in the front-end documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)
+See in the front-end documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md)
 
 ### Adding comments inside subscription
 

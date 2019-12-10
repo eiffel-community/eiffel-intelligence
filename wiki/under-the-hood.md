@@ -8,4 +8,3 @@ and message bus. The message bus instance must be the same you use
 to publish the events to. If several message buses are used then it is needed
 to federate these into one more extra message bus and configure Eiffel
 Intelligence to use the federated message bus.
-

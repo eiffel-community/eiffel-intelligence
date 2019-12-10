@@ -536,7 +536,6 @@
                     <skipITs>${skipITs}</skipITs>
                     <systemPropertyVariables>
                         <systemTest>true</systemTest>
-                        <er.url>http://localhost:8080/eventrepository/search/</er.url>
                     </systemPropertyVariables>
                     <excludes>
                         <exclude>**/test/*</exclude>

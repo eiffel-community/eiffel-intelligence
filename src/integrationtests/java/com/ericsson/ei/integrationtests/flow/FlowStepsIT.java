@@ -302,7 +302,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     @Override
-    protected Map<String, JsonNode> getCheckData() throws IOException {
+    protected Map<String, JsonNode> getCheckData() throws Exception {
         JsonNode expectedJSON = getJSONFromFile(aggregatedObjectFilePath);
         Map<String, JsonNode> checkData = new HashMap<>();
         checkData.put(aggregatedObjectID, expectedJSON);

@@ -51,7 +51,7 @@ import lombok.Setter;
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
     private static final int SECONDS_1 = 1000;
     private static final int SECONDS_30 = 30000;
-    private static final int DEFAULT_DELAY_BETWEEN_SENDING_EVENTS = 500;
+    private static final int DEFAULT_DELAY_BETWEEN_SENDING_EVENTS = 100;
     protected static final String MAILHOG_DATABASE_NAME = "mailhog";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
@@ -144,36 +144,30 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @throws Exception
      */
     protected void sendEventsAndConfirm() throws Exception {
-        try {
-            List<String> eventNames = getEventNamesToSend();
-            JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-            int eventsCount = eventNames.size() + extraEventsCount();
+        List<String> eventNames = getEventNamesToSend();
+        int eventsCount = eventNames.size() + extraEventsCount();
 
-            boolean alreadyExecuted = false;
-            for (String eventName : eventNames) {
-                JsonNode eventJson = parsedJSON.get(eventName);
-                String event = eventJson.toString();
+        JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
 
-                rabbitTemplate.convertAndSend(event);
-                if (!alreadyExecuted) {
-                    TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
-                    alreadyExecuted = true;
-                }
-                /**
-                 * Without a small delay between the sending of 2 events, one may risk to be lost in
-                 * an empty void if not received by EI
-                 */
-                TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
+        boolean alreadyExecuted = false;
+        for (String eventName : eventNames) {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            String event = eventJson.toString();
+
+            rabbitTemplate.convertAndSend(event);
+            if (!alreadyExecuted) {
+                TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
+                alreadyExecuted = true;
             }
-
-            waitForEventsToBeProcessed(eventsCount);
-            checkResult(getCheckData());
-        } catch (IOException e) {
-            String message = String.format("Failed to send Eiffel messages. Reason: %s",
-                    e.getMessage());
-            LOGGER.error(message, e);
-            fail(message);
+            /**
+             * Without a small delay between the sending of 2 events, one may risk to be lost in an
+             * empty void if not received by EI
+             */
+            TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
+
+        waitForEventsToBeProcessed(eventsCount);
+        checkResult(getCheckData());
     }
 
     /**
@@ -194,13 +188,22 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * @return map, where key - _id of expected aggregated object value - expected aggregated object
+     * @throws Exception
      *
      */
-    protected abstract Map<String, JsonNode> getCheckData() throws IOException;
+    protected abstract Map<String, JsonNode> getCheckData() throws IOException, Exception;
 
-    protected JsonNode getJSONFromFile(String filePath) throws IOException {
-        String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
-        return objectMapper.readTree(expectedDocument);
+    protected JsonNode getJSONFromFile(String filePath) throws Exception {
+        try {
+            String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
+            return objectMapper.readTree(expectedDocument);
+        } catch (IOException e) {
+            String message = String.format("Failed to load json content from file. Reason: %s",
+                    e.getMessage());
+            LOGGER.error("", e);
+            fail(message);
+        }
+        return null;
     }
 
     /**

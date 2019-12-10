@@ -1,6 +1,6 @@
 # Configuration
 
-The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](src/main/resources/application.properties) 
+The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](../src/main/resources/application.properties) 
 file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
 
 ## Setting up multiple EI instances
@@ -37,7 +37,7 @@ to point to the correct extraction rules json file.
 Eiffel Intelligence provides default extractions rules json files for
 different Eiffel protocol versions inside the war artifact file and in the
 source code repository. All default extraction rules json files can be
-found here: [extraction rules](/src/main/resources/rules)
+found here: [extraction rules](../src/main/resources/rules)
 
 Example of setting "rules.path" property in application.properties using 
 default extraction rules json files provided in eiffel-intelligence war file:
@@ -63,7 +63,7 @@ aggregated object using the below properties:
 * aggregated.object.name
 * aggregated.collection.name
 
-If Eiffel Intelligence is set up with [all_event_rules](src/main/resources/all_event_rules.json)
+If Eiffel Intelligence is set up with [all_event_rules](../src/main/resources/all_event_rules.json)
 it is recommended to set a time to live value to avoid having a copy of
 Event repository. Recommended settings is 10 minutes.
 

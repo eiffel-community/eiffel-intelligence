@@ -63,7 +63,7 @@ aggregated object using the below properties:
 * aggregated.object.name
 * aggregated.collection.name
 
-If Eiffel Intelligence is set up with [all_event_rules](../src/main/resources/rules/all_event_rules.json)
+If Eiffel Intelligence is set up with [all_event_rules](../src/main/resources/rules/AllEventsRules-Eiffel-Agen-Version.json)
 it is recommended to set a time to live value to avoid having a copy of
 Event repository. Recommended settings is 10 minutes.
 

@@ -4,7 +4,6 @@
 |------|---------------------|
 |GET   |/failed-notifications|
 
-
 ## Failed notifications
     GET /failed-Notifications
 
@@ -32,5 +31,10 @@ The content of a failed notification json object may look something like the fol
         }
     ]
 
-It contains the name of the subscription that failed, a snapshot of the aggregated object that triggered the subscription, the notification meta which is the mail or service endpoint to contact, the time of occurence and the message that contains the exception that was thrown.
-This information is meant to help you figure out why the notification failed. In the example above the reason is that the notification meta URL is invalid and because of this could not establish a connection.
+It contains the name of the subscription that failed, a snapshot of the 
+aggregated object that triggered the subscription, the notification meta 
+which is the mail or service endpoint to contact, the time of occurrence 
+and the message that contains the exception that was thrown. This information 
+is meant to help you figure out why the notification failed. In the example 
+above the reason is that the notification meta URL is invalid and because 
+of this Eiffel Intelligence could not establish a connection.

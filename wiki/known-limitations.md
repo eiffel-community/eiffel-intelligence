@@ -14,4 +14,6 @@ We can take the following chain of events:
 * event1 - start event and it will be aggregated
 * event2 - rules defined for its type and links to event1, it will be aggregated
 * event3 - it links to event2, rules not defined for its type so it will not be aggregated
-* event4 - it links to event3, rules defined for its type but since event3 is not aggregated then the aggregation chain is broken and this event will not be aggregated since we have no ways to find the start event for it.
+* event4 - it links to event3, rules defined for its type but since event3 is 
+not aggregated then the aggregation chain is broken and this event will not be 
+aggregated since we have no ways to find the start event for it.

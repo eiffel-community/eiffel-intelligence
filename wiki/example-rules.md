@@ -2,7 +2,7 @@
 
 We have created some example rules that represent use cases which triggered 
 the development of Eiffel Intelligence. The files containing the rules 
-can be found [**here**](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules).
+can be found [**here**](../src/main/resources/rules).
 
 We have also illustrated the Eiffel event flows which these example rules 
 need, to perform the aggregation. The illustrations contain the events 

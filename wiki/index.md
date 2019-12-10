@@ -25,8 +25,7 @@ information in the aggregated object. Today only one rule set can be run in
 each instance and the reason is that in an Eiffel domain with millions of
 events flowing we will have multiple extractions and checks for each rule set
 and multiple rule sets in same service will require large machines and more
-difficult optimization. To understand what they are and how they are used, [read more here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md).
-
+difficult optimization. To understand what they are and how they are used, [read more here](rules.md).
 
 ### Subscriptions and notifications
 
@@ -34,4 +33,3 @@ Eiffel intelligence uses subscriptions to notify interested parties when several
 events have occurred with desired content in an aggregated object. Every time an
 aggregated object is updated we check whether any subscription is fulfilled by
 the current state of the aggregated object.
-

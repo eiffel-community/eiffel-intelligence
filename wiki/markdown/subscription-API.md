@@ -33,6 +33,8 @@ Example of a subscription array input:
         ..Subscription 2..
       }
     ]
+    
+ Guidelines for writing requirements and conditions for creating subscriptions can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscriptions.md#writing-requirements-and-conditions)
 
 
 
@@ -101,5 +103,4 @@ Curl command example
    
  ## Subscription related information in front-end documentation
  
-Read more about curl examples for subscription endpoint in Eiffel Intelligence front-end docs [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/curl-examples.md#subscriptions)
- 
+Read more about curl examples for subscription endpoint in Eiffel Intelligence front-end docs [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/curl-examples.md#subscriptions) 

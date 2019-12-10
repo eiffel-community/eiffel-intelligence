@@ -1,6 +1,5 @@
 # TestCaseFinishedEvent Aggregation
 
-
 Suppose that and artifact has been build, published and uploaded and all tests
 in a test case has finished and as a result an EiffelTestCaseFinished event is
 received as follow:
@@ -111,7 +110,7 @@ Following aggregated object is extracted by using the identify rules:
 The event EiffelTestCaseFinishedEvent is aggregated. The required content is
 extracted from the event as specified in the rule:
 
-    "ExtractionRules":"{ testCaseFinishedEventId:meta.id,    testCaseFinishedTime:meta.time, outcome:data.outcome}"
+    "ExtractionRules":"{ testCaseFinishedEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}"
 
 And is put in to the object in the way as it is specified in this rule:
 

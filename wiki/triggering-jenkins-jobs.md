@@ -1,7 +1,7 @@
 # Trigger Jenkins
 
 On this page we only explain the subscription fields which are relevant to trigger 
-Jenkins jobs. For explanations of the other fields in the subscriptions, see [REST POST subscription](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-with-REST-POST-notification.md).
+Jenkins jobs. For explanations of the other fields in the subscriptions, see [REST POST subscription](subscription-with-REST-POST-notification.md).
 
 There are some important details to know when triggering Jenkins jobs with parameters and/or token.
 
@@ -118,5 +118,5 @@ use the build endpoint and we send the parameters in a json form using REST body
 
 ## Requirements and conditions
 
-Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscriptions.md#writing-requirements-and-conditions).
+Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](subscriptions.md#writing-requirements-and-conditions).
 

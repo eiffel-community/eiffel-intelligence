@@ -58,8 +58,6 @@ In the next step rules for this event are extracted:
         "ProcessFunction":null
     }
 
-
-
 Following aggregated object is extracted by using the identify rules:
 
     [
@@ -130,7 +128,6 @@ Next the merge rules template is:
 Merge rules are created using JMESPath:
 
     [{"NONEPATH":null},{"testCaseExecutions":[{"testCaseTriggeredEventId":"6d3df0e0-404d-46ee-ab4f-3118457148f4"}]}]
-
 
 
 Next the path to merge content in the aggregated object is computed:

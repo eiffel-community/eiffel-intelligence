@@ -7,21 +7,21 @@ Whenever an aggregated object is created or modified, it is evaluated against
 all existing subscriptions to find out whether the aggregated object 
 meets any subscription requirements. If it fulfills a subscription requirement 
 then a notification is sent to the subscriber as specified in that subscription. 
-For further explanation of the process, [consider the following example](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/step-by-step-subscription-notification.md).
+For further explanation of the process, [consider the following example](step-by-step-subscription-notification.md).
 
 ### Adding subscriptions
 It is possible to add subscriptions using the [Eiffel Intelligence
 front-end GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
-It is also possible to manage subscriptions [using the REST API](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md).
+It is also possible to manage subscriptions [using the REST API](subscription-API.md).
 
 ### Types of notifications for subscriptions
 Today Eiffel Intelligence supports notifications by email or by sending
 a HTTP POST request. Example subscriptions in JSON format with different types of notification
 can be found in the below links:
 
-* [Subscription with HTTP POST notification](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-with-REST-POST-notification.md)
-* [Subscription with HTTP POST notification to trigger parameterized Jenkins job](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/triggering-jenkins-jobs.md)
-* [Subscription with E-mail notification](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-with-email-notification.md)
+* [Subscription with HTTP POST notification](subscription-with-REST-POST-notification.md)
+* [Subscription with HTTP POST notification to trigger parameterized Jenkins job](triggering-jenkins-jobs.md)
+* [Subscription with E-mail notification](subscription-with-email-notification.md)
 
 The different fields in a subscription are also described in the 
 [front-end documentation](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
@@ -41,7 +41,7 @@ based on the below aggregated object. What you see in the aggregation is
 the extracted content from Eiffel events. Aside from that Eiffel Intelligence 
 has also added an extra _id key with the value of the start event. 
 This _id serves as an index in Mongo DB to speed up searches in the database. 
-The below aggregation is based on the [Artifact rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
+The below aggregation is based on the [Artifact rules](../src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 **Aggregation from several Eiffel events:**
 
@@ -95,7 +95,7 @@ has been published to a location of type "NEXUS". This subscription wants
 to listen for when an Eiffel ArtifactPublished event is aggregated by
 Eiffel Intelligence.
 
-Conditions in subscriptions are written in [JMESPath syntax](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#What-is-JMESPath?). 
+Conditions in subscriptions are written in [JMESPath syntax](/rules.md#What-is-JMESPath?). 
 The JSON structure of the subscription condition always contains a key 
 "jmespath" and the value is a JMESPath expression. In the example below, 
 we want to know when Eiffel Intelligence has aggregated information about 
@@ -169,7 +169,7 @@ first condition OR the second one, the syntax would look like below:
 
 This subscription describes two requirements and as soon as one of them 
 has been fulfilled, Eiffel Intelligence would perform a notification.
-More subscription templates [can be found here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).
+More subscription templates [can be found here](../src/main/resources/templates).
 
 ### Repeat handling
 See in the front-end documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md)

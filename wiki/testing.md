@@ -39,7 +39,7 @@ can be started with.
 
     mvn verify -DskipUnitTests
 
-If the ports above are different then you need to pass them as java options to
-maven and eventually the host to the instances if they are not started on localhost
+If the ports above are different then you need to pass them as Java options to
+Maven and eventually the host to the instances if they are not started on localhost
 
     mvn verify -DskipUnitTests -Drabbitmq.host=<rabbitmq host if other than localhost> -Drabbitmq.port=<rabbitMq Port> -Dspring.data.mongodb.port=<mongodb port> -Dspring.data.mongodb.host=<mongodb host if other than localhost> -Der.url=<url to search endpoint of ER instance>

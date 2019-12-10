@@ -6,20 +6,20 @@
 
 
 ## Failed notifications
-    GET /failed-Notifications
+    GET /failed-notifications
 
 **Query parameters**:
-subscriptionName={Subscription Name}
+subscriptionNames={Subscription1,Subscription2,...}
 
 Examples of this endpoint using curl
 
-    curl -X GET -H "Content-type: application/json" localhost:39835/failed-notifications?subscriptionName=Subscription_1
+    curl -X GET -H "Content-type: application/json" localhost:39835/failed-notifications?subscriptionNames=Subscription1
 
 The content of a failed notification json object may look something like the following
 
     [
         {
-            "subscriptionName": "Sub1",
+            "subscriptionName": "Subscription1",
             "aggregatedObject": {},
             "notificationMeta": "http://localhost:9999/some-endpoint",
             "_id": {

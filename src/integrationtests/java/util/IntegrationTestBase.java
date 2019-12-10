@@ -155,7 +155,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                 String event = eventJson.toString();
 
                 rabbitTemplate.convertAndSend(event);
-                System.out.println("## Send event ::: " + event);
                 if (!alreadyExecuted) {
                     TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                     alreadyExecuted = true;

@@ -31,45 +31,25 @@
 ##################################################################################################
 version: "2.1"
 services:
-  replica1:
-    container_name: replica1
-    image: mongo:latest
+  mongodb-auth:
+    restart: always
+    image: ${MONGODB_IMAGE}
     expose:
       - "27017"
     ports:
-      - "27001:27017"
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+      - "27016:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    healthcheck:
+        test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
     networks:
-      eiffel_2.0_1:
-        aliases:
-          - replica1
-  replica2:
-    container_name: replica2
-    image: mongo:latest
-    expose:
-      - "27017"
-    ports:
-      - "27002:27017"
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
-    networks:
-      eiffel_2.0_1:
-        aliases:
-          - replica3
-  replica3:
-    container_name: replica3
-    image: mongo:latest
-    expose:
-      - "27017"
-    ports:
-      - "27003:27017"
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
-    networks:
-      eiffel_2.0_1:
-        aliases:
-          - replica3
+          eiffel_2.0_1:
+            aliases:
+              - mongodb-auth
   mongodb:
     restart: always
     image: ${MONGODB_IMAGE}

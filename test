@@ -1,7 +1,0 @@
-#! /bin/bash
-
-docker_network="docker_eiffel_2.0_1"
-
-docker run -d --network=$docker_network --name mongo-auth -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin123 -p 27016:27017 mongo
-
-#exit $?

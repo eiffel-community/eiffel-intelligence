@@ -175,13 +175,13 @@ In a production environment and filesystems, administrator most likely don't wan
 These Eiffel Intelligence password properties can be provided encrypted:
 
         rabbitmq.password
-        password in spring.data.mongo.uri
+        password in spring.data.mongodb.uri
 
 
 A password property is configured by providing the encrypted password in this format.
 
         some.component.password=ENC(<encrypted password>)
-        spring.data.mongo.uri=mongodb://username:ENC(<encrypted password>)@host:port
+        spring.data.mongodb.uri=mongodb://username:ENC(<encrypted password>)@host:port
 
 
 Ldap encrypted password is set inside **ldap.server.list** property according the example below:

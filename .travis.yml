@@ -19,12 +19,10 @@ before_install:
   - uname -a
   - chmod +x pom.xml
 
-# Only running report_coverage and deploy stage (after merge) to master branch
+# Only running report_coverage (after merge) to master branch
 stages:
   - test
   - name: report_coverage
-    if: branch = master AND type != pull_request
-  - name: deploy
     if: branch = master AND type != pull_request
 
 # List of jobs to run, tied to specific stages
@@ -43,19 +41,6 @@ jobs:
         - sleep 60
       script:
         - mvn verify -DskipUTs -Der.url=http://localhost:8084/search/ -Drabbitmq.exchange.name=ei-exchange -Dspring.mail.host=localhost -Dspring.mail.port=1025 -Dwaitlist.fixedRateResend=1 -B
-    - stage: deploy
-      name: deployGitHubPages
-      script: skip          # do not run default test scripts
-      install: skip         # do not run default mvn install
-      # Generate site documentation using mvn site plugin
-      before_deploy:
-        - rm -rf docs
-        - mvn site -B
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        github-token: $GITHUB_TOKEN
-        local_dir: docs/
     - stage: report_coverage
       name: report_coverage
       # Generating test coverage report and publishing to Codacy

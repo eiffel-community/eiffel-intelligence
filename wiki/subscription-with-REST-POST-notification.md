@@ -3,7 +3,7 @@
 Valid subscriptions for REST POST notifications are provided below with 
 each field explained.
 
-**Subscription templates can be found [here](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/templates).**
+**Subscription templates can be found [here](../src/main/resources/templates).**
 
 ## subscriptionName
 The name of the subscription to make it easy to search for. Only numbers, letters and underscore allowed.
@@ -175,8 +175,6 @@ for issue JIRA-1234 has passed testcase TC5 successfully. The method
         ]
     }
 
-
 ## Requirements and conditions
 
-Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscriptions.md#writing-requirements-and-conditions).
-
+Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](subscriptions.md#writing-requirements-and-conditions).

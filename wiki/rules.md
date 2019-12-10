@@ -183,9 +183,8 @@ which could be added to the root of aggregated object or to the inner structure
 of aggregated object depending on **_MergeResolverRules_**.
 
 ### MergeResolverRules
-This is a JSON object describing the entire path or
-parts of the path to where the extracted content will be stored. More detailed
-explanation can be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/merge-resolver-rules.md)
+This is a JSON object describing the entire path or parts of the path to where 
+the extracted content will be stored. More detailed explanation can be found [here](merge-resolver-rules.md)
 
 ### ProcessRules 
 This rule is used to append (_only additions or modifications,
@@ -199,8 +198,10 @@ systems do not need to compute it.
 If your start event, meaning the event that starts the chain of aggregation, 
 contains links that point to upstream events, HistoryRules makes it 
 possible for these to be aggregated into the object as well. They are 
-explained [**here**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/history-rules.md)
+explained [**here**](history-rules.md).
 
 ## Reserved Key names
-The keys "_id" and "time" (at the root level of the aggregated object) are reserved and added in the mongo document by Eiffel Intelligence. User should not use these two keys at the 
-root level of an aggregated object. Even If user add these two keys at the root level, Eiffel Intelligence will overwrite those.
+The keys "_id" and "time" (at the root level of the aggregated object) are 
+reserved and added in the Mongo DB document by Eiffel Intelligence. User should 
+not use these two keys at the root level of an aggregated object. Even if 
+user add these two keys at the root level, Eiffel Intelligence will overwrite those.

@@ -27,17 +27,17 @@ should be set to true:
 
     testaggregated.enabled: true
 
-A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/eiffel-community/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
+A GUI for this feature is also implemented in [Eiffel Intelligence front-end](https://github.com/eiffel-community/eiffel-intelligence-frontend) 
+but only visible when above property is set to true in the backend (this application).
 
 ## Check if testRules are enabled on the selected instance
 
-Using the following endpoint one can check if rule tests are enabled in the EI instance.
+Using the following endpoint one can check if rule tests are enabled in the 
+Eiffel Intelligence instance.
 
     curl -X GET http://<host>:8090/rule-test
 
-
-
-## Test JMESPath expression on given Event
+## Test JMESPath expression on given Eiffel event
 
 This endpoint allows to test the result of a JMESPath expression of an event.
 
@@ -46,8 +46,8 @@ This endpoint allows to test the result of a JMESPath expression of an event.
 **Body (application/json)**
 
     {
-      "rule": <JMESPATH Expression>,
-      "event" <Eiffel Event>:
+      "rule": <JMESPATH expression>,
+      "event" <Eiffel event>:
     }
 
 Examples of this endpoint using curl
@@ -64,7 +64,6 @@ For example if we run the following JMESPath expression:
        fileInformation:data.fileInformation,
        buildCommand:data.buildCommand
     }
-
 
 on Eiffel event:
 
@@ -130,7 +129,6 @@ will give
     }
 
 
-
 ## Test a list of rule sets on given list of events
 This end point is to test a complete aggregation using rule sets for every
 event you need to be aggregated. And a list of events. The result is the
@@ -138,7 +136,6 @@ aggregated object containing the desired information from the events as you
 have specified in the rules.
 
     POST /rule-test/run-full-aggregation
-
 
 **Body (application/json)**
 
@@ -151,4 +148,7 @@ Examples of this endpoint using curl
 
     curl -X POST -H "Content-type: application/json"  --data @body.json  http://localhost:8090/rule-test/run-full-aggregation
 
-For demo you can use following list of [events](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListEvents.json) and list of [rules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateListRules.json). They can be used to create a json with the structure as above and when send as body to the endpoint you should get following [aggregation result](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/test/resources/AggregateResultObject.json)
+For demo you can use following list of [events](../src/test/resources/AggregateListEvents.json) 
+and list of [rules](../src/test/resources/AggregateListRules.json). They 
+can be used to create a json with the structure as above and when send as 
+body to the endpoint you should get following [aggregation result](../src/test/resources/AggregateResultObject.json)

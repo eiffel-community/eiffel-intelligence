@@ -1,7 +1,7 @@
 # Step By Step Subscription Notification
 
 Suppose a subscription is created (as shown below) by a user and then that is
-stored in the subscription database. Read more about the [subscription REST API](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscription-API.md)
+stored in the subscription database. Read more about the [subscription REST API](subscription-API.md)
 and [adding subscriptions via Eiffel Intelligence frontend GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/add-subscription.md).
 
     {
@@ -168,7 +168,7 @@ value of the testcase id. The complete notification message can be seen below:
 
 If the notification via REST POST fails, then a fixed number of attempts are
 made to resend successfully. The number of attempts are specified in the
-[application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
+[application.properties](../src/main/resources/application.properties)
 as “notification.failAttempt”. If message sending attempts fails for the
 specified number of time, then a failed notification is prepared and stored in 
 the database. The name of the collection is specified in the application.properties

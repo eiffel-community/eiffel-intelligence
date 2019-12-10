@@ -35,7 +35,6 @@ Example of a subscription array input:
     ]
 
 
-
 ## Get all subscriptions
 
 Retrieves all the subscriptions
@@ -86,7 +85,6 @@ Delete one or more subscriptions with a comma separated list
 Curl command example
 
     curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
-
 
 ## Delete subscription for the given name
 

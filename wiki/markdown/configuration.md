@@ -31,13 +31,13 @@ extra instance will be started.
 ## Configure Eiffel Intelligence with extraction rules for specific Eiffel protocol version
 
 Extraction rules for a specific Eiffel protocol versions is configured by
-setting "rules.path" property in [application.properties](src/main/resources/application.properties)
+setting "rules.path" property in [application.properties](../src/main/resources/application.properties)
 to point to the correct extraction rules json file.
 
 Eiffel Intelligence provides default extractions rules json files for
 different Eiffel protocol versions inside the war artifact file and in the
 source code repository. All default extraction rules json files can be
-found here: [extraction rules](src/main/resources/rules)
+found here: [extraction rules](/src/main/resources/rules)
 
 Example of setting "rules.path" property in application.properties using 
 default extraction rules json files provided in eiffel-intelligence war file:

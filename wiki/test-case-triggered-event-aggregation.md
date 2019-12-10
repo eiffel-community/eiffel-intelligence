@@ -66,7 +66,7 @@ The next step Eiffel Intelligence does is to fetch the rules for this event and 
       "ProcessFunction": null
     }
 
-With help of identifyRule:
+With help of IdentifyRule:
 
     links | [?type=='IUT'].target
 
@@ -115,28 +115,8 @@ like below:
       ]
     }
 
-The next step is to fetch the rules for the second event and they are:
-
-    {
-      "TemplateName": "ARTIFACT_1",
-      "Type": "EiffelTestCaseTriggeredEvent",
-      "TypeRule": "meta.type",
-      "IdRule": "meta.id",
-      "StartEvent": "NO",
-      "IdentifyRules": "links | [?type=='IUT'].target",
-      "MatchIdRules": {
-        "_id": "%IdentifyRules_objid%"
-      },
-      "ExtractionRules": "{ testCaseTriggeredEventId:meta.id, testCaseTriggeredTime:meta.time, outcome:data.testCase }",
-      "MergeResolverRules": "[ {NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: meta.id }]} ]",
-      "ArrayOptions": "",
-      "HistoryIdentifyRules": "",
-      "HistoryExtractionRules": "",
-      "ProcessRules": null,
-      "ProcessFunction": null
-    }
-
-With help of identifyRule:
+The next step is to fetch the rules for the second event and they are 
+the same as for the first event. With help of IdentifyRule:
 
     links | [?type=='IUT'].target
 
@@ -144,10 +124,11 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
-It is the same id, as previously and the object with that id is still not in
-the database. aggregatedObject returns empty and event is added to wait list.
+It is the same id as previously and the object with that id is still not in
+the database. The aggregated object returns empty and event is added to wait list.
 There, it waits until the object with requested id appears in the database.
 
+## Current aggregation
 Object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" appears but is modified
 before one of the above events are taken from the wait list.
 
@@ -191,6 +172,7 @@ The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
           "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
 
+
 First event with id "6d3df0e0-404d-46ee-ab4f-3118457148f4" is aggregated. The
 required content is extracted from the event as specified in the rule:
 
@@ -204,7 +186,6 @@ JSON object with requested data will be put into array and stored in aggregated
 object with key “testsCaseExecutions”. Data in correct format will look like:
 
     "testCaseExecutions": [
-
     {
         "testCaseTriggeredTime": 1490777327230,
         "testCaseTriggeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",

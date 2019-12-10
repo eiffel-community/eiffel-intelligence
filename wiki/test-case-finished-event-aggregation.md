@@ -52,16 +52,16 @@ The next step is to fetch the rules for this event and they are:
        "MatchIdRules":{
           "$and":[
              {
-                "aggregatedObject.testCaseExecutions.testCaseStartedEventId":"%IdentifyRules%"
+                "aggregatedObject.testCaseExecutions.testCaseStartedEventId":"%IdentifyRulesEventId%"
              }
           ]
        },
        "ExtractionRules":"{ testCaseFinishedEventId:meta.id, testCaseFinishedTime:meta.time, outcome:data.outcome}",
-       "MergeResolverRules":"{\"testCaseStartedEventId\":%IdentifyRules%}",
+       "MergeResolverRules":"{\"testCaseStartedEventId\":%IdentifyRulesEventId%}",
        "ArrayMergeOptions":"",
        "HistoryIdentifyRules":"",
        "HistoryExtractionRules":"",
-       "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}",
+       "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRulesEventId%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRulesEventId%'].testCaseStartedTime | [0])}",
        "ProcessFunction":"difference"
     }
 
@@ -116,11 +116,19 @@ extracted from the event as specified in the rule:
 
 And is put in to the object in the way as it is specified in this rule:
 
-    "MergeResolverRules":"{\"testCaseStartedEventId\":%IdentifyRules%}"
+    "MergeResolverRules":"{\"testCaseStartedEventId\":%IdentifyRulesEventId%}"
 
-Here we also have some processRules:
+Note the use of a placeholder for an unknown Eiffel event id. The "%IdentifyRulesEventId%"
+is a placeholder which Eiffel Intelligence will replace with the Eiffel event id
+extracted from the IdentifyRules. You can read more [about this here](rules.md#using-placeholders-in-rules).
 
-    "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRules%'].testCaseStartedTime | [0])}",
+    "IdentifyRules":"links | [?type=='TEST_CASE_EXECUTION'].target"
+
+The above mentioned IdentifyRule set will result in an Eiffel event id which 
+is inserted into the other rules; MergeResolverRules and ProcessRules.
+Below we see the ProcessRules:
+
+    "ProcessRules":"{testCaseDuration : diff(testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRulesEventId%'].testCaseFinishedTime | [0], testCaseExecutions | [?testCaseStartedEventId=='%IdentifyRulesEventId%'].testCaseStartedTime | [0])}",
 
 The processRules in this case makes a calculation where id calculates the
 difference from testCaseStartedTime and testCaseFinishedTime this calculated

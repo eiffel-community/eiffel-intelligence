@@ -14,11 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.handlers;
+package com.ericsson.ei.rules;
 
 import java.util.List;
 
+import com.ericsson.ei.handlers.ObjectHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.mongo.MongoQuery;
@@ -28,9 +30,16 @@ import com.ericsson.ei.rules.RulesObject;
 @Component
 public class MatchIdRulesHandler {
 
+    @Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
+    private String replacementMarker;
+
     @Autowired
     private ObjectHandler objHandler;
 
+    /**
+     * This method searches the database for any aggregated objects matching the search condition
+     * written in the rules MatchIdRules.
+     * */
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
         String fetchQueryString = replaceIdInRules(matchIdString, id);
@@ -39,11 +48,24 @@ public class MatchIdRulesHandler {
         return objects;
     }
 
-    public static String replaceIdInRules(String matchIdString, String id) {
-        if (matchIdString.contains("%IdentifyRules%")) {
-            return matchIdString.replace("%IdentifyRules%", id);
-        } else if (matchIdString.contains("%IdentifyRules_objid%")) {
-            return matchIdString.replace("%IdentifyRules_objid%", id);
+    /**
+     * This method replaces the 'replacementMarker' placeholder in MatchIdRules with a given Eiffel
+     * event id. The 'replacementMarker' property is defined in application.properties.
+     *
+     * <p>
+     * If 'replacementMarker' is defined as:'%myPlaceHolderId%', <br />
+     * and this method is called with the matchIdString: {"_id": "%myPlaceHolderId%"} <br />
+     * and the id: aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0 <br />
+     * the updated string will look like: {"_id":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee0"}
+     * </p>
+     *
+     * @param matchIdString the string containing a placeholder key to be replaced
+     * @param id            the Eiffel event id to replace placeholder with
+     * @return an updated matchIdString
+     */
+    public String replaceIdInRules(String matchIdString, String id) {
+        if (matchIdString.contains(replacementMarker)) {
+            return matchIdString.replace(replacementMarker, id);
         } else {
             return null;
         }

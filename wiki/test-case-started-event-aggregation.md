@@ -47,9 +47,7 @@ In the next step rules for this event are extracted:
         "IdRule":"meta.id",
         "StartEvent":"NO",
         "IdentifyRules":"links | [?type=='TEST_CASE_EXECUTION'].target",
-        "MatchIdRules":{
-           "_id":"%IdentifyRules_objid%"
-        },
+        "MatchIdRules":{ "_id":"%IdentifyRulesEventId%" },
         "ExtractionRules":"{ testCaseStartedEventId:meta.id, testCaseStartedTime:meta.time, outcome:data.testCase }",
         "MergeResolverRules":"[{NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: links | [?type=='TEST_CASE_EXECUTION'] | [0].target }] }]",
         "ArrayOptions":"",
@@ -59,7 +57,7 @@ In the next step rules for this event are extracted:
         "ProcessFunction":null
     }
 
-Following aggregated object is extracted by using the identify rules:
+The following aggregated object is extracted by using the IdentifyRules.
 
     [
         {
@@ -114,7 +112,7 @@ Extraction rule:
 
     { testCaseStartedEventId:meta.id, testCaseStartedTime:meta.time, outcome:data.testCase }
 
-And Extracted contents are:
+And extracted contents are:
 
     {
         "testCaseStartedEventId":"cb9d64b0-a6e9-4419-8b5d-a650c27c59ca",
@@ -129,7 +127,6 @@ Next the merge rules template is:
 Merge rules are created using JMESPath:
 
     [{"NONEPATH":null},{"testCaseExecutions":[{"testCaseTriggeredEventId":"6d3df0e0-404d-46ee-ab4f-3118457148f4"}]}]
-
 
 Next the path to merge content in the aggregated object is computed:
 
@@ -187,9 +184,8 @@ Finally, after merging the content, the merged object looks like this:
         "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
     }
 
-Next step is to extract the process rules apply on the aggregated object:
-
-In this case, since there are no ProcessRules defined for this event so this step is
+Next step is to apply the ProcessRules on the aggregated object. In this case, 
+since there are no ProcessRules defined for this event, this step is
 skipped.
 
 #### [**Next: Aggregating a TestCaseFinished event**](test-case-finished-event-aggregation.md)

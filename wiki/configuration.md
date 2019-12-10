@@ -54,6 +54,16 @@ Examples of setting "rules.path" property to an external rules file:
 - rules.path: http://somehost.com/full/path/to/ExtractionRules.json
 - rules.path: https://somehost.com/full/path/to/ExtractionRules.json
 
+## Define placeholder in rules
+
+If you wish to re-use the extracted value from IdentifyRules field 
+somewhere else in your rule set for a particular event, it is possible 
+to define a placeholder marker. Eiffel Intelligence will find and replace 
+this marker in your rules with the wanted value extracted from IdentifyRules. 
+This marker can be defined with the property **rules.replacement.marker**. 
+You can see example usages of it in the [example rules](../src/main/resources/rules) 
+and [read more about it's usage here](rules.md#using-placeholders-in-rules).
+
 ## Configuring aggregations
 
 Eiffel Intelligence saves aggregated objects in a database. It is possible
@@ -63,19 +73,17 @@ aggregated object using the below properties:
 * aggregated.object.name
 * aggregated.collection.name
 
-If Eiffel Intelligence is set up with [all_event_rules](../src/main/resources/rules/AllEventsRules-Eiffel-Agen-Version.json)
-it is recommended to set a time to live value to avoid having a copy of
-Event repository. Recommended settings is 10 minutes.
+If Eiffel Intelligence is set up with [AllEventRules](../src/main/resources/AllEventsRules-Eiffel-Agen-Version.json)
+it is recommended to set a time to live value on the aggregated objects, 
+to avoid having the collection growing too large. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
-
 
 ### Testing aggregation rules
 
 To test new rules for Eiffel Intelligence the property **testaggregated.enabled**
 can be set to true. This gives users the possibility to try out different rule sets
 on a specific set of Eiffel events and see the resulting aggregated object.
-
 
 ### Wait list
 
@@ -93,7 +101,6 @@ unprocessed events lying in the wait list. These properties are in **millisecond
 * waitlist.initialDelayResend (*milliseconds*)
 * waitlist.fixedRateResend (*milliseconds*)
 
-
 ## Subscriptions
 
 Eiffel Intelligence stores subscriptions in a database with the collection
@@ -105,7 +112,6 @@ collection is defined by the below property:
 
 * subscription.collection.name
 * subscription.collection.repeatFlagHandlerName
-
 
 ### Notifications
 
@@ -122,7 +128,6 @@ for each subscription. Note that these two properties are mandatory to set.
 * email.sender
 * email.subject
 
-
 ### Failed notifications
 
 Should the subscription notification for some reason fail. It is possible to configure
@@ -136,7 +141,6 @@ retry to make a REST POST notification when a subscription is triggered.
 * failed.notification.collection-name
 * notification.ttl.value
 * notification.failAttempt
-
 
 ### Configure search in Event repository
 
@@ -183,11 +187,9 @@ These Eiffel Intelligence password properties can be provided encrypted:
         rabbitmq.password
         spring.data.mongodb.password
 
-
 A password property is configured by providing the encrypted password in this format.
 
         some.component.password=ENC(<encrypted password>)
-
 
 Ldap encrypted password is set inside **ldap.server.list** property according the example below:
 

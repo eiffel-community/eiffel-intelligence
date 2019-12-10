@@ -37,8 +37,8 @@ public class MergeHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeHandler.class);
 
-    @Value("${mergeidmarker}")
-    private String mergeIdMarker;
+    @Value("${rules.replacement.marker}")
+    private String replacementMarker;
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -57,8 +57,8 @@ public class MergeHandler {
         this.prepareMergePrepareObject = prepareMergePrepareObject;
     }
 
-    public void setMergeIdMarker(String marker) {
-        mergeIdMarker = marker;
+    public void setReplacementMarker(String marker) {
+        replacementMarker = marker;
     }
 
     /**
@@ -102,7 +102,7 @@ public class MergeHandler {
     }
 
     /**
-     * 
+     *
      * @param id            the id of the aggregated object
      * @param mergeId       the id of the link used to identify this aggregated
      *                      object
@@ -143,18 +143,19 @@ public class MergeHandler {
     }
 
     /**
-     * The merge rule can contain a placeholder for the ids from IdentifyRules. This
-     * placeholder need to be replaced with an id from the ones extracted with
-     * IdentifyRules before we use it in JMESPath.
-     * 
+     * The merge rule can contain a placeholder for the ids extracted from IdentifyRules.
+     * This placeholder need to be replaced with an id from the ones extracted with
+     * IdentifyRules before we use it in JMESPath. The placeholder is defined in
+     * application.properties as 'rules.replacement.marker'.
+     *
      * @param rule string
      * @param id   that the mergeIdMarker will be replaced with
      * @return JSON object ready to be used in JMESPath
      */
     public String replaceIdMarkerInRules(String rule, String id) {
 
-        if (rule.contains(mergeIdMarker)) {
-            String updatedRule = rule.replaceAll(mergeIdMarker, "\"" + id + "\"");
+        if (rule.contains(replacementMarker)) {
+            String updatedRule = rule.replaceAll(replacementMarker, "\"" + id + "\"");
             updatedRule = "`" + updatedRule + "`";
             return updatedRule;
         }
@@ -175,7 +176,7 @@ public class MergeHandler {
 
     /**
      * Append preparedJsonObject to the given aggregatedJsonObject
-     * 
+     *
      * @param aggregatedJsonObject JSON object
      * @param preparedJsonObject   JSON object
      */
@@ -217,7 +218,7 @@ public class MergeHandler {
     /**
      * Append JSON elements from preparedJsonObject element-wise into
      * aggregatedJsonObject JSON array
-     * 
+     *
      * @param aggregatedJsonObject JSON array
      * @param preparedJsonObject   JSON array
      */

@@ -122,9 +122,7 @@ The next step is to fetch the rules for the second event and they are:
       "IdRule": "meta.id",
       "StartEvent": "NO",
       "IdentifyRules": "links | [?type=='IUT'].target",
-      "MatchIdRules": {
-        "_id": "%IdentifyRules_objid%"
-      },
+      "MatchIdRules": { "_id": "%IdentifyRulesEventId%" },
       "ExtractionRules": "{ testCaseTriggeredEventId:meta.id, testCaseTriggeredTime:meta.time, outcome:data.testCase }",
       "MergeResolverRules": "[ {NONEPATH:NONE}, {testCaseExecutions: [{ testCaseTriggeredEventId: meta.id }]} ]",
       "ArrayOptions": "",
@@ -202,7 +200,6 @@ JSON object with requested data will be put into array and stored in aggregated
 object with key “testsCaseExecutions”. Data in correct format will look like:
 
     "testCaseExecutions": [
-
     {
         "testCaseTriggeredTime": 1490777327230,
         "testCaseTriggeredEventId": "6d3df0e0-404d-46ee-ab4f-3118457148f4",

@@ -16,8 +16,6 @@
 */
 package com.ericsson.ei.mongo;
 
-import static org.junit.Assert.assertFalse;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.mongodb.MongoClientURI;
@@ -48,7 +46,7 @@ public class MongoUri {
 
         final String modifiedUri = replacePassword(uri, oldPassword, HIDDEN_PASSWORD);
         final String oldPasswordField = String.format(":%s", oldPassword);
-        assertFalse("URI contains old password.", modifiedUri.contains(oldPasswordField));
+        assert(!modifiedUri.contains(oldPasswordField)): "URI contains old password.";
 
         return modifiedUri;
     }

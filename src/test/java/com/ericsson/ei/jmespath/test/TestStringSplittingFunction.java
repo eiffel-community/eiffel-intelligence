@@ -43,7 +43,7 @@ public class TestStringSplittingFunction {
 
         String expectedResult = "com.mycompany.myproduct";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
-        JsonNode actualResult = result.get(2);
+        JsonNode actualResult = result.get(1);
         assertEquals(expectedResult, actualResult.textValue());
     }
 }

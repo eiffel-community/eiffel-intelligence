@@ -37,10 +37,7 @@ public class TestStringSplittingFunction {
 
     @Test
     public void testStringSplitFunction() throws Exception {
-        // String processRule = "split(data.identity, '/')";
-
         String processRule = "split(data.identity, '@|/')";
-
         String expectedResult = "com.mycompany.myproduct";
         JsonNode result = unitUnderTest.runRuleOnEvent(processRule, jsonInput);
         JsonNode actualResult = result.get(1);

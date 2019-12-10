@@ -101,7 +101,5 @@ Curl command example
    
  ## Subscription related information in front-end documentation
  
-Read more about curl examples for subscription endpoint in Eiffel Intelligence front-end docs [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/curl-examples.md#subscriptions).
-
-Guidelines about writing requirements and conditions cane be found [here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/subscriptions.md#writing-requirements-and-conditions)
+Read more about curl examples for subscription endpoint in Eiffel Intelligence front-end docs [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/markdown/curl-examples.md#subscriptions)
  

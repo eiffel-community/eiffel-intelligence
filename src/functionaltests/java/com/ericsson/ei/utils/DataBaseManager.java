@@ -30,7 +30,6 @@ public class DataBaseManager {
     private String database;
 
     @Value("${event_object_map.collection.name}")
-
     private String eventObjectCollectionName;
 
     @Value("${aggregated.collection.name}")

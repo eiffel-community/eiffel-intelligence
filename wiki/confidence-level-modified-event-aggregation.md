@@ -1,4 +1,4 @@
-# ConfidenceLevelModified event Aggregation
+# ConfidenceLevelModified Aggregation
 
 ## Eiffel events are sent
 

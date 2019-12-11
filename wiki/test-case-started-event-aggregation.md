@@ -1,4 +1,4 @@
-# TestCaseStartedEvent aggregation
+# TestCaseStartedEvent Aggregation
 
 ## Eiffel events are sent
 Suppose that the test has started and as a result an TestCaseStartedEvent is received as follow:

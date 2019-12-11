@@ -1,4 +1,4 @@
-# ArtifactPublishedEvent aggregation
+# ArtifactPublishedEvent Aggregation
 
 ## Eiffel events are sent
 Consider an artifact has been published and ArtifactPublishedEvent is

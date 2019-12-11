@@ -1,4 +1,4 @@
-# TestCaseTriggeredEvent aggregation
+# TestCaseTriggeredEvent Aggregation
 
 ## Eiffel events are sent
 When the start event ArtifactCreatedEvent has been aggregated we assume that it

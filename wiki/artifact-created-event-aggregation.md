@@ -1,4 +1,4 @@
-# ArtifactCreatedEvent aggregation
+# ArtifactCreatedEvent Aggregation
 
 ## Eiffel events are sent
 Suppose, we publish an “EiffelArtifactCreatedEvent” (given below) on the

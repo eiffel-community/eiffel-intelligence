@@ -1,4 +1,4 @@
-# TestCaseFinishedEvent aggregation
+# TestCaseFinishedEvent Aggregation
 
 ## Eiffel events are sent
 Suppose that and artifact has been build, published and uploaded and all tests

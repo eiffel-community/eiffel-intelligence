@@ -1,6 +1,6 @@
 # ConfidenceLevelModified Aggregation
 
-## Eiffel events are sent
+## Eiffel Events Are Sent
 
 ### 1) f37d59a3-069e-4f4c-8cc5-a52e73501a76
 Suppose an EiffelConfidenceLevelModified event is received:
@@ -41,7 +41,7 @@ Suppose an EiffelConfidenceLevelModified event is received:
       }
     }
 
-## Extract data from Eiffel event based on rules
+## Extract Data from Eiffel Event Based on Rules
 Next the specific rule for this event is found and extracted:
 
     {
@@ -69,7 +69,7 @@ But there is no object with such id in the database and the aggregated object
 returns empty. The Eiffel event is added to the wait list. There it waits until an object
 with the requested id appears in the database. 
 
-## Current aggregation
+## Current Aggregation
 After some time, the event is fetched again and the whole process starts from the 
 beginning. The rule is extracted, and the ids are selected. This time the object 
 with the required id exists in the database, but it was already aggregated with 
@@ -211,7 +211,7 @@ some other objects. The fetched object looks like below:
           ]        
       }
 
-## Data extraction from event 
+## Data Extraction from Event 
 The required content is extracted from the event as specified in the rule:
 
     "ExtractionRules": "{  eventId:meta.id,  time:meta.time,  name:data.name,  value:data.value }"
@@ -233,7 +233,7 @@ format will look like below:
       }
     ]
 
-## Updated aggregation
+## Updated Aggregation
 And the resulting aggregated object will be:
 
     {
@@ -379,7 +379,7 @@ And the resulting aggregated object will be:
         ]
     }
 
-## Eiffel events are sent
+## Eiffel Events Are Sent
 
 ### 2) f37d59a3-069e-4f4c-8cc5-a52e73501a75
 Then a new ConfidenceLevelModified event arrives:
@@ -420,7 +420,7 @@ Then a new ConfidenceLevelModified event arrives:
       }
     }
 
-## Extract data from Eiffel event based on rules
+## Extract Data from Eiffel Event Based on Rules
 The whole process with finding the configured rule is repeated for this
 Eiffel event and the rule is the same as above. With help of IdentifyRule:
 
@@ -430,7 +430,7 @@ the following object’s id is selected:
 
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
-## Current aggregation 
+## Current Aggregation 
 It is the same event id as in the previous aggregation but some other
 aggregations were done during the time between this and previous
 ConfidenceLevelModified event appearance. Because of that the object looks like this:
@@ -586,7 +586,7 @@ ConfidenceLevelModified event appearance. Because of that the object looks like 
           ]
     }
 
-## Data extraction from event 
+## Data Extraction from Event 
 The required content is extracted from the event as specified in the rule:
 
     "ExtractionRules": "{  eventId:meta.id,  time:meta.time,  name:data.name,  value:data.value }"
@@ -625,7 +625,7 @@ array. New “confidenceLevels” array will look like below:
           }
         ]
 
-## Updated aggregation
+## Updated Aggregation
 And the resulting aggregated object will include two JSON objects in the array
 called confidenceLevels.
 

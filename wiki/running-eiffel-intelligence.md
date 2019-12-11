@@ -1,6 +1,6 @@
 # Running Eiffel Intelligence
 
-## _Prerequisites_
+## Prerequisites
 
 Eiffel Intelligence is a Spring microservice distributed in a war file.
 
@@ -10,7 +10,7 @@ latest version. Now replace the latest version in the link below:
 
     https://jitpack.io/com/github/eiffel-community/eiffel-intelligence/<version>/eiffel-intelligence-<version>.war
 
-## Running with Maven command
+## Running with Maven Command
 
 If you want to test the latest code in github clone the project and compile it
 with:
@@ -56,7 +56,7 @@ If a few properties need to be overridden, then use java opts, for example:
 
     java -jar eiffel-intelligence-<version>.war -Dspring.data.mongodb.port=27019
 
-## Running in Tomcat instance
+## Running in Tomcat Instance
 
 To run Eiffel Intelligence in Tomcat, the war file must be put into the 
 webapp folder in tomcat installation folder, also called catalina home folder:
@@ -89,7 +89,7 @@ To run Tomcat and Eiffel Intelligence with logs printed to console:
     
     (catalina home)/bin/catalina.sh run
 
-## Eiffel Intelligence configurations and properties
+## Eiffel Intelligence Configurations and Properties
 
 All available Eiffel Intelligence properties can be found in [application.properties](../src/main/resources/application.properties) example file.
 

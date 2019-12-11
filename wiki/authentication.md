@@ -19,7 +19,7 @@ the subscriptions.
 When Eiffel Intelligence is configured without LDAP the subscriptions are
 available to anyone to view, edit and delete.
 
-## Check if security is enabled
+## Check if Security is Enabled
 
 Returns the json variable '_security_' that is set to either true or false
 
@@ -33,7 +33,7 @@ Example of response body
 
     {"security":true}
 
-## Login point that returns the name of current user
+## Login Endpoint Returns the Name of Current User
 
 Upon the first time valid credentials are used the response will contain an
 'X-Auth-Token' header that must be saved and attached to any following calls to
@@ -48,7 +48,6 @@ Curl command
     curl -X GET -H "Content-type: application/json" -u <username>:<password> http://<host>:8090/authentication/login
 
 Example of full response
-
 
     < HTTP/1.1 200
     < X-Content-Type-Options: nosniff
@@ -66,8 +65,7 @@ Example of full response
     * Connection #0 to host localhost left intact
     {"user":"myuser"}
 
-
-## Delete session of current user
+## Delete Session of Current User
 
 Removes the current session bound to the client. If 'X-Auth-Token' is used to
 authenticate then the same token needs to be attached when calling the logout

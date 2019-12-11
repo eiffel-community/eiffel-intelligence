@@ -7,15 +7,15 @@
 |POST  | /rule-test/run-full-aggregation         |
 |GET   | /rule-test |
 
-## Checking the active rules in your backend instance
+## Checking the Active Rules in Your Back-end Instance
 
 You can fetch the rules content from the backend to see what rules Eiffel Intelligence is currently using.
 This can give you an idea on how to write your own rules or could be saved and used
 in the /rule-test/run-single-rule endpoints to test the current rules against your events.
 
     curl -X GET http://<host>:8090/rules
-    
-## Testing rules and events in Eiffel Intelligence
+
+## Testing Rules and Events in Eiffel Intelligence
 
 Before deploying a new instance of Eiffel Intelligence it is good to test the
 desired rules that they give the desired outcome. Therefore it is possible to
@@ -30,14 +30,14 @@ should be set to true:
 A GUI for this feature is also implemented in [Eiffel Intelligence front-end](https://github.com/eiffel-community/eiffel-intelligence-frontend) 
 but only visible when above property is set to true in the backend (this application).
 
-## Check if testRules are enabled on the selected instance
+## Check if testRules Are Enabled on the Selected Instance
 
 Using the following endpoint one can check if rule tests are enabled in the 
 Eiffel Intelligence instance.
 
     curl -X GET http://<host>:8090/rule-test
 
-## Test JMESPath expression on given Eiffel event
+## Test JMESPath Expression on Given Eiffel Event
 
 This endpoint allows to test the result of a JMESPath expression of an event.
 
@@ -128,8 +128,7 @@ will give
       "buildCommand": null
     }
 
-
-## Test a list of rule sets on given list of events
+## Test a List of Rule-sets on Given List of Events
 This end point is to test a complete aggregation using rule sets for every
 event you need to be aggregated. And a list of events. The result is the
 aggregated object containing the desired information from the events as you

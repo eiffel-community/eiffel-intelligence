@@ -5,7 +5,7 @@ Intelligence the place where to insert the JSON object extracted from
 **ExtractionRules**. If **MergeResolverRules** is null, the **ExtractionRules** 
 object will be inserted to the root of aggregated object.
 
-## Specifying location with MergeResolverRules
+## Specifying Location with MergeResolverRules
 The location in the aggregated object where the extracted content will be 
 merged, can be specified with path elements. The path element needs a 
 value to exist, but not all elements of a path are needed. The aggregated 
@@ -103,7 +103,7 @@ and extracted content:
 
     "{test_time: some_time, test_name: some_name, event_id: someLevelId}"
 
-## Example 2 - array aggregations:
+## Example 2 - Array Aggregations:
 
 For aggregating arrays we use an array of JSON objects as merge rule.
 

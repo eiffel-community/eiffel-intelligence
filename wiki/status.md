@@ -4,7 +4,7 @@
 |------|-----------------|--------------|
 |GET   |/status          |no            |
 
-## Check the Eiffel Intelligence status
+## Check the Eiffel Intelligence Status
 
 An endpoint to check if Eiffel Intelligence back-end is working properly.
 The response data contains status of Eiffel Intelligence and dependent service
@@ -18,15 +18,15 @@ There are 3 different kind of status indications:
 Eiffel Intelligence status reflects the status dependent services and will only be
 available if all dependent service is available.
 
-Endpoint
+### Endpoint
 
     GET /status
 
-Curl command
+### Curl Command
 
     curl -X GET -H "Content-type: application/json" http://<host>:8090/status
 
-Example of response body
+### Example of Response Body
 
     {
         "eiffelIntelligenceStatus": "UNAVAILABLE",

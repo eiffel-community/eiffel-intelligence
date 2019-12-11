@@ -1,6 +1,6 @@
 # ArtifactCreatedEvent Aggregation
 
-## Eiffel events are sent
+## Eiffel Events Are Sent
 Suppose, we publish an “EiffelArtifactCreatedEvent” (given below) on the
 message bus.
 
@@ -68,7 +68,7 @@ used to search for all existing aggregated objects linked to the event under
 process. Here it should be noted that rules object path is configured in the
 application.properties file as “rules.path”.
 
-## Extract data from Eiffel event based on rules
+## Extract Data from Eiffel Event Based on Rules
 
     {
     "TemplateName": "ARTIFACT_1",
@@ -105,7 +105,7 @@ aggregated object. It should be noted that this event has no links to any
 aggregated object. However, as it is a start event so a new aggregated object
 is created by extracting information from this event.
 
-## Data extraction from event 
+## Data Extraction from Event 
 
 In this step, information from a given event is extracted. This information will 
 then be added into a relevant aggregated object. This is what the term aggregation 
@@ -152,4 +152,4 @@ the aggregated object using “MergeResolverRules”. More about
 (if they exist) are applied on the aggregated object and the resulting modified
 aggregated object is updated in the database.
 
-#### [**Next: Aggregating a TestCaseTriggered event**](test-case-triggered-event-aggregation.md)
+#### [**Next: Aggregating a TestCaseTriggered Event**](test-case-triggered-event-aggregation.md)

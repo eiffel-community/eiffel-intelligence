@@ -8,7 +8,7 @@ interest has been collected from desired flow events. The aggregation is stored
 in a JSON object, an "aggregated object". By flow we mean a chain of Eiffel
 events that are linked together directly or indirectly.
 
-### Aggregated objects
+### Aggregated Objects
 
 Term "Aggregated objects" in Eiffel Intelligence vocabulary means a composition of
 several Eiffel events into one big JSON object using a special rule mechanism.
@@ -28,7 +28,7 @@ events flowing we will have multiple extractions and checks for each rule set.
 Multiple rule sets in the same service will require large machines and more
 difficult optimization. To understand what rules are and how they are used, [read more here](rules.md).
 
-### Subscriptions and notifications
+### Subscriptions and Notifications
 
 It is possible to create subscriptions to be notified whenever Eiffel events 
 with desired content has been sent and aggregated into an object by Eiffel 

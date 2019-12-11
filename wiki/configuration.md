@@ -3,13 +3,13 @@
 The configuration for RabbitMQ, MongoDB etc. can be set in the [application.properties](../src/main/resources/application.properties) 
 file. You can also set them as system properties using the -D flags when starting Eiffel Intelligence.
 
-## Setting up multiple EI instances
+## Setting up Multiple Eiffel Intelligence Instances
 
 Eiffel Intelligence is designed to be able to collect different information
 in different objects. What information to be collected from what events
 to what object is configured using a set of rules.
 
-### Set up multiple instances with different rule sets in each instance
+### Set up Multiple Instances with Different Rule-sets in Each Instance
 
 In this case we use the same instance of RabbitMQ and MongoDB.
 
@@ -20,7 +20,7 @@ In this case we use the same instance of RabbitMQ and MongoDB.
 
 <img src="images/multiple_EI_instances.png"></img>
 
-### Set up multiple instances with same rule set
+### Set up Multiple Instances with Same Rule-set
 
 This situation may be needed when the events throughput is very high. In 
 this case the same configuration file is copied to the server where the 
@@ -28,7 +28,7 @@ extra instance will be started.
 
 <img src="images/multiple_EI_instances_same_rule.png"></img>
 
-## Configure Eiffel Intelligence with extraction rules for specific Eiffel protocol version
+## Configure Eiffel Intelligence with Extraction Rules for Specific Eiffel Protocol Version
 
 Extraction rules for a specific Eiffel protocol versions is configured by
 setting "rules.path" property in [application.properties](../src/main/resources/application.properties)
@@ -54,7 +54,7 @@ Examples of setting "rules.path" property to an external rules file:
 - rules.path: http://somehost.com/full/path/to/ExtractionRules.json
 - rules.path: https://somehost.com/full/path/to/ExtractionRules.json
 
-## Define placeholder in rules
+## Define Placeholder in Rules
 
 If you wish to re-use the extracted value from IdentifyRules field 
 somewhere else in your rule set for a particular event, it is possible 
@@ -64,7 +64,7 @@ This marker can be defined with the property **rules.replacement.marker**.
 You can see example usages of it in the [example rules](../src/main/resources/rules) 
 and [read more about it's usage here](rules.md#using-placeholders-in-rules).
 
-## Configuring aggregations
+## Configuring Aggregations
 
 Eiffel Intelligence saves aggregated objects in a database. It is possible
 to configure the collection name, the time to live and the name of the
@@ -79,13 +79,13 @@ to avoid having the collection growing too large. Recommended settings is 10 min
 
 * aggregated.collection.ttlValue (*seconds*)
 
-### Testing aggregation rules
+### Testing Aggregation Rules
 
 To test new rules for Eiffel Intelligence the property **testaggregated.enabled**
 can be set to true. This gives users the possibility to try out different rule sets
 on a specific set of Eiffel events and see the resulting aggregated object.
 
-### Wait list
+### Waitlist
 
 If Eiffel Intelligence receives events that are not connected to any
 existing aggregated objects, and it is not declared as start event in the
@@ -128,7 +128,7 @@ for each subscription. Note that these two properties are mandatory to set.
 * email.sender
 * email.subject
 
-### Failed notifications
+### Failed Notifications
 
 Should the subscription notification for some reason fail. It is possible to configure
 what the collection name for failed notifications should be in the property
@@ -142,7 +142,7 @@ retry to make a REST POST notification when a subscription is triggered.
 * notification.ttl.value
 * notification.failAttempt
 
-### Configure search in Event repository
+### Configure Search in Event Repository
 
 For Eiffel Intelligence to search for linked events Event repository is
 used. **er.url** takes a full URL to such a repository.
@@ -178,7 +178,7 @@ and the settings are defined in the **ldap.server.list** property.
         }\
     ]\
 
-## Password encryption
+### Password Encryption
 
 In a production environment and filesystems, administrator most likely don't want to store passwords in clear text.
 

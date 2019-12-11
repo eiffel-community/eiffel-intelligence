@@ -8,7 +8,7 @@ There are some important details to know when triggering Jenkins jobs with param
 ## Using _**token**_
     Tokens need to be treated as constants so they should be surrounded with single quotes. See examples below.
 
-## _**buildWithParameters**_ endpoint
+## _**buildWithParameters**_ Endpoint
    * Jenkins discards the body specified in notificationMessageKeyValues
    * the parameters need to be send in the URL
    * do not specify more parameters than you have in your job. This is a Jenkins security feature to hinder that someone triggers jobs that overwrite job environment variables. Your job will not be triggered otherwise.
@@ -116,7 +116,5 @@ use the build endpoint and we send the parameters in a json form using REST body
         ]
     }
 
-## Requirements and conditions
-
+## Requirements and Conditions
 Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](subscriptions.md#writing-requirements-and-conditions).
-

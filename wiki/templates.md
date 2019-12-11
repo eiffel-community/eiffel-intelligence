@@ -11,7 +11,7 @@ These endpoints exists today:
 |GET   |/templates/events               |Returns events template file                   |
 
 
-## List available REST endpoints to download templates
+## List Available REST Endpoints to Download Templates
 
     GET /templates
 
@@ -19,7 +19,7 @@ Curl command
 
     curl -X GET -H "Content-type: application/json" http://<host>:port/templates
 
-## Get subscription template file
+## Get Subscription Template File
 
     GET /templates/subscriptions
 
@@ -27,7 +27,7 @@ Curl command
 
     curl -X GET -H "Content-type: application/json" http://<host>:8090/templates/subscriptions
 
-## Get rules template file
+## Get Rules Template File
 
     GET /templates/rules
 
@@ -35,7 +35,7 @@ Curl command
 
     curl -X GET -H "Content-type: application/json" http://<host>:8090/templates/rules
 
-## Get events template file
+## Get Events Template File
 
     GET /templates/events
     

@@ -9,12 +9,12 @@ meets any subscription requirements. If it fulfills a subscription requirement
 then a notification is sent to the subscriber as specified in that subscription. 
 For further explanation of the process, [consider the following example](step-by-step-subscription-notification.md).
 
-### Adding subscriptions
+### Adding Subscriptions
 It is possible to add subscriptions using the [Eiffel Intelligence
 front-end GUI](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md).
 It is also possible to manage subscriptions [using the REST API](subscription-API.md).
 
-### Types of notifications for subscriptions
+### Types of Notifications for Subscriptions
 Today Eiffel Intelligence supports notifications by email or by sending
 a HTTP POST request. Example subscriptions in JSON format with different types of notification
 can be found in the below links:
@@ -26,7 +26,7 @@ can be found in the below links:
 The different fields in a subscription are also described in the 
 [front-end documentation](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md).
 
-### Writing requirements and conditions
+### Writing Requirements and Conditions
 When writing subscription requirements, they are referencing the structure
 of the aggregated object, which Eiffel Intelligence will create, based on
 the rules it was configured with. It is therefore important to know what
@@ -171,10 +171,10 @@ This subscription describes two requirements and as soon as one of them
 has been fulfilled, Eiffel Intelligence would perform a notification.
 More subscription templates [can be found here](../src/main/resources/templates).
 
-### Repeat handling
+### Repeat Handling
 See in the front-end documentation [here](https://github.com/eiffel-community/eiffel-intelligence-frontend/blob/master/wiki/add-subscription.md)
 
-### Adding comments inside subscription
+### Adding Comments in Subscription
 
 It is possible for users to add comments, at any level, in subscriptions. These
 comments should be a new field in the given subscription, following the json format.
@@ -185,7 +185,7 @@ downloaded from Eiffel Intelligence.
         "description": "It is my comment"
     }
 
-### Using JMESPath in subscriptions
+### Using JMESPath in Subscriptions
 
 Eiffel Intelligence supports several pre-defined methods in the JMESPath 
 expressions inside a subscription. For example it is possible to include

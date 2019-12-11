@@ -16,7 +16,7 @@ the Eiffel Intelligence on a Docker Host or in a Kubernetes cluster.
 
   Linux and Windows:  https://docs.docker.com/compose/install/
 
-## Follow these step to build the Docker image
+## Follow These Steps to Build the Docker Image
 
 **1** Build the Eiffel Intelligence war file:
     
@@ -30,7 +30,7 @@ This will produce a war file in the "target" folder.
 
 Now docker image has build with tag "eiffel-intelligence-backend:1.0.1"
 
-## Run Docker image on local Docker Host
+## Run Docker Image on Local Docker Host
 To run the produced docker image on the local Docker host, execute this command:
 
     docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.host=mongodb -e spring.data.mongodb.port=27017 eiffel-intelligence:1.0.1
@@ -40,7 +40,7 @@ be running and configured via the application properties that is provided
 to the docker command above. See the [application.properties](../src/main/resources/application.properties) 
 file for all available/required properties.
 
-## Some info about all flags to this command
+## Some Info about Flags to This Command
 
 ### Eiffel Intelligence Spring Properties
 
@@ -57,7 +57,7 @@ Intelligence Spring properties:
 
 [application.properties](../src/main/resources/application.properties)
 
-### Docker flags
+### Docker Flags
 
 <B>"--expose 8080"</B> - this Docker flag tells that containers internal 
 port shall be exposed to outside of the Docker Host. This flag do not set 
@@ -83,7 +83,7 @@ tell Eiffel Intelligence where the application.properties is located in the cont
 
     docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties eiffel-intelligence:0.0.19
 
-# Run Docker image with provided docker-compose file
+## Run Docker Image with Provided docker-compose File
 This docker-compose file includes these components, [docker-compose.yml](../src/main/docker/docker-compose.yml):
 - mongodb
 - rabbitmq

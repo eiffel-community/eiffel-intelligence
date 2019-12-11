@@ -1,6 +1,6 @@
 # TestCaseTriggeredEvent Aggregation
 
-## Eiffel events are sent
+## Eiffel Events Are Sent
 When the start event ArtifactCreatedEvent has been aggregated we assume that it
 has triggered a test case and an TestCaseTriggeredEvent is received that
 looks like below.
@@ -44,7 +44,7 @@ looks like below.
       ]
     }
 
-## Extract data from Eiffel event based on rules
+## Extract Data from Eiffel Event Based on Rules
 The next step Eiffel Intelligence does is to fetch the rules for this event and they are:
 
     {
@@ -128,7 +128,7 @@ It is the same id as previously and the object with that id is still not in
 the database. The aggregated object returns empty and event is added to wait list.
 There, it waits until the object with requested id appears in the database.
 
-## Current aggregation
+## Current Aggregation
 Object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" appears but is modified
 before one of the above events are taken from the wait list.
 
@@ -171,7 +171,6 @@ The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
           "type": "EiffelArtifactCreatedEvent",
           "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
       }
-
 
 First event with id "6d3df0e0-404d-46ee-ab4f-3118457148f4" is aggregated. The
 required content is extracted from the event as specified in the rule:
@@ -289,7 +288,7 @@ an array. The JSON object with data will be added to existing array. New
           }
         ]
 
-## Updated aggregation
+## Updated Aggregation
 And the result object will look like below:
 
     {
@@ -346,4 +345,4 @@ And the result object will look like below:
         "identity": "pkg:maven/com.mycompany.myproduct/sub-system@1.1.0"
     }
 
-#### [**Next: Aggregating a TestCaseStarted event**](test-case-started-event-aggregation.md)
+#### [**Next: Aggregating a TestCaseStarted Event**](test-case-started-event-aggregation.md)

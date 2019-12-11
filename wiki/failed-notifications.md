@@ -1,10 +1,11 @@
-# FailedNotification
+# Failed Notifications
 
 |Method|Endpoint             |
 |------|---------------------|
 |GET   |/failed-notifications|
 
-## Failed notifications
+## Get All Failed Notifications
+
     GET /failed-notifications
 
 **Query parameters**:

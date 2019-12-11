@@ -24,7 +24,7 @@ value is returned. Assume that we have such JSON object
 {"a": {"b": {"c": {"d": "value"}}}} and we need to get the string "value" from
 object. The JMESPath identifier will be a.b.c.d. [JMESPath identifier documentation](http://jmespath.org/specification.html#identifiers).
 
-### Extract data from Eiffel event
+### Extract Data from Eiffel Event
 
         {
             "meta": {
@@ -59,7 +59,7 @@ for post processing of data in an aggregated object. Hence, JMESPath is used
 to traverse JSON structures when writing rules, subscription requirements or
 querying an aggregated object.
 
-## Rule set up
+## Rule Setup
 
 Rules for object aggregation consist of JSON object with a defined structure
 inside it. Key in this object is rule specification and value is JMESPath
@@ -193,20 +193,20 @@ no delete operations will be performed. For example if you have aggregated
 the job finished time and job started time then you can create one more value 
 for the computed duration so that other systems do not need to compute it.
 
-### History Rules 
+### HistoryRules 
 If your start event, meaning the event that starts the chain of aggregation, 
 contains links that point to upstream events, HistoryRules makes it 
 possible for these to be aggregated into the object as well. They are 
 explained [**here**](history-rules.md).
 
-## Using placeholders in rules
+## Using Placeholders in Rules
 When you want to write a condition including an unknown Eiffel event id, 
 it is possible to use a placeholder to let Eiffel Intelligence inject the 
 Eiffel event ids extracted from **_IdentifyRules_**. The use of this placeholder
 value can only be used for **MatchIdRules** and **ProcessRules**. 
  
-The placeholder is defined as a property called [**rules.replacement.marker**](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md#define-placeholder-in-rules) 
-in [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties).
+The placeholder is defined as a property called [**rules.replacement.marker**](configuration.md#define-placeholder-in-rules) 
+in [application.properties](../src/main/resources/application.properties).
 
 If we configure the 'rules.replacement.marker' in application.properties:
 
@@ -232,9 +232,9 @@ event id will then be used to replace the 'rules.replacement.marker' in MatchIdR
 Using the 'rules.replacement.marker' placeholder in the rules, helps the 
 user who wants to use an event id of a future Eiffel event (currently 
 unknown) in conditions they include in their rules. Some examples of it's 
-usage can be found in [the template rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules).
+usage can be found in [the template rules](../src/main/resources/rules).
  
-## Reserved Key names
+## Reserved Key Names
 The keys "_id" and "time" (at the root level of the aggregated object) are 
 reserved and added in the MongoDB document by Eiffel Intelligence. User 
 should not use these two keys at the root level of an aggregated object. 

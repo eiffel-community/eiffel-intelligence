@@ -1,4 +1,4 @@
-# Rest API
+# REST API
 
 Eiffel intelligence provides a REST API for performing CRUD operations on
 the following endpoints:

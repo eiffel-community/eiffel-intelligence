@@ -4,7 +4,7 @@ Eiffel Intelligence backend has unit tests, functional tests and at the moment
 of writing this a system tests. This page is intended for developers used with
 Maven so we assume the reader has some knowledge about Java development with Maven.
 
-## Running unit tests and functional tests
+## Running Unit Tests and Functional Tests
 
 All unit tests and functional tests are run automatically when EI is compiled with
 
@@ -22,7 +22,7 @@ To exclude some tests and run all the others:
 
     mvn -DsomeModule.test.excludes="**/QueryAggregatedObjectsTestRunner.java, **/TestScalingAndFailoverRunner.java" test
 
-## Running integration test
+## Running Integration Test
 
 To run the integration test an instance of RabbitMQ, MongoDB and Event
 Repository must be up, running and accessible from the machine where the test

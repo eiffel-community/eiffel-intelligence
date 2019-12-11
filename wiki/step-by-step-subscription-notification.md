@@ -1,4 +1,4 @@
-# Step By Step Subscription Notification
+# Step by Step Subscription Notification
 
 Suppose a subscription is created (as shown below) by a user and then that is
 stored in the subscription database. Read more about the [subscription REST API](subscription-API.md)
@@ -86,7 +86,7 @@ is started to send notification to the specified subscriber. For this,
 'notificationMeta' and 'notificationType' field values are extracted from 
 the subscription.
 
-## Notify via REST POST
+## Notify with REST POST
 In the example subscription above, the notification is sent as **REST POST** 
 to the url `http://127.0.0.1:3000/ei/test_subscription_rest`. The notification 
 message in this subscription is prepared as key value pairs in the request body.
@@ -139,7 +139,7 @@ message would look like below:
     }
 
 
-## Notify via MAIL
+## Notify with MAIL
 If the “notificationType” of the subscription is “MAIL” then the notification
 message is sent to the email address(es) specified in the “notificationMeta”
 field. If more than one email address is written, it should be written as a
@@ -164,7 +164,7 @@ value of the testcase id. The complete notification message can be seen below:
         artifactIdentity: pkg:maven/com.mycompany.myproduct/sub-system@1.1.0
         testCase: TC5
 
-## Failed notifications
+## Failed Notifications
 
 If the notification via REST POST fails, then a fixed number of attempts are
 made to resend successfully. The number of attempts are specified in the

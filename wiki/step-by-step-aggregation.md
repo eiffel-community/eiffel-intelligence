@@ -1,4 +1,4 @@
-# Step By Step Aggregation
+# Step by Step Aggregation
 
 Two main tasks of Eiffel Intelligence (EI) are data aggregation and subscription
 notification.

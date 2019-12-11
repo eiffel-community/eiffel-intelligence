@@ -1,4 +1,4 @@
-# Subscription with REST POST notification
+# Subscription with REST POST Notification
 
 Valid subscriptions for REST POST notifications are provided below with 
 each field explained.
@@ -175,6 +175,5 @@ for issue JIRA-1234 has passed testcase TC5 successfully. The method
         ]
     }
 
-## Requirements and conditions
-
+## Requirements and Conditions
 Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](subscriptions.md#writing-requirements-and-conditions).

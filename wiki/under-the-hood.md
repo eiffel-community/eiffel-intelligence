@@ -1,4 +1,4 @@
-# Under the hood
+# Under the Hood
 
 A more detailed description of what it happens with an event is described on
 this page.

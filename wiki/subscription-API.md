@@ -9,7 +9,7 @@
 |DELETE|/subscriptions                          |yes           |
 |DELETE|/subscriptions/\<name\>                 |yes           |
 
-## Create subscriptions
+## Create Subscriptions
 
 Takes one or several subscriptions in a JSON array as input. If LDAP is 
 activated, the username of the person registering this subscription is 
@@ -18,7 +18,7 @@ name needs to be unique.
 
     POST /subscriptions
 
-### Curl command example:
+### Curl Command Example
 
     curl -X POST -H "Content-type: application/json" --data @<path to file> http://<host>:8090/subscriptions
 
@@ -35,7 +35,7 @@ Example of a subscription array input:
     ]
 
 
-## Get all subscriptions
+## Get All subscriptions
 
 Retrieves all the subscriptions
 
@@ -45,7 +45,7 @@ Curl command example
 
     curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions
 
-## Get multiple subscriptions
+## Get Multiple Subscriptions
 
 Retrieves one or more subscriptions with a comma separated list
 
@@ -55,7 +55,7 @@ Curl command example
 
     curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
 
-## Get subscription for the given name
+## Get Subscription for the Given Name
 
 Get a single specific subscription
 
@@ -65,7 +65,7 @@ Curl command example
 
     curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
 
-## Update subscriptions
+## Update Subscriptions
 
 Modify existing Subscriptions based on subscriptionName. Multiple subscriptions
 may be sent through a json array.
@@ -76,7 +76,7 @@ Curl command example
 
     curl -X PUT -H "Content-type: application/json"  --data @<path to json file> http://<host>:8090/subscriptions
 
-## Delete multiple subscriptions
+## Delete Multiple Subscriptions
 
 Delete one or more subscriptions with a comma separated list
 
@@ -86,7 +86,7 @@ Curl command example
 
     curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
 
-## Delete subscription for the given name
+## Delete Subscription for the Given Name
 
 Delete a single specific subscription
 

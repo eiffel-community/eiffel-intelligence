@@ -9,7 +9,7 @@
 Query on aggregated objects can be performed using the above mentioned endpoint. 
 There are two possibilities to query aggregated objects.
 
-## Perform query on created aggregated object using event id
+## Perform Query for Existing Aggregated Object Using Event Id
     GET /aggregated-objects
 
 **URI parameters**:
@@ -21,9 +21,8 @@ of the event that started the aggregated object.
 Examples of this endpoint using curl with an a given id = 6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
 
     curl -X GET -H "Content-type: application/json"  http://localhost:8090/aggregated-objects/6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43
-    
 
-## Perform freestyle query on created aggregated object
+## Perform Freestyle Query on Existing Aggregated Object
 It is possible to make queries on aggregated objects using freestyle queries. 
 These freestyle queries are plain Mongo DB queries, you can read more about 
 that [here](https://docs.mongodb.com/manual/tutorial/query-documents/).
@@ -42,7 +41,7 @@ Examples of this endpoint using curl
 
     curl -X POST -H "Content-type: application/json"  --data @Body.json http://localhost:34911/aggregated-objects/query
 
-Examples of criterias:
+### Examples of Criteria
 
     // This returns all objects where the testCaseExecutions.outcome.id is"TC5"
     // or testCaseExecutions.outcome.id is "TC6" and "identity"
@@ -114,7 +113,7 @@ Examples of criterias:
     }
 
 
-## Example of freestyle query that returns all aggregated objects
+## Example of Freestyle Query that Returns All Aggregated Objects
 By using a query that contains only empty "criteria" it is possible to return
 all aggregated objects from the database. The aggregated objects will be
 returned from specific collection (which name is defined by property
@@ -129,8 +128,7 @@ Example:
       "criteria": {}
     }
 
-
-## Query an aggregated object and filter it with specific key
+## Query an Aggregated Object and Filter It with Specific Key
 It is possible to filter the result from the query and return only the values
 which are of interest. This filter can be defined as a path in the aggregated
 object, or a specific key. The parameter of filter condition is a JMESPath 

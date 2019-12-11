@@ -1,4 +1,4 @@
-# Subscription with EMAIL notification
+# Subscription with EMAIL Notification
 
 A valid subscription for email notification is provided below with each 
 field explained.
@@ -83,7 +83,7 @@ be fulfilled.
         ]
     }
 
-## Enabling e-mail notification for Eiffel Intelligence
+## Enabling E-mail Notification for Eiffel Intelligence
 
 In order to use subscriptions with e-mail notifications, Eiffel Intelligence
 must be set up with an e-mail server in [application.properties](../src/main/resources/application.properties).
@@ -91,6 +91,5 @@ The e-mail subject for a subscription can be set globally or for each individual
 subscription. If the field emailSubject is left empty in the subscription, Eiffel
 Intelligence will use the default one.
 
-## Requirements and conditions
-
+## Requirements and Conditions
 Read more on how Eiffel Intelligence groups [requirements and conditions in subscriptions](subscriptions.md#writing-requirements-and-conditions).

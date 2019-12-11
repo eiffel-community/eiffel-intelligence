@@ -75,7 +75,7 @@ public class RMQProperties {
 
     @Getter
     @Setter
-    @Value("${rabbitmq.wait.list.queue.suffix}")
+    @Value("${rabbitmq.waitlist.queue.suffix}")
     private String waitlistSuffix;
 
     @Getter

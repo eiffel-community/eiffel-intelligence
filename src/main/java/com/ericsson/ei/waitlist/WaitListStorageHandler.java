@@ -46,7 +46,7 @@ public class WaitListStorageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WaitListStorageHandler.class);
 
     @Getter
-    @Value("${wait.list.collection.name}")
+    @Value("${waitlist.collection.name}")
     private String collectionName;
 
     @Getter
@@ -54,7 +54,7 @@ public class WaitListStorageHandler {
     private String databaseName;
 
     @Getter
-    @Value("${wait.list.collection.ttl}")
+    @Value("${waitlist.collection.ttl}")
     private int ttlValue;
 
     @Setter
@@ -66,7 +66,7 @@ public class WaitListStorageHandler {
     private JmesPathInterface jmesPathInterface;
 
     /**
-     * Adds event to the wait-list database if it does not already exists.
+     * Adds event to the wait list database if it does not already exists.
      *
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id

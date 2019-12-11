@@ -96,11 +96,11 @@ whether the given event is a “start event”. It should be clear that, term
 “start event” means that the event might be starting a new flow and therefore,
 a new aggregated object may be created out of this. If the current event is not
 a “start event” then it is stored in the database. The name of the collection
-is configured in the application.properties file as “wait.list.collection.name”.
+is configured in the application.properties file as “waitlist.collection.name”.
 The event is stored with the aim that if an aggregated object is created later
 with links to this specific event then it can be merged with that object. The
 event storage life time is set in the properties file as
-“wait.list.collection.ttl”.
+“waitlist.collection.ttl”.
 
 Otherwise, If the event is a start event (as is the current event) then the
 next step is information extraction from the event and adding into the

@@ -90,14 +90,14 @@ existing aggregated objects, and it is not declared as start event in the
 rules, the event is stored in the wait list database for a while. The
 "time-to-live" value limits how long an event is stored in the wait list.
 
-* wait.list.collection.name
-* wait.list.collection.ttl (*seconds*)
+* waitlist.collection.name
+* waitlist.collection.ttl (*seconds*)
 
 It is possible to configure how often Eiffel Intelligence should handle
 unprocessed events lying in the wait list. These properties are in **milliseconds**:
 
-* wait.list.resend.initial.delay (*milliseconds*)
-* wait.list.resend.fixed.rate (*milliseconds*)
+* waitlist.resend.initial.delay (*milliseconds*)
+* waitlist.resend.fixed.rate (*milliseconds*)
 
 
 ## Subscriptions

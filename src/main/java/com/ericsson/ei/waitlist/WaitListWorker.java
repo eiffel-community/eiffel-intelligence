@@ -60,7 +60,7 @@ public class WaitListWorker {
 
     private boolean shutdownInProgress = false;
 
-    @Scheduled(initialDelayString = "${wait.list.resend.initial.delay}", fixedRateString = "${wait.list.resend.fixed.rate}")
+    @Scheduled(initialDelayString = "${waitlist.resend.initial.delay}", fixedRateString = "${waitlist.resend.fixed.rate}")
     public void run() {
         if(shutdownInProgress) {
             return;

@@ -14,7 +14,7 @@ public class SourceChangeFlowRunnerIT {
     @BeforeClass
     public static void before() {
         System.setProperty("aggregations.collection.name", "aggregated_objects_source_change_flow");
-        System.setProperty("wait.list.collection.name", "wait_list_source_change_flow");
+        System.setProperty("waitlist.collection.name", "wait_list_source_change_flow");
         System.setProperty("subscriptions.collection.name", "subscription_source_change_flow");
         System.setProperty("event.object.map.collection.name", "event_object_map_source_change_flow");
         System.setProperty("subscriptions.repeat.handler.collection.name", "subscription_repeat_handler_source_change_flow");

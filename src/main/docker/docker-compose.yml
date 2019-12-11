@@ -186,7 +186,7 @@ services:
       - rabbitmq.port=${RABBITMQ_AMQP_PORT}
       - rabbitmq.domain.id=ei-domain
       - rabbitmq.component.name=ei-backend
-      - rabbitmq.wait.list.queue.suffix=waitlist
+      - rabbitmq.waitlist.queue.suffix=waitlist
       - rabbitmq.exchange.name=ei-exchange
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser

@@ -83,7 +83,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
-    @Value("${wait.list.collection.name}")
+    @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
     @Value("${subscriptions.collection.name}")
     private String subscriptionCollectionName;

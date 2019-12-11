@@ -16,7 +16,7 @@ public class FailedNotificationRunnerIT {
     @BeforeClass
     public static void before() {
         System.setProperty("aggregations.collection.name", "aggregated_failed_notification");
-        System.setProperty("wait.list.collection.name", "wait_list_failed_notification");
+        System.setProperty("waitlist.collection.name", "wait_list_failed_notification");
         System.setProperty("subscriptions.collection.name", "subscription_failed_notification");
         System.setProperty("event.object.map.collection.name",
                 "event_object_map_failed_notification");

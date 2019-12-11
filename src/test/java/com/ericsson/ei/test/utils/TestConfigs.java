@@ -110,8 +110,8 @@ public class TestConfigs {
         System.setProperty("rabbitmq.port", "" + port);
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("wait.list.resend.initial.delay", "500");
-        System.setProperty("wait.list.resend.fixed.rate", "100");
+        System.setProperty("waitlist.resend.initial.delay", "500");
+        System.setProperty("waitlist.resend.fixed.rate", "100");
         LOGGER.info("Message bus port:{}", port);
     }
 

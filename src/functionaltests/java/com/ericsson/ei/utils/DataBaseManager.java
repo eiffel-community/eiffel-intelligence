@@ -32,7 +32,7 @@ public class DataBaseManager {
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
-    @Value("${wait.list.collection.name}")
+    @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
 
     @Value("${subscriptions.collection.name}")

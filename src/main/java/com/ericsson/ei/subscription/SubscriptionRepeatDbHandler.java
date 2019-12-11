@@ -54,7 +54,7 @@ public class SubscriptionRepeatDbHandler {
     public String dataBaseName;
     @Getter
     @Setter
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     public String collectionName;
 
     /**

@@ -15,16 +15,16 @@ public class FailedNotificationRunnerIT {
 
     @BeforeClass
     public static void before() {
-        System.setProperty("aggregated.collection.name", "aggregated_failed_notification");
-        System.setProperty("waitlist.collection.name", "wait_list_failed_notification");
-        System.setProperty("subscription.collection.name", "subscription_failed_notification");
-        System.setProperty("event_object_map.collection.name", "event_object_map_failed_notification");
-        System.setProperty("subscription.collection.repeatFlagHandlerName",
+        System.setProperty("aggregations.collection.name", "aggregated_failed_notification");
+        System.setProperty("wait.list.collection.name", "wait_list_failed_notification");
+        System.setProperty("subscriptions.collection.name", "subscription_failed_notification");
+        System.setProperty("event.object.map.collection.name",
+                "event_object_map_failed_notification");
+        System.setProperty("subscriptions.repeat.handler.collection.name",
                 "subscription_repeat_handler_failed_notification");
-        System.setProperty("failed.notification.collection-name", FAILED_NOTIFICATION_COLLECTION);
+        System.setProperty("failed.notifications.collection.name", FAILED_NOTIFICATION_COLLECTION);
         System.setProperty("sessions.collection.name", "sessions_failed_notification");
-
         System.setProperty("rules.path", "/rules/ArtifactRules-Eiffel-Agen-Version.json");
-        System.setProperty("rabbitmq.consumerName", "failed_notification_queue");
+        System.setProperty("rabbitmq.consumer.name", "failed_notification_queue");
     }
 }

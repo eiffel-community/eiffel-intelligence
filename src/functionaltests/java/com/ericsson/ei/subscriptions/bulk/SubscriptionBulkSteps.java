@@ -25,10 +25,10 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionBulkSteps",
-        "failed.notification.collection-name: SubscriptionBulkSteps-failedNotifications",
+        "failed.notifications.collection.name: SubscriptionBulkSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
-        "rabbitmq.consumerName: SubscriptionBulkStepsConsumer",
-        "logging.level.com.ericsson.ei.subscriptions.bulk=OFF" })
+        "rabbitmq.consumer.name: SubscriptionBulkStepsConsumer",
+        "logging.level.com.ericsson.ei.subscriptions.bulk: OFF" })
 public class SubscriptionBulkSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/functionaltests/resources";

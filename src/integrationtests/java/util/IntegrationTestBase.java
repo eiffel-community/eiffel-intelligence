@@ -66,8 +66,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     @Value("${spring.data.mongodb.database}")
     private String database;
-    @Value("${event_object_map.collection.name}")
-    private String event_map;
     @Value("${rabbitmq.host}")
     private String rabbitMqHost;
     @Value("${rabbitmq.port}")
@@ -80,20 +78,20 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String exchangeName;
     @Value("${rabbitmq.binding.key}")
     private String bindingKey;
-    @Value("${rabbitmq.consumerName}")
+    @Value("${rabbitmq.consumer.name}")
     private String consumerName;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
-    @Value("${waitlist.collection.name}")
+    @Value("${wait.list.collection.name}")
     private String waitlistCollectionName;
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptions.collection.name}")
     private String subscriptionCollectionName;
-    @Value("${event_object_map.collection.name}")
+    @Value("${event.object.map.collection.name}")
     private String eventObjectMapCollectionName;
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     private String subscriptionCollectionRepatFlagHandlerName;
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollectionName;
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
@@ -211,7 +209,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
-            processedEvents = countProcessedEvents(database, event_map);
+            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }

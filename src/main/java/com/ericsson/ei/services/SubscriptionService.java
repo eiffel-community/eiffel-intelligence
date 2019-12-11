@@ -55,7 +55,7 @@ public class SubscriptionService implements ISubscriptionService {
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
 
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     private String repeatFlagHandlerCollection;
 
     @Value("${ldap.enabled}")

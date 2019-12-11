@@ -26,17 +26,18 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = {
-        "threads.corePoolSize= 3",
-        "threads.queueCapacity= 1",
-        "threads.maxPoolSize= 4",
-        "waitlist.collection.ttlValue: 60",
-        "waitlist.initialDelayResend= 500",
-        "waitlist.fixedRateResend= 1000",
+        "threads.corePoolSize: 3",
+        "threads.queueCapacity: 1",
+        "threads.maxPoolSize: 4",
+        "wait.list.collection.ttl: 60",
+        "wait.list.resend.initial.delay: 500",
+        "wait.list.resend.fixed.rate: 1000",
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
-        "failed.notification.collection-name: ThreadingAndWaitlistRepeatSteps-failedNotifications",
+        "failed.notifications.collection.name: ThreadingAndWaitlistRepeatSteps-failedNotifications",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
-        "rabbitmq.consumerName: ThreadingAndWaitlistRepeatStepsConsumer", "logging.level.com.ericsson.ei.waitlist=OFF",
-        "logging.level.com.ericsson.ei.handlers.EventHandler=OFF" })
+        "rabbitmq.consumer.name: ThreadingAndWaitlistRepeatStepsConsumer",
+        "logging.level.com.ericsson.ei.waitlist: OFF",
+        "logging.level.com.ericsson.ei.handlers.EventHandler: OFF" })
 
 @Ignore
 public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
@@ -52,7 +53,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     private int queueCapacity;
     @Value("${threads.maxPoolSize}")
     private int maxPoolSize;
-    @Value("${waitlist.collection.ttlValue}")
+    @Value("${wait.list.collection.ttl}")
     private int waitlistTtl;
 
     private RulesObject rulesObject;

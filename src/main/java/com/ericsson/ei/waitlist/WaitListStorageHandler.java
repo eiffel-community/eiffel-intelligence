@@ -46,7 +46,7 @@ public class WaitListStorageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WaitListStorageHandler.class);
 
     @Getter
-    @Value("${waitlist.collection.name}")
+    @Value("${wait.list.collection.name}")
     private String collectionName;
 
     @Getter
@@ -54,7 +54,7 @@ public class WaitListStorageHandler {
     private String databaseName;
 
     @Getter
-    @Value("${waitlist.collection.ttlValue}")
+    @Value("${wait.list.collection.ttl}")
     private int ttlValue;
 
     @Setter

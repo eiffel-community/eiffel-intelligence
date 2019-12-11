@@ -43,11 +43,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/arrayAggregationRules.json",
+        "rules.path: src/test/resources/arrayAggregationRules.json",
         "spring.data.mongodb.database: ArrayAggregationTest",
-        "failed.notification.collection-name: ArrayAggregationTest-failedNotifications",
+        "failed.notifications.collection.name: ArrayAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
-        "rabbitmq.consumerName: ArrayAggregationTestConsumer" })
+        "rabbitmq.consumer.name: ArrayAggregationTestConsumer" })
 public class ArrayAggregationTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "arrayAggregationUpstreamResult.json";

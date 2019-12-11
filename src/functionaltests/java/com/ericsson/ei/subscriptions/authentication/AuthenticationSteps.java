@@ -41,9 +41,9 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: AuthenticationSteps",
-        "failed.notification.collection-name: AuthenticationSteps-failedNotifications",
+        "failed.notifications.collection.name: AuthenticationSteps-failedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
-        "rabbitmq.consumerName: AuthenticationStepsConsumer",
+        "rabbitmq.consumer.name: AuthenticationStepsConsumer",
         "ldap.enabled: true" })
 public class AuthenticationSteps extends FunctionalTestBase {
 

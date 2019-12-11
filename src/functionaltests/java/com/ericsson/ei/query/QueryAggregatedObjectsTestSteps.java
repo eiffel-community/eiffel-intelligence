@@ -36,9 +36,9 @@ import cucumber.api.java.en.Then;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
-        "failed.notification.collection-name: QueryAggregatedObjectsTestSteps-failedNotifications",
+        "failed.notifications.collection.name: QueryAggregatedObjectsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: QueryAggregatedObjectsTestSteps-exchange",
-        "rabbitmq.consumerName: QueryAggregatedObjectsTestStepsConsumer" })
+        "rabbitmq.consumer.name: QueryAggregatedObjectsTestStepsConsumer" })
 @AutoConfigureMockMvc
 public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 
@@ -72,10 +72,10 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggrCollectionName;
 
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollectionName;
 
     private String aggrObj;

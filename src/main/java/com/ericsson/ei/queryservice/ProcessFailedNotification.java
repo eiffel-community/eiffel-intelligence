@@ -38,7 +38,7 @@ public class ProcessFailedNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessFailedNotification.class);
 
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollectionName;
 
     @Value("${spring.data.mongodb.database}")

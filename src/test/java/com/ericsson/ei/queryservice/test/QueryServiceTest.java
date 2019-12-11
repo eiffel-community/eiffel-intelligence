@@ -52,9 +52,9 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryServiceTest",
-        "failed.notification.collection-name: QueryServiceRESTAPITest-failedNotifications",
+        "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceTest-exchange",
-        "rabbitmq.consumerName: QueryServiceTest"})
+        "rabbitmq.consumer.name: QueryServiceTest"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)
@@ -65,10 +65,10 @@ public class QueryServiceTest {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollectionName;
 
     @Autowired

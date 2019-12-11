@@ -45,11 +45,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionHandlerTest",
-        "failed.notification.collection-name: SubscriptionHandlerTest-failedNotifications",
+        "failed.notifications.collection.name: SubscriptionHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange",
-        "subscription.collection.repeatFlagHandlerName: SubscriptionHandlerTestCollection",
-        "rabbitmq.consumerName: SubscriptionHandlerTest",
-        "notification.ttl.value: 1"})
+        "subscriptions.repeat.handler.collection.name: SubscriptionHandlerTestCollection",
+        "rabbitmq.consumer.name: SubscriptionHandlerTest",
+        "failed.notifications.collection.ttl: 1"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
@@ -80,7 +80,7 @@ public class RunSubscriptionTest {
     @Value("${spring.data.mongodb.database}")
     private String subRepeatFlagDataBaseName;
 
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     private String subRepeatFlagCollectionName;
 
     @Mock

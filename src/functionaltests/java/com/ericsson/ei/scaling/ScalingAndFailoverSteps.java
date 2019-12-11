@@ -42,9 +42,9 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: ScalingAndFailoverSteps",
-        "failed.notification.collection-name: ScalingAndFailoverSteps-failedNotifications",
+        "failed.notifications.collection.name: ScalingAndFailoverSteps-failedNotifications",
         "rabbitmq.exchange.name: ScalingAndFailoverSteps-exchange",
-        "rabbitmq.consumerName: ScalingAndFailoverStepsConsumer" })
+        "rabbitmq.consumer.name: ScalingAndFailoverStepsConsumer" })
 @AutoConfigureMockMvc
 public class ScalingAndFailoverSteps extends FunctionalTestBase {
     private static final String EVENT_DUMMY = "src/functionaltests/resources/scale_and_failover_dummy.json";
@@ -155,8 +155,8 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
                     Collections.singletonMap("rabbitmq.exchange.name", "ScalingAndFailoverSteps-exchange"));
             configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps1);
 
-            PropertySource ps2 = new MapPropertySource("rabbitmq.consumerName",
-                    Collections.singletonMap("rabbitmq.consumerName", "ScalingAndFailoverStepsConsumer"));
+            PropertySource ps2 = new MapPropertySource("rabbitmq.consumer.name",
+                    Collections.singletonMap("rabbitmq.consumer.name", "ScalingAndFailoverStepsConsumer"));
             configurableApplicationContext.getEnvironment().getPropertySources().addFirst(ps2);
 
             int port = SocketUtils.findAvailableTcpPort();

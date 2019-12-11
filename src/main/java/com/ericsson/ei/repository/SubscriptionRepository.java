@@ -33,7 +33,7 @@ import com.mongodb.MongoWriteException;
 @Component
 public class SubscriptionRepository implements ISubscriptionRepository {
 
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptions.collection.name}")
     private String collectionName;
 
     @Value("${spring.data.mongodb.database}")

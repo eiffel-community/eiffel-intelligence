@@ -25,7 +25,7 @@ company, organization or department. In this way every user testing will get its
 test space that will be removed after feedback to the user. The property controlling this feature
 should be set to true:
 
-    testaggregated.enabled: true
+    test.aggregation.enabled: true
 
 A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/eiffel-community/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
 

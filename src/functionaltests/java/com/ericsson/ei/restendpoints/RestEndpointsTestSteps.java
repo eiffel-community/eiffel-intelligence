@@ -22,9 +22,9 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RestEndpointsTestSteps",
-        "failed.notification.collection-name: RestEndpointsTestSteps-failedNotifications",
+        "failed.notifications.collection.name: RestEndpointsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RestEndpointsTestSteps-exchange",
-        "rabbitmq.consumerName: RestEndpointsTestStepsConsumer" })
+        "rabbitmq.consumer.name: RestEndpointsTestStepsConsumer" })
 @AutoConfigureMockMvc
 public class RestEndpointsTestSteps extends FunctionalTestBase {
 

@@ -43,13 +43,13 @@ import cucumber.api.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "notification.ttl.value:1",
-        "aggregated.collection.ttlValue:1",
-        "notification.failAttempt:1",
+        "failed.notifications.collection.ttl: 1",
+        "aggregations.collection.ttl: 1",
+        "notification.retry: 1",
         "spring.data.mongodb.database: TestTTLSteps",
-        "failed.notification.collection-name: TestTTLSteps-failedNotifications",
+        "failed.notifications.collection.name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
-        "rabbitmq.consumerName: TestTTLStepsConsumer"})
+        "rabbitmq.consumer.name: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
@@ -75,13 +75,13 @@ public class TestTTLSteps extends FunctionalTestBase {
     private MockServerClient mockServerClient;
     private ClientAndServer clientAndServer;
 
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollection;
 
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String collection;
 
     @Autowired

@@ -101,7 +101,7 @@ services:
        - rabbitmq.bindingKey=#
        - rabbitmq.autoDelete=false
        - rabbitmq.createExchangeIfNotExisting=true
-       - rabbitmq.consumerName=messageConsumer
+       - rabbitmq.consumer.name=messageConsumer
        - mongodb.host=mongodb
        - mongodb.port=${MONGODB_PORT}
        - mongodb.database=eiffel
@@ -179,21 +179,21 @@ services:
             aliases:
               - ei-backend
     environment:       # Overrides settings in application config file
-      - SpringApplicationName=eiffel-intelligence-backend
+      - spring.application.name=eiffel-intelligence-backend
       - server.port=8080
       - rules.path=src/main/resources/ArtifactRules.json
       - rabbitmq.host=rabbitmq
       - rabbitmq.port=${RABBITMQ_AMQP_PORT}
-      - rabbitmq.domainId=ei-domain
-      - rabbitmq.componentName=ei-backend
-      - rabbitmq.waitlist.queue.suffix=waitlist
+      - rabbitmq.domain.id=ei-domain
+      - rabbitmq.component.name=ei-backend
+      - rabbitmq.wait.list.queue.suffix=waitlist
       - rabbitmq.exchange.name=ei-exchange
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser
       - spring.data.mongodb.host=mongodb
       - spring.data.mongodb.port=${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
-      - failed.notification.collection-name=eiffel2_FailedNotification
+      - failed.notifications.collection.name=eiffel2_FailedNotification
       - spring.mail.host=
       - spring.mail.port=
       - spring.mail.username=

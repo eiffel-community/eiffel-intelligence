@@ -34,9 +34,9 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestProcessQueryParams",
-        "failed.notification.collection-name: QueryServiceRESTAPITest-failedNotifications",
+        "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: TestProcessQueryParams-exchange",
-        "rabbitmq.consumerName: TestProcessQueryParams" })
+        "rabbitmq.consumer.name: TestProcessQueryParams" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

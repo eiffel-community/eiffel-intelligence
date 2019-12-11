@@ -28,9 +28,9 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RuleTestSteps",
-        "failed.notification.collection-name: RuleTestSteps-failedNotifications",
+        "failed.notifications.collection.name: RuleTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RuleTestSteps-exchange",
-        "rabbitmq.consumerName: RuleTestStepsConsumer" })
+        "rabbitmq.consumer.name: RuleTestStepsConsumer" })
 public class RuleTestSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/test/resources";

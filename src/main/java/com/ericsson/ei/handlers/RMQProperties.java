@@ -48,7 +48,7 @@ public class RMQProperties {
 
     @Getter
     @Setter
-    @Value("${rabbitmq.tlsVersion}")
+    @Value("${rabbitmq.tls.version}")
     private String tlsVersion;
 
     @Getter
@@ -65,17 +65,17 @@ public class RMQProperties {
 
     @Getter
     @Setter
-    @Value("${rabbitmq.domainId}")
+    @Value("${rabbitmq.domain.id}")
     private String domainId;
 
     @Getter
     @Setter
-    @Value("${rabbitmq.componentName}")
+    @Value("${rabbitmq.component.name}")
     private String componentName;
 
     @Getter
     @Setter
-    @Value("${rabbitmq.waitlist.queue.suffix}")
+    @Value("${rabbitmq.wait.list.queue.suffix}")
     private String waitlistSuffix;
 
     @Getter
@@ -85,7 +85,7 @@ public class RMQProperties {
 
     @Getter
     @Setter
-    @Value("${rabbitmq.consumerName}")
+    @Value("${rabbitmq.consumer.name}")
     private String consumerName;
 
     public String getQueueName() {

@@ -45,10 +45,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: SubscriptionNotificationSteps",
-        "failed.notification.collection-name: SubscriptionNotificationSteps-failedNotifications",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: SubscriptionNotificationSteps",
+        "failed.notifications.collection.name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
-        "rabbitmq.consumerName: SubscriptionNotificationSteps-consumer" })
+        "rabbitmq.consumer.name: SubscriptionNotificationSteps-consumer" })
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(SubscriptionNotificationSteps.class);
@@ -69,16 +70,16 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${email.sender}")
     private String sender;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollection;
 
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptions.collection.name}")
     private String subscriptionCollection;
 
     @Autowired

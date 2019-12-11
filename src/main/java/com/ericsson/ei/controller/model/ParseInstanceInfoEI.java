@@ -60,7 +60,7 @@ public class ParseInstanceInfoEI {
     private String rulesPath;
 
     @Getter
-    @Value("${testaggregated.enabled:false}")
+    @Value("${test.aggregation.enabled:false}")
     private String testRulesEnabled;
 
     @Getter

@@ -34,8 +34,8 @@ public class TestConfigs {
         System.setProperty("rabbitmq.port", Integer.toString(port));
         System.setProperty("rabbitmq.user", "guest");
         System.setProperty("rabbitmq.password", "guest");
-        System.setProperty("waitlist.initialDelayResend", "500");
-        System.setProperty("waitlist.fixedRateResend", "3000");
+        System.setProperty("wait.list.resend.initial.delay", "500");
+        System.setProperty("wait.list.resend.fixed.rate", "3000");
 
         String config = "src/functionaltests/resources/configs/qpidConfig.json";
         File qpidConfig = new File(config);

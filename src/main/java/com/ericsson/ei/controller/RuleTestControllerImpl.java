@@ -41,7 +41,7 @@ public class RuleTestControllerImpl implements RuleTestController {
     private IRuleCheckService ruleCheckService;
 
     @Setter
-    @Value("${testaggregated.enabled:false}")
+    @Value("${test.aggregation.enabled:false}")
     private Boolean testEnabled;
 
     @Value("${rules.path}")
@@ -105,7 +105,7 @@ public class RuleTestControllerImpl implements RuleTestController {
             }
         } else {
             String errorMessage = "Test rules functionality is disabled in backend server. "
-                    + "Configure \"testaggregated.enabled\" setting in backend servers properties "
+                    + "Configure \"test.aggregation.enabled\" setting in backend servers properties "
                     + "to enable this functionality. This should normally only be enabled in backend test servers.";
             LOGGER.error(errorMessage);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);

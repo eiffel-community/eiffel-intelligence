@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.RMQProperties;
+import com.ericsson.ei.mongo.MongoUri;
 import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -45,6 +46,9 @@ import lombok.Getter;
  */
 @Component
 public class ParseInstanceInfoEI {
+    @Autowired
+    private Environment environment;
+
     @Getter
     @Value("${build.version:#{null}}")
     private String applicationPropertiesVersion;
@@ -142,16 +146,18 @@ public class ParseInstanceInfoEI {
     @Component
     private class MongoDbValues {
         @Getter
-        @Value("${spring.data.mongodb.host}")
-        private String host;
-
-        @Getter
-        @Value("${spring.data.mongodb.port}")
-        private String port;
+        private String uri;
 
         @Getter
         @Value("${spring.data.mongodb.database}")
         private String database;
+
+        @PostConstruct
+        public void init() throws IOException {
+            final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+            uri = MongoUri.getUriWithHiddenPassword(unsafeUri);
+        }
+
     }
 
     @Component
@@ -163,9 +169,6 @@ public class ParseInstanceInfoEI {
         @Getter
         private String ldapServerList;
 
-        @Autowired
-        private Environment env;
-
         /**
          * Extracts ldap.server.list content and creates a new safe to display ldap server list.
          *
@@ -173,7 +176,7 @@ public class ParseInstanceInfoEI {
          */
         @PostConstruct
         public void init() throws IOException {
-            final String ldapServers = env.getProperty("ldap.server.list");
+            final String ldapServers = environment.getProperty("ldap.server.list");
             final JSONArray serverList = SafeLdapServer.createLdapSettingsArray(ldapServers);
             ldapServerList = serverList.toString(2);
         }

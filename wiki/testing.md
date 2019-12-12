@@ -42,4 +42,4 @@ can be started with.
 If the ports above are different then you need to pass them as Java options to
 Maven and eventually the host to the instances if they are not started on localhost
 
-    mvn verify -DskipUnitTests -Drabbitmq.host=<rabbitmq host if other than localhost> -Drabbitmq.port=<rabbitMq Port> -Dspring.data.mongodb.port=<mongodb port> -Dspring.data.mongodb.host=<mongodb host if other than localhost> -Der.url=<url to search endpoint of ER instance>
+    mvn verify -DskipUnitTests -Drabbitmq.host=<rabbitmq host if other than localhost> -Drabbitmq.port=<rabbitMq Port> -Dspring.data.mongodb.uri=<mongodb uri if other than localhost:27017> -Der.url=<url to search endpoint of ER instance>

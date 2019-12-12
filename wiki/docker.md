@@ -18,20 +18,27 @@ the Eiffel Intelligence on a Docker Host or in a Kubernetes cluster.
 
 ## Follow These Steps to Build the Docker Image
 
-**1** Build the Eiffel Intelligence war file:
-    
+**1** Build the Eiffel-intelligence war file:
+
     mvn package -DskipTests
 
 This will produce a war file in the "target" folder.
 
 **2** Build the Docker image with the war file that was produced from previous step:
-    
+
     docker build -t eiffel-intelligence-backend:1.0.1 --build-arg URL=./target/eiffel-intelligence-1.0.1.war -f src/main/docker/Dockerfile .
 
 Now docker image has build with tag "eiffel-intelligence-backend:1.0.1"
 
 ## Run Docker Image on Local Docker Host
 To run the produced docker image on the local Docker host, execute this command:
+
+    docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.uri=mongodb://mongodb:27017 eiffel-intelligence:1.0.1
+
+MongoDB, RabbitMq and other Eiffel Intelligence required components need to running 
+and configured via these application properties that is provided to the docker 
+command above. See the application.properties file for all available/required properties:
+[application.properties](../src/main/resources/application.properties)
 
     docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.host=mongodb -e spring.data.mongodb.port=27017 eiffel-intelligence:1.0.1
 
@@ -75,7 +82,7 @@ Another option to configure Eiffel Intelligence is to provide the application
 properties file into the container, which can be made in two ways:
 
 **1** Put application.properties file in Tomcat Catalina config folder in container and run Eiffel Intelligence:
-    
+
     docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties eiffel-intelligence:0.0.19
 
 **2** Put application.properties file in a different folder in container and 
@@ -104,7 +111,7 @@ has loaded, you should be able to access EI-Backend REST-interfaces with address
 http://localhost:8080/\<EI rest-api endpoint\>
 
 Curl command can be used to make request to EI-Backend REST API, example for getting all subscriptions:
-    
+
     curl -X GET http://localhost:8080/subscriptions
 
 It is also possible to access these REST API addresses in the web-browser and get 

@@ -62,7 +62,6 @@ public class App extends SpringBootServletInitializer implements SchedulingConfi
         Scope threadScope = new SimpleThreadScope();
         beanFactory.registerScope("thread", threadScope);
 
-        //SpringApplication.run(App.class, args);
         SpringApplication springApplication = new SpringApplication(App.class);
         springApplication.addListeners(new ConfigurationLogger());
         springApplication.run(args); 

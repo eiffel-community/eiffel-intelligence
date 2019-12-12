@@ -27,7 +27,7 @@ Eiffel Intelligence is a real time data aggregation and analysis solution
 for Eiffel events. While Eiffel represents an event based architecture,
 Eiffel Intelligence addresses the need of stakeholders to view the current
 state of the system by bridging the divide from immutable events to mutable
-state representation. More information [can be found here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/index.md).
+state representation. More information can be found in the below documentation links.
 
 Eiffel Intelligence consists of two components: the Eiffel Intelligence
 back-end (this repository) and the [Eiffel Intelligence front-end](https://github.com/eiffel-community/eiffel-intelligence-frontend),
@@ -45,31 +45,30 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 
 ## Documentation
 
-1. [**Running Eiffel Intelligence**](wiki/markdown/running-eiffel-intelligence.md)
-    - [**Prerequisites**](wiki/markdown/running-eiffel-intelligence.md#Prerequisites)
-    - [**Configuration**](wiki/markdown/configuration.md)
-    - [**Run in Docker**](wiki/markdown/docker.md)
-2. [**Understanding subscriptions**](wiki/markdown/subscriptions.md)
-    - [**REST POST notification**](wiki/markdown/subscription-with-REST-POST-notification.md)
-    - [**HTTP POST notification to trigger parameterized Jenkins jobs**](wiki/markdown/triggering-jenkins-jobs.md)
-    - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
-    - [**Step by Step Subscription Notification**](wiki/markdown/step-by-step-subscription-notification.md)
-3. [**Understanding rules**](wiki/markdown/rules.md)
-    - [**What is JMESPath?**](wiki/markdown/rules.md#What-is-JMESPath?)
-    - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)
-    - [**MergeResolverRules**](wiki/markdown/merge-resolver-rules.md)
-    - [**History Rules**](wiki/markdown/history-rules.md)
-    - [**Example rules**](wiki/markdown/example-rules.md)
-    - [**Mapping Rules To Aggregations**](wiki/markdown/mapping-rules-to-aggregations.md)
-4. [**Step by Step Aggregation on Eiffel events**](wiki/markdown/step-by-step-aggregation.md)
-    - [**ArtifactCreatedEvent Aggregation**](wiki/markdown/artifact-created-event-aggregation.md)
-    - [**TestCaseTriggeredEvent Aggregation**](wiki/markdown/test-case-triggered-event-aggregation.md)
-    - [**TestCaseStartedEvent Aggregation**](wiki/markdown/test-case-started-event-aggregation.md)
-    - [**TestCaseFinishedEvent Aggregation**](wiki/markdown/test-case-finished-event-aggregation.md)
-    - [**ArtifactPublishedEvent Aggregation**](wiki/markdown/artifact-published-event-aggregation.md)
-    - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/confidence-level-modified-event-aggregation.md)
-5. [**REST API**](wiki/markdown/REST-API.md)
-6. [**Compatibility**](wiki/markdown/compatibility.md)
-7. [**Known limitations**](wiki/markdown/known-limitations.md)
-
-**Eiffel Intelligence documentation** [**can be found here**](https://eiffel-community.github.io/eiffel-intelligence/)
+1. [**What is Eiffel Intelligence?**](wiki/index.md)
+2. [**Running Eiffel Intelligence**](wiki/running-eiffel-intelligence.md)
+   - [**Prerequisites**](wiki/running-eiffel-intelligence.md#Prerequisites)
+   - [**Configuration**](wiki/configuration.md)
+   - [**Run in Docker**](wiki/docker.md)
+3. [**Understanding subscriptions**](wiki/subscriptions.md)
+   - [**REST POST notification**](wiki/subscription-with-REST-POST-notification.md)
+   - [**HTTP POST notification to trigger parameterized Jenkins jobs**](wiki/triggering-jenkins-jobs.md)
+   - [**Email notification**](wiki/subscription-with-email-notification.md)
+   - [**Step by Step Subscription Notification**](wiki/step-by-step-subscription-notification.md)
+4. [**Understanding rules**](wiki/rules.md)
+   - [**What is JMESPath?**](wiki/rules.md#What-is-JMESPath?)
+   - [**Rule set up**](wiki/rules.md#Rule-set-up)
+   - [**MergeResolverRules**](wiki/merge-resolver-rules.md)
+   - [**History Rules**](wiki/history-rules.md)
+   - [**Example rules**](wiki/example-rules.md)
+   - [**Mapping Rules To Aggregations**](wiki/mapping-rules-to-aggregations.md)
+5. [**Step by Step Aggregation on Eiffel events**](wiki/step-by-step-aggregation.md)
+   - [**ArtifactCreatedEvent Aggregation**](wiki/artifact-created-event-aggregation.md)
+   - [**TestCaseTriggeredEvent Aggregation**](wiki/test-case-triggered-event-aggregation.md)
+   - [**TestCaseStartedEvent Aggregation**](wiki/test-case-started-event-aggregation.md)
+   - [**TestCaseFinishedEvent Aggregation**](wiki/test-case-finished-event-aggregation.md)
+   - [**ArtifactPublishedEvent Aggregation**](wiki/artifact-published-event-aggregation.md)
+   - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/confidence-level-modified-event-aggregation.md)
+6. [**REST API**](wiki/REST-API.md)
+7. [**Compatibility**](wiki/compatibility.md)
+8. [**Known limitations**](wiki/known-limitations.md)

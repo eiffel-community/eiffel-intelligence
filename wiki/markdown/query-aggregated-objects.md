@@ -114,11 +114,9 @@ Examples of criterias:
 ## Example of freestyle query that returns all aggregated objects
 By using a query that contains only empty "criteria" it is possible to return
 all aggregated objects from the database. The aggregated objects will be
-returned from specific collection (which name is defined by property
-aggregations.collection.name) that is stored in specific database (which name is
-defined by property spring.data.mongodb.database). Read more about the
-different properties in [application's properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
-or in the [documentation](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/configuration.md).
+returned from s specific collection that is stored in a specific database. 
+Read more about the different properties in the
+[configuration documentation](configuration.md#configuring-aggregations).
 
 Example:
 

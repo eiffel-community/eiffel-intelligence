@@ -83,18 +83,18 @@ can be set to true. This gives users the possibility to try out different rule s
 on a specific set of Eiffel events and see the resulting aggregated object.
 
 
-### Wait list
+### Waitlist
 
 If Eiffel Intelligence receives events that are not connected to any
 existing aggregated objects, and it is not declared as start event in the
-rules, the event is stored in the wait list database for a while. The
-"time-to-live" value limits how long an event is stored in the wait list.
+rules, the event is stored in the waitlist database for a while. The
+"time-to-live" value limits how long an event is stored in the waitlist.
 
 * waitlist.collection.name
 * waitlist.collection.ttl (*seconds*)
 
 It is possible to configure how often Eiffel Intelligence should handle
-unprocessed events lying in the wait list. These properties are in **milliseconds**:
+unprocessed events lying in the waitlist. These properties are in **milliseconds**:
 
 * waitlist.resend.initial.delay (*milliseconds*)
 * waitlist.resend.fixed.rate (*milliseconds*)

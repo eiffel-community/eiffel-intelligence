@@ -44,7 +44,7 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
         List<MapPropertySource> propertySources = findApplicationProperties();
         for (MapPropertySource propertySource : propertySources) {
             String propertiesLogMessage = createPropertiesLogMessage(propertySource);
-            LOGGER.info(propertiesLogMessage);
+            LOGGER.debug(propertiesLogMessage);
         }
     }
 

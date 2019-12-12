@@ -70,7 +70,7 @@ the following object’s id is selected:
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
 But there is no object with such id in the database and the aggregated object
-returns empty. The Eiffel event is added to the wait list. There it waits until an object
+returns empty. The Eiffel event is added to the waitlist. There it waits until an object
 with the requested id appears in the database. After some time, the event is fetched
 again and the whole process starts from the beginning. The rule is extracted,
 and the ids are selected. This time the object with the required id exists in

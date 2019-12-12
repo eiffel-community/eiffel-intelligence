@@ -23,9 +23,7 @@ test the rules on a test instance of Eiffel Intelligence. This means that this
 instance needs to be dedicated to only testing rules and it can be one per
 company, organization or department. In this way every user testing will get its own
 test space that will be removed after feedback to the user. The property controlling this feature
-should be set to true:
-
-    test.aggregation.enabled: true
+can be seen [here](configuration.md#testing-aggregation-rules).
 
 A GUI is also implemented in [Eiffel Intelligence Frontend](https://github.com/eiffel-community/eiffel-intelligence-frontend) but only visible when above property is set to true in the backend (this application).
 

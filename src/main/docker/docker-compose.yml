@@ -101,7 +101,7 @@ services:
        - rabbitmq.bindingKey=#
        - rabbitmq.autoDelete=false
        - rabbitmq.createExchangeIfNotExisting=true
-       - rabbitmq.consumer.name=messageConsumer
+       - rabbitmq.consumerName=messageConsumer
        - mongodb.host=mongodb
        - mongodb.port=${MONGODB_PORT}
        - mongodb.database=eiffel

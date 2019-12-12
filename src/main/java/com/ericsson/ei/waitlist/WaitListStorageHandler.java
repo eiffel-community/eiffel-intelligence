@@ -66,7 +66,7 @@ public class WaitListStorageHandler {
     private JmesPathInterface jmesPathInterface;
 
     /**
-     * Adds event to the wait list database if it does not already exists.
+     * Adds event to the waitlist database if it does not already exists.
      *
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id

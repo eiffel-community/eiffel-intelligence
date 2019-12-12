@@ -19,22 +19,22 @@ With the Docker image user can try-out the Eiffel-Intelligence on a Docker Host 
 ## Follow these step to build the Docker image.
 
 **1** Build the Eiffel-intelligence war file:
-    
+
     mvn package -DskipTests
 
 
 This will produce a war file in the "target" folder.
 
 **2** Build the Docker image with the war file that was produced from previous step:
-    
+
     docker build -t eiffel-intelligence-backend:1.0.1 --build-arg URL=./target/eiffel-intelligence-1.0.1.war -f src/main/docker/Dockerfile .
 
 Now docker image has build with tag "eiffel-intelligence-backend:1.0.1"
 
 ## Run Docker image on local Docker Host
 To run the produced docker image on the local Docker host, execute this command:
-    
-    docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.host=mongodb -e spring.data.mongodb.port=27017 eiffel-intelligence:1.0.1
+
+    docker run -p 8070:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG -e spring.data.mongodb.uri=mongodb://mongodb:27017 eiffel-intelligence:1.0.1
 
 MongoDB, RabbitMq and other Eiffel-Intelligence required components need to running and configured via these application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
 [application.properties](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/application.properties)
@@ -73,11 +73,11 @@ When Eiffel-Intelligence container is running on your local Docker host, Eiffel-
 Another option to configure Eiffel-Intelligence is to provide the application properties file into the container, which can be made in two ways:
 
 **1** Put application.properties file in Tomcat Catalina config folder in container and run Eiffel-Intelligence:
-    
+
     docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties eiffel-intelligence:0.0.19
 
 **2** Put application.properties file in a different folder in container and tell EI where the application.properties is located in the container:
-    
+
     docker run -p 8070:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties eiffel-intelligence:0.0.19
 
 
@@ -94,30 +94,30 @@ The variable EI_BACKEND_IMAGE needs to be updated to the value of your
 recently built image: "eiffel-intelligence:1.0.1".
 
 Then run following docker-compose command to startup all components:
-    
+
     docker-compose -f src/main/docker/docker-compose.yml up -d
 
 It will take some minutes until all components has started. When all components has loaded, you should be able to access EI-Backend REST-interfaces with address:
 http://localhost:8080/\<EI rest-api endpoint\>
 
 Curl command can be used to make request to EI-Backend REST API, example for getting all subscriptions:
-    
+
     curl -X GET http://localhost:8080/subscriptions
 
 It is also possible to access these Rest-Api addresses in web-browser and get result present in a Json view in web-browser.
 
 Following command can be used to get the logs from the EI-Backend container/service:
-    
+
     docker-compose -f src/main/docker/docker-compose.yml logs ei-backend
 
 All service names can be retreived with following command:
-    
+
     docker-compose -f src/main/docker/docker-compose.yml config --services
 
 It is also possible to retrieve the logs by using standard "docker" command:
-    
+
     docker logs <container_id or container_name>
 
 Container id can be retrieved with docker command:
-    
+
     docker ps

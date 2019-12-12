@@ -51,12 +51,12 @@ Examples of setting "rules.path" property to an external rules file:
 
 ## Define placeholder in rules
 
-If you wish to re-use the extracted value from IdentifyRules field 
-somewhere else in your rule set for a particular event, it is possible 
-to define a placeholder marker. Eiffel Intelligence will find and replace 
-this marker in your rules with the wanted value extracted from IdentifyRules. 
-This marker can be defined with the property **rules.replacement.marker**. 
-You can see example usages of it in the [example rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules) 
+If you wish to re-use the extracted value from IdentifyRules field
+somewhere else in your rule set for a particular event, it is possible
+to define a placeholder marker. Eiffel Intelligence will find and replace
+this marker in your rules with the wanted value extracted from IdentifyRules.
+This marker can be defined with the property **rules.replacement.marker**.
+You can see example usages of it in the [example rules](https://github.com/eiffel-community/eiffel-intelligence/tree/master/src/main/resources/rules)
 and [read more about it's usage here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/rules.md#using-placeholders-in-rules).
 
 
@@ -70,7 +70,7 @@ aggregated object using the below properties:
 * aggregated.collection.name
 
 If Eiffel Intelligence is set up with [AllEventRules](https://github.com/eiffel-community/eiffel-intelligence/blob/master/src/main/resources/AllEventsRules-Eiffel-Agen-Version.json)
-it is recommended to set a time to live value on the aggregated objects, 
+it is recommended to set a time to live value on the aggregated objects,
 to avoid having the collection growing too large. Recommended settings is 10 minutes.
 
 * aggregated.collection.ttlValue (*seconds*)
@@ -187,12 +187,17 @@ In a production environment and filesystems, administrator most likely don't wan
 These Eiffel Intelligence password properties can be provided encrypted:
 
         rabbitmq.password
-        spring.data.mongodb.password
+        password in spring.data.mongodb.uri
 
 
 A password property is configured by providing the encrypted password in this format.
 
-        some.component.password=ENC(myEncryptedPassword)
+        Mongo URI:
+        encrypted.mongodb.password=ENC(myEncryptedPassword)
+        spring.data.mongodb.uri=mongodb://username:${encrypted.mongodb.password}@host:port
+
+        RabbitMQ:
+        rabbitmq.password=ENC(myEncryptedPassword)
 
 
 Ldap encrypted password is set inside **ldap.server.list** property according the example below:

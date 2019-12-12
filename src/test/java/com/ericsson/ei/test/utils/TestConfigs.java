@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -26,6 +24,7 @@ import lombok.Getter;
 
 public class TestConfigs {
 
+    private static final String DEFAULT_MONGO_URI = "mongodb://localhost:27017";
     @Getter
     private static AMQPBrokerManager amqpBroker;
     private static MongodForTestsFactory testsFactory;
@@ -43,11 +42,12 @@ public class TestConfigs {
 
     public static synchronized void init() throws Exception {
         setUpMessageBus();
-        setUpEmbeddedMongo();
+        setUpEmbeddedMongo(DEFAULT_MONGO_URI);
     }
 
     private static synchronized void setUpMessageBus() throws Exception {
-        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: " + connection + ",connection factory:"
+        LOGGER.debug("Before setting up message bus, amqp broker: " + amqpBroker + ", connection: "
+                + connection + ",connection factory:"
                 + connectionFactory);
         if (amqpBroker != null || connection != null || connectionFactory != null) {
             return;
@@ -61,14 +61,14 @@ public class TestConfigs {
         LOGGER.debug("Setting up message bus done!");
     }
 
-    public static MongoClient mongoClientInstance() throws Exception {
+    public static MongoClient mongoClientInstance(String mongoUri) throws Exception {
         if (mongoClient == null) {
-            setUpEmbeddedMongo();
+            setUpEmbeddedMongo(mongoUri);
         }
         return mongoClient;
     }
 
-    private static synchronized void setUpEmbeddedMongo() throws IOException {
+    private static synchronized void setUpEmbeddedMongo(String mongoUri) throws IOException {
         if (mongoClient != null) {
             return;
         }
@@ -76,11 +76,10 @@ public class TestConfigs {
         try {
             testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
             mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
-            System.setProperty("spring.data.mongodb.port", port);
+            String port = String.valueOf(mongoClient.getAddress().getPort());
+            setNewPortToMongoDBUriProperty(mongoUri, port);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
+            LOGGER.error("Error setting new mongoDB uri property {}", e.getMessage(), e);
         }
     }
 
@@ -95,11 +94,6 @@ public class TestConfigs {
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
         ccf.destroy();
-    }
-
-    protected static void setAuthorization() {
-        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
-        System.setProperty("ldap.password", password);
     }
 
     protected void setRules() {
@@ -130,5 +124,12 @@ public class TestConfigs {
         connectionFactory.setHandshakeTimeout(600000);
         connectionFactory.setConnectionTimeout(600000);
         connection = connectionFactory.newConnection();
+    }
+
+    private static void setNewPortToMongoDBUriProperty(String mongoUri, String port) {
+        String modifiedUri = mongoUri.replaceAll("[0-9]{4,5}", port);
+        System.setProperty("spring.data.mongodb.uri", modifiedUri);
+        LOGGER.debug("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
+                mongoUri, modifiedUri);
     }
 }

@@ -1,0 +1,96 @@
+#! /bin/bash
+
+mongodb_uri="mongodb://replica1:27017,replica2:27017,replica3:27017"
+mongodb_database="ei-test-db"
+mailhog_uri="mongodb://mongodb:27017"
+rabbitmg_host="rabbitmq"
+jenkins_host="jenkins"
+jenkins_port="8080"
+mail_server_host="mail-server"
+docker_network="docker_eiffel_2.0_1"
+
+test_command="mvn verify \
+    -DskipUTs \
+    -Der.url=http://eiffel-er:8080/search/ \
+    -Drabbitmq.host=$rabbitmg_host \
+    -Drabbitmq.exchange.name=ei-exchange \
+    -Dspring.data.mongodb.uri=$mongodb_uri \
+    -Dspring.data.mongodb.database=$mongodb_database \
+    -Dmailhog.uri=$mailhog_uri \
+    -Djenkins.host=$jenkins_host \
+    -Djenkins.port=$jenkins_port \
+    -Dspring.mail.host=$mail_server_host \
+    -Dspring.mail.port=1025 \
+    -Dwaitlist.fixedRateResend=1 -B"
+
+function invalid_arguments {
+  echo "missing command(s) setup | test"
+  echo " "
+  echo " setup     :: start the docker containers and initiate replica set"
+  echo " teardown  :: stop the docker containers"
+  echo " test      :: execute integration tests"
+  echo " "
+  exit;
+}
+
+function do_setup {
+  echo "########################################"
+  echo "###### STARTING DOCKER SERVICES ########"
+  echo "########################################"
+
+  source src/main/docker/env.bash
+  docker-compose -f src/main/docker/docker-compose.yml up -d mongodb rabbitmq eiffel-er jenkins mail-server
+  docker-compose -f src/main/docker/docker-compose-replica-set.yml up -d
+
+  echo "Waiting 10 seconds for services to start"
+  sleep 10
+  echo 'rs.initiate( {
+    _id : "rs0",
+    members: [
+      { _id: 0, host: "replica1:27017" },
+      { _id: 1, host: "replica2:27017" },
+      { _id: 2, host: "replica3:27017" }
+    ]
+  } )' | mongo localhost:27001 --quiet
+}
+
+function do_teardown {
+  echo "########################################"
+  echo "###### STOPPING DOCKER SERVICES ########"
+  echo "########################################"
+  source src/main/docker/env.bash
+  docker-compose -f src/main/docker/docker-compose.yml down
+  docker-compose -f src/main/docker/docker-compose-replica-set.yml down
+
+}
+
+function do_test {
+  echo "########################################"
+  echo "######     EXECUTING TESTS      ########"
+  echo "########################################"
+  docker run -it --rm --network=$docker_network -v $PWD:$PWD -v ~/.m2:/root/.m2 \
+      -w $PWD maven:3.6-jdk-8 $test_command
+}
+
+if [ $# -eq 0 ]; then
+  invalid_arguments
+fi
+
+if [[ "setup test teardown" =~ .*${1}.* ]];
+then
+  while [ "$1" != "" ]
+  do
+    echo "Executing command: '$1'"
+    case "$1" in
+            setup)     do_setup;;
+            test)      do_test;;
+            teardown)  do_teardown;;
+    esac
+    shift
+  done
+else
+  invalid_arguments
+  STATUS=1
+fi
+
+exit $STATUS

@@ -136,7 +136,7 @@ public class ScalingAndFailoverSteps extends FunctionalTestBase {
     @Then("^all event messages are processed$")
     public void messages_processed() throws Exception {
         int extraCheckDelay = 0;
-        List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList, extraCheckDelay);
+        List<String> missingEventIds = super.dbManager.verifyEventsInDB(eventsIdList, extraCheckDelay);
         LOGGER.debug("Missing events: {}", missingEventIds.toString());
         assertEquals("Number of events missing in DB: " + missingEventIds.size(), 0, missingEventIds.size());
     }

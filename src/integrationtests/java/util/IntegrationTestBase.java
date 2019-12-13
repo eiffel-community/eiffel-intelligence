@@ -121,6 +121,10 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         mongoDBHandler.dropCollection(database, sessionsCollectionName);
     }
 
+    public void setFirstEventWaitTime(int value) {
+        firstEventWaitTime = value;
+    }
+
     /**
      * Override this if you have more events that will be registered to event to object map but it
      * is not visible in the test. For example from upstream or downstream from event repository
@@ -138,36 +142,30 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @throws Exception
      */
     protected void sendEventsAndConfirm() throws Exception {
-        try {
-            List<String> eventNames = getEventNamesToSend();
-            JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-            int eventsCount = eventNames.size() + extraEventsCount();
+        List<String> eventNames = getEventNamesToSend();
+        int eventsCount = eventNames.size() + extraEventsCount();
 
-            boolean alreadyExecuted = false;
-            for (String eventName : eventNames) {
-                JsonNode eventJson = parsedJSON.get(eventName);
-                String event = eventJson.toString();
+        JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
 
-                rabbitTemplate.convertAndSend(event);
-                if (!alreadyExecuted) {
-                    TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
-                    alreadyExecuted = true;
-                }
-                /**
-                 * Without a small delay between the sending of 2 events, one may risk to be lost in
-                 * an empty void if not received by EI
-                 */
-                TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
+        boolean alreadyExecuted = false;
+        for (String eventName : eventNames) {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            String event = eventJson.toString();
+
+            rabbitTemplate.convertAndSend(event);
+            if (!alreadyExecuted) {
+                TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
+                alreadyExecuted = true;
             }
-
-            waitForEventsToBeProcessed(eventsCount);
-            checkResult(getCheckData());
-        } catch (IOException e) {
-            String message = String.format("Failed to send Eiffel messages. Reason: %s",
-                    e.getMessage());
-            LOGGER.error(message, e);
-            fail(message);
+            /**
+             * Without a small delay between the sending of 2 events, one may risk to be lost in an
+             * empty void if not received by EI
+             */
+            TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
+
+        waitForEventsToBeProcessed(eventsCount);
+        checkResult(getCheckData());
     }
 
     /**
@@ -188,13 +186,22 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * @return map, where key - _id of expected aggregated object value - expected aggregated object
+     * @throws Exception
      *
      */
-    protected abstract Map<String, JsonNode> getCheckData() throws IOException;
+    protected abstract Map<String, JsonNode> getCheckData() throws IOException, Exception;
 
-    protected JsonNode getJSONFromFile(String filePath) throws IOException {
-        String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
-        return objectMapper.readTree(expectedDocument);
+    protected JsonNode getJSONFromFile(String filePath) throws Exception {
+        try {
+            String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
+            return objectMapper.readTree(expectedDocument);
+        } catch (IOException e) {
+            String message = String.format("Failed to load json content from file. Reason: %s",
+                    e.getMessage());
+            LOGGER.error("", e);
+            fail(message);
+        }
+        return null;
     }
 
     /**

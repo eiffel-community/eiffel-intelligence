@@ -31,6 +31,25 @@
 ##################################################################################################
 version: "2.1"
 services:
+  mongodb-auth:
+    restart: always
+    image: ${MONGODB_IMAGE}
+    expose:
+      - "27017"
+    ports:
+      - "27016:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    healthcheck:
+        test: ["CMD-SHELL","echo", "'db.stats().ok' | mongo localhost:27017/test", "--quiet"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+          eiffel_2.0_1:
+            aliases:
+              - mongodb-auth
   mongodb:
     restart: always
     image: ${MONGODB_IMAGE}
@@ -190,8 +209,7 @@ services:
       - rabbitmq.exchange.name=ei-exchange
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser
-      - spring.data.mongodb.host=mongodb
-      - spring.data.mongodb.port=${MONGODB_PORT}
+      - spring.data.mongodb.uri=mongodb://mongodb:${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - failed.notifications.collection.name=eiffel2_FailedNotification
       - spring.mail.host=

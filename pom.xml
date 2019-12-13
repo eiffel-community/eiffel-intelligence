@@ -537,7 +537,6 @@
                     <skipITs>${skipITs}</skipITs>
                     <systemPropertyVariables>
                         <systemTest>true</systemTest>
-                        <er.url>http://localhost:8080/eventrepository/search/</er.url>
                     </systemPropertyVariables>
                     <excludes>
                         <exclude>**/test/*</exclude>
@@ -556,55 +555,6 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <!-- site plugin requires all resources to exist
-                                within resources/ directory -->
-                            <!-- but we don't want to break links in documentation -->
-                            <outputDirectory>${basedir}/wiki/resources/images</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/wiki/markdown/images</directory>
-                                    <includes>
-                                        <include>*.png</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-                <configuration>
-                    <!-- This is where site.xml is located -->
-                    <siteDirectory>${basedir}/wiki</siteDirectory>
-                    <!-- Github pages only generates documentation from docs
-                        directory -->
-                    <outputDirectory>${basedir}/docs</outputDirectory>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.8</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

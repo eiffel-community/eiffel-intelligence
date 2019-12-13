@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+import com.ericsson.ei.mongo.MongoUri;
 
 public class ConfigurationLogger implements ApplicationListener<ApplicationPreparedEvent> {
 
@@ -63,9 +64,21 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
         Arrays.sort(propertyNames);
         String propertiesLogMessage = String.format("\n##### %s #####\n", propertySource.getName());
         for (String propertyName : propertyNames) {
-            String propertyValue = environment.getProperty(propertyName);
+            String propertyValue = getPropertyValueAndCheckForSpecialCases(propertyName);
             propertiesLogMessage += String.format("%s: %s\n", propertyName, propertyValue);
         }
         return propertiesLogMessage;
+    }
+
+    private String getPropertyValueAndCheckForSpecialCases(String propertyName) {
+        switch (propertyName) {
+        case "spring.data.mongodb.uri":
+            final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+            final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
+            return safeUri;
+        default:
+            String propertyValue = environment.getProperty(propertyName);
+            return propertyValue;
+        }
     }
 }

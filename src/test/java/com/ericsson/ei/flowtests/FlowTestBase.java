@@ -72,7 +72,10 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${event.object.map.collection.name}")
+    @Value("${spring.data.mongodb.uri}")
+    private String mongoUri;
+
+    @Value("${event_object_map.collection.name}")
     private String event_map;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -93,7 +96,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     public void init() throws Exception {
         LOGGER.info("System Test is: " + systemTest);
         if (!systemTest) {
-            mongoDBHandler.setMongoClient(TestConfigs.mongoClientInstance());
+            mongoDBHandler.setMongoClient(TestConfigs.mongoClientInstance(mongoUri));
             LOGGER.info("MongoDB db is: " + mongoDBHandler.getMongoProperties().getDatabase());
             waitlist.setMongoDbHandler(mongoDBHandler);
         }
@@ -197,7 +200,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     private long countProcessedEvents(String database, String collection) throws Exception {
         MongoClient mongoClient = null;
         if (!systemTest) {
-            mongoClient = TestConfigs.mongoClientInstance();
+            mongoClient = TestConfigs.mongoClientInstance(mongoUri);
         } else {
             mongoClient = mongoDBHandler.getMongoClient();
         }

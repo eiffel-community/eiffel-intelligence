@@ -62,12 +62,13 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
     private String createPropertiesLogMessage(MapPropertySource propertySource) {
         String[] propertyNames = propertySource.getPropertyNames();
         Arrays.sort(propertyNames);
-        String propertiesLogMessage = String.format("\n##### %s #####\n", propertySource.getName());
+        StringBuilder propertiesLogMessage = new StringBuilder();
+        propertiesLogMessage.append(String.format("\n##### %s #####\n", propertySource.getName()));
         for (String propertyName : propertyNames) {
             String propertyValue = getPropertyValueAndCheckForSpecialCases(propertyName);
-            propertiesLogMessage += String.format("%s: %s\n", propertyName, propertyValue);
+            propertiesLogMessage.append(String.format("%s: %s\n", propertyName, propertyValue));
         }
-        return propertiesLogMessage;
+        return propertiesLogMessage.toString();
     }
 
     private String getPropertyValueAndCheckForSpecialCases(String propertyName) {

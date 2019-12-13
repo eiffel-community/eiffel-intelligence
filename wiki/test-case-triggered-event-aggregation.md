@@ -75,7 +75,7 @@ the following object’s id is selected:
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
 But there is no object with such id in the database and aggregated object
-returns empty. Event is added to wait list. There it waits until the object
+returns empty. Event is then added to the waitlist. There it waits until the object
 with requested id appears in database.
 
 Under a time a second TestCaseTriggeredEvent is received and it looks

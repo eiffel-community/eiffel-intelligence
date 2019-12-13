@@ -116,7 +116,7 @@ Examples of this endpoint using curl
 ## Example of Freestyle Query that Returns All Aggregated Objects
 By using a query that contains only empty "criteria" it is possible to return
 all aggregated objects from the database. The aggregated objects will be
-returned from s specific collection that is stored in a specific database. 
+returned from a specific collection that is stored in a specific database. 
 Read more about the different properties in the
 [configuration documentation](configuration.md#configuring-aggregations).
 

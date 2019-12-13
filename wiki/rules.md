@@ -95,7 +95,7 @@ This field denotes if this event type starts the object aggregation. If
 StartEvent is "YES" then it will be the first processed event in the aggregation
 sequence. If StartEvent is "NO" then Eiffel events of this type will be used to
 append information to existing aggregated object. If no aggregated object exist
-then it will wait a certain time as defined by the property [_waitlist.collection.ttl_](configuration.md#waitlist)
+then it will wait a certain time as defined by the property [waitlist.collection.ttl](configuration.md#waitlist)
 until wanted aggregated object has been created. If no aggregated object is
 created in time then the event will no longer be processed and it will be
 removed from the waitlist.

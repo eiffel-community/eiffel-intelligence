@@ -167,7 +167,7 @@ value of the testcase id. The complete notification message can be seen below:
 ## Failed Notifications
 
 If the notification via REST POST fails, then a fixed number of attempts are
-made to resend successfully. The number of attempts is specified by a property
+made to resend successfully. The number of attempts is configured with a property
 described [here](configuration.md#failed-notifications). If message sending attempts fails for the
 specified number of time, then a failed notification is prepared and stored in 
 the database. The name of the collection is specified in the application.properties

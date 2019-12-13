@@ -75,7 +75,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
 
-    @Value("${event_object_map.collection.name}")
+    @Value("${event.object.map.collection.name}")
     private String event_map;
 
     private static ObjectMapper objectMapper = new ObjectMapper();

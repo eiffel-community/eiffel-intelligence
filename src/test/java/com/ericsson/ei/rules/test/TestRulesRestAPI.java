@@ -76,7 +76,7 @@ public class TestRulesRestAPI {
     @MockBean
     private IRuleCheckService ruleCheckService;
 
-    @Value("${testaggregated.enabled:false}")
+    @Value("${test.aggregation.enabled:false}")
     private Boolean testEnable;
 
     @Test

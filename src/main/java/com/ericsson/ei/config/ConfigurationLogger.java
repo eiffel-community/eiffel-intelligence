@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -30,7 +29,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+
 import com.ericsson.ei.mongo.MongoUri;
+import com.ericsson.ei.utils.SafeLdapServer;
 
 public class ConfigurationLogger implements ApplicationListener<ApplicationPreparedEvent> {
 
@@ -89,12 +90,7 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
             return StringUtils.isEmpty(mailPassword) ? "" : maskedProperty;
         case "ldap.server.list":
             final String ldapList = environment.getProperty("ldap.server.list");
-            JSONArray ldapListJson = new JSONArray(ldapList);
-            for (Object ldapObject : ldapListJson) {
-                JSONObject ldap = (JSONObject) ldapObject;
-                String ldapPassword = ldap.getString("password");
-                ldap.put("password", StringUtils.isEmpty(ldapPassword) ? "" : maskedProperty);
-            }
+            JSONArray ldapListJson = SafeLdapServer.createLdapSettingsArray(ldapList);
             return ldapListJson.toString();
         default:
             String propertyValue = environment.getProperty(propertyName);

@@ -11,7 +11,7 @@ docker_network="docker_eiffel_2.0_1"
 
 test_command="mvn verify \
     -DskipUTs \
-    -Der.url=http://eiffel-er:8080/search/ \
+    -Devent.repository.url=http://eiffel-er:8080/search/ \
     -Drabbitmq.host=$rabbitmg_host \
     -Drabbitmq.exchange.name=ei-exchange \
     -Dspring.data.mongodb.uri=$mongodb_uri \

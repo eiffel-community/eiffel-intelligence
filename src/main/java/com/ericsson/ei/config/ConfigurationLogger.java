@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -72,11 +75,27 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
     }
 
     private String getPropertyValueAndCheckForSpecialCases(String propertyName) {
+        final String maskedProperty = "*****";
         switch (propertyName) {
         case "spring.data.mongodb.uri":
             final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
             final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
             return safeUri;
+        case "rabbitmq.password":
+            String rabbitPassword = environment.getProperty("rabbitmq.password");
+            return StringUtils.isEmpty(rabbitPassword) ? "" : maskedProperty;
+        case "spring.mail.password":
+            String mailPassword = environment.getProperty("spring.mail.password");
+            return StringUtils.isEmpty(mailPassword) ? "" : maskedProperty;
+        case "ldap.server.list":
+            final String ldapList = environment.getProperty("ldap.server.list");
+            JSONArray ldapListJson = new JSONArray(ldapList);
+            for (Object ldapObject : ldapListJson) {
+                JSONObject ldap = (JSONObject) ldapObject;
+                String ldapPassword = ldap.getString("password");
+                ldap.put("password", StringUtils.isEmpty(ldapPassword) ? "" : maskedProperty);
+            }
+            return ldapListJson.toString();
         default:
             String propertyValue = environment.getProperty(propertyName);
             return propertyValue;

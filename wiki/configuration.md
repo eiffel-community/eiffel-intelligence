@@ -145,9 +145,23 @@ retry to make a REST POST notification when a subscription is triggered.
 ### Configure Search in Event Repository
 
 For Eiffel Intelligence to search for linked events Event repository is
-used. **er.url** takes a full URL to such a repository.
+used. **event.repository.url** takes a full URL to such a repository.
 
-* er.url
+* event.repository.url
+
+## MongoDB
+
+You can set up connections to multiple MongoDB instances with or without authentication.
+Here are some examples:
+
+    mongodb://localhost:27017                                       - Single MongoDB instance, no authentication
+    mongodb://username:mypasswd@localhost:27017                     - Single MongoDD instance with authentication
+    mongodb://username:mypasswd@hostname1:27017,hostname2:27017     - Multiple MongoDB instances with authentication
+
+If encryption of the MongoDB password is desired there is information [here](configuration.md#password-encryption).
+
+* spring.data.mongodb.uri
+* spring.data.mongodb.database
 
 ## Security
 
@@ -158,7 +172,10 @@ the LDAP settings.
 Multiple LDAP servers can be configured. The priority is in the order they are written.
 This means that authentication will first be tried on the first defined LDAP and if that
 fails the second will be tried and so on. LDAP is enabled with the **ldap.enabled** property
-and the settings are defined in the **ldap.server.list** property.
+and the settings are defined in the **ldap.server.list** property. The password needs to
+be base64 encoded and in the example below we can see the password 'YWRtaW4=' which
+decodes into admin. However, if you are using encryption then this is not needed. More
+about encryption can be read [here](configuration.md#password-encryption).
 
     ldap.enabled: true
     ldap.server.list: [\

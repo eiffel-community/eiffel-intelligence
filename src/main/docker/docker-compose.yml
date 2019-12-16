@@ -218,7 +218,7 @@ services:
       - spring.mail.password=
       - spring.mail.properties.mail.smtp.auth=false
       - spring.mail.properties.mail.smtp.starttls.enable=false
-      - er.url=eiffel-er:${EIFFEL_ER_PORT}/search/
+      - event.repository.url=eiffel-er:${EIFFEL_ER_PORT}/search/
       - WAIT_MB_HOSTS=rabbitmq:${RABBITMQ_WEB_PORT}
       - WAIT_DB_HOSTS=mongodb:${MONGODB_PORT}
       - logging.level.root=OFF

@@ -50,7 +50,7 @@ public class ERQueryService {
     private HttpRequest request;
 
     @Getter
-    @Value("${er.url}")
+    @Value("${event.repository.url}")
     private String erBaseUrl;
 
     public ERQueryService() {

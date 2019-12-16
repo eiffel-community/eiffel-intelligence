@@ -13,7 +13,7 @@ to what object is configured using a set of rules.
 
 In this case we use the same instance of RabbitMQ and MongoDB.
 
-  - **rabbitmq.consumerName** property should be different for each rule set. 
+  - **rabbitmq.consumer.name** property should be different for each rule set.
   Otherwise the rabbitMQ will split the events in the queue among all the 
   instances listening to that queue.
   - MongoDb collection names should also be different for each rule set.

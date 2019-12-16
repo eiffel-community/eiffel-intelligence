@@ -21,7 +21,7 @@ test_command="mvn verify \
     -Djenkins.port=$jenkins_port \
     -Dspring.mail.host=$mail_server_host \
     -Dspring.mail.port=1025 \
-    -Dwaitlist.fixedRateResend=1 -B"
+    -Dwaitlist.resend.fixed.rate=1 -B"
 
 function invalid_arguments {
   echo "missing command(s) setup | test"

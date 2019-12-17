@@ -177,8 +177,8 @@ If encryption of the MongoDB password is desired there is information [here](con
 
 You can configure the RabbitMQ settings using the rabbitmq.* properties.
 Most of the properties should be familiar but a few may need some further explanation.
-The domain.id, component.name and consumer.name are used to build the queue name on which
-Eiffel Intelligence listens for messages.
+The rabbitmq.domain.id, rabbitmq.component.name and rabbitmq.queue.suffix are used to build
+the queue name on which Eiffel Intelligence listens for messages.
 The tls.version property specifies the security protocol and you can find valid names
 [here](https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext)
 

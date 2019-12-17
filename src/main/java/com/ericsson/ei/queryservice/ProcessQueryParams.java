@@ -37,7 +37,7 @@ public class ProcessQueryParams {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessQueryParams.class);
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggregationCollectionName;
 
     @Value("${spring.data.mongodb.database}")

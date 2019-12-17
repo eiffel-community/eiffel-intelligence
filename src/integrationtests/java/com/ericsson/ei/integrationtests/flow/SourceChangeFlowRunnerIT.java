@@ -13,15 +13,15 @@ import cucumber.api.junit.Cucumber;
 public class SourceChangeFlowRunnerIT {
     @BeforeClass
     public static void before() {
-        System.setProperty("aggregated.collection.name", "aggregated_objects_source_change_flow");
+        System.setProperty("aggregations.collection.name", "aggregated_objects_source_change_flow");
         System.setProperty("waitlist.collection.name", "wait_list_source_change_flow");
-        System.setProperty("subscription.collection.name", "subscription_source_change_flow");
-        System.setProperty("event_object_map.collection.name", "event_object_map_source_change_flow");
-        System.setProperty("subscription.collection.repeatFlagHandlerName", "subscription_repeat_handler_source_change_flow");
-        System.setProperty("failed.notification.collection-name", "failed_notification_source_change_flow");
+        System.setProperty("subscriptions.collection.name", "subscription_source_change_flow");
+        System.setProperty("event.object.map.collection.name", "event_object_map_source_change_flow");
+        System.setProperty("subscriptions.repeat.handler.collection.name", "subscription_repeat_handler_source_change_flow");
+        System.setProperty("failed.notifications.collection.name", "failed_notification_source_change_flow");
         System.setProperty("sessions.collection.name", "sessions_source_change_flow");
 
         System.setProperty("rules.path", "/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json");
-        System.setProperty("rabbitmq.consumerName", "source_change_queue");
+        System.setProperty("rabbitmq.queue.suffix", "source_change_queue");
     }
 }

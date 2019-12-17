@@ -59,11 +59,11 @@ public class InformSubscriber {
 
     @Setter
     @Getter
-    @Value("${notification.failAttempt:#{0}}")
+    @Value("${notification.retry:#{0}}")
     private int failAttempt;
 
     @Getter
-    @Value("${failed.notification.collection-name}")
+    @Value("${failed.notifications.collection.name}")
     private String failedNotificationCollectionName;
 
     @Getter
@@ -71,7 +71,7 @@ public class InformSubscriber {
     private String database;
 
     @Getter
-    @Value("${notification.ttl.value}")
+    @Value("${failed.notifications.collection.ttl}")
     private int ttlValue;
 
     @Autowired

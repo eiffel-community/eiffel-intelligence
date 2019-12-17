@@ -47,7 +47,7 @@ public class SubscriptionHandler {
         SubscriptionHandler.class);
 
     @Getter
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptions.collection.name}")
     private String subscriptionCollectionName;
 
     @Getter

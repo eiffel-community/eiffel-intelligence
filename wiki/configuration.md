@@ -13,7 +13,7 @@ to what object is configured using a set of rules.
 
 In this case we use the same instance of RabbitMQ and MongoDB.
 
-  - **rabbitmq.consumerName** property should be different for each rule set. 
+  - **rabbitmq.queue.suffix** property should be different for each rule set.
   Otherwise the rabbitMQ will split the events in the queue among all the 
   instances listening to that queue.
   - MongoDb collection names should also be different for each rule set.
@@ -70,18 +70,18 @@ Eiffel Intelligence saves aggregated objects in a database. It is possible
 to configure the collection name, the time to live and the name of the
 aggregated object using the below properties:
 
-* aggregated.object.name
-* aggregated.collection.name
+* aggregations.object.name
+* aggregations.collection.name
 
 If Eiffel Intelligence is set up with [AllEventRules](../src/main/resources/AllEventsRules-Eiffel-Agen-Version.json)
 it is recommended to set a time to live value on the aggregated objects,
 to avoid having the collection growing too large. Recommended settings is 10 minutes.
 
-* aggregated.collection.ttlValue (*seconds*)
+* aggregations.collection.ttl (*seconds*)
 
 ### Testing Aggregation Rules
 
-To test new rules for Eiffel Intelligence the property **testaggregated.enabled**
+To test new rules for Eiffel Intelligence the property **test.aggregation.enabled**
 can be set to true. This gives users the possibility to try out different rule sets
 on a specific set of Eiffel events and see the resulting aggregated object.
 
@@ -93,25 +93,25 @@ rules, the event is stored in the waitlist database for a while. The
 "time-to-live" value limits how long an event is stored in the waitlist.
 
 * waitlist.collection.name
-* waitlist.collection.ttlValue (*seconds*)
+* waitlist.collection.ttl (*seconds*)
 
 It is possible to configure how often Eiffel Intelligence should handle
-unprocessed events lying in the wait list. These properties are in **milliseconds**:
+unprocessed events lying in the waitlist. These properties are in **milliseconds**:
 
-* waitlist.initialDelayResend (*milliseconds*)
-* waitlist.fixedRateResend (*milliseconds*)
+* waitlist.resend.initial.delay (*milliseconds*)
+* waitlist.resend.fixed.rate (*milliseconds*)
 
 ## Subscriptions
 
 Eiffel Intelligence stores subscriptions in a database with the collection
-name configured with the property **subscription.collection.name**. When
+name configured with the property **subscriptions.collection.name**. When
 subscriptions have fulfilled their requirements and notifications
 should not be repeated, the subscription is stored together with the
 matched aggregated object in the database. The name of this particular
 collection is defined by the below property:
 
-* subscription.collection.name
-* subscription.collection.repeatFlagHandlerName
+* subscriptions.collection.name
+* subscriptions.repeat.handler.collection.name
 
 ### Notifications
 
@@ -128,26 +128,73 @@ for each subscription. Note that these two properties are mandatory to set.
 * email.sender
 * email.subject
 
+The e-mail SMTP server can be configured using the spring.mail.* namespace.
+An example of this can be seen below.
+
+    spring.mail.host=smtp.gmail.com
+    spring.mail.port=587
+    spring.mail.username=<login user to smtp server>
+    spring.mail.password=<login password to smtp server>
+    spring.mail.properties.mail.smtp.auth=true
+    spring.mail.properties.mail.smtp.starttls.enable=true
+
 ### Failed Notifications
 
 Should the subscription notification for some reason fail. It is possible to configure
 what the collection name for failed notifications should be in the property
-**failed.notification.collection-name**. **notification.ttl.value** tells
+**failed.notifications.collection.name**. **failed.notifications.collection.ttl** tells
 Eiffel Intelligence how long a failed notification will be stored in the
-database before deletion. With **notification.failAttempt** property, it
+database before deletion. With **notification.retry** property, it
 is possible to configure the number of attempts Eiffel Intelligence will
 retry to make a REST POST notification when a subscription is triggered.
 
-* failed.notification.collection-name
-* notification.ttl.value
-* notification.failAttempt
+* failed.notifications.collection.name
+* failed.notifications.collection.ttl
+* notification.retry
 
 ### Configure Search in Event Repository
 
 For Eiffel Intelligence to search for linked events Event repository is
-used. **er.url** takes a full URL to such a repository.
+used. **event.repository.url** takes a full URL to such a repository.
 
-* er.url
+* event.repository.url
+
+## MongoDB
+
+You can set up connections to multiple MongoDB instances with or without authentication.
+Here are some examples:
+
+    mongodb://localhost:27017                                       - Single MongoDB instance, no authentication
+    mongodb://username:mypasswd@localhost:27017                     - Single MongoDD instance with authentication
+    mongodb://username:mypasswd@hostname1:27017,hostname2:27017     - Multiple MongoDB instances with authentication
+
+If encryption of the MongoDB password is desired there is information [here](configuration.md#password-encryption).
+
+* spring.data.mongodb.uri
+* spring.data.mongodb.database
+
+## RabbitMQ
+
+You can configure the RabbitMQ settings using the rabbitmq.* properties.
+Most of the properties should be familiar but a few may need some further explanation.
+The rabbitmq.domain.id, rabbitmq.component.name and rabbitmq.queue.suffix are used to build
+the queue name on which Eiffel Intelligence listens for messages.
+The rabbitmq.tls.version property specifies the security protocol and you can find valid names
+[here](https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext)
+
+* rabbitmq.host
+* rabbitmq.port
+* rabbitmq.user
+* rabbitmq.password
+* rabbitmq.tls.version
+* rabbitmq.exchange.name
+* rabbitmq.domain.id
+* rabbitmq.component.name
+* rabbitmq.queue.suffix
+* rabbitmq.queue.durable
+* rabbitmq.binding.key
+* rabbitmq.waitlist.queue.suffix
+
 
 ## Security
 
@@ -158,7 +205,10 @@ the LDAP settings.
 Multiple LDAP servers can be configured. The priority is in the order they are written.
 This means that authentication will first be tried on the first defined LDAP and if that
 fails the second will be tried and so on. LDAP is enabled with the **ldap.enabled** property
-and the settings are defined in the **ldap.server.list** property.
+and the settings are defined in the **ldap.server.list** property. The password needs to
+be base64 encoded and in the example below we can see the password 'YWRtaW4=' which
+decodes into admin. However, if you are using encryption then this is not needed. More
+about encryption can be read [here](configuration.md#password-encryption).
 
     ldap.enabled: true
     ldap.server.list: [\

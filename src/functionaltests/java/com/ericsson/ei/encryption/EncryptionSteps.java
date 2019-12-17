@@ -30,10 +30,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Ignore
-@TestPropertySource(properties = { "spring.data.mongodb.database: EncryptionSteps",
-        "missedNotificationDataBaseName: EncryptionSteps-missedNotifications",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: EncryptionSteps",
+        "failed.notifications.collection.name: EncryptionSteps-missedNotifications",
         "rabbitmq.exchange.name: EncryptionSteps-exchange",
-        "rabbitmq.consumerName: EncryptionSteps-consumer"})
+        "rabbitmq.queue.suffix: EncryptionSteps"})
 public class EncryptionSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(EncryptionSteps.class);

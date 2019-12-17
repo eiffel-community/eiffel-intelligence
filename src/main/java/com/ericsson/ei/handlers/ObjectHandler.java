@@ -53,7 +53,7 @@ public class ObjectHandler {
 
     @Getter
     @Setter
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String collectionName;
 
     @Getter
@@ -78,7 +78,7 @@ public class ObjectHandler {
     private SubscriptionHandler subscriptionHandler;
 
     @Getter
-    @Value("${aggregated.collection.ttlValue}")
+    @Value("${aggregations.collection.ttl}")
     private String ttlValue;
 
     /**

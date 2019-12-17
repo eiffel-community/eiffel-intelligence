@@ -1,80 +1,100 @@
+/*
+   Copyright 2019 Ericsson AB.
+   For a full list of individual contributors, please see the commit history.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package com.ericsson.ei.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 import com.ericsson.ei.mongo.MongoUri;
+import com.ericsson.ei.utils.SafeLdapServer;
 
-@Component
-public class ConfigurationLogger {
+public class ConfigurationLogger implements ApplicationListener<ApplicationPreparedEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationLogger.class);
 
-    @Autowired
-    private Environment environment;
+    private ConfigurableEnvironment environment;
 
-    @PostConstruct
-    public void print() {
+    @Override
+    public void onApplicationEvent(ApplicationPreparedEvent event) {
+        environment = event.getApplicationContext().getEnvironment();
         logConfiguration();
     }
 
     private void logConfiguration() {
-        final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
-        final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
-        LOGGER.debug("EI Backend started with following configurations:\n"
-                + "server.port: " + environment.getProperty("server.port") + "\n"
-                + "server.session-timeout: " + environment.getProperty("server.session-timeout") + "\n"
-                + "rules.path: " + environment.getProperty("rules.path") + "\n"
-                + "rabbitmq.host: " + environment.getProperty("rabbitmq.host") + "\n"
-                + "rabbitmq.port: " + environment.getProperty("rabbitmq.port") + "\n"
-                + "rabbitmq.user: " + environment.getProperty("rabbitmq.user") + "\n"
-                + "rabbitmq.tlsVersion: " + environment.getProperty("rabbitmq.tlsVersion") + "\n"
-                + "rabbitmq.exchange.name: " + environment.getProperty("rabbitmq.exchange.name") + "\n"
-                + "rabbitmq.domainId: " + environment.getProperty("rabbitmq.domainId") + "\n"
-                + "rabbitmq.componentName: " + environment.getProperty("rabbitmq.componentName") + "\n"
-                + "rabbitmq.consumerName: " + environment.getProperty("rabbitmq.consumerName") + "\n"
-                + "rabbitmq.queue.durable: " + environment.getProperty("rabbitmq.queue.durable") + "\n"
-                + "rabbitmq.binding.key: " + environment.getProperty("rabbitmq.binding.key") + "\n"
-                + "rabbitmq.waitlist.queue.suffix: " + environment.getProperty("rabbitmq.waitlist.queue.suffix") + "\n"
-                + "rules.replacement.marker: " + environment.getProperty("rules.replacement.marker") + "\n"
-                + "spring.data.mongodb.uri: " + safeUri + "\n"
-                + "spring.data.mongodb.database: " + environment.getProperty("spring.data.mongodb.database") + "\n"
-                + "sessions.collection.name: " + environment.getProperty("sessions.collection.name") + "\n"
-                + "aggregated.collection.name: " + environment.getProperty("aggregated.collection.name") + "\n"
-                + "aggregated.collection.ttlValue: " + environment.getProperty("aggregated.collection.ttlValue") + "\n"
-                + "event_object_map.collection.name: " + environment.getProperty("event_object_map.collection.name") + "\n"
-                + "waitlist.collection.name: " + environment.getProperty("waitlist.collection.name") + "\n"
-                + "waitlist.collection.ttlValue: " + environment.getProperty("waitlist.collection.ttlValue") + "\n"
-                + "waitlist.initialDelayResend: " + environment.getProperty("waitlist.initialDelayResend") + "\n"
-                + "waitlist.fixedRateResend: " + environment.getProperty("waitlist.fixedRateResend") + "\n"
-                + "subscription.collection.name: " + environment.getProperty("subscription.collection.name") + "\n"
-                + "subscription.collection.repeatFlagHandlerName: " + environment.getProperty("subscription.collection.repeatFlagHandlerName") + "\n"
-                + "testaggregated.enabled: " + environment.getProperty("testaggregated.enabled") + "\n"
-                + "threads.corePoolSize: " + environment.getProperty("threads.corePoolSize") + "\n"
-                + "threads.queueCapacity: " + environment.getProperty("threads.queueCapacity") + "\n"
-                + "threads.maxPoolSize: " + environment.getProperty("threads.maxPoolSize") + "\n"
-                + "failed.notification.collection-name: " + environment.getProperty("failed.notification.collection-name") + "\n"
-                + "email.sender: " + environment.getProperty("email.sender") + "\n"
-                + "email.subject: " + environment.getProperty("email.subject") + "\n"
-                + "notification.failAttempt: " + environment.getProperty("notification.failAttempt") + "\n"
-                + "notification.ttl.value: " + environment.getProperty("notification.ttl.value") + "\n"
-                + "spring.mail.host: " + environment.getProperty("spring.mail.host") + "\n"
-                + "spring.mail.port: " + environment.getProperty("spring.mail.port") + "\n"
-                + "spring.mail.username: " + environment.getProperty("spring.mail.username") + "\n"
-                + "spring.mail.properties.mail.smtp.auth: " + environment.getProperty("spring.mail.properties.mail.smtp.auth") + "\n"
-                + "spring.mail.properties.mail.smtp.starttls.enable: " + environment.getProperty("spring.mail.properties.mail.smtp.starttls.enable") + "\n"
-                + "er.url: " + environment.getProperty("er.url") + "\n"
-                + "ldap.enabled: " + environment.getProperty("ldap.enabled") + "\n"
-                + "ldap.server.list: " + environment.getProperty("ldap.server.list") + "\n"
-                + "logging.level.root: " + environment.getProperty("logging.level.root") + "\n"
-                + "logging.level.org.springframework.web: " + environment.getProperty("logging.level.org.springframework.web") + "\n"
-                + "logging.level.com.ericsson.ei: " + environment.getProperty("logging.level.com.ericsson.ei") + "\n"
-                + "\nThese properties are only some of the configurations, more configurations could have been provided.\n");
+        List<MapPropertySource> propertySources = findApplicationProperties();
+        for (MapPropertySource propertySource : propertySources) {
+            String propertiesLogMessage = createPropertiesLogMessage(propertySource);
+            LOGGER.debug(propertiesLogMessage);
+        }
+    }
+
+    private List<MapPropertySource> findApplicationProperties() {
+        List<MapPropertySource> propertySources = new ArrayList<>();
+        for (PropertySource<?> propertySource : ((ConfigurableEnvironment) environment).getPropertySources()) {
+            if (propertySource.getName().contains("applicationConfig")) {
+                propertySources.add((MapPropertySource) propertySource);
+            }
+        }
+        return propertySources;
+    }
+
+    private String createPropertiesLogMessage(MapPropertySource propertySource) {
+        String[] propertyNames = propertySource.getPropertyNames();
+        Arrays.sort(propertyNames);
+        StringBuilder propertiesLogMessage = new StringBuilder();
+        propertiesLogMessage.append(String.format("\n##### %s #####\n", propertySource.getName()));
+        for (String propertyName : propertyNames) {
+            String propertyValue = getPropertyValueAndCheckForSpecialCases(propertyName);
+            propertiesLogMessage.append(String.format("%s: %s\n", propertyName, propertyValue));
+        }
+        return propertiesLogMessage.toString();
+    }
+
+    private String getPropertyValueAndCheckForSpecialCases(String propertyName) {
+        final String maskedProperty = "*****";
+        switch (propertyName) {
+        case "spring.data.mongodb.uri":
+            final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+            final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
+            return safeUri;
+        case "rabbitmq.password":
+            String rabbitPassword = environment.getProperty("rabbitmq.password");
+            return StringUtils.isEmpty(rabbitPassword) ? "" : maskedProperty;
+        case "spring.mail.password":
+            String mailPassword = environment.getProperty("spring.mail.password");
+            return StringUtils.isEmpty(mailPassword) ? "" : maskedProperty;
+        case "ldap.server.list":
+            final String ldapList = environment.getProperty("ldap.server.list");
+            JSONArray ldapListJson = SafeLdapServer.createLdapSettingsArray(ldapList);
+            return ldapListJson.toString();
+        default:
+            String propertyValue = environment.getProperty(propertyName);
+            return propertyValue;
+        }
     }
 }

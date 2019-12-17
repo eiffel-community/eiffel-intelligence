@@ -46,7 +46,7 @@ import lombok.Setter;
 public class RMQHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RMQHandler.class);
 
-    @Value("${threads.maxPoolSize}")
+    @Value("${threads.max.pool.size}")
     private int maxThreads;
 
     @Setter

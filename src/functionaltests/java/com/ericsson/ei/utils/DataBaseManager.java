@@ -29,16 +29,16 @@ public class DataBaseManager {
     @Value("${spring.data.mongodb.database}")
     private String database;
 
-    @Value("${event_object_map.collection.name}")
+    @Value("${event.object.map.collection.name}")
     private String eventObjectCollectionName;
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
     @Value("${waitlist.collection.name}")
     private String waitlistCollectionName;
 
-    @Value("${subscription.collection.name}")
+    @Value("${subscriptions.collection.name}")
     private String subscriptionCollectionName;
 
     @Getter

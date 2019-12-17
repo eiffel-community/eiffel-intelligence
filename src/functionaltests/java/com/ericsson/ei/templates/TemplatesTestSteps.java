@@ -26,9 +26,10 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Ignore
-@TestPropertySource(properties = {"spring.data.mongodb.database: TemplatesTestSteps",
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: TemplatesTestSteps",
         "rabbitmq.exchange.name: TemplatesTestSteps-exchange",
-        "rabbitmq.consumerName: TemplatesTestStepsConsumer" })
+        "rabbitmq.queue.suffix: TemplatesTestSteps" })
 @AutoConfigureMockMvc
 public class TemplatesTestSteps extends FunctionalTestBase {
 

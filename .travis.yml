@@ -31,7 +31,7 @@ jobs:
     - stage: test
       name: unitAndFunctionalTests
       script:
-        - mvn -Dsurefire.rerunFailingTestsCount=2 test -DskipITs -B
+        - mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Dspring.config.location=src/main/resources/application.properties -B
     - stage: test
       name: integrationTests
       # To ensure docker containers are fully up and running we sleep 60s

@@ -64,11 +64,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/all_event_rules.json",
+        "rules.path: src/test/resources/all_event_rules.json",
         "spring.data.mongodb.database: SingleEventAggregationTest",
-        "failed.notification.collection-name: SingleEventAggregationTest-failedNotifications",
+        "failed.notifications.collection.name: SingleEventAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
-        "rabbitmq.consumerName: SingleEventAggregationTestConsumer" })
+        "rabbitmq.queue.suffix: SingleEventAggregationTest" })
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";

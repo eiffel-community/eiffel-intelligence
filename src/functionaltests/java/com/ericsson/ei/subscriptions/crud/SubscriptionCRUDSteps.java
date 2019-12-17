@@ -30,9 +30,9 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionCRUDSteps",
-        "failed.notification.collection-name: SubscriptionCRUDSteps-failedNotifications",
+        "failed.notifications.collection.name: SubscriptionCRUDSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionCRUDSteps-exchange",
-        "rabbitmq.consumerName: SubscriptionCRUDSteps" })
+        "rabbitmq.queue.suffix: SubscriptionCRUDSteps" })
 @AutoConfigureMockMvc
 public class SubscriptionCRUDSteps extends FunctionalTestBase {
 

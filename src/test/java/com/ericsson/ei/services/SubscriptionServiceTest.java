@@ -64,9 +64,9 @@ import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionServiceTest",
-        "failed.notification.collection-name: SubscriptionServiceTest-failedNotifications",
+        "failed.notifications.collection.name: SubscriptionServiceTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionServiceTest-exchange",
-        "rabbitmq.consumerName: SubscriptionServiceTest" })
+        "rabbitmq.queue.suffix: SubscriptionServiceTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
@@ -80,7 +80,7 @@ public class SubscriptionServiceTest {
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
 
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     private String repeatFlagHandlerCollection;
 
     private String subscriptionName;

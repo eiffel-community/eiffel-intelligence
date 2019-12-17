@@ -571,7 +571,7 @@
        x="643.23022"
        y="294.7197"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8">aggregated.collection.name: rule1</tspan></text>
+       id="tspan6561-8"> aggregations.collection.name: rule1</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -583,7 +583,7 @@
        x="645.38605"
        y="367.24237"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-2">aggregated.collection.name: rule2</tspan></text>
+       id="tspan6561-8-2"> aggregations.collection.name: rule2</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -595,7 +595,7 @@
        x="642.72498"
        y="436.25635"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-7">aggregated.collection.name: rule3</tspan></text>
+       id="tspan6561-8-7"> aggregations.collection.name: rule3</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -607,7 +607,7 @@
        x="659.74286"
        y="307.06262"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8">event_object_map.collection.name: rule1</tspan></text>
+       id="tspan6561-8-8">event.object.map.collection.name: rule1</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -619,7 +619,7 @@
        x="661.66125"
        y="378.51849"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-4">event_object_map.collection.name: rule2</tspan></text>
+       id="tspan6561-8-8-4">event.object.map.collection.name: rule2</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -631,7 +631,7 @@
        x="659.81439"
        y="446.68814"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-44">event_object_map.collection.name: rule3</tspan></text>
+       id="tspan6561-8-8-44">event.object.map.collection.name: rule3</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -643,7 +643,7 @@
        x="643.82043"
        y="317.01224"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1">subscription.collection.name: rule1</tspan></text>
+       id="tspan6561-8-8-1">subscriptions.collection.name: rule1</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -655,7 +655,7 @@
        x="645.42542"
        y="390.33276"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1-8">subscription.collection.name: rule2</tspan></text>
+       id="tspan6561-8-8-1-8">subscriptions.collection.name: rule2</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -667,7 +667,7 @@
        x="643.63312"
        y="456.99472"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1-9">subscription.collection.name: rule3</tspan></text>
+       id="tspan6561-8-8-1-9">subscriptions.collection.name: rule3</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -679,7 +679,7 @@
        x="657.45135"
        y="327.31885"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1-90">failed.notification.collection-name: rule1</tspan></text>
+       id="tspan6561-8-8-1-90">failed.notifications.collection.name: rule1</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -691,7 +691,7 @@
        x="658.08826"
        y="401.6662"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1-90-1">failed.notification.collection-name: rule2</tspan></text>
+       id="tspan6561-8-8-1-90-1">failed.notifications.collection.name: rule2</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.38559723px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.55391979"
@@ -703,7 +703,7 @@
        x="657.5238"
        y="468.50922"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.44525242px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.55391979"
-       id="tspan6561-8-8-1-90-9">failed.notification.collection-name: rule3</tspan></text>
+       id="tspan6561-8-8-1-90-9">failed.notifications.collection.name: rule3</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.84866142px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.96364969"

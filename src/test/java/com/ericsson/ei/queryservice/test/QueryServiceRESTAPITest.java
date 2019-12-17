@@ -54,9 +54,11 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@TestPropertySource(properties = { "spring.data.mongodb.database: QueryServiceRESTAPITest",
-        "failed.notification.collection-name: QueryServiceRESTAPITest-failedNotifications",
-        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange", "rabbitmq.consumerName: QueryServiceRESTAPITest" })
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database: QueryServiceRESTAPITest",
+        "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
+        "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange",
+        "rabbitmq.queue.suffix: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = AggregatedObjectController.class, secure = false)

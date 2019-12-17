@@ -38,6 +38,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
+import com.ericsson.ei.config.ConfigurationLogger;
+
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
@@ -60,7 +62,9 @@ public class App extends SpringBootServletInitializer implements SchedulingConfi
         Scope threadScope = new SimpleThreadScope();
         beanFactory.registerScope("thread", threadScope);
 
-        SpringApplication.run(App.class, args);
+        SpringApplication springApplication = new SpringApplication(App.class);
+        springApplication.addListeners(new ConfigurationLogger());
+        springApplication.run(args); 
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,9 +35,9 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestProcessQueryParams",
-        "failed.notification.collection-name: QueryServiceRESTAPITest-failedNotifications",
+        "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: TestProcessQueryParams-exchange",
-        "rabbitmq.consumerName: TestProcessQueryParams" })
+        "rabbitmq.queue.suffix: TestProcessQueryParams" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
@@ -46,8 +47,10 @@ public class TestProcessQueryParams {
     private static final String QUERY_WITH_CRITERIA_AND_OPTIONS = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }, \"options\" :{ \"id\": \"6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"} }";
     private static final String QUERY_WITH_CRITERIA = "{\"criteria\" :{\"testCaseExecutions.testCase.verdict\":\"PASSED\", \"testCaseExecutions.testCase.id\":\"TC5\" }}";
     private static final String DATA_BASE_NAME = "TestProcessQueryParams";
-    private static final String AGGREGATION_COLLECTION_NAME = "aggregated_objects";
     private static JSONArray expected;
+
+    @Value("${aggregations.collection.name}")
+    private String aggregationsCollection;
 
     @Autowired
     private ProcessQueryParams processQueryParams;
@@ -76,7 +79,7 @@ public class TestProcessQueryParams {
             when(processAggregatedObject.processQueryAggregatedObject(
                     ArgumentMatchers.argThat(requestStringMatches),
                     eq(DATA_BASE_NAME),
-                    eq(AGGREGATION_COLLECTION_NAME))).thenReturn(expected);
+                    eq(aggregationsCollection))).thenReturn(expected);
             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {
@@ -97,7 +100,7 @@ public class TestProcessQueryParams {
             when(processAggregatedObject.processQueryAggregatedObject(
                     ArgumentMatchers.argThat(requestStringMatches),
                     eq(DATA_BASE_NAME),
-                    eq(AGGREGATION_COLLECTION_NAME))).thenReturn(expected);
+                    eq(aggregationsCollection))).thenReturn(expected);
             JSONArray result = processQueryParams.runQuery(criteria, options, filter);
             assertEquals(expected, result);
         } catch (Exception e) {

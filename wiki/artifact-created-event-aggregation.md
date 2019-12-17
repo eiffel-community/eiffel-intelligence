@@ -92,12 +92,8 @@ If no event-linked aggregated object is found, then next step is to check
 whether the given event is a “start event”. It should be clear that, term
 “start event” means that the event might be starting a new flow and therefore,
 a new aggregated object may be created out of this. If the current event is not
-a “start event” then it is stored in the database. The name of the collection
-is configured in the application.properties file as “waitlist.collection.name”.
-The event is stored with the aim that if an aggregated object is created later
-with links to this specific event then it can be merged with that object. The
-event storage life time is set in the properties file as
-“waitlist.collection.ttlValue”.
+a “start event” then it is stored in the database waitlist collection.
+You can read about the configuration regarding the waitlist [here](configuration.md#waitlist)
 
 Otherwise, If the event is a start event (as is the current event) then the
 next step is information extraction from the event and adding into the
@@ -135,9 +131,9 @@ following information will be extracted:
 Once the information extraction is complete, the next processing steps are
 different for start events (an event with no linked aggregated object) and
 events with link to an associated aggregated object. For start event, an object
-is created out of the extracted content and inserted into the database, with a
-name configured in the properties file as “aggregated.collection.name”. The
-next step is to query the database for all the upstream linked objects for this
+is created out of the extracted content and inserted into the database aggregations collection.
+It's possible to configure this collection name as seen [here](configuration.md#configuring-aggregations)
+The next step is to query the database for all the upstream linked objects for this
 event. Then each of the linked object is processed individually. For each
 object, its rule object field “HistoryExtractionRules” is used to extract
 contents from it and merge with the aggregated object. More about the

@@ -40,11 +40,11 @@ import gherkin.deps.com.google.gson.JsonParser;
 
 @Ignore
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/TestExecutionObjectRules.json",
+        "rules.path: src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: SubscriptionRepeatHandlerSteps",
-        "failed.notification.collection-name: SubscriptionRepeatHandlerSteps-failedNotifications",
+        "failed.notifications.collection.name: SubscriptionRepeatHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatHandlerSteps-exchange",
-        "rabbitmq.consumerName: SubscriptionRepeatHandlerStepsConsumer" })
+        "rabbitmq.consumer.name: SubscriptionRepeatHandlerStepsConsumer" })
 public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
 
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/functionaltests/resources/aggregatedObject.json";
@@ -61,13 +61,13 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     private MongoCondition subscriptionIdMatchedAggrIdObjQuery;
     private ObjectMapper mapper = new ObjectMapper();
 
-    @Value("${aggregated.collection.name}")
+    @Value("${aggregations.collection.name}")
     private String collectionName;
 
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
 
-    @Value("${subscription.collection.repeatFlagHandlerName}")
+    @Value("${subscriptions.repeat.handler.collection.name}")
     private String repeatFlagHandlerCollection;
 
     @LocalServerPort

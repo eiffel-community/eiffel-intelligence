@@ -71,11 +71,11 @@ import com.rabbitmq.client.Channel;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/ArtifactRules.json",
+        "rules.path: src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: TrafficGeneratedTest",
-        "failed.notification.collection-name: TrafficGeneratedTest-failedNotifications",
+        "failed.notifications.collection.name: TrafficGeneratedTest-failedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
-        "rabbitmq.consumerName: TrafficGeneratedTestConsumer"  })
+        "rabbitmq.queue.suffix: TrafficGeneratedTest"  })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class TrafficGeneratedTest extends FlowTestBase {
 
@@ -101,7 +101,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
 
     @Value("${spring.data.mongodb.database}")
     private String database;
-    @Value("${event_object_map.collection.name}")
+    @Value("${event.object.map.collection.name}")
     private String event_map;
 
     @Before

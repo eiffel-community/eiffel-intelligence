@@ -40,11 +40,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/TestExecutionObjectRules.json",
+        "rules.path: src/test/resources/TestExecutionObjectRules.json",
         "spring.data.mongodb.database: FlowTestTestExecution",
-        "failed.notification.collection-name: FlowTestTestExecution-failedNotifications",
+        "failed.notifications.collection.name: FlowTestTestExecution-failedNotifications",
         "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
-        "rabbitmq.consumerName: FlowTestTestExecutionConsumer" })
+        "rabbitmq.queue.suffix: FlowTestTestExecution" })
 public class FlowTestTestExecution extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";

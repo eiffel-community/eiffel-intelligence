@@ -75,7 +75,7 @@ the following object’s id is selected:
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
 But there is no object with such id in the database and aggregated object
-returns empty. Event is added to wait list. There it waits until the object
+returns empty. Event is then added to the waitlist. There it waits until the object
 with requested id appears in database.
 
 Under a time a second TestCaseTriggeredEvent is received and it looks
@@ -125,12 +125,12 @@ the following object’s id is selected:
     ["6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43"]
 
 It is the same id as previously and the object with that id is still not in
-the database. The aggregated object returns empty and event is added to wait list.
+the database. The aggregated object returns empty and event is added to the waitlist.
 There, it waits until the object with requested id appears in the database.
 
 ## Current Aggregation
 Object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" appears but is modified
-before one of the above events are taken from the wait list.
+before one of the above events are taken from the waitlist.
 
 The object with id "6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43" looks like below:
 
@@ -248,7 +248,7 @@ And the resulting aggregated object will look like below:
     }
 
 Then the second event with id "6d3df0e0-404d-46ee-ab4f-3118457148f5" is taken
-from wait list and it is aggregated.
+from the waitlist and it is aggregated.
 
 The required content is extracted from the event as specified in the rule:
 

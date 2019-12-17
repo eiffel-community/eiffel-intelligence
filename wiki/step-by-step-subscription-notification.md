@@ -167,14 +167,13 @@ value of the testcase id. The complete notification message can be seen below:
 ## Failed Notifications
 
 If the notification via REST POST fails, then a fixed number of attempts are
-made to resend successfully. The number of attempts are specified in the
-[application.properties](../src/main/resources/application.properties)
-as “notification.failAttempt”. If message sending attempts fails for the
+made to resend successfully. The number of attempts is configured with a property
+described [here](configuration.md#failed-notifications). If message sending attempts fails for the
 specified number of time, then a failed notification is prepared and stored in 
 the database. The name of the collection is specified in the application.properties
-file as “failed.notification.collection-name”. The message is stored in the 
+file as “failed.notifications.collection.name”. The message is stored in the 
 database for a certain duration before being deleted. This time can be 
-configured in application.properties as “notification.ttl.value”.
+configured in application.properties as “failed.notifications.collection.ttl”.
 
 **Failed notification in the failed notification database with TTL value:**
 

@@ -12,7 +12,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @EnableMongoHttpSession()
 public class HttpSessionConfig {
 
-    @Value("${server.session-timeout}")
+    @Value("${server.session.timeout}")
     private int maxInactiveIntervalInSeconds;
 
     @Value("${sessions.collection.name}")

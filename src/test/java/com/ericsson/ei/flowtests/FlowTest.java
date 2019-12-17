@@ -61,11 +61,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
-        "rules.path=src/test/resources/ArtifactRules.json",
+        "rules.path: src/test/resources/ArtifactRules.json",
         "spring.data.mongodb.database: FlowTest",
-        "failed.notification.collection-name: FlowTest-failedNotifications",
+        "failed.notifications.collection.name: FlowTest-failedNotifications",
         "rabbitmq.exchange.name: FlowTest-exchange",
-        "rabbitmq.consumerName: FlowTestConsumer" })
+        "rabbitmq.queue.suffix: FlowTest" })
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";

@@ -64,7 +64,7 @@ public class ParseInstanceInfoEI {
     private String rulesPath;
 
     @Getter
-    @Value("${testaggregated.enabled:false}")
+    @Value("${test.aggregation.enabled:false}")
     private String testRulesEnabled;
 
     @Getter
@@ -186,15 +186,15 @@ public class ParseInstanceInfoEI {
     @Component
     private class ThreadsValue {
         @Getter
-        @Value("${threads.corePoolSize}")
+        @Value("${threads.core.pool.size}")
         private int corePoolSize;
 
         @Getter
-        @Value("${threads.queueCapacity}")
+        @Value("${threads.queue.capacity}")
         private int queueCapacity;
 
         @Getter
-        @Value("${threads.maxPoolSize}")
+        @Value("${threads.max.pool.size}")
         private int maxPoolSize;
     }
 }

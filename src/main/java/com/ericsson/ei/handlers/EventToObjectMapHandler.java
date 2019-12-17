@@ -48,7 +48,7 @@ public class EventToObjectMapHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
-    @Value("${event_object_map.collection.name}") private String collectionName;
+    @Value("${event.object.map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
 
     private final String listPropertyName = "objects";

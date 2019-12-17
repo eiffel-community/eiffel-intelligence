@@ -101,7 +101,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private String decryptPassword(final String inputEncryptedPassword) throws Exception {
-        if (encryptor.isJasyptPasswordSet()) {
+        if (!encryptor.isJasyptPasswordSet()) {
             LOGGER.error("Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");
             throw new AbortExecutionException("Failed to initiate LDAP when password is encrypted. " +
                                 "Property -jasypt.encryptor.password need to be set for decrypting LDAP password.");

@@ -78,8 +78,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String exchangeName;
     @Value("${rabbitmq.binding.key}")
     private String bindingKey;
-    @Value("${rabbitmq.consumer.name}")
-    private String consumerName;
+    @Value("${rabbitmq.queue.name}")
+    private String queueName;
 
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;

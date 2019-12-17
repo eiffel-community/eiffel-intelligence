@@ -25,7 +25,7 @@ import cucumber.api.java.en.Then;
         "spring.data.mongodb.database: RulesHandlerSteps",
         "failed.notifications.collection.name: RulesHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: RulesHandlerSteps-exchange",
-        "rabbitmq.consumer.name: RulesHandlerStepsConsumer" })
+        "rabbitmq.queue.name: RulesHandlerStepsQueue" })
 public class RulesHandlerSteps {
 
     private ClientAndServer restServer;

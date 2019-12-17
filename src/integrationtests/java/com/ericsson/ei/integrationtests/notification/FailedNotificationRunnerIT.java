@@ -25,6 +25,6 @@ public class FailedNotificationRunnerIT {
         System.setProperty("failed.notifications.collection.name", FAILED_NOTIFICATION_COLLECTION);
         System.setProperty("sessions.collection.name", "sessions_failed_notification");
         System.setProperty("rules.path", "/rules/ArtifactRules-Eiffel-Agen-Version.json");
-        System.setProperty("rabbitmq.consumer.name", "failed_notification_queue");
+        System.setProperty("rabbitmq.queue.name", "failed_notification_queue");
     }
 }

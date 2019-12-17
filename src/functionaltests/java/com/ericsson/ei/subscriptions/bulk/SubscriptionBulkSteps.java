@@ -27,7 +27,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: SubscriptionBulkSteps",
         "failed.notifications.collection.name: SubscriptionBulkSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
-        "rabbitmq.consumer.name: SubscriptionBulkStepsConsumer",
+        "rabbitmq.queue.name: SubscriptionBulkStepsQueue",
         "logging.level.com.ericsson.ei.subscriptions.bulk: OFF" })
 public class SubscriptionBulkSteps extends FunctionalTestBase {
 

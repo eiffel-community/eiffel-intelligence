@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.JsonNode;
         "spring.data.mongodb.database: FlowTestTestExecution",
         "failed.notifications.collection.name: FlowTestTestExecution-failedNotifications",
         "rabbitmq.exchange.name: FlowTestTestExecution-exchange",
-        "rabbitmq.consumer.name: FlowTestTestExecutionConsumer" })
+        "rabbitmq.queue.name: FlowTestTestExecution" })
 public class FlowTestTestExecution extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestExecutionTestEvents.json";
     private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedTestActivityObject.json";

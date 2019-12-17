@@ -38,7 +38,7 @@ import cucumber.api.java.en.Then;
         "spring.data.mongodb.database: QueryAggregatedObjectsTestSteps",
         "failed.notifications.collection.name: QueryAggregatedObjectsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: QueryAggregatedObjectsTestSteps-exchange",
-        "rabbitmq.consumer.name: QueryAggregatedObjectsTestStepsConsumer" })
+        "rabbitmq.queue.name: QueryAggregatedObjectsTestStepsQueue" })
 @AutoConfigureMockMvc
 public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
 

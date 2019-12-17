@@ -22,6 +22,6 @@ public class SourceChangeFlowRunnerIT {
         System.setProperty("sessions.collection.name", "sessions_source_change_flow");
 
         System.setProperty("rules.path", "/rules/SourceChangeObjectRules-Eiffel-Agen-Version.json");
-        System.setProperty("rabbitmq.consumer.name", "source_change_queue");
+        System.setProperty("rabbitmq.queue.name", "source_change_queue");
     }
 }

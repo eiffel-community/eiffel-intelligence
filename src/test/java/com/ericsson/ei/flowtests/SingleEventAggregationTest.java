@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "spring.data.mongodb.database: SingleEventAggregationTest",
         "failed.notifications.collection.name: SingleEventAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
-        "rabbitmq.consumer.name: SingleEventAggregationTestConsumer" })
+        "rabbitmq.queue.name: SingleEventAggregationTest" })
 public class SingleEventAggregationTest extends FlowTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
     private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";

@@ -30,7 +30,7 @@ import com.mongodb.MongoClient;
         "spring.data.mongodb.database: TestRulesService",
         "failed.notifications.collection.name: TestRulesService-missedNotifications",
         "rabbitmq.exchange.name: TestRulesService-exchange",
-        "rabbitmq.consumer.name: TestRulesService" })
+        "rabbitmq.queue.name: TestRulesService" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

@@ -85,17 +85,17 @@ public class RMQProperties {
 
     @Getter
     @Setter
-    @Value("${rabbitmq.consumer.name}")
-    private String consumerName;
+    @Value("${rabbitmq.queue.name}")
+    private String queueName;
 
     public String getQueueName() {
         final String durableName = this.queueDurable ? "durable" : "transient";
-        return this.domainId + "." + this.componentName + "." + this.consumerName + "." + durableName;
+        return this.domainId + "." + this.componentName + "." + this.queueName + "." + durableName;
     }
 
     public String getWaitlistQueueName() {
         final String durableName = this.queueDurable ? "durable" : "transient";
-        return this.domainId + "." + this.componentName + "." + this.consumerName + "." + durableName + "."
+        return this.domainId + "." + this.componentName + "." + this.queueName + "." + durableName + "."
                 + this.waitlistSuffix;
     }
 }

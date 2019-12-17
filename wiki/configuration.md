@@ -13,7 +13,7 @@ to what object is configured using a set of rules.
 
 In this case we use the same instance of RabbitMQ and MongoDB.
 
-  - **rabbitmq.consumer.name** property should be different for each rule set.
+  - **rabbitmq.queue.name** property should be different for each rule set.
   Otherwise the rabbitMQ will split the events in the queue among all the 
   instances listening to that queue.
   - MongoDb collection names should also be different for each rule set.
@@ -128,6 +128,16 @@ for each subscription. Note that these two properties are mandatory to set.
 * email.sender
 * email.subject
 
+The e-mail SMTP server can be configured using the spring.mail.* namespace.
+An example of this can be seen below.
+
+    spring.mail.host=smtp.gmail.com
+    spring.mail.port=587
+    spring.mail.username=<login user to smtp server>
+    spring.mail.password=<login password to smtp server>
+    spring.mail.properties.mail.smtp.auth=true
+    spring.mail.properties.mail.smtp.starttls.enable=true
+
 ### Failed Notifications
 
 Should the subscription notification for some reason fail. It is possible to configure
@@ -162,6 +172,15 @@ If encryption of the MongoDB password is desired there is information [here](con
 
 * spring.data.mongodb.uri
 * spring.data.mongodb.database
+
+## RabbitMQ
+
+You can configure the RabbitMQ settings using the rabbitmq.* properties.
+Most of the properties should be familiar but a few may need some further explanation.
+The domain.id, component.name and consumer.name are used to build the queue name on which
+Eiffel Intelligence listens for messages.
+The tls.version property specifies the security protocol and you can find valid names
+[here](https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext)
 
 ## Security
 

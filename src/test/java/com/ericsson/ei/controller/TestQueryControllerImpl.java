@@ -45,7 +45,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "spring.data.mongodb.database: TestQueryControllerImpl",
         "failed.notifications.collection.name: TestQueryControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestQueryControllerImpl-exchange",
-        "rabbitmq.consumer.name: TestQueryControllerImpl" })
+        "rabbitmq.queue.name: TestQueryControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

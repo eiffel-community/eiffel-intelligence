@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
         "failed.notifications.collection.name: SubscriptionHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionHandlerTest-exchange",
         "subscriptions.repeat.handler.collection.name: SubscriptionHandlerTestCollection",
-        "rabbitmq.consumer.name: SubscriptionHandlerTest",
+        "rabbitmq.queue.name: SubscriptionHandlerTest",
         "failed.notifications.collection.ttl: 1"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)

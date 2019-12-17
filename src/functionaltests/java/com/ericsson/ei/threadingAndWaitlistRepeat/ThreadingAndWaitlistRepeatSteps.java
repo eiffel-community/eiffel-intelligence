@@ -35,7 +35,7 @@ import cucumber.api.java.en.Then;
         "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
         "failed.notifications.collection.name: ThreadingAndWaitlistRepeatSteps-failedNotifications",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
-        "rabbitmq.consumer.name: ThreadingAndWaitlistRepeatStepsConsumer",
+        "rabbitmq.queue.name: ThreadingAndWaitlistRepeatStepsQueue",
         "logging.level.com.ericsson.ei.waitlist: OFF",
         "logging.level.com.ericsson.ei.handlers.EventHandler: OFF" })
 

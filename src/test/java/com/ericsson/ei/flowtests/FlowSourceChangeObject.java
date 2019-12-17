@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "spring.data.mongodb.database: FlowSourceChangeObject",
         "failed.notifications.collection.name: FlowSourceChangeObject-failedNotifications",
         "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
-        "rabbitmq.consumer.name: FlowSourceChangeObjectConsumer" })
+        "rabbitmq.queue.name: FlowSourceChangeObject" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class FlowSourceChangeObject extends FlowTestBase {
     private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObjectEvents.json";

@@ -30,7 +30,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: SubscriptionContentSteps",
         "failed.notifications.collection.name: SubscriptionContentSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionContentSteps-exchange",
-        "rabbitmq.consumer.name: SubscriptionContentStepsConsumer" })
+        "rabbitmq.queue.name: SubscriptionContentStepsQueue" })
 public class SubscriptionContentSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionContentSteps.class);

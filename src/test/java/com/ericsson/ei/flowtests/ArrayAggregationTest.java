@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "spring.data.mongodb.database: ArrayAggregationTest",
         "failed.notifications.collection.name: ArrayAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: ArrayAggregationTest-exchange",
-        "rabbitmq.consumer.name: ArrayAggregationTestConsumer" })
+        "rabbitmq.queue.name: ArrayAggregationTest" })
 public class ArrayAggregationTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "arrayAggregationUpstreamResult.json";

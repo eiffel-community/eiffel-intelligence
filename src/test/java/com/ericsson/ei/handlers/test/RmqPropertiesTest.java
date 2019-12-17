@@ -38,14 +38,14 @@ public class RmqPropertiesTest {
 
     private Boolean queueDurable = true;
     private String host = "127.0.0.1";
-    private String exchangeName = "ei-poc-4";
+    private String exchangeName = "RmqHandlerTest-exchange";
     private Integer port = 5672;
     private String domainId = "EN1";
     private String componentName = "eiffelintelligence";
     private String bindingKey = "#";
-    private String queueSuffix = "messageQueue";
-    private String queueName = "EN1.eiffelintelligence.messageQueue.durable";
-    private String waitlistQueueName = "EN1.eiffelintelligence.messageConsumer.durable.waitlist";
+    private String queueSuffix = "RmqHandlerTest";
+    private String queueName = "EN1.eiffelintelligence.RmqHandlerTest.durable";
+    private String waitlistQueueName = "EN1.eiffelintelligence.RmqHandlerTest.durable.waitlist";
 
     @Autowired
     private RMQProperties rmqProperties;

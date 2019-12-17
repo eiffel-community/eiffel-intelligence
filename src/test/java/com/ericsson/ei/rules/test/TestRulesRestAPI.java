@@ -56,7 +56,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "spring.data.mongodb.database: TestRulesRestAPI",
         "failed.notifications.collection.name: TestRulesService-missedNotifications",
         "rabbitmq.exchange.name: TestRulesRestAPI-exchange",
-        "rabbitmq.queue.name: TestRulesRestAPI" })
+        "rabbitmq.queue.suffix: TestRulesRestAPI" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "spring.data.mongodb.database: UpStreamEventHandlerTest",
         "failed.notifications.collection.name: UpStreamEventHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: UpStreamEventHandlerTest-exchange",
-        "rabbitmq.queue.name: UpStreamEventHandlerTest",
+        "rabbitmq.queue.suffix: UpStreamEventHandlerTest",
         "event.repository.url: " })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)

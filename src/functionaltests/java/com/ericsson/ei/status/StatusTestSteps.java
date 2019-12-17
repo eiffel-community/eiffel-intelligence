@@ -32,7 +32,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: StatusSteps",
         "failed.notifications.collection.name: StatusSteps-missedNotifications",
         "rabbitmq.exchange.name: StatusSteps-exchange",
-        "rabbitmq.queue.name: StatusSteps-queue" })
+        "rabbitmq.queue.suffix: StatusSteps" })
 public class StatusTestSteps extends FunctionalTestBase {
 
     private static final String RABBITMQ_KEY = "rabbitMQStatus";

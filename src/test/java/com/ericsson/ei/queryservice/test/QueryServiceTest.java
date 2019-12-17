@@ -54,7 +54,7 @@ import com.mongodb.MongoClient;
         "spring.data.mongodb.database: QueryServiceTest",
         "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceTest-exchange",
-        "rabbitmq.queue.name: QueryServiceTest"})
+        "rabbitmq.queue.suffix: QueryServiceTest"})
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class)

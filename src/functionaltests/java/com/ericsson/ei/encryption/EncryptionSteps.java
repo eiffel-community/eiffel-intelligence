@@ -34,7 +34,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: EncryptionSteps",
         "failed.notifications.collection.name: EncryptionSteps-missedNotifications",
         "rabbitmq.exchange.name: EncryptionSteps-exchange",
-        "rabbitmq.queue.name: EncryptionSteps-queue"})
+        "rabbitmq.queue.suffix: EncryptionSteps"})
 public class EncryptionSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(EncryptionSteps.class);

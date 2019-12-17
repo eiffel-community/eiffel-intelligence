@@ -30,7 +30,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "spring.data.mongodb.database: TestInformationControllerImpl",
         "failed.notifications.collection.name: TestInformationControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestInformationControllerImpl-exchange",
-        "rabbitmq.queue.name: TestInformationControllerImpl" })
+        "rabbitmq.queue.suffix: TestInformationControllerImpl" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @WebMvcTest(value = InformationController.class, secure = false)

@@ -55,7 +55,7 @@ import com.google.common.io.CharStreams;
         "spring.data.mongodb.database: ERQueryServiceTest",
         "failed.notifications.collection.name: ERQueryServiceTest-failedNotifications",
         "rabbitmq.exchange.name: ERQueryServiceTest-exchange",
-        "rabbitmq.queue.name: ERQueryServiceTest",
+        "rabbitmq.queue.suffix: ERQueryServiceTest",
         "event.repository.url: http://localhost:8080/eventrepository/search/" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)

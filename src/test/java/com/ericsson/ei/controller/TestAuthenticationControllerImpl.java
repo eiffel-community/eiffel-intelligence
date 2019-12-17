@@ -32,7 +32,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "spring.data.mongodb.database: TestAuthControllerImpl",
         "failed.notifications.collection.name: TestAuthControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestAuthControllerImpl-exchange",
-        "rabbitmq.queue.name: TestAuthControllerImpl" })
+        "rabbitmq.queue.suffix: TestAuthControllerImpl" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })

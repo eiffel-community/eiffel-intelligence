@@ -30,7 +30,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: RuleTestSteps",
         "failed.notifications.collection.name: RuleTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RuleTestSteps-exchange",
-        "rabbitmq.queue.name: RuleTestStepsQueue" })
+        "rabbitmq.queue.suffix: RuleTestSteps" })
 public class RuleTestSteps extends FunctionalTestBase {
 
     private static final String TEST_RESOURCES_PATH = "src/test/resources";

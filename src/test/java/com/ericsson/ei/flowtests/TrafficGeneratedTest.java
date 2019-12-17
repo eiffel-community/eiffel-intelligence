@@ -75,7 +75,7 @@ import com.rabbitmq.client.Channel;
         "spring.data.mongodb.database: TrafficGeneratedTest",
         "failed.notifications.collection.name: TrafficGeneratedTest-failedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
-        "rabbitmq.queue.name: TrafficGeneratedTest"  })
+        "rabbitmq.queue.suffix: TrafficGeneratedTest"  })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class TrafficGeneratedTest extends FlowTestBase {
 

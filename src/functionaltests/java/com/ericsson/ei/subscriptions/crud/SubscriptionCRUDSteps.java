@@ -32,7 +32,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: SubscriptionCRUDSteps",
         "failed.notifications.collection.name: SubscriptionCRUDSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionCRUDSteps-exchange",
-        "rabbitmq.queue.name: SubscriptionCRUDSteps-queue" })
+        "rabbitmq.queue.suffix: SubscriptionCRUDSteps" })
 @AutoConfigureMockMvc
 public class SubscriptionCRUDSteps extends FunctionalTestBase {
 

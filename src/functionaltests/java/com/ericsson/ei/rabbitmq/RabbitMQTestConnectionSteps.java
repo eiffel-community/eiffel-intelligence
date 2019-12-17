@@ -40,7 +40,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: RabbitMQTestConnectionSteps",
         "failed.notifications.collection.name: RabbitMQTestConnectionSteps-failedNotifications",
         "rabbitmq.exchange.name: RabbitMQTestConnectionSteps-exchange",
-        "rabbitmq.queue.name: RabbitMQTestConnectionStepsQueue" })
+        "rabbitmq.queue.suffix: RabbitMQTestConnectionSteps" })
 public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
     @Value("${rabbitmq.port}")

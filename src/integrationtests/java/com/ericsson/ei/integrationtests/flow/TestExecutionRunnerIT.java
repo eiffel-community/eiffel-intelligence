@@ -22,6 +22,6 @@ public class TestExecutionRunnerIT {
         System.setProperty("sessions.collection.name", "sessions_test_execution_flow");
 
         System.setProperty("rules.path", "/rules/TestExecutionObjectRules-Eiffel-Agen-Version.json");
-        System.setProperty("rabbitmq.queue.name", "test_execution_queue");
+        System.setProperty("rabbitmq.queue.suffix", "test_execution_queue");
     }
 }

@@ -39,7 +39,7 @@ import com.mongodb.util.JSON;
         "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
         "failed.notifications.collection.name: SubscriptionRepeatDbHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
-        "rabbitmq.queue.name: SubscriptionRepeatDbHandlerTest" })
+        "rabbitmq.queue.suffix: SubscriptionRepeatDbHandlerTest" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 

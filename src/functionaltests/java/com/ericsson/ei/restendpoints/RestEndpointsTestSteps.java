@@ -24,7 +24,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: RestEndpointsTestSteps",
         "failed.notifications.collection.name: RestEndpointsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RestEndpointsTestSteps-exchange",
-        "rabbitmq.queue.name: RestEndpointsTestStepsQueue" })
+        "rabbitmq.queue.suffix: RestEndpointsTestSteps" })
 @AutoConfigureMockMvc
 public class RestEndpointsTestSteps extends FunctionalTestBase {
 

@@ -65,7 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "spring.data.mongodb.database: FlowTest",
         "failed.notifications.collection.name: FlowTest-failedNotifications",
         "rabbitmq.exchange.name: FlowTest-exchange",
-        "rabbitmq.queue.name: FlowTest" })
+        "rabbitmq.queue.suffix: FlowTest" })
 public class FlowTest extends FlowTestBase {
 
     private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";

@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "spring.data.mongodb.database: QueryServiceRESTAPITest",
         "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange",
-        "rabbitmq.queue.name: QueryServiceRESTAPITest" })
+        "rabbitmq.queue.suffix: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = AggregatedObjectController.class, secure = false)

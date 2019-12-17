@@ -43,7 +43,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: AuthenticationSteps",
         "failed.notifications.collection.name: AuthenticationSteps-failedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
-        "rabbitmq.queue.name: AuthenticationStepsQueue",
+        "rabbitmq.queue.suffix: AuthenticationSteps",
         "ldap.enabled: true" })
 public class AuthenticationSteps extends FunctionalTestBase {
 

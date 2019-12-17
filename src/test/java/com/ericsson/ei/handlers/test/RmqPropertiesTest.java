@@ -43,8 +43,8 @@ public class RmqPropertiesTest {
     private String domainId = "EN1";
     private String componentName = "eiffelintelligence";
     private String bindingKey = "#";
-    private String consumerName = "messageConsumer";
-    private String queueName = "EN1.eiffelintelligence.messageConsumer.durable";
+    private String queueSuffix = "messageQueue";
+    private String queueName = "EN1.eiffelintelligence.messageQueue.durable";
     private String waitlistQueueName = "EN1.eiffelintelligence.messageConsumer.durable.waitlist";
 
     @Autowired
@@ -86,8 +86,8 @@ public class RmqPropertiesTest {
     }
 
     @Test
-    public void getConsumerNameTest() {
-        assertThat(rmqProperties.getConsumerName(), is(equalTo(consumerName)));
+    public void getQueueSuffixTest() {
+        assertThat(rmqProperties.getQueueSuffix(), is(equalTo(queueSuffix)));
     }
 
     @Test

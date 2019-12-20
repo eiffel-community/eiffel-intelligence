@@ -173,6 +173,8 @@ If encryption of the MongoDB password is desired there is information [here](con
 * spring.data.mongodb.uri
 * spring.data.mongodb.database
 
+The second property **spring.data.mongodb.database** defines a name for the database.
+
 ## RabbitMQ
 
 You can configure the RabbitMQ settings using the rabbitmq.* properties.

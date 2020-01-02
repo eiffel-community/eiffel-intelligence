@@ -2,39 +2,13 @@
 
 |Method|Endpoint                                |Authentication|
 |------|----------------------------------------|--------------|
-|POST  |/subscriptions                          |yes           |
 |GET   |/subscriptions                          |no            |
 |GET   |/subscriptions/\<name\>                 |no            |
+|GET   |/subscriptions?subscriptionNames=\<name\> |no          |
+|POST  |/subscriptions                          |yes           |
 |PUT   |/subscriptions                          |yes           |
 |DELETE|/subscriptions                          |yes           |
 |DELETE|/subscriptions/\<name\>                 |yes           |
-
-## Create Subscriptions
-
-Takes one or several subscriptions in a JSON array as input. If LDAP is 
-activated, the username of the person registering this subscription is 
-included when saving the subscription in the database. The subscription 
-name needs to be unique. 
-
-    POST /subscriptions
-
-### Curl Command Example
-
-    curl -X POST -H "Content-type: application/json" --data @<path to file> http://<host>:8090/subscriptions
-
-Eiffel Intelligence takes a JSON list of one or several subscription objects. 
-Example of a subscription array input:
-
-    [
-      {
-        ..Subscription 1..
-      },
-      {
-        ..Subscription 2..
-      }
-    ]
-
- Guidelines for writing requirements and conditions for creating subscriptions can be found [here](subscriptions.md#writing-requirements-and-conditions)
 
 ## Get All subscriptions
 
@@ -65,6 +39,33 @@ Get a single specific subscription
 Curl command example
 
     curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
+
+## Create Subscriptions
+
+Takes one or several subscriptions in a JSON array as input. If LDAP is 
+activated, the username of the person registering this subscription is 
+included when saving the subscription in the database. The subscription 
+name needs to be unique. 
+
+    POST /subscriptions
+
+### Curl Command Example
+
+    curl -X POST -H "Content-type: application/json" --data @<path to file> http://<host>:8090/subscriptions
+
+Eiffel Intelligence takes a JSON list of one or several subscription objects. 
+Example of a subscription array input:
+
+    [
+      {
+        ..Subscription 1..
+      },
+      {
+        ..Subscription 2..
+      }
+    ]
+
+ Guidelines for writing requirements and conditions for creating subscriptions can be found [here](subscriptions.md#writing-requirements-and-conditions)
 
 ## Update Subscriptions
 

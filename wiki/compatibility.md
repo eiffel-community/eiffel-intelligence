@@ -6,10 +6,21 @@ table to see which versions are compatible with each other.
 
 |Back-end              |Recommended front-end versions  |
 |:--------------------:|:------------------------------:|
+|[3.0.0](#back-end-300)|Front-end 3.0.0                 |
 |[2.0.0](#back-end-200)|Front-end 2.0.0                 |
 |[1.0.2](#back-end-102)|Front-end 1.0.3                 |
 |[1.0.1](#back-end-101)|Front-end 1.0.1                 |
 |[1.0.0](#back-end-100)|Front-end 1.0.1                 |
+
+## Back-end: 3.0.0
+#### Front-end: 3.0.0
+Compatible: ✔️️ Yes
+
+#### Front-end: 2.x
+Compatible: ❌  No
+
+#### Front-end: 1.x
+Compatible: ❌  No
 
 ## Back-end: 2.0.0
 #### Front-end: 2.0.0

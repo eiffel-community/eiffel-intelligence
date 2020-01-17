@@ -150,7 +150,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieve a subscription")
+    @ApiOperation(value = "Retrieve a single subscription")
     public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return getSingleSubscription(subscriptionName);
     }
@@ -164,7 +164,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Remove a subscription")
+    @ApiOperation(value = "Remove a single subscription")
     public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return deleteSingleSubscription(subscriptionName);
     }

@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "aggregatedObject", tags = { "aggregated object" })
+@Api(value = "aggregatedObject", tags = { "Aggregated objects" })
 public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);
@@ -63,7 +63,7 @@ public class AggregatedObjectControllerImpl implements AggregatedObjectControlle
      * @return ResponseEntity
      */
     @Override
-    @ApiOperation(value = "")
+    @ApiOperation(value = "Get a specific aggregated object")
     public ResponseEntity<?> getAggregatedObjectById(@PathVariable final String id,
             final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();

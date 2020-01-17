@@ -23,14 +23,12 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.services.IRuleCheckService;
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.Setter;
 
 @Component
 @CrossOrigin
-@Api(value = "Rule test", tags = {"Templates"})
 public class RuleTestControllerImpl implements RuleTestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleTestControllerImpl.class);
 
@@ -60,7 +58,8 @@ public class RuleTestControllerImpl implements RuleTestController {
      */
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To execute rule on one Eiffel event", response = String.class)
+    @ApiOperation(value = "Execute rule on one Eiffel event", tags = {"Rule-test"}, response
+            = String.class)
     public ResponseEntity<?> createRuleTestRunSingleRule (
             @ApiParam(value = "JSON object", required = true) @RequestBody RuleCheckBody body, final HttpServletRequest httpRequest) {
         JSONObject rule = new JSONObject(body.getRule().getAdditionalProperties());
@@ -81,7 +80,8 @@ public class RuleTestControllerImpl implements RuleTestController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To execute the list of rules on list of Eiffel events. Returns the aggregated object(s)", response = String.class)
+    @ApiOperation(value = "Execute a list of rules on a list of Eiffel events. Returns the "
+            + "aggregated object(s)", tags = {"Rule-test"}, response = String.class)
     public ResponseEntity<?> createRuleTestRunFullAggregation(
             @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body,
             final HttpServletRequest httpRequest) {
@@ -114,7 +114,8 @@ public class RuleTestControllerImpl implements RuleTestController {
     }
 
     @Override
-    @ApiOperation(value = "Check if rules check service is enabled", response = String.class)
+    @ApiOperation(value = "Check if rules test service is enabled", tags = {"Rule-test"},
+            response = String.class)
     public ResponseEntity<?> getRuleTest(HttpServletRequest httpRequest) {
         LOGGER.debug("Getting Enabling Status of Rules Check Service");
         try {

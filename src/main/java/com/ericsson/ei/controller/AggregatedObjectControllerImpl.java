@@ -37,15 +37,14 @@ import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * This class represents the REST GET mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
+ * This class represents the REST GET mechanism to extract the aggregated data on the basis of the
+ * Id from the aggregatedObject.
  */
 @Component
 @CrossOrigin
-@Api(value = "aggregatedObject", tags = { "Aggregated objects" })
 public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);
@@ -57,13 +56,14 @@ public class AggregatedObjectControllerImpl implements AggregatedObjectControlle
     private ProcessQueryParams processQueryParams;
 
     /**
-     * This method is responsible for the REST Get mechanism to extract the aggregated data on the basis of the ID from the aggregatedObject.
+     * This method is responsible for the REST Get mechanism to extract the aggregated data on the
+     * basis of the Id from the aggregatedObject.
      *
      * @param id
      * @return ResponseEntity
      */
     @Override
-    @ApiOperation(value = "Get a specific aggregated object")
+    @ApiOperation(value = "Get a specific aggregated object", tags = { "Aggregated objects" })
     public ResponseEntity<?> getAggregatedObjectById(@PathVariable final String id,
             final HttpServletRequest httpRequest) {
         ObjectMapper mapper = new ObjectMapper();
@@ -90,7 +90,7 @@ public class AggregatedObjectControllerImpl implements AggregatedObjectControlle
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects")
+    @ApiOperation(value = "Perform a freestyle query to retrieve aggregated objects", tags = { "Aggregated objects" })
     public ResponseEntity<?> createAggregatedObjectsQuery(@RequestBody final QueryBody body,
             final HttpServletRequest httpRequest) {
         String emptyResponseContent = "[]";

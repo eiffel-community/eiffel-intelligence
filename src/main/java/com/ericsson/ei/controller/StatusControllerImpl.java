@@ -18,7 +18,6 @@ package com.ericsson.ei.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "status", tags = { "Status" })
 public class StatusControllerImpl implements StatusController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);
@@ -52,7 +50,7 @@ public class StatusControllerImpl implements StatusController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To check back-end status", response = String.class)
+    @ApiOperation(value = "Check back-end status", tags = { "Status" }, response = String.class)
     public ResponseEntity<?> getStatus(HttpServletRequest httpRequest) {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();

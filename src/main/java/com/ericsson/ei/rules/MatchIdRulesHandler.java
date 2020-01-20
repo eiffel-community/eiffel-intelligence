@@ -18,7 +18,11 @@ package com.ericsson.ei.rules;
 
 import java.util.List;
 
+import com.ericsson.ei.exception.ReplacementMarkerException;
 import com.ericsson.ei.handlers.ObjectHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,6 +33,8 @@ import com.ericsson.ei.rules.RulesObject;
 
 @Component
 public class MatchIdRulesHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatchIdRulesHandler.class);
 
     @Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
     private String replacementMarker;
@@ -67,7 +73,10 @@ public class MatchIdRulesHandler {
         if (matchIdString.contains(replacementMarker)) {
             return matchIdString.replace(replacementMarker, id);
         } else {
-            return null;
+            String errorMessage = String.format("Failed to find rules.replacement.marker:%s in MatchIdRules: %s", replacementMarker, matchIdString);
+            ReplacementMarkerException exception = new ReplacementMarkerException(errorMessage);
+            LOGGER.warn("", exception);
+            throw exception;
         }
     }
 

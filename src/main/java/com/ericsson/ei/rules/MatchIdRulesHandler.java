@@ -73,7 +73,7 @@ public class MatchIdRulesHandler {
         if (matchIdString.contains(replacementMarker)) {
             return matchIdString.replace(replacementMarker, id);
         } else {
-            String errorMessage = String.format("Failed to find rules.replacement.marker:%s in MatchIdRules: %s", replacementMarker, matchIdString);
+            String errorMessage = String.format("MatchIdRules: %s does not contain the rules.replacement.marker: %s", matchIdString, replacementMarker);
             ReplacementMarkerException exception = new ReplacementMarkerException(errorMessage);
             LOGGER.warn("", exception);
             throw exception;

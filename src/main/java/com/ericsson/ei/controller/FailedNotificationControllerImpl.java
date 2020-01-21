@@ -33,7 +33,6 @@ import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessFailedNotification;
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -41,7 +40,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "failedNotifications", tags = { "Failed notifications" })
 public class FailedNotificationControllerImpl implements FailedNotificationController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(
@@ -54,10 +52,11 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
      * This method is responsible for the REST GET mechanism to extract the data on the basis of the
      * subscription name from the Failed Notification Object.
      *
-     * @param subscriptionName
+     * @param subscriptionNames
      */
     @Override
-    @ApiOperation(value = "Retrieve failed notifications", response = QueryResponse.class)
+    @ApiOperation(value = "Retrieve failed notifications", tags = { "Failed notifications" },
+            response = QueryResponse.class)
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {
@@ -70,7 +69,7 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
             String errorMessage = "Failed to fetch failed notifications for subscription(s): " + subscriptionNames;
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR); 
+            return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

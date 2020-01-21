@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -39,7 +38,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
-@Api(value = "Auth", tags = { "Authentication" })
 public class AuthenticationControllerImpl implements AuthenticationController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationControllerImpl.class);
@@ -49,7 +47,8 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To check if security is enabled", response = String.class)
+    @ApiOperation(value = "Check if security is enabled", tags = { "Authentication" },
+            response = String.class)
     public ResponseEntity<?> getAuthentication(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(),
@@ -64,7 +63,8 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To get login of current user", response = String.class)
+    @ApiOperation(value = "Get login of current user", tags = { "Authentication" }, response =
+            String.class)
     public ResponseEntity<?> getAuthenticationLogin(final HttpServletRequest httpRequest) {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

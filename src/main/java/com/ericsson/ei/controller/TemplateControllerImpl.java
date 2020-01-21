@@ -32,18 +32,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.Api;
-
 @Component
 @CrossOrigin
-@Api(value = "Get templates", tags = {"Templates"})
 public class TemplateControllerImpl implements TemplateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
             TemplateControllerImpl.class);
 
     @Override
-    @ApiOperation(value = "Retrieve REST endpoints for downloading templates")
+    @ApiOperation(value = "Retrieve REST endpoints for downloading templates", tags = {"Templates"})
     public ResponseEntity<?> getTemplates(final HttpServletRequest httpRequest) {
         try {
             JSONObject response = new JSONObject();
@@ -60,7 +57,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download subscription template")
+    @ApiOperation(value = "Download subscription template", tags = {"Templates"})
     public ResponseEntity<?> getTemplatesSubscriptions(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(
@@ -80,7 +77,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download rules template")
+    @ApiOperation(value = "Download rules template", tags = {"Templates"})
     public ResponseEntity<?> getTemplatesRules(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(
@@ -100,7 +97,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download Eiffel events template")
+    @ApiOperation(value = "Download Eiffel events template", tags = {"Templates"})
     public ResponseEntity<?> getTemplatesEvents(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(

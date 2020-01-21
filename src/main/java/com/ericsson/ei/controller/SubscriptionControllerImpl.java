@@ -53,7 +53,6 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "subscriptions", tags = {"Subscriptions"})
 public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionControllerImpl.class);
@@ -70,7 +69,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Creates subscription(s)")
+    @ApiOperation(value = "Create subscription(s)", tags = {"Subscriptions"})
     public ResponseEntity<?> createSubscription(@RequestBody List<Subscription> subscriptions, final HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
@@ -100,7 +99,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Updates existing subscription(s)")
+    @ApiOperation(value = "Update existing subscription(s)", tags = {"Subscriptions"})
     public ResponseEntity<?> updateSubscriptions(@RequestBody List<Subscription> subscriptions, final HttpServletRequest httpRequest) {
         Map<String, String> errorMap = new HashMap<>();
         String user = (ldapEnabled) ? HttpSessionConfig.getCurrentUser() : "";
@@ -129,7 +128,7 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieves all or specific subscriptions")
+    @ApiOperation(value = "Retrieve all or specific subscriptions", tags = {"Subscriptions"})
     public ResponseEntity<?> getSubscriptions(@RequestParam(required = false) String subscriptionNames,
             final HttpServletRequest httpRequest) {
         String queryString = httpRequest.getQueryString();
@@ -150,21 +149,21 @@ public class SubscriptionControllerImpl implements SubscriptionController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Retrieve a subscription")
+    @ApiOperation(value = "Retrieve a single subscription", tags = {"Subscriptions"})
     public ResponseEntity<?> getSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return getSingleSubscription(subscriptionName);
     }
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Remove subscription(s)")
+    @ApiOperation(value = "Remove subscription(s)", tags = {"Subscriptions"})
     public ResponseEntity<?> deleteSubscriptions(@RequestParam String subscriptionNames, final HttpServletRequest httpRequest) {
         return deleteListedSubscriptions(subscriptionNames);
     }
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Remove a subscription")
+    @ApiOperation(value = "Remove a single subscription", tags = {"Subscriptions"})
     public ResponseEntity<?> deleteSubscriptionByName(@PathVariable String subscriptionName, final HttpServletRequest httpRequest) {
         return deleteSingleSubscription(subscriptionName);
     }

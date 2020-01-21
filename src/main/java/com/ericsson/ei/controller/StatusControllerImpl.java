@@ -50,7 +50,7 @@ public class StatusControllerImpl implements StatusController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "To check back-end status", response = String.class)
+    @ApiOperation(value = "Check back-end status", tags = { "Status" }, response = String.class)
     public ResponseEntity<?> getStatus(HttpServletRequest httpRequest) {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();

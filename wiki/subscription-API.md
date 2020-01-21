@@ -1,16 +1,16 @@
 # Subscription API
 
-|Method|Endpoint                                |Authentication|
-|------|----------------------------------------|--------------|
-|GET   |/subscriptions                          |no            |
-|GET   |/subscriptions/\<name\>                 |no            |
-|GET   |/subscriptions?subscriptionNames=\<name\> |no          |
-|POST  |/subscriptions                          |yes           |
-|PUT   |/subscriptions                          |yes           |
-|DELETE|/subscriptions                          |yes           |
-|DELETE|/subscriptions/\<name\>                 |yes           |
+|Method|Endpoint                                           |Authentication|
+|------|---------------------------------------------------|--------------|
+|GET   |/subscriptions                                     |no            |
+|GET   |/subscriptions/\<name\>                            |no            |
+|GET   |/subscriptions?subscriptionNames=\<name\>,\<name\> |no            |
+|POST  |/subscriptions                                     |yes           |
+|PUT   |/subscriptions                                     |yes           |
+|DELETE|/subscriptions/\<name\>                            |yes           |
+|DELETE|/subscriptions?subscriptionNames=\<name\>,\<name\> |yes           |
 
-## Get All subscriptions
+## Get All Subscriptions
 
 Retrieves all the subscriptions
 
@@ -32,13 +32,15 @@ Curl command example
 
 ## Get Subscription for the Given Name
 
-Get a single specific subscription
+Get a single specific subscription, using either of the below commands:
 
+    GET /subscriptions?subscriptionNames=<name1>
     GET /subscriptions/<name>
 
-Curl command example
+Curl command examples:
 
     curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
+    curl -X GET -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name>
 
 ## Create Subscriptions
 
@@ -70,13 +72,25 @@ Example of a subscription array input:
 ## Update Subscriptions
 
 Modify existing Subscriptions based on subscriptionName. Multiple subscriptions
-may be sent through a json array.
+may be sent through a JSON array.
 
     PUT /subscriptions
 
 Curl command example
 
     curl -X PUT -H "Content-type: application/json"  --data @<path to json file> http://<host>:8090/subscriptions
+
+## Delete Subscription for the Given Name
+
+Delete a single specific subscription using either of the below commands:
+
+    DELETE /subscriptions/<name>
+    DELETE /subscriptions?subscriptionNames=<name>
+
+Curl command examples:
+
+    curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
+    curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name>
 
 ## Delete Multiple Subscriptions
 
@@ -87,16 +101,6 @@ Delete one or more subscriptions with a comma separated list
 Curl command example
 
     curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions?subscriptionNames=<name1>,<name2>,...
-
-## Delete Subscription for the Given Name
-
-Delete a single specific subscription
-
-    DELETE /subscriptions/<name>
-
-Curl command example
-
-    curl -X DELETE -H "Content-type: application/json"  http://<host>:8090/subscriptions/<name>
 
 ## Subscription related information in front-end documentation
 

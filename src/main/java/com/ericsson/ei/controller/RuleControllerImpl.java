@@ -34,12 +34,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
-@Api(value = "Rules", tags = {"Rules"})
 public class RuleControllerImpl implements RuleController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleControllerImpl.class);
@@ -52,7 +50,8 @@ public class RuleControllerImpl implements RuleController{
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Get the active rules from Eiffel Intelligence", response = String.class)
+    @ApiOperation(value = "Get the active rules from Eiffel Intelligence", tags = {"Rules"},
+            response = String.class)
     public ResponseEntity<?> getRules(final HttpServletRequest httpRequest) {
         JsonNode rulesContent = rulesHandler.getRulesContent();
         ObjectMapper objectmapper = new ObjectMapper();

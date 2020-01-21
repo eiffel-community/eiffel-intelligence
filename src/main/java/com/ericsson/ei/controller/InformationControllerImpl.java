@@ -16,7 +16,6 @@ package com.ericsson.ei.controller;
 import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
 import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Component
 @CrossOrigin
-@Api(value = "information", tags = {"Information"})
 public class InformationControllerImpl implements InformationController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InformationControllerImpl.class);
 
@@ -40,7 +38,8 @@ public class InformationControllerImpl implements InformationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Shows information about Eiffel Intelligence backend")
+    @ApiOperation(value = "Shows information about Eiffel Intelligence back-end", tags = {
+            "Information"})
     public ResponseEntity<?> getInformation(final HttpServletRequest httpRequest) {
         try {
             String info = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(instanceInfo);

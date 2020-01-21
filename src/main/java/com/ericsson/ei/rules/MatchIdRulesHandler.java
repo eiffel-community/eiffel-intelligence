@@ -53,6 +53,7 @@ public class MatchIdRulesHandler {
         try {
             objects = doFetchObjectsById(matchIdString, id);
         } catch (ReplacementMarkerException e) {
+            // The outer for loop must not stop because of this exception but logging is still wanted.
             LOGGER.warn("", e);
         }
         return  objects;

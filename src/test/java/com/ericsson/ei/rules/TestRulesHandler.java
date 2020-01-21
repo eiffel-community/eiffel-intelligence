@@ -14,52 +14,55 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.rules.test;
+package com.ericsson.ei.rules;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.rules.IdRulesHandler;
-import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestIdRulesHandler {
+public class TestRulesHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesHandler.class);
+    private static final String INPUT_FILE_PATH = "src/test/resources/EiffelSourceChangeCreatedEvent.json";
+    private static final String OUTPUT_FILE_PATH = "src/test/resources/RulesHandlerOutput.json";
     private static final String RULES_PATH = "src/test/resources/ArtifactRules.json";
-    private static final String EVENT_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
+
+    private RulesHandler unitUnderTest;
+
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty("rules.path", RULES_PATH);
+        unitUnderTest = new RulesHandler();
+        unitUnderTest.init();
+    }
 
     @Test
-    public void testGetIds(){
-        RulesObject rulesObject = null;
-        String eventFile = "";
-        String expectedIds = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
-
-        IdRulesHandler idRulesHandler = new IdRulesHandler();
-        JmesPathInterface jmespath = new JmesPathInterface();
-        idRulesHandler.setJmesPathInterface(jmespath);
-        try{
-            String jsonRules = FileUtils.readFileToString(new File(RULES_PATH), "UTF-8");
-            ObjectMapper rulesObjectMapper = new ObjectMapper();
-            eventFile = FileUtils.readFileToString(new File(EVENT_PATH), "UTF-8");
-            rulesObject = new RulesObject(rulesObjectMapper.readTree(jsonRules.replace("[", "").replace("]", "")));
-            LOGGER.debug("RulesObject: {}", rulesObject.getJsonRulesObject());
+    public void testPrintJson() {
+        String jsonInput = null;
+        String jsonOutput;
+        RulesObject result;
+        RulesObject output = null;
+        try {
+            jsonInput = FileUtils.readFileToString(new File(INPUT_FILE_PATH), "UTF-8");
+            jsonOutput = FileUtils.readFileToString(new File(OUTPUT_FILE_PATH), "UTF-8");
+            ObjectMapper objectmapper = new ObjectMapper();
+            output = new RulesObject(objectmapper.readTree(jsonOutput));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        JsonNode ids = idRulesHandler.getIds(rulesObject, eventFile);
-        LOGGER.debug("Ids: {}", ids.textValue());
-
-        assertEquals(expectedIds, ids.textValue());
+        result = unitUnderTest.getRulesForEvent(jsonInput);
+        assertEquals(result, output);
     }
 }

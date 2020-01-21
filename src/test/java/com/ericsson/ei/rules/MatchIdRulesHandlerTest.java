@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.ericsson.ei.rules.test;
+package com.ericsson.ei.rules;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
 import com.ericsson.ei.exception.ReplacementMarkerException;
-import com.ericsson.ei.rules.MatchIdRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

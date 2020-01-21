@@ -1,4 +1,4 @@
-package com.ericsson.ei.rules.test;
+package com.ericsson.ei.rules;
 
 import static org.junit.Assert.assertEquals;
 

@@ -52,11 +52,10 @@ public class MatchIdRulesHandler {
         List<String> objects = new ArrayList<>();
         try {
             objects = doFetchObjectsById(matchIdString, id);
-            return objects;
         } catch (ReplacementMarkerException e) {
             LOGGER.warn("", e);
-            return  objects;
         }
+        return  objects;
     }
 
     /**
@@ -75,7 +74,7 @@ public class MatchIdRulesHandler {
      * @return an updated matchIdString
      * @throws ReplacementMarkerException
      */
-    public String replaceIdInRules(String matchIdString, String id) throws ReplacementMarkerException {
+    protected String replaceIdInRules(String matchIdString, String id) throws ReplacementMarkerException {
         if (matchIdString.contains(replacementMarker)) {
             return matchIdString.replace(replacementMarker, id);
         } else {

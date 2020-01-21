@@ -1,6 +1,6 @@
 package com.ericsson.ei.exception;
 
-public class ReplacementMarkerException extends RuntimeException {
+public class ReplacementMarkerException extends Exception {
 
     private static final long serialVersionUID = 1L;
 

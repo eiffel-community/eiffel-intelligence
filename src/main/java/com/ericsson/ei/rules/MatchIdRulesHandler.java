@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.rules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ericsson.ei.exception.ReplacementMarkerException;
@@ -48,10 +49,14 @@ public class MatchIdRulesHandler {
      * */
     public List<String> fetchObjectsById(RulesObject ruleObject, String id) {
         String matchIdString = ruleObject.getMatchIdRules();
-        String fetchQueryString = replaceIdInRules(matchIdString, id);
-        MongoQuery fetchQuery = new MongoStringQuery(fetchQueryString);
-        List<String> objects = objHandler.findObjectsByCondition(fetchQuery);
-        return objects;
+        List<String> objects = new ArrayList<>();
+        try {
+            objects = doFetchObjectsById(matchIdString, id);
+            return objects;
+        } catch (ReplacementMarkerException e) {
+            LOGGER.warn("", e);
+            return  objects;
+        }
     }
 
     /**
@@ -68,16 +73,21 @@ public class MatchIdRulesHandler {
      * @param matchIdString the string containing a placeholder key to be replaced
      * @param id            the Eiffel event id to replace placeholder with
      * @return an updated matchIdString
+     * @throws ReplacementMarkerException
      */
-    public String replaceIdInRules(String matchIdString, String id) {
+    public String replaceIdInRules(String matchIdString, String id) throws ReplacementMarkerException {
         if (matchIdString.contains(replacementMarker)) {
             return matchIdString.replace(replacementMarker, id);
         } else {
             String errorMessage = String.format("MatchIdRules: %s does not contain the rules.replacement.marker: %s", matchIdString, replacementMarker);
-            ReplacementMarkerException exception = new ReplacementMarkerException(errorMessage);
-            LOGGER.warn("", exception);
-            throw exception;
+            throw new ReplacementMarkerException(errorMessage);
         }
     }
 
+    private List<String> doFetchObjectsById(String matchIdString, String id) throws ReplacementMarkerException {
+        String fetchQueryString = replaceIdInRules(matchIdString, id);
+        MongoQuery fetchQuery = new MongoStringQuery(fetchQueryString);
+        List<String> objects = objHandler.findObjectsByCondition(fetchQuery);
+        return objects;
+    }
 }

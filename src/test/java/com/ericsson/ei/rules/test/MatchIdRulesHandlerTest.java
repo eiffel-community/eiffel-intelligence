@@ -19,14 +19,13 @@ package com.ericsson.ei.rules.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.ericsson.ei.exception.ReplacementMarkerException;
 import com.ericsson.ei.rules.MatchIdRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,32 +34,47 @@ public class MatchIdRulesHandlerTest {
     private static final String INPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerInput.json";
     private static final String OUTPUT_FILE_PATH = "src/test/resources/MatchIdRulesHandlerOutput.json";
     private static final String EVENT_ID = "e90daae3-bf3f-4b0a-b899-67834fd5ebd0";
-    private static final Logger LOGGER = LoggerFactory.getLogger(MatchIdRulesHandlerTest.class);
 
     private MatchIdRulesHandler matchIdRulesHandler;
 
-    @Before
-    public void setProperties() {
-        matchIdRulesHandler = new MatchIdRulesHandler();
-        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker", "%IdentifyRulesEventId%");
-    }
-
     @Test
-    public void replaceIdInRulesTest() {
-        String jsonInput = null;
-        String jsonOutput = null;
-        RulesObject ruleObject = null;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(INPUT_FILE_PATH), "UTF-8");
-            jsonOutput = FileUtils.readFileToString(new File(OUTPUT_FILE_PATH), "UTF-8");
-            ObjectMapper objectmapper = new ObjectMapper();
-            ruleObject = new RulesObject(objectmapper.readTree(jsonInput));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    public void replaceIdInRulesTest() throws IOException, ReplacementMarkerException {
+        setMatchingProperty();
+        String jsonInput = readFile(INPUT_FILE_PATH);
+        String jsonOutput = readFile(OUTPUT_FILE_PATH);
+        RulesObject ruleObject = createRulesObject(jsonInput);
         String matchIdString = ruleObject.getMatchIdRules();
         String replacedId = matchIdRulesHandler.replaceIdInRules(matchIdString, EVENT_ID);
         assertEquals(replacedId, jsonOutput);
     }
 
+    @Test(expected = ReplacementMarkerException.class)
+    public void replaceIdInRulesExceptionTest() throws IOException, ReplacementMarkerException {
+        setMismatchingProperty();
+        String jsonInput = readFile(INPUT_FILE_PATH);
+        RulesObject ruleObject = createRulesObject(jsonInput);
+        String matchIdString = ruleObject.getMatchIdRules();
+        matchIdRulesHandler.replaceIdInRules(matchIdString, EVENT_ID);
+    }
+
+    private RulesObject createRulesObject(String input) throws IOException {
+        ObjectMapper objectmapper = new ObjectMapper();
+        RulesObject ruleObject = new RulesObject(objectmapper.readTree(input));
+        return ruleObject;
+    }
+
+    private String readFile(String path) throws IOException {
+        return FileUtils.readFileToString(new File(path), "UTF-8");
+    }
+
+    private void setMatchingProperty() {
+        matchIdRulesHandler = new MatchIdRulesHandler();
+        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker",
+                "%IdentifyRulesEventId%");
+    }
+
+    private void setMismatchingProperty() {
+        matchIdRulesHandler = new MatchIdRulesHandler();
+        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker", "%IdentifyRulesEvent%");
+    }
 }

@@ -70,6 +70,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${email.sender}")
     private String sender;
 
+    @Value("${email.subject}")
+    private String subject;
+
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
@@ -187,6 +190,18 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
+    @Then("^Default values mail notification are assigned$")
+    public void default_values_mail_notification() {
+        if (sender == null && subject == null) {
+            sender = "noreply@ericsson.com";
+            subject = "Email Subscription Notification";
+        } else if (sender == null && subject != null) {
+            sender = "noreply@ericsson.com";
+        } else if (sender != null && subject == null) {
+            subject = "Email Subscription Notification";
+        }
+    }
+
     @Then("^Mail subscriptions were triggered$")
     public void mail_subscriptions_were_triggered() {
         LOGGER.debug("Verifying received emails.");
@@ -196,6 +211,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         for (SmtpMessage email : emails) {
             // assert correct sender.
             assertEquals("Assert correct email sender: ", email.getHeaderValue("From"), sender);
+            // assert correct subject.
+            assertEquals("Assert correct email subject: ", email.getHeaderValue("Subject"), subject);
             // assert given test case exist in body.
             assert (email.getBody().contains("TC5"));
         }

@@ -48,12 +48,12 @@ public class EmailSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
     @Getter
-    @Value("${email.sender}")
-    private String sender;
+    @Value("${email.sender:noreply@ericsson.com}")
+    private static final String SENDER = "noreply@ericsson.com";
 
     @Getter
-    @Value("${email.subject}")
-    private String subject;
+    @Value("${email.subject:Email Subscription Notification}")
+    private static final String SUBJECT = "Email Subscription Notification";
 
     @Autowired
     private JavaMailSender emailSender;
@@ -102,7 +102,7 @@ public class EmailSender {
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sender);
+            helper.setFrom(SENDER);
             helper.setSubject(getSubject(emailSubject));
             helper.setText(mapNotificationMessage);
             helper.setTo(recipients);
@@ -138,7 +138,7 @@ public class EmailSender {
      */
     private String getSubject(String emailSubject) {
         if (emailSubject.isEmpty()) {
-            return subject;
+            return SUBJECT;
         }
         return emailSubject;
     }

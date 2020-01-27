@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -43,14 +44,33 @@ public class EmailSenderTest {
     @InjectMocks
     private EmailSender emailSender;
 
+    @Value("${email.sender:noreply@ericsson.com}")
+    private String sender;
+
+    @Value("${email.subject:Email notification}")
+    private String subject;
+
     @Test(expected = NotificationFailureException.class)
     public void sendEmailThrowsException() throws Exception {
         doThrow(new MailSendException("")).when(javaMailSender).send(message);
         emailSender.sendEmail(message);
     }
 
+    @Test
+    public void testDefaultValues() {
+        if (sender == null && subject == null) {
+            sender = "noreply@ericsson.com";
+            subject = "Email Subscription Notification";
+        } else if (sender == null && subject != null) {
+            sender = "noreply@ericsson.com";
+        } else if (sender != null && subject == null) {
+            subject = "Email Subscription Notification";
+        }
+    }
+
     /*
      * prepareEmail is not possible to test due too much hidden Spring mumbo jumbo doing things in
      * background.
      */
+
 }

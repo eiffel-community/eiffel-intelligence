@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.waitlist;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClientException;
 
 @Component
 public class WaitListWorker {
@@ -65,20 +67,32 @@ public class WaitListWorker {
         if(shutdownInProgress) {
             return;
         }
+        try {
+            getAllDocumentsAndCheckTargetAggregations();
+        } catch (MongoClientException e) {
+            LOGGER.error("Failed to get documents from MongoDB", e.getMessage());
+        }
+    }
+
+    private void getAllDocumentsAndCheckTargetAggregations() {
         List<String> documents = waitListStorageHandler.getWaitList();
         for (String document : documents) {
             try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode eventJson = objectMapper.readTree(document);
-                String id = eventJson.get("_id").asText();
-                if (eventToObjectMapHandler.isEventInEventObjectMap(id)) {
-                    waitListStorageHandler.dropDocumentFromWaitList(document);
-                } else {
-                    checkTargetAggregationsExistAndRepublishEvent(eventJson);
-                }
+                checkAggregationsExistAndRepublishEvent(document);
             } catch (Exception e) {
                 LOGGER.error("Exception occured while trying to resend event: {}", document, e);
             }
+        }
+    }
+
+    private void checkAggregationsExistAndRepublishEvent(String document) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode eventJson = objectMapper.readTree(document);
+        String id = eventJson.get("_id").asText();
+        if (eventToObjectMapHandler.isEventInEventObjectMap(id)) {
+            waitListStorageHandler.dropDocumentFromWaitList(document);
+        } else {
+            checkTargetAggregationsExistAndRepublishEvent(eventJson);
         }
     }
 

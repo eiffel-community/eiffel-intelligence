@@ -37,6 +37,7 @@ import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClientException;
 import com.mongodb.util.JSON;
 
 import lombok.Getter;
@@ -152,7 +153,7 @@ public class ObjectHandler {
      * @param query query to base search on
      * @return List of documents
      */
-    public List<String> findObjectsByCondition(MongoQuery query) {
+    public List<String> findObjectsByCondition(MongoQuery query) throws MongoClientException {
         return mongoDbHandler.find(databaseName, collectionName, query);
     }
 
@@ -162,7 +163,7 @@ public class ObjectHandler {
      * @param id An id to search for in the database
      * @return document
      */
-    public String findObjectById(String id) {
+    public String findObjectById(String id) throws MongoClientException {
         final MongoCondition condition = MongoCondition.idCondition(id);
         String document = "";
         List<String> documents = findObjectsByCondition(condition);

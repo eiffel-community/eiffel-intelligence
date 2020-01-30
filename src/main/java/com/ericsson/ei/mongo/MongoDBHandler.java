@@ -370,14 +370,14 @@ public class MongoDBHandler {
             throw new MongoClientException("Failed to connect MongoDB");
         }
 
-        verifyExistanceOfCollection(databaseName, collectionName);
+        verifyExistenceOfCollection(databaseName, collectionName);
 
         MongoDatabase db = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;
     }
 
-    private void verifyExistanceOfCollection(String databaseName, String collectionName) throws MongoClientException {
+    private void verifyExistenceOfCollection(String databaseName, String collectionName) throws MongoClientException {
         List<String> collectionList = getCollectionList(databaseName);
         if (!collectionList.contains(collectionName)) {
             createCollection(databaseName, collectionName);

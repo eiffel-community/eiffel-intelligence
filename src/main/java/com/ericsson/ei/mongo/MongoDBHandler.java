@@ -52,7 +52,6 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 
-@SuppressWarnings("deprecation")
 @Component
 public class MongoDBHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBHandler.class);

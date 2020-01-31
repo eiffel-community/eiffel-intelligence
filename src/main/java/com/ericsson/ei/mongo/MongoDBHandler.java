@@ -123,7 +123,7 @@ public class MongoDBHandler {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to retrieve documents as {}", e.getMessage());
+            LOGGER.error("Failed to retrieve documents from the collection {} as {}", collectionName, e.getMessage());
         }
         return result;
     }

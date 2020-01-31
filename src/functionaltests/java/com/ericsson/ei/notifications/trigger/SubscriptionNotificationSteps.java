@@ -197,11 +197,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Then("^Default values mail notification are added$")
     public void default_values_mail_notification() {
-        if (emailSender.getSender() != null && emailSender.getSubject() != null) {
             assertEquals("noreply@ericsson.com", emailSender.getSender());
             assertEquals("Email Subscription Notification", emailSender.getSubject());
         }
-    }
 
     @Then("^Mail subscriptions were triggered$")
     public void mail_subscriptions_were_triggered() {

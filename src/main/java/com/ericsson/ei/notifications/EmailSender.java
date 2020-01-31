@@ -59,6 +59,20 @@ public class EmailSender {
     private JavaMailSender emailSender;
 
     /**
+     * @return the sender
+     */
+    public String getSender() {
+        return SENDER;
+    }
+
+    /**
+     * @return the subject
+     */
+    public String getSubject() {
+        return SUBJECT;
+    }
+
+/**
      * This method sends an email.
      *
      * @param message   The email message to send

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doThrow;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,12 +45,6 @@ public class EmailSenderTest {
     @InjectMocks
     private EmailSender emailSender;
 
-    @Value("${email.sender:noreply@ericsson.com}")
-    private String sender;
-
-    @Value("${email.subject:Email notification}")
-    private String subject;
-
     @Test(expected = NotificationFailureException.class)
     public void sendEmailThrowsException() throws Exception {
         doThrow(new MailSendException("")).when(javaMailSender).send(message);
@@ -58,13 +53,9 @@ public class EmailSenderTest {
 
     @Test
     public void testDefaultValues() {
-        if (sender == null && subject == null) {
-            sender = "noreply@ericsson.com";
-            subject = "Email Subscription Notification";
-        } else if (sender == null && subject != null) {
-            sender = "noreply@ericsson.com";
-        } else if (sender != null && subject == null) {
-            subject = "Email Subscription Notification";
+        if (emailSender.getSender() != null && emailSender.getSubject() != null) {
+            assertEquals("noreply@ericsson.com", emailSender.getSender());
+            assertEquals("Email Subscription Notification", emailSender.getSubject());
         }
     }
 

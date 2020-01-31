@@ -30,6 +30,6 @@ Feature: Test Subscription Trigger
     And Subscriptions are created
     When I send Eiffel events
     And Wait for EI to aggregate objects
-    Then Default values mail notification are assigned
+    Then Default values mail notification are added
     Then Mail subscriptions were triggered
     And Rest subscriptions were triggered

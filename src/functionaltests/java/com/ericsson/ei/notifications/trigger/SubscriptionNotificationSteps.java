@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
+import org.mockito.InjectMocks;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
@@ -34,6 +35,7 @@ import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -90,6 +92,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @InjectMocks
+    private EmailSender emailSender;
 
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
@@ -190,15 +195,11 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
-    @Then("^Default values mail notification are assigned$")
+    @Then("^Default values mail notification are added$")
     public void default_values_mail_notification() {
-        if (sender == null && subject == null) {
-            sender = "noreply@ericsson.com";
-            subject = "Email Subscription Notification";
-        } else if (sender == null && subject != null) {
-            sender = "noreply@ericsson.com";
-        } else if (sender != null && subject == null) {
-            subject = "Email Subscription Notification";
+        if (emailSender.getSender() != null && emailSender.getSubject() != null) {
+            assertEquals("noreply@ericsson.com", emailSender.getSender());
+            assertEquals("Email Subscription Notification", emailSender.getSubject());
         }
     }
 

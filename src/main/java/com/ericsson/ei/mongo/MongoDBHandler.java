@@ -86,7 +86,7 @@ public class MongoDBHandler {
      * @return
      */
     public void insertDocument(String dataBaseName, String collectionName, String input)
-            throws MongoWriteException {
+            throws MongoWriteException, MongoClientException {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection != null) {
             final Document dbObjectInput = Document.parse(input);
@@ -123,7 +123,7 @@ public class MongoDBHandler {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to retrieve documents.", e);
+            LOGGER.error("Failed to retrieve documents from the collection {} as {}", collectionName, e.getMessage());
         }
         return result;
     }
@@ -137,7 +137,7 @@ public class MongoDBHandler {
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName,
-            MongoQuery query) {
+            MongoQuery query) throws MongoClientException {
         ArrayList<String> result = new ArrayList<>(0);
 
         try {
@@ -161,7 +161,7 @@ public class MongoDBHandler {
      */
     public boolean updateDocument(String dataBaseName, String collectionName,
             MongoQuery queryFilter,
-            String updateInput) {
+            String updateInput) throws MongoClientException {
         try {
             return doUpdate(dataBaseName, collectionName, queryFilter, updateInput);
         } catch (Exception e) {
@@ -219,7 +219,7 @@ public class MongoDBHandler {
      * @param ttlValue       seconds
      */
     public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
-            int ttlValue) {
+            int ttlValue) throws MongoClientException {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
                 TimeUnit.SECONDS);
@@ -274,7 +274,7 @@ public class MongoDBHandler {
     }
 
     private ArrayList<String> doFind(String dataBaseName, String collectionName,
-            MongoQuery query) {
+            MongoQuery query) throws MongoClientException {
         LOGGER.debug(
                 "Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}",
                 dataBaseName, collectionName, query.getQueryString());
@@ -310,7 +310,7 @@ public class MongoDBHandler {
 
     private Document doFindAndModify(String dataBaseName, String collectionName,
             MongoQuery queryFilter,
-            String updateInput) {
+            String updateInput) throws MongoClientException {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
             return null;
@@ -327,7 +327,7 @@ public class MongoDBHandler {
     }
 
     private boolean doUpdate(String dataBaseName, String collectionName, MongoQuery queryFilter,
-            String updateInput) {
+            String updateInput) throws MongoClientException {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
             return false;
@@ -344,7 +344,7 @@ public class MongoDBHandler {
         return updateWasPerformed;
     }
 
-    private boolean doDrop(String dataBaseName, String collectionName, MongoQuery query) {
+    private boolean doDrop(String dataBaseName, String collectionName, MongoQuery query) throws MongoClientException {
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
             return false;
@@ -364,33 +364,27 @@ public class MongoDBHandler {
 
     }
 
-    private MongoCollection<Document> getMongoCollection(String databaseName,
-            String collectionName) {
+    private MongoCollection<Document> getMongoCollection(String databaseName, String collectionName)
+            throws MongoClientException {
         if (mongoClient == null) {
-            return null;
+            throw new MongoClientException("Failed to connect MongoDB");
         }
 
-        try {
-            verifyExistanceOfCollection(databaseName, collectionName);
+        verifyExistenceOfCollection(databaseName, collectionName);
 
-            MongoDatabase db = mongoClient.getDatabase(databaseName);
-            MongoCollection<Document> collection = db.getCollection(collectionName);
-            return collection;
-        } catch (MongoClientException e) {
-            LOGGER.error("Failure when handling Mongo collection: {} ", e.getMessage(), e);
-            return null;
-        }
-
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+        MongoCollection<Document> collection = db.getCollection(collectionName);
+        return collection;
     }
 
-    private void verifyExistanceOfCollection(String databaseName, String collectionName) {
+    private void verifyExistenceOfCollection(String databaseName, String collectionName) throws MongoClientException {
         List<String> collectionList = getCollectionList(databaseName);
         if (!collectionList.contains(collectionName)) {
             createCollection(databaseName, collectionName);
         }
     }
 
-    private List<String> getCollectionList(String databaseName) {
+    private List<String> getCollectionList(String databaseName) throws MongoClientException {
         try {
             MongoDatabase db = mongoClient.getDatabase(databaseName);
             List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
@@ -404,7 +398,7 @@ public class MongoDBHandler {
         }
     }
 
-    private void createCollection(String databaseName, String collectionName) {
+    private void createCollection(String databaseName, String collectionName) throws MongoClientException {
         try {
             LOGGER.debug(
                     "The requested database({}) / collection({}) not found in mongodb, Creating.",
@@ -429,7 +423,7 @@ public class MongoDBHandler {
      * @param e
      */
     private void checkIfCollectionExistError(String databaseName, String collectionName,
-            MongoCommandException e) {
+            MongoCommandException e) throws MongoClientException {
         String collectionExistsError = String.format("collection '%s.%s' already exists",
                 databaseName, collectionName);
 

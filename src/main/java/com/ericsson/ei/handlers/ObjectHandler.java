@@ -45,7 +45,8 @@ import lombok.Setter;
 
 @Component
 public class ObjectHandler {
-
+    private static final String DOCUMENT_TIME_KEY = "Time";
+    private static final String DOCUMENT_ID_KEY = "_id";
     private static final String NOT_LOCKED = "0";
 
     private static final int MAX_RETRY_COUNT = 1000;
@@ -55,12 +56,16 @@ public class ObjectHandler {
     @Getter
     @Setter
     @Value("${aggregations.collection.name}")
-    private String collectionName;
+    private String aggregationsCollectionName;
 
     @Getter
     @Setter
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
+
+    @Getter
+    @Value("${aggregations.collection.ttl}")
+    private String aggregationsTtl;
 
     @Setter
     @Autowired
@@ -77,10 +82,6 @@ public class ObjectHandler {
     @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
-
-    @Getter
-    @Value("${aggregations.collection.ttl}")
-    private String ttlValue;
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.
@@ -103,10 +104,11 @@ public class ObjectHandler {
                 document.toString());
 
         if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+            mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
+                    DOCUMENT_TIME_KEY, getTtl());
         }
 
-        mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
+        mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -138,7 +140,7 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         final MongoCondition condition = MongoCondition.idCondition(id);
         String documentStr = document.toString();
-        mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        mongoDbHandler.updateDocument(databaseName, aggregationsCollectionName, condition, documentStr);
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -154,7 +156,7 @@ public class ObjectHandler {
      * @return List of documents
      */
     public List<String> findObjectsByCondition(MongoQuery query) throws MongoClientException {
-        return mongoDbHandler.find(databaseName, collectionName, query);
+        return mongoDbHandler.find(databaseName, aggregationsCollectionName, query);
     }
 
     /**
@@ -198,10 +200,10 @@ public class ObjectHandler {
      */
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {
         BasicDBObject document = BasicDBObject.parse(object);
-        document.put("_id", id);
+        document.put(DOCUMENT_ID_KEY, id);
         try {
             if (getTtl() > 0) {
-                document.put("Time", DateUtils.getDate());
+                document.put(DOCUMENT_TIME_KEY, DateUtils.getDate());
             }
         } catch (ParseException e) {
             LOGGER.error("Failed to attach date to document.", e);
@@ -216,7 +218,7 @@ public class ObjectHandler {
      * @return id
      */
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get("_id").textValue();
+        return aggregatedDbObject.get(DOCUMENT_ID_KEY).textValue();
     }
 
     /**
@@ -251,7 +253,8 @@ public class ObjectHandler {
         while (documentLocked && retryCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
-                Document result = mongoDbHandler.findAndModify(databaseName, collectionName,
+                Document result = mongoDbHandler.findAndModify(databaseName,
+                        aggregationsCollectionName,
                         idAndNoLockCondition,
                         documentJson.toString());
                 if (result != null) {
@@ -278,9 +281,9 @@ public class ObjectHandler {
      */
     public int getTtl() {
         int ttl = 0;
-        if (ttlValue != null && !ttlValue.isEmpty()) {
+        if (aggregationsTtl != null && !aggregationsTtl.isEmpty()) {
             try {
-                ttl = Integer.parseInt(ttlValue);
+                ttl = Integer.parseInt(aggregationsTtl);
             } catch (NumberFormatException e) {
                 LOGGER.error("Failed to parse TTL value.", e);
             }
@@ -290,7 +293,8 @@ public class ObjectHandler {
 
     private boolean isInvalidId(String id) {
         final MongoCondition idCondition = MongoCondition.idCondition(id);
-        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName, collectionName,
+        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName,
+                aggregationsCollectionName,
                 idCondition);
 
         return documentExistsCheck.isEmpty();

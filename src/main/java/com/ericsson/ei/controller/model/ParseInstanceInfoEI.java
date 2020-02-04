@@ -41,17 +41,13 @@ import com.ericsson.ei.waitlist.WaitListStorageHandler;
 import lombok.Getter;
 
 /**
- * Parsing all classes which contains value annotation in eiffel-intelligence plugin. Needed for
- * generate Json file with information about backend instance.
+ * Parsing all classes which contains value annotation in Eiffel Intelligence. Needed for
+ * generating JSON file with information about backend instance.
  */
 @Component
 public class ParseInstanceInfoEI {
     @Autowired
     private Environment environment;
-
-    @Getter
-    @Value("${build.version:#{null}}")
-    private String applicationPropertiesVersion;
 
     @Getter
     private String version;
@@ -65,7 +61,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Value("${test.aggregation.enabled:false}")
-    private String testRulesEnabled;
+    private String testAggregationEnabled;
 
     @Getter
     @Autowired
@@ -109,7 +105,7 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
-    private ERQueryService erUrl;
+    private ERQueryService eventRepository;
 
     @PostConstruct
     public void init() throws IOException {
@@ -164,7 +160,7 @@ public class ParseInstanceInfoEI {
     private class LdapValues {
         @Getter
         @Value("${ldap.enabled}")
-        private String enabled;
+        private String ldapEnabled;
 
         @Getter
         private String ldapServerList;

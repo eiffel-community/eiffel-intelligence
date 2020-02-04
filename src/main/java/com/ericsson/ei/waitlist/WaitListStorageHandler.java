@@ -44,10 +44,13 @@ import java.util.List;
 @Component
 public class WaitListStorageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WaitListStorageHandler.class);
+    public static final String DOCUMENT_ID_KEY = "_id";
+    public static final String DOCUMENT_TIME_KEY = "Time";
+    public static final String DOCUMENT_EVENT_KEY = "Event";
 
     @Getter
     @Value("${waitlist.collection.name}")
-    private String collectionName;
+    private String waitlistCollectionName;
 
     @Getter
     @Value("${spring.data.mongodb.database}")
@@ -55,7 +58,7 @@ public class WaitListStorageHandler {
 
     @Getter
     @Value("${waitlist.collection.ttl}")
-    private int ttlValue;
+    private int waitlistTtl;
 
     @Setter
     @Autowired
@@ -78,7 +81,7 @@ public class WaitListStorageHandler {
             if (foundEvent.isEmpty()) {
                 Date date = createCurrentTimeStamp();
                 BasicDBObject document = createWaitListDocument(event, id, date);
-                mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
+                mongoDbHandler.insertDocument(databaseName, waitlistCollectionName, document.toString());
             }
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert event into waitlist.", e);
@@ -87,7 +90,8 @@ public class WaitListStorageHandler {
 
     private String findEventInWaitList(JsonNode id) {
         final MongoCondition condition = MongoCondition.idCondition(id);
-        List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
+        List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName,
+                waitlistCollectionName, condition);
         if (foundEventsInWaitList.isEmpty()) {
             return "";
         }
@@ -97,19 +101,19 @@ public class WaitListStorageHandler {
 
     public boolean dropDocumentFromWaitList(String document) {
        MongoQuery query = new MongoStringQuery(document);
-        return mongoDbHandler.dropDocument(databaseName, collectionName, query);
+        return mongoDbHandler.dropDocument(databaseName, waitlistCollectionName, query);
     }
 
     public List<String> getWaitList() {
-        return mongoDbHandler.getAllDocuments(databaseName, collectionName);
+        return mongoDbHandler.getAllDocuments(databaseName, waitlistCollectionName);
     }
 
     private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) {
         BasicDBObject document = new BasicDBObject();
-        document.put("_id", id.textValue());
-        document.put("Time", date);
-        document.put("Event", event);
-        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        document.put(DOCUMENT_ID_KEY, id.textValue());
+        document.put(DOCUMENT_TIME_KEY, date);
+        document.put(DOCUMENT_EVENT_KEY, event);
+        mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, DOCUMENT_TIME_KEY, waitlistTtl);
         return document;
     }
 

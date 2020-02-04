@@ -60,7 +60,7 @@ public class InformSubscriber {
     @Setter
     @Getter
     @Value("${notification.retry:#{0}}")
-    private int failAttempt;
+    private int notificationRetry;
 
     @Getter
     @Value("${failed.notifications.collection.name}")
@@ -72,7 +72,7 @@ public class InformSubscriber {
 
     @Getter
     @Value("${failed.notifications.collection.ttl}")
-    private int ttlValue;
+    private int failedNotificationsTtl;
 
     @Autowired
     private JmesPathInterface jmespath;
@@ -132,7 +132,7 @@ public class InformSubscriber {
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
             mongoDBHandler.createTTLIndex(database,
-                    failedNotificationCollectionName, "time", ttlValue);
+                    failedNotificationCollectionName, "time", failedNotificationsTtl);
             saveFailedNotificationToDB(failedNotification);
         }
     }
@@ -161,7 +161,7 @@ public class InformSubscriber {
             }
             LOGGER.debug("After trying for {} time(s), the result is : {}", requestTries,
                     exception != null);
-        } while (exception != null && requestTries <= failAttempt);
+        } while (exception != null && requestTries <= notificationRetry);
 
         if (exception != null) {
             String errorMessage = "Failed to send REST/POST notification!";

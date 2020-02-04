@@ -132,15 +132,14 @@ public class InformSubscriberTest {
 
         informSubscriber.informSubscriber(aggregatedObject, restPostSubscriptionNode);
         // Should expect 1 tries to perform a HTTP request since AuthenticationException should
-        // ignore failAttempt.
+        // ignore notification.retry configuration.
         verify(httpRequest, times(1)).perform();
         // Should try to save failed notification to DB
         verify(mongoDBHandler, times(1)).insertDocument(any(), any(), any());
     }
 
     /**
-     * If sedning email is successfull then there should be no tries to save massed notification to
-     * DB.
+     * If sending email is successful, no failed notification should be stored in database.
      *
      * @throws Exception
      */
@@ -194,7 +193,7 @@ public class InformSubscriberTest {
     }
 
     /**
-     * Preperation before rest post subscription tests to create rest post subscription and stubb
+     * Preparation before rest post subscription tests to create rest post subscription and stubb
      * HttpRequest setters.
      *
      * @throws IOException
@@ -210,8 +209,8 @@ public class InformSubscriberTest {
         restPostSubscriptionObject.setAuthenticationType("NO_AUTH").setNotificationMeta("some_url");
         restPostSubscriptionNode = mapper.readTree(restPostSubscriptionObject.toString());
 
-        // Setting failAttempts to 3
-        informSubscriber.setFailAttempt(REST_POST_RETRIES);
+        // Setting retries to 3
+        informSubscriber.setNotificationRetry(REST_POST_RETRIES);
     }
 
     /**

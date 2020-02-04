@@ -51,7 +51,7 @@ public class ERQueryService {
 
     @Getter
     @Value("${event.repository.url}")
-    private String erBaseUrl;
+    private String eventRepositoryUrl;
 
     public ERQueryService() {
         this.request = new HttpRequest();
@@ -90,7 +90,7 @@ public class ERQueryService {
     private ResponseEntity sendRequestToER(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) throws IOException, URISyntaxException,
             ClientProtocolException, PropertyNotFoundException {
-        if (StringUtils.isBlank(erBaseUrl)) {
+        if (StringUtils.isBlank(eventRepositoryUrl)) {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
 
@@ -103,7 +103,7 @@ public class ERQueryService {
         final SearchParameters searchParameters = getSearchParameters(searchOption);
         request
                .setHttpMethod(HttpMethod.POST)
-               .setBaseUrl(erBaseUrl)
+               .setBaseUrl(eventRepositoryUrl)
                .setEndpoint(eventId)
                .addParam("limit", Integer.toString(limit))
                .addParam("levels", Integer.toString(levels))

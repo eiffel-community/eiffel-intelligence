@@ -102,7 +102,7 @@ public class ERQueryServiceTest extends Mockito {
 
     public String buildUri() {
         String uri = "";
-        uri += erQueryService.getErBaseUrl().trim() + eventId + "?limit=" + limitParam + "&tree=" + isTree + "&levels=" + levels;
+        uri += erQueryService.getEventRepositoryUrl().trim() + eventId + "?limit=" + limitParam + "&tree=" + isTree + "&levels=" + levels;
         return uri;
     }
 }

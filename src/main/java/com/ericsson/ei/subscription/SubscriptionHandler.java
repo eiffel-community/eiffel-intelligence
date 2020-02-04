@@ -52,7 +52,7 @@ public class SubscriptionHandler {
 
     @Getter
     @Value("${spring.data.mongodb.database}")
-    private String subscriptionDataBaseName;
+    private String database;
 
     @Autowired
     private InformSubscriber informSubscriber;
@@ -76,7 +76,7 @@ public class SubscriptionHandler {
                                            final String id) {
         Thread subscriptionThread = new Thread(() -> {
             List<String> subscriptions = mongoDBHandler.getAllDocuments(
-                subscriptionDataBaseName, subscriptionCollectionName);
+                    database, subscriptionCollectionName);
             subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
                     subscription, id));

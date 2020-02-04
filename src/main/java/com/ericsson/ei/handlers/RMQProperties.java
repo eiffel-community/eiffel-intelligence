@@ -76,7 +76,7 @@ public class RMQProperties {
     @Getter
     @Setter
     @Value("${rabbitmq.waitlist.queue.suffix}")
-    private String waitlistSuffix;
+    private String waitlistQueueSuffix;
 
     @Getter
     @Setter
@@ -96,6 +96,6 @@ public class RMQProperties {
     public String getWaitlistQueueName() {
         final String durableName = this.queueDurable ? "durable" : "transient";
         return this.domainId + "." + this.componentName + "." + this.queueSuffix + "." + durableName + "."
-                + this.waitlistSuffix;
+                + this.waitlistQueueSuffix;
     }
 }

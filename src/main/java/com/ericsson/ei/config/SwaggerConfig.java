@@ -36,7 +36,7 @@ public class SwaggerConfig {
 
     private static final String CONTACT_NAME = "Eiffel Intelligence Maintainers";
     private static final String CONTACT_URL = "https://github.com/eiffel-community/eiffel-intelligence";
-    private static final String CONTACT_EMAIL = "https://groups.google.com/forum/#!forum/eiffel-community";
+    private static final String CONTACT_EMAIL = "eiffel-community@googlegroups.com";
 
     @Autowired
     ParseInstanceInfoEI parseInstanceInfoEI;

@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,7 +282,7 @@ public class ObjectHandler {
      */
     public int getTtl() {
         int ttl = 0;
-        if (aggregationsTtl != null && !aggregationsTtl.isEmpty()) {
+        if (!StringUtils.isEmpty(aggregationsTtl)) {
             try {
                 ttl = Integer.parseInt(aggregationsTtl);
             } catch (NumberFormatException e) {

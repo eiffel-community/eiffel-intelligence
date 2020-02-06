@@ -115,19 +115,6 @@ public class EmailSender {
      */
     private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject,
             String[] recipients) {
-        if(sender.isEmpty() && subject.isEmpty())
-        {
-            sender = "noreply@ericsson.com";
-            subject = "Email Subscription Notification";
-        }
-        else if(!sender.isEmpty() && subject.isEmpty())
-        {
-            subject = "Email Subscription Notification";
-        }
-        else if(sender.isEmpty() && !subject.isEmpty())
-        {
-            sender = "noreply@ericsson.com";
-        }
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

@@ -49,28 +49,14 @@ public class EmailSender {
 
     @Getter
     @Value("${email.sender:noreply@ericsson.com}")
-    private static final String SENDER = "noreply@ericsson.com";
+    private String sender;
 
     @Getter
     @Value("${email.subject:Email Subscription Notification}")
-    private static final String SUBJECT = "Email Subscription Notification";
+    private String subject;
 
     @Autowired
     private JavaMailSender emailSender;
-
-    /**
-     * @return the sender
-     */
-    public String getSender() {
-        return SENDER;
-    }
-
-    /**
-     * @return the subject
-     */
-    public String getSubject() {
-        return SUBJECT;
-    }
 
 /**
      * This method sends an email.
@@ -97,11 +83,27 @@ public class EmailSender {
      * */
     public MimeMessage prepareEmailMessage(String recipients, String mapNotificationMessage,
             String emailSubject) {
+        setDefaultValues();
         Set<String> emails = new HashSet<>();
         emails = extractEmails(recipients);
         String[] to = emails.toArray(new String[0]);
         MimeMessage message = prepareEmail(mapNotificationMessage, emailSubject, to);
         return message;
+    }
+
+    /*
+     * This method assigns the default values of sender and subject of email notification if values
+     * at application.proporties are empty.
+     * */
+    private void setDefaultValues() {
+        if (sender.isEmpty() && subject.isEmpty()) {
+            sender = "noreply@ericsson.com";
+            subject = "Email Subscription Notification";
+        } else if (!sender.isEmpty() && subject.isEmpty()) {
+            subject = "Email Subscription Notification";
+        } else if (sender.isEmpty() && !subject.isEmpty()) {
+            sender = "noreply@ericsson.com";
+        }
     }
 
     /**
@@ -113,10 +115,23 @@ public class EmailSender {
      */
     private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject,
             String[] recipients) {
+        if(sender.isEmpty() && subject.isEmpty())
+        {
+            sender = "noreply@ericsson.com";
+            subject = "Email Subscription Notification";
+        }
+        else if(!sender.isEmpty() && subject.isEmpty())
+        {
+            subject = "Email Subscription Notification";
+        }
+        else if(sender.isEmpty() && !subject.isEmpty())
+        {
+            sender = "noreply@ericsson.com";
+        }
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(SENDER);
+            helper.setFrom(sender);
             helper.setSubject(getSubject(emailSubject));
             helper.setText(mapNotificationMessage);
             helper.setTo(recipients);
@@ -152,7 +167,7 @@ public class EmailSender {
      */
     private String getSubject(String emailSubject) {
         if (emailSubject.isEmpty()) {
-            return SUBJECT;
+            return subject;
         }
         return emailSubject;
     }

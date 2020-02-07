@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class MongoCondition implements MongoQuery {
 
-    private static final String ID = "_id";
     private static final String LOCK = "lock";
     private static final String SUBSCRIPTION_ID = "subscriptionId";
     private static final String SUBSCRIPTION_NAME = "subscriptionName";
@@ -37,7 +36,7 @@ public class MongoCondition implements MongoQuery {
      * @return A MongoCondition with id set
      */
     public static MongoCondition idCondition(String documentId) {
-        return condition(ID, documentId);
+        return condition(MongoConstants.ID, documentId);
     }
 
     /**
@@ -96,7 +95,7 @@ public class MongoCondition implements MongoQuery {
      * <p>
      * <code>{"lock":"0"}
      *
-     * @param lockValue
+     * @param lock
      * @return A MongoCondition with lock set
      */
     public static MongoCondition lockCondition(String lock) {

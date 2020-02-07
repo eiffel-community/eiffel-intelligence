@@ -20,6 +20,7 @@ import java.text.ParseException;
 
 import javax.mail.internet.MimeMessage;
 
+import com.ericsson.ei.mongo.MongoConstants;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ public class InformSubscriber {
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
             mongoDBHandler.createTTLIndex(database,
-                    failedNotificationCollectionName, "time", failedNotificationsTtl);
+                    failedNotificationCollectionName, MongoConstants.TIME, failedNotificationsTtl);
             saveFailedNotificationToDB(failedNotification);
         }
     }
@@ -197,7 +198,7 @@ public class InformSubscriber {
         document.put("subscriptionName", subscriptionName);
         document.put("notificationMeta", notificationMeta);
         try {
-            document.put("time", DateUtils.getDate());
+            document.put(MongoConstants.TIME, DateUtils.getDate());
         } catch (ParseException e) {
             LOGGER.error("Failed to get date object.", e);
         }

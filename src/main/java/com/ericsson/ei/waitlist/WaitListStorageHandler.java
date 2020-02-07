@@ -17,10 +17,7 @@
 package com.ericsson.ei.waitlist;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongo.MongoCondition;
-import com.ericsson.ei.mongo.MongoDBHandler;
-import com.ericsson.ei.mongo.MongoQuery;
-import com.ericsson.ei.mongo.MongoStringQuery;
+import com.ericsson.ei.mongo.*;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.BasicDBObject;
@@ -44,9 +41,6 @@ import java.util.List;
 @Component
 public class WaitListStorageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(WaitListStorageHandler.class);
-    public static final String DOCUMENT_ID_KEY = "_id";
-    public static final String DOCUMENT_TIME_KEY = "Time";
-    public static final String DOCUMENT_EVENT_KEY = "Event";
 
     @Getter
     @Value("${waitlist.collection.name}")
@@ -110,10 +104,11 @@ public class WaitListStorageHandler {
 
     private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) {
         BasicDBObject document = new BasicDBObject();
-        document.put(DOCUMENT_ID_KEY, id.textValue());
-        document.put(DOCUMENT_TIME_KEY, date);
-        document.put(DOCUMENT_EVENT_KEY, event);
-        mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, DOCUMENT_TIME_KEY, waitlistTtl);
+        document.put(MongoConstants.ID, id.textValue());
+        document.put(MongoConstants.TIME, date);
+        document.put(MongoConstants.EVENT, event);
+        mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, MongoConstants.TIME,
+                waitlistTtl);
         return document;
     }
 

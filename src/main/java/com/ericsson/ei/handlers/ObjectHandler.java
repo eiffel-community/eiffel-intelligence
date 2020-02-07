@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ericsson.ei.mongo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -29,10 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongo.MongoCondition;
-import com.ericsson.ei.mongo.MongoDBHandler;
-import com.ericsson.ei.mongo.MongoQuery;
-import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,9 +43,6 @@ import lombok.Setter;
 
 @Component
 public class ObjectHandler {
-    private static final String DOCUMENT_TIME_KEY = "Time";
-    private static final String DOCUMENT_ID_KEY = "_id";
-    private static final String NOT_LOCKED = "0";
 
     private static final int MAX_RETRY_COUNT = 1000;
 
@@ -106,7 +100,7 @@ public class ObjectHandler {
 
         if (getTtl() > 0) {
             mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
-                    DOCUMENT_TIME_KEY, getTtl());
+                    MongoConstants.TIME, getTtl());
         }
 
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
@@ -201,10 +195,10 @@ public class ObjectHandler {
      */
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {
         BasicDBObject document = BasicDBObject.parse(object);
-        document.put(DOCUMENT_ID_KEY, id);
+        document.put(MongoConstants.ID, id);
         try {
             if (getTtl() > 0) {
-                document.put(DOCUMENT_TIME_KEY, DateUtils.getDate());
+                document.put(MongoConstants.TIME, DateUtils.getDate());
             }
         } catch (ParseException e) {
             LOGGER.error("Failed to attach date to document.", e);
@@ -219,7 +213,7 @@ public class ObjectHandler {
      * @return id
      */
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get(DOCUMENT_ID_KEY).textValue();
+        return aggregatedDbObject.get(MongoConstants.ID).textValue();
     }
 
     /**
@@ -236,7 +230,7 @@ public class ObjectHandler {
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();
 
-        final MongoCondition lockNotSet = MongoCondition.lockCondition(NOT_LOCKED);
+        final MongoCondition lockNotSet = MongoCondition.lockCondition(MongoConstants.NOT_LOCKED);
         final MongoCondition noLock = MongoCondition.lockNullCondition();
         MongoQuery idAndNoLockCondition = MongoQueryBuilder.buildOr(lockNotSet, noLock)
                                                            .append(MongoCondition.idCondition(id));
@@ -282,7 +276,7 @@ public class ObjectHandler {
      */
     public int getTtl() {
         int ttl = 0;
-        if (!StringUtils.isEmpty(aggregationsTtl)) {
+        if (StringUtils.isNotEmpty(aggregationsTtl)) {
             try {
                 ttl = Integer.parseInt(aggregationsTtl);
             } catch (NumberFormatException e) {

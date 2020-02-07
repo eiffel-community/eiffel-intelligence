@@ -241,7 +241,7 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a database. For example after testing.
      *
-     * @param dataBaseName to know which database to remove
+     * @param databaseName to know which database to remove
      */
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);

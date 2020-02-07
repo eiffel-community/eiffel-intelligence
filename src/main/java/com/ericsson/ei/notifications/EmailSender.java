@@ -96,12 +96,10 @@ public class EmailSender {
      * at application.proporties are empty.
      * */
     private void setDefaultValues() {
-        if (sender.isEmpty() && subject.isEmpty()) {
-            sender = "noreply@ericsson.com";
+       if (subject.isEmpty()) {
             subject = "Email Subscription Notification";
-        } else if (!sender.isEmpty() && subject.isEmpty()) {
-            subject = "Email Subscription Notification";
-        } else if (sender.isEmpty() && !subject.isEmpty()) {
+        }
+       if (sender.isEmpty()) {
             sender = "noreply@ericsson.com";
         }
     }

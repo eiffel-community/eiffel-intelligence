@@ -53,14 +53,8 @@ public class EmailSenderTest {
 
     @Test
     public void testDefaultValues() {
-        if (emailSender.getSender() != null && emailSender.getSubject() != null) {
-            assertEquals("noreply@ericsson.com", emailSender.getSender());
-            assertEquals("Email Subscription Notification", emailSender.getSubject());
-        } else if (emailSender.getSender() != null && emailSender.getSubject() == null) {
-            assertEquals("noreply@ericsson.com", emailSender.getSender());
-        } else if (emailSender.getSender() == null && emailSender.getSubject() != null) {
-            assertEquals("Email Subscription Notification", emailSender.getSubject());
-        }
+        assertEquals("noreply@ericsson.com", emailSender.getSender());
+        assertEquals("Email Subscription Notification", emailSender.getSubject());
     }
 
     /*

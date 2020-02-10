@@ -51,12 +51,6 @@ public class EmailSenderTest {
         emailSender.sendEmail(message);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testDefaultValues() {
-        assertEquals("noreply@domain.com", emailSender.getSender());
-        assertEquals("Email Subscription Notification", emailSender.getSubject());
-    }
-
     /*
      * prepareEmail is not possible to test due too much hidden Spring mumbo jumbo doing things in
      * background.

@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +96,10 @@ public class EmailSender {
      * at application.proporties are empty.
      * */
     private void setDefaultValuesEmailSenderSubject() {
-       if (subject.isEmpty()) {
+       if (StringUtils.isEmpty(subject) == true) {
             subject = "Email Subscription Notification";
         }
-       if (sender.isEmpty()) {
+       if (StringUtils.isEmpty(sender) == true) {
             sender = "noreply@domain.com";
         }
     }

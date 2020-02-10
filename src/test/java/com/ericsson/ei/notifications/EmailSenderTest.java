@@ -51,9 +51,9 @@ public class EmailSenderTest {
         emailSender.sendEmail(message);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testDefaultValues() {
-        assertEquals("noreply@ericsson.com", emailSender.getSender());
+        assertEquals("noreply@domain.com", emailSender.getSender());
         assertEquals("Email Subscription Notification", emailSender.getSubject());
     }
 

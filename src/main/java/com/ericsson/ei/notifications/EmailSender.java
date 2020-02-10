@@ -48,7 +48,7 @@ public class EmailSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
     @Getter
-    @Value("${email.sender:noreply@ericsson.com}")
+    @Value("${email.sender:noreply@domain.com}")
     private String sender;
 
     @Getter
@@ -99,7 +99,7 @@ public class EmailSender {
             subject = "Email Subscription Notification";
         }
        if (sender.isEmpty()) {
-            sender = "noreply@ericsson.com";
+            sender = "noreply@domain.com";
         }
     }
 

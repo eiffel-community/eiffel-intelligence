@@ -31,6 +31,6 @@ Feature: Test Subscription Trigger
     And Subscriptions are created
     When I send Eiffel events
     And Wait for EI to aggregate objects
-    Then Notification email contains "noreply@ericsson.com" and "Email Subscription Notification" values
+    Then Notification email contains "noreply@domain.com" and "Email Subscription Notification" values
     Then Mail subscriptions were triggered
     And Rest subscriptions were triggered

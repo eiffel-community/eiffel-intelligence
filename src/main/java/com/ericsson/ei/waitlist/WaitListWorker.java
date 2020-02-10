@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 
+import com.ericsson.ei.mongo.MongoConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +62,6 @@ public class WaitListWorker {
     private EventToObjectMapHandler eventToObjectMapHandler;
 
     private boolean shutdownInProgress = false;
-    private static final String ID = "_id";
-    private static final String EVENT = "Event";
-    private static final String TIME = "Time";
 
     @Scheduled(initialDelayString = "${waitlist.resend.initial.delay}", fixedRateString = "${waitlist.resend.fixed.rate}")
     public void run() {
@@ -91,7 +89,7 @@ public class WaitListWorker {
     private void checkAggregationsExistAndRepublishEvent(String document) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode eventJson = objectMapper.readTree(document);
-        String id = eventJson.get(ID).asText();
+        String id = eventJson.get(MongoConstants.ID).asText();
         if (eventToObjectMapHandler.isEventInEventObjectMap(id)) {
             waitListStorageHandler.dropDocumentFromWaitList(document);
         } else {
@@ -100,7 +98,7 @@ public class WaitListWorker {
     }
 
     public void checkTargetAggregationsExistAndRepublishEvent(JsonNode eventJson) {
-        JsonNode event = eventJson.get(EVENT);
+        JsonNode event = eventJson.get(MongoConstants.EVENT);
         String eventStr = event.asText();
         RulesObject rulesObject = rulesHandler.getRulesForEvent(eventStr);
         String idRule = rulesObject.getIdentifyRules();
@@ -109,8 +107,8 @@ public class WaitListWorker {
         if (idRule != null && !idRule.isEmpty()) {
             JsonNode ids = jmesPathInterface.runRuleOnEvent(idRule, eventStr);
             if (ids.isArray()) {
-                JsonNode idNode = eventJson.get(ID);
-                JsonNode timeNode = eventJson.get(TIME);
+                JsonNode idNode = eventJson.get(MongoConstants.ID);
+                JsonNode timeNode = eventJson.get(MongoConstants.TIME);
                 LOGGER.debug("[EIFFEL EVENT RESENT FROM WAITLIST: {}] id:{} time:{}", waitlistId, idNode.textValue(),
                         timeNode);
                 for (final JsonNode idJsonObj : ids) {

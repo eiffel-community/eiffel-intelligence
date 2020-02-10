@@ -29,7 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -93,11 +95,11 @@ public class SingleEventAggregationTest extends FlowTestBase {
 
     @Before
     public void before() throws PropertyNotFoundException, Exception {
-
+        Header[] headers = {};
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
         when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(null);
+                anyBoolean())).thenReturn(new ResponseEntity(500, "", headers));
         super.setFirstEventWaitTime(5000);
 
         try {

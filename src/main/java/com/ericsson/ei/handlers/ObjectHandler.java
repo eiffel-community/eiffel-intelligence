@@ -20,6 +20,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ericsson.ei.mongo.*;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.mongo.MongoCondition;
-import com.ericsson.ei.mongo.MongoDBHandler;
-import com.ericsson.ei.mongo.MongoQuery;
-import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,8 +44,6 @@ import lombok.Setter;
 @Component
 public class ObjectHandler {
 
-    private static final String NOT_LOCKED = "0";
-
     private static final int MAX_RETRY_COUNT = 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandler.class);
@@ -55,12 +51,16 @@ public class ObjectHandler {
     @Getter
     @Setter
     @Value("${aggregations.collection.name}")
-    private String collectionName;
+    private String aggregationsCollectionName;
 
     @Getter
     @Setter
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
+
+    @Getter
+    @Value("${aggregations.collection.ttl}")
+    private String aggregationsTtl;
 
     @Setter
     @Autowired
@@ -77,10 +77,6 @@ public class ObjectHandler {
     @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
-
-    @Getter
-    @Value("${aggregations.collection.ttl}")
-    private String ttlValue;
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.
@@ -103,10 +99,11 @@ public class ObjectHandler {
                 document.toString());
 
         if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+            mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
+                    MongoConstants.TIME, getTtl());
         }
 
-        mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
+        mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -138,7 +135,7 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         final MongoCondition condition = MongoCondition.idCondition(id);
         String documentStr = document.toString();
-        mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        mongoDbHandler.updateDocument(databaseName, aggregationsCollectionName, condition, documentStr);
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -154,7 +151,7 @@ public class ObjectHandler {
      * @return List of documents
      */
     public List<String> findObjectsByCondition(MongoQuery query) throws MongoClientException {
-        return mongoDbHandler.find(databaseName, collectionName, query);
+        return mongoDbHandler.find(databaseName, aggregationsCollectionName, query);
     }
 
     /**
@@ -198,10 +195,10 @@ public class ObjectHandler {
      */
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {
         BasicDBObject document = BasicDBObject.parse(object);
-        document.put("_id", id);
+        document.put(MongoConstants.ID, id);
         try {
             if (getTtl() > 0) {
-                document.put("Time", DateUtils.getDate());
+                document.put(MongoConstants.TIME, DateUtils.getDate());
             }
         } catch (ParseException e) {
             LOGGER.error("Failed to attach date to document.", e);
@@ -216,7 +213,7 @@ public class ObjectHandler {
      * @return id
      */
     public String extractObjectId(JsonNode aggregatedDbObject) {
-        return aggregatedDbObject.get("_id").textValue();
+        return aggregatedDbObject.get(MongoConstants.ID).textValue();
     }
 
     /**
@@ -233,7 +230,7 @@ public class ObjectHandler {
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();
 
-        final MongoCondition lockNotSet = MongoCondition.lockCondition(NOT_LOCKED);
+        final MongoCondition lockNotSet = MongoCondition.lockCondition(MongoConstants.NOT_LOCKED);
         final MongoCondition noLock = MongoCondition.lockNullCondition();
         MongoQuery idAndNoLockCondition = MongoQueryBuilder.buildOr(lockNotSet, noLock)
                                                            .append(MongoCondition.idCondition(id));
@@ -251,7 +248,8 @@ public class ObjectHandler {
         while (documentLocked && retryCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
-                Document result = mongoDbHandler.findAndModify(databaseName, collectionName,
+                Document result = mongoDbHandler.findAndModify(databaseName,
+                        aggregationsCollectionName,
                         idAndNoLockCondition,
                         documentJson.toString());
                 if (result != null) {
@@ -278,9 +276,9 @@ public class ObjectHandler {
      */
     public int getTtl() {
         int ttl = 0;
-        if (ttlValue != null && !ttlValue.isEmpty()) {
+        if (StringUtils.isNotEmpty(aggregationsTtl)) {
             try {
-                ttl = Integer.parseInt(ttlValue);
+                ttl = Integer.parseInt(aggregationsTtl);
             } catch (NumberFormatException e) {
                 LOGGER.error("Failed to parse TTL value.", e);
             }
@@ -290,7 +288,8 @@ public class ObjectHandler {
 
     private boolean isInvalidId(String id) {
         final MongoCondition idCondition = MongoCondition.idCondition(id);
-        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName, collectionName,
+        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName,
+                aggregationsCollectionName,
                 idCondition);
 
         return documentExistsCheck.isEmpty();

@@ -79,7 +79,7 @@ public class ObjectHandlerTest {
         objHandler.setEventToObjectMap(eventToObjectMapHandler);
         objHandler.setMongoDbHandler(mongoDBHandler);
         objHandler.setJmespathInterface(jmesPathInterface);
-        objHandler.setCollectionName(collectionName);
+        objHandler.setAggregationsCollectionName(collectionName);
         objHandler.setDatabaseName(dataBaseName);
         objHandler.setSubscriptionHandler(subscriptionHandlerMock);
 

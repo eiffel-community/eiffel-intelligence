@@ -13,6 +13,7 @@
 */
 package com.ericsson.ei.queryservice;
 
+import com.ericsson.ei.mongo.MongoConstants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,7 +103,8 @@ public class ProcessQueryParams {
         JmesPathInterface jmesPathInterface = new JmesPathInterface();
         try {
             for (int i = 0; i < resultAggregatedObjectArray.length(); i++) {
-                String objectId = ((JSONObject) resultAggregatedObjectArray.get(i)).get("_id").toString();
+                String objectId =
+                        ((JSONObject) resultAggregatedObjectArray.get(i)).get(MongoConstants.ID).toString();
                 JsonNode filteredData = jmesPathInterface.runRuleOnEvent(filter, resultAggregatedObjectArray.get(i).toString());
                 JSONObject tempJson = new JSONObject();
                 tempJson.put(objectId, filteredData);

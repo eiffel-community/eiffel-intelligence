@@ -83,7 +83,6 @@ public class EmailSender {
      * */
     public MimeMessage prepareEmailMessage(String recipients, String mapNotificationMessage,
             String emailSubject) {
-        setDefaultValues();
         Set<String> emails = new HashSet<>();
         emails = extractEmails(recipients);
         String[] to = emails.toArray(new String[0]);
@@ -92,10 +91,10 @@ public class EmailSender {
     }
 
     /*
-     * This method assigns the default values of sender and subject of email notification if values
+     * This method assigns the default values for sender and subject of email notification if values
      * at application.proporties are empty.
      * */
-    private void setDefaultValues() {
+    private void setDefaultValuesEmailSenderSubject() {
        if (subject.isEmpty()) {
             subject = "Email Subscription Notification";
         }
@@ -113,6 +112,7 @@ public class EmailSender {
      */
     private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject,
             String[] recipients) {
+        setDefaultValuesEmailSenderSubject();
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

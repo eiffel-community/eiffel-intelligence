@@ -195,16 +195,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
-    @Then("^Then Notification email contains <our expected> values")
-    public void notification_email_contains_expected_values() {
-        sender = "noreply@ericsson.com";
-        subject = "Email Subscription Notification";
-    }
-
-    @Then("^Notification email contains default values$")
-    public void notification_email_contains_default_values() {
-        assertEquals("noreply@ericsson.com", sender);
-        assertEquals("Email Subscription Notification", subject);
+    @Then("^Then Notification email contains {String} and {String} values")
+    public void notification_email_contains_expected_values(String sender, String subject) {
+        assertEquals(sender, emailSender.getSender());
+        assertEquals(subject, emailSender.getSubject());
     }
 
     @Then("^Mail subscriptions were triggered$")

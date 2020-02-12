@@ -53,4 +53,5 @@ public class EmailSenderTest {
      * prepareEmail is not possible to test due too much hidden Spring mumbo jumbo doing things in
      * background.
      */
+
 }

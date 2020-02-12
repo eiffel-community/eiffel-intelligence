@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
+import org.mockito.InjectMocks;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
@@ -34,6 +35,7 @@ import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.notifications.EmailSender;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,6 +72,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${email.sender}")
     private String sender;
 
+    @Value("${email.subject}")
+    private String subject;
+
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
@@ -87,6 +92,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
+
+    @InjectMocks
+    private EmailSender emailSender;
 
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
@@ -187,6 +195,12 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
+    @Then("^Then Notification email contains ('(.*?)') and ('(.*?)') values")
+    public void notification_email_contains_expected_values(String sender, String subject) {
+        assertEquals(sender, emailSender.getSender());
+        assertEquals(subject, emailSender.getSubject());
+    }
+
     @Then("^Mail subscriptions were triggered$")
     public void mail_subscriptions_were_triggered() {
         LOGGER.debug("Verifying received emails.");
@@ -196,6 +210,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         for (SmtpMessage email : emails) {
             // assert correct sender.
             assertEquals("Assert correct email sender: ", email.getHeaderValue("From"), sender);
+            // assert correct subject.
+            assertEquals("Assert correct email subject: ", email.getHeaderValue("Subject"), subject);
             // assert given test case exist in body.
             assert (email.getBody().contains("TC5"));
         }

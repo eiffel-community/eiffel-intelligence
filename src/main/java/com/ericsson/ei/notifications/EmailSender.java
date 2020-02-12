@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +49,17 @@ public class EmailSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
     @Getter
-    @Value("${email.sender}")
+    @Value("${email.sender:noreply@domain.com}")
     private String sender;
 
     @Getter
-    @Value("${email.subject}")
+    @Value("${email.subject:Email Subscription Notification}")
     private String subject;
 
     @Autowired
     private JavaMailSender emailSender;
 
-    /**
+/**
      * This method sends an email.
      *
      * @param message   The email message to send
@@ -90,6 +91,19 @@ public class EmailSender {
         return message;
     }
 
+    /*
+     * This method assigns the default values for sender and subject of email notification if values
+     * at application.proporties are empty.
+     * */
+    private void setDefaultValuesEmailSenderSubject() {
+       if (StringUtils.isEmpty(subject)) {
+            subject = "Email Subscription Notification";
+        }
+       if (StringUtils.isEmpty(sender)) {
+            sender = "noreply@domain.com";
+        }
+    }
+
     /**
      * This method creates a MimeMessageHelper and prepares the email to send
      *
@@ -99,6 +113,7 @@ public class EmailSender {
      */
     private MimeMessage prepareEmail(String mapNotificationMessage, String emailSubject,
             String[] recipients) {
+        setDefaultValuesEmailSenderSubject();
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

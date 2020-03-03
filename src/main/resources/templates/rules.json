@@ -9,7 +9,7 @@
         "MatchIdRules": {"_id": "%IdentifyRulesEventId%"},
         "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
         "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
-        "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRules%}}",
+        "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRulesEventId%}}",
         "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",
         "ArrayMergeOptions": "",
         "HistoryIdentifyRules": "links | [?type=='COMPOSITION'].target",

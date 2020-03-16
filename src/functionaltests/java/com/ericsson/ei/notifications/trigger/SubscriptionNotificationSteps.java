@@ -93,7 +93,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @InjectMocks
+    @Autowired
     private EmailSender emailSender;
 
     private SimpleSmtpServer smtpServer;
@@ -195,11 +195,12 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
-    @Then("^Then Notification email contains ('(.*?)') and ('(.*?)') values")
+    @Then("^Notification email contains '(.*)' and '(.*)' values")
     public void notification_email_contains_expected_values(String sender, String subject) {
         assertEquals(sender, emailSender.getSender());
         assertEquals(subject, emailSender.getSubject());
     }
+
 
     @Then("^Mail subscriptions were triggered$")
     public void mail_subscriptions_were_triggered() {

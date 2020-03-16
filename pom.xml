@@ -426,7 +426,7 @@
                 <version>${springBootVersion}</version>
             </plugin>
 
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources
+            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
                 from raml -->
             <plugin>
                 <groupId>com.phoenixnap.oss</groupId>
@@ -504,22 +504,62 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
-                <configuration>
-                    <skipTests>${skipUTs}</skipTests>
-                    <forkCountTests>${forkCountTests}</forkCountTests>
-                    <forkCount>${forkCountTests}</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                        <exclude>${someModule.test.excludes}</exclude>
-                        <exclude>**/integrationtests/*</exclude>
-                    </excludes>
-                    <includes>
-                        <include>${someModule.test.includes}</include>
-                    </includes>
-                    <parallel>classes</parallel>
-                    <threadCount>5</threadCount>
-                </configuration>
+                <!-- Surefire tests are split into parallel and sequential 
+                    tests. If the test is sensitive to run in parallel it should be excluded 
+                    from that execution and moved into sequential. -->
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>parallel-tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${skipUTs}</skipTests>
+                            <forkCount>${forkCountTests}</forkCount>
+                            <reuseForks>true</reuseForks>
+                            <parallel>classes</parallel>
+                            <threadCount>5</threadCount>
+                            <includes>
+                                <include>${someModule.test.includes}</include>
+                            </includes>
+                            <excludes>
+                                <exclude>${someModule.test.excludes}</exclude>
+                                <exclude>**/*IT.java</exclude>
+                                <exclude>**/integrationtests/*</exclude>
+                                <exclude>**/TestTTLRunner.java</exclude>
+                                <exclude>**/TestSubscriptionNotificationRunner.java</exclude>
+                                <exclude>**/TestScalingAndFailoverRunner.java</exclude>
+                                <exclude>**/FlowTestTestExecution.java</exclude>
+                                <exclude>**/SingleEventAggregationTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>sequential-tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${skipUTs}</skipTests>
+                            <reuseForks>false</reuseForks>
+                            <includes>
+                                <include>**/TestTTLRunner.java</include>
+                                <include>**/TestSubscriptionNotificationRunner.java</include>
+                                <include>**/TestScalingAndFailoverRunner.java</include>
+                                <include>**/FlowTestTestExecution.java</include>
+                                <include>**/SingleEventAggregationTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -563,15 +603,29 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
                 <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
+                    <excludes>
+                        <exclude>com/ericsson/ei/controller/model/*</exclude>
+                    </excludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

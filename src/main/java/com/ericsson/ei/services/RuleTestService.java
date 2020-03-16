@@ -1,5 +1,6 @@
 package com.ericsson.ei.services;
 
+import com.ericsson.ei.exception.InvalidRulesException;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -13,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class RuleCheckService implements IRuleCheckService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RuleCheckService.class);
+public class RuleTestService implements IRuleTestService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuleTestService.class);
 
     @Autowired
     private JmesPathInterface jmesPathInterface;
@@ -34,33 +35,41 @@ public class RuleCheckService implements IRuleCheckService {
 
     @Override
     public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, IOException {
+            throws JSONException, IOException, InvalidRulesException {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
-        String response;
+        String response = "";
         // Looping all events and add suffix template name to id and links, For
         // identifying the test aggregated events.
-        HashSet<String> templateNames = new HashSet<>();
-        for (int i = 0; i < listEventsJson.length(); i++) {
-            String templateName = jmesPathInterface
-                    .runRuleOnEvent("TemplateName", listRulesJson.getJSONObject(i).toString()).asText("TEST");
-            templateNames.add(templateName);
-            if (templateNames.size() == 1) {
-                addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
-                LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
-                eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
+        List<String> templateNames = new ArrayList<String>();
+        for (int i = 0; i < listRulesJson.length(); i++) {
+            String templateName = jmesPathInterface.runRuleOnEvent("TemplateName",
+                    listRulesJson.getJSONObject(i).toString()).asText("TEST");
+            if (!templateNames.contains(templateName)) {
+                templateNames.add(templateName);
             }
         }
-        String templateName = templateNames.iterator().next();
-        if (templateNames.size() == 1) {
-            List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
-            response = responseList.toString();
-        } else {
-            response = "Multiple template names are not allowed, Please use single name for all rules.";
+
+        if (templateNames.size() != 1) {
+            String errorMessage = "Different template names are not allowed in rules, Please use "
+                    + "one template name for all rules.";
+            throw new InvalidRulesException(errorMessage);
         }
+
+        String templateName = templateNames.iterator().next();
+        for (int i = 0; i < listEventsJson.length(); i++) {
+            addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
+            LOGGER.debug("Event to prepare aggregated object :: {}",
+                    listEventsJson.getJSONObject(i).toString());
+            eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
+        }
+        List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
+        response = responseList.toString();
+
         // Delete the aggregated object
         processAggregatedObject.deleteAggregatedObject(templateName);
         // Delete the event object mapper
         eventToObjectMapHandler.deleteEventObjectMap(templateName);
+
         return response;
     }
 

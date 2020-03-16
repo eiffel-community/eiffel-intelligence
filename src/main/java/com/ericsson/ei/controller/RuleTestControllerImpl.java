@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ericsson.ei.exception.InvalidRulesException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.services.IRuleCheckService;
+import com.ericsson.ei.services.IRuleTestService;
 import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +37,7 @@ public class RuleTestControllerImpl implements RuleTestController {
     private JmesPathInterface jmesPathInterface;
 
     @Autowired
-    private IRuleCheckService ruleCheckService;
+    private IRuleTestService ruleTestService;
 
     @Setter
     @Value("${test.aggregation.enabled:false}")
@@ -49,10 +50,7 @@ public class RuleTestControllerImpl implements RuleTestController {
      * This method interacts with JmesPathInterface class method runRuleOnEvent to
      * evaluate a rule on JSON object.
      *
-     * @param rule-
-     *            takes a String as a rule that need to be evaluated on JSON content
-     * @param jsonContent-
-     *            takes JSON object as a String
+     * @param body - the request body contains a rule and an event
      * @return a String object
      *
      */
@@ -87,7 +85,7 @@ public class RuleTestControllerImpl implements RuleTestController {
             final HttpServletRequest httpRequest) {
         if (testEnabled) {
             try {
-                String aggregatedObject = ruleCheckService.prepareAggregatedObject(
+                String aggregatedObject = ruleTestService.prepareAggregatedObject(
                         new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
@@ -97,7 +95,12 @@ public class RuleTestControllerImpl implements RuleTestController {
                     String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
                     return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
                 }
-            } catch (JSONException | IOException e) {
+            }
+            catch (InvalidRulesException e) {
+                String errorJsonAsString = ResponseMessage.createJsonMessage(e.getMessage());
+                return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
+            }
+            catch (JSONException | IOException e) {
                 String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
                 String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
@@ -117,11 +120,11 @@ public class RuleTestControllerImpl implements RuleTestController {
     @ApiOperation(value = "Check if rules test service is enabled", tags = {"Rule-test"},
             response = String.class)
     public ResponseEntity<?> getRuleTest(HttpServletRequest httpRequest) {
-        LOGGER.debug("Getting Enabling Status of Rules Check Service");
+        LOGGER.debug("Getting Enabled Status of Rules Test Service");
         try {
             return new ResponseEntity<>(new JSONObject().put("status", testEnabled).toString(), HttpStatus.OK);
         } catch (Exception e) {
-            String errorMessage = "Internal Server Error: Failed to get status.";
+            String errorMessage = "Failed to get status.";
             LOGGER.error(errorMessage, e);
             String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
             return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

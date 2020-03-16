@@ -2,19 +2,19 @@ package com.ericsson.ei.services;
 
 import java.io.IOException;
 
+import com.ericsson.ei.exception.InvalidRulesException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-public interface IRuleCheckService {
+public interface IRuleTestService {
 
     /**
-     * This method used for the prepare the aggregated object using list of
-     * rules and list events This method uses the mongodb to store and update
-     * aggregated object, once aggregation done it return and remove from the
-     * mongodb. All these test events aggregated objects having the suffiex name
-     * "_"<templateName>
+     * This method prepares an aggregated object using a list of rules and a list events. This
+     * method uses the mongodb to store and update aggregated object, once aggregation done it
+     * return and remove from the mongodb. All these test events aggregated objects having the
+     * suffix name _"<templateName>.
      *
      * @param listRulesJson
      *            each event has their own rule set
@@ -26,6 +26,6 @@ public interface IRuleCheckService {
      * @throws IOException
      */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, JsonProcessingException, IOException;
+            throws JSONException, JsonProcessingException, IOException, InvalidRulesException;
 
 }

@@ -72,7 +72,7 @@ public class ProcessAggregatedObject {
      * @return ArrayList
      */
     public ArrayList<String> getAggregatedObjectByTemplateName(String templateName) {
-        String queryString = "{\"id\": /.*" + templateName + "/}";
+        String queryString = "{\"_id\": /.*" + templateName + "/}";
         MongoQuery query = new MongoStringQuery(queryString);
         LOGGER.debug("The JSON query is: {}", query);
         return mongoDBHandler.find(aggregationDataBaseName, aggregationCollectionName, query);
@@ -86,7 +86,7 @@ public class ProcessAggregatedObject {
      * @return boolean
      */
     public boolean deleteAggregatedObject(String templateName) {
-        String queryString = "{\"id\": /.*" + templateName + "/}";
+        String queryString = "{\"_id\": /.*" + templateName + "/}";
         MongoQuery query = new MongoStringQuery(queryString);
         LOGGER.debug("The JSON query for deleting aggregated object is: {}", query);
         return mongoDBHandler.dropDocument(aggregationDataBaseName, aggregationCollectionName, query);

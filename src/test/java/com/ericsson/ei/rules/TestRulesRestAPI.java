@@ -49,7 +49,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.RuleTestControllerImpl;
-import com.ericsson.ei.services.IRuleCheckService;
+import com.ericsson.ei.services.IRuleTestService;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
@@ -74,7 +74,7 @@ public class TestRulesRestAPI {
     private MockMvc mockMvc;
 
     @MockBean
-    private IRuleCheckService ruleCheckService;
+    private IRuleTestService ruleCheckService;
 
     @Value("${test.aggregation.enabled:false}")
     private Boolean testEnable;

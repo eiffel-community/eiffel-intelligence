@@ -1,0 +1,51 @@
+[
+    {
+        "TemplateName": "TEST_RULES_INVALID",
+        "Type": "EiffelArtifactCreatedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "YES",
+        "IdentifyRules": "[meta.id]",
+        "MatchIdRules": {
+            "_id": "%IdentifyRulesEventId%"
+        },
+        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity }",
+        "ArrayMergeOptions": "",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    },
+    {
+        "TemplateName": "WRONG_NAME",
+        "Type": "EiffelArtifactPublishedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "NO",
+        "IdentifyRules": "links | [?type=='ARTIFACT'].target",
+        "MatchIdRules": {
+            "_id": "%IdentifyRulesEventId%"
+        },
+        "ExtractionRules": "{ publications :[ { eventId : meta.id, time : meta.time, locations : data.locations  }] }",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    },
+    {
+        "TemplateName": "TEST_RULES_INVALID",
+        "Type": "EiffelConfidenceLevelModifiedEvent",
+        "TypeRule": "meta.type",
+        "IdRule": "meta.id",
+        "StartEvent": "NO",
+        "IdentifyRules": "links | [?type=='SUBJECT'].target",
+        "MatchIdRules": {
+            "_id": "%IdentifyRulesEventId%"
+        },
+        "ExtractionRules": "{confidenceLevels :[{ eventId:meta.id, time:meta.time, name:data.name, value:data.value}]}",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
+        "ProcessRules": null,
+        "ProcessFunction": null
+    }
+]

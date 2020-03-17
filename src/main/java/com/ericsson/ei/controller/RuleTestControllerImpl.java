@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
 import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.services.IRuleTestService;
+import com.ericsson.ei.rules.IRuleTestService;
 import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.ApiOperation;
@@ -101,7 +101,7 @@ public class RuleTestControllerImpl implements RuleTestController {
                 return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
             }
             catch (JSONException | IOException e) {
-                String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
+                String errorMessage = "Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
                 String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
                 return new ResponseEntity<>(errorJsonAsString, HttpStatus.INTERNAL_SERVER_ERROR);

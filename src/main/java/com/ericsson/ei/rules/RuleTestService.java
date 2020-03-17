@@ -1,4 +1,4 @@
-package com.ericsson.ei.services;
+package com.ericsson.ei.rules;
 
 import com.ericsson.ei.exception.InvalidRulesException;
 import com.ericsson.ei.handlers.EventHandler;
@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

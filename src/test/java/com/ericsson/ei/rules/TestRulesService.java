@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.mongo.MongoDBHandler;
-import com.ericsson.ei.services.IRuleTestService;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.MongoClient;
@@ -40,8 +39,6 @@ public class TestRulesService {
     private static final String RULES = "src/test/resources/AggregateListRules.json";
     private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
     private static final String INVALID_RULES = "src/test/resources/InvalidRules.json";
-
-    final static Logger LOGGER = LoggerFactory.getLogger(TestRulesService.class);
 
     @Autowired
     private IRuleTestService ruleTestService;

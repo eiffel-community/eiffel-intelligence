@@ -49,7 +49,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.RuleTestControllerImpl;
-import com.ericsson.ei.services.IRuleTestService;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
@@ -63,12 +62,13 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @AutoConfigureMockMvc
 public class TestRulesRestAPI {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesRestAPI.class);
     private static final String INPUT_FILE_PATH = "src/test/resources/EiffelArtifactCreatedEvent.json";
     private static final String EXTRACTION_RULE_FILE_PATH = "src/test/resources/ExtractionRule.txt";
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";
     private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesRestAPI.class);
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,7 +77,7 @@ public class TestRulesRestAPI {
     private IRuleTestService ruleCheckService;
 
     @Value("${test.aggregation.enabled:false}")
-    private Boolean testEnable;
+    private Boolean testEnabled;
 
     @Test
     public void testJmesPathRestApi() throws Exception {
@@ -129,7 +129,7 @@ public class TestRulesRestAPI {
                 .accept(MediaType.ALL).content(body).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         String resultStr = result.getResponse().getContentAsString();
-        if (testEnable) {
+        if (testEnabled) {
             JSONArray actualAggObject = new JSONArray(resultStr);
             assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
             assertEquals(expectedAggObject.toString(), actualAggObject.toString());

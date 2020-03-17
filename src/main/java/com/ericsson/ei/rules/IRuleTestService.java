@@ -1,4 +1,4 @@
-package com.ericsson.ei.services;
+package com.ericsson.ei.rules;
 
 import java.io.IOException;
 

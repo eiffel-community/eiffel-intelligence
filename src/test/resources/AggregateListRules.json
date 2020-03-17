@@ -10,13 +10,7 @@
             "_id": "%IdentifyRulesEventId%"
         },
         "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
-        "DownstreamIdentifyRules": "links | [?type=='COMPOSITION'].target",
-        "DownstreamMergeRules": "{\"externalComposition\":{\"eventId\":%IdentifyRulesEventId%}}",
-        "DownstreamExtractionRules": "{artifacts: [{id : meta.id}]}",
         "ArrayMergeOptions": "",
-        "HistoryIdentifyRules": "links | [?type=='COMPOSITION'].target",
-        "HistoryExtractionRules": "{internalComposition:{artifacts: [{id : meta.id}]}}",
-        "HistoryPathRules": "{artifacts: {id: meta.id}}",
         "ProcessRules": null,
         "ProcessFunction": null
     },
@@ -31,9 +25,6 @@
             "_id": "%IdentifyRulesEventId%"
         },
         "ExtractionRules": "{ publications :[ { eventId : meta.id, time : meta.time, locations : data.locations  }] }",
-        "ArrayMergeOptions": "",
-        "HistoryIdentifyRules": "",
-        "HistoryExtractionRules": "",
         "ProcessRules": null,
         "ProcessFunction": null
     },
@@ -47,10 +38,8 @@
         "MatchIdRules": {
             "_id": "%IdentifyRulesEventId%"
         },
-        "ExtractionRules": "{confidenceLevels :[{ eventId:meta.id, time:meta.time, name:data.name, value:data.value}]}",
-        "ArrayMergeOptions": "",
-        "HistoryIdentifyRules": "",
-        "HistoryExtractionRules": "",
+        "ExtractionRules" : "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
+        "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
         "ProcessRules": null,
         "ProcessFunction": null
     }

@@ -5,20 +5,7 @@
             "type": "EiffelArtifactCreatedEvent",
             "version": "3.0.0",
             "time": 1521452368194,
-            "tags": [],
-            "source": {
-                "domainId": "eiffel039.seli.fem101",
-                "host": "eselivm2v1464l",
-                "name": "fem101-eiffel039",
-                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
-                "uri": "https://arm101-eiffel039.lmera.ericsson.se:8443/nexus/content/repositories/releases"
-            },
-            "security": {
-                "sdm": {
-                    "authorIdentity": "test",
-                    "encryptedDigest": "sample"
-                }
-            }
+            "tags": []
         },
         "data": {
             "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
@@ -55,13 +42,6 @@
             "version": "3.0.0",
             "time": 1521452400324,
             "tags": [],
-            "source": {
-                "domainId": "eiffel039.seli.fem101",
-                "host": "eselivm2v1464l",
-                "name": "fem101-eiffel039",
-                "serializer": "pkg:maven/com.mycompany.tools/eiffel-serializer@1.0.3",
-                "uri": ""
-            },
             "security": {
                 "sdm": {
                     "authorIdentity": "true",
@@ -70,15 +50,27 @@
             }
         },
         "data": {
-            "name": "dummy_1_stable",
-            "value": "SUCCESS",
-            "issuer": {
-                "name": "",
-                "email": "",
-                "id": "",
-                "group": ""
-            },
-            "customData": []
+            "name": "INTEGRATION_TEST",
+            "value": "SUCCESS"
+        },
+        "links": [
+            {
+                "type": "SUBJECT",
+                "target": "df4cdb42-1580-4cff-b97a-4d0faa9b2b22"
+            }
+        ]
+    },
+    {
+        "meta": {
+            "id": "a2be0cf8-2ebd-4d6d-bf5c-a3b535cd084e",
+            "type": "EiffelConfidenceLevelModifiedEvent",
+            "version": "3.0.0",
+            "time": 1521452400324,
+            "tags": []
+        },
+        "data": {
+            "name": "SMOKE_TEST",
+            "value": "SUCCESS"
         },
         "links": [
             {

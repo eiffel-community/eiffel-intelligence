@@ -53,22 +53,18 @@ public class TestRulesService {
     }
 
     @Test
-    public void prepareAggregatedObject() {
-        String jsonInput;
-        String extractionRules_test;
-        String aggregatedResult;
-        JSONArray expectedAggObject;
-        try {
-            jsonInput = FileUtils.readFileToString(new File(EVENTS), "UTF-8");
-            extractionRules_test = FileUtils.readFileToString(new File(RULES), "UTF-8");
-            aggregatedResult = FileUtils.readFileToString(new File(AGGREGATED_RESULT_OBJECT), "UTF-8");
-            expectedAggObject = new JSONArray(aggregatedResult);
-            String result = ruleTestService.prepareAggregatedObject(new JSONArray(extractionRules_test),
-                    new JSONArray(jsonInput));
-            JSONArray actualAggObject = new JSONArray(result);
-            assertEquals(expectedAggObject.toString(), actualAggObject.toString());
-        } catch (Exception e) {
-        }
+    public void prepareAggregatedObject() throws Throwable {
+        String events = FileUtils.readFileToString(new File(EVENTS), "UTF-8");
+        String extractionRules = FileUtils.readFileToString(new File(RULES), "UTF-8");
+        String aggregationResult =
+                FileUtils.readFileToString(new File(AGGREGATED_RESULT_OBJECT), "UTF-8");
+        JSONArray expectedAggregation = new JSONArray(aggregationResult);
+
+        String result = ruleTestService.prepareAggregatedObject(new JSONArray(extractionRules),
+                new JSONArray(events));
+        JSONArray actualAggregation = new JSONArray(result);
+
+        assertEquals(expectedAggregation.toString(), actualAggregation.toString());
     }
 
     @Test(expected = InvalidRulesException.class)

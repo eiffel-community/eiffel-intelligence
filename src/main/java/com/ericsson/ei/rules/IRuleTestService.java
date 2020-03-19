@@ -6,7 +6,6 @@ import com.ericsson.ei.exception.InvalidRulesException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface IRuleTestService {
 

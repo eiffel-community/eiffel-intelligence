@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.io.IOException;
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,8 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -70,8 +67,6 @@ public class TestRulesRestAPI {
     private static final String EVENTS = "src/test/resources/AggregateListEvents.json";
     private static final String RULES = "src/test/resources/AggregateListRules.json";
     private static final String AGGREGATED_RESULT_OBJECT = "src/test/resources/AggregateResultObject.json";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestRulesRestAPI.class);
 
     @Autowired
     private MockMvc mockMvc;

@@ -58,7 +58,7 @@ public class RuleTestService implements IRuleTestService {
      * This method iterates through the list of rules to extract the template name from each rule.
      * All rules should contain the same template name, which is returned.
      *
-     * @throws  InvalidRulesException if the rules contains several template names
+     * @throws  InvalidRulesException if the rules contain several template names
      * @return a single template name used in all rules
      * */
     private String validateRuleTemplateNames(JSONArray listRulesJson)

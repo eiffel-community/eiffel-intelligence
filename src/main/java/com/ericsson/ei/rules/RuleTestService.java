@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,31 @@ public class RuleTestService implements IRuleTestService {
             throws JSONException, IOException, InvalidRulesException {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
         String response = "";
-        // Looping all events and add suffix template name to id and links, For
-        // identifying the test aggregated events.
+
+        String templateName = validateRuleTemplateNames(listRulesJson);
+
+        prepareEventsForTestAggregation(listEventsJson, templateName);
+
+        List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
+        response = responseList.toString();
+
+        // Delete the aggregated object
+        processAggregatedObject.deleteAggregatedObject(templateName);
+        // Delete the event object mapper
+        eventToObjectMapHandler.deleteEventObjectMap(templateName);
+
+        return response;
+    }
+
+    /**
+     * This method iterates through the list of rules to extract the template name from each rule.
+     * All rules should contain the same template name, which is returned.
+     *
+     * @throws  InvalidRulesException if the rules contains several template names
+     * @return a single template name used in all rules
+     * */
+    private String validateRuleTemplateNames(JSONArray listRulesJson)
+            throws InvalidRulesException {
         List<String> templateNames = new ArrayList<String>();
         for (int i = 0; i < listRulesJson.length(); i++) {
             String templateName = jmesPathInterface.runRuleOnEvent("TemplateName",
@@ -57,32 +79,35 @@ public class RuleTestService implements IRuleTestService {
         }
 
         String templateName = templateNames.iterator().next();
+        return templateName;
+    }
+
+    /**
+     * Iterates through a list of events and adding a suffix to their ids and the ids in their
+     * links. This is to easily identify which events are used in a test aggregation.
+     */
+    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) {
         for (int i = 0; i < listEventsJson.length(); i++) {
-            addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
+            addTemplateNameToIds(listEventsJson.getJSONObject(i), suffix);
             LOGGER.debug("Event to prepare aggregated object :: {}",
                     listEventsJson.getJSONObject(i).toString());
             eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
         }
-        List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
-        response = responseList.toString();
-
-        // Delete the aggregated object
-        processAggregatedObject.deleteAggregatedObject(templateName);
-        // Delete the event object mapper
-        eventToObjectMapHandler.deleteEventObjectMap(templateName);
-
-        return response;
     }
 
-    private void addTemplateNameToIds(JSONObject jsonObject, final String templateName) throws JSONException {
+    /**
+     * Takes an Eiffel event and a suffix to attach to the event id and all ids in the links.
+     * @throws JSONException
+     * */
+    private void addTemplateNameToIds(JSONObject jsonObject, final String suffix) throws JSONException {
         String idTemplateSuffix = jmesPathInterface.runRuleOnEvent("meta.id", jsonObject.toString()).asText() + "_"
-                + templateName;
+                + suffix;
         if (jsonObject.has("meta"))
             jsonObject.getJSONObject("meta").put("id", idTemplateSuffix);
         if (jsonObject.has("links")) {
             for (int i = 0; i < jsonObject.getJSONArray("links").length(); i++) {
                 JSONObject link = jsonObject.getJSONArray("links").getJSONObject(i);
-                link.put("target", link.getString("target") + "_" + templateName);
+                link.put("target", link.getString("target") + "_" + suffix);
             }
         }
     }

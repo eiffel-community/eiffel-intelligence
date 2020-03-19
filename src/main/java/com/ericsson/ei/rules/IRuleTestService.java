@@ -11,21 +11,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface IRuleTestService {
 
     /**
-     * This method prepares an aggregated object using a list of rules and a list events. This
-     * method uses the mongodb to store and update aggregated object, once aggregation done it
-     * return and remove from the mongodb. All these test events aggregated objects having the
-     * suffix name _"<templateName>.
+     * This method is used to start a test aggregation on given set of rules and events. The
+     * rules are validated to ensure they all contain the same template name.
+     * Before starting the process the event ids gets a suffix attached, to identify these as
+     * test events. When test aggregation is done it is removed from the database.
      *
-     * @param listRulesJson
-     *            each event has their own rule set
-     * @param listEventsJson
-     *            list of events to perform aggregated using the listRulesJson
-     * @return
+     * @param listRulesJson a JSONArray containing a list of rules to test
+     * @param listEventsJson  a JSONArray containing a list of events to test
      * @throws JSONException
-     * @throws JsonProcessingException
      * @throws IOException
-     */
+     * @throws InvalidRulesException
+     * */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, JsonProcessingException, IOException, InvalidRulesException;
+            throws JSONException, IOException, InvalidRulesException;
 
 }

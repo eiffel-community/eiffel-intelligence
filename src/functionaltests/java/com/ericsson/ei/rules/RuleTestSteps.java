@@ -35,7 +35,7 @@ public class RuleTestSteps extends FunctionalTestBase {
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
 
     @Autowired
-    RuleTestControllerImpl ruleTestControllerImpl;
+    private RuleTestControllerImpl ruleTestControllerImpl;
 
     private String rules;
     private String events;

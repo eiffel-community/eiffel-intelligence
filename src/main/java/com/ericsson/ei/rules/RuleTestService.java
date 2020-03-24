@@ -37,14 +37,13 @@ public class RuleTestService implements IRuleTestService {
     public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
             throws JSONException, IOException, InvalidRulesException {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
-        String response = "";
 
         String templateName = validateRuleTemplateNames(listRulesJson);
 
         prepareEventsForTestAggregation(listEventsJson, templateName);
 
         List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
-        response = responseList.toString();
+        String response = responseList.toString();
 
         // Delete the aggregated object
         processAggregatedObject.deleteAggregatedObject(templateName);

@@ -5,6 +5,7 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import java.io.File;
 
+import com.ericsson.ei.controller.RuleTestControllerImpl;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ericsson.ei.controller.RuleTestController;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -36,7 +35,7 @@ public class RuleTestSteps extends FunctionalTestBase {
     private static final String TEST_RESOURCES_PATH = "src/test/resources";
 
     @Autowired
-    private RuleTestController ruleTestController;
+    private RuleTestControllerImpl ruleTestControllerImpl;
 
     private String rules;
     private String events;
@@ -47,13 +46,13 @@ public class RuleTestSteps extends FunctionalTestBase {
     private ResponseEntity response;
 
     @Given("^rules checking is enabled$")
-    public void rules_checking_is_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleTestController, "testEnabled", true);
+    public void rules_checking_is_enabled() {
+        ruleTestControllerImpl.setTestEnabled(true);
     }
 
     @Given("^rules checking is not enabled$")
-    public void rules_checking_is_not_enabled() throws Throwable {
-        ReflectionTestUtils.setField(ruleTestController, "testEnabled", false);
+    public void rules_checking_is_not_enabled() {
+        ruleTestControllerImpl.setTestEnabled(false);
     }
 
     @Given("^file with JMESPath rules \"([^\"]*)\" and file with events \"([^\"]*)\"$")

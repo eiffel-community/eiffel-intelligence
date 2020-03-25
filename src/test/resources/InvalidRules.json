@@ -1,6 +1,6 @@
 [
     {
-        "TemplateName": "ARTIFACT_TEST",
+        "TemplateName": "TEST_RULES_INVALID",
         "Type": "EiffelArtifactCreatedEvent",
         "TypeRule": "meta.type",
         "IdRule": "meta.id",
@@ -9,13 +9,13 @@
         "MatchIdRules": {
             "_id": "%IdentifyRulesEventId%"
         },
-        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity, fileInformation : data.fileInformation, buildCommand : data.buildCommand }",
+        "ExtractionRules": "{ id : meta.id, type : meta.type, time : meta.time, identity : data.identity }",
         "ArrayMergeOptions": "",
         "ProcessRules": null,
         "ProcessFunction": null
     },
     {
-        "TemplateName": "ARTIFACT_TEST",
+        "TemplateName": "WRONG_NAME",
         "Type": "EiffelArtifactPublishedEvent",
         "TypeRule": "meta.type",
         "IdRule": "meta.id",
@@ -25,11 +25,14 @@
             "_id": "%IdentifyRulesEventId%"
         },
         "ExtractionRules": "{ publications :[ { eventId : meta.id, time : meta.time, locations : data.locations  }] }",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
         "ProcessRules": null,
         "ProcessFunction": null
     },
     {
-        "TemplateName": "ARTIFACT_TEST",
+        "TemplateName": "TEST_RULES_INVALID",
         "Type": "EiffelConfidenceLevelModifiedEvent",
         "TypeRule": "meta.type",
         "IdRule": "meta.id",
@@ -38,8 +41,10 @@
         "MatchIdRules": {
             "_id": "%IdentifyRulesEventId%"
         },
-        "ExtractionRules" : "{ eventId:meta.id, time:meta.time, name:data.name, value:data.value }",
-        "MergeResolverRules": "[ {NONEPATH:NONE}, {confidenceLevels: [{ eventId: meta.id }]} ]",
+        "ExtractionRules": "{confidenceLevels :[{ eventId:meta.id, time:meta.time, name:data.name, value:data.value}]}",
+        "ArrayMergeOptions": "",
+        "HistoryIdentifyRules": "",
+        "HistoryExtractionRules": "",
         "ProcessRules": null,
         "ProcessFunction": null
     }

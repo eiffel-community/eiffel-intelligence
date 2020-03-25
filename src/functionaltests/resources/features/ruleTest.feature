@@ -1,6 +1,5 @@
-#Author: valentin.tyhonov@ericsson.com
 
-@RuleCheck
+@RuleTest
 Feature: Test rule test feature
 
   @ExecuteRuleSingle
@@ -21,7 +20,7 @@ Feature: Test rule test feature
   @ExecuteIncorrectRule
   Scenario: Execute incorrect list of JMESPath rules on list of JSON objects
     Given rules checking is enabled
-    And file with JMESPath rules "/AggregateListRules.json" and file with events "/subscription_single.json"
+    And file with JMESPath rules "/InvalidRules.json" and file with events "/AggregateListEvents.json"
     When make a POST request to the REST API "/rule-test/run-full-aggregation"
     Then get response code of 400
 

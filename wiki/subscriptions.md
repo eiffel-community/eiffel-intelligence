@@ -34,7 +34,8 @@ the aggregated object will look like when writing the conditions. The
 requirements inside a subscription should reflect a wanted state of the 
 aggregation, for example: "_Hey Eiffel Intelligence, let me know when my 
 artifact has been published here!_" or "_I want to know when these two products 
-have reached confidence level X_".
+have reached confidence level X_". Requirements in subscriptions are written 
+using [JMESPath](https://jmespath.org/) language.
 
 We will go through how to write some example requirements in a subscription
 based on the below aggregated object. What you see in the aggregation is 

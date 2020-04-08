@@ -44,7 +44,7 @@ This _id serves as an index in Mongo DB to speed up searches in the database.
 The below aggregation is based on the [Artifact rules](../src/main/resources/rules/ArtifactRules-Eiffel-Agen-Version.json).
 
 It should be noted that requirements in subscriptions are written 
-by using [JMESPath](https://jmespath.org/) language.
+by using [JMESPath](https://jmespath.org/) language. And, here is the [JMESPATH specification](https://jmespath.org/specification.html).
 
 **Aggregation from several Eiffel events:**
 

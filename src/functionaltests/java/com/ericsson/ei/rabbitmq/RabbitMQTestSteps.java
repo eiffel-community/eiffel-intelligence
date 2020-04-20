@@ -40,13 +40,17 @@ import cucumber.api.java.en.When;
         "missedNotificationDataBaseName: RabbitMQTestConnectionSteps-missedNotifications",
         "rabbitmq.exchange.name: RabbitMQTestConnectionSteps-exchange",
         "rabbitmq.consumerName: RabbitMQTestConnectionStepsConsumer" })
-public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
+public class RabbitMQTestSteps extends FunctionalTestBase {
 
     @Value("${rabbitmq.port}")
     private String rabbitMQPort;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQTestConnectionSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQTestSteps.class);
     private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
+    private static final String EIFFEL_EVENTS_MULTI_KEY = "src/functionaltests/resources/eiffel_events_for_test.json";
+
+    private static final String ROUTING_KEY_1 = "routing-key-1";
+    private static final String ROUTING_KEY_2 = "routing-key-2";
 
     private AMQPBrokerManager amqpBroker;
 
@@ -72,6 +76,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
         RabbitAdmin rabbitAdmin = createExchange(rmqHandler);
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
+        rabbitTemplate.setRoutingKey(ROUTING_KEY_1);
         rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -99,6 +104,19 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         createExchange(eventManager.getRmqHandler());
     }
 
+    @When("^events are published using different routing keys$")
+    public void events_are_published_using_different_routing_keys() throws Exception {
+        LOGGER.debug("Sending eiffel events");
+        List<String> eventNames = new ArrayList<>();
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventManager.getRmqHandler().rabbitMqTemplate().setRoutingKey(ROUTING_KEY_1);
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS_MULTI_KEY, eventNames);
+        eventNames.clear();
+        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventManager.getRmqHandler().rabbitMqTemplate().setRoutingKey(ROUTING_KEY_2);
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS_MULTI_KEY, eventNames);
+    }
+
     @Then("^I can send events which are put in the waitlist$")
     public void can_send_events_which_are_put_in_the_waitlist() throws Exception {
         LOGGER.debug("Sending eiffel events");
@@ -112,6 +130,16 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
             waitListSize = dbManager.waitListSize();
         }
         assertEquals(4, waitListSize);
+    }
+
+    @Then("^an aggregated object should be created$")
+    public void an_aggregated_object_should_be_created() throws Exception {
+        List<String> arguments = new ArrayList<>();
+        arguments.add("_id=6acc3c87-75e0-4b6d-88f5-b1a5d4e62b43");
+        arguments.add("uri=https://myrepository.com/mySubSystemArtifact");
+        List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);
+        assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: "
+                + missingArguments.toString(), 0, missingArguments.size());
     }
 
     /**
@@ -137,7 +165,8 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         admin.declareQueue(queue);
         final TopicExchange exchange = new TopicExchange(exchangeName, true, false);
         admin.declareExchange(exchange);
-        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("#"));
+        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY_1));
+        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY_2));
         admin.initialize();
         admin.getQueueProperties(queueName);
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();

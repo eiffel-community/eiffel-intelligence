@@ -167,6 +167,10 @@ The rabbitmq.tlsVersion property specifies the security protocol and you can fin
 * rabbitmq.binding.key
 * rabbitmq.waitlist.queue.suffix
 
+**Note:** Eiffel Intelligence will create a binding with the routing key "eiffel-intelligence.waitlist".
+This key is meant to be used internally by the back-end.
+
+
 ## Security
 
 ### LDAP

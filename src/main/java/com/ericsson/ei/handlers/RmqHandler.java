@@ -16,6 +16,9 @@
 */
 package com.ericsson.ei.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -99,7 +102,7 @@ public class RmqHandler {
     @Getter
     @Setter
     @Value("${rabbitmq.binding.key}")
-    private String bindingKey;
+    private String bindingKeys;
 
     @Getter
     @Setter
@@ -118,6 +121,8 @@ public class RmqHandler {
     @Getter
     @JsonIgnore
     private SimpleMessageListenerContainer container;
+
+    private static final String WAITLIST_BINDING_KEY = "eiffel-intelligence.waitlist";
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -148,22 +153,33 @@ public class RmqHandler {
     }
 
     @Bean
-    Queue queue() {
+    public Queue queue() {
         return new Queue(getQueueName(), true);
     }
 
     @Bean
-    TopicExchange exchange() {
+    public TopicExchange exchange() {
         return new TopicExchange(exchangeName);
     }
 
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(bindingKey);
+        return BindingBuilder.bind(queue).to(exchange).with(WAITLIST_BINDING_KEY);
     }
 
     @Bean
-    public SimpleMessageListenerContainer bindToQueueForRecentEvents(ConnectionFactory springConnectionFactory,
+    public List<Binding> bindings() {
+        String[] bingingKeysArray = splitBindingKeys(bindingKeys);
+        List<Binding> bindingList = new ArrayList<Binding>();
+        for (String bindingKey : bingingKeysArray) {
+            bindingList.add(BindingBuilder.bind(queue()).to(exchange()).with(bindingKey));
+        }
+        return bindingList;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer bindToQueueForRecentEvents(
+            ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
         String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
@@ -176,17 +192,6 @@ public class RmqHandler {
         return container;
     }
 
-    public String getQueueName() {
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName;
-    }
-
-    public String getWaitlistQueueName() {
-
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "." + waitlistSufix;
-    }
-
     @Bean
     public RabbitTemplate rabbitMqTemplate() {
         if (rabbitTemplate == null) {
@@ -197,8 +202,8 @@ public class RmqHandler {
             }
 
             rabbitTemplate.setExchange(exchangeName);
-            rabbitTemplate.setRoutingKey(bindingKey);
             rabbitTemplate.setQueue(getQueueName());
+            rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -207,6 +212,18 @@ public class RmqHandler {
             });
         }
         return rabbitTemplate;
+    }
+
+    public String getQueueName() {
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName;
+    }
+
+    public String getWaitlistQueueName() {
+
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
+                + waitlistSufix;
     }
 
     public void publishObjectToWaitlistQueue(String message) {
@@ -223,4 +240,8 @@ public class RmqHandler {
         }
     }
 
+    private String[] splitBindingKeys(String bindingKeys) {
+        String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
+        return bindingKeysWithoutWhitespace.split(",");
+    }
 }

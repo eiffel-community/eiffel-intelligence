@@ -74,7 +74,7 @@ public class RmqHandlerTest {
         rmqHandler.setPort(port);
         rmqHandler.setDomainId(domainId);
         rmqHandler.setComponentName(componentName);
-        rmqHandler.setBindingKey(bindingKey);
+        rmqHandler.setBindingKeys(bindingKey);
         rmqHandler.setConsumerName(consumerName);
     }
 
@@ -110,7 +110,7 @@ public class RmqHandlerTest {
 
     @Test
     public void getRoutingKeyTest() {
-        assertTrue(rmqHandler.getBindingKey().equals(bindingKey));
+        assertTrue(rmqHandler.getBindingKeys().equals(bindingKey));
     }
 
     @Test

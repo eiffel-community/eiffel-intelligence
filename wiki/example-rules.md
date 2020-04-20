@@ -34,7 +34,7 @@ In the example "[all event rules](src/main/resources/rules/AllEventsRules-Eiffel
 no aggregation is defined. Eiffel Intelligence will simply listen to the
 Eiffel events listed, and put them as is in the database.
 Each Eiffel event will become a separate object/document in the database,
-independent of, if they are linked together or not.
+regardless of whether the events are linked together or not.
 
 These rules are **not meant for production use**, since the database will become
 a copy of any other storage implementation for Eiffel events. These example

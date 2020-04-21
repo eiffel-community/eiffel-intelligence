@@ -153,8 +153,13 @@ public class RmqHandler {
     }
 
     @Bean
-    public Queue queue() {
+    public Queue externalQueue() {
         return new Queue(getQueueName(), true);
+    }
+
+    @Bean
+    public Queue internalQueue() {
+        return new Queue(getWaitlistQueueName(), true);
     }
 
     @Bean
@@ -163,8 +168,8 @@ public class RmqHandler {
     }
 
     @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(WAITLIST_BINDING_KEY);
+    Binding binding() {
+        return BindingBuilder.bind(internalQueue()).to(exchange()).with(WAITLIST_BINDING_KEY);
     }
 
     @Bean
@@ -172,7 +177,7 @@ public class RmqHandler {
         String[] bingingKeysArray = splitBindingKeys(bindingKeys);
         List<Binding> bindingList = new ArrayList<Binding>();
         for (String bindingKey : bingingKeysArray) {
-            bindingList.add(BindingBuilder.bind(queue()).to(exchange()).with(bindingKey));
+            bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
         return bindingList;
     }
@@ -181,11 +186,10 @@ public class RmqHandler {
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
             ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
-        String queueName = getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(springConnectionFactory);
-        container.setQueueNames(queueName);
+        container.setQueueNames(getQueueName(), getWaitlistQueueName());
         container.setMessageListener(listenerAdapter);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setPrefetchCount(maxThreads);
@@ -223,6 +227,13 @@ public class RmqHandler {
     public String getQueueName() {
         String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
+    }
+
+    public String getWaitlistQueueName() {
+
+        String durableName = queueDurable ? "durable" : "transient";
+        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
+                + waitlistSufix;
     }
 
     public void publishObjectToWaitlistQueue(String message) {

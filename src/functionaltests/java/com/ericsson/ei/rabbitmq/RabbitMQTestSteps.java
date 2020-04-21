@@ -76,13 +76,6 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
 
         RabbitAdmin rabbitAdmin = createExchange(rmqHandler);
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
-        rabbitTemplate.setRoutingKey(ROUTING_KEY_1);
-        rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
-            @Override
-            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                LOGGER.info("Received confirm with result : {}", ack);
-            }
-        });
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);

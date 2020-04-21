@@ -172,6 +172,7 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setQueue(queueName);
+        rabbitTemplate.setRoutingKey(ROUTING_KEY_1);
         return admin;
     }
 

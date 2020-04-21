@@ -192,6 +192,12 @@ public class RmqHandler {
         return container;
     }
 
+    /**
+     * This configures the settings used when sending messages to the waitlist.
+     * It uses the exchange and queue defined in the properties and the routing key
+     * is a reserved one intended for internal use only.
+     * @return
+     */
     @Bean
     public RabbitTemplate rabbitMqTemplate() {
         if (rabbitTemplate == null) {

@@ -147,8 +147,6 @@ You can configure the RabbitMQ settings using the rabbitmq.* properties.
 Most of the properties should be familiar but a few may need some further explanation.
 The rabbitmq.domainId, rabbitmq.componentName, rabbitmq.consumerName and rabbitmq.queue.durable are used to build
 the queue name on which Eiffel Intelligence listens for messages.
-The waitlist queue also attaches the rabbitmq.waitlist.queue.suffix property and all of the previously
-mentioned properties.
 Multiple routing keys can be defined with the rabbitmq.binding.key property by writing them one after the other in
 a comma separated string e.g. routing-key1, routing-key2, ... etc.
 The rabbitmq.tlsVersion property specifies the security protocol and you can find valid names

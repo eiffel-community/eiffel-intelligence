@@ -225,13 +225,6 @@ public class RmqHandler {
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
     }
 
-    public String getWaitlistQueueName() {
-
-        String durableName = queueDurable ? "durable" : "transient";
-        return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
-                + waitlistSufix;
-    }
-
     public void publishObjectToWaitlistQueue(String message) {
         LOGGER.debug("Publishing message to message bus...");
         rabbitTemplate.convertAndSend(message);

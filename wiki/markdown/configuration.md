@@ -149,6 +149,8 @@ The rabbitmq.domainId, rabbitmq.componentName, rabbitmq.consumerName and rabbitm
 the queue name on which Eiffel Intelligence listens for messages.
 The waitlist queue also attaches the rabbitmq.waitlist.queue.suffix property and all of the previously
 mentioned properties.
+The waitlist queue is meant for consuming internal messages only and gets a binding with the non configurable
+routing key "eiffel-intelligence.waitlist".
 Multiple routing keys can be defined with the rabbitmq.binding.key property by writing them one after the other in
 a comma separated string e.g. routing-key1, routing-key2, ... etc.
 The rabbitmq.tlsVersion property specifies the security protocol and you can find valid names
@@ -166,9 +168,6 @@ The rabbitmq.tlsVersion property specifies the security protocol and you can fin
 * rabbitmq.queue.durable
 * rabbitmq.binding.key
 * rabbitmq.waitlist.queue.suffix
-
-**Note:** Eiffel Intelligence will create a binding with the routing key "eiffel-intelligence.waitlist".
-This key is meant to be used internally by the back-end.
 
 
 ## Security

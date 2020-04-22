@@ -212,7 +212,7 @@ public class RmqHandler {
             }
 
             rabbitTemplate.setExchange(exchangeName);
-            rabbitTemplate.setQueue(getQueueName());
+            rabbitTemplate.setQueue(getWaitlistQueueName());
             rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override

@@ -16,6 +16,9 @@
 */
 package com.ericsson.ei.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,11 +101,10 @@ public class RMQHandler {
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
             ConnectionFactory springConnectionFactory,
             EventHandler eventHandler) {
-        String queueName = rmqProperties.getQueueName();
         MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(springConnectionFactory);
-        container.setQueueNames(queueName);
+        container.setQueueNames(rmqProperties.getQueueName(), rmqProperties.getWaitlistQueueName());
         container.setMessageListener(listenerAdapter);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setPrefetchCount(maxThreads);
@@ -118,9 +120,9 @@ public class RMQHandler {
                 rabbitTemplate = new RabbitTemplate(connectionFactory());
             }
 
+            rabbitTemplate.setQueue(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setExchange(rmqProperties.getExchangeName());
-            rabbitTemplate.setRoutingKey(rmqProperties.getBindingKey());
-            rabbitTemplate.setQueue(rmqProperties.getQueueName());
+            rabbitTemplate.setRoutingKey(RMQProperties.WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -146,8 +148,13 @@ public class RMQHandler {
     }
 
     @Bean
-    protected Queue queue() {
+    protected Queue externalQueue() {
         return new Queue(rmqProperties.getQueueName(), true);
+    }
+
+    @Bean
+    protected Queue internalQueue() {
+        return new Queue(rmqProperties.getWaitlistQueueName(), true);
     }
 
     @Bean
@@ -156,11 +163,26 @@ public class RMQHandler {
     }
 
     @Bean
-    protected Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(rmqProperties.getBindingKey());
+    protected Binding binding() {
+        return BindingBuilder.bind(internalQueue()).to(exchange()).with(RMQProperties.WAITLIST_BINDING_KEY);
+    }
+
+    @Bean
+    public List<Binding> bindings() {
+        String[] bingingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
+        List<Binding> bindingList = new ArrayList<Binding>();
+        for (String bindingKey : bingingKeysArray) {
+            bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
+        }
+        return bindingList;
     }
 
     private boolean isRMQCredentialsSet() {
         return !StringUtils.isEmpty(rmqProperties.getUser()) && !StringUtils.isEmpty(rmqProperties.getPassword());
+    }
+
+    private String[] splitBindingKeys(String bindingKeys) {
+        String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
+        return bindingKeysWithoutWhitespace.split(",");
     }
 }

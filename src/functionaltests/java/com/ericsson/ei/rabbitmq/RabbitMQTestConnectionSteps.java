@@ -145,7 +145,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         admin.getQueueProperties(queueName);
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(rmqProperties.getBindingKey());
+        rabbitTemplate.setRoutingKey(RMQProperties.WAITLIST_BINDING_KEY);
         rabbitTemplate.setQueue(queueName);
         return admin;
     }

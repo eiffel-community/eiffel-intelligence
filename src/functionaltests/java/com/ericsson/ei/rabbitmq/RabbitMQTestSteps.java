@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -16,9 +15,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +43,7 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
     private String rabbitMQPort;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQTestSteps.class);
-    private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
-    private static final String EIFFEL_EVENTS_MULTI_KEY = "src/functionaltests/resources/eiffel_events_for_test.json";
+    private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_test.json";
 
     private static final String ROUTING_KEY_1 = "routing-key-1";
     private static final String ROUTING_KEY_2 = "routing-key-2";
@@ -100,29 +96,22 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
     @When("^events are published using different routing keys$")
     public void events_are_published_using_different_routing_keys() throws Exception {
         LOGGER.debug("Sending eiffel events");
-        List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        List<String> eventNames = getEventNamesToSend();
+        eventNames.remove(1);
         eventManager.getRmqHandler().rabbitMqTemplate().setRoutingKey(ROUTING_KEY_1);
-        eventManager.sendEiffelEvents(EIFFEL_EVENTS_MULTI_KEY, eventNames);
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
         eventNames.clear();
-        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventNames = getEventNamesToSend();
+        eventNames.remove(0);
         eventManager.getRmqHandler().rabbitMqTemplate().setRoutingKey(ROUTING_KEY_2);
-        eventManager.sendEiffelEvents(EIFFEL_EVENTS_MULTI_KEY, eventNames);
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
     }
 
-    @Then("^I can send events which are put in the waitlist$")
+    @Then("^I can send events$")
     public void can_send_events_which_are_put_in_the_waitlist() throws Exception {
         LOGGER.debug("Sending eiffel events");
-        int waitListSize = 0;
         List<String> eventNames = getEventNamesToSend();
-        long maxTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
-
-        while (waitListSize != 4 && maxTime > System.currentTimeMillis()) {
-            eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
-            TimeUnit.SECONDS.sleep(2);
-            waitListSize = dbManager.waitListSize();
-        }
-        assertEquals(4, waitListSize);
+        eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
     }
 
     @Then("^an aggregated object should be created$")
@@ -141,10 +130,8 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
      */
     protected List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3");
         return eventNames;
     }
 

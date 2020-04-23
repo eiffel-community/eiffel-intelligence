@@ -145,14 +145,15 @@ used. **er.url** takes a full URL to such a repository.
 
 You can configure the RabbitMQ settings using the rabbitmq.* properties.
 Most of the properties should be familiar but a few may need some further explanation.
-The rabbitmq.domainId, rabbitmq.componentName, rabbitmq.consumerName and rabbitmq.queue.durable are used to build
-the queue name on which Eiffel Intelligence listens for messages.
-The waitlist queue also attaches the rabbitmq.waitlist.queue.suffix property and all of the previously
-mentioned properties.
-The waitlist queue is meant for consuming internal messages only and gets a binding with the non configurable
-routing key "eiffel-intelligence.waitlist".
-Multiple routing keys can be defined with the rabbitmq.binding.key property by writing them one after the other in
-a comma separated string e.g. routing-key1, routing-key2, ... etc.
+The rabbitmq.domain.id, rabbitmq.component.name, rabbitmq.queue.suffix and rabbitmq.queue.durable
+are used to build the queue name on which Eiffel Intelligence listens for outside messages.
+Multiple routing keys can be defined for this queue with the rabbitmq.binding.key property by writing
+them one after the other in a comma separated string e.g. routing-key1, routing-key2, ... etc.
+An internal waitlist queue is also created that uses all of the previously mentioned properties but also
+attaches the rabbitmq.waitlist.queue.suffix property at the end of the name.
+This queue does not get the routing key bindings from the rabbitmq.binding.key property and is only meant for
+sending and consuming messages by Eiffel Intelligence.
+It instead uses the non-configurable routing key "eiffel-intelligence.waitlist".
 The rabbitmq.tlsVersion property specifies the security protocol and you can find valid names
 [here](https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext)
 

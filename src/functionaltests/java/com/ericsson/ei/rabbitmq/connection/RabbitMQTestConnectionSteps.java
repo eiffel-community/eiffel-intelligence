@@ -98,7 +98,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         LOGGER.debug("Sending eiffel events");
         int waitListSize = 0;
         List<String> eventNames = getEventNamesToSend();
-        eventNames.remove(0);
         long maxTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
 
         while (waitListSize != 4 && maxTime > System.currentTimeMillis()) {
@@ -115,7 +114,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
      */
     protected List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelArtifactCreatedEvent_3");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
         return eventNames;
     }

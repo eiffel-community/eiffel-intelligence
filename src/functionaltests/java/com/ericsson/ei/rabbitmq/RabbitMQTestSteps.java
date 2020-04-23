@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -107,11 +108,20 @@ public class RabbitMQTestSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
     }
 
-    @Then("^I can send events$")
+    @Then("^I can send events which are put in the waitlist$")
     public void can_send_events_which_are_put_in_the_waitlist() throws Exception {
         LOGGER.debug("Sending eiffel events");
+        int waitListSize = 0;
         List<String> eventNames = getEventNamesToSend();
-        eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
+        eventNames.remove(0);
+        long maxTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
+
+        while (waitListSize != 4 && maxTime > System.currentTimeMillis()) {
+            eventManager.sendEiffelEvents(EIFFEL_EVENTS, eventNames);
+            TimeUnit.SECONDS.sleep(2);
+            waitListSize = dbManager.waitListSize();
+        }
+        assertEquals(1, waitListSize);
     }
 
     @Then("^an aggregated object should be created$")

@@ -30,7 +30,7 @@ The start event for this flow is the ActivityTriggered (ActT) event.
 
 
 ## All Events Rules
-In the example "[all event rules](src/main/resources/rules/AllEventsRules-Eiffel-Agen-Version.json)"
+In the example "[all event rules](../src/main/resources/rules/AllEventsRules-Eiffel-Agen-Version.json)"
 no aggregation is defined. Eiffel Intelligence will simply listen to the
 Eiffel events listed, and put them as is in the database.
 Each Eiffel event will become a separate object/document in the database,

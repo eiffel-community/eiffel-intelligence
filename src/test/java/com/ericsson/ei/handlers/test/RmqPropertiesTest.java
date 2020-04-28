@@ -42,7 +42,7 @@ public class RmqPropertiesTest {
     private Integer port = 5672;
     private String domainId = "EN1";
     private String componentName = "eiffelintelligence";
-    private String bindingKey = "#";
+    private String bindingKeys = "#";
     private String queueSuffix = "RmqHandlerTest";
     private String queueName = "EN1.eiffelintelligence.RmqHandlerTest.durable";
     private String waitlistQueueName = "EN1.eiffelintelligence.RmqHandlerTest.durable.waitlist";
@@ -82,7 +82,7 @@ public class RmqPropertiesTest {
 
     @Test
     public void getRoutingKeyTest() {
-        assertThat(rmqProperties.getBindingKey(), is(equalTo(bindingKey)));
+        assertThat(rmqProperties.getBindingKeys(), is(equalTo(bindingKeys)));
     }
 
     @Test

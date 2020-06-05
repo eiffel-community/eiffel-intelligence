@@ -106,26 +106,6 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
                 dbManager.waitListSize());
     }
 
-    @Then("^correct amount of threads should be spawned$")
-    public void correct_amount_of_threads_should_be_spawned() throws Throwable {
-        List<String> threadsSpawned = new ArrayList<>();
-        String port = environment.getProperty("local.server.port");
-        String eventHandlerThreadNamePattern = String.format("EventHandler-(\\d+)-%s", port);
-        Pattern pattern = Pattern.compile(eventHandlerThreadNamePattern);
-
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-        for (Thread thread : threadArray) {
-            Matcher matcher = pattern.matcher(thread.getName());
-            if (matcher.find() && !matcher.group(1).equals("")) {
-                if (!threadsSpawned.contains(matcher.group(1))) {
-                    threadsSpawned.add(matcher.group(1));
-                }
-            }
-        }
-        assertEquals(getEventNamesToSend().size() - queueCapacity, threadsSpawned.size());
-    }
-
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
         long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);

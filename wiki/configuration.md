@@ -187,7 +187,7 @@ An internal waitlist queue is also created that uses all of the previously menti
 attaches the rabbitmq.waitlist.queue.suffix property at the end of the name.
 This queue does not get the routing key bindings from the rabbitmq.binding.key property and is only meant for
 sending and consuming messages by Eiffel Intelligence.
-It instead uses the non-configurable routing key "eiffel-intelligence.waitlist".
+It instead uses the full name of the waitlist queue as a routing key.
 The rabbitmq.tls.version property specifies the security protocol and you can find valid names
 [here](https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext)
 

@@ -88,7 +88,6 @@ public class RMQProperties {
     @Value("${rabbitmq.queue.suffix}")
     private String queueSuffix;
 
-    public static final String WAITLIST_BINDING_KEY = "eiffel-intelligence.waitlist";
 
     public String getQueueName() {
         final String durableName = this.queueDurable ? "durable" : "transient";

@@ -26,9 +26,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @TestPropertySource(properties = {
-        "event-handler.threads.corePoolSize= 3",
-        "event-handler.threads.queueCapacity= 1",
-        "event-handler.threads.maxPoolSize= 4",
+        "threads.corePoolSize= 3",
+        "threads.queueCapacity= 1",
+        "threads.maxPoolSize= 4",
         "subscription-handler.threads.corePoolSize= 3",
         "subscription-handler.threads.queueCapacity= 1",
         "subscription-handler.threads.maxPoolSize= 4",

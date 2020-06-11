@@ -31,22 +31,22 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class SpringAsyncConfig implements AsyncConfigurer{
 
 
-    @Value("${event-handler.threads.corePoolSize}")
+    @Value("${threads.corePoolSize}")
     private int eventHandlerCorePoolSize;
 
-    @Value("${event-handler.threads.queueCapacity}")
+    @Value("${threads.queueCapacity}")
     private int eventHandlerQueueCapacity;
 
-    @Value("${event-handler.threads.maxPoolSize}")
+    @Value("${threads.maxPoolSize}")
     private int eventHandlerMaxPoolSize;
 
-    @Value("${subscription-handler.threads.corePoolSize}")
+    @Value("${subscription-handler.threads.corePoolSize:50}")
     private int subscriptionHandlerCorePoolSize;
 
-    @Value("${subscription-handler.threads.queueCapacity}")
+    @Value("${subscription-handler.threads.queueCapacity:5000}")
     private int subscriptionHandlerQueueCapacity;
 
-    @Value("${subscription-handler.threads.maxPoolSize}")
+    @Value("${subscription-handler.threads.maxPoolSize:50}")
     private int subscriptionHandlerMaxPoolSize;
 
 

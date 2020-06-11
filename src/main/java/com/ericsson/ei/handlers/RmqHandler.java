@@ -122,8 +122,6 @@ public class RmqHandler {
     @JsonIgnore
     private SimpleMessageListenerContainer container;
 
-    private static final String WAITLIST_BINDING_KEY = "eiffel-intelligence.waitlist";
-
     @Bean
     public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
@@ -169,7 +167,7 @@ public class RmqHandler {
 
     @Bean
     Binding binding() {
-        return BindingBuilder.bind(internalQueue()).to(exchange()).with(WAITLIST_BINDING_KEY);
+        return BindingBuilder.bind(internalQueue()).to(exchange()).with(getWaitlistQueueName());
     }
 
     @Bean
@@ -213,7 +211,7 @@ public class RmqHandler {
 
             rabbitTemplate.setExchange(exchangeName);
             rabbitTemplate.setQueue(getWaitlistQueueName());
-            rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
+            rabbitTemplate.setRoutingKey(getWaitlistQueueName());
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {

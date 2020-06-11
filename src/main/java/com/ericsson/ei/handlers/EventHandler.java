@@ -62,15 +62,13 @@ public class EventHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
-        String port = environment.getProperty("local.server.port");
-        Thread.currentThread().setName(Thread.currentThread().getName() + "-" + port);
-        LOGGER.debug("Thread id {} spawned for EventHandler on port: {}", Thread.currentThread().getId(), port);
-        LOGGER.debug("Event {} received on port {}", id, port);
+        LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
+        LOGGER.debug("Event {} received", id);
 
         eventReceived(messageBody);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
 
-        LOGGER.debug("Event {} processed on port {}", id, port);
+        LOGGER.debug("Event {} processed", id);
     }
 }

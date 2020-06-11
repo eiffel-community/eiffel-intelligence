@@ -183,15 +183,15 @@ public class ParseInstanceInfoEI {
     @Component
     private class ThreadsValue {
         @Getter
-        @Value("${event-handler.threads.corePoolSize}")
+        @Value("${threads.corePoolSize}")
         private int eventHandlerCorePoolSize;
 
         @Getter
-        @Value("${event-handler.threads.queueCapacity}")
+        @Value("${threads.queueCapacity}")
         private int eventHandlerQueueCapacity;
 
         @Getter
-        @Value("${event-handler.threads.maxPoolSize}")
+        @Value("${threads.maxPoolSize}")
         private int eventHandlerMaxPoolSize;
 
         @Getter

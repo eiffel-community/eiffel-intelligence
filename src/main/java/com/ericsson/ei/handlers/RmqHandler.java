@@ -109,7 +109,7 @@ public class RmqHandler {
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
 
-    @Value("${event-handler.threads.maxPoolSize}")
+    @Value("${threads.maxPoolSize}")
     private int maxThreads;
 
     @Setter

@@ -31,7 +31,6 @@ public interface ISubscriptionService {
      *
      * @param subscription
      * @throws JsonProcessingException
-     * @throws EncryptorException
      * @throws MongoWriteException
      */
     void addSubscription(Subscription subscription) throws JsonProcessingException, MongoWriteException;

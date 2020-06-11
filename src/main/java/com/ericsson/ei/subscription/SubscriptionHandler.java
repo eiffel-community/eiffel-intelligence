@@ -16,17 +16,15 @@ package com.ericsson.ei.subscription;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.jmespath.JmesPathInterface;
-import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.handlers.MongoDBHandler;
+import com.ericsson.ei.notifications.InformSubscriber;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -35,10 +33,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class is responsible to take a aggregatedObject and match it with all
- * the subscription object, to check ALL Conditions/requirement for
- * notification. (AND between conditions in requirements, "OR" between
- * requirements with conditions)
+ * This class is responsible to take a aggregatedObject and match it with all the subscription
+ * object, to check ALL Conditions/requirement for notification. (AND between conditions in
+ * requirements, "OR" between requirements with conditions)
  *
  * @author xjibbal
  */
@@ -68,57 +65,53 @@ public class SubscriptionHandler {
     private RunSubscription runSubscription;
 
     /**
-     * The method takes a aggregatedObject as argument and fetches all the
-     * subscriber from the database in order to match the subscription
-     * conditions in a separate thread.
+     * The method takes a aggregatedObject as argument and fetches all the subscriber from the
+     * database in order to match the subscription conditions in a separate thread.
      *
      * @param aggregatedObject
      * @param id
      */
+    @Async("subscriptionHandlerExecutor")
     public void checkSubscriptionForObject(final String aggregatedObject,
-                                           final String id) {
-        Thread subscriptionThread = new Thread(() -> {
-            List<String> subscriptions = mongoDBHandler.getAllDocuments(
+            final String id) {
+        mongoDBHandler.init();
+        final List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 subscriptionDataBaseName, subscriptionCollectionName);
-            subscriptions.forEach(
+        subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
-                    subscription, id));
-        });
-        subscriptionThread.setName("SubscriptionHandler");
-        subscriptionThread.start();
+                        subscription, id));
     }
 
     /**
-     * This method takes both aggregatedObject and a Subscription object as
-     * arguments and fetches the subscription conditions from the
-     * subscription object and matches these conditions with
+     * This method takes both aggregatedObject and a Subscription object as arguments and fetches
+     * the subscription conditions from the subscription object and matches these conditions with
      * the aggregatedObject.
      *
      * @param aggregatedObject
      * @param subscriptionData
      * @param id
      */
-    private void extractConditions(String aggregatedObject,
-                                   String subscriptionData, String id) {
+    private void extractConditions(final String aggregatedObject,
+            final String subscriptionData, final String id) {
         try {
-            JsonNode subscriptionJson = new ObjectMapper().readTree(
-                subscriptionData);
+            final JsonNode subscriptionJson = new ObjectMapper().readTree(
+                    subscriptionData);
             LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
             LOGGER.debug("Aggregated Object : " + aggregatedObject);
-            ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
-                "requirements");
+            final ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
+                    "requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
-            Iterator<JsonNode> requirementIterator = requirementNode.elements();
+            final Iterator<JsonNode> requirementIterator = requirementNode.elements();
             if (runSubscription.runSubscriptionOnObject(aggregatedObject,
-                requirementIterator, subscriptionJson, id)) {
+                    requirementIterator, subscriptionJson, id)) {
                 LOGGER.debug(
-                    "The subscription conditions match for the aggregatedObject");
+                        "The subscription conditions match for the aggregatedObject");
                 informSubscriber.informSubscriber(aggregatedObject,
-                    subscriptionJson);
+                        subscriptionJson);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Subscription: {}, failed for aggregated object: {}",
-                subscriptionData, aggregatedObject, e);
+                    subscriptionData, aggregatedObject, e);
         }
     }
 }

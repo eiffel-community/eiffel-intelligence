@@ -109,7 +109,7 @@ public class RmqHandler {
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
 
-    @Value("${threads.maxPoolSize}")
+    @Value("${event-handler.threads.maxPoolSize}")
     private int maxThreads;
 
     @Setter
@@ -137,7 +137,7 @@ public class RmqHandler {
             try {
                 LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", tlsVersion);
                 cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(tlsVersion);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.error("Failed to set SSL/TLS version.", e);
             }
         }
@@ -174,9 +174,9 @@ public class RmqHandler {
 
     @Bean
     public List<Binding> bindings() {
-        String[] bingingKeysArray = splitBindingKeys(bindingKeys);
-        List<Binding> bindingList = new ArrayList<Binding>();
-        for (String bindingKey : bingingKeysArray) {
+        final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
+        final List<Binding> bindingList = new ArrayList<>();
+        for (final String bindingKey : bingingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
         return bindingList;
@@ -184,9 +184,9 @@ public class RmqHandler {
 
     @Bean
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
-            ConnectionFactory springConnectionFactory,
-            EventHandler eventHandler) {
-        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+            final ConnectionFactory springConnectionFactory,
+            final EventHandler eventHandler) {
+        final MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(springConnectionFactory);
         container.setQueueNames(getQueueName(), getWaitlistQueueName());
@@ -216,7 +216,7 @@ public class RmqHandler {
             rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
-                public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                public void confirm(final CorrelationData correlationData, final boolean ack, final String cause) {
                     LOGGER.info("Received confirm with result : {}", ack);
                 }
             });
@@ -225,18 +225,18 @@ public class RmqHandler {
     }
 
     public String getQueueName() {
-        String durableName = queueDurable ? "durable" : "transient";
+        final String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName;
     }
 
     public String getWaitlistQueueName() {
 
-        String durableName = queueDurable ? "durable" : "transient";
+        final String durableName = queueDurable ? "durable" : "transient";
         return domainId + "." + componentName + "." + consumerName + "." + durableName + "."
                 + waitlistSufix;
     }
 
-    public void publishObjectToWaitlistQueue(String message) {
+    public void publishObjectToWaitlistQueue(final String message) {
         LOGGER.debug("Publishing message to message bus...");
         rabbitTemplate.convertAndSend(message);
     }
@@ -245,13 +245,13 @@ public class RmqHandler {
         try {
             container.destroy();
             cachingConnectionFactory.destroy();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
     }
 
-    private String[] splitBindingKeys(String bindingKeys) {
-        String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
+    private String[] splitBindingKeys(final String bindingKeys) {
+        final String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
         return bindingKeysWithoutWhitespace.split(",");
     }
 }

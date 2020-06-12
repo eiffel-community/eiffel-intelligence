@@ -77,14 +77,16 @@ public class MongoDBHandler {
 
     // Establishing the connection to mongodb and creating a collection
     private void createConnection() {
-        if (!StringUtils.isBlank(mongoProperties.getUsername())
-                && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
-            ServerAddress address = new ServerAddress(mongoProperties.getHost(), mongoProperties.getPort());
-            MongoCredential credential = MongoCredential.createCredential(mongoProperties.getUsername(),
-                    mongoProperties.getDatabase(), mongoProperties.getPassword());
-            mongoClient = new MongoClient(address, Collections.singletonList(credential));
-        } else {
-            mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+        if (mongoClient!=null) {
+            if (!StringUtils.isBlank(mongoProperties.getUsername())
+                    && !StringUtils.isBlank(new String(mongoProperties.getPassword()))) {
+                ServerAddress address = new ServerAddress(mongoProperties.getHost(), mongoProperties.getPort());
+                MongoCredential credential = MongoCredential.createCredential(mongoProperties.getUsername(),
+                        mongoProperties.getDatabase(), mongoProperties.getPassword());
+                mongoClient = new MongoClient(address, Collections.singletonList(credential));
+            } else {
+                mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
+            }
         }
     }
 

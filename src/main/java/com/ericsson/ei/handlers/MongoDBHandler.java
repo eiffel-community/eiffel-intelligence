@@ -76,6 +76,7 @@ public class MongoDBHandler {
     }
 
     // Establishing the connection to mongodb and creating a collection
+    @SuppressWarnings("deprecation")
     private void createConnection() {
         if (mongoClient!=null) {
             if (!StringUtils.isBlank(mongoProperties.getUsername())

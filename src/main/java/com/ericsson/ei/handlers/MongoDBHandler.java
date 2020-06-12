@@ -330,9 +330,11 @@ public class MongoDBHandler {
      * @param collectionName to know which collection to drop
      */
     public void dropCollection(String dataBaseName, String collectionName) {
-        MongoDatabase db = mongoClient.getDatabase(dataBaseName);
-        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
-        mongoCollection.drop();
+        if (mongoClient!=null) {
+            MongoDatabase db = mongoClient.getDatabase(dataBaseName);
+            MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+            mongoCollection.drop();
+        }
     }
 
     /**
@@ -341,7 +343,9 @@ public class MongoDBHandler {
      * @param dataBaseName to know which database to remove
      */
     public void dropDatabase(String databaseName) {
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        db.drop();
+        if (mongoClient!=null) {
+            MongoDatabase db = mongoClient.getDatabase(databaseName);
+            db.drop();
+        }
     }
 }

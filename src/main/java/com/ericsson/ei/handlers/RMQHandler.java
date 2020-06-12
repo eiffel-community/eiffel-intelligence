@@ -122,7 +122,7 @@ public class RMQHandler {
 
             rabbitTemplate.setQueue(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setExchange(rmqProperties.getExchangeName());
-            rabbitTemplate.setRoutingKey(RMQProperties.WAITLIST_BINDING_KEY);
+            rabbitTemplate.setRoutingKey(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -164,7 +164,7 @@ public class RMQHandler {
 
     @Bean
     protected Binding binding() {
-        return BindingBuilder.bind(internalQueue()).to(exchange()).with(RMQProperties.WAITLIST_BINDING_KEY);
+        return BindingBuilder.bind(internalQueue()).to(exchange()).with(rmqProperties.getWaitlistQueueName());
     }
 
     @Bean

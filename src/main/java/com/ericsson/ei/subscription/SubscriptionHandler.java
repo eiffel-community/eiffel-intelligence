@@ -74,7 +74,6 @@ public class SubscriptionHandler {
     @Async("subscriptionHandlerExecutor")
     public void checkSubscriptionForObject(final String aggregatedObject,
             final String id) {
-        mongoDBHandler.init();
         final List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 subscriptionDataBaseName, subscriptionCollectionName);
         subscriptions.forEach(

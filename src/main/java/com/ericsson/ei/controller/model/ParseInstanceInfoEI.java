@@ -195,15 +195,15 @@ public class ParseInstanceInfoEI {
         private int eventHandlerMaxPoolSize;
 
         @Getter
-        @Value("${subscription-handler.threads.corePoolSize}")
+        @Value("${subscription-handler.threads.corePoolSize:100}")
         private int subscriptionHandlerCorePoolSize;
 
         @Getter
-        @Value("${subscription-handler.threads.queueCapacity}")
+        @Value("${subscription-handler.threads.queueCapacity:5000}")
         private int subscriptionHandlerQueueCapacity;
 
         @Getter
-        @Value("${subscription-handler.threads.maxPoolSize}")
+        @Value("${subscription-handler.threads.maxPoolSize:150}")
         private int subscriptionHandlerMaxPoolSize;
     }
 }

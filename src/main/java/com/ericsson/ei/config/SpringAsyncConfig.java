@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,22 +30,48 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class SpringAsyncConfig implements AsyncConfigurer{
 
-    @Value("${threads.corePoolSize}") private int corePoolSize;
-    @Value("${threads.queueCapacity}") private int queueCapacity;
-    @Value("${threads.maxPoolSize}") private int maxPoolSize;
+
+    @Value("${threads.corePoolSize}")
+    private int eventHandlerCorePoolSize;
+
+    @Value("${threads.queueCapacity}")
+    private int eventHandlerQueueCapacity;
+
+    @Value("${threads.maxPoolSize}")
+    private int eventHandlerMaxPoolSize;
+
+    @Value("${subscription-handler.threads.corePoolSize:50}")
+    private int subscriptionHandlerCorePoolSize;
+
+    @Value("${subscription-handler.threads.queueCapacity:5000}")
+    private int subscriptionHandlerQueueCapacity;
+
+    @Value("${subscription-handler.threads.maxPoolSize:50}")
+    private int subscriptionHandlerMaxPoolSize;
 
 
-    @Override
-    public Executor getAsyncExecutor() {
-         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-            executor.setCorePoolSize(corePoolSize);
-            executor.setQueueCapacity(queueCapacity);
-            executor.setMaxPoolSize(maxPoolSize);
-            executor.setThreadNamePrefix("EventHandler-");
+    @Bean("subscriptionHandlerExecutor")
+    public Executor subscriptionHandlerExecutor() {
+         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(subscriptionHandlerCorePoolSize);
+            executor.setQueueCapacity(subscriptionHandlerQueueCapacity);
+            executor.setMaxPoolSize(subscriptionHandlerMaxPoolSize);
+            executor.setThreadNamePrefix("SubscriptionHandler-");
             executor.initialize();
             return executor;
     }
 
+
+    @Bean("eventHandlerExecutor")
+    public Executor eventHandlerExecutor() {
+         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(eventHandlerCorePoolSize);
+            executor.setQueueCapacity(eventHandlerQueueCapacity);
+            executor.setMaxPoolSize(eventHandlerMaxPoolSize);
+            executor.setThreadNamePrefix("EventHandler-");
+            executor.initialize();
+            return executor;
+    }
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {

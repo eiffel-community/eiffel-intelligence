@@ -109,7 +109,7 @@ public class ParseInstanceInfoEI {
 
     @PostConstruct
     public void init() throws IOException {
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         properties.load(
                 ParseInstanceInfoEI.class.getResourceAsStream("/default-application.properties"));
         version = properties.getProperty("version");
@@ -184,14 +184,26 @@ public class ParseInstanceInfoEI {
     private class ThreadsValue {
         @Getter
         @Value("${threads.corePoolSize}")
-        private int corePoolSize;
+        private int eventHandlerCorePoolSize;
 
         @Getter
         @Value("${threads.queueCapacity}")
-        private int queueCapacity;
+        private int eventHandlerQueueCapacity;
 
         @Getter
         @Value("${threads.maxPoolSize}")
-        private int maxPoolSize;
+        private int eventHandlerMaxPoolSize;
+
+        @Getter
+        @Value("${subscription-handler.threads.corePoolSize}")
+        private int subscriptionHandlerCorePoolSize;
+
+        @Getter
+        @Value("${subscription-handler.threads.queueCapacity}")
+        private int subscriptionHandlerQueueCapacity;
+
+        @Getter
+        @Value("${subscription-handler.threads.maxPoolSize}")
+        private int subscriptionHandlerMaxPoolSize;
     }
 }

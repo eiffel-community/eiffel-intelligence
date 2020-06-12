@@ -51,22 +51,22 @@ public class EventHandler {
         return rulesHandler;
     }
 
-    public void eventReceived(String event) {
-        RulesObject eventRules = rulesHandler.getRulesForEvent(event);
+    public void eventReceived(final String event) {
+        final RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
     }
 
-    @Async
-    public void onMessage(Message message, Channel channel) throws Exception {
-        String messageBody = new String(message.getBody());
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(messageBody);
-        String id = node.get("meta").get("id").toString();
+    @Async("eventHandlerExecutor")
+    public void onMessage(final Message message, final Channel channel) throws Exception {
+        final String messageBody = new String(message.getBody());
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final JsonNode node = objectMapper.readTree(messageBody);
+        final String id = node.get("meta").get("id").toString();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
         LOGGER.debug("Event {} received", id);
 
         eventReceived(messageBody);
-        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        final long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, false);
 
         LOGGER.debug("Event {} processed", id);

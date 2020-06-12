@@ -22,12 +22,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitManagementTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -122,6 +125,14 @@ public class RmqHandler {
     @JsonIgnore
     private SimpleMessageListenerContainer container;
 
+    @Getter
+    @JsonIgnore
+    private AmqpAdmin amqpAdmin;
+
+    @Getter
+    @JsonIgnore
+    private RabbitManagementTemplate rabbitManagementTemplate;
+
     @Bean
     public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
@@ -172,12 +183,24 @@ public class RmqHandler {
 
     @Bean
     public List<Binding> bindings() {
+        deleteBindingKeys();
         final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
         final List<Binding> bindingList = new ArrayList<>();
         for (final String bindingKey : bingingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
         return bindingList;
+    }
+
+    public void deleteBindingKeys() {
+        rabbitManagementTemplate = new RabbitManagementTemplate();
+        amqpAdmin = new RabbitAdmin(connectionFactory());
+        rabbitManagementTemplate.getBindings().stream().filter(
+                binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
+                .forEach(binding -> {
+                    LOGGER.debug("Deleting " + binding);
+                    amqpAdmin.removeBinding(binding);
+                });
     }
 
     @Bean

@@ -36,6 +36,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -127,10 +128,12 @@ public class RmqHandler {
 
     @Getter
     @JsonIgnore
+    @Autowired
     private AmqpAdmin amqpAdmin;
 
     @Getter
     @JsonIgnore
+    @Autowired
     private RabbitManagementTemplate rabbitManagementTemplate;
 
     @Bean
@@ -162,6 +165,20 @@ public class RmqHandler {
     }
 
     @Bean
+    @Autowired
+    public RabbitManagementTemplate deleteBindingKeys() {
+        rabbitManagementTemplate = new RabbitManagementTemplate();
+        amqpAdmin = new RabbitAdmin(connectionFactory());
+        rabbitManagementTemplate.getBindings().stream().filter(
+                binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
+                .forEach(binding -> {
+                    LOGGER.debug("Deleting " + binding);
+                    amqpAdmin.removeBinding(binding);
+                });
+        return rabbitManagementTemplate;
+    }
+
+    @Bean
     public Queue externalQueue() {
         return new Queue(getQueueName(), true);
     }
@@ -183,24 +200,12 @@ public class RmqHandler {
 
     @Bean
     public List<Binding> bindings() {
-        deleteBindingKeys();
         final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
         final List<Binding> bindingList = new ArrayList<>();
         for (final String bindingKey : bingingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
         return bindingList;
-    }
-
-    public void deleteBindingKeys() {
-        rabbitManagementTemplate = new RabbitManagementTemplate();
-        amqpAdmin = new RabbitAdmin(connectionFactory());
-        rabbitManagementTemplate.getBindings().stream().filter(
-                binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
-                .forEach(binding -> {
-                    LOGGER.debug("Deleting " + binding);
-                    amqpAdmin.removeBinding(binding);
-                });
     }
 
     @Bean

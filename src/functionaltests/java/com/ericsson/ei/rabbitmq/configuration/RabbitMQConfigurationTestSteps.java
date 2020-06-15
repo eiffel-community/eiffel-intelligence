@@ -14,6 +14,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitManagementTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,8 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         File qpidConfig = new File(config);
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
+        
+        RabbitManagementTemplate rabbitManagementTemplate = new RabbitManagementTemplate("amqp:guest@guest//localhost:"+rabbitMQPort);
 
         RmqHandler rmqHandler = eventManager.getRmqHandler();
         rmqHandler.setPort(port);
@@ -74,6 +77,7 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
+        rmqHandler.setRabbitManagementTemplate(rabbitManagementTemplate);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
         rmqHandler.getContainer().setQueueNames(rmqHandler.getQueueName());

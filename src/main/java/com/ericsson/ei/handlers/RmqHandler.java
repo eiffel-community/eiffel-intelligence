@@ -128,12 +128,10 @@ public class RmqHandler {
 
     @Getter
     @JsonIgnore
-    @Autowired
     private AmqpAdmin amqpAdmin;
 
     @Getter
     @JsonIgnore
-    @Autowired
     private RabbitManagementTemplate rabbitManagementTemplate;
 
     @Bean
@@ -165,16 +163,32 @@ public class RmqHandler {
     }
 
     @Bean
-    @Autowired
     public RabbitManagementTemplate deleteBindingKeys() {
-        rabbitManagementTemplate = new RabbitManagementTemplate();
+    	Integer rabbitPort=port;
+    	String rabbitHttp = "https://";
+    	if(port==5672 && host.equals("localhost")){
+    		rabbitPort=15672;
+    		rabbitHttp="http://";
+    	}
+        System.out.println("http="+rabbitHttp);
+        System.out.println("rabbitPort="+rabbitPort);
+        rabbitManagementTemplate = new RabbitManagementTemplate(rabbitHttp+host+":"+rabbitPort+"/api/",user,password);
         amqpAdmin = new RabbitAdmin(connectionFactory());
         rabbitManagementTemplate.getBindings().stream().filter(
-                binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
-                .forEach(binding -> {
-                    LOGGER.debug("Deleting " + binding);
-                    amqpAdmin.removeBinding(binding);
-                });
+        binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
+           .forEach(binding -> {
+            final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
+            for (final String bindingKey : bingingKeysArray) {
+	            if(binding.getRoutingKey().equals(bindingKey)){
+	               System.out.println("Not Deleting the existing binding key : "+bindingKey);
+	               break;
+	             }
+	             else{
+	                amqpAdmin.removeBinding(binding);
+	                LOGGER.debug("Deleting " + binding);
+	             }
+             }
+        });
         return rabbitManagementTemplate;
     }
 

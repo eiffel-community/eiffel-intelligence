@@ -18,12 +18,13 @@ package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
@@ -43,6 +44,10 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listener.EIMessageListenerAdapter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -112,9 +117,17 @@ public class RmqHandler {
     @Setter
     @Value("${rabbitmq.consumerName}")
     private String consumerName;
+    
+    @Getter
+    @Value("${spring.data.mongodb.database}")
+    private String bindingKeysDataBaseName;
 
     @Value("${threads.maxPoolSize}")
     private int maxThreads;
+    
+    @Setter
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     @Setter
     @JsonIgnore
@@ -163,33 +176,6 @@ public class RmqHandler {
     }
 
     @Bean
-    public RabbitManagementTemplate deleteBindingKeys() {
-    	int rabbitPort=port;
-    	if(port==5672){
-    		rabbitPort=15672;
-    	}
-        rabbitManagementTemplate = new RabbitManagementTemplate("http://"+host+":"+rabbitPort+"/api/",user,password);
-        amqpAdmin = new RabbitAdmin(connectionFactory());
-        rabbitManagementTemplate.getBindings().stream().filter(
-        binding -> binding.getDestination().equals(externalQueue().getName()) && binding.isDestinationQueue())
-           .forEach(binding -> {
-            final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
-            for (final String bindingKey : bingingKeysArray) {
-	            if(binding.getRoutingKey().equals(bindingKey)){
-	               System.out.println("............."+bindingKey);
-	               LOGGER.debug("Not Deleting the existing binding key : "+bindingKey);
-	               break;
-	             }
-	             else{
-	                amqpAdmin.removeBinding(binding);
-	                LOGGER.debug("Deleting " + binding);
-	             }
-             }
-        });
-        return rabbitManagementTemplate;
-    }
-
-    @Bean
     public Queue externalQueue() {
         return new Queue(getQueueName(), true);
     }
@@ -210,16 +196,63 @@ public class RmqHandler {
     }
 
     @Bean
-    public List<Binding> bindings() {
+    public List<Binding> bindings(){
         final String[] bingingKeysArray = splitBindingKeys(bindingKeys);
         final List<Binding> bindingList = new ArrayList<>();
         for (final String bindingKey : bingingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
+        deleteBindings(bindingList);
         return bindingList;
     }
 
-    @Bean
+    private void deleteBindings(List<Binding> bindingList){
+    // Creating BindingKeys Collection in mongoDB
+        String bindingKeyCollectionName = "BindingKeys";
+        MongoClient mongoClient = new MongoClient();
+        MongoDatabase database = mongoClient.getDatabase(bindingKeysDataBaseName);
+        boolean collectionExists = mongoClient.getDatabase(bindingKeysDataBaseName).listCollectionNames().into(new ArrayList<String>()).contains(bindingKeyCollectionName);
+
+        if(collectionExists){
+        	LOGGER.info("Collection Already exists: "+collectionExists);
+        }else{
+            database.createCollection(bindingKeyCollectionName);
+        }
+        if(bindingKeyCollectionName.isEmpty()){
+            for (final Binding bindingKey : bindingList) {
+                DestinationType destinationType=bindingKey.getDestinationType();
+                Document document=new Document("destination",bindingKey.getDestination()).append("destinationType", destinationType.toString())
+                        .append("exchange", bindingKey.getExchange()).append("bindingKeys", bindingKey.getRoutingKey()).append("arg", bindingKey.getArguments().toString());
+                database.getCollection(bindingKeyCollectionName).insertOne(document);
+                }
+        }
+
+        MongoCollection<Document> collection = database.getCollection(bindingKeyCollectionName);
+        for (Document document : collection.find()) {
+            final String mongoDbBindings = document.getString("bindingKeys");
+            	if(!(bindingList.contains(mongoDbBindings))){
+            		collection.deleteOne(new Document("bindingKeys",(mongoDbBindings)));
+                    String destinationDB = document.getString("destination");
+                    String exchangeDB = document.getString("exchange");
+                    // Binding the old binding key and removing from queue
+                    Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindings, null);
+                    amqpAdmin = new RabbitAdmin(connectionFactory());
+                    amqpAdmin.removeBinding(b);
+                    LOGGER.info("@ Bindings deleted @ ");
+            	}
+        }
+     // Clear the document and ADD new bindings into it.
+        BasicDBObject oldDocument = new BasicDBObject();
+        collection.deleteMany(oldDocument);
+        for(final Binding bindingKey : bindingList) {
+            DestinationType destinationType=bindingKey.getDestinationType();
+            Document newBindingDocument=new Document("destination",bindingKey.getDestination()).append("destinationType", destinationType.toString()).append("exchange", bindingKey.getExchange())
+                .append("bindingKeys", bindingKey.getRoutingKey()).append("arg", bindingKey.getArguments().toString());
+            database.getCollection(bindingKeyCollectionName).insertOne(newBindingDocument);
+        }
+    }
+
+	@Bean
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
             final ConnectionFactory springConnectionFactory,
             final EventHandler eventHandler) {

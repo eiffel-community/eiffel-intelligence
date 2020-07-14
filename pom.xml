@@ -392,14 +392,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.rabbitmq/http-client -->
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>http-client</artifactId>
-            <version>3.7.0.RELEASE</version>
-        </dependency>
-
     </dependencies>
 
     <build>

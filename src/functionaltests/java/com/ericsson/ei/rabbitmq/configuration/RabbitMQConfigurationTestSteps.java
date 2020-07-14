@@ -7,17 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Ignore;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitManagementTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +57,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
     @Autowired
     EventHandler eventHandler;
 
-    @Mock
-    private List<Binding> bindings;
-
-    RabbitManagementTemplate rabbitManagementTemplate;
-
     @Given("^We are connected to message bus$")
     public void connect_to_message_bus() throws Exception {
         int port = SocketUtils.findAvailableTcpPort();
@@ -74,7 +65,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         amqpBroker = new AMQPBrokerManager(qpidConfig.getAbsolutePath(), port);
         amqpBroker.startBroker();
         
-        Mockito.when(rabbitManagementTemplate.getBindings()).thenReturn(bindings);
         RmqHandler rmqHandler = eventManager.getRmqHandler();
         rmqHandler.setPort(port);
         rmqHandler.connectionFactory();
@@ -84,7 +74,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
-        rmqHandler.setRabbitManagementTemplate(rabbitManagementTemplate);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
         rmqHandler.getContainer().setQueueNames(rmqHandler.getQueueName());
@@ -114,7 +103,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: "
                 + missingArguments.toString(), 0, missingArguments.size());
     }
-
     /**
      * This method collects all the event names of events we will send to the
      * message bus.

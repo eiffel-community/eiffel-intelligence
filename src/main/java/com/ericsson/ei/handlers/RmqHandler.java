@@ -17,8 +17,10 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bson.Document;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -44,10 +46,14 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listener.EIMessageListenerAdapter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -143,10 +149,6 @@ public class RmqHandler {
     @JsonIgnore
     private AmqpAdmin amqpAdmin;
 
-    @Setter
-    @JsonIgnore
-    private RabbitManagementTemplate rabbitManagementTemplate;
-
     @Bean
     public ConnectionFactory connectionFactory() {
         cachingConnectionFactory = new CachingConnectionFactory(host, port);
@@ -202,54 +204,50 @@ public class RmqHandler {
         for (final String bindingKey : bingingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
-        deleteBindings(bindingList);
+        deleteBindings(bingingKeysArray,bindingList);
         return bindingList;
     }
 
-    private void deleteBindings(List<Binding> bindingList){
+    private void deleteBindings(String[] bingingKeysArray, List<Binding> bindingList){
     // Creating BindingKeys Collection in mongoDB
-        String bindingKeyCollectionName = "BindingKeys";
-        MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase(bindingKeysDataBaseName);
-        boolean collectionExists = mongoClient.getDatabase(bindingKeysDataBaseName).listCollectionNames().into(new ArrayList<String>()).contains(bindingKeyCollectionName);
-
-        if(collectionExists){
-        	LOGGER.info("Collection Already exists: "+collectionExists);
-        }else{
-            database.createCollection(bindingKeyCollectionName);
+        String bindingKeyCollectionName = "binding_keys";
+        ArrayList<String> allDocuments = mongoDBHandler.getAllDocuments(bindingKeysDataBaseName, bindingKeyCollectionName);
+        ArrayList<String> existingBindingsData = new ArrayList<String>();
+        if(!allDocuments.isEmpty()){
+            for(String bindings : allDocuments) {
+                JSONObject bindingObj = new JSONObject(bindings);
+                final String mongoDbBindings = bindingObj.getString("bindingKeys");
+                String condition = "{\"bindingKeys\": /.*" + mongoDbBindings + "/}";
+                    if(!Arrays.asList(bingingKeysArray).contains(mongoDbBindings)){
+                        String destinationDB = bindingObj.getString("destination");
+                        String exchangeDB = bindingObj.getString("exchange");
+                        // Binding the old binding key and removing from queue
+                        Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindings, null);
+                        amqpAdmin = new RabbitAdmin(connectionFactory());
+                        amqpAdmin.removeBinding(b);
+                        // Removing binding document from mongoDB
+                        mongoDBHandler.dropDocument(bindingKeysDataBaseName, bindingKeyCollectionName, condition);
+                    }
+                    else{
+                        // storing the existing key into an array.
+                        existingBindingsData.add(mongoDbBindings);
+                    }
+            }
         }
-        if(bindingKeyCollectionName.isEmpty()){
-            for (final Binding bindingKey : bindingList) {
-                DestinationType destinationType=bindingKey.getDestinationType();
-                Document document=new Document("destination",bindingKey.getDestination()).append("destinationType", destinationType.toString())
-                        .append("exchange", bindingKey.getExchange()).append("bindingKeys", bindingKey.getRoutingKey()).append("arg", bindingKey.getArguments().toString());
-                database.getCollection(bindingKeyCollectionName).insertOne(document);
-                }
-        }
-
-        MongoCollection<Document> collection = database.getCollection(bindingKeyCollectionName);
-        for (Document document : collection.find()) {
-            final String mongoDbBindings = document.getString("bindingKeys");
-            	if(!(bindingList.contains(mongoDbBindings))){
-            		collection.deleteOne(new Document("bindingKeys",(mongoDbBindings)));
-                    String destinationDB = document.getString("destination");
-                    String exchangeDB = document.getString("exchange");
-                    // Binding the old binding key and removing from queue
-                    Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindings, null);
-                    amqpAdmin = new RabbitAdmin(connectionFactory());
-                    amqpAdmin.removeBinding(b);
-                    LOGGER.info("@ Bindings deleted @ ");
-            	}
-        }
-     // Clear the document and ADD new bindings into it.
-        BasicDBObject oldDocument = new BasicDBObject();
-        collection.deleteMany(oldDocument);
-        for(final Binding bindingKey : bindingList) {
-            DestinationType destinationType=bindingKey.getDestinationType();
-            Document newBindingDocument=new Document("destination",bindingKey.getDestination()).append("destinationType", destinationType.toString()).append("exchange", bindingKey.getExchange())
-                .append("bindingKeys", bindingKey.getRoutingKey()).append("arg", bindingKey.getArguments().toString());
-            database.getCollection(bindingKeyCollectionName).insertOne(newBindingDocument);
-        }
+        // comparing with the stored key and adding the new binding key into the mongoDB.
+        for(final Binding bindingKey:bindingList){
+            if(existingBindingsData.contains(bindingKey.getRoutingKey())){
+                LOGGER.info("Binding alredy present");
+            }else{
+                    BasicDBObject document = new BasicDBObject();
+                    document.put("destination",bindingKey.getDestination());
+                    document.put("destinationType", bindingKey.getDestinationType().toString());
+                    document.put("exchange", bindingKey.getExchange());
+                    document.put("bindingKeys", bindingKey.getRoutingKey());
+                    document.put("arg", bindingKey.getArguments().toString());
+                    mongoDBHandler.insertDocument(bindingKeysDataBaseName, bindingKeyCollectionName, document.toString());
+             }
+         }
     }
 
 	@Bean

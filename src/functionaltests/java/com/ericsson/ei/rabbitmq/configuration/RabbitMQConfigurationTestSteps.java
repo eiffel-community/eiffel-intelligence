@@ -6,9 +6,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
@@ -23,9 +26,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.mongodb.BasicDBObject;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -56,6 +61,15 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
 
     @Autowired
     EventHandler eventHandler;
+
+    @Value("${spring.data.mongodb.database}")
+    private String dataBaseName;
+
+    @Value("${bindingkeys.collection.name}")
+    private String collectionName;
+
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
 
     @Given("^We are connected to message bus$")
     public void connect_to_message_bus() throws Exception {
@@ -102,6 +116,46 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);
         assertEquals("The following arguments are missing in the Aggregated Object in mongoDB: "
                 + missingArguments.toString(), 0, missingArguments.size());
+    }
+
+    @Then("^get the binding documents from mongoDB$")
+    public void get_the_binding_documents_from_mongoDB() {
+        LOGGER.debug("retriving all the documents from the database for binding keys");
+        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        assertEquals(1, allObjects.size());
+    }
+
+    @Then("^compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB$")
+    public void compare_the_binding_keys_and_remove_the_old_binding_keys_from_rabbitMQ_and_mongoDB() {
+        LOGGER.debug("comparing the binding keys to remove the old binding key");
+        ArrayList<Binding> listBinding = new ArrayList<Binding>();
+        listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE, "ei-navya-exchange", "#.eiffel30", null));
+        listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE, "ei-navya-exchange", "#.eiffel31", null));
+        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        ArrayList<String> removedBinding = new ArrayList<String>();
+        String mongoDbBindings = null;
+        for(String bindings : allObjects) {
+            JSONObject bindingObj = new JSONObject(bindings);
+            mongoDbBindings = bindingObj.getString("bindingKeys");
+                if(!(listBinding.contains(mongoDbBindings))){
+                    removedBinding.add(mongoDbBindings);
+                }
+        }
+        assertEquals(1,removedBinding.size());
+        assertEquals("[]",removedBinding.contains("#.eiffel31"));
+    }
+
+    @Then("^insert the new binding keys into mongoDB document$")
+    public void insert_the_new_binding_keys_into_mongoDB_document() {
+        LOGGER.debug("Inserting the new binding key into mongoDB");
+        BasicDBObject docInput = new BasicDBObject();
+        docInput.put("destination","ei-domain.eiffel-intelligence.messageConsumer.durable");
+        docInput.put("destinationType", "QUEUE");
+        docInput.put("exchange", "ei-navya-exchange");
+        docInput.put("bindingKeys", "#.eiffel32");
+        docInput.put("arg", null);
+        mongoDBHandler.insertDocument(dataBaseName, collectionName, docInput.toString());
+        assertEquals(docInput,true);
     }
     /**
      * This method collects all the event names of events we will send to the

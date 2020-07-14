@@ -248,7 +248,7 @@ public class RmqHandler {
     // comparing with the stored key and adding the new binding key into the mongoDB.
        for(final Binding bindingKey:AMQPBindingObjectList){
             if(existingBindingsData.contains(bindingKey.getRoutingKey())){
-                LOGGER.info("Binding already present");
+                LOGGER.info("Binding already present in mongoDB");
             }else{
                     BasicDBObject document = new BasicDBObject();
                     document.put("destination",bindingKey.getDestination());

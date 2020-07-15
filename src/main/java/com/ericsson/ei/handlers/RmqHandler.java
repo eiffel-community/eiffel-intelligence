@@ -211,29 +211,29 @@ public class RmqHandler {
      * Binding key which is not present in the current AMQPBindingObjectList gets deleted and removed from mongoDB.
      * @return
      */
-    private void deleteBindings(String[] newBindingKeysArray, List<Binding> AMQPBindingObjectList){
-    // Creating BindingKeys Collection in mongoDB
+
+    private void deleteBindings(String[] newBindingKeysArray, List<Binding> AMQPBindingObjectList) {
+        // Creating BindingKeys Collection in mongoDB
         ArrayList<String> allDocuments = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         ArrayList<String> existingBindingsData = new ArrayList<String>();
-        if(!allDocuments.isEmpty()){
-            for(String bindings : allDocuments) {
+        if (!allDocuments.isEmpty()) {
+            for (String bindings : allDocuments) {
                 JSONObject bindingObj = new JSONObject(bindings);
                 final String mongoDbBindingKey = bindingObj.getString("bindingKeys");
                 String condition = "{\"bindingKeys\": /.*" + mongoDbBindingKey + "/}";
-                    if(!Arrays.asList(newBindingKeysArray).contains(mongoDbBindingKey)){
-                        String destinationDB = bindingObj.getString("destination");
-                        String exchangeDB = bindingObj.getString("exchange");
-                        // Binding the old binding key and removing from queue
-                        Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindingKey, null);
-                        amqpAdmin = new RabbitAdmin(connectionFactory());
-                        amqpAdmin.removeBinding(b);
-                        // Removing binding document from mongoDB
-                        mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
-                    }
-                    else{
-                        // storing the existing key into an array.
-                        existingBindingsData.add(mongoDbBindingKey);
-                    }
+                if (!Arrays.asList(newBindingKeysArray).contains(mongoDbBindingKey)) {
+                    String destinationDB = bindingObj.getString("destination");
+                    String exchangeDB = bindingObj.getString("exchange");
+                    // Binding the old binding key and removing from queue
+                    Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindingKey, null);
+                    amqpAdmin = new RabbitAdmin(connectionFactory());
+                    amqpAdmin.removeBinding(b);
+                    // Removing binding document from mongoDB
+                    mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
+                } else {
+                    // storing the existing key into an array.
+                    existingBindingsData.add(mongoDbBindingKey);
+                }
             }
         }
         // To store the new binding key into the mongoDB.
@@ -244,6 +244,7 @@ public class RmqHandler {
      * This method is used to store the bindings of new binding key into mongoDB.
      * @return
      */
+
     private void storeNewBindingKeys(ArrayList<String> existingBindingsData, List<Binding> AMQPBindingObjectList){
     // comparing with the stored key and adding the new binding key into the mongoDB.
        for(final Binding bindingKey:AMQPBindingObjectList){
@@ -260,7 +261,8 @@ public class RmqHandler {
              }
          }
     }
-	@Bean
+
+    @Bean
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
             final ConnectionFactory springConnectionFactory,
             final EventHandler eventHandler) {

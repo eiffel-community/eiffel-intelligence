@@ -1,6 +1,7 @@
 package com.ericsson.ei.rabbitmq.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
     @When("^add the binding documents to mongoDB$")
     public void add_the_binding_documents_to_mongoDB() {
         BasicDBObject dbBinding = insertBinding();
-        assertEquals(1, dbBinding.size());
+        assertNotNull(dbBinding);
     }
 
     @Then("^compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB$")

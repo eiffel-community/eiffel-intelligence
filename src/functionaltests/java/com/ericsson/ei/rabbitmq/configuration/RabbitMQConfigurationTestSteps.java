@@ -122,12 +122,10 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
                 + missingArguments.toString(), 0, missingArguments.size());
     }
 
-    @When("^get the binding documents from mongoDB$")
-    public void get_the_binding_documents_from_mongoDB() {
-        insertBinding();
-        LOGGER.debug("retriving all the documents from the database for binding keys");
-        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
-        assertEquals(1, allObjects.size());
+    @When("^add the binding documents to mongoDB$")
+    public void add_the_binding_documents_to_mongoDB() {
+        BasicDBObject dbBinding = insertBinding();
+        assertEquals(1, dbBinding.size());
     }
 
     @Then("^compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB$")

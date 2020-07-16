@@ -20,22 +20,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Binding.DestinationType;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
@@ -48,8 +40,6 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RmqHandlerTest",
@@ -104,6 +94,8 @@ public class RmqHandlerTest {
         rmqHandler.setComponentName(componentName);
         rmqHandler.setBindingKeys(bindingKeys);
         rmqHandler.setConsumerName(consumerName);
+        rmqHandler.setCollectionName(collectionName);
+        rmqHandler.setDataBaseName(databaseName);
     }
 
     @Test
@@ -150,6 +142,16 @@ public class RmqHandlerTest {
     public void testMessageBusConnection() {
         factory = rmqHandler.connectionFactory();
         assertNotNull(factory);
+    }
+
+    @Test
+    public void getDatabaseNameTest() {
+        assertTrue(rmqHandler.getDataBaseName().equals(databaseName));
+    }
+
+    @Test
+    public void getCollectionNameTest() {
+        assertTrue(rmqHandler.getCollectionName().equals(collectionName));
     }
 
 }

@@ -116,10 +116,12 @@ public class RmqHandler {
     private String consumerName;
     
     @Getter
+    @Setter
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
 
     @Getter
+    @Setter
     @Value("${bindingkeys.collection.name}")
     private String collectionName;
 

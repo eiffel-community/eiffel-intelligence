@@ -39,6 +39,7 @@ import cucumber.api.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RabbitMQConfigurationTestSteps",
+        "bindingkeys.collection.name: RabbitMQConfigurationTestSteps-bindingKeys",
         "missedNotificationDataBaseName: RabbitMQConfigurationTestSteps-missedNotifications",
         "rabbitmq.exchange.name: RabbitMQConfigurationTestSteps-exchange",
         "rabbitmq.consumerName: RabbitMQConfigurationTestStepsConsumer" })
@@ -52,6 +53,9 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
 
     private static final String ROUTING_KEY_1 = "routing-key-1";
     private static final String ROUTING_KEY_2 = "routing-key-2";
+
+    private static final String BINDING_KEY_1 = "binding-key-1";
+    private static final String BINDING_KEY_2 = "binding-key-2";
 
     private AMQPBrokerManager amqpBroker;
 
@@ -118,8 +122,9 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
                 + missingArguments.toString(), 0, missingArguments.size());
     }
 
-    @Then("^get the binding documents from mongoDB$")
+    @When("^get the binding documents from mongoDB$")
     public void get_the_binding_documents_from_mongoDB() {
+        insertBinding();
         LOGGER.debug("retriving all the documents from the database for binding keys");
         List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         assertEquals(1, allObjects.size());
@@ -128,35 +133,10 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
     @Then("^compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB$")
     public void compare_the_binding_keys_and_remove_the_old_binding_keys_from_rabbitMQ_and_mongoDB() {
         LOGGER.debug("comparing the binding keys to remove the old binding key");
-        ArrayList<Binding> listBinding = new ArrayList<Binding>();
-        listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE, "ei-navya-exchange", "#.eiffel30", null));
-        listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE, "ei-navya-exchange", "#.eiffel31", null));
-        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
-        ArrayList<String> removedBinding = new ArrayList<String>();
-        String mongoDbBindings = null;
-        for(String bindings : allObjects) {
-            JSONObject bindingObj = new JSONObject(bindings);
-            mongoDbBindings = bindingObj.getString("bindingKeys");
-                if(!(listBinding.contains(mongoDbBindings))){
-                    removedBinding.add(mongoDbBindings);
-                }
-        }
-        assertEquals(1,removedBinding.size());
-        assertEquals("[]",removedBinding.contains("#.eiffel31"));
+        ArrayList<String> removedBinding = compareAndRemoveBindings();
+        assertEquals(1, removedBinding.size());
     }
 
-    @Then("^insert the new binding keys into mongoDB document$")
-    public void insert_the_new_binding_keys_into_mongoDB_document() {
-        LOGGER.debug("Inserting the new binding key into mongoDB");
-        BasicDBObject docInput = new BasicDBObject();
-        docInput.put("destination","ei-domain.eiffel-intelligence.messageConsumer.durable");
-        docInput.put("destinationType", "QUEUE");
-        docInput.put("exchange", "ei-navya-exchange");
-        docInput.put("bindingKeys", "#.eiffel32");
-        docInput.put("arg", null);
-        mongoDBHandler.insertDocument(dataBaseName, collectionName, docInput.toString());
-        assertEquals(docInput,true);
-    }
     /**
      * This method collects all the event names of events we will send to the
      * message bus.
@@ -187,6 +167,38 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         rabbitTemplate.setQueue(queueName);
         rabbitTemplate.setRoutingKey(ROUTING_KEY_1);
         return admin;
+    }
+
+    private BasicDBObject insertBinding() {
+        BasicDBObject docInput = new BasicDBObject();
+        docInput.put("destination", "ei-domain.eiffel-intelligence.messageConsumer.durable");
+        docInput.put("destinationType", "QUEUE");
+        docInput.put("exchange", "ei-exchange");
+        docInput.put("bindingKeys", BINDING_KEY_1);
+        docInput.put("arg", null);
+        mongoDBHandler.insertDocument(dataBaseName, collectionName, docInput.toString());
+        return docInput;
+    }
+
+    private ArrayList<String> compareAndRemoveBindings() {
+        ArrayList<Binding> listBinding = new ArrayList<Binding>();
+        listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE,
+                "ei-exchange", BINDING_KEY_2, null));
+        List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        ArrayList<String> removedBinding = new ArrayList<String>();
+
+        JSONObject dbBinding = new JSONObject(allObjects.get(0));
+        String mongoDbBinding = dbBinding.getString("bindingKeys");
+        if (!(listBinding.contains(mongoDbBinding))) {
+            removedBinding.add(mongoDbBinding);
+            RmqHandler rmqHandler = eventManager.getRmqHandler();
+            final CachingConnectionFactory ccf = rmqHandler.getCachingConnectionFactory();
+            RabbitAdmin admin = new RabbitAdmin(ccf);
+            admin.removeBinding(listBinding.get(0));
+            String condition = "{\"bindingKeys\": /.*" + mongoDbBinding + "/}";
+            mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
+        }
+        return removedBinding;
     }
 
 }

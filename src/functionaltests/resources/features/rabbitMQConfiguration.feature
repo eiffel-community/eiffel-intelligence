@@ -10,6 +10,5 @@ Feature: Test Rabbit MQ Configuration
   @RabbitMQConfigurationDeleteBindingKeysScenario
   Scenario: Test that old binding keys are deleted from rabbitMQ and mongoDB
     Given We are connected to message bus
-    Then get the binding documents from mongoDB
+    When get the binding documents from mongoDB
     Then compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB
-    Then insert the new binding keys into mongoDB document

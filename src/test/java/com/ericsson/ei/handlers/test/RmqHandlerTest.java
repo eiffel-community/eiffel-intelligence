@@ -43,6 +43,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RmqHandlerTest",
+        "missedNotificationDataBaseName: RmqHandlerTest-missedNotifications",
         "bindingkeys.collection.name: binding_keys_test",
         "rabbitmq.exchange.name: RmqHandlerTest-exchange",
         "rabbitmq.consumerName: RmqHandlerTest" })
@@ -72,7 +73,8 @@ public class RmqHandlerTest {
     @InjectMocks
     private RmqHandler rmqHandler;
 
-    @Mock ConnectionFactory factory;
+    @Mock
+    private ConnectionFactory factory;
 
     @Before
     public void setUp() {

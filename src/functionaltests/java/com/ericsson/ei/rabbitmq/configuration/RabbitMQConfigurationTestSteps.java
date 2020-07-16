@@ -190,10 +190,7 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         String mongoDbBinding = dbBinding.getString("bindingKeys");
         if (!(listBinding.contains(mongoDbBinding))) {
             removedBinding.add(mongoDbBinding);
-            RmqHandler rmqHandler = eventManager.getRmqHandler();
-            final CachingConnectionFactory ccf = rmqHandler.getCachingConnectionFactory();
-            RabbitAdmin admin = new RabbitAdmin(ccf);
-            admin.removeBinding(listBinding.get(0));
+            listBinding.remove(0);
             String condition = "{\"bindingKeys\": /.*" + mongoDbBinding + "/}";
             mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
         }

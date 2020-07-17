@@ -252,3 +252,13 @@ Eiffel-Intelligence will decrypt password properties with help of the provided s
 Execute Eiffel-Intelligence with "jasypt.encryptor.password=<the secret encryptor password>" flag, example:
         
         java -jar eiffel-intelligence-<version>.war --jasypt.encryptor.password=<the secret encryptor password> --spring.config.location=/path/to/application.properties
+
+## Removal of unused bindings from RabbitMQ using mongoDB
+
+Eiffel Intelligence stores bindings of a queue in a database with thecollection name
+configured with the property **bindingkeys.collection.name**. When start of EI,
+compares the bindingkeys with the property value rabbitmq.binding.key and bindings
+from mongoDB, and removes unused bindings from RabbitMQ then adds new bindings to the
+mongoDB collection. The name of this particular collection is defined by the below property:
+
+* bindingkeys.collection.name

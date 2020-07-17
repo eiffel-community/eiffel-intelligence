@@ -172,7 +172,7 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         BasicDBObject docInput = new BasicDBObject();
         docInput.put("destination", "ei-domain.eiffel-intelligence.messageConsumer.durable");
         docInput.put("destinationType", "QUEUE");
-        docInput.put("exchange", "ei-bindings");
+        docInput.put("exchange", "ei-binding-keys");
         docInput.put("bindingKeys", BINDING_KEY_1);
         docInput.put("arg", null);
         mongoDBHandler.insertDocument(dataBaseName, collectionName, docInput.toString());
@@ -182,7 +182,7 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
     private ArrayList<String> compareAndRemoveBindings() {
         ArrayList<Binding> listBinding = new ArrayList<Binding>();
         listBinding.add(new Binding("ei-domain.eiffel-intelligence.messageConsumer.durable", DestinationType.QUEUE,
-                "ei-bindings", BINDING_KEY_2, null));
+                "ei-binding-keys", BINDING_KEY_2, null));
         List<String> allObjects = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         ArrayList<String> removedBinding = new ArrayList<String>();
 

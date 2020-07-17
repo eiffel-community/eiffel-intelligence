@@ -255,10 +255,10 @@ Execute Eiffel-Intelligence with "jasypt.encryptor.password=<the secret encrypto
 
 ## Removal of unused bindings from RabbitMQ using mongoDB
 
-Eiffel Intelligence stores bindings of a queue in a database with thecollection name
+Eiffel Intelligence stores bindings of a queue in a database with the collection name
 configured with the property **bindingkeys.collection.name**. When start of EI,
 compares the bindingkeys with the property value rabbitmq.binding.key and bindings
-from mongoDB, and removes unused bindings from RabbitMQ then adds new bindings to the
+from mongoDB, then removes unused bindings from RabbitMQ and adds new bindings to the
 mongoDB collection. The name of this particular collection is defined by the below property:
 
 * bindingkeys.collection.name

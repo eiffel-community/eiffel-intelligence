@@ -54,7 +54,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
     private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_test.json";
 
     private static final String DEFAULT_ROUTING_KEY = "#";
-    
+
     private static final String BINDING_KEY_1 = "binding-key-1";
     private static final String BINDING_KEY_2 = "binding-key-2";
 
@@ -126,7 +126,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         }
         assertEquals(1, waitListSize);
     }
-    
+
     @When("^add the binding documents to mongoDB$")
     public void add_the_binding_documents_to_mongoDB() {
         BasicDBObject dbBinding = insertBinding();
@@ -169,7 +169,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         rabbitTemplate.setRoutingKey(DEFAULT_ROUTING_KEY);
         return admin;
     }
-    
+
     private BasicDBObject insertBinding() {
         BasicDBObject docInput = new BasicDBObject();
         docInput.put("destination", "ei-domain.eiffel-intelligence.messageConsumer.durable");

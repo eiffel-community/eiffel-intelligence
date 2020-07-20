@@ -6,9 +6,3 @@ Feature: Test Rabbit MQ Configuration
     Given We are connected to message bus
     When events are published using different routing keys
     Then an aggregated object should be created
-
-  @RabbitMQConfigurationDeleteBindingKeysScenario
-  Scenario: Test that old binding keys are deleted from rabbitMQ and mongoDB
-    Given We are connected to message bus
-    When add the binding documents to mongoDB
-    Then compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB

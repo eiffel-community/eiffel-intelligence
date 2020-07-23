@@ -19,6 +19,8 @@ package com.ericsson.ei.handlers.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,12 +37,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: RmqHandlerTest",
         "missedNotificationDataBaseName: RmqHandlerTest-missedNotifications",
+        "bindingkeys.collection.name: binding_keys_test",
         "rabbitmq.exchange.name: RmqHandlerTest-exchange",
         "rabbitmq.consumerName: RmqHandlerTest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
@@ -55,6 +61,15 @@ public class RmqHandlerTest {
     private String bindingKeys = "#";
     private String consumerName = "messageConsumer";
 
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;
+
+    @Value("${bindingkeys.collection.name}")
+    private String collectionName;
+
     @InjectMocks
     private RmqHandler rmqHandler;
 
@@ -67,6 +82,11 @@ public class RmqHandlerTest {
         initProperties();
     }
 
+    @After
+    public void afterTests() throws IOException {
+        mongoDBHandler.dropCollection(databaseName, collectionName);
+    }
+
     public void initProperties() {
         rmqHandler.setQueueDurable(queueDurable);
         rmqHandler.setHost(host);
@@ -76,6 +96,8 @@ public class RmqHandlerTest {
         rmqHandler.setComponentName(componentName);
         rmqHandler.setBindingKeys(bindingKeys);
         rmqHandler.setConsumerName(consumerName);
+        rmqHandler.setCollectionName(collectionName);
+        rmqHandler.setDataBaseName(databaseName);
     }
 
     @Test
@@ -123,4 +145,15 @@ public class RmqHandlerTest {
         factory = rmqHandler.connectionFactory();
         assertNotNull(factory);
     }
+
+    @Test
+    public void getDatabaseNameTest() {
+        assertTrue(rmqHandler.getDataBaseName().equals(databaseName));
+    }
+
+    @Test
+    public void getCollectionNameTest() {
+        assertTrue(rmqHandler.getCollectionName().equals(collectionName));
+    }
+
 }

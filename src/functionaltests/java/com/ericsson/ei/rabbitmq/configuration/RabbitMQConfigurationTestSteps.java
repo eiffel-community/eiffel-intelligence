@@ -1,14 +1,18 @@
 package com.ericsson.ei.rabbitmq.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
@@ -23,9 +27,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.handlers.EventHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.handlers.RmqHandler;
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.ericsson.ei.utils.FunctionalTestBase;
+import com.mongodb.BasicDBObject;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

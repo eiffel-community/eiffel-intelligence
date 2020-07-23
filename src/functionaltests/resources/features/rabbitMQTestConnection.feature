@@ -7,3 +7,9 @@ Feature: Test Rabbit MQ Connection
     When Message bus goes down
     And Message bus is restarted
     Then I can send events which are put in the waitlist
+
+  @RabbitMQConfigurationDeleteBindingKeysScenario
+  Scenario: Test that old binding keys are deleted from rabbitMQ and mongoDB
+    Given We are connected to message bus
+    When add the binding documents to mongoDB
+    Then compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB

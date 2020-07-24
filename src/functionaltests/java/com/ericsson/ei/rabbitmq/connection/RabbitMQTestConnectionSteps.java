@@ -139,7 +139,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
     @When("^add the binding documents to mongoDB$")
     public void add_the_binding_documents_to_mongoDB() {
         BasicDBObject dbBinding = insertBinding();
-        assertEquals(1,dbBinding.size());
+        assertEquals(5,dbBinding.size());
     }
 
     @Then("^compare the binding keys and remove the old binding keys from rabbitMQ and mongoDB$")

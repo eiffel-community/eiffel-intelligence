@@ -46,6 +46,8 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listeners.EIMessageListenerAdapter;
 import com.ericsson.ei.listeners.RMQConnectionListener;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -232,7 +234,7 @@ public class RMQHandler {
             for (String bindings : allDocuments) {
                 JSONObject bindingObj = new JSONObject(bindings);
                 final String mongoDbBindingKey = bindingObj.getString("bindingKeys");
-                String queryString = "{\"bindingKeys\": /.*" + mongoDbBindingKey + "/}";
+                final MongoCondition condition = MongoCondition.bindingKeyCondition(mongoDbBindingKey);
                 if (!Arrays.asList(newBindingKeysArray).contains(mongoDbBindingKey)) {
                     String destinationDB = bindingObj.getString("destination");
                     String exchangeDB = bindingObj.getString("exchange");
@@ -241,20 +243,19 @@ public class RMQHandler {
                     amqpAdmin = new RabbitAdmin(connectionFactory());
                     amqpAdmin.removeBinding(b);
                     // Removing binding document from mongoDB
-                    MongoStringQuery query = new MongoStringQuery(queryString);
-                    mongoDBHandler.dropDocument(dataBaseName, collectionName, query);
+                    mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
                 } else {
                     // storing the existing key into an array.
                     existingBindingsData.add(mongoDbBindingKey);
                 }
             }
         }
-        // To store the new binding key into the mongoDB.
+        // to store the binding keys used for rabbitMQ, in mongo db.
         storeNewBindingKeys(existingBindingsData, AMQPBindingObjectList);
     }
 
     /**
-     * This method is used to store the bindings of new binding key into mongoDB.
+     * This method is used to store the binding keys used for rabbitMQ, in mongo db.
      * @return
      */
 
@@ -265,11 +266,11 @@ public class RMQHandler {
                 LOGGER.info("Binding already present in mongoDB");
             }else{
                     BasicDBObject document = new BasicDBObject();
-                    document.put("destination",bindingKey.getDestination());
-                    document.put("destinationType", bindingKey.getDestinationType().toString());
-                    document.put("exchange", bindingKey.getExchange());
-                    document.put("bindingKeys", bindingKey.getRoutingKey());
-                    document.put("arg", bindingKey.getArguments().toString());
+                    document.put(MongoConstants.DESTINATION,bindingKey.getDestination());
+                    document.put(MongoConstants.DESTINATIONT_TYPE, bindingKey.getDestinationType().toString());
+                    document.put(MongoConstants.EXCHANGE, bindingKey.getExchange());
+                    document.put(MongoConstants.BINDING_KEYS, bindingKey.getRoutingKey());
+                    document.put(MongoConstants.ARG, bindingKey.getArguments().toString());
                     mongoDBHandler.insertDocument(dataBaseName, collectionName, document.toString());
              }
          }

@@ -204,6 +204,13 @@ The rabbitmq.tls.version property specifies the security protocol and you can fi
 * rabbitmq.binding.key
 * rabbitmq.waitlist.queue.suffix
 
+## Storage of rabbitMQ binding keys in mongo database
+
+Eiffel Intelligence stores bindings of a queue in a database with the collection name
+configured with the property **bindingkeys.collection.name**. Upon starting, Eiffel Intelligence compares,
+the bindingkeys with the property value rabbitmq.binding.key and bindings
+from mongoDB, then removes unused bindings from RabbitMQ and adds new bindings to the
+mongoDB collection. The name of this particular collection is defined by the below property:
 
 ## Security
 

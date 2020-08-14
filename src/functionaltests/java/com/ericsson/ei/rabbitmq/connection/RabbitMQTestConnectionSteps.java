@@ -31,6 +31,7 @@ import org.springframework.util.SocketUtils;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.RMQHandler;
 import com.ericsson.ei.handlers.RMQProperties;
+import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.mongo.MongoStringQuery;
@@ -206,9 +207,8 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         if (!(listBinding.contains(mongoDbBinding))) {
             removedBinding.add(mongoDbBinding);
             listBinding.remove(0);
-            String queryString = "{\"bindingKeys\": /.*" + mongoDbBinding + "/}";
-            MongoQuery query = new MongoStringQuery(queryString);
-            mongoDBHandler.dropDocument(dataBaseName, collectionName, query);
+            final MongoCondition condition = MongoCondition.bindingKeyCondition(mongoDbBinding);
+            mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
         }
         return removedBinding;
     }

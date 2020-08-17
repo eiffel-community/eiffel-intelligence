@@ -44,10 +44,11 @@ public class MongoCondition implements MongoQuery {
      * <code>my-bindingKey</code> the JSON will look like this:
      * <code>{"bindingKeys":"my-bindingKey"}</code>
      *
+     * @param bindingKey The value of the bindingKey
      * @return A MongoCondition with bindingKey set
      */
     public static MongoCondition bindingKeyCondition(String bindingKey) {
-        return condition(MongoConstants.BINDING_KEYS, bindingKey);
+        return condition(MongoConstants.MB_BINDING_KEYS, bindingKey);
     }
 
     /**

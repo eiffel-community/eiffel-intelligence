@@ -17,18 +17,23 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -41,6 +46,11 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.listeners.EIMessageListenerAdapter;
 import com.ericsson.ei.listeners.RMQConnectionListener;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.BasicDBObject;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -67,6 +77,24 @@ public class RMQHandler {
     @Getter
     @Autowired
     private RMQProperties rmqProperties;
+
+    @Getter
+    @Setter
+    @Value("${spring.data.mongodb.database}")
+    private String dataBaseName;
+
+    @Getter
+    @Setter
+    @Value("${bindingkeys.collection.name}")
+    private String collectionName;
+
+    @Setter
+    @Autowired
+    private MongoDBHandler mongoDBHandler;
+
+    @Getter
+    @JsonIgnore
+    private AmqpAdmin amqpAdmin;
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -169,11 +197,12 @@ public class RMQHandler {
 
     @Bean
     public List<Binding> bindings() {
-        String[] bingingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
+        String[] bindingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
         List<Binding> bindingList = new ArrayList<Binding>();
-        for (String bindingKey : bingingKeysArray) {
+        for (String bindingKey : bindingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
+        deleteBindings(bindingKeysArray,bindingList);
         return bindingList;
     }
 
@@ -184,5 +213,62 @@ public class RMQHandler {
     private String[] splitBindingKeys(String bindingKeys) {
         String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
         return bindingKeysWithoutWhitespace.split(",");
+    }
+
+    /**
+     * This method is used to delete the bindings in rabbitMQ.
+     * By comparing the binding keys used in the properties and binding keys stored in mongoDB.
+     * newBindingKeysArray is the only binding keys array.
+     * AMQPBindingObjectList is entire list of bindings.
+     * Binding key which is not present in the current AMQPBindingObjectList gets deleted and removed from mongoDB.
+     * @return
+     */
+    private void deleteBindings(String[] newBindingKeysArray, List<Binding> AMQPBindingObjectList) {
+        // Creating BindingKeys Collection in mongoDB
+        ArrayList<String> allDocuments = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
+        ArrayList<String> existingBindingsData = new ArrayList<String>();
+        if (!allDocuments.isEmpty()) {
+            for (String bindings : allDocuments) {
+                JSONObject bindingObj = new JSONObject(bindings);
+                final String mongoDbBindingKey = bindingObj.getString("bindingKeys");
+                MongoCondition condition = MongoCondition.bindingKeyCondition(mongoDbBindingKey);
+                if (!Arrays.asList(newBindingKeysArray).contains(mongoDbBindingKey)) {
+                    String destinationDB = bindingObj.getString("destination");
+                    String exchangeDB = bindingObj.getString("exchange");
+                    // Binding the old binding key and removing from queue
+                    Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindingKey, null);
+                    amqpAdmin = new RabbitAdmin(connectionFactory());
+                    amqpAdmin.removeBinding(b);
+                    // Removing binding document from mongoDB
+                    mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
+                } else {
+                    // storing the existing key into an array.
+                    existingBindingsData.add(mongoDbBindingKey);
+                }
+            }
+        }
+        // to store the binding keys used for rabbitMQ, in mongo db.
+        storeNewBindingKeys(existingBindingsData, AMQPBindingObjectList);
+    }
+
+	/**
+     * This method is used to store the binding keys used for rabbitMQ, in mongoDB.
+     * @return
+     */
+    private void storeNewBindingKeys(ArrayList<String> existingBindingsData, List<Binding> AMQPBindingObjectList){
+    // comparing with the stored key and adding the new binding key into the mongoDB.
+       for(final Binding bindingKey:AMQPBindingObjectList){
+            if(existingBindingsData.contains(bindingKey.getRoutingKey())){
+                LOGGER.info("Binding already present in mongoDB");
+            }else{
+                    BasicDBObject document = new BasicDBObject();
+                    document.put(MongoConstants.MB_DESTINATION,bindingKey.getDestination());
+                    document.put(MongoConstants.MB_DESTINATIONT_TYPE, bindingKey.getDestinationType().toString());
+                    document.put(MongoConstants.MB_EXCHANGE, bindingKey.getExchange());
+                    document.put(MongoConstants.MB_BINDING_KEYS, bindingKey.getRoutingKey());
+                    document.put(MongoConstants.MB_ARG, bindingKey.getArguments().toString());
+                    mongoDBHandler.insertDocument(dataBaseName, collectionName, document.toString());
+             }
+         }
     }
 }

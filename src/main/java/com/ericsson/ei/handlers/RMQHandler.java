@@ -231,9 +231,16 @@ public class RMQHandler {
             for (String bindings : allDocuments) {
                 JSONObject bindingObj = new JSONObject(bindings);
                 final String mongoDbBindingKey = bindingObj.getString("bindingKeys");
+                MongoCondition condition = MongoCondition.bindingKeyCondition(mongoDbBindingKey);
                 if (!Arrays.asList(newBindingKeysArray).contains(mongoDbBindingKey)) {
-                    //To compare and remove the existing binding keys from the rabbitMQ and MongoDB.
-                    removeBindingKeys(newBindingKeysArray,bindingObj,mongoDbBindingKey);
+                    String destinationDB = bindingObj.getString("destination");
+                    String exchangeDB = bindingObj.getString("exchange");
+                    // Binding the old binding key and removing from queue
+                    Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindingKey, null);
+                    amqpAdmin = new RabbitAdmin(connectionFactory());
+                    amqpAdmin.removeBinding(b);
+                    // Removing binding document from mongoDB
+                    mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
                 } else {
                     // storing the existing key into an array.
                     existingBindingsData.add(mongoDbBindingKey);
@@ -243,22 +250,6 @@ public class RMQHandler {
         // to store the binding keys used for rabbitMQ, in mongo db.
         storeNewBindingKeys(existingBindingsData, AMQPBindingObjectList);
     }
-
-    /**
-     * This method is used To compare and remove the existing binding keys from the rabbitMQ and MongoDB.
-     * @return
-     */
-    private void removeBindingKeys(String[] newBindingKeysArray, JSONObject bindingObj, String mongoDbBindingKey) {
-        final MongoCondition condition = MongoCondition.bindingKeyCondition(mongoDbBindingKey);
-        String destinationDB = bindingObj.getString("destination");
-        String exchangeDB = bindingObj.getString("exchange");
-        // Binding the old binding key and removing from queue
-        Binding b = new Binding(destinationDB, DestinationType.QUEUE, exchangeDB, mongoDbBindingKey, null);
-        amqpAdmin = new RabbitAdmin(connectionFactory());
-        amqpAdmin.removeBinding(b);
-        // Removing binding document from mongoDB
-        mongoDBHandler.dropDocument(dataBaseName, collectionName, condition);
-	}
 
 	/**
      * This method is used to store the binding keys used for rabbitMQ, in mongoDB.

@@ -346,7 +346,10 @@ public class MongoDBHandler {
     
     /**
      * Check if the document exists
-     * @return 
+     * @param databaseName
+     * @param collectionName
+     * @param condition is a condition for update documents
+     * @return
      */
     public boolean checkObjectExists(String databaseName, String collectionName, String condition) {
     	MongoDatabase db = mongoClient.getDatabase(databaseName);
@@ -358,8 +361,14 @@ public class MongoDBHandler {
     	return true;
     }
     
+    
     /**
-     * Update the already existing object
+     * Update the existing doucment with unique objects list
+     * @param dataBaseName
+     * @param collectionName
+     * @param condition is a condition for update documents
+     * @param eventId eventId to update in the mapper collection
+     * @return 
      */
     public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
         try {

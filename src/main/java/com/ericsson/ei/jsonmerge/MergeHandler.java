@@ -70,7 +70,7 @@ public class MergeHandler {
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
-                String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
+                String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).textValue();
                 String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge, false);
                 preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);

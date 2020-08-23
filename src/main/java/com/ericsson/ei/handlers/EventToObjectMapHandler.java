@@ -17,7 +17,9 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,10 +85,17 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
+        LOGGER.info("Event : {} \n, Rules Object : {}", event, rulesObject);
         String condition = "{\"_id\" : \"" + eventId + "\"}";
         ArrayList<String> list =  getEventToObjectList(eventId);
         boolean firstTime = list.isEmpty();
         list = updateList(list, eventId, objectId);
+        LOGGER.info("Pre List of Objects: " + list.size() + " objectId : " + objectId + " eventId : " + eventId);
+        Set<String> set = new LinkedHashSet<>();
+        set.addAll(list);
+        list.clear();
+        list.addAll(set);
+        LOGGER.info("Post List of Objects: " + list.size() + " objectId : " + objectId );
         ObjectMapper mapper = new ObjectMapper();
         JsonNode entry = null;
 

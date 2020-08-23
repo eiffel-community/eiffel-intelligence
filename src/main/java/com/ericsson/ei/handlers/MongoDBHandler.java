@@ -351,8 +351,8 @@ public class MongoDBHandler {
     public boolean checkObjectExists(String databaseName, String collectionName, String condition) {
     	MongoDatabase db = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
-        Document doc = mongoCollection.find(BasicDBObject.parse(condition)).filter(BasicDBObject.parse("{_id: 1}")).limit(1).first();
-        if (doc == null) {
+        Document doc = mongoCollection.find(BasicDBObject.parse(condition)).first();
+        if (doc == null || doc.isEmpty()) {
         	return false;
         }
     	return true;
@@ -361,12 +361,12 @@ public class MongoDBHandler {
     /**
      * Update the already existing object
      */
-    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String input, String objectId) {
+    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
-                final Document dbObjectInput = Document.parse(input);
-                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("object", objectId));
+                final Document dbObjectInput = Document.parse(condition);
+                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
                 LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }

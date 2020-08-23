@@ -17,9 +17,7 @@
 package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,35 +83,29 @@ public class EventToObjectMapHandler {
 
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
-        LOGGER.info("Event : {} \n, Rules Object : {}", event, rulesObject);
-        String condition = "{\"_id\" : \"" + eventId + "\"}";
-        ArrayList<String> list =  getEventToObjectList(eventId);
-        boolean firstTime = list.isEmpty();
-        list = updateList(list, eventId, objectId);
-        LOGGER.info("Pre List of Objects: " + list.size() + " objectId : " + objectId + " eventId : " + eventId);
-        Set<String> set = new LinkedHashSet<>();
-        set.addAll(list);
-        list.clear();
-        list.addAll(set);
-        LOGGER.info("Post List of Objects: " + list.size() + " objectId : " + objectId );
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode entry = null;
-
+        String condition = "{\"_id\" : \"" + objectId + "\"}";
+        LOGGER.debug("Checking document exists in the collection with ID : {}", condition );
+        LOGGER.debug("EventID : {}", eventId);
+        boolean docExists = mongodbhandler.checkObjectExists(databaseName, collectionName, condition);
         try {
-            entry = new ObjectMapper().readValue(condition, JsonNode.class);
-            ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
-            ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
-            String mapStr = entry.toString();
-            LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);
-            if (firstTime) {
-                mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
+        	if (!docExists) {
+        		ArrayList<String> list =  new ArrayList<String>();
+        		list.add(eventId);
+        		final ObjectMapper mapper = new ObjectMapper();
+    			JsonNode entry = new ObjectMapper().readValue(condition, JsonNode.class);
+        		ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
+        		((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
+                final String mapStr = entry.toString(); 
+            	LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);	
+            	mongodbhandler.insertDocument(databaseName, collectionName, mapStr );
             } else {
-                mongodbhandler.updateDocument(databaseName, collectionName, condition, mapStr);
+                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
             }
         } catch (Exception e) {
             LOGGER.info("Failed to update event object list.", e);
         }
     }
+    
 
     public String getEventId(RulesObject rulesObject, String event) {
         String idRule = rulesObject.getIdRule();

@@ -138,7 +138,7 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition      string json
+     * @param condition      a condition to find a requested object in the database
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
@@ -348,7 +348,7 @@ public class MongoDBHandler {
      * Check if the document exists
      * @param databaseName
      * @param collectionName
-     * @param condition is a condition for update documents
+     * @param condition      a condition to find a requested object in the database
      * @return
      */
     public boolean checkObjectExists(String databaseName, String collectionName, String condition) {
@@ -364,9 +364,10 @@ public class MongoDBHandler {
     
     /**
      * Update the existing doucment with unique objects list
+     * Used only in EventToObjectMapHandler.java
      * @param dataBaseName
      * @param collectionName
-     * @param condition is a condition for update documents
+     * @param condition      a condition to find a requested object in the database
      * @param eventId eventId to update in the mapper collection
      * @return 
      */

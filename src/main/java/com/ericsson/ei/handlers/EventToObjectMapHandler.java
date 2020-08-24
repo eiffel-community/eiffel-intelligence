@@ -81,11 +81,16 @@ public class EventToObjectMapHandler {
         return getEventToObjectList(eventId);
     }
 
+    /**
+     * To check and save the eventIds to the objectId in the mapped database.
+     * @param rulesObject
+     * @param event
+     * @param objectId aggregated event object Id
+     */
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
         String condition = "{\"_id\" : \"" + objectId + "\"}";
-        LOGGER.debug("Checking document exists in the collection with ID : {}", condition );
-        LOGGER.debug("EventID : {}", eventId);
+        LOGGER.debug("Checking document exists in the collection with ID : {}\n EventId : {}", condition, eventId);
         boolean docExists = mongodbhandler.checkObjectExists(databaseName, collectionName, condition);
         try {
         	if (!docExists) {
@@ -102,7 +107,7 @@ public class EventToObjectMapHandler {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
             }
         } catch (Exception e) {
-            LOGGER.info("Failed to update event object list.", e);
+            LOGGER.error("Failed to update event object list.", e);
         }
     }
     

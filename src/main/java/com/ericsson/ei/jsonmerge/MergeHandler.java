@@ -67,6 +67,7 @@ public class MergeHandler {
         try {
             // lock and get the AggregatedObject
             String aggregatedObject = getAggregatedObject(id, true);
+            LOGGER.debug("AGGREGATED OBJECT : " + aggregatedObject);
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
@@ -74,6 +75,7 @@ public class MergeHandler {
                 String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge, false);
                 preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);
+                LOGGER.debug("PREPARE TO MERGE OBJECT : " + preparedToMergeObject);
             } else {
                 preparedToMergeObject = objectToMerge.toString();
             }

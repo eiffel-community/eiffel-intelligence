@@ -64,6 +64,7 @@ public class JmesPathInterface {
         String inputs[] = { rule, event };
         for (String input : inputs) {
             if (input == null || input == "") {
+            	LOGGER.debug("-----------------------------EMPTY RULE -----------------");
                 return result;
             }
         }
@@ -72,8 +73,12 @@ public class JmesPathInterface {
 
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
+            LOGGER.debug("EXPRESSION : " + expression );
+            LOGGER.debug("EVENT : " + event);
             JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
+            LOGGER.debug("EVENTJSON " + eventJson);
             result = expression.search(eventJson);
+            LOGGER.debug("RESULT VALUE FROM JMESPATH : {}" , result);
         } catch (Exception e) {
             LOGGER.error("Failed to run rule on event.\nRule: {}\nEvent: {}", rule, event, e);
         }

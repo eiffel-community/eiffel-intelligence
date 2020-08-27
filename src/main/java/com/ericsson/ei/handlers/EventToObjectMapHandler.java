@@ -90,7 +90,7 @@ public class EventToObjectMapHandler {
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
         String eventId = getEventId(rulesObject, event);
         String condition = "{\"_id\" : \"" + objectId + "\"}";
-        LOGGER.debug("Checking document exists in the collection with ID : {}\n EventId : {}", condition, eventId);
+        LOGGER.debug("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
         boolean docExists = mongodbhandler.checkObjectExists(databaseName, collectionName, condition);
         try {
         	if (!docExists) {

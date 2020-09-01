@@ -76,7 +76,7 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
-        assertTrue(mongoDBHandler.dropDocument(dataBaseName, mapCollectionName, condition));
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, mapCollectionName, conditionForEventToObjectMap));
     }
     
     //Added test cases for EventToObjectMapHandler

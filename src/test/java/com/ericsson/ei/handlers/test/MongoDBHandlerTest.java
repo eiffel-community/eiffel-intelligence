@@ -37,13 +37,14 @@ public class MongoDBHandlerTest {
 
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
+    private String mapCollectionName = "SampleEventObjectMap"
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";
     
     //Added to test new functionality for EventToObjectMapHandler
     private String conditionForEventToObjectMap = "{\"_id\" : \"testid1\"}";
-    private String inputForEventToObjectMap = "{\"_id\": \"testid1\", \"objects\" : [{\"eventid1\", \"eventid2\"}]}";
+    private String inputForEventToObjectMap = "{\"_id\" : \"testid1\", \"objects\" : [{\"eventid1\", \"eventid2\"}]}";
     private String updateInputForEventToObjectMap = "\"eventid3\"";
 
     @Before
@@ -52,7 +53,7 @@ public class MongoDBHandlerTest {
         mongoDBHandler = new MongoDBHandler();
         mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
         mongoDBHandler.insertDocument(dataBaseName, collectionName, input);
-        mongoDBHandler.insertDocument(dataBaseName, collectionName, inputForEventToObjectMap);
+        mongoDBHandler.insertDocument(dataBaseName, mapCollectionName, inputForEventToObjectMap);
     }
 
     @Test
@@ -75,16 +76,17 @@ public class MongoDBHandlerTest {
     @After
     public void dropCollection() {
         assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, condition));
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, mapCollectionName, condition));
     }
     
     //Added test cases for EventToObjectMapHandler
     @Test
     public void checkDocument() {
-    	assertTrue(mongoDBHandler.checkDocumentExists(dataBaseName, collectionName, conditionForEventToObjectMap));
+    	assertTrue(mongoDBHandler.checkDocumentExists(dataBaseName, mapCollectionName, conditionForEventToObjectMap));
     }
     
     @Test
     public void updateEventToObjectMap() {
-    	assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, collectionName, conditionForEventToObjectMap, updateInputForEventToObjectMap));
+    	assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, mapCollectionName, conditionForEventToObjectMap, updateInputForEventToObjectMap));
     }
 }

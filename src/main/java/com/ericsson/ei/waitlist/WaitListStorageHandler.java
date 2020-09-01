@@ -83,7 +83,7 @@ public class WaitListStorageHandler {
     }
 
     private String findEventInWaitList(String id) {
-    	String condition = "{\"_id\" : \"" + id + "\"}";
+        String condition = "{\"_id\" : \"" + id + "\"}";
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
         if (foundEventsInWaitList.isEmpty()) {
             return "";

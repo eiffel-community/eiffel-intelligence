@@ -363,7 +363,7 @@ public class MongoDBHandler {
     
     
     /**
-     * Update the existing doucment with unique objects list
+     * Update the existing documents with unique objects list
      * Used only in EventToObjectMapHandler.java
      * @param dataBaseName
      * @param collectionName

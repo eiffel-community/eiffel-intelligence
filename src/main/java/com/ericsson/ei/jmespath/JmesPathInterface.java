@@ -72,10 +72,9 @@ public class JmesPathInterface {
 
         try {
             Expression<JsonNode> expression = jmespath.compile(rule);
-            LOGGER.debug("EXPRESSION : {}", expression );
             JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
             result = expression.search(eventJson);
-            LOGGER.debug("RESULT VALUE FROM JMESPATH : {}" , result);
+            LOGGER.debug("RESULT VALUE FROM JMESPATH : {} AND EXPRESSION : {} " , result, expression);
         } catch (Exception e) {
             LOGGER.error("Failed to run rule on event.\nRule: {}\nEvent: {}", rule, event, e);
         }

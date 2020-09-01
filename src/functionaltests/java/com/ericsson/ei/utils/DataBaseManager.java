@@ -127,7 +127,6 @@ public class DataBaseManager {
         long stopTime = System.currentTimeMillis() + 30000 + extraCheckDelay;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
-            System.out.println("******eventsIdList********"+eventsIdList.size());
             if (eventsIdList.isEmpty()) {
                 break;
             }
@@ -143,23 +142,20 @@ public class DataBaseManager {
      *            list of event IDs
      * @return list of missing events
      */
-    private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
-        mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
-        MongoDatabase db = mongoClient.getDatabase(database);
-        //System.out.println("*******checklist*******"+checklist);
-        MongoCollection<Document> collection = db.getCollection(eventMapCollection);
-        List<Document> documents = collection.find().into(new ArrayList<>());
-        for (Document document : documents) {
-        	//System.out.println("**********document*******"+document.toJson());
-            for (String expectedID : new ArrayList<>(checklist)) {
-            	//System.out.println("******expectedID*******"+expectedID);
-                if (document.get("objects").toString().contains(expectedID)) {
-                    checklist.remove(expectedID);
-                }
-            }
-        }
-        return checklist;
-    }
+	private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
+		mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
+		MongoDatabase db = mongoClient.getDatabase(database);
+		MongoCollection<Document> collection = db.getCollection(eventMapCollection);
+		List<Document> documents = collection.find().into(new ArrayList<>());
+		for (Document document : documents) {
+			for (String expectedID : new ArrayList<>(checklist)) {
+				if (document.get("events").toString().contains(expectedID)) {
+					checklist.remove(expectedID);
+				}
+			}
+		}
+		return checklist;
+	}
 
     /**
      * Retrieve a value from a database query result

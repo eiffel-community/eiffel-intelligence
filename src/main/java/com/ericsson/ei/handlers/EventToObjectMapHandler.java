@@ -48,7 +48,7 @@ public class EventToObjectMapHandler {
     @Value("${event_object_map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
 
-    private final String listPropertyName = "objects";
+    private final String listPropertyName = "events";
 
     @Autowired
     MongoDBHandler mongodbhandler;
@@ -148,13 +148,13 @@ public class EventToObjectMapHandler {
      * @return boolean
      */
     public boolean deleteEventObjectMap(String templateName) {
-        String condition = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
+        String condition = "{\"events\": { \"$in\" : [/.*" + templateName + "/]} }";
         LOGGER.info("The JSON condition for deleting aggregated object is : {}", condition);
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        String condition = "{\"events\": { \"$in\" : [\"" + eventId + "\"]} }";
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }

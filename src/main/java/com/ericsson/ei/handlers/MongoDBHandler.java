@@ -363,7 +363,7 @@ public class MongoDBHandler {
     
     
     /**
-     * Update the existing doucment with unique objects list
+     * Update the existing document with unique events list
      * Used only in EventToObjectMapHandler.java
      * @param dataBaseName
      * @param collectionName
@@ -376,7 +376,7 @@ public class MongoDBHandler {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(condition);
-                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
+                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("events", eventId));
                 LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }

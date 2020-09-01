@@ -44,7 +44,7 @@ public class MongoDBHandlerTest {
     
     //Added to test new functionality for EventToObjectMapHandler
     private String conditionForEventToObjectMap = "{\"_id\" : \"testid1\"}";
-    private String inputForEventToObjectMap = "{\"_id\" : \"testid1\", \"objects\" : [\"eventid1\", \"eventid2\"]}";
+    private String inputForEventToObjectMap = "{\"_id\" : \"testid1\", \"events\" : [\"eventid1\", \"eventid2\"]}";
     private String updateInputForEventToObjectMap = "\"eventid3\"";
 
     @Before

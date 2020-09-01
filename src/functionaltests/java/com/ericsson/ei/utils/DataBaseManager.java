@@ -146,12 +146,13 @@ public class DataBaseManager {
     private List<String> compareSentEventsWithEventsInDB(List<String> checklist) {
         mongoClient = new MongoClient(getMongoDbHost(), getMongoDbPort());
         MongoDatabase db = mongoClient.getDatabase(database);
+        System.out.println("*******checklist*******"+checklist);
         MongoCollection<Document> collection = db.getCollection(eventMapCollection);
         List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
-        	System.out.println("**********document*******"+document.toJson());
+        	System.out.println("**********document*******"+document.get("_id").toString());
             for (String expectedID : new ArrayList<>(checklist)) {
-            	System.out.println("******expectedID*******"+expectedID);
+            	//System.out.println("******expectedID*******"+expectedID);
                 if (expectedID.equals(document.get("_id").toString())) {
                     checklist.remove(expectedID);
                 }

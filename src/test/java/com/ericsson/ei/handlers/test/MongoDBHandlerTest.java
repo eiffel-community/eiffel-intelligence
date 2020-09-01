@@ -37,7 +37,7 @@ public class MongoDBHandlerTest {
 
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
-    private String mapCollectionName = "SampleEventObjectMap"
+    private String mapCollectionName = "SampleEventObjectMap";
     private String input = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase1data\"},{\"event_id\" : \"testcaseid2\", \"test_data\" : \"testcase2data\"}]}";
     private String updateInput = "{\"id\":\"eventId\",\"type\":\"eventType11\",\"test_cases\" : [{\"event_id\" : \"testcaseid1\", \"test_data\" : \"testcase2data\"},{\"event_id\" : \"testcaseid3\", \"test_data\" : \"testcase3data\"}]}";
     private String condition = "{\"test_cases.event_id\" : \"testcaseid1\"}";

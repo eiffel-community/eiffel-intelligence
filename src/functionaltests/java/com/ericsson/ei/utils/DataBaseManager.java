@@ -127,6 +127,7 @@ public class DataBaseManager {
         long stopTime = System.currentTimeMillis() + 30000 + extraCheckDelay;
         while (!eventsIdList.isEmpty() && stopTime > System.currentTimeMillis()) {
             eventsIdList = compareSentEventsWithEventsInDB(eventsIdList);
+            System.out.println("******eventsIdList********"+eventsIdList.size());
             if (eventsIdList.isEmpty()) {
                 break;
             }
@@ -148,7 +149,9 @@ public class DataBaseManager {
         MongoCollection<Document> collection = db.getCollection(eventMapCollection);
         List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
+        	System.out.println("**********document*******"+document.toJson());
             for (String expectedID : new ArrayList<>(checklist)) {
+            	System.out.println("******expectedID*******"+expectedID);
                 if (expectedID.equals(document.get("_id").toString())) {
                     checklist.remove(expectedID);
                 }

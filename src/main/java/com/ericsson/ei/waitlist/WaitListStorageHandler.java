@@ -71,7 +71,7 @@ public class WaitListStorageHandler {
     public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) {
         try {
             JsonNode id = extractIdFromEventUsingRules(event, rulesObject);
-            String foundEvent = findEventInWaitList(id);
+            String foundEvent = findEventInWaitList(id.textValue());
             if (foundEvent.isEmpty()) {
                 Date date = createCurrentTimeStamp();
                 BasicDBObject document = createWaitListDocument(event, id, date);
@@ -82,7 +82,7 @@ public class WaitListStorageHandler {
         }
     }
 
-    private String findEventInWaitList(JsonNode id) {
+    private String findEventInWaitList(String id) {
         String condition = "{\"_id\" : \"" + id + "\"}";
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName, collectionName, condition);
         if (foundEventsInWaitList.isEmpty()) {

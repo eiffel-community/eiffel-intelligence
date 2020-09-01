@@ -43,6 +43,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
@@ -137,7 +138,7 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition      string json
+     * @param condition      a condition to find a requested object in the database
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
@@ -341,5 +342,48 @@ public class MongoDBHandler {
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);
         db.drop();
+    }
+    
+    /**
+     * Check if the document exists
+     * @param databaseName
+     * @param collectionName
+     * @param condition      a condition to find a requested object in the database
+     * @return
+     */
+    public boolean checkDocumentExists(String databaseName, String collectionName, String condition) {
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+    	MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+        Document doc = mongoCollection.find(BasicDBObject.parse(condition)).first();
+        if (doc == null || doc.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    /**
+     * Update the existing documents with unique objects list
+     * Used only in EventToObjectMapHandler.java
+     * @param dataBaseName
+     * @param collectionName
+     * @param condition      a condition to find a requested object in the database
+     * @param eventId eventId to update in the mapper collection
+     * @return 
+     */
+    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
+        try {
+            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(condition);
+                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
+                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
+                return updateMany.wasAcknowledged();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to update document.", e);
+        }
+
+        return false;
     }
 }

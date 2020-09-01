@@ -150,9 +150,9 @@ public class DataBaseManager {
         for (Document document : documents) {
             for (String expectedID : new ArrayList<>(checklist)) {
             	Document objects = (Document) document.get("objects");
-            	if (expectedID.equals(objects.toString())) {
+            	if (objects.containsValue(expectedID)) {
             		checklist.remove(expectedID);
-                }
+            	}
             }
         }
         return checklist;

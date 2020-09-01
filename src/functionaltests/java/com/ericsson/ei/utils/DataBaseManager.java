@@ -150,10 +150,8 @@ public class DataBaseManager {
         MongoCollection<Document> collection = db.getCollection(eventMapCollection);
         List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
-        	System.out.println("**********document*******"+document.get("_id").toString());
             for (String expectedID : new ArrayList<>(checklist)) {
-            	//System.out.println("******expectedID*******"+expectedID);
-                if (expectedID.equals(document.get("_id").toString())) {
+                if ((document.get("objects").contains(expectedID))) {
                     checklist.remove(expectedID);
                 }
             }

@@ -351,14 +351,14 @@ public class MongoDBHandler {
      * @param condition      a condition to find a requested object in the database
      * @return
      */
-    public boolean checkObjectExists(String databaseName, String collectionName, String condition) {
-    	MongoDatabase db = mongoClient.getDatabase(databaseName);
-        MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+    public boolean checkDocumentExists(String databaseName, String collectionName, String condition) {
+        MongoDatabase db = mongoClient.getDatabase(databaseName);
+    	MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
         Document doc = mongoCollection.find(BasicDBObject.parse(condition)).first();
         if (doc == null || doc.isEmpty()) {
-        	return false;
+            return false;
         }
-    	return true;
+        return true;
     }
     
     

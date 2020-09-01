@@ -91,7 +91,7 @@ public class EventToObjectMapHandler {
         String eventId = getEventId(rulesObject, event);
         String condition = "{\"_id\" : \"" + objectId + "\"}";
         LOGGER.debug("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
-        boolean docExists = mongodbhandler.checkObjectExists(databaseName, collectionName, condition);
+        boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName, condition);
         try {
         	if (!docExists) {
         		ArrayList<String> list =  new ArrayList<String>();

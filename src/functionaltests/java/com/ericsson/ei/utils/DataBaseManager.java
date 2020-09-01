@@ -151,7 +151,8 @@ public class DataBaseManager {
         List<Document> documents = collection.find().into(new ArrayList<>());
         for (Document document : documents) {
             for (String expectedID : new ArrayList<>(checklist)) {
-                if ((document.getArray("objects").contains(expectedID))) {
+            	System.out.println(document.get("objects"));
+                if (expectedID.equals(document.get("_id").toString())) {
                     checklist.remove(expectedID);
                 }
             }

@@ -96,8 +96,13 @@ public class JenkinsCrumb {
     private URL buildJenkinsCrumbUrl(String url) throws MalformedURLException {
         String baseUrl = urlParser.extractBaseUrl(url);
         String contextPath = urlParser.extractContextPath(url).split("/")[1];
-        String jenkinsBaseUrl = String.format("%s/%s", baseUrl, contextPath);
-        URL jenkinsCrumbUrl = new URL(jenkinsBaseUrl + JENKINS_CRUMB_ENDPOINT);
+        URL jenkinsCrumbUrl;
+        if (contextPath.equals("job")) {
+            jenkinsCrumbUrl = new URL(baseUrl + JENKINS_CRUMB_ENDPOINT);
+        } else {
+            String jenkinsBaseUrl = String.format("%s/%s", baseUrl, contextPath);
+            jenkinsCrumbUrl = new URL(jenkinsBaseUrl + JENKINS_CRUMB_ENDPOINT);
+        }
         return jenkinsCrumbUrl;
     }
 }

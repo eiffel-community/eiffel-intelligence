@@ -42,7 +42,8 @@ public class JenkinsCrumbTest {
 
     private static final String URL = "http://www.somehot.com/some-endpoint/";
     private static final String BASE_URL = "http://www.somehot.com";
-    private static final String JENKINS_CRUMB_URL = "http://www.somehot.com/crumbIssuer/api/json";
+    private static final String CONTEXT_PATH = "/some-endpoint";
+    private static final String JENKINS_CRUMB_URL = "http://www.somehot.com/some-endpoint/crumbIssuer/api/json";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
 
@@ -65,6 +66,7 @@ public class JenkinsCrumbTest {
     public void beforeTests() throws IOException {
         encoding = Base64.getEncoder().encodeToString((USERNAME + ":" + PASSWORD).getBytes());
         when(urlParser.extractBaseUrl(URL)).thenReturn(BASE_URL);
+        when(urlParser.extractContextPath(URL)).thenReturn(CONTEXT_PATH);
 
         headers.add("Authorization", "Basic " + encoding);
         headers.setContentType(MediaType.APPLICATION_JSON);

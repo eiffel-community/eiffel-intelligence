@@ -74,11 +74,11 @@ public class SubscriptionHandler {
      */
     public void checkSubscriptionForObject(final String aggregatedObject,
                                            final String id) {
-            List<String> subscriptions = mongoDBHandler.getAllDocuments(
-                    database, subscriptionCollectionName);
-            subscriptions.forEach(
+        List<String> subscriptions = mongoDBHandler.getAllDocuments(
+                database, subscriptionCollectionName);
+        subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
-                    subscription, id));
+                        subscription, id));
     }
 
     /**

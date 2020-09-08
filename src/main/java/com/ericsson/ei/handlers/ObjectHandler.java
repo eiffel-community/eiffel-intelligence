@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ericsson.ei.mongo.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class ObjectHandler {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
+    @JsonIgnore
     @Getter
     @Value("${aggregations.collection.ttl}")
     private String aggregationsTtl;

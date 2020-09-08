@@ -62,7 +62,7 @@ public class ObjectHandler {
     @JsonIgnore
     @Getter
     @Value("${aggregations.collection.ttl}")
-    private String aggregationsTtl;
+    private String aggregationsTtlConfig;
 
     @Setter
     @Autowired
@@ -100,9 +100,9 @@ public class ObjectHandler {
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
 
-        if (getTtl() > 0) {
+        if (getAggregationsTtl() > 0) {
             mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
-                    MongoConstants.TIME, getTtl());
+                    MongoConstants.TIME, getAggregationsTtl());
         }
 
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
@@ -199,7 +199,7 @@ public class ObjectHandler {
         BasicDBObject document = BasicDBObject.parse(object);
         document.put(MongoConstants.ID, id);
         try {
-            if (getTtl() > 0) {
+            if (getAggregationsTtl() > 0) {
                 document.put(MongoConstants.TIME, DateUtils.getDate());
             }
         } catch (ParseException e) {
@@ -276,16 +276,16 @@ public class ObjectHandler {
      *
      * @return ttl Integer value representing time to live for documents
      */
-    public int getTtl() {
-        int ttl = 0;
-        if (StringUtils.isNotEmpty(aggregationsTtl)) {
+    public int getAggregationsTtl() {
+        int aggregationsTtl = 0;
+        if (StringUtils.isNotEmpty(aggregationsTtlConfig)) {
             try {
-                ttl = Integer.parseInt(aggregationsTtl);
+                aggregationsTtl = Integer.parseInt(aggregationsTtlConfig);
             } catch (NumberFormatException e) {
                 LOGGER.error("Failed to parse TTL value.", e);
             }
         }
-        return ttl;
+        return aggregationsTtl;
     }
 
     private boolean isInvalidId(String id) {

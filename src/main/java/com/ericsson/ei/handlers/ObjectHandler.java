@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ericsson.ei.mongo.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -59,10 +58,9 @@ public class ObjectHandler {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
-    @JsonIgnore
     @Getter
     @Value("${aggregations.collection.ttl}")
-    private String aggregationsTtlConfig;
+    private String aggregationsTtl;
 
     @Setter
     @Autowired
@@ -100,9 +98,9 @@ public class ObjectHandler {
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
 
-        if (getAggregationsTtl() > 0) {
+        if (getTtl() > 0) {
             mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
-                    MongoConstants.TIME, getAggregationsTtl());
+                    MongoConstants.TIME, getTtl());
         }
 
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
@@ -199,7 +197,7 @@ public class ObjectHandler {
         BasicDBObject document = BasicDBObject.parse(object);
         document.put(MongoConstants.ID, id);
         try {
-            if (getAggregationsTtl() > 0) {
+            if (getTtl() > 0) {
                 document.put(MongoConstants.TIME, DateUtils.getDate());
             }
         } catch (ParseException e) {
@@ -276,16 +274,16 @@ public class ObjectHandler {
      *
      * @return ttl Integer value representing time to live for documents
      */
-    public int getAggregationsTtl() {
-        int aggregationsTtl = 0;
-        if (StringUtils.isNotEmpty(aggregationsTtlConfig)) {
+    public int getTtl() {
+        int ttl = 0;
+        if (StringUtils.isNotEmpty(aggregationsTtl)) {
             try {
-                aggregationsTtl = Integer.parseInt(aggregationsTtlConfig);
+                ttl = Integer.parseInt(aggregationsTtl);
             } catch (NumberFormatException e) {
                 LOGGER.error("Failed to parse TTL value.", e);
             }
         }
-        return aggregationsTtl;
+        return ttl;
     }
 
     private boolean isInvalidId(String id) {

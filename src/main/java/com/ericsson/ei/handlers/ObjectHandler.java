@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ericsson.ei.mongo.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -274,6 +275,7 @@ public class ObjectHandler {
      *
      * @return ttl Integer value representing time to live for documents
      */
+    @JsonIgnore
     public int getTtl() {
         int ttl = 0;
         if (StringUtils.isNotEmpty(aggregationsTtl)) {

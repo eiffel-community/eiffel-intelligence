@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -254,6 +255,7 @@ public class ObjectHandler {
      * @return ttl
      *     Integer value representing time to live for documents
      * */
+    @JsonIgnore
     public int getTtl() {
         int ttl = 0;
         if (ttlValue != null && !ttlValue.isEmpty()) {

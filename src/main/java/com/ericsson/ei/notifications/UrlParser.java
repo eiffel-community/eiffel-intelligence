@@ -104,7 +104,7 @@ public class UrlParser {
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    private String extractContextPath(String url) throws MalformedURLException {
+    public String extractContextPath(String url) throws MalformedURLException {
         URL absoluteUrl = new URL(url);
         String contextPath = absoluteUrl.getPath();
         return contextPath;

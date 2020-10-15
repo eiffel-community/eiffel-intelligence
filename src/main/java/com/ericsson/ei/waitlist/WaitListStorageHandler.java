@@ -17,6 +17,7 @@
 package com.ericsson.ei.waitlist;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,8 +68,9 @@ public class WaitListStorageHandler {
      *
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
+     * @throws SubscriptionValidationException 
      */
-    public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) {
+    public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) throws SubscriptionValidationException {
         try {
             JsonNode id = extractIdFromEventUsingRules(event, rulesObject);
             String foundEvent = findEventInWaitList(id.textValue());
@@ -100,7 +102,7 @@ public class WaitListStorageHandler {
         return mongoDbHandler.getAllDocuments(databaseName, collectionName);
     }
 
-    private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) {
+    private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) throws SubscriptionValidationException {
         BasicDBObject document = new BasicDBObject();
         document.put("_id", id.textValue());
         document.put("Time", date);

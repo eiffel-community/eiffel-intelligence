@@ -16,16 +16,24 @@
 */
 package com.ericsson.ei.handlers;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.config.SpringAsyncConfig;
+import com.ericsson.ei.encryption.Encryptor;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.utils.SpringContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -46,14 +54,17 @@ public class EventHandler {
 
     @Autowired
     Environment environment;
+    
 
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
 
-    public void eventReceived(final String event) {
+    public void eventReceived(final String event) throws SubscriptionValidationException {
+        
         final RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
+        
     }
 
     @Async("eventHandlerExecutor")
@@ -63,12 +74,17 @@ public class EventHandler {
         final JsonNode node = objectMapper.readTree(messageBody);
         final String id = node.get("meta").get("id").toString();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
-        LOGGER.debug("Event {} received", id);
-
-        eventReceived(messageBody);
-        final long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        channel.basicAck(deliveryTag, false);
-
-        LOGGER.debug("Event {} processed", id);
-    }
+        try {
+            eventReceived(messageBody);
+            final long deliveryTag = message.getMessageProperties().getDeliveryTag();
+            channel.basicAck(deliveryTag, false);
+            LOGGER.info("Event {} processed", id);
+        }catch(SubscriptionValidationException sbe) {
+            LOGGER.info("SubscriptionValidationException handled in Catch block ", id);
+            final long deliveryTag = message.getMessageProperties().getDeliveryTag();
+            channel.basicNack(deliveryTag, false, true);
+            LOGGER.info("SubscriptionValidationException handled in Catch block  done", id);
+        }
+    }  
 }
+

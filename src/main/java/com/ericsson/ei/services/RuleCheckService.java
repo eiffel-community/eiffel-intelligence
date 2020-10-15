@@ -1,5 +1,6 @@
 package com.ericsson.ei.services;
 
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -34,7 +35,7 @@ public class RuleCheckService implements IRuleCheckService {
 
     @Override
     public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, IOException {
+            throws JSONException, IOException, SubscriptionValidationException {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
         String response;
         // Looping all events and add suffix template name to id and links, For
@@ -46,7 +47,12 @@ public class RuleCheckService implements IRuleCheckService {
             templateNames.add(templateName);
             if (templateNames.size() == 1) {
                 addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
-                LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
+                try {
+                    LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
             }
         }

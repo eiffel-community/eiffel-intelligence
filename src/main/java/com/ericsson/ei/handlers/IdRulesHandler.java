@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
@@ -49,7 +50,7 @@ public class IdRulesHandler {
         this.jmesPathInterface = jmesPathInterface;
     }
 
-    public void runIdRules(RulesObject rulesObject, String event) {
+    public void runIdRules(RulesObject rulesObject, String event) throws SubscriptionValidationException {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
             if (idsJsonObj != null && idsJsonObj.isArray()) {

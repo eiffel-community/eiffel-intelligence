@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
@@ -90,7 +91,7 @@ public class ObjectHandler {
      *      String id is stored together with aggregated object in database
      * @throws SubscriptionValidationException 
      * */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws SubscriptionValidationException {
+    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -107,7 +108,7 @@ public class ObjectHandler {
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws SubscriptionValidationException {
+    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 

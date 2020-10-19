@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesHandler;
@@ -140,7 +141,7 @@ public class RuleControllerImpl implements RuleController{
                     String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
                     return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
                 }
-            } catch (JSONException | IOException | SubscriptionValidationException e) {
+            } catch (JSONException | IOException | MongoDBConnectionException e) {
                 String errorMessage = "Internal Server Error: Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
                 String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);

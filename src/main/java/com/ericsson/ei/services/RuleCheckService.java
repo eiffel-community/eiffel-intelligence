@@ -1,5 +1,6 @@
 package com.ericsson.ei.services;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
@@ -35,7 +36,7 @@ public class RuleCheckService implements IRuleCheckService {
 
     @Override
     public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, IOException, SubscriptionValidationException {
+            throws JSONException, IOException, MongoDBConnectionException {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
         String response;
         // Looping all events and add suffix template name to id and links, For

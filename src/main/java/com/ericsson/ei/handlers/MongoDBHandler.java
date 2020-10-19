@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
@@ -286,20 +287,19 @@ public class MongoDBHandler {
      * @param ttlValue
      *            seconds
      * @throws SubscriptionValidationException
+     * @throws MongoDBConnectionException 
      */
-    public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue)
-            throws SubscriptionValidationException {
-        //String mongoDBStatus = null;
-        try {
-            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-            IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
-            collection.createIndex(Indexes.ascending(fieldName), indexOptions);
-        } catch (Exception e) {
-             //mongoDBStatus = checkMongoConnection(dataBaseName, collectionName);
-            throw new SubscriptionValidationException("Exception raised from Create TTL index ");
-        }
+	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue)
+			throws MongoDBConnectionException {
+		try {
+			MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+			IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+			collection.createIndex(Indexes.ascending(fieldName), indexOptions);
+		} catch (Exception e) {
+			throw new MongoDBConnectionException("MongoDB Connection down");
+		}
 
-    }
+	}
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {
        
@@ -442,4 +442,32 @@ public class MongoDBHandler {
 
         return false;
     }
+
+
+	/**
+	 * 
+	 * This method checks the mongoDB connection status.
+	 * 
+	 * @param dataBaseName
+	 * @return true if the connection is up otherwise return false
+	 */
+
+	public boolean checkMongoDbStatus(String dataBaseName) {
+		MongoDatabase db;
+		List<String> collectionList;
+		try {
+			if (mongoClient == null) {
+				createConnection();
+			}
+			db = mongoClient.getDatabase(dataBaseName);
+			collectionList = db.listCollectionNames().into(new ArrayList<String>());
+		} catch (Exception e) {
+			LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e);
+			return false;
+		}
+		if (collectionList == null || collectionList.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
 }

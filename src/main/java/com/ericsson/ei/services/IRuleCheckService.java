@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.ericsson.ei.exception.SubscriptionValidationException;
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface IRuleCheckService {
@@ -28,6 +28,6 @@ public interface IRuleCheckService {
      * @throws SubscriptionValidationException 
      */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, JsonProcessingException, IOException, SubscriptionValidationException;
+            throws JSONException, JsonProcessingException, IOException, MongoDBConnectionException;
 
 }

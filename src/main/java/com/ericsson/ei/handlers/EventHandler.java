@@ -79,33 +79,33 @@ public class EventHandler {
 		final ObjectMapper objectMapper = new ObjectMapper();
 		final JsonNode node = objectMapper.readTree(messageBody);
 		final String id = node.get("meta").get("id").toString();
+		final long deliveryTag = message.getMessageProperties().getDeliveryTag();
 		LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
 		try {
 			eventReceived(messageBody);
-			final long deliveryTag = message.getMessageProperties().getDeliveryTag();
 			channel.basicAck(deliveryTag, false);
 			LOGGER.info("Event {} processed", id);
-		} catch (MongoDBConnectionException e) {
-			if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
-
-				// if the previous Thread state is TERMINATED then get a new
-				// mongoDBMonitorThread instance
-				if (mongoDBMonitorThread.getState() == Thread.State.TERMINATED) {
+		} catch (MongoDBConnectionException mdce) {
+			if (mdce.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+				if (mongoDBMonitorThread.getState() == Thread.State.NEW
+						|| mongoDBMonitorThread.getState() == Thread.State.TERMINATED) {
+					// if the previous Thread state is TERMINATED then get a new
+					// mongoDBMonitorThread instance
 					synchronized (this) {
-						mongoDBMonitorThread = SpringContext.getBean(MongoDBMonitorThread.class);
+						if (mongoDBMonitorThread.getState() == Thread.State.TERMINATED) {
+							mongoDBMonitorThread = SpringContext.getBean(MongoDBMonitorThread.class);
+						}
+						// New thread will start to monitor the mongoDB connection status
+						if (mongoDBMonitorThread.getState() == Thread.State.NEW) {
+							mongoDBMonitorThread.setMongoDBConnected(false);
+							mongoDBMonitorThread.start();
+						}
 					}
 				}
-
-				// New thread will start to monitor the mongoDB connection status
-				if (mongoDBMonitorThread.getState() == Thread.State.NEW) {
-					mongoDBMonitorThread.setMongoDBConnected(false);
-					mongoDBMonitorThread.start();
-				}
-
 				// Continue the loop till the mongoDB connection is Re-established
 				while (!mongoDBMonitorThread.isMongoDBConnected()) {
 					try {
-						Thread.sleep(10000);
+						Thread.sleep(30000);
 						LOGGER.debug("Waiting for MongoDB connection...");
 					} catch (InterruptedException ie) {
 						LOGGER.error("MongoDBMonitorThread got Interrupted");
@@ -114,9 +114,10 @@ public class EventHandler {
 			}
 			// once the mongoDB Connection is up event will be sent back to queue with
 			// un-acknowledgement
-			final long deliveryTag = message.getMessageProperties().getDeliveryTag();
 			channel.basicNack(deliveryTag, false, true);
-			LOGGER.debug("Sent back the event to queue with un-acknowledgement: " +message.getBody());
+			LOGGER.debug("Sent back the event to queue with un-acknowledgement: " + message.getBody());
+		} catch (Exception e) {
+			LOGGER.error("Event is not Re-queued due to exception " + e);
 		}
 	}
 }

@@ -98,21 +98,13 @@ public class MongoDBHandlerTest {
     
     @Test
     public void checkMongoDBStatusUp() {
-        assertTrue(mongoDBHandler.checkMongoDbStatus(dataBaseName));
+        assertEquals(mongoDBHandler.checkMongoDbStatus(dataBaseName), true);
     }
 
     @Test
     public void checkMongoDBStatusDown() {
         final MongoDBHandler mongoDB = new MongoDBHandler();
-        //List<String> collectionList = mongoClient.getDatabase(dataBaseName).listCollectionNames().into(new ArrayList<String>());
-        Mockito.when(mongoClient.getDatabase(dataBaseName).listCollectionNames().into(new ArrayList<String>())).thenThrow(new Exception("MongoCommandException, Something went wrong with MongoDb connection"));
-        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName),false);
-    }
-    
-    @Test
-    public void checkMongoDBStatusDown1() {
-        final MongoDBHandler mongoDB = new MongoDBHandler();
         final MongoClient mongoclient = null;
-        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName),false);
+        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName), false);
     }
 }

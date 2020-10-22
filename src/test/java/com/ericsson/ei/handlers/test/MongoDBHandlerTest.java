@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -23,11 +24,13 @@ import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
+import com.mongodb.MongoClient;
 
 public class MongoDBHandlerTest {
 
@@ -88,5 +91,18 @@ public class MongoDBHandlerTest {
     @Test
     public void updateEventToObjectMap() {
     	assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, mapCollectionName, conditionForEventToObjectMap, updateInputForEventToObjectMap));
+    }
+    
+    @Test
+    public void checkMongoDBStatusUp() {
+        assertTrue(mongoDBHandler.checkMongoDbStatus(dataBaseName));
+    }
+
+    @Test
+    public void checkMongoDBStatusDown() {
+        final MongoDBHandler mongoDB = new MongoDBHandler();
+        final MongoClient mongoclient = null;
+        Mockito.when(mongoclient.getDatabase(dataBaseName)).thenReturn(null);
+        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName),false);
     }
 }

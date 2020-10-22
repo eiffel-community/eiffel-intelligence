@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoTimeoutException;
 
 public class MongoDBHandlerTest {
 
@@ -38,6 +40,7 @@ public class MongoDBHandlerTest {
 
     private MongoDBHandler mongoDBHandler;
 
+    private MongoClient mongoClient;
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
     private String mapCollectionName = "SampleEventObjectMap";
@@ -101,8 +104,15 @@ public class MongoDBHandlerTest {
     @Test
     public void checkMongoDBStatusDown() {
         final MongoDBHandler mongoDB = new MongoDBHandler();
+        //List<String> collectionList = mongoClient.getDatabase(dataBaseName).listCollectionNames().into(new ArrayList<String>());
+        Mockito.when(mongoClient.getDatabase(dataBaseName).listCollectionNames().into(new ArrayList<String>())).thenThrow(new Exception("MongoCommandException, Something went wrong with MongoDb connection"));
+        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName),false);
+    }
+    
+    @Test
+    public void checkMongoDBStatusDown1() {
+        final MongoDBHandler mongoDB = new MongoDBHandler();
         final MongoClient mongoclient = null;
-        Mockito.when(mongoclient.getDatabase(dataBaseName)).thenReturn(null);
         assertEquals(mongoDB.checkMongoDbStatus(dataBaseName),false);
     }
 }

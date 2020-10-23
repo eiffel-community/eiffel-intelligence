@@ -61,17 +61,20 @@ public class ExtractionHandler {
         this.objectHandler = objectHandler;
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
+    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) throws MongoDBConnectionException {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
-            LOGGER.info("Failed with extraction.", e);
+            LOGGER.error("Failed with extraction.", e);
+            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+                throw new MongoDBConnectionException("MongoDB Connection down");
+            }
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) throws MongoDBConnectionException {
+    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) throws MongoDBConnectionException  {
         try {
             JsonNode extractedContent = extractContent(rulesObject, event);
 
@@ -90,7 +93,10 @@ public class ExtractionHandler {
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
+            LOGGER.error("Failed to run extraction for event {} , stacktrace1 hello {} ", event, ExceptionUtils.getStackTrace(e));
+            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+                throw new MongoDBConnectionException("MongoDB Connection down");
+            }
         }
     }
 

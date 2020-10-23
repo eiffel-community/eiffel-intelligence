@@ -58,8 +58,9 @@ public class IdRulesHandler {
                 for (final JsonNode idJsonObj : idsJsonObj) {
                     final String id = idJsonObj.textValue();
                     final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                    aggregatedObjects.forEach(
-                        aggregatedObject -> extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject));
+                    for(String aggregatedObject : aggregatedObjects) {
+                        extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
+                    }
                     if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
                             extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);

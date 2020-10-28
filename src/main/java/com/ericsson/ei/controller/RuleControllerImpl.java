@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.services.IRuleCheckService;

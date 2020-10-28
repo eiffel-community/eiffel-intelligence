@@ -27,7 +27,6 @@ import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.FunctionalTestBase;

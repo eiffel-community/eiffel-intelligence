@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -90,15 +89,13 @@ public class MongoDBHandler {
             mongoClient = new MongoClient(mongoProperties.getHost(), mongoProperties.getPort());
         }
     }
-    
 
     /**
      * This method used for the insert the document into collection
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            json String
+     * @param input          json String
      * @return
      */
     public void insertDocument(String dataBaseName, String collectionName, String input) throws MongoWriteException {
@@ -108,8 +105,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 collection.insertOne(dbObjectInput);
-                LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input,
-                        collectionName, dataBaseName);
+                LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", input,
@@ -135,8 +131,7 @@ public class MongoDBHandler {
                 if (result.size() != 0) {
                     // This will pass about 10 times/second and most of the times DB will be empty,
                     // this is normal, no need to log
-                    LOGGER.debug("getAllDocuments() :: database: {} and collection: {} fetched No of : {}",
-                            dataBaseName, collectionName, result.size());
+                    LOGGER.debug("getAllDocuments() :: database: {} and collection: {} fetched No of : {}", dataBaseName, collectionName, result.size());
                 }
             }
         } catch (Exception e) {
@@ -150,15 +145,13 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            a condition to find a requested object in the database
+     * @param condition      a condition to find a requested object in the database
      * @return
      */
     public ArrayList<String> find(String dataBaseName, String collectionName, String condition) {
         ArrayList<String> result = new ArrayList<>();
 
-        LOGGER.debug("Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}",
-                dataBaseName, collectionName, condition);
+        LOGGER.debug("Find and retrieve data from database.\nDatabase: {}\nCollection: {}\nCondition/Query: {}", dataBaseName, collectionName, condition);
 
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
@@ -167,11 +160,9 @@ public class MongoDBHandler {
                     result.add(JSON.serialize(document));
                 });
                 if (result.size() != 0) {
-                    LOGGER.debug("find() :: database: {} and collection: {} fetched No of : {}", dataBaseName,
-                            collectionName, result.size());
+                    LOGGER.debug("find() :: database: {} and collection: {} fetched No of : {}", dataBaseName, collectionName, result.size());
                 } else {
-                    LOGGER.debug("find() :: database: {} and collection: {} documents are not found", dataBaseName,
-                            collectionName);
+                    LOGGER.debug("find() :: database: {} and collection: {} documents are not found", dataBaseName, collectionName);
                 }
             } else {
                 LOGGER.debug("Collection {} is empty in database {}", collectionName, dataBaseName);
@@ -189,10 +180,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a json string
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a json string
+     * @param updateInput    is updated document without lock
      * @return
      */
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -202,8 +191,7 @@ public class MongoDBHandler {
                 final Document dbObjectInput = Document.parse(input);
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
-                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}",
-                        dataBaseName, collectionName, updateMany.wasAcknowledged());
+                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }
         } catch (Exception e) {
@@ -220,10 +208,8 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param input
-     *            is a condition for update documents
-     * @param updateInput
-     *            is updated document without lock
+     * @param input          is a condition for update documents
+     * @param updateInput    is updated document without lock
      * @return
      */
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
@@ -234,8 +220,7 @@ public class MongoDBHandler {
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
                 if (result != null) {
-                    LOGGER.debug("updateDocument() :: database: {} and collection: {} updated successfully",
-                            dataBaseName, collectionName);
+                    LOGGER.debug("updateDocument() :: database: {} and collection: {} updated successfully", dataBaseName, collectionName);
                     return result;
                 }
             }
@@ -251,8 +236,7 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            string json
+     * @param condition      string json
      * @return
      */
     public boolean dropDocument(String dataBaseName, String collectionName, String condition) {
@@ -280,12 +264,9 @@ public class MongoDBHandler {
      *
      * @param dataBaseName
      * @param collectionName
-     * @param fieldName
-     *            for index creation field
-     * @param ttlValue
-     *            seconds
-     * @throws SubscriptionValidationException
-     * @throws MongoDBConnectionException 
+     * @param fieldName      for index creation field
+     * @param ttlValue       seconds
+     * @throws MongoDBConnectionException
      */
 	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue)
 			throws MongoDBConnectionException {
@@ -296,45 +277,41 @@ public class MongoDBHandler {
 		} catch (Exception e) {
 			throw new MongoDBConnectionException("MongoDB Connection down");
 		}
-
 	}
 
     private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {
-       
-        if(mongoClient == null) {
+        if (mongoClient == null)
             return null;
-        }
         MongoDatabase db;
         List<String> collectionList;
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collectionList = db.listCollectionNames().into(new ArrayList<String>());
-        } catch (MongoCommandException e) {
-            LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: "
-                    + e.getErrorMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
-            return null;
-        } catch (MongoInterruptedException e) {
-            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage()
-                    + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
-            return null;
-        } catch (MongoSocketReadException e) {
-            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage()
-                    + "\nStacktrace\n" + e);
+        }
+        catch (MongoCommandException e) {
+            LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
             closeMongoDbConecction();
             return null;
         }
-
+        catch (MongoInterruptedException e) {
+            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
+        }
+        catch (MongoSocketReadException e) {
+            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
+            closeMongoDbConecction();
+            return null;
+        }
+        
         catch (IllegalStateException e) {
             LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
             closeMongoDbConecction();
             return null;
         }
-
+        
         if (!collectionList.contains(collectionName)) {
-            LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........",
-                    dataBaseName, collectionName);
+            LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
             try {
                 db.createCollection(collectionName);
             } catch (MongoCommandException e) {
@@ -357,14 +334,12 @@ public class MongoDBHandler {
         }
         mongoClient = null;
     }
-
+    
     /**
      * This method is used to drop a collection.
      *
-     * @param dataBaseName
-     *            to know which database to drop a collection from
-     * @param collectionName
-     *            to know which collection to drop
+     * @param dataBaseName   to know which database to drop a collection from
+     * @param collectionName to know which collection to drop
      */
     public void dropCollection(String dataBaseName, String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(dataBaseName);
@@ -375,21 +350,18 @@ public class MongoDBHandler {
     /**
      * This method is used to drop a database. For example after testing.
      *
-     * @param dataBaseName
-     *            to know which database to remove
+     * @param dataBaseName to know which database to remove
      */
     public void dropDatabase(String databaseName) {
         MongoDatabase db = mongoClient.getDatabase(databaseName);
         db.drop();
     }
-
+    
     /**
      * Check if the document exists
-     * 
      * @param databaseName
      * @param collectionName
-     * @param condition
-     *            a condition to find a requested object in the database
+     * @param condition      a condition to find a requested object in the database
      * @return
      */
     public boolean checkDocumentExists(String databaseName, String collectionName, String condition) {
@@ -410,28 +382,24 @@ public class MongoDBHandler {
         }
         return true;
     }
-
+    
+    
     /**
-     * Update the existing documents with unique objects list Used only in
-     * EventToObjectMapHandler.java
-     * 
+     * Update the existing documents with unique objects list
+     * Used only in EventToObjectMapHandler.java
      * @param dataBaseName
      * @param collectionName
-     * @param condition
-     *            a condition to find a requested object in the database
-     * @param eventId
-     *            eventId to update in the mapper collection
-     * @return
+     * @param condition      a condition to find a requested object in the database
+     * @param eventId eventId to update in the mapper collection
+     * @return 
      */
-    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition,
-            String eventId) {
+    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(condition);
                 UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
-                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}",
-                        dataBaseName, collectionName, updateMany.wasAcknowledged());
+                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }
         } catch (Exception e) {
@@ -449,7 +417,6 @@ public class MongoDBHandler {
 	 * @param dataBaseName
 	 * @return true if the connection is up otherwise return false
 	 */
-
 	public boolean checkMongoDbStatus(String dataBaseName) {
 		MongoDatabase db;
 		List<String> collectionList;

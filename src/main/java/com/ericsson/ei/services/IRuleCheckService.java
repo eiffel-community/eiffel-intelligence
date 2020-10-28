@@ -25,7 +25,7 @@ public interface IRuleCheckService {
      * @throws JSONException
      * @throws JsonProcessingException
      * @throws IOException
-     * @throws SubscriptionValidationException 
+     * @throws MongoDBConnectionException 
      */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
             throws JSONException, JsonProcessingException, IOException, MongoDBConnectionException;

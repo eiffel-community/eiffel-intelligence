@@ -18,7 +18,6 @@ package com.ericsson.ei.waitlist;
 
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,7 +68,7 @@ public class WaitListStorageHandler {
      *
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
-     * @throws SubscriptionValidationException 
+     * @throws MongoDBConnectionException 
      */
     public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) throws MongoDBConnectionException {
         try {

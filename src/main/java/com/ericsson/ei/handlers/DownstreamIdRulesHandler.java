@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;

@@ -93,7 +93,7 @@ public class ExtractionHandler {
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to run extraction for event {} , stacktrace1 hello {} ", event, ExceptionUtils.getStackTrace(e));
+        	LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
             if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
             }

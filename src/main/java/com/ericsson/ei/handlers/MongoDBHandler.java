@@ -262,8 +262,8 @@ public class MongoDBHandler {
                 final Document dbObjectCondition = Document.parse(condition);
                 DeleteResult deleteMany = collection.deleteMany(dbObjectCondition);
                 if (deleteMany.getDeletedCount() > 0) {
-					LOGGER.debug("database: {} and collection: {} deleted No.of records {}", dataBaseName,
-							collectionName, deleteMany.getDeletedCount());
+                	LOGGER.debug("database: {} and collection: {} deleted No.of records {}", dataBaseName,
+                			collectionName, deleteMany.getDeletedCount());
                     return true;
                 } else {
                     LOGGER.debug("database {} and collection: {} No documents found to delete.", dataBaseName,

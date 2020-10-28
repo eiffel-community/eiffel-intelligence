@@ -46,10 +46,10 @@ public class RuleCheckService implements IRuleCheckService {
             String templateName = jmesPathInterface
                     .runRuleOnEvent("TemplateName", listRulesJson.getJSONObject(i).toString()).asText("TEST");
             templateNames.add(templateName);
-			if (templateNames.size() == 1) {
-				addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
-				LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
-				eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
+            if (templateNames.size() == 1) {
+                addTemplateNameToIds(listEventsJson.getJSONObject(i), templateName);
+                LOGGER.debug("Event to prepare aggregated object :: {}", listEventsJson.getJSONObject(i).toString());
+                eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
             }
         }
         String templateName = templateNames.iterator().next();

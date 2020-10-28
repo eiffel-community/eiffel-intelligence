@@ -168,9 +168,10 @@ Here are some examples:
     mongodb://localhost:27017                                                 - Single MongoDB instance, no authentication
     mongodb://username:mypasswd@localhost:27017                               - Single MongoDD instance with authentication
     mongodb://username:mypasswd@hostname1:27017,hostname2:27017               - Multiple MongoDB instances with authentication
-    mongodb://username:mypasswd@hostname1:27017,hostname2:27017/?param=value  - Multiple MongoDB instances with authentication and parameters
+    mongodb://username:mypasswd@hostname1:27017,hostname2:27017/?param=value  - Multiple MongoDB instances with authentication and options
 
 If encryption of the MongoDB password is desired there is information [here](configuration.md#password-encryption).
+Options provided only once in the end but will be used for all provided hosts.
 The **spring.data.mongodb.uri** property specifies a MongoDB connection string, read more [here](https://docs.mongodb.com/manual/reference/connection-string/)
 The second property **spring.data.mongodb.database** defines a name for the database so this does not have to be provided in the uri property.
 

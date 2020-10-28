@@ -1,7 +1,6 @@
 package com.ericsson.ei.services;
 
 import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;

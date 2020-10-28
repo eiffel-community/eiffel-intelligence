@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -33,9 +32,6 @@ import com.ericsson.ei.utils.SpringContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Component
 public class EventHandler {
@@ -53,34 +49,27 @@ public class EventHandler {
 
     @Autowired
     Environment environment;
-    
+
     @Autowired
     MongoDBMonitorThread mongoDBMonitorThread;
-    
-    @Getter
-    @Setter
-    @Value("${spring.data.mongodb.database}")
-    private String dataBaseName;
 
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
 
-    public void eventReceived(final String event) throws MongoDBConnectionException {
-        
+    public void eventReceived(final String event) throws MongoDBConnectionException{
         final RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
-        
     }
 
-	@Async("eventHandlerExecutor")
-	public void onMessage(final Message message, final Channel channel) throws Exception {
-		final String messageBody = new String(message.getBody());
-		final ObjectMapper objectMapper = new ObjectMapper();
-		final JsonNode node = objectMapper.readTree(messageBody);
-		final String id = node.get("meta").get("id").toString();
-		final long deliveryTag = message.getMessageProperties().getDeliveryTag();
-		LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
+    @Async("eventHandlerExecutor")
+    public void onMessage(final Message message, final Channel channel) throws Exception {
+        final String messageBody = new String(message.getBody());
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final JsonNode node = objectMapper.readTree(messageBody);
+        final String id = node.get("meta").get("id").toString();
+        final long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
 		try {
 			eventReceived(messageBody);
 			channel.basicAck(deliveryTag, false);

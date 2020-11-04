@@ -16,18 +16,23 @@
 */
 package com.ericsson.ei.handlers.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoTimeoutException;
 
 public class MongoDBHandlerTest {
 
@@ -35,6 +40,7 @@ public class MongoDBHandlerTest {
 
     private MongoDBHandler mongoDBHandler;
 
+    private MongoClient mongoClient;
     private String dataBaseName = "MongoDBHandlerTestDB";
     private String collectionName = "SampleEvents";
     private String mapCollectionName = "SampleEventObjectMap";
@@ -88,5 +94,17 @@ public class MongoDBHandlerTest {
     @Test
     public void updateEventToObjectMap() {
     	assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, mapCollectionName, conditionForEventToObjectMap, updateInputForEventToObjectMap));
+    }
+    
+    @Test
+    public void checkMongoDBStatusUp() {
+        assertEquals(mongoDBHandler.checkMongoDbStatus(dataBaseName), true);
+    }
+
+    @Test
+    public void checkMongoDBStatusDown() {
+        final MongoDBHandler mongoDB = new MongoDBHandler();
+        final MongoClient mongoclient = null;
+        assertEquals(mongoDB.checkMongoDbStatus(dataBaseName), false);
     }
 }

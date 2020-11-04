@@ -24,8 +24,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
+import com.ericsson.ei.utils.MongoDBMonitorThread;
+import com.ericsson.ei.utils.SpringContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -47,11 +50,14 @@ public class EventHandler {
     @Autowired
     Environment environment;
 
+    @Autowired
+    MongoDBMonitorThread mongoDBMonitorThread;
+
     public RulesHandler getRulesHandler() {
         return rulesHandler;
     }
 
-    public void eventReceived(final String event) {
+    public void eventReceived(final String event) throws MongoDBConnectionException{
         final RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event);
     }
@@ -62,13 +68,45 @@ public class EventHandler {
         final ObjectMapper objectMapper = new ObjectMapper();
         final JsonNode node = objectMapper.readTree(messageBody);
         final String id = node.get("meta").get("id").toString();
-        LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
-        LOGGER.debug("Event {} received", id);
-
-        eventReceived(messageBody);
         final long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        channel.basicAck(deliveryTag, false);
-
-        LOGGER.debug("Event {} processed", id);
-    }
+        LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
+		try {
+			eventReceived(messageBody);
+			channel.basicAck(deliveryTag, false);
+			LOGGER.info("Event {} processed", id);
+		} catch (MongoDBConnectionException mdce) {
+			if (mdce.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+				if (mongoDBMonitorThread.getState() == Thread.State.NEW
+						|| mongoDBMonitorThread.getState() == Thread.State.TERMINATED) {
+					// if the previous Thread state is TERMINATED then get a new
+					// mongoDBMonitorThread instance
+					synchronized (this) {
+						if (mongoDBMonitorThread.getState() == Thread.State.TERMINATED) {
+							mongoDBMonitorThread = SpringContext.getBean(MongoDBMonitorThread.class);
+						}
+						// New thread will start to monitor the mongoDB connection status
+						if (mongoDBMonitorThread.getState() == Thread.State.NEW) {
+							mongoDBMonitorThread.setMongoDBConnected(false);
+							mongoDBMonitorThread.start();
+						}
+					}
+				}
+				// Continue the loop till the mongoDB connection is Re-established
+				while (!mongoDBMonitorThread.isMongoDBConnected()) {
+					try {
+						Thread.sleep(30000);
+						LOGGER.debug("Waiting for MongoDB connection...");
+					} catch (InterruptedException ie) {
+						LOGGER.error("MongoDBMonitorThread got Interrupted");
+					}
+				}
+			}
+			// once the mongoDB Connection is up event will be sent back to queue with
+			// un-acknowledgement
+			channel.basicNack(deliveryTag, false, true);
+			LOGGER.debug("Sent back the event to queue with un-acknowledgement: " + message.getBody());
+		} catch (Exception e) {
+			LOGGER.error("Event is not Re-queued due to exception " + e);
+		}
+	}
 }

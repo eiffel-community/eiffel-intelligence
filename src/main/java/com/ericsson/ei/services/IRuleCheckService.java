@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface IRuleCheckService {
@@ -24,8 +25,9 @@ public interface IRuleCheckService {
      * @throws JSONException
      * @throws JsonProcessingException
      * @throws IOException
+     * @throws MongoDBConnectionException 
      */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, JsonProcessingException, IOException;
+            throws JSONException, JsonProcessingException, IOException, MongoDBConnectionException;
 
 }

@@ -434,11 +434,4 @@ public class MongoDBHandler {
             throw new MongoClientException(message, e);
         }
     }
-
-    private void closeMongoDbConnection() {
-        if (mongoClient != null) {
-            mongoClient.close();
-        }
-        mongoClient = null;
-    }
 }

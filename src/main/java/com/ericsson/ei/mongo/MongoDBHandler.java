@@ -392,8 +392,7 @@ public class MongoDBHandler {
         } catch (MongoInterruptedException | MongoSocketReadException | MongoSocketWriteException
                 | MongoCommandException | IllegalStateException e) {
             String message = String.format("Failed to get Mongo collection list, Reason: %s",
-                    e.getMessage());
-            closeMongoDbConnection();
+                    e.getMessage()); 
             throw new MongoClientException(message, e);
         }
     }
@@ -434,12 +433,5 @@ public class MongoDBHandler {
                     e.getMessage());
             throw new MongoClientException(message, e);
         }
-    }
-
-    private void closeMongoDbConnection() {
-        if (mongoClient != null) {
-            mongoClient.close();
-        }
-        mongoClient = null;
     }
 }

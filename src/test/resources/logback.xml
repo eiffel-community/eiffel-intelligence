@@ -8,5 +8,5 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
-    <logger name="org.mockserver.mock" level="error" />
+    <logger name="org.mongodb.driver.protocol.command" level="error" />
 </configuration>

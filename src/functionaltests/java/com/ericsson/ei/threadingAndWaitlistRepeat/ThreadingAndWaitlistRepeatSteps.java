@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
@@ -25,6 +26,9 @@ import cucumber.api.java.en.Then;
         "threads.core.pool.size: 3",
         "threads.queue.capacity: 1",
         "threads.max.pool.size: 4",
+        "subscription-handler.threads.corePoolSize= 3",
+        "subscription-handler.threads.queueCapacity= 1",
+        "subscription-handler.threads.maxPoolSize= 4",
         "waitlist.collection.ttl: 60",
         "waitlist.resend.initial.delay: 500",
         "waitlist.resend.fixed.rate: 1000",
@@ -40,6 +44,9 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
     private static final String EIFFEL_EVENTS_JSON_PATH = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
     private static final String ID_RULE = "{" + "\"IdRule\": \"meta.id\"" + "}";
 
+    @Autowired
+    private Environment environment;
+
     @Value("${waitlist.collection.ttl}")
     private int waitlistTtl;
 
@@ -52,41 +59,41 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Given("^that eiffel events are sent$")
     public void that_eiffel_events_are_sent() throws Throwable {
-        List<String> eventNamesToSend = getEventNamesToSend();
+        final List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
     }
 
     @Then("^waitlist should not be empty$")
     public void waitlist_should_not_be_empty() throws Throwable {
         TimeUnit.SECONDS.sleep(5);
-        int waitListSize = dbManager.waitListSize();
+        final int waitListSize = dbManager.waitListSize();
         assertNotEquals(0, waitListSize);
     }
 
     @Given("^no event is aggregated$")
     public void no_event_is_aggregated() throws Throwable {
-        boolean aggregatedObjectExists = dbManager.verifyAggregatedObjectExistsInDB();
+        final boolean aggregatedObjectExists = dbManager.verifyAggregatedObjectExistsInDB();
         assertEquals("aggregatedObjectExists was true, should be false, ", false, aggregatedObjectExists);
     }
 
     @Then("^event-to-object-map is manipulated to include the sent events$")
     public void event_to_object_map_is_manipulated_to_include_the_sent_events() throws Throwable {
-        JsonNode parsedJSON = eventManager.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
-        ObjectMapper objectMapper = new ObjectMapper();
+        final JsonNode parsedJSON = eventManager.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+        final ObjectMapper objectMapper = new ObjectMapper();
         rulesJson = objectMapper.readTree(ID_RULE);
         rulesObject = new RulesObject(rulesJson);
 
-        String dummyObjectID = "1234abcd-12ab-12ab-12ab-123456abcdef";
-        List<String> eventNames = getEventNamesToSend();
-        for (String eventName : eventNames) {
-            JsonNode eventJson = parsedJSON.get(eventName);
+        final String dummyObjectID = "1234abcd-12ab-12ab-12ab-123456abcdef";
+        final List<String> eventNames = getEventNamesToSend();
+        for (final String eventName : eventNames) {
+            final JsonNode eventJson = parsedJSON.get(eventName);
             eventToObjectMapHanler.updateEventToObjectMapInMemoryDB(rulesObject, eventJson.toString(), dummyObjectID);
         }
     }
 
     @Then("^when waitlist has resent events they should have been deleted$")
     public void when_waitlist_has_resent_events_they_should_have_been_deleted() throws Throwable {
-        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3);
+        final long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3);
         while (dbManager.waitListSize() > 0 && stopTime > System.currentTimeMillis()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
@@ -96,11 +103,11 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
 
     @Then("^after the time to live has ended, the waitlist should be empty$")
     public void after_the_time_to_live_has_ended_the_waitlist_should_be_empty() throws Throwable {
-        long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);
+        final long stopTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(waitlistTtl + 60);
         while (dbManager.waitListSize() > 0 && stopTime > System.currentTimeMillis()) {
             TimeUnit.MILLISECONDS.sleep(10000);
         }
-        int waitListSize = dbManager.waitListSize();
+        final int waitListSize = dbManager.waitListSize();
         assertEquals(0, waitListSize);
     }
 
@@ -108,7 +115,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
      * Events used in the aggregation.
      */
     protected List<String> getEventNamesToSend() {
-        List<String> eventNames = new ArrayList<>();
+        final List<String> eventNames = new ArrayList<>();
         eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
         eventNames.add("event_EiffelTestCaseTriggeredEvent_3");

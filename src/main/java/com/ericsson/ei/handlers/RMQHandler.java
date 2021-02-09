@@ -110,7 +110,7 @@ public class RMQHandler {
             try {
                 LOGGER.debug("Using SSL/TLS version {} connection to RabbitMQ.", rmqProperties.getTlsVersion());
                 cachingConnectionFactory.getRabbitConnectionFactory().useSslProtocol(rmqProperties.getTlsVersion());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.error("Failed to set SSL/TLS version.", e);
             }
         }
@@ -127,9 +127,9 @@ public class RMQHandler {
 
     @Bean
     public SimpleMessageListenerContainer bindToQueueForRecentEvents(
-            ConnectionFactory springConnectionFactory,
-            EventHandler eventHandler) {
-        MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
+            final ConnectionFactory springConnectionFactory,
+            final EventHandler eventHandler) {
+        final MessageListenerAdapter listenerAdapter = new EIMessageListenerAdapter(eventHandler);
         container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(springConnectionFactory);
         container.setQueueNames(rmqProperties.getQueueName(), rmqProperties.getWaitlistQueueName());
@@ -153,7 +153,7 @@ public class RMQHandler {
             rabbitTemplate.setRoutingKey(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
-                public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                public void confirm(final CorrelationData correlationData, final boolean ack, final String cause) {
                     LOGGER.info("Received confirm with result : {}", ack);
                 }
             });
@@ -170,7 +170,7 @@ public class RMQHandler {
         try {
             container.destroy();
             cachingConnectionFactory.destroy();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception occurred while closing connections.", e);
         }
     }
@@ -197,9 +197,9 @@ public class RMQHandler {
 
     @Bean
     public List<Binding> bindings() {
-        String[] bindingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
-        List<Binding> bindingList = new ArrayList<Binding>();
-        for (String bindingKey : bindingKeysArray) {
+        final String[] bindingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
+        final List<Binding> bindingList = new ArrayList<Binding>();
+        for (final String bindingKey : bindingKeysArray) {
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
         deleteBindings(bindingKeysArray,bindingList);
@@ -210,8 +210,8 @@ public class RMQHandler {
         return !StringUtils.isEmpty(rmqProperties.getUser()) && !StringUtils.isEmpty(rmqProperties.getPassword());
     }
 
-    private String[] splitBindingKeys(String bindingKeys) {
-        String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
+    private String[] splitBindingKeys(final String bindingKeys) {
+        final String bindingKeysWithoutWhitespace = bindingKeys.replaceAll("\\s+", "");
         return bindingKeysWithoutWhitespace.split(",");
     }
 

@@ -58,6 +58,8 @@ import lombok.Setter;
 @Component
 public class RMQHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RMQHandler.class);
+    
+    private static final String WAITLIST_BINDING_KEY = "eiffel-intelligence.waitlist";
 
     @Value("${threads.max.pool.size}")
     private int maxThreads;
@@ -150,7 +152,7 @@ public class RMQHandler {
 
             rabbitTemplate.setQueue(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setExchange(rmqProperties.getExchangeName());
-            rabbitTemplate.setRoutingKey(rmqProperties.getWaitlistQueueName());
+            rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
                 @Override
                 public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -192,7 +194,7 @@ public class RMQHandler {
 
     @Bean
     protected Binding binding() {
-        return BindingBuilder.bind(internalQueue()).to(exchange()).with(rmqProperties.getWaitlistQueueName());
+        return BindingBuilder.bind(internalQueue()).to(exchange()).with(WAITLIST_BINDING_KEY);
     }
 
     @Bean

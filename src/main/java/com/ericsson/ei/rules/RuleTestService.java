@@ -1,6 +1,7 @@
 package com.ericsson.ei.rules;
 
 import com.ericsson.ei.exception.InvalidRulesException;
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.handlers.EventHandler;
 import com.ericsson.ei.handlers.EventToObjectMapHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -39,8 +40,12 @@ public class RuleTestService implements IRuleTestService {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
 
         String templateName = validateRuleTemplateNames(listRulesJson);
-
-        prepareEventsForTestAggregation(listEventsJson, templateName);
+        try {
+            prepareEventsForTestAggregation(listEventsJson, templateName);
+        } catch (MongoDBConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
         String response = responseList.toString();
@@ -85,7 +90,7 @@ public class RuleTestService implements IRuleTestService {
      * Iterates through a list of events and adding a suffix to their ids and the ids in their
      * links. This is to easily identify which events are used in a test aggregation.
      */
-    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) {
+    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) throws MongoDBConnectionException{
         for (int i = 0; i < listEventsJson.length(); i++) {
             addTemplateNameToIds(listEventsJson.getJSONObject(i), suffix);
             LOGGER.debug("Event to prepare aggregated object :: {}",

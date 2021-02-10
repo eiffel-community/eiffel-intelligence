@@ -31,6 +31,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.ericsson.ei.exception.AuthenticationException;
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.NotificationFailureException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.ericsson.ei.jmespath.JmesPathInterface;
@@ -96,7 +97,7 @@ public class InformSubscriber {
      * @throws AuthenticationException
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
-            throws AuthenticationException {
+            throws AuthenticationException, MongoDBConnectionException {
         SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
         String notificationType = subscriptionField.get("notificationType");
         String notificationMeta = subscriptionField.get("notificationMeta");

@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.waitlist;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.*;
 import com.ericsson.ei.rules.RulesObject;
@@ -68,10 +69,10 @@ public class WaitListStorageHandler {
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
      */
-    public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) {
+    public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject) throws MongoDBConnectionException {
         try {
             JsonNode id = extractIdFromEventUsingRules(event, rulesObject);
-            String foundEvent = findEventInWaitList(id);
+            String foundEvent = findEventInWaitList(id.textValue());
             if (foundEvent.isEmpty()) {
                 Date date = createCurrentTimeStamp();
                 BasicDBObject document = createWaitListDocument(event, id, date);
@@ -82,7 +83,7 @@ public class WaitListStorageHandler {
         }
     }
 
-    private String findEventInWaitList(JsonNode id) {
+    private String findEventInWaitList(String id) {
         final MongoCondition condition = MongoCondition.idCondition(id);
         List<String> foundEventsInWaitList = mongoDbHandler.find(databaseName,
                 waitlistCollectionName, condition);
@@ -102,7 +103,7 @@ public class WaitListStorageHandler {
         return mongoDbHandler.getAllDocuments(databaseName, waitlistCollectionName);
     }
 
-    private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) {
+    private BasicDBObject createWaitListDocument(String event, JsonNode id, Date date) throws MongoDBConnectionException {
         BasicDBObject document = new BasicDBObject();
         document.put(MongoConstants.ID, id.textValue());
         document.put(MongoConstants.TIME, date);

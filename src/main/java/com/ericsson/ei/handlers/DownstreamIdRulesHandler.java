@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
@@ -50,7 +51,7 @@ public class DownstreamIdRulesHandler {
         this.jmesPathInterface = jmesPathInterface;
     }
 
-    public void runIdRules(RulesObject rulesObject, String event) {
+    public void runIdRules(RulesObject rulesObject, String event) throws MongoDBConnectionException{
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
             List<String> objects;

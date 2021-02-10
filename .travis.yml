@@ -43,6 +43,6 @@ jobs:
       name: report_coverage
       # Generating test coverage report and publishing to Codacy
       script:
-        - mvn jacoco:prepare-agent test jacoco:report -B
-        - curl -Ls -o codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/6.0.2/codacy-coverage-reporter-6.0.2-assembly.jar
-        - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/jacoco/jacoco.xml
+        - mvn cobertura:cobertura -B
+        - curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+        - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

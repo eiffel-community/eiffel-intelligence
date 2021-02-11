@@ -50,7 +50,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: TestTTLSteps",
         "failed.notifications.collection.name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
-        "rabbitmq.consumer.name: TestTTLStepsConsumer"})
+        "rabbitmq.consumer.name: TestTTLStepsConsumer" })
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
     private static final String BASE_URL = "localhost";
@@ -109,17 +109,21 @@ public class TestTTLSteps extends FunctionalTestBase {
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
         mongoDBHandler.dropCollection(database, failedNotificationCollection);
 
-        String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH), "utf-8");
+        String subscriptionStr = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH),
+                "utf-8");
 
         // replace with port of running mock server
-        subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
+        subscriptionStr = subscriptionStr.replaceAll("\\{port\\}",
+                String.valueOf(clientAndServer.getPort()));
 
         subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
-        assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
+        assertEquals(false,
+                subscriptionObject.get("notificationMeta").toString().contains("{port}"));
     }
 
     @When("^I want to inform subscriber$")
-    public void inform_subscriber() throws IOException, AuthenticationException, MongoDBConnectionException {
+    public void inform_subscriber()
+            throws IOException, AuthenticationException, MongoDBConnectionException {
         JsonNode aggregatedObject = eventManager.getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
         informSubscriber.informSubscriber(aggregatedObject.toString(), subscriptionObject);
     }
@@ -127,7 +131,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Verify that request has been retried")
     public void verify_request_has_been_made() throws JSONException {
 
-        String retrievedRequests = mockServerClient.retrieveRecordedRequests(request().withPath(INVALID_ENDPOINT), Format.JSON);
+        String retrievedRequests = mockServerClient.retrieveRecordedRequests(
+                request().withPath(INVALID_ENDPOINT), Format.JSON);
         JSONArray requests = new JSONArray(retrievedRequests);
 
         // received requests include number of retries
@@ -136,19 +141,23 @@ public class TestTTLSteps extends FunctionalTestBase {
 
     @Then("^Check failed notification is in database$")
     public void check_failed_notification_is_in_database() {
-        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(
+                SUBSCRIPTION_NAME);
         List<String> result = mongoDBHandler.find(database,
                 failedNotificationCollection, condition);
 
         assertEquals(1, result.size());
         assertEquals("Could not find a failed notification matching the condition: " + condition,
-                "\"" + SUBSCRIPTION_NAME + "\"", dbManager.getValueFromQuery(result, "subscriptionName", 0));
+                "\"" + SUBSCRIPTION_NAME + "\"",
+                dbManager.getValueFromQuery(result, "subscriptionName", 0));
     }
 
     @Given("^A subscription is created using \"([^\"]*)\" with non-working notification meta$")
-    public void a_subscription_is_created_at_the_end_point_with_non_existent_notification_meta(String endPoint)
+    public void a_subscription_is_created_at_the_end_point_with_non_existent_notification_meta(
+            String endPoint)
             throws Throwable {
-        String readFileToString = FileUtils.readFileToString(new File(SUBSCRIPTION_FILE_PATH_CREATION), "UTF-8");
+        String readFileToString = FileUtils.readFileToString(
+                new File(SUBSCRIPTION_FILE_PATH_CREATION), "UTF-8");
         JSONArray jsonArr = new JSONArray(readFileToString);
         httpRequest = new HttpRequest(HttpMethod.POST);
         httpRequest.setHost(hostName)
@@ -167,7 +176,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(
                 eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
-        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
+        assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
+                0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
     }
@@ -184,7 +194,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     public void a_failed_notification_is_created() throws Throwable {
         // verifying that failed notification is created and present in db
         int expectedSize = 1;
-        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(
+                SUBSCRIPTION_NAME_3);
 
         LOGGER.debug("Checking presence of failed notification in db");
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -194,7 +205,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Then("^Notification document should be deleted from the database$")
     public void the_Notification_document_should_be_deleted_from_the_database() throws Throwable {
         int expectedSize = 0;
-        final MongoCondition condition = MongoCondition.subscriptionNameCondition(SUBSCRIPTION_NAME_3);
+        final MongoCondition condition = MongoCondition.subscriptionNameCondition(
+                SUBSCRIPTION_NAME_3);
         LOGGER.debug("Checking deletion of notification document in db");
 
         int notificationExistSize = getNotificationForExpectedSize(expectedSize, condition);
@@ -202,7 +214,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     @Then("^Aggregated Object document should be deleted from the database$")
-    public void the_Aggregated_Object_document_should_be_deleted_from_the_database() throws Throwable {
+    public void the_Aggregated_Object_document_should_be_deleted_from_the_database()
+            throws Throwable {
         LOGGER.debug("Checking deletion of aggregated object in db");
         List<String> allObjects = null;
         // To be sure at least one minute has passed since creation of aggregated object
@@ -212,8 +225,8 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     /**
-     * Setting up mock server to receive calls on one endpoint and respond with 500
-     * to trigger retries of POST request
+     * Setting up mock server to receive calls on one endpoint and respond with 500 to trigger
+     * retries of POST request
      */
     private void setUpMockServer() {
         int port = SocketUtils.findAvailableTcpPort();

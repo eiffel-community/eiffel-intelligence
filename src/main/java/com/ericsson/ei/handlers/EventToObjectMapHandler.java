@@ -37,10 +37,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * @author evasiba
- * Class for handling event to object map.
- * The map has the event id as key and the value is a list
- * with all the ids of objects that an event has contributed to.
+ * @author evasiba Class for handling event to object map. The map has the event id as key and the
+ *         value is a list with all the ids of objects that an event has contributed to.
  *
  */
 @Component
@@ -48,8 +46,10 @@ public class EventToObjectMapHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
-    @Value("${event.object.map.collection.name}") private String collectionName;
-    @Value("${spring.data.mongodb.database}") private String databaseName;
+    @Value("${event.object.map.collection.name}")
+    private String collectionName;
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;
 
     private final String listPropertyName = "objects";
 
@@ -84,25 +84,40 @@ public class EventToObjectMapHandler {
         return getEventToObjectList(eventId);
     }
 
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
+    /**
+     * To check and save the eventIds to the objectId in the mapped database.
+     * 
+     * @param rulesObject
+     * @param event
+     * @param objectId    aggregated event object Id
+     */
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,
+            String objectId) {
         String eventId = getEventId(rulesObject, event);
+
         final MongoCondition condition = MongoCondition.idCondition(eventId);
-        LOGGER.debug("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
-        boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName, condition);
+        LOGGER.debug(
+                "Checking document exists in the collection with condition : {}\n EventId : {}",
+                condition, eventId);
+        boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName,
+                condition);
 
         try {
             if (!docExists) {
-                ArrayList<String> list =  new ArrayList<String>();
+                ArrayList<String> list = new ArrayList<String>();
                 list.add(eventId);
                 final ObjectMapper mapper = new ObjectMapper();
                 JsonNode entry = new ObjectMapper().readValue(condition.toString(), JsonNode.class);
                 ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
                 ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
-        final String mapStr = entry.toString(); 
-        LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);    
-        mongodbhandler.insertDocument(databaseName, collectionName, mapStr );
+                final String mapStr = entry.toString();
+                LOGGER.debug(
+                        "MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}",
+                        mapStr, databaseName, collectionName);
+                mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
             } else {
-                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
+                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
+                        eventId);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to update event object list.", e);
@@ -130,7 +145,9 @@ public class EventToObjectMapHandler {
             try {
                 JsonNode document = mapper.readValue(mapStr, JsonNode.class);
                 JsonNode value = document.get(listPropertyName);
-                list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>(){});
+                list = new ObjectMapper().readValue(value.traverse(),
+                        new TypeReference<ArrayList<String>>() {
+                        });
             } catch (Exception e) {
                 LOGGER.info("Failed to deserialize event object list.", e);
             }
@@ -156,6 +173,5 @@ public class EventToObjectMapHandler {
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }
-
 
 }

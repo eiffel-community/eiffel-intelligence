@@ -36,11 +36,16 @@ public class ExtractionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
-    @Autowired private JmesPathInterface jmesPathInterface;
-    @Autowired private MergeHandler mergeHandler;
-    @Autowired private ObjectHandler objectHandler;
-    @Autowired private ProcessRulesHandler processRulesHandler;
-    @Autowired private UpStreamEventsHandler upStreamEventsHandler;
+    @Autowired
+    private JmesPathInterface jmesPathInterface;
+    @Autowired
+    private MergeHandler mergeHandler;
+    @Autowired
+    private ObjectHandler objectHandler;
+    @Autowired
+    private ProcessRulesHandler processRulesHandler;
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
 
     public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
         this.jmesPathInterface = jmesPathInterface;
@@ -62,7 +67,8 @@ public class ExtractionHandler {
         this.objectHandler = objectHandler;
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) throws MongoDBConnectionException{
+    public void runExtraction(RulesObject rulesObject, String id, String event,
+            String aggregatedDbObject) throws MongoDBConnectionException {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
@@ -75,18 +81,21 @@ public class ExtractionHandler {
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) throws MongoDBConnectionException {
+    public void runExtraction(RulesObject rulesObject, String mergeId, String event,
+            JsonNode aggregatedDbObject) throws MongoDBConnectionException {
         try {
             JsonNode extractedContent = extractContent(rulesObject, event);
 
-            if(aggregatedDbObject != null) {
+            if (aggregatedDbObject != null) {
                 LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
                         + "\nwith extracted content:\n{}"
                         + "\nfrom event:\n{}",
                         aggregatedDbObject.toString(), extractedContent.toString(), event);
                 String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-                String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-                processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
+                String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject,
+                        event, extractedContent);
+                processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId,
+                        mergeId);
             } else {
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
@@ -99,7 +108,7 @@ public class ExtractionHandler {
             LOGGER.error("Failed to run extraction for event {}", event, e);
             if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
-            }   
+            }
         }
     }
 

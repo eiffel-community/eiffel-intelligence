@@ -51,14 +51,13 @@ public class JmesPathInterface {
     }
 
     /**
-     * This method makes use of the JMESPath to compile the expression and then
-     * searches for this expression in the given JSON structure.
+     * This method makes use of the JMESPath to compile the expression and then searches for this
+     * expression in the given JSON structure.
      *
      * @param rule
      * @param event
-     * @return result
-     *     JSONNode of the result from the JMESPath expression search
-     * */
+     * @return result JSONNode of the result from the JMESPath expression search
+     */
     public JsonNode runRuleOnEvent(String rule, String event) {
         JsonNode result = JsonNodeFactory.instance.nullNode();
         String inputs[] = { rule, event };
@@ -74,7 +73,7 @@ public class JmesPathInterface {
             Expression<JsonNode> expression = jmespath.compile(rule);
             JsonNode eventJson = objectMapper.readValue(event, JsonNode.class);
             result = expression.search(eventJson);
-            LOGGER.debug("Expression : {} \n RESULT VALUE FROM JMESPATH : {}" , expression, result);
+            LOGGER.debug("Expression : {} \n RESULT VALUE FROM JMESPATH : {}", expression, result);
         } catch (Exception e) {
             LOGGER.error("Failed to run rule on event.\nRule: {}\nEvent: {}", rule, event, e);
         }

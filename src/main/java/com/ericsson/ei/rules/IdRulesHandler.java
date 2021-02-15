@@ -56,19 +56,16 @@ public class IdRulesHandler {
             if (idsJsonObj != null && idsJsonObj.isArray()) {
                 for (final JsonNode idJsonObj : idsJsonObj) {
                     final String id = idJsonObj.textValue();
-                    final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(
-                            rulesObject, id);
+                    final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
 
                     for (String aggregatedObject : aggregatedObjects) {
                         extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
                     }
                     if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
-                            extractionHandler.runExtraction(rulesObject, id, event,
-                                    (JsonNode) null);
+                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
                         } else {
-                            waitListStorageHandler.addEventToWaitListIfNotExisting(event,
-                                    rulesObject);
+                            waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
                         }
                     }
                 }

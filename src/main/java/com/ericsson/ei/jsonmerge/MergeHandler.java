@@ -64,14 +64,14 @@ public class MergeHandler {
 
     /**
      * @param id            the id of the aggregated object
-     * @param mergeId       the id of the link used to identify this aggregated object
+     * @param mergeId       the id of the link used to identify this aggregated
+     *                      object
      * @param rules         the current rules for the received event
      * @param event         the received event
      * @param objectToMerge the object to be merged
      * @return the aggregated object updated with the objectToMerge
      */
-    public String mergeObject(String id, String mergeId, RulesObject rules, String event,
-            JsonNode objectToMerge) {
+    public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge) {
         String mergedObject = null;
         String preparedToMergeObject;
         try {
@@ -82,11 +82,9 @@ public class MergeHandler {
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
                 // populate the rule with data from event
-                String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event)
-                                                       .toString();
+                String ruleForMerge = jmesPathInterface.runRuleOnEvent(updatedRule, event).toString();
                 // compute the path where to insert the object
-                String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject,
-                        ruleForMerge, false);
+                String mergePath = prepareMergePrepareObject.getMergePath(aggregatedObject, ruleForMerge, false);
                 // inflate the object to be merged with levels from merge path
                 preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);
@@ -109,15 +107,16 @@ public class MergeHandler {
     /**
      *
      * @param id            the id of the aggregated object
-     * @param mergeId       the id of the link used to identify this aggregated object
+     * @param mergeId       the id of the link used to identify this aggregated
+     *                      object
      * @param rules         the current rules for the received event
      * @param event         the received event
      * @param objectToMerge the object to be merged
-     * @param mergePath     the path in the aggregated object where to merge the object
+     * @param mergePath     the path in the aggregated object where to merge the
+     *                      object
      * @return the aggregated object updated with the objectToMerge
      */
-    public String mergeObject(String id, String mergeId, RulesObject rules, String event,
-            JsonNode objectToMerge,
+    public String mergeObject(String id, String mergeId, RulesObject rules, String event, JsonNode objectToMerge,
             String mergePath) {
         String mergedObject = null;
         String preparedToMergeObject;
@@ -147,10 +146,10 @@ public class MergeHandler {
     }
 
     /**
-     * The merge rule can contain a placeholder for the ids extracted from IdentifyRules. This
-     * placeholder need to be replaced with an id from the ones extracted with IdentifyRules before
-     * we use it in JMESPath. The placeholder is defined in application.properties as
-     * 'rules.replacement.marker'.
+     * The merge rule can contain a placeholder for the ids extracted from IdentifyRules.
+     * This placeholder need to be replaced with an id from the ones extracted with
+     * IdentifyRules before we use it in JMESPath. The placeholder is defined in
+     * application.properties as 'rules.replacement.marker'.
      *
      * @param rule string
      * @param id   that the mergeIdMarker will be replaced with
@@ -186,8 +185,7 @@ public class MergeHandler {
      */
     private void updateJsonObject(JSONObject aggregatedJsonObject, JSONObject preparedJsonObject) {
         try {
-            Iterator<String> preparedJsonKeys = preparedJsonObject != null
-                    ? preparedJsonObject.keys()
+            Iterator<String> preparedJsonKeys = preparedJsonObject != null ? preparedJsonObject.keys()
                     : new JSONObject().keys();
 
             while (preparedJsonKeys.hasNext()) {
@@ -196,24 +194,19 @@ public class MergeHandler {
                     final Object aggregatedObj = aggregatedJsonObject.get(preparedJsonKey);
                     final Object preparedObj = preparedJsonObject.get(preparedJsonKey);
                     if (aggregatedObj instanceof JSONObject) {
-                        JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null)
-                                ? new JSONObject()
+                        JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null) ? new JSONObject()
                                 : aggregatedObj);
-                        JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null)
-                                ? new JSONObject()
+                        JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null) ? new JSONObject()
                                 : preparedObj);
                         updateJsonObject(objectFromAggregation, objectFromPreparation);
                     } else if (aggregatedObj instanceof JSONArray) {
-                        JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null)
-                                ? new JSONObject()
+                        JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null) ? new JSONObject()
                                 : aggregatedObj);
-                        JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null)
-                                ? new JSONObject()
+                        JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null) ? new JSONObject()
                                 : preparedObj);
                         updateJsonObject(objectFromAggregation, objectFromPreparation);
                     } else {
-                        aggregatedJsonObject.put(preparedJsonKey,
-                                preparedJsonObject.get(preparedJsonKey));
+                        aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                     }
                 } else {
                     aggregatedJsonObject.put(preparedJsonKey,
@@ -221,15 +214,14 @@ public class MergeHandler {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(
-                    "Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
+            LOGGER.error("Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
                     aggregatedJsonObject, preparedJsonObject, e);
         }
     }
 
     /**
-     * Append JSON elements from preparedJsonObject element-wise into aggregatedJsonObject JSON
-     * array
+     * Append JSON elements from preparedJsonObject element-wise into 
+     * aggregatedJsonObject JSON array
      *
      * @param aggregatedJsonObject JSON array
      * @param preparedJsonObject   JSON array
@@ -243,34 +235,29 @@ public class MergeHandler {
                 final Object aggregatedObj = aggregatedJsonObject.get(i);
                 final Object preparedObj = preparedJsonObject.get(i);
                 if (aggregatedObj instanceof JSONObject) {
-                    JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null)
-                            ? new JSONObject()
+                    JSONObject objectFromAggregation = (JSONObject) (aggregatedObj.equals(null) ? new JSONObject()
                             : aggregatedObj);
-                    JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null)
-                            ? new JSONObject()
+                    JSONObject objectFromPreparation = (JSONObject) (preparedObj.equals(null) ? new JSONObject()
                             : preparedObj);
                     updateJsonObject(objectFromAggregation, objectFromPreparation);
 
                 } else if (aggregatedObj instanceof JSONArray) {
-                    JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null)
-                            ? new JSONArray()
+                    JSONArray objectFromAggregation = (JSONArray) (aggregatedObj.equals(null) ? new JSONArray()
                             : aggregatedObj);
-                    JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null)
-                            ? new JSONArray()
+                    JSONArray objectFromPreparation = (JSONArray) (preparedObj.equals(null) ? new JSONArray()
                             : preparedObj);
                     updateJsonObject(objectFromAggregation, objectFromPreparation);
                 }
             } catch (JSONException e) {
-                LOGGER.error(
-                        "Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
+                LOGGER.error("Failed to update JSON object for aggregatedJsonObject: {} and preparedJsonObject: {}",
                         aggregatedJsonObject, preparedJsonObject, e);
             }
         }
     }
 
     /**
-     * This method set lock property in document in database and returns the aggregated document
-     * which will be further modified.
+     * This method set lock property in document in database and returns the 
+     * aggregated document which will be further modified.
      *
      * @param id String to search in database and lock this document.
      */

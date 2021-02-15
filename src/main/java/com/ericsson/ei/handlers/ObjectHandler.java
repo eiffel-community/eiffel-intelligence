@@ -105,8 +105,7 @@ public class ObjectHandler {
                     MongoConstants.TIME, getTtl());
         }
 
-        mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName,
-                document.toString());
+        mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -138,8 +137,7 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         final MongoCondition condition = MongoCondition.idCondition(id);
         String documentStr = document.toString();
-        mongoDbHandler.updateDocument(databaseName, aggregationsCollectionName, condition,
-                documentStr);
+        mongoDbHandler.updateDocument(databaseName, aggregationsCollectionName, condition, documentStr);
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 

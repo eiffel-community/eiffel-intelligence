@@ -126,8 +126,7 @@ public class InformSubscriber {
                         subject);
                 emailSender.sendEmail(message);
             }
-        } catch (NotificationFailureException | AuthenticationException
-                | EncryptionOperationNotPossibleException e) {
+        } catch (NotificationFailureException | AuthenticationException | EncryptionOperationNotPossibleException e) {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String failedNotification = prepareFailedNotification(aggregatedObject,
                     subscriptionName, notificationMeta, e.getMessage());

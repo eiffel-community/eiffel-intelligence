@@ -51,7 +51,8 @@ public class JmesPathInterface {
     }
 
     /**
-     * This method makes use of the JMESPath to compile the expression and then searches for this
+     * This method makes use of the JMESPath to compile the expression and then 
+     * searches for this
      * expression in the given JSON structure.
      *
      * @param rule

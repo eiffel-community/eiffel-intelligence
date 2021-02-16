@@ -66,9 +66,8 @@ public class WaitListStorageHandler {
     /**
      * Adds event to the waitlist database if it does not already exists.
      *
-     * @param event       The event that will be added to database
-     * @param rulesObject Rules for extracting a unique identifier from an event object to be used
-     *                    as document id
+     * @param event The event that will be added to database
+     * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
      */
     public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject)
             throws MongoDBConnectionException {
@@ -78,8 +77,7 @@ public class WaitListStorageHandler {
             if (foundEvent.isEmpty()) {
                 Date date = createCurrentTimeStamp();
                 BasicDBObject document = createWaitListDocument(event, id, date);
-                mongoDbHandler.insertDocument(databaseName, waitlistCollectionName,
-                        document.toString());
+                mongoDbHandler.insertDocument(databaseName, waitlistCollectionName, document.toString());
             }
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert event into waitlist.", e);
@@ -98,7 +96,7 @@ public class WaitListStorageHandler {
     }
 
     public boolean dropDocumentFromWaitList(String document) {
-        MongoQuery query = new MongoStringQuery(document);
+       MongoQuery query = new MongoStringQuery(document);
         return mongoDbHandler.dropDocument(databaseName, waitlistCollectionName, query);
     }
 

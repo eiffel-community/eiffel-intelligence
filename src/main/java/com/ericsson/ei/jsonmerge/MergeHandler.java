@@ -209,8 +209,7 @@ public class MergeHandler {
                         aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                     }
                 } else {
-                    aggregatedJsonObject.put(preparedJsonKey,
-                            preparedJsonObject.get(preparedJsonKey));
+                    aggregatedJsonObject.put(preparedJsonKey, preparedJsonObject.get(preparedJsonKey));
                 }
             }
         } catch (Exception e) {
@@ -220,7 +219,7 @@ public class MergeHandler {
     }
 
     /**
-     * Append JSON elements from preparedJsonObject element-wise into 
+     * Append JSON elements from preparedJsonObject element-wise into
      * aggregatedJsonObject JSON array
      *
      * @param aggregatedJsonObject JSON array
@@ -256,7 +255,7 @@ public class MergeHandler {
     }
 
     /**
-     * This method set lock property in document in database and returns the 
+     * This method set lock property in document in database and returns the
      * aggregated document which will be further modified.
      *
      * @param id String to search in database and lock this document.

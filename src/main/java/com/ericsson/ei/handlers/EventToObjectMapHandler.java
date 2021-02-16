@@ -37,8 +37,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * @author evasiba Class for handling event to object map. The map has the event id as key and the
- *         value is a list with all the ids of objects that an event has contributed to.
+ * @author evasiba
+ * Class for handling event to object map.
+ * The map has the event id as key and the value is a list
+ * with all the ids of objects that an event has contributed to.
  *
  */
 @Component
@@ -46,10 +48,9 @@ public class EventToObjectMapHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
 
-    @Value("${event.object.map.collection.name}")
-    private String collectionName;
-    @Value("${spring.data.mongodb.database}")
-    private String databaseName;
+    @Value("${event.object.map.collection.name}") private String collectionName;
+    @Value("${spring.data.mongodb.database}") private String databaseName;
+    
 
     private final String listPropertyName = "objects";
 
@@ -145,9 +146,7 @@ public class EventToObjectMapHandler {
             try {
                 JsonNode document = mapper.readValue(mapStr, JsonNode.class);
                 JsonNode value = document.get(listPropertyName);
-                list = new ObjectMapper().readValue(value.traverse(),
-                        new TypeReference<ArrayList<String>>() {
-                        });
+                list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>() {});
             } catch (Exception e) {
                 LOGGER.info("Failed to deserialize event object list.", e);
             }

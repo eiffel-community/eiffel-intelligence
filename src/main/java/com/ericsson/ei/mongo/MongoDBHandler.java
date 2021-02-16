@@ -95,7 +95,9 @@ public class MongoDBHandler {
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 collection.insertOne(dbObjectInput);
-                LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
+                LOGGER.debug(
+                        "Object: {}\n was inserted successfully in collection: {} and database {}.",
+                        input, collectionName, dataBaseName);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", input,
@@ -224,11 +226,12 @@ public class MongoDBHandler {
      * @param fieldName      for index creation field
      * @param ttlValue       seconds
      */
-	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue)
-			throws MongoDBConnectionException {
+	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
+	        int ttlValue) throws MongoDBConnectionException {
 		try {
 			MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-			IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+			IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
+			        TimeUnit.SECONDS);
 			collection.createIndex(Indexes.ascending(fieldName), indexOptions);
 		} catch (Exception e) {
 			throw new MongoDBConnectionException("MongoDB Connection down");

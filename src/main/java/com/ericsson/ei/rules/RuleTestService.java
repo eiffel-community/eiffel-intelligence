@@ -43,8 +43,7 @@ public class RuleTestService implements IRuleTestService {
         try {
             prepareEventsForTestAggregation(listEventsJson, templateName);
         } catch (MongoDBConnectionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("Mongodb connection down");
         }
 
         List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);

@@ -94,7 +94,7 @@ public class InformSubscriber {
      *
      * @param aggregatedObject
      * @param subscriptionJson
-     * @throws AuthenticationException
+     * @throws AuthenticationException, MongoDBConnectionException
      */
     public void informSubscriber(String aggregatedObject, JsonNode subscriptionJson)
             throws AuthenticationException, MongoDBConnectionException {

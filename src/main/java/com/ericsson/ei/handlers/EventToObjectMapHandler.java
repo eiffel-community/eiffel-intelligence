@@ -148,7 +148,7 @@ public class EventToObjectMapHandler {
                 JsonNode value = document.get(listPropertyName);
                 list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>() {});
             } catch (Exception e) {
-                LOGGER.info("Failed to deserialize event object list.", e);
+                LOGGER.error("Failed to deserialize event object list.", e);
             }
         }
         return list;

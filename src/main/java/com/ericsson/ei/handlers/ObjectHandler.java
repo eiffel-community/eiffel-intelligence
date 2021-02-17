@@ -87,6 +87,7 @@ public class ObjectHandler {
      * @param rulesObject      RulesObject
      * @param event            String representation of event, used to fetch id if not specified
      * @param givenId          String id is stored together with aggregated object in database
+     * @throws                 MongoDBConnectionException
      */
     public void insertObject(String aggregatedObject, RulesObject rulesObject, String event,
             String givenId) throws MongoDBConnectionException {

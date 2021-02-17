@@ -85,6 +85,7 @@ public class MongoDBHandler {
      * @param dataBaseName
      * @param collectionName
      * @param input          json String
+     * @throws MongoWriteException, MongoClientException
      * @return
      */
     public void insertDocument(String dataBaseName, String collectionName, String input)
@@ -225,6 +226,7 @@ public class MongoDBHandler {
      * @param collectionName
      * @param fieldName      for index creation field
      * @param ttlValue       seconds
+     * @throws MongoDBConnectionException
      */
 	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
 	        int ttlValue) throws MongoDBConnectionException {

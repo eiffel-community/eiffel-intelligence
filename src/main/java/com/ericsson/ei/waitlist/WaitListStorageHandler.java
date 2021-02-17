@@ -68,6 +68,7 @@ public class WaitListStorageHandler {
      *
      * @param event The event that will be added to database
      * @param rulesObject Rules for extracting a unique identifier from an event object to be used as document id
+     * @throws MongoDBConnectionException
      */
     public void addEventToWaitListIfNotExisting(String event, RulesObject rulesObject)
             throws MongoDBConnectionException {

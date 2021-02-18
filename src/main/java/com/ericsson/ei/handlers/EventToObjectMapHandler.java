@@ -50,6 +50,7 @@ public class EventToObjectMapHandler {
 
     @Value("${event.object.map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
+    
 
     private final String listPropertyName = "objects";
 
@@ -84,28 +85,43 @@ public class EventToObjectMapHandler {
         return getEventToObjectList(eventId);
     }
 
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
+    /**
+     * To check and save the eventIds to the objectId in the mapped database.
+     * 
+     * @param rulesObject
+     * @param event
+     * @param objectId    aggregated event object Id
+     */
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,
+            String objectId) {
         String eventId = getEventId(rulesObject, event);
+
         final MongoCondition condition = MongoCondition.idCondition(eventId);
-        ArrayList<String> list =  getEventToObjectList(eventId);
-        boolean firstTime = list.isEmpty();
-        list = updateList(list, eventId, objectId);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode entry = null;
+        LOGGER.debug(
+                "Checking document exists in the collection with condition : {}\n EventId : {}",
+                condition, eventId);
+        boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName,
+                condition);
 
         try {
-            entry = new ObjectMapper().readValue(condition.toString(), JsonNode.class);
-            ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
-            ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
-            String mapStr = entry.toString();
-            LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);
-            if (firstTime) {
+            if (!docExists) {
+                ArrayList<String> list = new ArrayList<String>();
+                list.add(eventId);
+                final ObjectMapper mapper = new ObjectMapper();
+                JsonNode entry = new ObjectMapper().readValue(condition.toString(), JsonNode.class);
+                ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
+                ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
+                final String mapStr = entry.toString();
+                LOGGER.debug(
+                        "MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}",
+                        mapStr, databaseName, collectionName);
                 mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
             } else {
-                mongodbhandler.updateDocument(databaseName, collectionName, condition, mapStr);
+                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
+                        eventId);
             }
         } catch (Exception e) {
-            LOGGER.info("Failed to update event object list.", e);
+            LOGGER.error("Failed to update event object list.", e);
         }
     }
 
@@ -130,9 +146,9 @@ public class EventToObjectMapHandler {
             try {
                 JsonNode document = mapper.readValue(mapStr, JsonNode.class);
                 JsonNode value = document.get(listPropertyName);
-                list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>(){});
+                list = new ObjectMapper().readValue(value.traverse(), new TypeReference<ArrayList<String>>() {});
             } catch (Exception e) {
-                LOGGER.info("Failed to deserialize event object list.", e);
+                LOGGER.error("Failed to deserialize event object list.", e);
             }
         }
         return list;
@@ -156,6 +172,5 @@ public class EventToObjectMapHandler {
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
         return !documents.isEmpty();
     }
-
 
 }

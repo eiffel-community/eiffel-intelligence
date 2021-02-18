@@ -3,6 +3,7 @@ package com.ericsson.ei.rules;
 import java.io.IOException;
 
 import com.ericsson.ei.exception.InvalidRulesException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 

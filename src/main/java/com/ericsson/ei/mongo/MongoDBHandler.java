@@ -29,10 +29,12 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.AbortExecutionException;
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
+import com.mongodb.client.model.Updates;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoConfigurationException;
@@ -83,17 +85,24 @@ public class MongoDBHandler {
      * @param dataBaseName
      * @param collectionName
      * @param input          json String
+     * @throws MongoWriteException, MongoClientException
      * @return
      */
     public void insertDocument(String dataBaseName, String collectionName, String input)
             throws MongoWriteException, MongoClientException {
-        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-        if (collection != null) {
-            final Document dbObjectInput = Document.parse(input);
-            collection.insertOne(dbObjectInput);
-            LOGGER.debug(
-                    "Object: {}\n was inserted successfully in collection: {} and database {}.",
-                    input, collectionName, dataBaseName);
+
+    	try {
+            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(input);
+                collection.insertOne(dbObjectInput);
+                LOGGER.debug(
+                        "Object: {}\n was inserted successfully in collection: {} and database {}.",
+                        input, collectionName, dataBaseName);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", input,
+                    collectionName, dataBaseName, e.getMessage());
         }
     }
 
@@ -217,14 +226,19 @@ public class MongoDBHandler {
      * @param collectionName
      * @param fieldName      for index creation field
      * @param ttlValue       seconds
+     * @throws MongoDBConnectionException
      */
-    public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
-            int ttlValue) throws MongoClientException {
-        MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-        IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
-                TimeUnit.SECONDS);
-        collection.createIndex(Indexes.ascending(fieldName), indexOptions);
-    }
+	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
+	        int ttlValue) throws MongoDBConnectionException {
+		try {
+			MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+			IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
+			        TimeUnit.SECONDS);
+			collection.createIndex(Indexes.ascending(fieldName), indexOptions);
+		} catch (Exception e) {
+			throw new MongoDBConnectionException("MongoDB Connection down");
+		}
+	}
 
     /**
      * This method is used to drop a collection.
@@ -434,4 +448,77 @@ public class MongoDBHandler {
             throw new MongoClientException(message, e);
         }
     }
+    
+    /**
+     * Check if the document exists
+     * @param databaseName
+     * @param collectionName
+     * @param condition      a condition to find a requested object in the database
+     * @return
+     */
+    public boolean checkDocumentExists(String databaseName, String collectionName, MongoCondition condition) {
+
+        try {
+            MongoDatabase db = mongoClient.getDatabase(databaseName);
+            MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
+            Document doc = null;
+            if (mongoCollection != null) {
+                doc = mongoCollection.find(BasicDBObject.parse(condition.toString())).first();
+            }
+            if (doc == null || doc.isEmpty()) {
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.error("something wrong with MongoDB " + e);
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Update the existing documents with unique objects list
+     * Used only in EventToObjectMapHandler.java
+     * @param dataBaseName
+     * @param collectionName
+     * @param condition      a condition to find a requested object in the database
+     * @param eventId eventId to update in the mapper collection
+     * @return 
+     */
+    public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, MongoCondition condition, String eventId) {
+        try {
+            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+            if (collection != null) {
+                final Document dbObjectInput = Document.parse(condition.toString());
+                UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
+                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
+                return updateMany.wasAcknowledged();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to update document.", e);
+        }
+
+        return false;
+    }
+    
+    public boolean checkMongoDbStatus(String dataBaseName) {
+        MongoDatabase db;
+        List<String> collectionList;
+        try {
+                if (mongoClient == null) {
+                        createMongoClient();
+                }
+                db = mongoClient.getDatabase(dataBaseName);
+                collectionList = db.listCollectionNames().into(new ArrayList<String>());
+        } catch (Exception e) {
+                LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e);
+                return false;
+        }
+        if (collectionList == null || collectionList.isEmpty()) {
+                return false;
+        }
+        return true;
+}
+
+
 }

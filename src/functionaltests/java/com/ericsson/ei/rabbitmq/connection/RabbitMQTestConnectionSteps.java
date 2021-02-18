@@ -56,10 +56,11 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
     private String rabbitMQPort;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQTestConnectionSteps.class);
-    private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_thread_testing.json";
+    private static final String EIFFEL_EVENTS = "src/functionaltests/resources/eiffel_events_for_test.json";
 
     private static final String BINDING_KEY_1 = "binding-key-1";
     private static final String BINDING_KEY_2 = "binding-key-2";
+    private static final String DEFAULT_ROUTING_KEY = "#";
 
     private AMQPBrokerManager amqpBroker;
 
@@ -95,12 +96,6 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
 
         RabbitAdmin rabbitAdmin = createExchange(rmqHandler);
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
-        rabbitTemplate.setConfirmCallback(new ConfirmCallback() {
-            @Override
-            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                LOGGER.info("Received confirm with result : {}", ack);
-            }
-        });
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
         rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
@@ -134,7 +129,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
             TimeUnit.SECONDS.sleep(2);
             waitListSize = dbManager.waitListSize();
         }
-        assertEquals(4, waitListSize);
+        assertEquals(1, waitListSize);
     }
 
     @When("^add the binding documents to mongoDB$")
@@ -156,10 +151,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
      */
     protected List<String> getEventNamesToSend() {
         List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
         eventNames.add("event_EiffelArtifactPublishedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3");
         return eventNames;
     }
 
@@ -179,7 +171,7 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         admin.getQueueProperties(queueName);
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(rmqProperties.getWaitlistQueueName());
+        rabbitTemplate.setRoutingKey(DEFAULT_ROUTING_KEY);
         rabbitTemplate.setQueue(queueName);
         return admin;
     }

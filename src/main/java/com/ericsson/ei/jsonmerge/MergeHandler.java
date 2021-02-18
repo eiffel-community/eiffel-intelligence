@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
@@ -76,6 +77,7 @@ public class MergeHandler {
         try {
             // lock and get the AggregatedObject
             String aggregatedObject = getAggregatedObject(id, true);
+            LOGGER.debug("AGGREGATED OBJECT : " + aggregatedObject);
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
@@ -86,6 +88,7 @@ public class MergeHandler {
                 // inflate the object to be merged with levels from merge path
                 preparedToMergeObject = prepareMergePrepareObject.addMissingLevels(aggregatedObject,
                         objectToMerge.toString(), ruleForMerge, mergePath);
+                LOGGER.debug("PREPARE TO MERGE OBJECT : " + preparedToMergeObject);
             } else {
                 preparedToMergeObject = objectToMerge.toString();
             }
@@ -268,11 +271,13 @@ public class MergeHandler {
         return document;
     }
 
-    public void addNewObject(String event, String newObject, RulesObject rulesObject) {
+    public void addNewObject(String event, String newObject, RulesObject rulesObject)
+            throws MongoDBConnectionException {
         objectHandler.insertObject(newObject, rulesObject, event, null);
     }
 
-    public void addNewObject(String event, JsonNode newObject, RulesObject rulesObject) {
+    public void addNewObject(String event, JsonNode newObject, RulesObject rulesObject)
+            throws MongoDBConnectionException {
         objectHandler.insertObject(newObject, rulesObject, event, null);
     }
 }

@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.rules;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.handlers.ExtractionHandler;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.waitlist.WaitListStorageHandler;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
 
 @Component
 public class IdRulesHandler {
@@ -49,15 +49,18 @@ public class IdRulesHandler {
         this.jmesPathInterface = jmesPathInterface;
     }
 
-    public void runIdRules(RulesObject rulesObject, String event) {
+    public void runIdRules(RulesObject rulesObject, String event)
+            throws MongoDBConnectionException {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
             if (idsJsonObj != null && idsJsonObj.isArray()) {
                 for (final JsonNode idJsonObj : idsJsonObj) {
                     final String id = idJsonObj.textValue();
                     final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                    aggregatedObjects.forEach(
-                        aggregatedObject -> extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject));
+
+                    for (String aggregatedObject : aggregatedObjects) {
+                        extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
+                    }
                     if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
                             extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);

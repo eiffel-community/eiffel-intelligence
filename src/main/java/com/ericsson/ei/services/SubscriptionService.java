@@ -115,6 +115,15 @@ public class SubscriptionService implements ISubscriptionService {
         return !list.isEmpty();
     }
 
+    /**
+     * Finds an existing subscription and replaces with a new updated subscription. If the update
+     * was successful, any previous matches on aggregations for the old subscription is cleaned from
+     * the database.
+     *
+     * @param subscription     the updated subscription to save in the database
+     * @param subscriptionName the name of the existing subscription which will be updated
+     * @return boolean result of the update operation
+     */
     @Override
     public boolean modifySubscription(Subscription subscription, String subscriptionName) {
         ObjectMapper mapper = new ObjectMapper();
@@ -130,15 +139,7 @@ public class SubscriptionService implements ISubscriptionService {
 
             result = subscriptionRepository.modifySubscription(query, stringSubscription);
             if (result != null) {
-                final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
-                        subscriptionName);
-                if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                    LOGGER.info("Subscription  \"{}"
-                            + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the update of the subscription,\n"
-                            + "probably due to subscription has never matched any aggregated objects and "
-                            + "no matched aggregated objects id has been stored in database for the specific subscription.",
-                            subscriptionName);
-                }
+                cleanSubscriptionRepeatFlagHandlerDb(subscriptionName);
             }
 
         } catch (JSONException | JsonProcessingException e) {
@@ -148,6 +149,13 @@ public class SubscriptionService implements ISubscriptionService {
         return true;
     }
 
+    /**
+     * Removes a given subscription from the database. If the operation was successful, any previous
+     * matches on aggregations for the removed subscription is also cleaned from the database.
+     *
+     * @param subscriptionName the name of the subscription to delete
+     * @return boolean result of the delete operation
+     */
     @Override
     public boolean deleteSubscription(String subscriptionName) throws AccessException {
         final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
@@ -159,15 +167,7 @@ public class SubscriptionService implements ISubscriptionService {
 
         boolean deleteResult = subscriptionRepository.deleteSubscription(deleteQuery);
         if (deleteResult) {
-            final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
-                    subscriptionName);
-            if (!cleanSubscriptionRepeatFlagHandlerDb(subscriptionIdQuery)) {
-                LOGGER.info("Subscription  \"{}"
-                        + "\" matched aggregated objects id from repeat flag handler database could not be cleaned during the removal of subscription,\n"
-                        + "probably due to subscription has never matched any aggregated objects and "
-                        + "no matched aggregated objects id has been stored in database for the specific subscription.",
-                        subscriptionName);
-            }
+            cleanSubscriptionRepeatFlagHandlerDb(subscriptionName);
         } else if (doSubscriptionExist(subscriptionName)) {
             String message = "Failed to delete subscription \"" + subscriptionName
                     + "\" invalid ldapUserName";
@@ -177,6 +177,11 @@ public class SubscriptionService implements ISubscriptionService {
         return deleteResult;
     }
 
+    /**
+     * Retrieves all existing subscriptions from the database in a list.
+     *
+     * @throws SubscriptionNotFoundException if no subscriptions exists in the database
+     */
     @Override
     public List<Subscription> getSubscriptions() throws SubscriptionNotFoundException {
         final MongoCondition query = MongoCondition.emptyCondition();
@@ -217,13 +222,14 @@ public class SubscriptionService implements ISubscriptionService {
         return EncryptionUtils.addEncryptionParentheses(encryptedPassword);
     }
 
-    private boolean cleanSubscriptionRepeatFlagHandlerDb(MongoCondition subscriptionNameQuery) {
-        LOGGER.debug(
-                "Cleaning and removing matched subscriptions AggrObjIds in ReapeatHandlerFlag database with query: {}",
-                subscriptionNameQuery);
+    private void cleanSubscriptionRepeatFlagHandlerDb(String subscriptionName) {
+        LOGGER.debug("Cleaning up previously matched aggregations for subscription: {}.",
+                subscriptionName);
+        final MongoCondition subscriptionIdQuery = MongoCondition.subscriptionCondition(
+                subscriptionName);
         MongoDBHandler mongoDbHandler = subscriptionRepository.getMongoDbHandler();
-        return mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection,
-                subscriptionNameQuery);
+        mongoDbHandler.dropDocument(dataBaseName, repeatFlagHandlerCollection,
+                subscriptionIdQuery);
     }
 
     /**

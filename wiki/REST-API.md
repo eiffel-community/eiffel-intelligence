@@ -3,9 +3,9 @@
 Eiffel intelligence provides a REST API for performing CRUD operations on
 the following endpoints:
 
-* [Query](query-aggregated-objects.md) - query Eiffel Intelligence for aggregated objects which fulfills a given condition.
-* [Failed Notifications](failed-notifications.md) - query for failed notifications which fulfills a given condition.
-* [Rules](running-rules-on-objects.md) - test rules work as expected.
+* [Query](query-aggregated-objects.md) - Query Eiffel Intelligence for aggregated objects which fulfills a given condition.
+* [Failed Notifications](failed-notifications.md) - Query for failed notifications which fulfills a given condition.
+* [Rules](running-rules-on-objects.md) - Test rules work as expected.
 * [Authentication](authentication.md)
 * [Subscriptions](subscription-API.md) - Manage subscriptions (Create, Read, Update, Delete) via HTTP POST requests.
 * [Get templates](templates.md) - Download template files for Eiffel events, subscriptions and rules.

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
@@ -61,17 +62,20 @@ public class ExtractionHandler {
         this.objectHandler = objectHandler;
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) {
+    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) throws MongoDBConnectionException {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
-            LOGGER.info("Failed with extraction.", e);
+            LOGGER.error("Failed with extraction.", e);
+            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+                throw new MongoDBConnectionException("MongoDB Connection down");
+            }
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
+    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) throws MongoDBConnectionException {
         try {
             JsonNode extractedContent = extractContent(rulesObject, event);
 
@@ -93,6 +97,9 @@ public class ExtractionHandler {
             LOGGER.debug("Did not run history extraction on upstream events.", e);
         } catch (Exception e) {
             LOGGER.error("Failed to run extraction for event {}", event, e);
+            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+                throw new MongoDBConnectionException("MongoDB Connection down");
+            }
         }
     }
 

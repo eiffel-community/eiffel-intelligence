@@ -159,6 +159,14 @@ used. **event.repository.url** takes a full URL to such a repository.
 
 * event.repository.url
 
+A shallow property has been added , which is set to true. With property **event.repository.shallow** set to true,
+the ER query from Eiffel Intelligence will search the event id only in main ER. It will not look in external ER(s)
+for event ids. If this parameter set to false , search for event id will extended to External ER(s) as well.
+
+The event id is of aggregated object. Using this event id , ER query will retrieve upstream/downstream events.
+
+* event.repository.shallow
+
 ## MongoDB
 
 You can set up connections to a single MongoDB instance or a Replica set of multiple MongoDB instances with or

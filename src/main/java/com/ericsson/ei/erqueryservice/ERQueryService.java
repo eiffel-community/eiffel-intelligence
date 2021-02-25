@@ -53,6 +53,10 @@ public class ERQueryService {
     @Value("${event.repository.url}")
     private String eventRepositoryUrl;
 
+    @Getter
+    @Value("${event.repository.shallow}")
+    private String shallowParameter;
+
     public ERQueryService() {
         this.request = new HttpRequest();
     }
@@ -100,7 +104,14 @@ public class ERQueryService {
 
     private void prepareRequest(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) throws IOException, URISyntaxException {
+        String shallow="";
         final SearchParameters searchParameters = getSearchParameters(searchOption);
+        if (shallowParameter == null || shallowParameter.isEmpty()) {
+            shallow ="true";
+        }
+        else {
+            shallow = shallowParameter;
+        }
         request
                .setHttpMethod(HttpMethod.POST)
                .setBaseUrl(eventRepositoryUrl)
@@ -108,6 +119,7 @@ public class ERQueryService {
                .addParam("limit", Integer.toString(limit))
                .addParam("levels", Integer.toString(levels))
                .addParam("tree", Boolean.toString(tree))
+               .addParam("shallow", shallow)
                .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
         String uri = request.getURI().toString();

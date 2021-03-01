@@ -30,6 +30,7 @@
         <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
         <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
         <forkCountTests>1</forkCountTests>
+        <jackson.version>2.12.1</jackson.version>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -179,13 +180,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.10.1</version>
+            <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.10.1</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>

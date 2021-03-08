@@ -54,7 +54,7 @@ public class ERQueryService {
     private String eventRepositoryUrl;
 
     @Getter
-    @Value("${event.repository.shallow}")
+    @Value("${event.repository.shallow:true}")
     private Boolean shallow;
 
     public ERQueryService() {

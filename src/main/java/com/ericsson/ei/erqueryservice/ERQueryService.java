@@ -104,12 +104,12 @@ public class ERQueryService {
 
     private void prepareRequest(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) throws IOException, URISyntaxException {
-        Boolean shallowParamter;
+        Boolean shallowParameter;
         if (shallow == null ) {
-            shallowParamter = true;
+            shallowParameter = true;
         }
         else {
-            shallowParamter = shallow;
+            shallowParameter = shallow;
         }
         final SearchParameters searchParameters = getSearchParameters(searchOption);
         request
@@ -119,7 +119,7 @@ public class ERQueryService {
                .addParam("limit", Integer.toString(limit))
                .addParam("levels", Integer.toString(levels))
                .addParam("tree", Boolean.toString(tree))
-               .addParam("shallow", Boolean.toString(shallowParamter))
+               .addParam("shallow", Boolean.toString(shallowParameter))
                .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
         String uri = request.getURI().toString();

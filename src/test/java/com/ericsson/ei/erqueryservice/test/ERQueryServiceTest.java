@@ -71,6 +71,7 @@ public class ERQueryServiceTest extends Mockito {
     private int limitParam = 85;
     private int levels = 2;
     private boolean isTree = true;
+    private boolean shallow = true;
 
     @Before
     public void setUp() throws Exception {
@@ -101,8 +102,8 @@ public class ERQueryServiceTest extends Mockito {
     }
 
     public String buildUri() {
-        String uri = String.format("%s%s?limit=%s&tree=%s&levels=%s",
-                erQueryService.getEventRepositoryUrl().trim(), eventId, limitParam, isTree, levels);
+        String uri = String.format("%s%s?limit=%s&tree=%s&shallow=%s&levels=%s",
+                erQueryService.getEventRepositoryUrl().trim(), eventId, limitParam, isTree, shallow, levels) ;
         return uri;
     }
 }

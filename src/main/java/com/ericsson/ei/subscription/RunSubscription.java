@@ -48,7 +48,7 @@ public class RunSubscription {
 
     @Autowired
     private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
-    
+
     @Getter
     @Value("${spring.data.mongodb.database}")
     public String dataBaseName;
@@ -120,9 +120,18 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionRepeatFlag.equals("false") && id != null) {
+                    /* Other sites on synchronization
+                     * https://stackoverflow.com/questions/133988/synchronizing-on-string-objects-in-java
+                     * http://illegalargumentexception.blogspot.com/2008/04/java-synchronizing-on-transient-id.html
+                     * https://docs.oracle.com/javase/tutorial/essential/concurrency/syncrgb.html
+                     */
+
+                    // Please see https://www.baeldung.com/java-synchronization-bad-practices chapter 3.2 for the explanation of doing new
+                    final String synchronization_string = new String(subscriptionName);
+
                     // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
-                    synchronized (this) {
+                    synchronized (synchronization_string) {
                         if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                                 subscriptionName, requirementIndex, id)) {
                             LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);

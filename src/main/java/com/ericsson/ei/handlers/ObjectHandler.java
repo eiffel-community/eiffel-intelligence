@@ -88,9 +88,9 @@ public class ObjectHandler {
      *      String representation of event, used to fetch id if not specified
      * @param id
      *      String id is stored together with aggregated object in database
-     * @throws SubscriptionValidationException 
+     * @throws SubscriptionValidationException
      * */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
+    public String insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -105,10 +105,11 @@ public class ObjectHandler {
 
         mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
+        return aggregatedObject;
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
-        insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    public String insertObject(final JsonNode aggregatedObject, final RulesObject rulesObject, final String event, final String id) throws MongoDBConnectionException {
+        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -190,12 +191,12 @@ public class ObjectHandler {
      * sets the time to live value.
      * @return document
      * */
-    public BasicDBObject prepareDocumentForInsertion(String id, String object) {        
+    public BasicDBObject prepareDocumentForInsertion(String id, String object) {
         BasicDBObject document = BasicDBObject.parse(object);
         document.put("_id", id);
         try {
-            if (getTtl() > 0) {               
-                document.put("Time", DateUtils.getDate());                
+            if (getTtl() > 0) {
+                document.put("Time", DateUtils.getDate());
             }
         }
         catch (ParseException e) {
@@ -270,8 +271,11 @@ public class ObjectHandler {
         return ttl;
     }
 
-    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
+    private void postInsertActions(final String aggregatedObject, final RulesObject rulesObject, final String event, final String id) {
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+    }
+
+    public void checkSubscriptions(final String aggregatedObject, final String id) {
         subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 }

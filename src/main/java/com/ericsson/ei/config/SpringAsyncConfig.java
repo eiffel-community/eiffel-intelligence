@@ -40,13 +40,13 @@ public class SpringAsyncConfig implements AsyncConfigurer{
     @Value("${threads.maxPoolSize}")
     private int eventHandlerMaxPoolSize;
 
-    @Value("${subscription-handler.threads.corePoolSize:50}")
+    @Value("${subscription-handler.threads.corePoolSize:1}")
     private int subscriptionHandlerCorePoolSize;
 
-    @Value("${subscription-handler.threads.queueCapacity:5000}")
+    @Value("${subscription-handler.threads.queueCapacity:5}")
     private int subscriptionHandlerQueueCapacity;
 
-    @Value("${subscription-handler.threads.maxPoolSize:50}")
+    @Value("${subscription-handler.threads.maxPoolSize:1}")
     private int subscriptionHandlerMaxPoolSize;
 
 

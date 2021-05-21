@@ -108,7 +108,7 @@ public class ObjectHandler {
         return aggregatedObject;
     }
 
-    public String insertObject(final JsonNode aggregatedObject, final RulesObject rulesObject, final String event, final String id) throws MongoDBConnectionException {
+    public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
@@ -271,7 +271,7 @@ public class ObjectHandler {
         return ttl;
     }
 
-    private void postInsertActions(final String aggregatedObject, final RulesObject rulesObject, final String event, final String id) {
+    private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
     }
 

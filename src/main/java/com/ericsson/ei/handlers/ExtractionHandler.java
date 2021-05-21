@@ -84,17 +84,17 @@ public class ExtractionHandler {
                         + "\nwith extracted content:\n{}"
                         + "\nfrom event:\n{}",
                         aggregatedDbObject.toString(), extractedContent.toString(), event);
-                 String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-                 mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
+                String objectId = objectHandler.extractObjectId(aggregatedDbObject);
+                mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
                 processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
             } else {
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
-                 mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
             }
             objectHandler.checkSubscriptions(mergedContent, mergeId);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
             if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");

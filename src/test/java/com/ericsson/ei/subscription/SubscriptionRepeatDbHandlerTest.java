@@ -18,8 +18,12 @@ package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +55,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
     private static String subRepeatFlagDataBaseName = "SubscriptionRepeatDbHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
+    Map<String, List<String>> subscriptionsCache = new HashedMap<>();
 
     @PostConstruct
     public void init() throws Exception {
@@ -69,11 +74,12 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         String subscriptionId = "12345";
         int requirementId = 0;
+        
         String aggrObjId = "99999";
 
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
                 .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
@@ -105,9 +111,9 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2, subscriptionsCache);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
                 .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
@@ -141,14 +147,14 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
         try {
-            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
         }
 
         try {
-            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2, subscriptionsCache);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();

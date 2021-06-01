@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,7 @@ public class ObjectHandler {
      *      String id is stored together with aggregated object in database
      * @throws SubscriptionValidationException 
      * */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
+    public String insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -105,10 +106,11 @@ public class ObjectHandler {
 
         mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
+        return aggregatedObject;
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
-        insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
+        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -136,7 +138,11 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
+        long start = System.currentTimeMillis();
         mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
+        long end = System.currentTimeMillis();
+        long sec = end - start;
+        LOGGER.info("#### Response time for to update aggregation object with id : {} : {} milliseconds", id, sec);
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 
@@ -272,6 +278,10 @@ public class ObjectHandler {
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+        //subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+    }
+    
+    public void checkAggregations(String aggregatedObject, String id) {
+    	subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id );
     }
 }

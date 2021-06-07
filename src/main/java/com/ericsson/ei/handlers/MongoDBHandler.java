@@ -15,6 +15,7 @@ package com.ericsson.ei.handlers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,8 @@ public class MongoDBHandler {
     @Setter
     @JsonIgnore
     private MongoClient mongoClient;
+    
+    private final HashMap<String, MongoCollection<Document>> collectionCache = new HashMap<>(); // New code
 
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
@@ -107,7 +110,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 collection.insertOne(dbObjectInput);
-                LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
+                LOGGER.info("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
             }
             long stop = System.currentTimeMillis();
             LOGGER.info("#### Response time to insert the document: {} ", stop-start);
@@ -117,6 +120,36 @@ public class MongoDBHandler {
                     collectionName, dataBaseName, e.getMessage());
         }
     }
+    
+    /**
+     * This method used for the insert the Document object into collection
+     * 
+     * @param dataBaseName
+     * @param collectionName
+     * @param document - Document object to insert
+     * @throws MongoWriteException
+     */
+    public void inserDocumentObject(String dataBaseName, String collectionName, Document document) throws MongoWriteException {
+       LOGGER.info("=======EventObjectMap======= Inserting the document details: "+ document.toJson());    	
+    	try {
+            long start = System.currentTimeMillis();        	
+        	MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);           
+            
+        	        	
+            if (collection != null) {
+                collection.insertOne(document);
+                LOGGER.info("Object: {}\n was inserted successfully in collection: {} and database {}.", document, collectionName, dataBaseName);
+            }
+            long stop = System.currentTimeMillis();
+            LOGGER.info("#### Response time to insert the document: {} ", stop-start);
+            
+        } catch (Exception e) {
+            LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", document,
+            		collectionName, dataBaseName, e.getMessage());
+        }
+    }
+
+
 
     /**
      * This method is used for the retrieve the all documents from the collection
@@ -291,56 +324,60 @@ public class MongoDBHandler {
 		}
 	}
 
-    private MongoCollection<Document> getMongoCollection(String dataBaseName, String collectionName) {
+    private MongoCollection<Document> getMongoCollection(final String dataBaseName, final String collectionName) {
         if (mongoClient == null)
-            return null;
+            return null;  
+
+        MongoCollection<Document> collection = null;
         MongoDatabase db;
-        List<String> collectionList;
         try {
             db = mongoClient.getDatabase(dataBaseName);
-            collectionList = db.listCollectionNames().into(new ArrayList<String>());
+            collection = db.getCollection(collectionName);
         }
-        catch (MongoCommandException e) {
+        catch (final IllegalArgumentException e) {
+            LOGGER.debug("Could not get collection as the name was {} Illegal: {}", collectionName, e);
+            closeMongoDbConecction();
+            throw e;
+        }
+        catch (final MongoCommandException e) {
             LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
             closeMongoDbConecction();
             return null;
         }
-        catch (MongoInterruptedException e) {
+        catch (final MongoInterruptedException e) {
             LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
             closeMongoDbConecction();
             return null;
         }
-        catch (MongoSocketReadException e) {
+        catch (final MongoSocketReadException e) {
             LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
             closeMongoDbConecction();
             return null;
         }
-        
-        catch (IllegalStateException e) {
+        catch (final IllegalStateException e) {
             LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
             closeMongoDbConecction();
             return null;
         }
-        
-        if (!collectionList.contains(collectionName)) {
+        if (collection == null) {
             LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
             try {
                 db.createCollection(collectionName);
-            } catch (MongoCommandException e) {
-                String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
+            } catch (final MongoCommandException e) {
+                final String message = "collection '" + dataBaseName + "." + collectionName + "' already exists";
                 if (e.getMessage().contains(message)) {
                     LOGGER.warn("A {}.", message, e);
                 } else {
                     throw e;
                 }
             }
-            LOGGER.debug("done....");
-        }
-        MongoCollection<Document> collection = db.getCollection(collectionName);
+            collection = db.getCollection(collectionName);
+            LOGGER.debug("done....");            
+        }        
         return collection;
-    }
-
-    private void closeMongoDbConecction() {
+    }	
+	
+       private void closeMongoDbConecction() {
         if (mongoClient != null) {
             mongoClient.close();
         }
@@ -409,13 +446,16 @@ public class MongoDBHandler {
      * @return 
      */
     public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
-        try {
+    	LOGGER.info("=======EventObjectMap======= updating the document with eventid: "+ eventId);
+    	try {
         	long start = System.currentTimeMillis();
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
-                final Document dbObjectInput = Document.parse(condition);
+                final Document dbObjectInput = Document.parse(condition);  
+                
                 UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
-                LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
+                updateMany = collection.updateOne(dbObjectInput, Updates.set("Time", DateUtils.getDate()));
+                LOGGER.info("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 long stop = System.currentTimeMillis();
                 LOGGER.info("#### Response time to update and set the document: {} ", stop-start);
                 return updateMany.wasAcknowledged();

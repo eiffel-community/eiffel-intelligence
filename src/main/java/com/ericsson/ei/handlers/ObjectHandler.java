@@ -16,7 +16,6 @@
 */
 package com.ericsson.ei.handlers;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.MongoDBConnectionException;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -76,6 +76,8 @@ public class ObjectHandler {
     @Getter
     @Value("${aggregated.collection.ttlValue}")
     private String ttlValue;
+    
+    private boolean isTTLCreated;
 
 
     /**
@@ -100,9 +102,15 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}", document.toString());
 
-        if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
-        }
+		try {
+			if (getTtl() > 0 && !isTTLCreated) {
+				mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+				isTTLCreated = true;
+			}
+		} catch (Exception e) {
+			LOGGER.error("Failed to create an index for {}", collectionName);
+			isTTLCreated = false;
+		}
 
         mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
@@ -199,7 +207,7 @@ public class ObjectHandler {
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {        
         BasicDBObject document = BasicDBObject.parse(object);
         document.put("_id", id);
-        try {
+       try {
             if (getTtl() > 0) {               
                 document.put("Time", DateUtils.getDate());                
             }
@@ -277,8 +285,7 @@ public class ObjectHandler {
     }
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
-        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-        //subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
     }
     
     public void checkAggregations(String aggregatedObject, String id) {

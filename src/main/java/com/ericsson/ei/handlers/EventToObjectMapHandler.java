@@ -19,6 +19,7 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,12 @@ public class EventToObjectMapHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventToObjectMapHandler.class);
 
     @Value("${event_object_map.collection.name}") private String collectionName;
+        
     @Value("${spring.data.mongodb.database}") private String databaseName;
 
     private final String listPropertyName = "objects";
+    
+    private boolean isTTLCreated;
 
     @Autowired
     MongoDBHandler mongodbhandler;
@@ -87,10 +91,10 @@ public class EventToObjectMapHandler {
      * @param event
      * @param objectId aggregated event object Id
      */
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId) {
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
         String condition = "{\"_id\" : \"" + objectId + "\"}";
-        LOGGER.debug("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
+        LOGGER.info("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
         boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName, condition);
         try {
         	if (!docExists) {
@@ -99,14 +103,24 @@ public class EventToObjectMapHandler {
         		final ObjectMapper mapper = new ObjectMapper();
     			JsonNode entry = new ObjectMapper().readValue(condition, JsonNode.class);
         		ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
-        		((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
+        		((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));        		
+        		//((ObjectNode) entry).set("Time", new ObjectMapper().readValue("\"" + Instant.now() + "\"", JsonNode.class));
                 final String mapStr = entry.toString(); 
-            	LOGGER.debug("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);	
-            	mongodbhandler.insertDocument(databaseName, collectionName, mapStr );
+            	LOGGER.info("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);	
+                
+                Document document = Document.parse(mapStr);
+                document.append("Time", DateUtils.getDate());
+            	
+            	if(ttlValue > 0 && !isTTLCreated) {                 
+            		mongodbhandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+            		isTTLCreated = true;
+            	}
+            	mongodbhandler.inserDocumentObject(databaseName, collectionName, document);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
             }
         } catch (Exception e) {
+        	isTTLCreated = false;
             LOGGER.error("Failed to update event object list.", e);
         }
     }
@@ -152,7 +166,7 @@ public class EventToObjectMapHandler {
         LOGGER.info("The JSON condition for deleting aggregated object is : {}", condition);
         return mongodbhandler.dropDocument(databaseName, collectionName, condition);
     }
-
+   
     public boolean isEventInEventObjectMap(String eventId) {
         String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
         List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);

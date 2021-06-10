@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoInterruptedException;
@@ -66,8 +67,6 @@ public class MongoDBHandler {
     @JsonIgnore
     private MongoClient mongoClient;
     
-    private final HashMap<String, MongoCollection<Document>> collectionCache = new HashMap<>(); // New code
-
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
     @PostConstruct
@@ -322,42 +321,45 @@ public class MongoDBHandler {
 		} catch (Exception e) {
 			throw new MongoDBConnectionException("MongoDB Connection down");
 		}
-	}
-
-    private MongoCollection<Document> getMongoCollection(final String dataBaseName, final String collectionName) {
-        if (mongoClient == null)
-            return null;  
+	}	
+  
+    private MongoCollection<Document> getMongoCollection(final String dataBaseName, final String collectionName) throws MongoClientException{
+    	
+    	if (mongoClient == null) {
+            throw new MongoClientException("Failed to connect MongoDB");
+        }
 
         MongoCollection<Document> collection = null;
+        String errorMessage = null;
         MongoDatabase db;
         try {
             db = mongoClient.getDatabase(dataBaseName);
             collection = db.getCollection(collectionName);
-        }
+        }        
         catch (final IllegalArgumentException e) {
-            LOGGER.debug("Could not get collection as the name was {} Illegal: {}", collectionName, e);
-            closeMongoDbConecction();
-            throw e;
+        	errorMessage = String.format("IllegalArgumentException, Collection name was {} Illegal: %s",
+                    e.getMessage());
+            throw new MongoClientException(errorMessage, e);
         }
         catch (final MongoCommandException e) {
-            LOGGER.error("MongoCommandException, Something went wrong with MongoDb connection. Error: " + e.getErrorMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
-            return null;
+        	errorMessage = String.format("MongoCommandException, Something went wrong with MongoDb connection, Reason: %s",
+                    e.getMessage()); 
+            throw new MongoClientException(errorMessage, e);
         }
         catch (final MongoInterruptedException e) {
-            LOGGER.error(" MongoInterruptedException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
-            return null;
+        	errorMessage = String.format("MongoInterruptedException, MongoDB shutdown or interrupted. Reason: %s",
+                    e.getMessage());             
+            throw new MongoClientException(errorMessage, e);
         }
         catch (final MongoSocketReadException e) {
-            LOGGER.error("MongoSocketReadException, MongoDB shutdown or interrupted. Error: " + e.getMessage() + "\nStacktrace\n" + e);
-            closeMongoDbConecction();
-            return null;
+        	errorMessage = String.format("MongoSocketReadException, MongoDB shutdown or interrupted, Reason: %s",
+                    e.getMessage());            
+            throw new MongoClientException(errorMessage, e);
         }
         catch (final IllegalStateException e) {
-            LOGGER.error("IllegalStateException, MongoDB state not good. Error: " + e.getMessage());
-            closeMongoDbConecction();
-            return null;
+        	errorMessage = String.format("IllegalStateException, MongoDB state not good. Reason: %s",
+                    e.getMessage());             
+            throw new MongoClientException(errorMessage, e);
         }
         if (collection == null) {
             LOGGER.debug("The requested database({}) / collection({}) not available in mongodb, Creating ........", dataBaseName, collectionName);
@@ -377,13 +379,6 @@ public class MongoDBHandler {
         return collection;
     }	
 	
-       private void closeMongoDbConecction() {
-        if (mongoClient != null) {
-            mongoClient.close();
-        }
-        mongoClient = null;
-    }
-    
     /**
      * This method is used to drop a collection.
      *

@@ -46,6 +46,7 @@ import lombok.Setter;
 public class ObjectHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandler.class);
+    private static final int MAX_RETRY_COUNT = 1000;
 
     @Getter
     @Setter
@@ -239,11 +240,21 @@ public class ObjectHandler {
      */
     public String lockDocument(String id) {
         boolean documentLocked = true;
+        int retryCounter = 0;
         String conditionId = "{\"_id\" : \"" + id + "\"}";
         String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();
-        while (documentLocked == true) {
+        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName,
+        		collectionName,
+                conditionId);
+
+        if(documentExistsCheck.isEmpty()) {
+        	 LOGGER.error("Could not find document with id: {}", id);
+             return null;
+        }
+        
+        while (documentLocked == true && retryCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
@@ -259,6 +270,8 @@ public class ObjectHandler {
                 LOGGER.debug("Waiting by {} thread", Thread.currentThread().getId());
             } catch (Exception e) {
                 LOGGER.error("Failed to parse JSON.", e);
+            } finally {
+                retryCounter++;
             }
         }
         return null;

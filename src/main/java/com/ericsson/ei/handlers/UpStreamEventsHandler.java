@@ -93,6 +93,11 @@ public class UpStreamEventsHandler {
         }
 
         final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
+        if(upstreamLinkObjects == null) {
+        	LOGGER.warn("Expected upstreamLinkObjects are null");
+        	return;
+        }
+
         if (!upstreamLinkObjects.isArray()) {
             LOGGER.warn("Expected upstreamLinkObjects to be an array but is: {}", upstreamLinkObjects.getNodeType());
         }

@@ -59,40 +59,6 @@ public class ERQueryService {
         this.request = request;
     }
 
-    /**
-     * This method only extracts the event information from ER2.0 based on the
-     * eventID.
-     *
-     * @param eventId
-     *            the id of the event.
-     * @return ResponseEntity
-     */
-    public ResponseEntity getEventDataById(String eventId) {
-        String erUrl = null;
-
-        try {
-            if(StringUtils.isNotBlank(erBaseUrl)) {
-                request
-                    .setHttpMethod(HttpMethod.GET)
-                    .setBaseUrl(erBaseUrl)
-                    .setEndpoint("{id}")
-                    .addParam("id", eventId);
-
-                erUrl= request.getURI().toString();
-                LOGGER.debug("The URL to ER is: {}", erUrl);
-                ResponseEntity response = request.performRequest();
-                LOGGER.trace("The response is : {}", response.toString());
-            } else {
-                LOGGER.info("The URL to ER is not provided");
-            }
-        } catch (MalformedURLException e) {
-            LOGGER.error("Error while building the ER url. Stacktrace: {}", ExceptionUtils.getStackTrace(e));
-        } catch (Exception e) {
-            LOGGER.error("Error occurred while executing REST GET to: {} for {}", erUrl, eventId, e);
-        }
-
-        return null;
-    }
 
     /**
      * This method is used to fetch only the upstream or downstream or both
@@ -122,7 +88,8 @@ public class ERQueryService {
             if(StringUtils.isNotBlank(erBaseUrl)) {
                 // Request Body parameters
                 final SearchParameters searchParameters = getSearchParameters(searchOption);
-                request
+                HttpRequest uniqRequest = new HttpRequest();
+                uniqRequest
                         .setHttpMethod(HttpMethod.POST)
                         .setBaseUrl(erBaseUrl)
                         .setEndpoint(eventId)
@@ -131,10 +98,10 @@ public class ERQueryService {
                         .addParam("tree", Boolean.toString(tree))
                         .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
-                uri = request.getURI().toString();
+                uri = uniqRequest.getURI().toString();
                 LOGGER.debug("The URL to ER is: {}", uri);
 
-                return request.performRequest();
+                return uniqRequest.performRequest();
             } else {
                 LOGGER.info("The URL to ER is not provided");
             }

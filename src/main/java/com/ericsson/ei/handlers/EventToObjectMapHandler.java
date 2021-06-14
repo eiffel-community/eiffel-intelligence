@@ -95,34 +95,35 @@ public class EventToObjectMapHandler {
         String eventId = getEventId(rulesObject, event);
         String condition = "{\"_id\" : \"" + objectId + "\"}";
         LOGGER.info("Checking document exists in the collection with condition : {}\n EventId : {}", condition, eventId);
-        boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName, condition);
-        try {
-        	if (!docExists) {
-        		ArrayList<String> list =  new ArrayList<String>();
-        		list.add(eventId);
-        		final ObjectMapper mapper = new ObjectMapper();
-    			JsonNode entry = new ObjectMapper().readValue(condition, JsonNode.class);
-        		ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
-        		((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));        		
-        		//((ObjectNode) entry).set("Time", new ObjectMapper().readValue("\"" + Instant.now() + "\"", JsonNode.class));
-                final String mapStr = entry.toString(); 
-            	LOGGER.info("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);	
-                
-                Document document = Document.parse(mapStr);
-                document.append("Time", DateUtils.getDate());
-            	
-            	if(ttlValue > 0 && !isTTLCreated) {                 
-            		mongodbhandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
-            		isTTLCreated = true;
-            	}
-            	mongodbhandler.inserDocumentObject(databaseName, collectionName, document);
-            } else {
-                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
+        final String synchronization_string = new String(objectId);
+        synchronized (synchronization_string) {
+            boolean docExists = mongodbhandler.checkDocumentExists(databaseName, collectionName, condition);
+            try {
+                if (!docExists) {
+                    ArrayList<String> list = new ArrayList<String>();
+                    list.add(eventId);
+                    final ObjectMapper mapper = new ObjectMapper();
+                    JsonNode entry = new ObjectMapper().readValue(condition, JsonNode.class);
+                    ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
+                    ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
+                    final String mapStr = entry.toString();
+                    LOGGER.info("MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}", mapStr, databaseName, collectionName);
+                    Document document = Document.parse(mapStr);
+                    document.append("Time", DateUtils.getDate());
+                    if (ttlValue > 0 && !isTTLCreated) {
+                        mongodbhandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+                        isTTLCreated = true;
+                    }
+                    mongodbhandler.inserDocumentObject(databaseName, collectionName, document);
+                } else {
+                    mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
+                }
+            } catch (Exception e) {
+                isTTLCreated = false;
+                LOGGER.error("Failed to update event object list.", e);
             }
-        } catch (Exception e) {
-        	isTTLCreated = false;
-            LOGGER.error("Failed to update event object list.", e);
         }
+
     }
     
 

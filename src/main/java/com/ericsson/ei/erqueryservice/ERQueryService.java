@@ -43,19 +43,10 @@ import lombok.Getter;
 public class ERQueryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ERQueryService.class);
 
-    private HttpRequest request;
-
     @Getter
     @Value("${er.url}")
     private String erBaseUrl;
 
-    public ERQueryService() {
-        this.request = new HttpRequest();
-    }
-
-    public void setHttpRequest(HttpRequest request) {
-        this.request = request;
-    }
 
 
     /**
@@ -79,14 +70,41 @@ public class ERQueryService {
      * @return ResponseEntity
      */
     public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
-            int levels, boolean tree) {
+                                                 int levels, boolean tree) {
+        // Due to multiple threads accessing this method we need to have a new http request for each thread
+        return getEventStreamDataById(eventId, searchOption, limit, levels, tree, new HttpRequest());
+    }
+
+    /**
+     * This method is used to fetch only the upstream or downstream or both
+     * event information from ER2.0 based on the eventID and searchOption
+     * conditions.
+     *
+     * @param eventId
+     *            the id of the event.
+     * @param searchOption
+     *            the SearchOption to indicate whether to search up, down or
+     *            both ways from the eventId.
+     * @param limit
+     *            sets the limit of how many events up and/or down stream from
+     *            the eventId to include in the result.
+     * @param levels
+     *            sets the limit of how many levels up and/or down stream from
+     *            the eventId to include in the result.
+     * @param tree
+     *            whether or not to retain the tree structure in the result.
+     * @param uniqRequest
+     *            the HttpRequest to use for contacting the ER (Used by tests)
+     * @return ResponseEntity
+     */
+    public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree, final HttpRequest uniqRequest) {
 
         String uri = null;
         try {
             if(StringUtils.isNotBlank(erBaseUrl)) {
                 // Request Body parameters
                 final SearchParameters searchParameters = getSearchParameters(searchOption);
-                HttpRequest uniqRequest = new HttpRequest();
                 uniqRequest
                         .setHttpMethod(HttpMethod.POST)
                         .setBaseUrl(erBaseUrl)

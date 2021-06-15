@@ -17,10 +17,6 @@
 package com.ericsson.ei.subscription;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +52,6 @@ public class RunSubscription {
     @Value("${spring.data.mongodb.database}")
     public String dataBaseName;
     
-    Map<String, List<String>> subscriptionsCache = new HashedMap<>();
 
     /**
      * This method matches every condition specified in the subscription Object and
@@ -90,7 +85,7 @@ public class RunSubscription {
            // boolean checkAggregation = subscriptionRepeatDbHandler
             //        .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id);
             
-            if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, true, subscriptionsCache) ) {
+            if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, true) ) {
                 LOGGER.debug(
                         "Subscription has already matched with AggregatedObject Id: {}\n"
                                 + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
@@ -135,10 +130,10 @@ public class RunSubscription {
                 	synchronized (synchronization_string) {	
 					
                         if (!subscriptionRepeatDbHandler
-                                .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, false, subscriptionsCache)) {
+                                .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, false)) {
                             LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);
                             subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
-                                    requirementIndex, id, subscriptionsCache);
+                                    requirementIndex, id);
                         } else {
                         	conditionFulfilled = false;
                         }

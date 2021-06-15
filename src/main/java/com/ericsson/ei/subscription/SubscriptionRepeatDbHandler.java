@@ -16,6 +16,17 @@
 */
 package com.ericsson.ei.subscription;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.cache.SubscriptionCacheHandler;
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,18 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.map.HashedMap;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -66,12 +65,12 @@ public class SubscriptionRepeatDbHandler {
      * @param aggrObjId
      */
     public void addMatchedAggrObjToSubscriptionId(String subscriptionId,
-            int requirementId, String aggrObjId, Map<String, List<String>> subscriptionsCache) {
+            int requirementId, String aggrObjId) {
         LOGGER.debug(
                 "Adding/Updating matched AggrObjId: {} to SubscriptionsId: {} aggrId matched list",
                 aggrObjId, subscriptionId);
 
-        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId, true, subscriptionsCache)) {
+        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId, true)) {
             LOGGER.debug(
                     "Subscription: {} and AggrObjId, {} has already been matched."
                             + "No need to register the subscription match.",
@@ -89,11 +88,12 @@ public class SubscriptionRepeatDbHandler {
         }
     }
     public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
-            String subscriptionId, int requirementId, String aggrObjId, boolean useCache, Map<String, List<String>> subscriptionsCache) {
+            String subscriptionId, int requirementId, String aggrObjId, boolean useCache) {
+        
         List<String> objArray = null;        
-        if (useCache && subscriptionsCache.containsKey(subscriptionId)) {
+        if (useCache && SubscriptionCacheHandler.subscriptionsCache.containsKey(subscriptionId)) {
         	LOGGER.info("In Cache subscription id: " + subscriptionId);
-            objArray = subscriptionsCache.get(subscriptionId);
+            objArray = SubscriptionCacheHandler.subscriptionsCache.get(subscriptionId);
         } else {
             LOGGER.debug(
                     "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
@@ -105,7 +105,7 @@ public class SubscriptionRepeatDbHandler {
             long end = System.currentTimeMillis();        
             long elapsedTime = end - start;
             LOGGER.debug("##### Response time to find the subscripton id :" + elapsedTime);
-            subscriptionsCache.put(subscriptionId, objArray);
+            SubscriptionCacheHandler.subscriptionsCache.put(subscriptionId, objArray);
         }
         if (objArray != null && !objArray.isEmpty()) {
 

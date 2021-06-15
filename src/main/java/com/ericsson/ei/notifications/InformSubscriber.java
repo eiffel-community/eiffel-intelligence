@@ -168,9 +168,9 @@ public class InformSubscriber {
         try {
             mongoDBHandler.insertDocument(missedNotificationDataBaseName,
                     missedNotificationCollectionName, missedNotification);
-            LOGGER.debug("Notification saved in the database");
+            LOGGER.debug("Missed notification saved in database: {} ", missedNotificationCollectionName);
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database.", e);
+            LOGGER.debug("Failed to insert the missed notification into database.", e);
         }
     }
 

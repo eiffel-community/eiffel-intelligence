@@ -16,7 +16,6 @@
  */
 package com.ericsson.ei.handlers;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,26 +80,22 @@ public class ExtractionHandler {
             String mergedContent = null;
             String aggregatedObjectId = null;
             if(aggregatedDbObject != null) {
-                LOGGER.info("ExtractionHandler: Merging Aggregated Object:\n{}"
+                LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
                         + "\nwith extracted content:\n{}"
                         + "\nfrom event:\n{}",
                         aggregatedDbObject.toString(), extractedContent.toString(), event);
                 aggregatedObjectId = objectHandler.extractObjectId(aggregatedDbObject);
                 mergedContent = mergeHandler.mergeObject(aggregatedObjectId, mergeId, rulesObject, event, extractedContent);
-                LOGGER.info("Merged Content when updating: {} for id: {}", mergedContent, mergeId);
                 mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, aggregatedObjectId, mergeId);                
             } else {
-            	LOGGER.info("***** Extraction starts for the Id: " + mergeId);
+            	LOGGER.debug("***** Extraction starts for the Id: " + mergeId);
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
                 mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
-                LOGGER.info("Merged Content when inserting before history rules: {} for id: {}", mergedContent, mergeId);
                 aggregatedObjectId = mergeId;
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
-                //mergedContent = mergeHandler.getAggregatedObject(mergeId, true);                
                 mergedContent = objectHandler.findObjectById(mergeId);
-                LOGGER.info("Merged Content when inserting after history rules: {} for id: {}", mergedContent, mergeId);
-                LOGGER.info("**** Extraction ends for the Id: " + mergeId);               
+                LOGGER.debug("**** Extraction ends for the Id: " + mergeId);               
             }
             objectHandler.checkAggregations(mergedContent, aggregatedObjectId);
             

@@ -147,11 +147,7 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         String condition = "{\"_id\" : \"" + id + "\"}";
         String documentStr = document.toString();
-        long start = System.currentTimeMillis();
         mongoDbHandler.updateDocument(databaseName, collectionName, condition, documentStr);
-        long end = System.currentTimeMillis();
-        long sec = end - start;
-        LOGGER.info("#### Response time for to update aggregation object with id : {} : {} milliseconds", id, sec);
         postInsertActions(aggregatedObject, rulesObject, event, id);
     }
 

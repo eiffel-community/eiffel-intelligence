@@ -75,17 +75,13 @@ public class SubscriptionHandler {
     @Async("subscriptionHandlerExecutor")
     public void checkSubscriptionForObject(final String aggregatedObject,
             final String id) {    
-    	LOGGER.info("**** Thread name {} starts for {} **** ", Thread.currentThread().getName(), id);
-    	long start = System.currentTimeMillis();
+    	LOGGER.debug("**** Thread name: {} starts for {} **** ", Thread.currentThread().getName(), id);
         final List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 subscriptionDataBaseName, subscriptionCollectionName);
-        long end = System.currentTimeMillis();
-        long elapsedTime = end - start;
-        LOGGER.info("##### Response time to getAllDocuemnts in subscription handler: " + elapsedTime);       
         subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
                         subscription, id));
-        LOGGER.info("**** Thread name {} ends for {} **** ", Thread.currentThread().getName(), id);
+        LOGGER.debug("**** Thread name: {} ends for {} **** ", Thread.currentThread().getName(), id);
     }
 
     /**
@@ -103,7 +99,7 @@ public class SubscriptionHandler {
             final JsonNode subscriptionJson = new ObjectMapper().readTree(
                     subscriptionData);
             LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("***** Aggregated Object : " + aggregatedObject +" for the id: " + id);
+            LOGGER.debug("Aggregated Object : " + aggregatedObject +" for the id: " + id);
             final ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                     "requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
@@ -117,7 +113,7 @@ public class SubscriptionHandler {
                         "The subscription conditions match for the aggregatedObject");
                 informSubscriber.informSubscriber(aggregatedObject,
                         subscriptionJson);
-                LOGGER.info("Subscription with name ** {} ** has been informed for the event id: {}", subscriptionName, id);
+                LOGGER.info("Subscription with name ** {} ** has been processed for the event id: {}", subscriptionName, id);
             } else {
             	LOGGER.info("Subscription with name ** {} ** has not met with the conditions for id: {}", subscriptionName, id);
             }

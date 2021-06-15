@@ -82,8 +82,6 @@ public class RunSubscription {
                 LOGGER.debug(
                         "ID has not been passed for given aggregated object. The subscription will be triggered again.");
             }
-           // boolean checkAggregation = subscriptionRepeatDbHandler
-            //        .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id);
             
             if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, true) ) {
                 LOGGER.debug(
@@ -122,13 +120,12 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionRepeatFlag.equals("false") && id != null) {
-                	
+
                 	final String synchronization_string = new String(subscriptionName);
                     // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
-                    //synchronized (this) {
                 	synchronized (synchronization_string) {	
-					
+
                         if (!subscriptionRepeatDbHandler
                                 .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, false)) {
                             LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);

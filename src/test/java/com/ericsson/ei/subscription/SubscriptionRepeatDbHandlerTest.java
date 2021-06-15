@@ -79,7 +79,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
                 .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery).get(0).toString());
@@ -111,9 +111,9 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         String subscriptionQuery2 = "{\"subscriptionId\" : \"" + subscriptionId2 + "\"}";
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
-        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2, subscriptionsCache);
+        subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
 
         BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
                 .find(subRepeatFlagDataBaseName, subRepeatFlagCollectionName, subscriptionQuery2).get(0).toString());
@@ -147,14 +147,14 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
 
         try {
-            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId, subscriptionsCache);
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
         }
 
         try {
-            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2, subscriptionsCache);
+            subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();

@@ -87,24 +87,21 @@ public class SubscriptionRepeatDbHandler {
             insertNewMatchedAggregationToDatabase(subscriptionId, requirementId, aggrObjId);
         }
     }
+
     public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
             String subscriptionId, int requirementId, String aggrObjId, boolean useCache) {
         
         List<String> objArray = null;        
         if (useCache && SubscriptionCacheHandler.subscriptionsCache.containsKey(subscriptionId)) {
-        	LOGGER.info("In Cache subscription id: " + subscriptionId);
             objArray = SubscriptionCacheHandler.subscriptionsCache.get(subscriptionId);
         } else {
             LOGGER.debug(
                     "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
                     aggrObjId, subscriptionId);
-            long start = System.currentTimeMillis();                  
             String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
             objArray = mongoDbHandler.find(dataBaseName, collectionName,
                     subscriptionQuery);   
-            long end = System.currentTimeMillis();        
-            long elapsedTime = end - start;
-            LOGGER.debug("##### Response time to find the subscripton id :" + elapsedTime);
+
             SubscriptionCacheHandler.subscriptionsCache.put(subscriptionId, objArray);
         }
         if (objArray != null && !objArray.isEmpty()) {

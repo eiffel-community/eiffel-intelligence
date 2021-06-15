@@ -51,8 +51,9 @@ public class SubscriptionCacheHandler {
         // subscriptionsCache.clear();
         //This statement is used to not cause concurrent modification exception to the map.
         LOGGER.debug("Cleaning the subscription cache at : {}", DateUtils.getDate());
-        LOGGER.debug("Size of subscription cache is : {}", subscriptionsCache.size() );
+        LOGGER.info("Size of subscription cache is : {}", subscriptionsCache.size() );
         subscriptionsCache = new HashedMap<>();
+        LOGGER.info("Size of subscription cache after cleaning is : {}", subscriptionsCache.size() );
     }
 
 }

@@ -55,7 +55,7 @@ public class SubscriptionCacheHandler {
         LOGGER.debug("Cleaning the subscription cache at : {}", DateUtils.getDate());
         LOGGER.info("Size of subscription cache is : {}", subscriptionsCache.size() );
         subscriptionsCache = new HashedMap<>();
-        LOGGER.info("Size of subscription cache after cleaning is : {}", subscriptionsCache.size() );
+        LOGGER.info("Size of subscription cache after cleaning is: {}", subscriptionsCache.size() );
     }
 
 }

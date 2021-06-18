@@ -115,7 +115,7 @@ public class EventToObjectMapHandler {
             		mongodbhandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
             		isTTLCreated = true;
             	}
-            	mongodbhandler.inserDocumentObject(databaseName, collectionName, document);
+            	mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition, eventId);
             }

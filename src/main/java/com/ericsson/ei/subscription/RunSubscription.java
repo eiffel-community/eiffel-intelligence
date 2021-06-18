@@ -140,7 +140,7 @@ public class RunSubscription {
             requirementIndex++;
         }
 
-        LOGGER.info("The final value of conditionFulfilled is : {} for id: {} and Subscription: {}", conditionFulfilled, id, subscriptionName);
+        LOGGER.info("The final value of conditionFulfilled is : {} for aggregation object id: {} and Subscription: {}", conditionFulfilled, id, subscriptionName);
 
         return conditionFulfilled;
     }

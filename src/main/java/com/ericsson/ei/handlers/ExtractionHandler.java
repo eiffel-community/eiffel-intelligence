@@ -88,14 +88,14 @@ public class ExtractionHandler {
                 mergedContent = mergeHandler.mergeObject(aggregatedObjectId, mergeId, rulesObject, event, extractedContent);
                 mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, aggregatedObjectId, mergeId);                
             } else {
-            	LOGGER.debug("***** Extraction starts for the Id: " + mergeId);
+            	LOGGER.trace("***** Extraction starts for the aggregation Id: " + mergeId);
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
                 mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
                 aggregatedObjectId = mergeId;
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
                 mergedContent = objectHandler.findObjectById(mergeId);
-                LOGGER.debug("**** Extraction ends for the Id: " + mergeId);               
+                LOGGER.trace("**** Extraction ends for the aggregation Id: " + mergeId);               
             }
             objectHandler.checkAggregations(mergedContent, aggregatedObjectId);
             

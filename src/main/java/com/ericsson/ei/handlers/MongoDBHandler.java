@@ -102,11 +102,14 @@ public class MongoDBHandler {
     public void insertDocument(String dataBaseName, String collectionName, String input) throws MongoWriteException {
 
         try {
+            long start = System.currentTimeMillis();
         	MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);           
             
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 collection.insertOne(dbObjectInput);
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to insert the document in ms: {} ", stop-start);
                 LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", input, collectionName, dataBaseName);
             }
             
@@ -117,19 +120,22 @@ public class MongoDBHandler {
     }
     
     /**
-     * This method used for the insert the Document object into collection
+     * This method is used to insert the Document object into collection
      * 
      * @param dataBaseName
      * @param collectionName
      * @param document - Document object to insert
      * @throws MongoWriteException
      */
-    public void inserDocumentObject(String dataBaseName, String collectionName, Document document) throws MongoWriteException {
+    public void insertDocumentObject(String dataBaseName, String collectionName, Document document) throws MongoWriteException {
     	try {
         	MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);           
 
             if (collection != null) {
+            	long start = System.currentTimeMillis();
                 collection.insertOne(document);
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to insert the document in ms: {} ", stop-start);
                 LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", document, collectionName, dataBaseName);
             }
 
@@ -212,11 +218,14 @@ public class MongoDBHandler {
      */
     public boolean updateDocument(String dataBaseName, String collectionName, String input, String updateInput) {
         try {
+        	long start = System.currentTimeMillis();
         	MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 UpdateResult updateMany = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to update the document in ms: {} ", stop-start);
                 LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                                
                 return updateMany.wasAcknowledged();
@@ -241,12 +250,15 @@ public class MongoDBHandler {
      */
     public Document findAndModify(String dataBaseName, String collectionName, String input, String updateInput) {
         try {
+            long start = System.currentTimeMillis();
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 final Document dbObjectUpdateInput = Document.parse(updateInput);
                 Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
                 if (result != null) {
+                	long stop = System.currentTimeMillis();
+                	LOGGER.debug("#### Response time to findAndModify the document in ms: {} ", stop-start);
                     LOGGER.debug("updateDocument() :: database: {} and collection: {} updated successfully", dataBaseName, collectionName);
                     return result;
                 }
@@ -394,6 +406,7 @@ public class MongoDBHandler {
     public boolean checkDocumentExists(String databaseName, String collectionName, String condition) {
 
         try {
+        	long start = System.currentTimeMillis();
             MongoDatabase db = mongoClient.getDatabase(databaseName);
             MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
             Document doc = null;
@@ -403,6 +416,8 @@ public class MongoDBHandler {
             if (doc == null || doc.isEmpty()) {
                 return false;
             }
+            long stop = System.currentTimeMillis();
+            LOGGER.debug("#### Response time to checkDocumentExists in ms: {} ", stop-start);
         } catch (Exception e) {
             LOGGER.error("something wrong with MongoDB " + e);
             return false;
@@ -422,12 +437,15 @@ public class MongoDBHandler {
      */
     public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, String condition, String eventId) {
     	try {
+            long start = System.currentTimeMillis();
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(condition);  
                 
                 UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
                 updateMany = collection.updateOne(dbObjectInput, Updates.set("Time", DateUtils.getDate()));
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to updateDocumentAddToSet in ms: {} ", stop-start);
                 LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }

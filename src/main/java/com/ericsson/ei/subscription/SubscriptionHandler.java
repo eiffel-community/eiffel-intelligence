@@ -75,13 +75,13 @@ public class SubscriptionHandler {
     @Async("subscriptionHandlerExecutor")
     public void checkSubscriptionForObject(final String aggregatedObject,
             final String id) {    
-    	LOGGER.debug("**** Thread name: {} starts for {} **** ", Thread.currentThread().getName(), id);
+    	LOGGER.trace("**** Thread name: {} starts for {} **** ", Thread.currentThread().getName(), id);
         final List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 subscriptionDataBaseName, subscriptionCollectionName);
         subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
                         subscription, id));
-        LOGGER.debug("**** Thread name: {} ends for {} **** ", Thread.currentThread().getName(), id);
+        LOGGER.trace("**** Thread name: {} ends for {} **** ", Thread.currentThread().getName(), id);
     }
 
     /**
@@ -99,7 +99,7 @@ public class SubscriptionHandler {
             final JsonNode subscriptionJson = new ObjectMapper().readTree(
                     subscriptionData);
             LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject +" for the id: " + id);
+            LOGGER.debug("Aggregated Object : " + aggregatedObject + " for the event id: " + id);
             final ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                     "requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
@@ -115,7 +115,7 @@ public class SubscriptionHandler {
                         subscriptionJson);
                 LOGGER.info("Subscription with name ** {} ** has been processed for the event id: {}", subscriptionName, id);
             } else {
-            	LOGGER.info("Subscription with name ** {} ** has not met with the conditions for id: {}", subscriptionName, id);
+            	LOGGER.debug("Subscription with name ** {} ** has not met with the conditions for event id: {}", subscriptionName, id);
             }
         } catch (final Exception e) {
             LOGGER.error("Subscription: {}, failed for aggregated object: {}",

@@ -297,7 +297,13 @@ public class ObjectHandler {
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
     }
     
+    /**
+     * This method is used to check the aggregations for the subscriptions.
+     * 
+     * @param aggregatedObject 
+     * @param id - Aggregated object id.
+     */
     public void checkAggregations(String aggregatedObject, String id) {
-    	subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id );
+    	subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 }

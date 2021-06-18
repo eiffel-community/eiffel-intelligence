@@ -129,7 +129,7 @@ public class InformSubscriber {
             String subscriptionName = subscriptionField.get("subscriptionName");
             String missedNotification = prepareMissedNotification(aggregatedObject,
                     subscriptionName, notificationMeta);
-            LOGGER.debug(
+            LOGGER.info(
                     "Failed to inform subscriber '{}'\nPrepared 'missed notification' document : {}",
                     e.getMessage(), missedNotification);
             mongoDBHandler.createTTLIndex(missedNotificationDataBaseName,
@@ -168,7 +168,7 @@ public class InformSubscriber {
         try {
             mongoDBHandler.insertDocument(missedNotificationDataBaseName,
                     missedNotificationCollectionName, missedNotification);
-            LOGGER.debug("Missed notification saved in database: {} ", missedNotificationCollectionName);
+            LOGGER.info("Missed notification saved in database: {} ", missedNotificationCollectionName);
         } catch (MongoWriteException e) {
             LOGGER.debug("Failed to insert the missed notification into database.", e);
         }

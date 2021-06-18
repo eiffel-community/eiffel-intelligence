@@ -16,14 +16,6 @@
 */
 package com.ericsson.ei.subscription;
 
-import com.ericsson.ei.handlers.MongoDBHandler;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoWriteException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.ericsson.ei.cache.SubscriptionCacheHandler;
+import com.ericsson.ei.handlers.MongoDBHandler;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoWriteException;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -69,8 +70,7 @@ public class SubscriptionRepeatDbHandler {
                 "Adding/Updating matched AggrObjId: {} to SubscriptionsId: {} aggrId matched list",
                 aggrObjId, subscriptionId);
 
-        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId,
-                aggrObjId)) {
+        if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId, aggrObjId, true)) {
             LOGGER.debug(
                     "Subscription: {} and AggrObjId, {} has already been matched."
                             + "No need to register the subscription match.",
@@ -86,6 +86,65 @@ public class SubscriptionRepeatDbHandler {
 
             insertNewMatchedAggregationToDatabase(subscriptionId, requirementId, aggrObjId);
         }
+    }
+
+    public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
+            String subscriptionId, int requirementId, String aggrObjId, boolean useCache) {
+        
+        List<String> objArray = null;        
+        if (useCache && SubscriptionCacheHandler.subscriptionsCache.containsKey(subscriptionId)) {
+            objArray = SubscriptionCacheHandler.subscriptionsCache.get(subscriptionId);
+        } else {
+            LOGGER.debug(
+                    "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
+                    aggrObjId, subscriptionId);
+            String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";
+            objArray = mongoDbHandler.find(dataBaseName, collectionName,
+                    subscriptionQuery);   
+
+            SubscriptionCacheHandler.subscriptionsCache.put(subscriptionId, objArray);
+        }
+        if (objArray != null && !objArray.isEmpty()) {
+
+            LOGGER.debug("Making AggrObjId checks on SubscriptionId document: {}", objArray.get(0));
+            try {
+                JsonNode jNode = mapper.readTree(objArray.get(0));
+                boolean aggrObjIdExist = jNode.get("subscriptionId")
+                                              .asText()
+                                              .trim()
+                                              .equals(subscriptionId);
+                if (aggrObjIdExist) {
+                    LOGGER.debug(
+                            "SubscriptionId \"{}\" , exist in document. "
+                                    + "Checking if AggrObjId has matched earlier.",
+                            subscriptionId);
+
+                    LOGGER.debug(
+                            "Subscription requirementId: {} and Requirements content:\n{}",
+                            jNode.get("requirements")
+                                 .get(new Integer(requirementId).toString()),
+                            requirementId);
+
+                    boolean triggered = checkRequirementIdTriggered(jNode, requirementId,
+                            aggrObjId);
+
+                    if (!triggered) {
+                        LOGGER.debug(
+                                "RequirementId: {} and SubscriptionId: {} "
+                                        + "has not matched any AggregatedObject.",
+                                requirementId, subscriptionId);
+                    }
+                    return triggered;
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to check if requirement has triggered.",
+                        e);
+            }
+        }
+        LOGGER.debug(
+                "AggrObjId: {} not found for SubscriptionId: {} in SubscriptionRepeatFlagHandlerDb.",
+                aggrObjId, subscriptionId);
+        return false;
     }
 
     public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
@@ -236,7 +295,7 @@ public class SubscriptionRepeatDbHandler {
         }
 
         if (listAggrObjIds.contains(aggrObjId)) {
-            LOGGER.debug("Subscription has already matched for aggregated object id: {}", aggrObjId);
+            LOGGER.info("Subscription has already matched for aggregated object id: {}", aggrObjId);
             return true;
         }
         return false;

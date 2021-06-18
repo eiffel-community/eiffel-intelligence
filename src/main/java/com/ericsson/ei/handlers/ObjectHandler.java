@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.MongoDBConnectionException;
+import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -45,6 +46,7 @@ import lombok.Setter;
 public class ObjectHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectHandler.class);
+    private static final int MAX_RETRY_COUNT = 1000;
 
     @Getter
     @Setter
@@ -75,6 +77,8 @@ public class ObjectHandler {
     @Getter
     @Value("${aggregated.collection.ttlValue}")
     private String ttlValue;
+    
+    private boolean isTTLCreated;
 
 
     /**
@@ -90,7 +94,7 @@ public class ObjectHandler {
      *      String id is stored together with aggregated object in database
      * @throws SubscriptionValidationException 
      * */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
+    public String insertObject(String aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
         if (id == null) {
             String idRules = rulesObject.getIdRule();
             JsonNode idNode = jmespathInterface.runRuleOnEvent(idRules, event);
@@ -99,16 +103,23 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}", document.toString());
 
-        if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
-        }
+		try {
+			if (getTtl() > 0 && !isTTLCreated) {
+				mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", getTtl());
+				isTTLCreated = true;
+			}
+		} catch (Exception e) {
+			LOGGER.error("Failed to create an index for {}", collectionName);
+			isTTLCreated = false;
+		}
 
         mongoDbHandler.insertDocument(databaseName, collectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
+        return aggregatedObject;
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
-        insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event, String id) throws MongoDBConnectionException {
+        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -193,7 +204,7 @@ public class ObjectHandler {
     public BasicDBObject prepareDocumentForInsertion(String id, String object) {        
         BasicDBObject document = BasicDBObject.parse(object);
         document.put("_id", id);
-        try {
+       try {
             if (getTtl() > 0) {               
                 document.put("Time", DateUtils.getDate());                
             }
@@ -225,11 +236,21 @@ public class ObjectHandler {
      */
     public String lockDocument(String id) {
         boolean documentLocked = true;
+        int retryCounter = 0;
         String conditionId = "{\"_id\" : \"" + id + "\"}";
         String conditionLock = "[ { \"lock\" :  null } , { \"lock\" : \"0\"}]";
         String setLock = "{ \"$set\" : { \"lock\" : \"1\"}}";
         ObjectMapper mapper = new ObjectMapper();
-        while (documentLocked == true) {
+        ArrayList<String> documentExistsCheck = mongoDbHandler.find(databaseName,
+        		collectionName,
+                conditionId);
+
+        if(documentExistsCheck.isEmpty()) {
+        	 LOGGER.error("Could not find document with id: {}", id);
+             return null;
+        }
+        
+        while (documentLocked == true && retryCounter < MAX_RETRY_COUNT) {
             try {
                 JsonNode documentJson = mapper.readValue(setLock, JsonNode.class);
                 JsonNode queryCondition = mapper.readValue(conditionId, JsonNode.class);
@@ -245,6 +266,8 @@ public class ObjectHandler {
                 LOGGER.debug("Waiting by {} thread", Thread.currentThread().getId());
             } catch (Exception e) {
                 LOGGER.error("Failed to parse JSON.", e);
+            } finally {
+                retryCounter++;
             }
         }
         return null;
@@ -271,7 +294,16 @@ public class ObjectHandler {
     }
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event, String id) {
-        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
-        subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
+    }
+    
+    /**
+     * This method is used to check the aggregations for the subscriptions.
+     * 
+     * @param aggregatedObject 
+     * @param id - Aggregated object id.
+     */
+    public void checkAggregations(String aggregatedObject, String id) {
+    	subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 }

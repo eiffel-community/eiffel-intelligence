@@ -62,6 +62,8 @@ public class WaitListStorageHandler {
     @Setter
     @Autowired
     private JmesPathInterface jmesPathInterface;
+    
+    private boolean isTTLCreated;
 
     /**
      * Adds event to the wait-list database if it does not already exists.
@@ -107,7 +109,16 @@ public class WaitListStorageHandler {
         document.put("_id", id.textValue());
         document.put("Time", date);
         document.put("Event", event);
-        mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+        try {
+			if (ttlValue > 0 && !isTTLCreated) {
+				mongoDbHandler.createTTLIndex(databaseName, collectionName, "Time", ttlValue);
+				isTTLCreated = true;
+			}
+		} catch (Exception e) {
+			LOGGER.error("Failed to create an index for {} ", collectionName);
+			isTTLCreated = false;
+		}
+        
         return document;
     }
 

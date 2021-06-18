@@ -73,18 +73,19 @@ public class ERQueryServiceTest extends Mockito {
     private int limitParam = 85;
     private int levels = 2;
     private boolean isTree = true;
+    private HttpRequest httpRequest;
 
     @Before
     public void setUp() throws Exception {
         httpExecutor = mock(HttpExecutor.class);
-        HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
-        erQueryService.setHttpRequest(httpRequest);
+        httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
+
     }
 
     @Test
     public void testErQueryUpstream() throws ClientProtocolException, URISyntaxException, IOException {
         BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
-        erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
+        erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree, httpRequest);
     }
 
     private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {

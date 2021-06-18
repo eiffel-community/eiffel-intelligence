@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.handlers.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
+import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -73,12 +74,14 @@ public class SubscriptionHandler {
      */
     @Async("subscriptionHandlerExecutor")
     public void checkSubscriptionForObject(final String aggregatedObject,
-            final String id) {
+            final String id) {    
+    	LOGGER.trace("**** Thread name: {} starts for {} **** ", Thread.currentThread().getName(), id);
         final List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 subscriptionDataBaseName, subscriptionCollectionName);
         subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
                         subscription, id));
+        LOGGER.trace("**** Thread name: {} ends for {} **** ", Thread.currentThread().getName(), id);
     }
 
     /**
@@ -96,17 +99,23 @@ public class SubscriptionHandler {
             final JsonNode subscriptionJson = new ObjectMapper().readTree(
                     subscriptionData);
             LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject);
+            LOGGER.debug("Aggregated Object : " + aggregatedObject + " for the event id: " + id);
             final ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                     "requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
-            final Iterator<JsonNode> requirementIterator = requirementNode.elements();
+
+            SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
+            String subscriptionName = subscriptionField.get("subscriptionName");
+            final Iterator<JsonNode> requirementIterator = requirementNode.elements();            
             if (runSubscription.runSubscriptionOnObject(aggregatedObject,
                     requirementIterator, subscriptionJson, id)) {
                 LOGGER.debug(
                         "The subscription conditions match for the aggregatedObject");
                 informSubscriber.informSubscriber(aggregatedObject,
                         subscriptionJson);
+                LOGGER.info("Subscription with name ** {} ** has been processed for the event id: {}", subscriptionName, id);
+            } else {
+            	LOGGER.debug("Subscription with name ** {} ** has not met with the conditions for event id: {}", subscriptionName, id);
             }
         } catch (final Exception e) {
             LOGGER.error("Subscription: {}, failed for aggregated object: {}",

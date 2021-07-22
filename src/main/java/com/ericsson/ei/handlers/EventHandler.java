@@ -73,6 +73,7 @@ public class EventHandler {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
         try {
+            LOGGER.info("Event {} Received", id);
             eventReceived(messageBody);
             channel.basicAck(deliveryTag, false);
             LOGGER.info("Event {} processed", id);

@@ -71,10 +71,11 @@ public class RunSubscription {
         int count_condition_fulfillment = 0;
         int count_conditions = 0;
         int requirementIndex = 0;
+        String subscriptionName = "";
 
         while (requirementIterator.hasNext()) {
 
-            String subscriptionName = subscriptionJson.get("subscriptionName").asText();
+            subscriptionName = subscriptionJson.get("subscriptionName").asText();
             String subscriptionRepeatFlag = subscriptionJson.get("repeat").asText();
 
             if (id == null) {
@@ -83,7 +84,7 @@ public class RunSubscription {
             }
 
             if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler
-                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id)) {
+                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, true)) {
                 LOGGER.debug(
                         "Subscription has already matched with AggregatedObject Id: {}\n"
                                 + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",
@@ -120,11 +121,12 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionRepeatFlag.equals("false") && id != null) {
+                    final String synchronizationString = new String(subscriptionName);
                     // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
-                    synchronized (this) {
+                    synchronized (synchronizationString) {
                         if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
-                                subscriptionName, requirementIndex, id)) {
+                                subscriptionName, requirementIndex, id, false)) {
                             LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);
                             subscriptionRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionName,
                                     requirementIndex, id);
@@ -138,7 +140,8 @@ public class RunSubscription {
             requirementIndex++;
         }
 
-        LOGGER.info("The final value of conditionFulfilled is : {}", conditionFulfilled);
+        LOGGER.info("The final value of conditionFulfilled is : {} for aggregation object id: {} and Subscription: {}",
+                conditionFulfilled, id, subscriptionName);
 
         return conditionFulfilled;
     }

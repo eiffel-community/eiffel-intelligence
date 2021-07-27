@@ -47,8 +47,6 @@ import lombok.Getter;
 public class ERQueryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ERQueryService.class);
 
-    private HttpRequest request;
-
     @Getter
     @Value("${event.repository.url}")
     private String eventRepositoryUrl;
@@ -56,14 +54,6 @@ public class ERQueryService {
     @Getter
     @Value("${event.repository.shallow:true}")
     private Boolean shallow;
-
-    public ERQueryService() {
-        this.request = new HttpRequest();
-    }
-
-    public void setHttpRequest(HttpRequest request) {
-        this.request = request;
-    }
 
     /**
      * This method is used to fetch only the upstream or downstream or both event information for
@@ -98,11 +88,11 @@ public class ERQueryService {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
 
-        prepareRequest(eventId, searchOption, limit, levels, tree);
+        HttpRequest request = prepareRequest(eventId, searchOption, limit, levels, tree);
         return request.performRequest();
     }
 
-    private void prepareRequest(String eventId, SearchOption searchOption, int limit,
+    private HttpRequest prepareRequest(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree) throws IOException, URISyntaxException {
         Boolean shallowParameter;
         if (shallow == null ) {
@@ -112,6 +102,7 @@ public class ERQueryService {
             shallowParameter = shallow;
         }
         final SearchParameters searchParameters = getSearchParameters(searchOption);
+        HttpRequest request = new HttpRequest();
         request
                .setHttpMethod(HttpMethod.POST)
                .setBaseUrl(eventRepositoryUrl)
@@ -124,6 +115,7 @@ public class ERQueryService {
 
         String uri = request.getURI().toString();
         LOGGER.debug("The URL to ER is: {}", uri);
+        return request;
     }
 
     /**

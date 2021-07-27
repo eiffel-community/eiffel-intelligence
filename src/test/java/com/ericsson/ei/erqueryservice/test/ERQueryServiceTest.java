@@ -76,8 +76,8 @@ public class ERQueryServiceTest extends Mockito {
     @Before
     public void setUp() throws Exception {
         httpExecutor = mock(HttpExecutor.class);
-        HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
-        erQueryService.setHttpRequest(httpRequest);
+        //HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
+        //erQueryService.setHttpRequest(httpRequest);
     }
 
     @Test(expected = Test.None.class)

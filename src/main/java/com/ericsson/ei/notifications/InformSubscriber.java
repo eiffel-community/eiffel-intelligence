@@ -179,9 +179,10 @@ public class InformSubscriber {
         try {
             mongoDBHandler.insertDocument(database,
                     failedNotificationCollectionName, failedNotification);
-            LOGGER.debug("Notification saved in the database");
+            LOGGER.warn("Failed notification saved. Database: {} , Collection: {} ", database,
+                    failedNotificationCollectionName);
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database.", e);
+            LOGGER.warn("Failed to insert the failed notification into database.", e);
         }
     }
 

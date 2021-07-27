@@ -80,6 +80,8 @@ public class ObjectHandler {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
+    private boolean isTTLCreated;
+
     /**
      * This method is responsible for inserting an aggregated object in to the database.
      *
@@ -89,7 +91,7 @@ public class ObjectHandler {
      * @param givenId          String id is stored together with aggregated object in database
      * @throws                 MongoDBConnectionException
      */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event,
+    public String insertObject(String aggregatedObject, RulesObject rulesObject, String event,
             String givenId) throws MongoDBConnectionException {
         String id = givenId;
         if (id == null) {
@@ -100,19 +102,24 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
-
-        if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
-                    MongoConstants.TIME, getTtl());
+        try {
+            if (getTtl() > 0 && !isTTLCreated) {
+                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
+                isTTLCreated = true;
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {}", aggregationsCollectionName);
+            isTTLCreated = false;
         }
 
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
+        return aggregatedObject;
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
+    public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
             String id) throws MongoDBConnectionException {
-        insertObject(aggregatedObject.toString(), rulesObject, event, id);
+        return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -301,7 +308,16 @@ public class ObjectHandler {
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event,
             String id) {
-        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
+    }
+    
+    /**
+     * This method is used to check the aggregations for the subscriptions.
+     * 
+     * @param aggregatedObject 
+     * @param id - Aggregated object id.
+     */
+    public void checkAggregations(String aggregatedObject, String id) {
         subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 }

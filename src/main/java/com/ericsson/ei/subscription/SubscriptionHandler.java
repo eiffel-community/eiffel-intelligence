@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
+import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -102,12 +103,16 @@ public class SubscriptionHandler {
                 "requirements");
             LOGGER.debug("Requirements : " + requirementNode.toString());
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
+            SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
+            String subscriptionName = subscriptionField.get("subscriptionName");
             if (runSubscription.runSubscriptionOnObject(aggregatedObject,
                 requirementIterator, subscriptionJson, id)) {
                 LOGGER.debug(
                     "The subscription conditions match for the aggregatedObject");
                 informSubscriber.informSubscriber(aggregatedObject,
                     subscriptionJson);
+                LOGGER.info("Subscription with name ** {} ** has been processed for the event id: {}", subscriptionName,
+                        id);
             }
         } catch (Exception e) {
             LOGGER.error("Subscription: {}, failed for aggregated object: {}",

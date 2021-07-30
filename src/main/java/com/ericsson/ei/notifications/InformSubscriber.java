@@ -87,6 +87,8 @@ public class InformSubscriber {
 
     @Autowired
     private HttpRequestFactory httpRequestFactory;
+    
+    private boolean isTTLCreated;
 
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
@@ -133,8 +135,11 @@ public class InformSubscriber {
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
-            mongoDBHandler.createTTLIndex(database,
-                    failedNotificationCollectionName, MongoConstants.TIME, failedNotificationsTtl);
+            if (failedNotificationsTtl > 0 && !isTTLCreated) {
+                mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,
+                        failedNotificationsTtl);
+                isTTLCreated = true;
+            }
             saveFailedNotificationToDB(failedNotification);
         }
     }

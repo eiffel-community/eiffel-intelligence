@@ -77,11 +77,6 @@ public class UpStreamEventsHandler {
         long stop = System.currentTimeMillis();
         LOGGER.debug("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
 
-        if (responseEntity == null) {
-            LOGGER.warn("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
-            return;
-        }
-
         final String searchResultString = responseEntity.getBody();
         ObjectMapper mapper = new ObjectMapper();
         final JsonNode searchResult = mapper.readTree(searchResultString);
@@ -94,7 +89,7 @@ public class UpStreamEventsHandler {
         final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
 
         if (upstreamLinkObjects == null) {
-            LOGGER.warn("Expected upstreamLinkObjects are null");
+            LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
             return;
         }
 

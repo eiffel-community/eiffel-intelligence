@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +66,6 @@ public class ERQueryServiceTest extends Mockito {
     @Autowired
     private ERQueryService erQueryService;
     private HttpExecutor httpExecutor;
-    
-    private HttpRequest httpRequest;
 
     private String eventId = "01";
     private SearchOption searchOption = SearchOption.UP_STREAM;
@@ -74,19 +73,19 @@ public class ERQueryServiceTest extends Mockito {
     private int levels = 2;
     private boolean isTree = true;
     private boolean shallow = true;
+    private HttpRequest httpRequest;
 
     @Before
     public void setUp() throws Exception {
         httpExecutor = mock(HttpExecutor.class);
         httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
-        //erQueryService.setHttpRequest(httpRequest);
     }
 
     @Test(expected = Test.None.class)
     public void testErQueryUpstream() throws PropertyNotFoundException, Exception {
         BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
-        Mockito.when(erQueryService.prepareRequest(Mockito.anyString(),Mockito.any(),Mockito.anyInt(),Mockito.anyInt(),Mockito.anyBoolean())).thenReturn(httpRequest);
-        erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
+        //Mockito.when(erQueryService.prepareRequest(Mockito.anyString(),Mockito.any(),Mockito.anyInt(),Mockito.anyInt(),Mockito.anyBoolean())).thenReturn(httpRequest);
+        erQueryService.sendRequestToER(eventId, searchOption, limitParam, levels, isTree, httpRequest);
     }
 
     private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {

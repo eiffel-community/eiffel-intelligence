@@ -19,6 +19,8 @@ package com.ericsson.ei.handlers;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import com.ericsson.ei.mongo.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.annotation.PostConstruct;
 
@@ -87,16 +89,13 @@ public class ObjectHandler {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
-    @PostConstruct
-    public void init() throws AbortExecutionException {
-        try {
-            if (getTtl() > 0) {
-                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
-            }
-        } catch (Exception e1) {
-            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1);
-        }
-    }
+    private boolean isTTLCreated;
+
+    /*
+     * @PostConstruct public void init() throws AbortExecutionException { try { if (getTtl() > 0) { mongoDbHandler.createTTLIndex(databaseName,
+     * aggregationsCollectionName, MongoConstants.TIME, getTtl()); } } catch (Exception e1) {
+     * LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1); } }
+     */
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.
@@ -118,6 +117,15 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
+        try {
+            if (getTtl() > 0 && !isTTLCreated) {
+                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
+                isTTLCreated = true;
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {}", aggregationsCollectionName);
+            isTTLCreated = false;
+        }
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
         return aggregatedObject;

@@ -266,7 +266,7 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
-            checkAndDropTTLIndex(collection, fieldName + "_1");
+            //checkAndDropTTLIndex(collection, fieldName + "_1");
             LOGGER.debug("Creating the index for {} in collection: {}", fieldName, collection.getNamespace());
             collection.createIndex(Indexes.ascending(fieldName), indexOptions);
         } catch (Exception e) {
@@ -281,19 +281,12 @@ public class MongoDBHandler {
      * @param fieldName  - Field name for dropping the index.
      * @throws Exception
      */
-    private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception {
-        // Verify if the index is present for the field in the collection.
-        for (Document index : collection.listIndexes()) {
-            for (Map.Entry<String, Object> entry : index.entrySet()) {
-                Object value = entry.getValue();
-                if (value.equals(fieldName)) {
-                    LOGGER.debug("Dropping the index for {} in collection: {}", fieldName, collection.getNamespace());
-                    collection.dropIndex(fieldName);
-                    break;
-                }
-            }
-        }
-    }
+    /*
+     * private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception { // Verify if the index is
+     * present for the field in the collection. for (Document index : collection.listIndexes()) { for (Map.Entry<String, Object> entry :
+     * index.entrySet()) { Object value = entry.getValue(); if (value.equals(fieldName)) { LOGGER.debug("Dropping the index for {} in collection: {}",
+     * fieldName, collection.getNamespace()); collection.dropIndex(fieldName); break; } } } }
+     */
 
     /**
      * This method is used to drop a collection.

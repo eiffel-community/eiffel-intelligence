@@ -266,7 +266,7 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
-            //checkAndDropTTLIndex(collection, fieldName + "_1");
+            checkAndDropTTLIndex(collection, fieldName + "_1");
             LOGGER.debug("Creating the index for {} in collection: {}", fieldName, collection.getNamespace());
             collection.createIndex(Indexes.ascending(fieldName), indexOptions);
         } catch (Exception e) {
@@ -360,7 +360,9 @@ public class MongoDBHandler {
         }
 
         BasicDBObject conditionsAsDbObject = BasicDBObject.parse(query.getQueryString());
+        //System.out.println("----mongo conditionsAsDbObject---------\n"+conditionsAsDbObject);
         FindIterable<Document> foundResults = collection.find(conditionsAsDbObject);
+        //System.out.println("-------------found results-----------"+foundResults);
         for (Document document : foundResults) {
             // Currently document.toJson() does not work here since something will add \\\ before
             // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
@@ -376,7 +378,7 @@ public class MongoDBHandler {
                     "find() :: database: {} and collection: {} documents are not found",
                     dataBaseName, collectionName);
         }
-
+        //System.out.println("-------result mongo----\n"+result);
         return result;
     }
 

@@ -67,14 +67,18 @@ public class EventToObjectMapHandler {
     @Value("${aggregations.collection.ttl:0}")
     private int eventToObjectTtl;
 
-    private boolean isTTLCreated;
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+    	System.out.println("------------event to object map---------------\n");
+        try {
+            if (eventToObjectTtl > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, eventToObjectTtl);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
+        }
+    }
     
-    /*
-     * @PostConstruct public void init() throws AbortExecutionException { try { if (eventToObjectTtl > 0) {
-     * mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, eventToObjectTtl); } } catch (Exception e) {
-     * LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e); } }
-     */
-
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
     }
@@ -111,7 +115,7 @@ public class EventToObjectMapHandler {
             String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(objectId);
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);
@@ -132,14 +136,6 @@ public class EventToObjectMapHandler {
                         mapStr, databaseName, collectionName);
                 Document document = Document.parse(mapStr);
                 document.append("Time", DateUtils.getDate());
-                if(ttlValue > 0 && !isTTLCreated) {                 
-                    mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, ttlValue);
-                    isTTLCreated = true;
-                }
-                mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
-            } else {
-                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
-                        eventId);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to update event object list.", e);

@@ -103,7 +103,7 @@ public class QueryServiceTest {
         mongoClient.getDatabase(database).getCollection(failedNotificationCollectionName)
                 .insertOne(failedDocument);
         LOG.debug("Document Inserted in failed notification Database");
-
+        
         BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
                 aggDocument.getString("_id"),
                 aggregatedObject);
@@ -116,6 +116,7 @@ public class QueryServiceTest {
     public void initializeData() throws Exception {
         aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
+        
         failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
         LOG.debug("The failed notification is : " + failedNotification);
     }
@@ -160,8 +161,8 @@ public class QueryServiceTest {
         try {
             JsonNode tempRecord = new ObjectMapper().readTree(result.get(0));
             record = (ObjectNode) tempRecord;
+            record.remove("Time");
             actual = new ObjectMapper().readTree(aggregatedObject);
-
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }

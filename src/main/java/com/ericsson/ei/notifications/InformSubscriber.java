@@ -90,13 +90,18 @@ public class InformSubscriber {
     @Autowired
     private HttpRequestFactory httpRequestFactory;
     
-    private boolean isTTLCreated;
-    
-    /*
-     * @PostConstruct public void init() throws AbortExecutionException { try { if (failedNotificationsTtl > 0) {
-     * mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME, failedNotificationsTtl); } } catch (Exception e)
-     * { LOGGER.error("Failed to create an index for {} due to: {}", failedNotificationCollectionName, e); } }
-     */
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+    	System.out.println("--------------------inform subscriberr------------\n");
+        try {
+            if (failedNotificationsTtl > 0) {
+                mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,
+                        failedNotificationsTtl);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", failedNotificationCollectionName, e);
+        }
+    }
 
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
@@ -143,11 +148,6 @@ public class InformSubscriber {
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
-            if (failedNotificationsTtl > 0 && !isTTLCreated) {
-                mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,
-                        failedNotificationsTtl);
-                isTTLCreated = true;
-            }
             saveFailedNotificationToDB(failedNotification);
         }
     }

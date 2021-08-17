@@ -89,13 +89,20 @@ public class ObjectHandler {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
-    private boolean isTTLCreated;
 
-    /*
-     * @PostConstruct public void init() throws AbortExecutionException { try { if (getTtl() > 0) { mongoDbHandler.createTTLIndex(databaseName,
-     * aggregationsCollectionName, MongoConstants.TIME, getTtl()); } } catch (Exception e1) {
-     * LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1); } }
-     */
+
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+    	System.out.println("--------------object handler---------");
+        try {
+            if (getTtl() > 0) {
+                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
+            }
+        } catch (Exception e1) {
+            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1);
+        }
+    }
+
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.
@@ -117,15 +124,6 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
-        try {
-            if (getTtl() > 0 && !isTTLCreated) {
-                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
-                isTTLCreated = true;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to create an index for {}", aggregationsCollectionName);
-            isTTLCreated = false;
-        }
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
         return aggregatedObject;
@@ -184,14 +182,14 @@ public class ObjectHandler {
      * @param id An id to search for in the database
      * @return document
      */
-    public String findObjectById(String id) throws MongoClientException {
-        final MongoCondition condition = MongoCondition.idCondition(id);
-        String document = "";
-        List<String> documents = findObjectsByCondition(condition);
-        if (!documents.isEmpty())
-            document = documents.get(0);
-        return document;
-    }
+	public String findObjectById(String id) throws MongoClientException {
+		final MongoCondition condition = MongoCondition.idCondition(id);
+		String document = "";
+		List<String> documents = findObjectsByCondition(condition);
+		if (!documents.isEmpty())
+			document = documents.get(0);
+		return document;
+	}
 
     /**
      * This method searches the database for documents matching a list of ids.

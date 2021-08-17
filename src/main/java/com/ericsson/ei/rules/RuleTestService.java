@@ -45,7 +45,7 @@ public class RuleTestService implements IRuleTestService {
         } catch (MongoDBConnectionException e) {
             LOGGER.info("Mongodb connection down");
         }
-
+        System.out.println("----template name----------"+templateName);
         List<String> responseList = processAggregatedObject.getAggregatedObjectByTemplateName(templateName);
         String response = responseList.toString();
 

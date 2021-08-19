@@ -289,7 +289,7 @@ public class MongoDBHandler {
             for (Map.Entry<String, Object> entry : index.entrySet()) {
                 Object value = entry.getValue();
                 if (value.equals(fieldName)) {
-                    LOGGER.debug("Dropping the index for {} in collection: {}", fieldName, collection.getNamespace());
+                    LOGGER.debug("Dropping  the index for {} in collection: {}", fieldName, collection.getNamespace());
                     collection.dropIndex(fieldName);
                     break;
                 }

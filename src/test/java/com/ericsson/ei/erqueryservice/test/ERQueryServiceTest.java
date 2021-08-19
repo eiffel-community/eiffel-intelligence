@@ -66,7 +66,6 @@ public class ERQueryServiceTest extends Mockito {
     private ERQueryService erQueryService;
     private HttpExecutor httpExecutor;
  
-    
     private String eventId = "01";
     private SearchOption searchOption = SearchOption.UP_STREAM;
     private int limitParam = 85;

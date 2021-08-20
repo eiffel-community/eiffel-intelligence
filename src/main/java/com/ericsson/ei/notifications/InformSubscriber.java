@@ -92,7 +92,6 @@ public class InformSubscriber {
     
     @PostConstruct
     public void init() throws AbortExecutionException {
-    	System.out.println("--------------------inform subscriberr------------\n");
         try {
             if (failedNotificationsTtl > 0) {
                 mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,

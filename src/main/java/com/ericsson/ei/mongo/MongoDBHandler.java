@@ -282,21 +282,19 @@ public class MongoDBHandler {
      * @throws Exception
      */
     
-    private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception {
-        // Verify if the index is present for the field in the collection.
-    	System.out.println("-----ttl index----\n");
-        for (Document index : collection.listIndexes()) {
-            for (Map.Entry<String, Object> entry : index.entrySet()) {
-                Object value = entry.getValue();
-                if (value.equals(fieldName)) {
-                    LOGGER.debug("Dropping  the index for {} in collection: {}", fieldName, collection.getNamespace());
-                    collection.dropIndex(fieldName);
-                    break;
-                }
-            }
-        }
-    }
-
+	private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception {
+		// Verify if the index is present for the field in the collection
+		for (Document index : collection.listIndexes()) {
+			for (Map.Entry<String, Object> entry : index.entrySet()) {
+				Object value = entry.getValue();
+				if (value.equals(fieldName)) {
+					LOGGER.debug("Dropping  the index for {} in collection: {}", fieldName, collection.getNamespace());
+					collection.dropIndex(fieldName);
+					break;
+				}
+			}
+		}
+	}
 
     /**
      * This method is used to drop a collection.
@@ -360,9 +358,7 @@ public class MongoDBHandler {
         }
 
         BasicDBObject conditionsAsDbObject = BasicDBObject.parse(query.getQueryString());
-        //System.out.println("----mongo conditionsAsDbObject---------\n"+conditionsAsDbObject);
         FindIterable<Document> foundResults = collection.find(conditionsAsDbObject);
-        //System.out.println("-------------found results-----------"+foundResults);
         for (Document document : foundResults) {
             // Currently document.toJson() does not work here since something will add \\\ before
             // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
@@ -378,7 +374,6 @@ public class MongoDBHandler {
                     "find() :: database: {} and collection: {} documents are not found",
                     dataBaseName, collectionName);
         }
-        //System.out.println("-------result mongo----\n"+result);
         return result;
     }
 

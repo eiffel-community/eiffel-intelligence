@@ -93,7 +93,6 @@ public class ObjectHandler {
 
     @PostConstruct
     public void init() throws AbortExecutionException {
-    	System.out.println("--------------object handler---------");
         try {
             if (getTtl() > 0) {
                 mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());

@@ -218,17 +218,19 @@ public class MergePrepare {
         try {
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
-            Object ruleJSONObject = new JSONObject(mergeRule);
-            // hack to remove quotes
+            Object ruleJSONObject;
+             // condition to avoid un-necessary exception to print in the log
+			if (mergeRule.startsWith("{")) {
+				ruleJSONObject = new JSONObject(mergeRule);
+			} else {
+				return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
+			}
             stringRule = ruleJSONObject.toString();
-            // if we have an array with only one JSON object we remove the
-            // square brackets
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
-        } catch (JSONException e) {
-            LOGGER.warn("Failed to parse JSON.", e);
-            return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
-        }
+		} catch (JSONException e) {
+			LOGGER.warn("Failed to parse mergeRule {} , due to: {}.", mergeRule, e);
+		}
 
         // flatten the stringObject to check if it contains parts of the rules
         Map<String, Object> flattenJson = JsonFlattener.flattenAsMap(stringObject);

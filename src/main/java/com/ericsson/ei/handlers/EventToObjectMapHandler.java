@@ -69,7 +69,6 @@ public class EventToObjectMapHandler {
 
     @PostConstruct
     public void init() throws AbortExecutionException {
-    	System.out.println("------------event to object map---------------\n");
         try {
             if (eventToObjectTtl > 0) {
                 mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, eventToObjectTtl);

@@ -226,16 +226,11 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     private void checkResult(final Map<String, JsonNode> checkData) {
-    	System.out.println("----check data----"+checkData);
         checkData.forEach((id, expectedJSON) -> {
             try {
                 String document = objectHandler.findObjectById(id);
-                System.out.println("---------id------"+id);
-                System.out.println("--------document----"+document);
                 JsonNode actualJSON = objectMapper.readTree(document);
                 LOGGER.info("Complete aggregated object: " + actualJSON);
-                System.out.println("---------------expected------"+expectedJSON.toString());
-                System.out.println("------------------actual----------"+actualJSON.toString());;
                 JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
             } catch (IOException | JSONException e) {
                 LOGGER.error(e.getMessage(), e);

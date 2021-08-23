@@ -165,7 +165,6 @@ public class RMQHandler {
 
     public void publishObjectToWaitlistQueue(String message) {
         LOGGER.debug("Publishing message to message bus...");
-        System.out.println("------events-------\n"+message);
         rabbitTemplate.convertAndSend(message);
     }
 

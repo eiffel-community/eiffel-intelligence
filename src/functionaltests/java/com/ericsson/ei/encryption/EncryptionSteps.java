@@ -96,7 +96,9 @@ public class EncryptionSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> eventsIdList = eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH,
                 eventNamesToSend);
+        System.out.println("----actual id list---------------"+eventsIdList);
         List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList, 0);
+        System.out.println("-----------missing events-----\n"+missingEventIds);
         String errorMessage = "The following events are missing in mongoDB: "
                 + missingEventIds.toString();
         assertEquals(errorMessage, 0, missingEventIds.size());
@@ -136,6 +138,7 @@ public class EncryptionSteps extends FunctionalTestBase {
                               .setEndpoint(SUBSCRIPTION_ROOT_ENDPOINT)
                               .setBody(jsonDataAsString)
                               .performRequest();
+        System.out.println("-----------response1-----\n"+response);
         assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(),
                 response.getStatusCodeValue());
     }
@@ -150,6 +153,7 @@ public class EncryptionSteps extends FunctionalTestBase {
                              .addHeader("Accept", "application/json")
                              .setEndpoint(endpoint)
                              .performRequest();
+        System.out.println("-----------response2-----\n"+response);
         assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(),
                 response.getStatusCodeValue());
     }

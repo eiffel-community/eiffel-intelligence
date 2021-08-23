@@ -143,6 +143,7 @@ public class DataBaseManager {
         List<String> foundIDs = new ArrayList<>();
         for (Document document : documents) {
             final String documentId = document.get("_id").toString();
+            System.out.println("------------------found ids-----------\n"+documentId);
             foundIDs.add(documentId);
         }
 
@@ -199,6 +200,8 @@ public class DataBaseManager {
         mongoClient = new MongoClient(uri);
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> collection = db.getCollection(collectionName);
+        System.out.println("----------collection------\n"+collection);
+        System.out.println("---------------------db------------\n"+db);
         return collection;
     }
 

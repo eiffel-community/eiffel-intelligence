@@ -44,7 +44,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(EndpointSecurity.class);
 
     @Value("${ldap.enabled:false}")
-    private boolean ldapEnabled;
+    private boolean ldapEnabled; 
 
     @Value("${ldap.server.list:}")
     private String ldapServerList;

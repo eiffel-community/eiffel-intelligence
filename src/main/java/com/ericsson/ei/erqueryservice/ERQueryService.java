@@ -93,6 +93,7 @@ public class ERQueryService {
         return request.performRequest();
     }
 
+    
     private HttpRequest prepareRequest(String eventId, SearchOption searchOption, int limit,
             int levels, boolean tree, HttpRequest request) throws IOException, URISyntaxException {
         Boolean shallowParameter;

@@ -139,7 +139,7 @@ public class DataBaseManager {
      */
     private List<String> compareSentEventsWithEventsInDB(final List<String> checklist) {
         final List<Document> documents = getDocumentsFromCollection(eventObjectCollectionName);
-
+        System.out.println("---------------documents-----"+documents);
         List<String> foundIDs = new ArrayList<>();
         for (Document document : documents) {
             final String documentId = document.get("_id").toString();

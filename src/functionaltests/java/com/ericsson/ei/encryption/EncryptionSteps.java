@@ -47,7 +47,7 @@ public class EncryptionSteps extends FunctionalTestBase {
     private static final String AUTH_HEADER_VALUE = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
     private static final int NOTIFICATION_SLEEP = 5;
 
-    private static final String SUBSCRIPTION_NAME = "MySubscription";
+    private static final String SUBSCRIPTION_NAME = "MySubscription1";
     private static final String MEDIA_TYPE = "application/x-www-form-urlencoded";
     private static final String NOTIFICATION_META = "http://localhost:{port}/notify-me";
     private static final String CONDITION_KEY = "jmespath";
@@ -94,10 +94,11 @@ public class EncryptionSteps extends FunctionalTestBase {
         LOGGER.debug("Sending Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> eventsIdList = eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH,
-                eventNamesToSend);
-        System.out.println("----actual id list---------------"+eventsIdList);
-        List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList, 0);
+        //List<String> eventsIdList = eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH,
+                //eventNamesToSend);
+       // System.out.println("----actual id list---------------"+eventsIdList);
+        List<String> missingEventIds = dbManager.verifyEventsInDB(
+        		eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH,eventNamesToSend), 0);
         System.out.println("-----------missing events-----\n"+missingEventIds);
         String errorMessage = "The following events are missing in mongoDB: "
                 + missingEventIds.toString();

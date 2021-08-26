@@ -64,14 +64,14 @@ public class EventToObjectMapHandler {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    @Value("${aggregations.collection.ttl:#{0}}")
-    private int eventToObjectTtl;
+    @Value("${aggregations.collection.ttl:0}")
+    private String eventToObjectTtl;
 
     @PostConstruct
     public void init() throws AbortExecutionException {
         try {
-            if (eventToObjectTtl > 0) {
-                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, eventToObjectTtl);
+            if (Integer.parseInt(eventToObjectTtl) > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
             }
         } catch (Exception e) {
             LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);

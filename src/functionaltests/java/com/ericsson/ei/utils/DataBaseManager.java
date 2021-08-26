@@ -200,8 +200,6 @@ public class DataBaseManager {
         mongoClient = new MongoClient(uri);
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> collection = db.getCollection(collectionName);
-        System.out.println("----------collection------\n"+collection);
-        System.out.println("---------------------db------------\n"+db);
         return collection;
     }
 

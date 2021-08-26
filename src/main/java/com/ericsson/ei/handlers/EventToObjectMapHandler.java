@@ -64,14 +64,14 @@ public class EventToObjectMapHandler {
     @Autowired
     JmesPathInterface jmesPathInterface;
 
-    @Value("${aggregations.collection.ttl:0}")
-    private String eventToObjectTtl;
+    @Value("${aggregations.collection.ttl:#{0}}")
+    private int eventToObjectTtl;
 
     @PostConstruct
     public void init() throws AbortExecutionException {
         try {
-            if (Integer.parseInt(eventToObjectTtl) > 0) {
-                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
+            if (eventToObjectTtl > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, eventToObjectTtl);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
@@ -114,7 +114,7 @@ public class EventToObjectMapHandler {
             String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(objectId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);

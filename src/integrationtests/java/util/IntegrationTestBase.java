@@ -153,6 +153,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String event = eventJson.toString();
 
             rabbitTemplate.convertAndSend(event);
+            System.out.println("-------event------\n"+event);
             if (!alreadyExecuted) {
                 TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                 alreadyExecuted = true;
@@ -217,6 +218,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database, eventObjectMapCollectionName);
+            System.out.println("---------processedEvents----"+processedEvents);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }

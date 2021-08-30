@@ -23,6 +23,7 @@ import com.ericsson.ei.mongo.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -101,7 +102,11 @@ public class ObjectHandler {
             LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1);
         }
     }
-
+    @PreDestroy
+    public void predestroy()
+    {
+    	mongoDbHandler.close();
+    }
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.

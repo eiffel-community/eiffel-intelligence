@@ -19,6 +19,7 @@ package com.ericsson.ei.notifications;
 import java.text.ParseException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.mail.internet.MimeMessage;
 
 import com.ericsson.ei.mongo.MongoConstants;
@@ -101,7 +102,11 @@ public class InformSubscriber {
             LOGGER.error("Failed to create an index for {} due to: {}", failedNotificationCollectionName, e);
         }
     }
-
+    @PreDestroy
+    public void predestroy()
+    {
+    	mongoDBHandler.close();
+    }
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.

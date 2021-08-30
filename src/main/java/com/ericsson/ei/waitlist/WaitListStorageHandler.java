@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 @Component
 public class WaitListStorageHandler {
@@ -77,11 +76,7 @@ public class WaitListStorageHandler {
             LOGGER.error("Failed to create an index for {} due to: {}", waitlistCollectionName, e);
         }
     }
-    @PreDestroy
-    public void predestroy()
-    {
-    	mongoDbHandler.close();
-    }
+
     /**
      * Adds event to the waitlist database if it does not already exists.
      *

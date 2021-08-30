@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,11 +76,6 @@ public class EventToObjectMapHandler {
         } catch (Exception e) {
             LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
         }
-    }
-    @PreDestroy
-    public void predestroy()
-    {
-    	mongodbhandler.close();
     }
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
@@ -195,3 +189,5 @@ public class EventToObjectMapHandler {
     }
 
 }
+
+ 

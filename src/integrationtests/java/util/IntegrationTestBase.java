@@ -217,7 +217,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
-            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName);
+            processedEvents = countProcessedEvents(this.database, this.eventObjectMapCollectionName);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }

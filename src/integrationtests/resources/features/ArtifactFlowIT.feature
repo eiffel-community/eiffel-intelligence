@@ -23,5 +23,5 @@ Feature: Artifact flow Integrationtest
 
     # Send Events and Check job triggered
     When the upstream input events are sent
-    And the eiffel events are sent
+    #And the eiffel events are sent
     Then mongodb should contain "2" mails.

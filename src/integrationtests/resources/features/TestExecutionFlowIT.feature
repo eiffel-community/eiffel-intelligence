@@ -28,7 +28,7 @@ Feature: Test execution flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    When the eiffel events are sent
+    #When the eiffel events are sent
     And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created
     And jenkins job status data has key "test_key" with value "e46ef12d-25gb-4d7y-b9fd-8763re66de47"
@@ -62,7 +62,7 @@ Feature: Test execution flow integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    When the eiffel events are sent
+    #When the eiffel events are sent
     And jenkins job status data fetched
     Then verify jenkins job data timestamp is after test subscription was created
     And jenkins job status data has key "test_param_1" with value "test_value"

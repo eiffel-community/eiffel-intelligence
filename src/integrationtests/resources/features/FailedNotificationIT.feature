@@ -18,7 +18,7 @@ Feature: Failed Notification Integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    When the eiffel events are sent
+    #When the eiffel events are sent
     Then failed notification of type "MAIL" should exist for subscription "MailFailureTestSubscription"
 
   Scenario: Start an artifact flow aggregation and make sure the REST notification fails
@@ -36,5 +36,5 @@ Feature: Failed Notification Integrationtest
     Then subscription is uploaded
 
     # Send Events and Check job triggered
-    When the eiffel events are sent
+    #When the eiffel events are sent
     Then failed notification of type "REST/POST" should exist for subscription "RestFailureTestSubscription"

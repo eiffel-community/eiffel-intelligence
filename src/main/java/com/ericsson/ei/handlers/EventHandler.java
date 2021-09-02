@@ -66,12 +66,10 @@ public class EventHandler {
 
     @Async
     public void onMessage(Message message, Channel channel) throws Exception {
-    	System.out.println("----------on message--------\n");
         String messageBody = new String(message.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
-        System.out.println("---------event id------"+id);
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         System.out.println("--------delivery tag------"+deliveryTag);
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
@@ -79,7 +77,6 @@ public class EventHandler {
             LOGGER.info("Event {} Received", id);
             eventReceived(messageBody);
             channel.basicAck(deliveryTag, false);
-            System.out.println("-------event processed---------"+ id);
             LOGGER.info("Event {} processed", id);
         } catch (MongoDBConnectionException mdce) {
             if (mdce.getMessage().equalsIgnoreCase("MongoDB Connection down")) {

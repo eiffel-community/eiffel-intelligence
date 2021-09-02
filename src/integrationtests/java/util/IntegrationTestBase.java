@@ -167,7 +167,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             //System.out.println("---------------events count------"+processedEvents);
         }
 
-        //waitForEventsToBeProcessed(eventsCount);
+        waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
 
@@ -216,12 +216,17 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
-        long stopTime = System.currentTimeMillis() + SECONDS_30;
+        long stopTime = System.currentTimeMillis() + 30000;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            TimeUnit.MILLISECONDS.sleep(SECONDS_1);
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000);
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+            TimeUnit.MILLISECONDS.sleep(5000);
         }
         System.out.println("---------------events count------"+countProcessedEvents(database,eventObjectMapCollectionName));
         if (processedEvents < eventsCount) {

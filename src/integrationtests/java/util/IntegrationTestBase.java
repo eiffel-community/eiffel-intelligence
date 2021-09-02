@@ -153,8 +153,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             String event = eventJson.toString();
 
             rabbitTemplate.convertAndSend(event);
-            long processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
-            System.out.println("---------------events count------"+processedEvents);
             if (!alreadyExecuted) {
                 TimeUnit.MILLISECONDS.sleep(firstEventWaitTime);
                 alreadyExecuted = true;
@@ -164,6 +162,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
              * empty void if not received by EI
              */
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
+
+            //long processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
+            //System.out.println("---------------events count------"+processedEvents);
         }
 
         waitForEventsToBeProcessed(eventsCount);
@@ -222,7 +223,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
-
+        System.out.println("---------------events count------"+processedEvents);
         if (processedEvents < eventsCount) {
             fail(String.format(
                     "EI did not process all sent events. Processed '%s' events out of '%s' sent.",

@@ -79,7 +79,7 @@ public class EventHandler {
             LOGGER.info("Event {} Received", id);
             eventReceived(messageBody);
             channel.basicAck(deliveryTag, false);
-            System.out.println("-------event processed---------");
+            System.out.println("-------event processed---------"+ id);
             LOGGER.info("Event {} processed", id);
         } catch (MongoDBConnectionException mdce) {
             if (mdce.getMessage().equalsIgnoreCase("MongoDB Connection down")) {

@@ -70,6 +70,8 @@ public class WaitListStorageHandler {
     public void init() throws AbortExecutionException {
         try {
             if (waitlistTtl > 0) {
+            	System.out.println("-------db-----------"+ databaseName);
+            	System.out.println("---------collection name------\n"+ waitlistCollectionName);
                 mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, MongoConstants.TIME, waitlistTtl);
             }
         } catch (Exception e) {

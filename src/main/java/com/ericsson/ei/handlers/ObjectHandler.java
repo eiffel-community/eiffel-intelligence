@@ -95,6 +95,8 @@ public class ObjectHandler {
     public void init() throws AbortExecutionException {
         try {
             if (getTtl() > 0) {
+            	System.out.println("-------db-----------"+ databaseName);
+            	System.out.println("---------collection name------\n"+ aggregationsCollectionName);
                 mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
             }
         } catch (Exception e1) {

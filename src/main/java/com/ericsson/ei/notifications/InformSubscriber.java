@@ -94,6 +94,8 @@ public class InformSubscriber {
     public void init() throws AbortExecutionException {
         try {
             if (failedNotificationsTtl > 0) {
+            	System.out.println("-------db-----------"+ database);
+            	System.out.println("---------collection name------\n"+ failedNotificationCollectionName);
                 mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,
                         failedNotificationsTtl);
             }

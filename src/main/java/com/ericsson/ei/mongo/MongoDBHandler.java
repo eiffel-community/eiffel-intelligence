@@ -266,9 +266,11 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+            System.out.println("--------create ttl index-----\n");
             checkAndDropTTLIndex(collection, fieldName + "_1");
             LOGGER.debug("Creating the index for {} in collection: {}", fieldName, collection.getNamespace());
             collection.createIndex(Indexes.ascending(fieldName), indexOptions);
+            System.out.println("--------index created------\n");
         } catch (Exception e) {
             throw new MongoDBConnectionException(e.getMessage());
         }
@@ -290,6 +292,7 @@ public class MongoDBHandler {
 				if (value.equals(fieldName)) {
 					LOGGER.debug("Dropping  the index for {} in collection: {}", fieldName, collection.getNamespace());
 					collection.dropIndex(fieldName);
+					System.out.println("----------index droppped------------\n");
 					break;
 				}
 			}

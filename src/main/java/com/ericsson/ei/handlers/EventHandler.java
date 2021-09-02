@@ -65,6 +65,7 @@ public class EventHandler {
 
     @Async
     public void onMessage(Message message, Channel channel) throws Exception {
+    	System.out.println("----------on message--------\n");
         String messageBody = new String(message.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(messageBody);

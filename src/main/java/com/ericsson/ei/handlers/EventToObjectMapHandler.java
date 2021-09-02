@@ -71,6 +71,8 @@ public class EventToObjectMapHandler {
     public void init() throws AbortExecutionException {
         try {
             if (Integer.parseInt(eventToObjectTtl) > 0) {
+            	System.out.println("-------db-----------"+ databaseName);
+            	System.out.println("---------collection name------\n"+ collectionName);
                 mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
             }
         } catch (Exception e) {

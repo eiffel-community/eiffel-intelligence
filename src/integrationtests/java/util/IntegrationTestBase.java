@@ -223,7 +223,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
-        System.out.println("---------------events count------"+processedEvents);
+        System.out.println("---------------events count------"+countProcessedEvents(database,eventObjectMapCollectionName));
         if (processedEvents < eventsCount) {
             fail(String.format(
                     "EI did not process all sent events. Processed '%s' events out of '%s' sent.",
@@ -242,6 +242,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         MongoClient mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection collection = db.getCollection(collectionName);
+        System.out.println("----db-------"+db);
+        System.out.println("---------------ccollection-----"+collection);
+        System.out.println("-------count processed events---------"+collection.count());
         return collection.count();
     }
 

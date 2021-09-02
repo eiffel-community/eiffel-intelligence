@@ -77,6 +77,7 @@ public class SubscriptionHandler {
                                            final String id) {
         List<String> subscriptions = mongoDBHandler.getAllDocuments(
                 database, subscriptionCollectionName);
+        System.out.println("-----subscription collection name-------db------------"+subscriptionCollectionName + database);
         subscriptions.forEach(
                 subscription -> extractConditions(aggregatedObject,
                         subscription, id));

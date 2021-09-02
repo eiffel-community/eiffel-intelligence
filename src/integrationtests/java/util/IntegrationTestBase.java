@@ -220,7 +220,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
-            LOGGER.info("Have gotten: " + processedEvents + " out of: " + eventsCount);
+            LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             try {
                 TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException e) {
@@ -229,6 +229,11 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             TimeUnit.MILLISECONDS.sleep(5000);
         }
         System.out.println("---------------events count------"+countProcessedEvents(database,eventObjectMapCollectionName));
+        if (processedEvents < eventsCount) {
+            fail(String.format(
+                    "EI did not process all sent events. Processed '%s' events out of '%s' sent.",
+                    processedEvents, eventsCount));
+        }
     }
 
     /**
@@ -242,7 +247,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         MongoClient mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection collection = db.getCollection(collectionName);
-        System.out.println("----db-------"+db);
+        System.out.println("----db-------"+db.listCollectionNames());
         System.out.println("---------------ccollection-----"+collection);
         System.out.println("-------count processed events---------"+collection.count());
         return collection.count();

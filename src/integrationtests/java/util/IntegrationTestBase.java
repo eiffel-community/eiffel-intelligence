@@ -167,7 +167,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             //System.out.println("---------------events count------"+processedEvents);
         }
 
-        waitForEventsToBeProcessed(eventsCount);
+        //waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
 

@@ -309,6 +309,7 @@ public class ObjectHandler {
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event,
             String id) {
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
+        //subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
     
     /**

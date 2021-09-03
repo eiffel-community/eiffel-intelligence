@@ -44,7 +44,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 
 import lombok.Setter;
 
@@ -216,17 +218,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
-        long stopTime = System.currentTimeMillis() + 30000;
+        long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
             processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
-            try {
-                TimeUnit.MILLISECONDS.sleep(1000);
-            } catch (InterruptedException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-            TimeUnit.MILLISECONDS.sleep(5000);
+            TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
         System.out.println("---------------events count------"+countProcessedEvents(database,eventObjectMapCollectionName));
         if (processedEvents < eventsCount) {
@@ -247,7 +244,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         MongoClient mongoClient = mongoDBHandler.getMongoClient();
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection collection = db.getCollection(collectionName);
-        System.out.println("----db-------"+db.listCollectionNames());
+        MongoIterable<String> collectionNames = db.listCollectionNames();
+        MongoCursor<String> i = collectionNames.iterator();
+        while (i.hasNext()) {
+            String t = i.next();
+            System.out.println("---------collection name----"+t);
+        }
         System.out.println("---------------ccollection-----"+collection);
         System.out.println("-------count processed events---------"+collection.count());
         return collection.count();

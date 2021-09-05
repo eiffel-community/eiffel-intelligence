@@ -57,7 +57,6 @@ public class IdRulesHandler {
                 for (final JsonNode idJsonObj : idsJsonObj) {
                     final String id = idJsonObj.textValue();
                     final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                    System.out.println("----------------agg obj----------"+aggregatedObjects);
 
                     for (String aggregatedObject : aggregatedObjects) {
                         extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
@@ -65,10 +64,8 @@ public class IdRulesHandler {
                     if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
                             extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
-                            System.out.println("------------if\n");
                         } else {
                             waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
-                            System.out.println("-----------------------else\n");
                         }
                     }
                 }

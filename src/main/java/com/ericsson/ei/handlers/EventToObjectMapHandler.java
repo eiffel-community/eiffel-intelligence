@@ -115,7 +115,9 @@ public class EventToObjectMapHandler {
             String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(objectId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
+        //System.out.println("-------condition--------"+condition);
+        //System.out.println("------------event to object map-----------\n");
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);
@@ -131,11 +133,17 @@ public class EventToObjectMapHandler {
                 ArrayNode jsonNode = mapper.convertValue(list, ArrayNode.class);
                 ((ObjectNode) entry).set(listPropertyName, mapper.readTree(jsonNode.toString()));
                 final String mapStr = entry.toString();
+                //System.out.println("---------db----"+databaseName+"-----collection---\n"+collectionName);
+                //System.out.println("----event---"+mapStr);
                 LOGGER.debug(
                         "MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}",
                         mapStr, databaseName, collectionName);
                 Document document = Document.parse(mapStr);
                 document.append("Time", DateUtils.getDate());
+                mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
+            } else {
+                mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
+                        eventId);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to update event object list.", e);

@@ -179,8 +179,10 @@ public class EventToObjectMapHandler {
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
-        List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
+    	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        MongoStringQuery query = new MongoStringQuery(condition);
+        LOGGER.info("The JSON query for isEventInEventObjectMap is : {}", query);
+        List<String> documents = mongodbhandler.find(databaseName, collectionName, query);
         return !documents.isEmpty();
     }
 

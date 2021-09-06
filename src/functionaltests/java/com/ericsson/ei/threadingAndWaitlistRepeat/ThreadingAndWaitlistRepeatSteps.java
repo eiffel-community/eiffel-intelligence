@@ -90,7 +90,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         while (dbManager.waitListSize() > 0 && stopTime > System.currentTimeMillis()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
-        assertEquals("Waitlist resent events and due their presence in event-to-object-map, events are deleted", 4,
+        assertEquals("Waitlist resent events and due their presence in event-to-object-map, events are deleted", 0,
                 dbManager.waitListSize());
     }
 

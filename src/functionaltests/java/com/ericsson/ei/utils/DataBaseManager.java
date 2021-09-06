@@ -138,6 +138,7 @@ public class DataBaseManager {
      * @return list of missing events
      */
     private List<String> compareSentEventsWithEventsInDB(final List<String> checklist) {
+    	System.out.println("---------collection name-----"+eventObjectCollectionName);
         final List<Document> documents = getDocumentsFromCollection(eventObjectCollectionName);
         System.out.println("---------------documents-----"+documents);
         List<String> foundIDs = new ArrayList<>();

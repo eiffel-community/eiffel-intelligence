@@ -168,7 +168,10 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
             //System.out.println("---------------events count------"+processedEvents);
         }
-        waitForEventsToBeProcessed(eventsCount);
+        long c=countProcessedEvents(database,eventObjectMapCollectionName);
+        System.out.println("-------------->>>>>>>>>>>>>> c"+c);
+        assertEquals("processed events",1,c);
+        //waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
 

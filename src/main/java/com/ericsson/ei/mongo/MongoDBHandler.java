@@ -46,7 +46,9 @@ import com.mongodb.MongoSocketWriteException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.DeleteResult;
@@ -554,6 +556,7 @@ public class MongoDBHandler {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(condition.toString());
+                System.out.println("--------db object input--------"+dbObjectInput);
                 UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
                 updateMany = collection.updateOne(dbObjectInput, Updates.set(MongoConstants.TIME, DateUtils.getDate()));
                 long stop = System.currentTimeMillis();

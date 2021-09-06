@@ -121,10 +121,10 @@ public class RunSubscription {
             if (count_conditions != 0 && count_condition_fulfillment == count_conditions) {
                 conditionFulfilled = true;
                 if (subscriptionRepeatFlag.equals("false") && id != null) {
-                    final String synchronizationString = new String(subscriptionName);
+                    //final String synchronizationString = new String(subscriptionName);
                     // the keyword 'synchronized' ensures that this part of the code run
                     // synchronously. Thus avoids race condition.
-                    synchronized (synchronizationString) {
+                    synchronized (this) {
                         if (!subscriptionRepeatDbHandler.checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
                                 subscriptionName, requirementIndex, id, false)) {
                             LOGGER.debug("Adding matched aggregated object to database:" + dataBaseName);

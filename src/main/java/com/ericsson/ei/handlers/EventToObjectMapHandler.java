@@ -115,7 +115,7 @@ public class EventToObjectMapHandler {
             String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(objectId);
+        final MongoCondition condition = MongoCondition.idCondition(eventId);
         //System.out.println("-------condition--------"+condition);
         //System.out.println("------------event to object map-----------\n");
         LOGGER.debug(

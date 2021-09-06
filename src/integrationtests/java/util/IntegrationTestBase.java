@@ -13,6 +13,7 @@
 */
 package util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -165,10 +166,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
              */
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
 
-            //long processedEvents = countProcessedEvents(database,eventObjectMapCollectionName);
             //System.out.println("---------------events count------"+processedEvents);
         }
-
         waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
@@ -225,7 +224,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
-        System.out.println("---------------events count------"+countProcessedEvents(database,eventObjectMapCollectionName));
         if (processedEvents < eventsCount) {
             fail(String.format(
                     "EI did not process all sent events. Processed '%s' events out of '%s' sent.",
@@ -248,10 +246,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         MongoCursor<String> i = collectionNames.iterator();
         while (i.hasNext()) {
             String t = i.next();
-            System.out.println("---------collection name----"+t);
         }
-        System.out.println("---------------ccollection-----"+collection);
-        System.out.println("-------count processed events---------"+collection.count());
         return collection.count();
     }
 

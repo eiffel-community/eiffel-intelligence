@@ -88,6 +88,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     private JenkinsXmlData jenkinsXmlData;
     private SubscriptionObject subscriptionObject;
     private JSONObject jobStatusData;
+    public static int upcount=0;
 
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
@@ -178,6 +179,12 @@ public class FlowStepsIT extends IntegrationTestBase {
             for (JsonNode event : upstreamJson) {
                 String eventStr = event.toString();
                 rabbitTemplate.convertAndSend(eventStr);
+                JsonNode json = event.get("meta");
+                JsonNode type = json.get("type");
+                String eventType = type.asText();
+                if(eventType.equals("EiffelArtifactCreatedEvent")) {
+                	upcount++;
+                }
             }
         }
     }

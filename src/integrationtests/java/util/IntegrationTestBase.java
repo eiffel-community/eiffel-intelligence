@@ -13,6 +13,7 @@
 */
 package util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -37,6 +38,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
+import com.ericsson.ei.integrationtests.flow.FlowStepsIT;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -164,7 +166,10 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
 
-        waitForEventsToBeProcessed(eventsCount);
+        //waitForEventsToBeProcessed(eventsCount);
+        long count = countProcessedEvents(database,eventObjectMapCollectionName);
+        int i = FlowStepsIT.upcount;
+        assertEquals("processed events",1+i,count);
         checkResult(getCheckData());
     }
 
@@ -253,6 +258,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     private void checkResult(final Map<String, JsonNode> expectedData)
             throws IOException, URISyntaxException, InterruptedException {
+    	System.out.println("--------------expected data----------"+expectedData);
         Iterator iterator = expectedData.entrySet().iterator();
 
         JsonNode expectedJSON = objectMapper.createObjectNode();
@@ -272,6 +278,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                  * This is a workaround for expectedJSON.equals(acutalJSON) as that does not work
                  * with strict equalization
                  */
+                System.out.println("--------------expected json----\n"+expectedJSON.toString()+"\n----actual json-------\n"+actualJSON.toString());
                 try {
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;

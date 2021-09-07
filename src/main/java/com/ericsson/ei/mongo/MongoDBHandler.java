@@ -15,6 +15,7 @@ package com.ericsson.ei.mongo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -265,12 +266,33 @@ public class MongoDBHandler {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+            checkAndDropTTLIndex(collection, fieldName + "_1");
+            LOGGER.debug("Creating the index for {} in collection: {}", fieldName, collection.getNamespace());
             collection.createIndex(Indexes.ascending(fieldName), indexOptions);
         } catch (Exception e) {
-            throw new MongoDBConnectionException("MongoDB Connection down");
+            throw new MongoDBConnectionException(e.getMessage());
         }
     }
-
+    /**
+     * This method is used to check and drop the TTL index for specific field.
+     * 
+     * @param collection - MongoCollection.
+     * @param fieldName  - Field name for dropping the index.
+     * @throws Exception
+     */
+    private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception {
+        // Verify if the index is present for the field in the collection.
+        for (Document index : collection.listIndexes()) {
+            for (Map.Entry<String, Object> entry : index.entrySet()) {
+                Object value = entry.getValue();
+                if (value.equals(fieldName)) {
+                    LOGGER.debug("Dropping the index for {} in collection: {}", fieldName, collection.getNamespace());
+                    collection.dropIndex(fieldName);
+                    break;
+                }
+            }
+        }
+    }
     /**
      * This method is used to drop a collection.
      *

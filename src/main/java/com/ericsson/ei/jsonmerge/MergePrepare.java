@@ -218,7 +218,14 @@ public class MergePrepare {
         try {
             objectJSONObject = new JSONObject(originObject);
             stringObject = objectJSONObject.toString();
-            Object ruleJSONObject = new JSONObject(mergeRule);
+            Object ruleJSONObject;
+
+            // condition to avoid un-necessary exception to print in the log
+            if(mergeRule.startsWith("{")) {
+            	ruleJSONObject = new JSONObject(mergeRule);
+            } else {
+            	return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
+            }
             // hack to remove quotes
             stringRule = ruleJSONObject.toString();
             // if we have an array with only one JSON object we remove the

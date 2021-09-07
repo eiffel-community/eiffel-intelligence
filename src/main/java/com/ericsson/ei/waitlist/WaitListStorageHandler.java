@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.waitlist;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.*;
@@ -38,6 +39,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 @Component
 public class WaitListStorageHandler {
@@ -62,9 +65,18 @@ public class WaitListStorageHandler {
     @Setter
     @Autowired
     private JmesPathInterface jmesPathInterface;
-    
-    private boolean isTTLCreated;
 
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (waitlistTtl > 0) {
+                mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, MongoConstants.TIME, waitlistTtl);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", waitlistCollectionName, e);
+        }
+    }
+    
     /**
      * Adds event to the waitlist database if it does not already exists.
      *
@@ -113,16 +125,6 @@ public class WaitListStorageHandler {
         document.put(MongoConstants.ID, id.textValue());
         document.put(MongoConstants.TIME, date);
         document.put(MongoConstants.EVENT, event);
-        try {
-            if (waitlistTtl > 0 && !isTTLCreated) {
-                mongoDbHandler.createTTLIndex(databaseName, waitlistCollectionName, MongoConstants.TIME,
-                        waitlistTtl);
-                isTTLCreated = true;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to create an index for {} ", waitlistCollectionName);
-            isTTLCreated = false;
-        }
         return document;
     }
 

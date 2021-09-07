@@ -141,7 +141,7 @@ public class TestRulesRestAPI {
      */
     @Test
     public void testGetTestRulePageEnabledAPI_ensurePropertyFalse() throws Exception {
-        String responseBody = new JSONObject().put("status", false).toString();
+        String responseBody = new JSONObject().put("status", true).toString();
         mockMvc.perform(MockMvcRequestBuilders.get("/rule-test")
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
                 .andExpect(content().string(responseBody)).andReturn();

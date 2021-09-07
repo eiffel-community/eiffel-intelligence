@@ -19,6 +19,8 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoConstants;
@@ -61,8 +64,21 @@ public class EventToObjectMapHandler {
 
     @Autowired
     JmesPathInterface jmesPathInterface;
+    
+    @Value("${aggregations.collection.ttl:0}")
+    private String eventToObjectTtl;
 
-    private boolean isTTLCreated;
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (Integer.parseInt(eventToObjectTtl) > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
+        }
+    }
+
 
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
@@ -121,11 +137,6 @@ public class EventToObjectMapHandler {
                         mapStr, databaseName, collectionName);
                 Document document = Document.parse(mapStr);
                 document.append("Time", DateUtils.getDate());
-
-                if(ttlValue > 0 && !isTTLCreated) {                 
-                    mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, ttlValue);
-                    isTTLCreated = true;
-                }
                 mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,

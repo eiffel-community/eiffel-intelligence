@@ -116,7 +116,7 @@ public class EventToObjectMapHandler {
             String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(objectId);
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);

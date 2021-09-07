@@ -20,6 +20,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import com.ericsson.ei.mongo.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.RulesObject;
@@ -80,8 +83,16 @@ public class ObjectHandler {
     @Autowired
     private SubscriptionHandler subscriptionHandler;
 
-    private boolean isTTLCreated;
-
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (getTtl() > 0) {
+                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
+            }
+        } catch (Exception e1) {
+            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1);
+        }
+    }
     /**
      * This method is responsible for inserting an aggregated object in to the database.
      *
@@ -102,16 +113,6 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
-        try {
-            if (getTtl() > 0 && !isTTLCreated) {
-                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
-                isTTLCreated = true;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to create an index for {}", aggregationsCollectionName);
-            isTTLCreated = false;
-        }
-
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
         return aggregatedObject;
@@ -308,6 +309,7 @@ public class ObjectHandler {
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event,
             String id) {
+    	LOGGER.info("Updating the event object map with event id: " + id + " event is : " + event);
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
     }
     

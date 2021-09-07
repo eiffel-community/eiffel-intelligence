@@ -107,6 +107,10 @@ public class RuleTestSteps extends FunctionalTestBase {
         if (expectedResponse instanceof JSONArray) {
             JSONArray expectedArray = new JSONArray(responseBody);
             JSONArray responseArray = new JSONArray(response.getBody().toString());
+            for(int i=0;i<responseArray.length();i++) {
+            	JSONObject jsonobject = responseArray.getJSONObject(i);
+            	jsonobject.remove("Time");
+            	}
             assertEquals(expectedArray, responseArray, true);
         } else {
             JSONObject expectedObject = new JSONObject(responseBody);

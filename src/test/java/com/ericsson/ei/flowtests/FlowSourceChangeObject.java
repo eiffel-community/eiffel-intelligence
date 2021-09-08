@@ -54,67 +54,65 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowSourceChangeObject.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {
-        "rules.path: src/test/resources/SourceChangeObjectRules.json",
-        "spring.data.mongodb.database: FlowSourceChangeObject",
-        "failed.notifications.collection.name: FlowSourceChangeObject-failedNotifications",
-        "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
-        "rabbitmq.queue.suffix: FlowSourceChangeObject" })
+@TestPropertySource(properties = { "rules.path: src/test/resources/SourceChangeObjectRules.json",
+		"spring.data.mongodb.database: FlowSourceChangeObject",
+		"failed.notifications.collection.name: FlowSourceChangeObject-failedNotifications",
+		"rabbitmq.exchange.name: FlowSourceChangeObject-exchange", "rabbitmq.queue.suffix: FlowSourceChangeObject" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class FlowSourceChangeObject extends FlowTestBase {
-    private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObjectEvents.json";
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
-    private static final String AGGREGATED_OBJECT_ID = "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
-    private static final String UPSTREAM_FILE = "UpstreamEventsForMockedSourceChange.json";
+	private static final String EVENTS_FILE_PATH = "src/test/resources/TestSourceChangeObjectEvents.json";
+	private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregatedSourceChangeObject.json";
+	private static final String AGGREGATED_OBJECT_ID = "sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47";
+	private static final String UPSTREAM_FILE = "UpstreamEventsForMockedSourceChange.json";
 
-    @Override
-    String getEventsFilePath() {
-        return EVENTS_FILE_PATH;
-    }
+	@Override
+	String getEventsFilePath() {
+		return EVENTS_FILE_PATH;
+	}
 
-    @Autowired
-    private UpStreamEventsHandler upStreamEventsHandler;
+	@Autowired
+	private UpStreamEventsHandler upStreamEventsHandler;
 
-    @Mock
-    private ERQueryService erQueryService;
+	@Mock
+	private ERQueryService erQueryService;
 
-    @Before
-    public void before() throws PropertyNotFoundException, Exception {
-        MockitoAnnotations.initMocks(this);
-        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-        final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_FILE);
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
-        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+	@Before
+	public void before() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+		final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_FILE);
+		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectNode objectNode = objectMapper.createObjectNode();
+		objectNode.set("upstreamLinkObjects", objectMapper.readTree(upStreamResult));
+		objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-        Header[] headers = {};
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
-    }
+		Header[] headers = {};
+		when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+				anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
+	}
 
-    @Override
-    List<String> getEventNamesToSend() {
-        List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-        eventNames.add("event_EiffelActivityTriggeredEvent_3");
-        eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
-        eventNames.add("event_EiffelActivityStartedEvent_3");
-        eventNames.add("event_EiffelActivityStartedEvent_3_2");
-        eventNames.add("event_EiffelActivityFinishedEvent_3");
-        eventNames.add("event_EiffelActivityFinishedEvent_3_2");
-        eventNames.add("event_EiffelActivityCanceledEvent_3");
-        eventNames.add("event_EiffelActivityCanceledEvent_3_2");
-        return eventNames;
-    }
+	@Override
+	List<String> getEventNamesToSend() {
+		List<String> eventNames = new ArrayList<>();
+		eventNames.add("event_EiffelSourceChangeSubmittedEvent_3");
+		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+		eventNames.add("event_EiffelActivityTriggeredEvent_3");
+		eventNames.add("event_EiffelActivityTriggeredEvent_3_2");
+		eventNames.add("event_EiffelActivityStartedEvent_3");
+		eventNames.add("event_EiffelActivityStartedEvent_3_2");
+		eventNames.add("event_EiffelActivityFinishedEvent_3");
+		eventNames.add("event_EiffelActivityFinishedEvent_3_2");
+		eventNames.add("event_EiffelActivityCanceledEvent_3");
+		eventNames.add("event_EiffelActivityCanceledEvent_3_2");
+		return eventNames;
+	}
 
-    @Override
-    Map<String, JsonNode> getCheckData() throws IOException {
-        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
-        Map<String, JsonNode> checkData = new HashMap<>();
-        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
-        return checkData;
-    }
+	@Override
+	Map<String, JsonNode> getCheckData() throws IOException {
+		JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+		Map<String, JsonNode> checkData = new HashMap<>();
+		checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+		return checkData;
+	}
 }

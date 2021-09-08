@@ -41,7 +41,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.ei.App;
 import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
-import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.utils.HttpExecutor;
 import com.ericsson.eiffelcommons.utils.HttpRequest;
@@ -50,60 +49,59 @@ import com.ericsson.eiffelcommons.utils.ResponseEntity;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
-
-@TestPropertySource(properties = {
-        "spring.data.mongodb.database: ERQueryServiceTest",
-        "failed.notifications.collection.name: ERQueryServiceTest-failedNotifications",
-        "rabbitmq.exchange.name: ERQueryServiceTest-exchange",
-        "rabbitmq.queue.suffix: ERQueryServiceTest",
-        "event.repository.url: http://localhost:8080/eventrepository/search/" })
+@TestPropertySource(properties = { "spring.data.mongodb.database: ERQueryServiceTest",
+		"failed.notifications.collection.name: ERQueryServiceTest-failedNotifications",
+		"rabbitmq.exchange.name: ERQueryServiceTest-exchange", "rabbitmq.queue.suffix: ERQueryServiceTest",
+		"event.repository.url: http://localhost:8080/eventrepository/search/" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { App.class })
 public class ERQueryServiceTest extends Mockito {
 
-    @Autowired
-    private ERQueryService erQueryService;
-    private HttpExecutor httpExecutor;
- 
-    private String eventId = "01";
-    private SearchOption searchOption = SearchOption.UP_STREAM;
-    private int limitParam = 85;
-    private int levels = 2;
-    private boolean isTree = true;
-    private boolean shallow = true;
-    private HttpRequest httpRequest;
+	@Autowired
+	private ERQueryService erQueryService;
+	private HttpExecutor httpExecutor;
 
-    @Before
-    public void setUp() throws Exception {
-        httpExecutor = mock(HttpExecutor.class);
-        httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
-    }
+	private String eventId = "01";
+	private SearchOption searchOption = SearchOption.UP_STREAM;
+	private int limitParam = 85;
+	private int levels = 2;
+	private boolean isTree = true;
+	private boolean shallow = true;
 
-    @Test(expected = Test.None.class)
-    public void testErQueryUpstream() throws PropertyNotFoundException, Exception {
-        BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
-        erQueryService.sendRequestToER(eventId, searchOption, limitParam, levels, isTree, httpRequest);
-    }
+	@Before
+	public void setUp() throws Exception {
+		httpExecutor = mock(HttpExecutor.class);
+		HttpRequest httpRequest = new HttpRequest(HttpMethod.POST, httpExecutor);
+		erQueryService.setHttpRequest(httpRequest);
+	}
 
-    private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase ) {
-        return invocation -> {
-            DefaultHttpResponseFactory responseFactory = new DefaultHttpResponseFactory();
-            HttpResponse response = responseFactory.newHttpResponse(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, ""), null);
-            HttpPost postRequest = invocation.getArgument(0);
-            String expectedUri = buildUri();
-            assertEquals(expectedUri, postRequest.getURI().toString());
-            HttpEntity httpEntity = postRequest.getEntity();
-            InputStream bodyInputStream = httpEntity.getContent();
-            String bodyString = CharStreams.toString(new InputStreamReader(bodyInputStream, Charsets.UTF_8));
-            assertEquals("{\"dlt\":[],\"ult\":[\"ALL\"]}", bodyString);
-            return new ResponseEntity(response);
-        };
-    }
+	@Test(expected = Test.None.class)
+	public void testErQueryUpstream() throws Exception {
+		BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class)))
+				.willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
+		erQueryService.getEventStreamDataById(eventId, searchOption, limitParam, levels, isTree);
+	}
 
-    public String buildUri() {
-        String uri = String.format("%s%s?limit=%s&tree=%s&shallow=%s&levels=%s",
-                erQueryService.getEventRepositoryUrl().trim(), eventId, limitParam, isTree, shallow, levels) ;
-        return uri;
-    }
+	private Answer<ResponseEntity> validateRequest(HttpRequestBase httpRequestBase) {
+		return invocation -> {
+			DefaultHttpResponseFactory responseFactory = new DefaultHttpResponseFactory();
+			HttpResponse response = responseFactory
+					.newHttpResponse(new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, ""), null);
+			HttpPost postRequest = invocation.getArgument(0);
+			String expectedUri = buildUri();
+			assertEquals(expectedUri, postRequest.getURI().toString());
+			HttpEntity httpEntity = postRequest.getEntity();
+			InputStream bodyInputStream = httpEntity.getContent();
+			String bodyString = CharStreams.toString(new InputStreamReader(bodyInputStream, Charsets.UTF_8));
+			assertEquals("{\"dlt\":[],\"ult\":[\"ALL\"]}", bodyString);
+			return new ResponseEntity(response);
+		};
+	}
+
+	public String buildUri() {
+		String uri = String.format("%s%s?limit=%s&tree=%s&shallow=%s&levels=%s",
+				erQueryService.getEventRepositoryUrl().trim(), eventId, limitParam, isTree, shallow, levels);
+		return uri;
+	}
 }

@@ -31,59 +31,59 @@ import java.util.List;
 @Component
 public class IdRulesHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IdRulesHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdRulesHandler.class);
 
-    @Autowired
-    private JmesPathInterface jmesPathInterface;
+	@Autowired
+	private JmesPathInterface jmesPathInterface;
 
-    @Autowired
-    private MatchIdRulesHandler matchIdRulesHandler;
+	@Autowired
+	private MatchIdRulesHandler matchIdRulesHandler;
 
-    @Autowired
-    private ExtractionHandler extractionHandler;
+	@Autowired
+	private ExtractionHandler extractionHandler;
 
-    @Autowired
-    private WaitListStorageHandler waitListStorageHandler;
+	@Autowired
+	private WaitListStorageHandler waitListStorageHandler;
 
-    public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
-        this.jmesPathInterface = jmesPathInterface;
-    }
+	public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
+		this.jmesPathInterface = jmesPathInterface;
+	}
 
-    public void runIdRules(RulesObject rulesObject, String event)
-            throws MongoDBConnectionException {
-        if (rulesObject != null && event != null) {
-            JsonNode idsJsonObj = getIds(rulesObject, event);
-            if (idsJsonObj != null && idsJsonObj.isArray()) {
-                for (final JsonNode idJsonObj : idsJsonObj) {
-                    final String id = idJsonObj.textValue();
-                    final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
+	public void runIdRules(RulesObject rulesObject, String event, boolean isRedelivered)
+			throws MongoDBConnectionException, Exception {
+		if (rulesObject != null && event != null) {
+			JsonNode idsJsonObj = getIds(rulesObject, event);
+			if (idsJsonObj != null && idsJsonObj.isArray()) {
+				for (final JsonNode idJsonObj : idsJsonObj) {
+					final String id = idJsonObj.textValue();
+					final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
 
-                    for (String aggregatedObject : aggregatedObjects) {
-                        extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
-                    }
-                    if (aggregatedObjects.size() == 0) {
-                        if (rulesObject.isStartEventRules()) {
-                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
-                        } else {
-                            waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
-                        }
-                    }
-                }
-            }
-        }
-    }
+					for (String aggregatedObject : aggregatedObjects) {
+						extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject, isRedelivered);
+					}
+					if (aggregatedObjects.size() == 0) {
+						if (rulesObject.isStartEventRules()) {
+							extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null, isRedelivered);
+						} else {
+							waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
+						}
+					}
+				}
+			}
+		}
+	}
 
-    public JsonNode getIds(RulesObject rulesObject, String event) {
-        String idRule = rulesObject.getIdentifyRules();
-        JsonNode ids = null;
-        if (idRule != null && !idRule.isEmpty()) {
-            try {
-                ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-            } catch (Exception e) {
-                LOGGER.info("Failed to get ID from event.", e);
-            }
-        }
+	public JsonNode getIds(RulesObject rulesObject, String event) {
+		String idRule = rulesObject.getIdentifyRules();
+		JsonNode ids = null;
+		if (idRule != null && !idRule.isEmpty()) {
+			try {
+				ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+			} catch (Exception e) {
+				LOGGER.info("Failed to get ID from event.", e);
+			}
+		}
 
-        return ids;
-    }
+		return ids;
+	}
 }

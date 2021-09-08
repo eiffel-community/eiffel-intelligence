@@ -33,56 +33,55 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Component
 public class DownstreamIdRulesHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamIdRulesHandler.class);
 
-    @Autowired
-    private JmesPathInterface jmesPathInterface;
+	@Autowired
+	private JmesPathInterface jmesPathInterface;
 
-    @Autowired
-    private MatchIdRulesHandler matchIdRulesHandler;
+	@Autowired
+	private MatchIdRulesHandler matchIdRulesHandler;
 
-    @Autowired
-    private DownstreamExtractionHandler downstreamExtractionHandler;
+	@Autowired
+	private DownstreamExtractionHandler downstreamExtractionHandler;
 
-    @Autowired
-    private WaitListStorageHandler waitListStorageHandler;
+	@Autowired
+	private WaitListStorageHandler waitListStorageHandler;
 
-    public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
-        this.jmesPathInterface = jmesPathInterface;
-    }
+	public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
+		this.jmesPathInterface = jmesPathInterface;
+	}
 
-    public void runIdRules(RulesObject rulesObject, String event)
-            throws MongoDBConnectionException {
-        if (rulesObject != null && event != null) {
-            JsonNode idsJsonObj = getIds(rulesObject, event);
-            List<String> objects;
-            String id;
-            if (idsJsonObj != null && idsJsonObj.isArray()) {
-                for (final JsonNode idJsonObj : idsJsonObj) {
-                    id = idJsonObj.textValue();
-                    objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
-                    for (String object : objects) {
-                        downstreamExtractionHandler.runExtraction(rulesObject, id, event, object);
-                    }
-                    if (objects.size() == 0) {
-                        waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
-                    }
-                }
-            }
-        }
-    }
+	public void runIdRules(RulesObject rulesObject, String event) throws MongoDBConnectionException, Exception {
+		if (rulesObject != null && event != null) {
+			JsonNode idsJsonObj = getIds(rulesObject, event);
+			List<String> objects;
+			String id;
+			if (idsJsonObj != null && idsJsonObj.isArray()) {
+				for (final JsonNode idJsonObj : idsJsonObj) {
+					id = idJsonObj.textValue();
+					objects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
+					for (String object : objects) {
+						downstreamExtractionHandler.runExtraction(rulesObject, id, event, object);
+					}
+					if (objects.size() == 0) {
+						waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
+					}
+				}
+			}
+		}
+	}
 
-    public JsonNode getIds(RulesObject rulesObject, String event) {
-        String idRule = rulesObject.getDownstreamIdentifyRules();
-        JsonNode ids = null;
-        if (idRule != null && !idRule.isEmpty()) {
-            try {
-                ids = jmesPathInterface.runRuleOnEvent(idRule, event);
-            } catch (Exception e) {
-                LOGGER.info("Failed to get ID from event.", e);
-            }
-        }
+	public JsonNode getIds(RulesObject rulesObject, String event) {
+		String idRule = rulesObject.getDownstreamIdentifyRules();
+		JsonNode ids = null;
+		if (idRule != null && !idRule.isEmpty()) {
+			try {
+				ids = jmesPathInterface.runRuleOnEvent(idRule, event);
+			} catch (Exception e) {
+				LOGGER.info("Failed to get ID from event.", e);
+			}
+		}
 
-        return ids;
-    }
+		return ids;
+	}
 }

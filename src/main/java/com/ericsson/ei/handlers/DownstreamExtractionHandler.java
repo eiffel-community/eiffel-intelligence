@@ -21,45 +21,52 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.DownstreamMergeHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoExecutionTimeoutException;
 
 @Component
 public class DownstreamExtractionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamExtractionHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownstreamExtractionHandler.class);
 
-    @Autowired private JmesPathInterface jmesPathInterface;
-    @Autowired private DownstreamMergeHandler mergeHandler;
-    @Autowired private ObjectHandler objectHandler;
+	@Autowired
+	private JmesPathInterface jmesPathInterface;
+	@Autowired
+	private DownstreamMergeHandler mergeHandler;
+	@Autowired
+	private ObjectHandler objectHandler;
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, String aggregatedDbObject) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            LOGGER.debug("Start extraction of Aggregated Object:\n{} \nwith Event:\n{}", aggregatedDbObject, event);
-            JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
-            runExtraction(rulesObject, mergeId, event, aggregatedJsonObject);
-        } catch (Exception e) {
-            LOGGER.info("Failed with extraction." ,e);
-        }
-    }
+	public void runExtraction(RulesObject rulesObject, String mergeId, String event, String aggregatedDbObject) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			LOGGER.debug("Start extraction of Aggregated Object:\n{} \nwith Event:\n{}", aggregatedDbObject, event);
+			JsonNode aggregatedJsonObject = mapper.readValue(aggregatedDbObject, JsonNode.class);
+			runExtraction(rulesObject, mergeId, event, aggregatedJsonObject);
+		} catch (Exception e) {
+			LOGGER.info("Failed with extraction.", e);
+		}
+	}
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) {
-        JsonNode extractedContent;
-        extractedContent = extractContent(rulesObject, event);
-        LOGGER.debug("Start extraction of Aggregated Object:\n{} \nwith Event:\n{}", aggregatedDbObject.toString(), event);
+	public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject)
+			throws MongoExecutionTimeoutException, MongoDBConnectionException {
+		JsonNode extractedContent;
+		extractedContent = extractContent(rulesObject, event);
+		LOGGER.debug("Start extraction of Aggregated Object:\n{} \nwith Event:\n{}", aggregatedDbObject.toString(),
+				event);
 
-        if(aggregatedDbObject != null) {
-            String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-            mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-        }
-    }
+		if (aggregatedDbObject != null) {
+			String objectId = objectHandler.extractObjectId(aggregatedDbObject);
+			mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
+		}
+	}
 
-    private JsonNode extractContent(RulesObject rulesObject, String event) {
-        String extractionRules = rulesObject.getDownstreamExtractionRules();
-        return jmesPathInterface.runRuleOnEvent(extractionRules, event);
-    }
+	private JsonNode extractContent(RulesObject rulesObject, String event) {
+		String extractionRules = rulesObject.getDownstreamExtractionRules();
+		return jmesPathInterface.runRuleOnEvent(extractionRules, event);
+	}
 }

@@ -60,90 +60,91 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, FlowTest.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {
-        "rules.path: src/test/resources/ArtifactRules.json",
-        "spring.data.mongodb.database: FlowTest",
-        "failed.notifications.collection.name: FlowTest-failedNotifications",
-        "rabbitmq.exchange.name: FlowTest-exchange",
-        "rabbitmq.queue.suffix: FlowTest" })
+@TestPropertySource(properties = { "rules.path: src/test/resources/ArtifactRules.json",
+		"spring.data.mongodb.database: FlowTest", "failed.notifications.collection.name: FlowTest-failedNotifications",
+		"rabbitmq.exchange.name: FlowTest-exchange", "rabbitmq.queue.suffix: FlowTest" })
 public class FlowTest extends FlowTestBase {
 
-    private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
-    private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
-    private static final String EVENTS_FILE_PATH = "src/test/resources/ArtifactFlowTestEvents.json";
-    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestUnitTest.json";
-    private static final String AGGREGATED_OBJECT_ID = "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
+	private static final String UPSTREAM_RESULT_FILE = "upStreamResultFile.json";
+	private static final String UPSTREAM_INPUT_FILE = "upStreamInput.json";
+	private static final String EVENTS_FILE_PATH = "src/test/resources/ArtifactFlowTestEvents.json";
+	private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/AggregatedDocumentInternalCompositionLatestUnitTest.json";
+	private static final String AGGREGATED_OBJECT_ID = "aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43";
 
-    @Autowired
-    private UpStreamEventsHandler upStreamEventsHandler;
+	@Autowired
+	private UpStreamEventsHandler upStreamEventsHandler;
 
-    @Mock
-    private ERQueryService erQueryService;
+	@Mock
+	private ERQueryService erQueryService;
 
-    @Autowired
-    private RabbitTemplate rabbitMqTemplate;
+	@Autowired
+	private RabbitTemplate rabbitMqTemplate;
 
-    @Before
-    public void before() throws PropertyNotFoundException, Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
+	@Before
+	public void before() throws PropertyNotFoundException, Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
 
-        if (!systemTest) {
-            final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
-            MockitoAnnotations.initMocks(this);
-            upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+		if (!systemTest) {
+			final URL upStreamResult = this.getClass().getClassLoader().getResource(UPSTREAM_RESULT_FILE);
+			MockitoAnnotations.initMocks(this);
+			upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            JsonNode upstreamJson = objectMapper.readTree(upStreamResult);
-            objectNode.set("upstreamLinkObjects", upstreamJson);
-            objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+			ObjectNode objectNode = objectMapper.createObjectNode();
+			JsonNode upstreamJson = objectMapper.readTree(upStreamResult);
+			objectNode.set("upstreamLinkObjects", upstreamJson);
+			objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-            Header[] headers = {};
-            when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                    anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
-        } else {
-            final URL upStreamInput = this.getClass().getClassLoader().getResource(UPSTREAM_INPUT_FILE);
-            ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
-            if (upstreamJson != null) {
-                for (JsonNode event : upstreamJson) {
-                    String eventStr = event.toString();
-                    rabbitMqTemplate.convertAndSend(eventStr);
-                }
-            }
-        }
-    }
+			Header[] headers = {};
+			try {
+				when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+						anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			final URL upStreamInput = this.getClass().getClassLoader().getResource(UPSTREAM_INPUT_FILE);
+			ArrayNode upstreamJson = (ArrayNode) objectMapper.readTree(upStreamInput);
+			if (upstreamJson != null) {
+				for (JsonNode event : upstreamJson) {
+					String eventStr = event.toString();
+					rabbitMqTemplate.convertAndSend(eventStr);
+				}
+			}
+		}
+	}
 
-    @Override
-    String getEventsFilePath() {
-        return EVENTS_FILE_PATH;
-    }
+	@Override
+	String getEventsFilePath() {
+		return EVENTS_FILE_PATH;
+	}
 
-    @Override
-    protected int extraEventsCount() {
-        return 8;
-    }
+	@Override
+	protected int extraEventsCount() {
+		return 8;
+	}
 
-    @Override
-    List<String> getEventNamesToSend() {
-        List<String> eventNames = new ArrayList<>();
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3");
-        eventNames.add("event_EiffelArtifactCreatedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-        eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
-        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-        eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
-        eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
-        eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
-        return eventNames;
-    }
+	@Override
+	List<String> getEventNamesToSend() {
+		List<String> eventNames = new ArrayList<>();
+		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+		eventNames.add("event_EiffelArtifactPublishedEvent_3");
+		eventNames.add("event_EiffelArtifactCreatedEvent_3");
+		eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
+		eventNames.add("event_EiffelTestCaseStartedEvent_3");
+		eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+		eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
+		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+		eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
+		eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
+		eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
+		return eventNames;
+	}
 
-    @Override
-    Map<String, JsonNode> getCheckData() throws IOException {
-        JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
-        Map<String, JsonNode> checkData = new HashMap<>();
-        checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
-        return checkData;
-    }
+	@Override
+	Map<String, JsonNode> getCheckData() throws IOException {
+		JsonNode expectedJSON = getJSONFromFile(AGGREGATED_OBJECT_FILE_PATH);
+		Map<String, JsonNode> checkData = new HashMap<>();
+		checkData.put(AGGREGATED_OBJECT_ID, expectedJSON);
+		return checkData;
+	}
 }

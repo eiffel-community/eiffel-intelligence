@@ -36,126 +36,132 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class UpStreamEventsHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpStreamEventsHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpStreamEventsHandler.class);
 
-    @Autowired
-    private ERQueryService eventRepositoryQueryService;
-    @Autowired
-    private HistoryExtractionHandler historyExtractionHandler;
-    @Autowired
-    private RulesHandler rulesHandler;
+	@Autowired
+	private ERQueryService eventRepositoryQueryService;
+	@Autowired
+	private HistoryExtractionHandler historyExtractionHandler;
+	@Autowired
+	private RulesHandler rulesHandler;
 
-    public void upstreamEventsHandler() throws URISyntaxException {
-        eventRepositoryQueryService = new ERQueryService();
-    }
+	public void upstreamEventsHandler() throws URISyntaxException {
+		eventRepositoryQueryService = new ERQueryService();
+	}
 
-    // setters used for injecting mocks
-    public void setEventRepositoryQueryService(final ERQueryService eventRepositoryQueryService) {
-        this.eventRepositoryQueryService = eventRepositoryQueryService;
-    }
+	// setters used for injecting mocks
+	public void setEventRepositoryQueryService(final ERQueryService eventRepositoryQueryService) {
+		this.eventRepositoryQueryService = eventRepositoryQueryService;
+	}
 
-    public void setHistoryExtractionHandler(final HistoryExtractionHandler historyExtractionHandler) {
-        this.historyExtractionHandler = historyExtractionHandler;
-    }
+	public void setHistoryExtractionHandler(final HistoryExtractionHandler historyExtractionHandler) {
+		this.historyExtractionHandler = historyExtractionHandler;
+	}
 
-    /**
-     * Run history extraction rules on all upstream events.
-     *
-     * @param aggregatedObjectId
-     *                               the aggregated object id
-     * @throws Exception 
-     * @throws PropertyNotFoundException 
-     */
-    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws PropertyNotFoundException, Exception {
+	/**
+	 * Run history extraction rules on all upstream events.
+	 *
+	 * @param aggregatedObjectId the aggregated object id
+	 * @throws Exception
+	 * @throws PropertyNotFoundException
+	 */
+	public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId)
+			throws PropertyNotFoundException, Exception {
 
-        // Use aggregatedObjectId as eventId since they are the same for start
-        // events.
-        long start = System.currentTimeMillis();
-        final ResponseEntity responseEntity = eventRepositoryQueryService
-                .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
-        
-        long stop = System.currentTimeMillis();
-        LOGGER.debug("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
+		// Use aggregatedObjectId as eventId since they are the same for start
+		// events.
+		long start = System.currentTimeMillis();
+		final ResponseEntity responseEntity = eventRepositoryQueryService.getEventStreamDataById(aggregatedObjectId,
+				SearchOption.UP_STREAM, -1, -1, true);
+		long stop = System.currentTimeMillis();
+		LOGGER.info("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop - start);
+		LOGGER.info("ResponseEntity: " + responseEntity);
 
-        final String searchResultString = responseEntity.getBody();
-        ObjectMapper mapper = new ObjectMapper();
-        final JsonNode searchResult = mapper.readTree(searchResultString);
+		if (responseEntity == null) {
+			LOGGER.info("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
+			return;
+		}
 
-        if (searchResult == null) {
-            LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
-            return;
-        }
+		final String searchResultString = responseEntity.getBody();
+		LOGGER.info("Search result string is: " + searchResultString);
+		LOGGER.info("ResponseEntity: " + responseEntity);
+		ObjectMapper mapper = new ObjectMapper();
+		final JsonNode searchResult = mapper.readTree(searchResultString);
 
-        final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
+		if (searchResult == null) {
+			LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
+			return;
+		}
 
-        if (upstreamLinkObjects == null) {
-            LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
-            return;
-        }
+		final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
 
-        if (!upstreamLinkObjects.isArray()) {
-            LOGGER.warn("Expected upstreamLinkObjects to be an array but is: {}", upstreamLinkObjects.getNodeType());
-        }
+		if (upstreamLinkObjects == null) {
+			LOGGER.warn("Asked for upstream from {} but got null result back!", aggregatedObjectId);
+			return;
+		}
 
-        // apply history extract rules on each node in the tree
-        traverseTree(upstreamLinkObjects, aggregatedObjectId, "");
-    }
+		if (!upstreamLinkObjects.isArray()) {
+			LOGGER.warn("Expected upstreamLinkObjects to be an array but is: {}", upstreamLinkObjects.getNodeType());
+		}
 
-    /**
-     * Traverses the tree from ER. The tree is defined as an array of either an
-     * event or a list of events. E.g:
-     *
-     * <pre>
-     *      [A, [B, C, [D, E]], [F, [N, [G, H]]], [I, [J, [K, L, [M]]]]]
-     * </pre>
-     *
-     * Where the corresponding tree looks like this:
-     *
-     * <pre>
-     * A -> B -> C -> D -> E -> F -> N -> G -> H -> I -> J -> K -> L -> M
-     * </pre>
-     *
-     * @param jsonArray
-     *                                   the array to traverse
-     * @param aggregatedObjectId
-     *                                   the id of the aggregated object
-     * @param pathInAggregatedObject
-     *                                   the current path in the aggregated object
-     */
-    private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId,
-            final String pathInAggregatedObject) {
+		// apply history extract rules on each node in the tree
+		traverseTree(upstreamLinkObjects, aggregatedObjectId, "");
+	}
 
-        String np = pathInAggregatedObject;
-        final JsonNode parent = jsonArray.get(0);
-        if (parent != null) {
-            JsonNode parentId = parent.at("/meta/id");
-            if (!aggregatedObjectId.equals(parentId.textValue())) {
-                // parent event is not the same as the starting event so we can
-                // start collecting history
-                RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
+	/**
+	 * Traverses the tree from ER. The tree is defined as an array of either an
+	 * event or a list of events. E.g:
+	 *
+	 * <pre>
+	 *      [A, [B, C, [D, E]], [F, [N, [G, H]]], [I, [J, [K, L, [M]]]]]
+	 * </pre>
+	 *
+	 * Where the corresponding tree looks like this:
+	 *
+	 * <pre>
+	 * A -> B -> C -> D -> E -> F -> N -> G -> H -> I -> J -> K -> L -> M
+	 * </pre>
+	 *
+	 * @param jsonArray              the array to traverse
+	 * @param aggregatedObjectId     the id of the aggregated object
+	 * @param pathInAggregatedObject the current path in the aggregated object
+	 */
+	private void traverseTree(final JsonNode jsonArray, final String aggregatedObjectId,
+			final String pathInAggregatedObject) {
 
-                if (rules != null) {
-                    np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(), pathInAggregatedObject);
-                }
-            }
-        }
+		String np = pathInAggregatedObject;
+		final JsonNode parent = jsonArray.get(0);
+		if (parent != null) {
+			JsonNode parentId = parent.at("/meta/id");
+			if (!aggregatedObjectId.equals(parentId.textValue())) {
+				// parent event is not the same as the starting event so we can
+				// start collecting history
+				RulesObject rules = rulesHandler.getRulesForEvent(parent.toString());
 
-        String prevNp = null;
-        for (int i = 1; i < jsonArray.size(); i++) {
-            if (jsonArray.get(i).isObject()) {
-                String event = jsonArray.get(i).toString();
-                RulesObject rules = rulesHandler.getRulesForEvent(event);
+				if (rules != null) {
+					np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, parent.toString(),
+							pathInAggregatedObject);
+				}
+			}
+		}
 
-                if (rules != null) {
-                    np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, event, pathInAggregatedObject);
-                }
-            } else {
-                // if we have prevNp then we should use that because it is the
-                // "parent" of the list we are now going to
-                // traverse. But if we don't have it, use the new path from the
-                // parent node.
-                traverseTree(jsonArray.get(i), aggregatedObjectId, prevNp != null ? prevNp : np);
-            }
-        }
-    }
+		String prevNp = null;
+		for (int i = 1; i < jsonArray.size(); i++) {
+			if (jsonArray.get(i).isObject()) {
+				String event = jsonArray.get(i).toString();
+				RulesObject rules = rulesHandler.getRulesForEvent(event);
+
+				if (rules != null) {
+					np = historyExtractionHandler.runHistoryExtraction(aggregatedObjectId, rules, event,
+							pathInAggregatedObject);
+				}
+			} else {
+				// if we have prevNp then we should use that because it is the
+				// "parent" of the list we are now going to
+				// traverse. But if we don't have it, use the new path from the
+				// parent node.
+				traverseTree(jsonArray.get(i), aggregatedObjectId, prevNp != null ? prevNp : np);
+			}
+		}
+	}
 }

@@ -62,122 +62,125 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, SingleEventAggregationTest.class })
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
+		SingleEventAggregationTest.class })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = {
-        "rules.path: src/test/resources/all_event_rules.json",
-        "spring.data.mongodb.database: SingleEventAggregationTest",
-        "failed.notifications.collection.name: SingleEventAggregationTest-failedNotifications",
-        "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
-        "rabbitmq.queue.suffix: SingleEventAggregationTest" })
+@TestPropertySource(properties = { "rules.path: src/test/resources/all_event_rules.json",
+		"spring.data.mongodb.database: SingleEventAggregationTest",
+		"failed.notifications.collection.name: SingleEventAggregationTest-failedNotifications",
+		"rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
+		"rabbitmq.queue.suffix: SingleEventAggregationTest" })
 public class SingleEventAggregationTest extends FlowTestBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
-    private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
-    private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
+	private static final Logger LOGGER = LoggerFactory.getLogger(SingleEventAggregationTest.class);
+	private static final String EVENTS_FILE_PATH = "src/test/resources/test_All_Events.json";
+	private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
 
-    @Autowired
-    private ObjectHandler objectHandler;
+	@Autowired
+	private ObjectHandler objectHandler;
 
-    @Autowired
-    private UpStreamEventsHandler upStreamEventsHandler;
+	@Autowired
+	private UpStreamEventsHandler upStreamEventsHandler;
 
-    @Autowired
-    private ISubscriptionService subscriptionService;
+	@Autowired
+	private ISubscriptionService subscriptionService;
 
-    @Mock
-    private ERQueryService erQueryService;
+	@Mock
+	private ERQueryService erQueryService;
 
-    @Override
-    String getEventsFilePath() {
-        return EVENTS_FILE_PATH;
-    }
+	@Override
+	String getEventsFilePath() {
+		return EVENTS_FILE_PATH;
+	}
 
-    @Before
-    public void before() throws PropertyNotFoundException, Exception {
-        Header[] headers = {};
-        MockitoAnnotations.initMocks(this);
-        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
-        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-                anyBoolean())).thenReturn(new ResponseEntity(500, "", headers));
-        super.setFirstEventWaitTime(5000);
+	@Before
+	public void before() throws PropertyNotFoundException, Exception {
+		MockitoAnnotations.initMocks(this);
+		upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+		try {
+			when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+					anyBoolean())).thenReturn(null);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		super.setFirstEventWaitTime(5000);
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
-            JSONArray jsonArray = new JSONArray(readFileToString);
-            Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
-            subscriptionService.addSubscription(subscription);
-        } catch (Exception e) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String readFileToString = FileUtils.readFileToString(new File(subscriptionJsonPath), "UTF-8");
+			JSONArray jsonArray = new JSONArray(readFileToString);
+			Subscription subscription = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+			subscriptionService.addSubscription(subscription);
+		} catch (Exception e) {
 
-        }
-    }
+		}
+	}
 
-    @Override
-    List<String> getEventNamesToSend() {
-        ArrayList<String> eventNames = new ArrayList<>();
-        eventNames.add("EiffelActivityCanceledEvent");
-        eventNames.add("EiffelActivityStartedEvent");
-        eventNames.add("EiffelActivityFinishedEvent");
-        eventNames.add("EiffelActivityTriggeredEvent");
-        eventNames.add("EiffelAnnouncementPublishedEvent");
-        eventNames.add("EiffelArtifactCreatedEvent");
-        eventNames.add("EiffelArtifactPublishedEvent");
-        eventNames.add("EiffelArtifactReusedEvent");
-        eventNames.add("EiffelCompositionDefinedEvent");
-        eventNames.add("EiffelConfidenceLevelModifiedEvent");
-        eventNames.add("EiffelEnvironmentDefinedEvent");
-        eventNames.add("EiffelFlowContextDefinedEvent");
-        eventNames.add("EiffelIssueVerifiedEvent");
-        eventNames.add("EiffelSourceChangeCreatedEvent");
-        eventNames.add("EiffelSourceChangeSubmittedEvent");
-        eventNames.add("EiffelTestCaseCanceledEvent");
-        eventNames.add("EiffelTestCaseFinishedEvent");
-        eventNames.add("EiffelTestCaseStartedEvent");
-        eventNames.add("EiffelTestCaseTriggeredEvent");
-        eventNames.add("EiffelTestExecutionRecipeCollectionCreatedEvent");
-        eventNames.add("EiffelTestSuiteFinishedEvent");
-        eventNames.add("EiffelTestSuiteStartedEvent");
-        eventNames.add("EiffelArtifactDeployedEvent");
-        eventNames.add("EiffelServiceAllocatedEvent");
-        eventNames.add("EiffelServiceDeployedEvent");
-        eventNames.add("EiffelServiceDiscontinuedEvent");
-        eventNames.add("EiffelServiceReturnedEvent");
-        eventNames.add("EiffelServiceStartedEvent");
-        eventNames.add("EiffelServiceStoppedEvent");
-        eventNames.add("EiffelAlertAcknowledgedEvent");
-        eventNames.add("EiffelAlertCeasedEvent");
-        eventNames.add("EiffelAlertRaisedEvent");
+	@Override
+	List<String> getEventNamesToSend() {
+		ArrayList<String> eventNames = new ArrayList<>();
+		eventNames.add("EiffelActivityCanceledEvent");
+		eventNames.add("EiffelActivityStartedEvent");
+		eventNames.add("EiffelActivityFinishedEvent");
+		eventNames.add("EiffelActivityTriggeredEvent");
+		eventNames.add("EiffelAnnouncementPublishedEvent");
+		eventNames.add("EiffelArtifactCreatedEvent");
+		eventNames.add("EiffelArtifactPublishedEvent");
+		eventNames.add("EiffelArtifactReusedEvent");
+		eventNames.add("EiffelCompositionDefinedEvent");
+		eventNames.add("EiffelConfidenceLevelModifiedEvent");
+		eventNames.add("EiffelEnvironmentDefinedEvent");
+		eventNames.add("EiffelFlowContextDefinedEvent");
+		eventNames.add("EiffelIssueVerifiedEvent");
+		eventNames.add("EiffelSourceChangeCreatedEvent");
+		eventNames.add("EiffelSourceChangeSubmittedEvent");
+		eventNames.add("EiffelTestCaseCanceledEvent");
+		eventNames.add("EiffelTestCaseFinishedEvent");
+		eventNames.add("EiffelTestCaseStartedEvent");
+		eventNames.add("EiffelTestCaseTriggeredEvent");
+		eventNames.add("EiffelTestExecutionRecipeCollectionCreatedEvent");
+		eventNames.add("EiffelTestSuiteFinishedEvent");
+		eventNames.add("EiffelTestSuiteStartedEvent");
+		eventNames.add("EiffelArtifactDeployedEvent");
+		eventNames.add("EiffelServiceAllocatedEvent");
+		eventNames.add("EiffelServiceDeployedEvent");
+		eventNames.add("EiffelServiceDiscontinuedEvent");
+		eventNames.add("EiffelServiceReturnedEvent");
+		eventNames.add("EiffelServiceStartedEvent");
+		eventNames.add("EiffelServiceStoppedEvent");
+		eventNames.add("EiffelAlertAcknowledgedEvent");
+		eventNames.add("EiffelAlertCeasedEvent");
+		eventNames.add("EiffelAlertRaisedEvent");
 
-        return eventNames;
-    }
+		return eventNames;
+	}
 
-    protected void checkResult() {
-        try {
-            ArrayList<String> eventNames = (ArrayList<String>) getEventNamesToSend();
-            String eventsDocument = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
-            ObjectMapper objectmapper = new ObjectMapper();
-            JsonNode eventsJson = objectmapper.readTree(eventsDocument);
+	protected void checkResult() {
+		try {
+			ArrayList<String> eventNames = (ArrayList<String>) getEventNamesToSend();
+			String eventsDocument = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
+			ObjectMapper objectmapper = new ObjectMapper();
+			JsonNode eventsJson = objectmapper.readTree(eventsDocument);
 
-            for (String temp : eventNames) {
-                String expectedEvent = eventsJson.at("/" + temp).toString();
-                String actualEventID = eventsJson.at("/" + temp + "/meta/id").asText();
-                String document = objectHandler.findObjectById(actualEventID);
-                JsonNode actualJson = objectmapper.readTree(document);
-                JsonNode actualEvent = actualJson.at("/aggregatedObject");
-                ObjectNode objectActualEvent = (ObjectNode) actualEvent;
-                objectActualEvent.without("TemplateName");
-                assertEquals(objectActualEvent.toString(), expectedEvent);
-            }
+			for (String temp : eventNames) {
+				String expectedEvent = eventsJson.at("/" + temp).toString();
+				String actualEventID = eventsJson.at("/" + temp + "/meta/id").asText();
+				String document = objectHandler.findObjectById(actualEventID);
+				JsonNode actualJson = objectmapper.readTree(document);
+				JsonNode actualEvent = actualJson.at("/aggregatedObject");
+				ObjectNode objectActualEvent = (ObjectNode) actualEvent;
+				objectActualEvent.without("TemplateName");
+				assertEquals(objectActualEvent.toString(), expectedEvent);
+			}
 
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    Map<String, JsonNode> getCheckData() {
-        Map<String, JsonNode> checkInfo = new HashMap<>();
-        return checkInfo;
-    }
+	@Override
+	Map<String, JsonNode> getCheckData() {
+		Map<String, JsonNode> checkInfo = new HashMap<>();
+		return checkInfo;
+	}
 }

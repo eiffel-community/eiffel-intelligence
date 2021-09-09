@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.ericsson.ei.integrationtests.flow.FlowStepsIT;
 import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -97,6 +100,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String failedNotificationCollectionName;
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
+    
+    private String aggId;
 
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
@@ -148,10 +153,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         int eventsCount = eventNames.size() + extraEventsCount();
 
         JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
+            if(eventName.contains("EiffelArtifactCreatedEvent")) {
+                aggId = eventJson.get("meta").get("id").toString();
+            }
             String event = eventJson.toString();
 
             rabbitTemplate.convertAndSend(event);
@@ -166,10 +173,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
 
-        //waitForEventsToBeProcessed(eventsCount);
-        long count = countProcessedEvents(database,eventObjectMapCollectionName);
-        int i = FlowStepsIT.upcount;
-        assertEquals("processed events",1+i,count);
+        waitForEventsToBeProcessed(eventsCount,aggId);
         checkResult(getCheckData());
     }
 
@@ -216,12 +220,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return
      * @throws InterruptedException
      */
-    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
+    protected void waitForEventsToBeProcessed(int eventsCount,String aggId) throws InterruptedException {
         // wait for all events to be processed
         long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
-            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName);
+            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName,aggId);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
@@ -240,12 +244,23 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @param collectionName - A string with the collection to use
      * @return amount of processed events
      */
-    private long countProcessedEvents(String database, String collectionName) {
-        MongoClient mongoClient = mongoDBHandler.getMongoClient();
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection collection = db.getCollection(collectionName);
-        return collection.count();
-    }
+	private long countProcessedEvents(String database, String collectionName, String aggId) {
+		String queryString = "{\"_id\": " + aggId + "}";
+		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
+		MongoStringQuery query = new MongoStringQuery(queryString);
+		List<String> documents = mongoDBHandler.find(database, collectionName, query);
+		JSONObject json = new JSONObject(documents.get(0));
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.put(json.get("objects"));
+		String s = json.get("objects").toString();
+		int count = 0;
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == ',')
+				count++;
+		}
+		count++;
+		return count;
+	}
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data
@@ -258,7 +273,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     private void checkResult(final Map<String, JsonNode> expectedData)
             throws IOException, URISyntaxException, InterruptedException {
-    	System.out.println("--------------expected data----------"+expectedData);
         Iterator iterator = expectedData.entrySet().iterator();
 
         JsonNode expectedJSON = objectMapper.createObjectNode();
@@ -278,7 +292,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
                  * This is a workaround for expectedJSON.equals(acutalJSON) as that does not work
                  * with strict equalization
                  */
-                System.out.println("--------------expected json----\n"+expectedJSON.toString()+"\n----actual json-------\n"+actualJSON.toString());
                 try {
                     JSONAssert.assertEquals(expectedJSON.toString(), actualJSON.toString(), false);
                     foundMatch = true;

@@ -162,6 +162,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             for (String temp : startEvents) {
             if(eventName.contains(temp)) {
                 aggId = eventJson.get("meta").get("id").toString();
+                System.out.println("----aggId---------------"+aggId);
                 break;
             }
             }
@@ -254,7 +255,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 		String queryString = "{\"_id\": " + aggId + "}";
 		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
 		MongoStringQuery query = new MongoStringQuery(queryString);
+		System.out.println("----query string----\n"+query);
 		List<String> documents = mongoDBHandler.find(database, collectionName, query);
+		System.out.println("----------documents----------\n"+documents);
 		JSONObject json = new JSONObject(documents.get(0));
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.put(json.get("objects"));

@@ -259,7 +259,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 				count++;
 		}
 		count++;
-		return count;
+		 return count;
 	}
 
     /**

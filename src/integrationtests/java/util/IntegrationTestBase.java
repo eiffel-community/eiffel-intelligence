@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -102,6 +104,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String sessionsCollectionName;
     
     private String aggId;
+    List<String> startEvents = Stream.of("EiffelActivityTriggeredEvent","EiffelArtifactCreatedEvent","EiffelSourceChangeSubmittedEvent").collect(Collectors.toList());
 
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
@@ -156,8 +159,11 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
-            if(eventName.contains("EiffelArtifactCreatedEvent")) {
+            for (String temp : startEvents) {
+            if(eventName.contains(temp)) {
                 aggId = eventJson.get("meta").get("id").toString();
+                break;
+            }
             }
             String event = eventJson.toString();
 
@@ -248,9 +254,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 		String queryString = "{\"_id\": " + aggId + "}";
 		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
 		MongoStringQuery query = new MongoStringQuery(queryString);
-		System.out.println("--------query string---------------\n"+query);
 		List<String> documents = mongoDBHandler.find(database, collectionName, query);
-		System.out.println("-------documents--------\n"+documents);
 		JSONObject json = new JSONObject(documents.get(0));
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.put(json.get("objects"));

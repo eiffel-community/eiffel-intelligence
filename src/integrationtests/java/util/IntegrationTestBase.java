@@ -18,7 +18,10 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -42,17 +46,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.ericsson.ei.integrationtests.flow.FlowStepsIT;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
 import lombok.Setter;
 
 public abstract class IntegrationTestBase extends AbstractTestExecutionListener {
@@ -103,9 +102,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
     
-    private String aggId;
-    List<String> startEvents = Stream.of("EiffelActivityTriggeredEvent","EiffelArtifactCreatedEvent","EiffelSourceChangeSubmittedEvent").collect(Collectors.toList());
-
+    List<String> expectedAggId = Stream.of("sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47","aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43","e46ef12d-25gb-4d7y-b9fd-8763re66de47").collect(Collectors.toList());
+    String aggId,type= null;
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
      * thread looking for the events don't do it before actually populating events in the database
@@ -159,14 +157,15 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
-            for (String temp : startEvents) {
-            if(eventName.contains(temp)) {
-                aggId = eventJson.get("meta").get("id").toString();
+            //for (String temp : startEvents) {
+            if(eventName.contains(type)) {
+                 aggId = eventJson.get("meta").get("id").toString();
                 System.out.println("----aggId---------------"+aggId);
                 break;
             }
-            }
+            
             String event = eventJson.toString();
+            System.out.println("-------event-----------\n"+event);
 
             rabbitTemplate.convertAndSend(event);
             if (!alreadyExecuted) {
@@ -180,7 +179,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
 
-        waitForEventsToBeProcessed(eventsCount,aggId);
+        waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
 
@@ -227,12 +226,12 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return
      * @throws InterruptedException
      */
-    protected void waitForEventsToBeProcessed(int eventsCount,String aggId) throws InterruptedException {
+    protected void waitForEventsToBeProcessed(int eventsCount) throws InterruptedException {
         // wait for all events to be processed
         long stopTime = System.currentTimeMillis() + SECONDS_30;
         long processedEvents = 0;
         while (processedEvents < eventsCount && stopTime > System.currentTimeMillis()) {
-            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName,aggId);
+            processedEvents = countProcessedEvents(database, eventObjectMapCollectionName);
             LOGGER.debug("Have gotten: " + processedEvents + " out of: " + eventsCount);
             TimeUnit.MILLISECONDS.sleep(SECONDS_1);
         }
@@ -251,18 +250,25 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @param collectionName - A string with the collection to use
      * @return amount of processed events
      */
-	private long countProcessedEvents(String database, String collectionName, String aggId) {
-		String queryString = "{\"_id\": " + aggId + "}";
-		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
+	private long countProcessedEvents(String database, String collectionName) {
+		int count = 0;
+		List<String> documents = null;
+		//for(String temp:expectedAggId) {
+			//String queryString = "{\"_id\": " + aggId + "}";
+		 String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
 		MongoStringQuery query = new MongoStringQuery(queryString);
 		System.out.println("----query string----\n"+query);
-		List<String> documents = mongoDBHandler.find(database, collectionName, query);
+		 documents = mongoDBHandler.find(database, collectionName, query);
+		 System.out.println("----------database,collection name------------------"+database+collectionName);
+		//if(!documents.isEmpty()) {
+			//break;
+		//}
+		//}
 		System.out.println("----------documents----------\n"+documents);
 		JSONObject json = new JSONObject(documents.get(0));
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.put(json.get("objects"));
 		String s = json.get("objects").toString();
-		int count = 0;
 		for (int i = 0; i < s.length(); i++) {
 			if (s.charAt(i) == ',')
 				count++;
@@ -270,6 +276,36 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 		count++;
 		 return count;
 	}
+	public String readRulesFileContent(String rules) throws Exception {
+        String content;
+            content = readRulesFileFromPath(rules);
+            //JSONObject json = new JSONObject(content);
+            JSONArray json = new JSONArray(content);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject jsonObj = json.getJSONObject(i);
+    		if(jsonObj.get("StartEvent").equals("YES")) {
+    			 type=jsonObj.get("Type").toString();
+    			break;
+    		}
+    		}
+        if (content.isEmpty()) {
+            throw new Exception("Rules content cannot be empty");
+        }
+        return type;
+    }
+	
+	private String readRulesFileFromPath(String rules) throws IOException {
+        String rulesJsonFileContent = null;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(rules)) {
+            if (inputStream == null) {
+                rulesJsonFileContent = FileUtils.readFileToString(new File(rules), Charset.defaultCharset());
+            } else {
+                rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
+            }
+        }
+        return rulesJsonFileContent;
+    }
+    
 
     /**
      * Retrieves the result from EI and checks if it equals the expected data

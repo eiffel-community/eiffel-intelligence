@@ -103,7 +103,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String sessionsCollectionName;
     
     List<String> expectedAggId = Stream.of("sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47","aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43","e46ef12d-25gb-4d7y-b9fd-8763re66de47").collect(Collectors.toList());
-    String aggId,type= null;
+    public String aggId;
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
      * thread looking for the events don't do it before actually populating events in the database
@@ -149,7 +149,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return
      * @throws Exception
      */
-    protected void sendEventsAndConfirm() throws Exception {
+    protected void sendEventsAndConfirm(String AggEvent) throws Exception {
         List<String> eventNames = getEventNamesToSend();
         int eventsCount = eventNames.size() + extraEventsCount();
 
@@ -158,14 +158,10 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
             //for (String temp : startEvents) {
-            if(eventName.contains(type)) {
+            if(eventName.contains(AggEvent)) {
                  aggId = eventJson.get("meta").get("id").toString();
-                System.out.println("----aggId---------------"+aggId);
-                break;
-            }
-            
+        }
             String event = eventJson.toString();
-            System.out.println("-------event-----------\n"+event);
 
             rabbitTemplate.convertAndSend(event);
             if (!alreadyExecuted) {
@@ -177,8 +173,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
              * empty void if not received by EI
              */
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
-        }
-
+        }    
         waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
@@ -254,17 +249,16 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 		int count = 0;
 		List<String> documents = null;
 		//for(String temp:expectedAggId) {
-			//String queryString = "{\"_id\": " + aggId + "}";
-		 String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
+			String queryString = "{\"_id\": " + aggId + "}";
+			System.out.println("----------query string---------"+queryString);
+		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
 		MongoStringQuery query = new MongoStringQuery(queryString);
 		System.out.println("----query string----\n"+query);
 		 documents = mongoDBHandler.find(database, collectionName, query);
-		 System.out.println("----------database,collection name------------------"+database+collectionName);
 		//if(!documents.isEmpty()) {
 			//break;
 		//}
 		//}
-		System.out.println("----------documents----------\n"+documents);
 		JSONObject json = new JSONObject(documents.get(0));
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.put(json.get("objects"));
@@ -277,7 +271,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 		 return count;
 	}
 	public String readRulesFileContent(String rules) throws Exception {
-        String content;
+        String content,type = null;
             content = readRulesFileFromPath(rules);
             //JSONObject json = new JSONObject(content);
             JSONArray json = new JSONArray(content);

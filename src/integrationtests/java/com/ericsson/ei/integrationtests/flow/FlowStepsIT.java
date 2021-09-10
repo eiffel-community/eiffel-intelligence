@@ -92,6 +92,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
+        readRulesFileContent(this.rulesFilePath);
     }
 
     @Given("^the events \"([^\"]*)\"$")

@@ -28,6 +28,7 @@ import org.springframework.util.SocketUtils;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.subscription.SubscriptionHandler;
@@ -108,7 +109,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     @Given("^Subscription is created$")
-    public void create_subscription_object() throws IOException, JSONException {
+    public void create_subscription_object() throws IOException, JSONException, MongoDBConnectionException {
 
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
         mongoDBHandler.dropCollection(database, failedNotificationCollection);
@@ -119,6 +120,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
 
         subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
+        mongoDBHandler.createTTLIndex(database, failedNotificationCollection, MongoConstants.TIME,
+                1);
         assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
     }
 

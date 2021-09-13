@@ -201,7 +201,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected abstract Map<String, JsonNode> getCheckData() throws IOException, Exception;
 
-    protected JsonNode getJSONFromFile(String filePath) throws Exception {
+    public static JsonNode getJSONFromFile(String filePath) throws Exception {
         try {
             String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
             return objectMapper.readTree(expectedDocument);
@@ -248,17 +248,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 	private long countProcessedEvents(String database, String collectionName) {
 		int count = 0;
 		List<String> documents = null;
-		//for(String temp:expectedAggId) {
 			String queryString = "{\"_id\": " + aggId + "}";
-			System.out.println("----------query string---------"+queryString);
-		// String queryString = "{\"_id\": \"aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43\"}";
 		MongoStringQuery query = new MongoStringQuery(queryString);
-		System.out.println("----query string----\n"+query);
 		 documents = mongoDBHandler.find(database, collectionName, query);
-		//if(!documents.isEmpty()) {
-			//break;
-		//}
-		//}
 		JSONObject json = new JSONObject(documents.get(0));
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.put(json.get("objects"));

@@ -84,7 +84,7 @@ public class RunSubscription {
             }
 
             if (subscriptionRepeatFlag.equals("false") && id != null && subscriptionRepeatDbHandler
-                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, true)) {
+                    .checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionName, requirementIndex, id, false)) {
                 LOGGER.debug(
                         "Subscription has already matched with AggregatedObject Id: {}\n"
                                 + "SubscriptionName: {}\nand has Subscription Repeat flag set to: {}",

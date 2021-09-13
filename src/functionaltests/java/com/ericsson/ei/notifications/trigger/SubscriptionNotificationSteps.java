@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Ignore;
@@ -45,13 +48,15 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import util.IntegrationTestBase;
 
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionNotificationSteps",
         "failed.notifications.collection.name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
-        "rabbitmq.queue.suffix: SubscriptionNotificationSteps" })
+        "rabbitmq.queue.suffix: SubscriptionNotificationSteps",
+        "aggregations.collection.ttl: 0"})
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(SubscriptionNotificationSteps.class);
@@ -95,11 +100,12 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Autowired
     private EmailSender emailSender;
-
+    
     private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
     private ResponseEntity response;
+    private String aggId;
 
     @Before()
     public void beforeScenario() {
@@ -165,17 +171,25 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager
-                                                .verifyEventsInDB(eventManager.getEventsIdList(
-                                                        EIFFEL_EVENTS_JSON_PATH, eventNamesToSend),
-                                                        0);
+        JsonNode parsedJSON = IntegrationTestBase.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+        for(String eventName : eventNamesToSend) {
+        	JsonNode eventJson = parsedJSON.get(eventName);
+        	if(eventName.contains("EiffelArtifactCreatedEvent")) {
+        		 aggId = eventJson.get("meta").get("id").toString();
+                break;
+            }
+        }
+        aggId = aggId.substring(1,aggId.length()-1);
+        List<String> list = Stream.of(aggId).collect(Collectors.toList());
+        List<String> missingEventIds = dbManager.verifyEventsInDB(list,0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
                 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel events sent.");
     }
 
-    @When("^Wait for EI to aggregate objects")
+
+	@When("^Wait for EI to aggregate objects")
     public void wait_for_ei_to_aggregate_objects() throws Throwable {
         List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");
@@ -233,10 +247,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         final MongoCondition condition = MongoCondition.emptyCondition();
         int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB,
-                condition);
+               condition);
 
         assertEquals("Missed notifications saved in the database.", maxObjectsInDB,
-                failedNotifications);
+        		failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")
@@ -487,4 +501,5 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         return queryResult.size();
     }
+
 }

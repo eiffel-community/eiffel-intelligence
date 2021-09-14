@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -40,9 +38,8 @@ public class HttpRequestSender {
 
     private RestOperations rest;
     
-    @Autowired
-    public HttpRequestSender(RestTemplateBuilder builder, @Value("${notification.httpRequest.timeout:5000}") final int timeOut) {
-        rest = builder.setReadTimeout(timeOut).setConnectTimeout(timeOut).build();
+    public HttpRequestSender(RestTemplateBuilder builder) {
+        rest = builder.build();
     }
 
     /**

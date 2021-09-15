@@ -36,7 +36,7 @@ public class RuleTestService implements IRuleTestService {
 
     @Override
     public String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, IOException, InvalidRulesException {
+            throws JSONException, IOException, InvalidRulesException, Exception {
         eventHandler.getRulesHandler().setParsedJson(listRulesJson.toString());
 
         String templateName = validateRuleTemplateNames(listRulesJson);
@@ -88,13 +88,15 @@ public class RuleTestService implements IRuleTestService {
     /**
      * Iterates through a list of events and adding a suffix to their ids and the ids in their
      * links. This is to easily identify which events are used in a test aggregation.
+     * @throws Exception 
+     * @throws JSONException 
      */
-    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) throws MongoDBConnectionException{
+    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) throws JSONException, Exception{
         for (int i = 0; i < listEventsJson.length(); i++) {
             addTemplateNameToIds(listEventsJson.getJSONObject(i), suffix);
             LOGGER.debug("Event to prepare aggregated object :: {}",
                     listEventsJson.getJSONObject(i).toString());
-            eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString());
+            eventHandler.eventReceived(listEventsJson.getJSONObject(i).toString(), false);
         }
     }
 

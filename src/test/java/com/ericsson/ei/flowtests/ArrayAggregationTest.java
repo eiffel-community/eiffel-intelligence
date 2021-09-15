@@ -62,7 +62,7 @@ public class ArrayAggregationTest extends FlowTestBase {
     private ERQueryService erQueryService;
 
     @Before
-    public void before() throws PropertyNotFoundException, Exception {
+    public void before() throws Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 

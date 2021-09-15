@@ -66,14 +66,25 @@ public class UpStreamEventsHandler {
      * @throws Exception 
      * @throws PropertyNotFoundException 
      */
-    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws PropertyNotFoundException, Exception {
+    public void runHistoryExtractionRulesOnAllUpstreamEvents(String aggregatedObjectId) throws Exception {
 
         // Use aggregatedObjectId as eventId since they are the same for start
         // events.
+        long start = System.currentTimeMillis();
         final ResponseEntity responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
-
+        long stop = System.currentTimeMillis();
+        LOGGER.info("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
+        LOGGER.info("ResponseEntity: " + responseEntity);
+        
+        if (responseEntity == null) {
+            LOGGER.info("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
+            return;
+        }
+        
         final String searchResultString = responseEntity.getBody();
+        LOGGER.info("Search result string is: " + searchResultString);
+        LOGGER.info("ResponseEntity: " + responseEntity);
         ObjectMapper mapper = new ObjectMapper();
         final JsonNode searchResult = mapper.readTree(searchResultString);
 

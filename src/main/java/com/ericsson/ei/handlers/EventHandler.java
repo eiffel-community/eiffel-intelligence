@@ -16,8 +16,7 @@
 */
 package com.ericsson.ei.handlers;
 
-import com.ericsson.ei.exception.MongoDBConnectionException;
-import com.ericsson.ei.rules.IdRulesHandler;
+import org.apache.http.conn.HttpHostConnectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -26,13 +25,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.MongoDBConnectionException;
+import com.ericsson.ei.rules.IdRulesHandler;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Channel;
 import com.ericsson.ei.utils.MongoDBMonitorThread;
 import com.ericsson.ei.utils.SpringContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoExecutionTimeoutException;
+import com.rabbitmq.client.Channel;
 
 @Component
 public class EventHandler {
@@ -58,9 +60,9 @@ public class EventHandler {
         return rulesHandler;
     }
 
-    public void eventReceived(String event) throws MongoDBConnectionException {
+    public void eventReceived(String event, final boolean isRelivered) throws MongoDBConnectionException ,Exception {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
-        idRulesHandler.runIdRules(eventRules, event);
+        idRulesHandler.runIdRules(eventRules, event, isRelivered);
     }
 
     @Async
@@ -69,11 +71,13 @@ public class EventHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
+        final boolean isRedelivered = message.getMessageProperties().isRedelivered();
 
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
         try {
-            eventReceived(messageBody);
+            LOGGER.info("Event {} Received", id);
+            eventReceived(messageBody, isRedelivered);
             channel.basicAck(deliveryTag, false);
             LOGGER.info("Event {} processed", id);
         } catch (MongoDBConnectionException mdce) {
@@ -107,10 +111,14 @@ public class EventHandler {
             // once the mongoDB Connection is up event will be sent back to queue with
             // un-acknowledgement
             channel.basicNack(deliveryTag, false, true);
-            LOGGER.debug(
-                    "Sent back the event to queue with un-acknowledgement: " + message.getBody());
+            LOGGER.debug("Sent back the event {} to queue with un-acknowledgement: ", id);
+        } catch (HttpHostConnectException | MongoExecutionTimeoutException e) {
+                LOGGER.info("Waiting for 2 seconds before sending the event back to queue");
+                Thread.sleep(2000);
+                channel.basicNack(deliveryTag, false, true);
+                LOGGER.info("Sent back the event {} to queue with un-acknowledgement: ", id);
         } catch (Exception e) {
-            LOGGER.error("Event is not Re-queued due to exception " + e);
+                LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
         }
     }
 

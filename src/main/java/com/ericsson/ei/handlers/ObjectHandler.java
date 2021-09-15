@@ -89,7 +89,7 @@ public class ObjectHandler {
      * @param givenId          String id is stored together with aggregated object in database
      * @throws                 MongoDBConnectionException
      */
-    public void insertObject(String aggregatedObject, RulesObject rulesObject, String event,
+    public String insertObject(String aggregatedObject, RulesObject rulesObject, String event,
             String givenId) throws MongoDBConnectionException {
         String id = givenId;
         if (id == null) {
@@ -108,11 +108,13 @@ public class ObjectHandler {
 
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
+        return aggregatedObject;
     }
 
-    public void insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
+    public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
             String id) throws MongoDBConnectionException {
         insertObject(aggregatedObject.toString(), rulesObject, event, id);
+        return aggregatedObject.toString();
     }
 
     /**

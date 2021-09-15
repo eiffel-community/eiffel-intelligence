@@ -70,163 +70,166 @@ import com.rabbitmq.client.Channel;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, TrafficGeneratedTest.class })
 @SpringBootTest(classes = App.class)
-@TestPropertySource(properties = { "rules.path: src/test/resources/ArtifactRules.json",
-		"spring.data.mongodb.database: TrafficGeneratedTest",
-		"failed.notifications.collection.name: TrafficGeneratedTest-failedNotifications",
-		"rabbitmq.exchange.name: TrafficGeneratedTest-exchange", "rabbitmq.queue.suffix: TrafficGeneratedTest" })
+@TestPropertySource(properties = {
+        "rules.path: src/test/resources/ArtifactRules.json",
+        "spring.data.mongodb.database: TrafficGeneratedTest",
+        "failed.notifications.collection.name: TrafficGeneratedTest-failedNotifications",
+        "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
+        "rabbitmq.queue.suffix: TrafficGeneratedTest"  })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 public class TrafficGeneratedTest extends FlowTestBase {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
-	private static final int EVENT_PACKAGES = 10;
-	private static final String EVENTS_FILE_PATH = "src/test/resources/test_events_MP.json";
-	private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregated_document_MP.json";
-	private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrafficGeneratedTest.class);
+    private static final int EVENT_PACKAGES = 10;
+    private static final String EVENTS_FILE_PATH = "src/test/resources/test_events_MP.json";
+    private static final String AGGREGATED_OBJECT_FILE_PATH = "src/test/resources/aggregated_document_MP.json";
+    private static final String AGGREGATED_OBJECT_ID = "6acc3c87-75e0-4b6d-88f5-b1a5d4";
 
-	private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-	@Autowired
-	private RMQHandler rmqHandler;
+    @Autowired
+    private RMQHandler rmqHandler;
 
-	@Autowired
-	private ObjectHandler objectHandler;
+    @Autowired
+    private ObjectHandler objectHandler;
 
-	@Autowired
-	private UpStreamEventsHandler upStreamEventsHandler;
+    @Autowired
+    private UpStreamEventsHandler upStreamEventsHandler;
 
-	@Mock
-	private ERQueryService erQueryService;
+    @Mock
+    private ERQueryService erQueryService;
 
-	@Value("${spring.data.mongodb.database}")
-	private String database;
-	@Value("${event.object.map.collection.name}")
-	private String event_map;
+    @Value("${spring.data.mongodb.database}")
+    private String database;
+    @Value("${event.object.map.collection.name}")
+    private String event_map;
 
-	@Before
-	public void before() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
+    @Before
+    public void before() throws PropertyNotFoundException, Exception {
+        MockitoAnnotations.initMocks(this);
+        upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 
-		ObjectNode objectNode = objectMapper.createObjectNode();
-		objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
-		objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.set("upstreamLinkObjects", objectMapper.createArrayNode());
+        objectNode.set("downstreamLinkObjects", objectMapper.createArrayNode());
 
-		Header[] headers = {};
-		when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
-				anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
-	}
+        Header[] headers = {};
+        when(erQueryService.getEventStreamDataById(anyString(), any(SearchOption.class), anyInt(), anyInt(),
+                anyBoolean())).thenReturn(new ResponseEntity(200, objectNode.toString(), headers));
+    }
 
-	@Override
-	public void flowTest() {
-		try {
-			List<String> eventNames = getEventNamesToSend();
-			List<String> events = getPreparedEventsToSend(eventNames);
-			int eventsCount = eventNames.size() * EVENT_PACKAGES;
+    @Override
+    public void flowTest() {
+        try {
+            List<String> eventNames = getEventNamesToSend();
+            List<String> events = getPreparedEventsToSend(eventNames);
+            int eventsCount = eventNames.size() * EVENT_PACKAGES;
 
-			RMQProperties rmqProperties = rmqHandler.getRmqProperties();
-			String queueName = rmqProperties.getQueueName();
-			String exchange = "ei-poc-4";
-			TestConfigs.createExchange(exchange, queueName);
-			Channel channel = TestConfigs.getConnection().createChannel();
+            RMQProperties rmqProperties = rmqHandler.getRmqProperties();
+            String queueName = rmqProperties.getQueueName();
+            String exchange = "ei-poc-4";
+            TestConfigs.createExchange(exchange, queueName);
+            Channel channel = TestConfigs.getConnection().createChannel();
 
-			long timeBefore = System.currentTimeMillis();
+            long timeBefore = System.currentTimeMillis();
 
-			for (String event : events) {
-				try {
-					channel.basicPublish(exchange, queueName, null, event.getBytes());
-					TimeUnit.MILLISECONDS.sleep(10);
-				} catch (InterruptedException e) {
-					LOGGER.error(e.getMessage(), e);
-				}
-			}
+            for (String event : events) {
+                try {
+                    channel.basicPublish(exchange, queueName, null, event.getBytes());
+                    TimeUnit.MILLISECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
 
-			waitForEventsToBeProcessed(eventsCount);
+            waitForEventsToBeProcessed(eventsCount);
 
-			long timeAfter = System.currentTimeMillis();
-			long diffTime = timeAfter - timeBefore;
+            long timeAfter = System.currentTimeMillis();
+            long diffTime = timeAfter - timeBefore;
 
-			checkResult();
+            checkResult();
 
-			String time = "" + diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000;
-			LOGGER.debug("Number of events, that were sent: " + eventsCount);
-			LOGGER.debug("Time of execution: " + time);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
+            String time = "" + diffTime / 60000 + "m " + (diffTime / 1000) % 60 + "s " + diffTime % 1000;
+            LOGGER.debug("Number of events, that were sent: " + eventsCount);
+            LOGGER.debug("Time of execution: " + time);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * This method loops through every package of events and changes their ids and
-	 * targets to unique value. Ids of events that are located in the same package
-	 * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
-	 * used.
-	 *
-	 * @param eventNames list of events to be sent.
-	 * @return list of ready to send events.
-	 */
-	private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {
-		List<String> events = new ArrayList<>();
-		String newID;
-		String jsonFileContent = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
-		JsonNode parsedJSON = objectMapper.readTree(jsonFileContent);
-		for (int i = 0; i < EVENT_PACKAGES; i++) {
-			for (String eventName : eventNames) {
-				JsonNode eventJSON = parsedJSON.get(eventName);
-				newID = eventJSON.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));
-				((ObjectNode) eventJSON.path("meta")).put("id", newID);
-				for (JsonNode link : eventJSON.path("links")) {
-					if (link.has("target")) {
-						newID = link.path("target").textValue().substring(0, 30).concat(String.format("%06d", i));
-						((ObjectNode) link).put("target", newID);
-					}
-				}
-				events.add(eventJSON.toString());
-			}
-		}
-		return events;
-	}
+    /**
+     * This method loops through every package of events and changes their ids and
+     * targets to unique value. Ids of events that are located in the same package
+     * are related. Events are sent to RabbitMQ queue. Deterministic traffic is
+     * used.
+     *
+     * @param eventNames
+     *            list of events to be sent.
+     * @return list of ready to send events.
+     */
+    private List<String> getPreparedEventsToSend(List<String> eventNames) throws IOException {
+        List<String> events = new ArrayList<>();
+        String newID;
+        String jsonFileContent = FileUtils.readFileToString(new File(EVENTS_FILE_PATH), "UTF-8");
+        JsonNode parsedJSON = objectMapper.readTree(jsonFileContent);
+        for (int i = 0; i < EVENT_PACKAGES; i++) {
+            for (String eventName : eventNames) {
+                JsonNode eventJSON = parsedJSON.get(eventName);
+                newID = eventJSON.at("/meta/id").textValue().substring(0, 30).concat(String.format("%06d", i));
+                ((ObjectNode) eventJSON.path("meta")).put("id", newID);
+                for (JsonNode link : eventJSON.path("links")) {
+                    if (link.has("target")) {
+                        newID = link.path("target").textValue().substring(0, 30).concat(String.format("%06d", i));
+                        ((ObjectNode) link).put("target", newID);
+                    }
+                }
+                events.add(eventJSON.toString());
+            }
+        }
+        return events;
+    }
 
-	@Override
-	List<String> getEventNamesToSend() {
-		List<String> eventNames = new ArrayList<>();
+    @Override
+    List<String> getEventNamesToSend() {
+        List<String> eventNames = new ArrayList<>();
 
-		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
-		eventNames.add("event_EiffelArtifactPublishedEvent_3");
-		eventNames.add("event_EiffelArtifactCreatedEvent_3");
-		eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
-		eventNames.add("event_EiffelTestCaseStartedEvent_3");
-		eventNames.add("event_EiffelTestCaseFinishedEvent_3");
-		eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
-		eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
-		eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
-		eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
-		eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3_2");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3");
+        eventNames.add("event_EiffelArtifactCreatedEvent_3");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_3");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3");
+        eventNames.add("event_EiffelArtifactPublishedEvent_3_1");
+        eventNames.add("event_EiffelConfidenceLevelModifiedEvent_3");
+        eventNames.add("event_EiffelTestCaseTriggeredEvent_3_1");
+        eventNames.add("event_EiffelTestCaseStartedEvent_3_1");
+        eventNames.add("event_EiffelTestCaseFinishedEvent_3_1");
 
-		return eventNames;
-	}
+        return eventNames;
+    }
 
-	private void checkResult() throws IOException, JSONException {
-		String expectedDocument = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "UTF-8");
-		ObjectMapper objectmapper = new ObjectMapper();
-		JsonNode expectedJSON = objectmapper.readTree(expectedDocument);
-		for (int i = 0; i < EVENT_PACKAGES; i++) {
-			String document = objectHandler.findObjectById(AGGREGATED_OBJECT_ID.concat(String.format("%06d", i)));
-			JsonNode actualJSON = objectmapper.readTree(document);
-			LOGGER.debug("Complete aggregated object #" + i + ": " + actualJSON);
-			assertEquals(expectedJSON.toString().length(), actualJSON.toString().length());
-		}
-	}
+    private void checkResult() throws IOException, JSONException {
+        String expectedDocument = FileUtils.readFileToString(new File(AGGREGATED_OBJECT_FILE_PATH), "UTF-8");
+        ObjectMapper objectmapper = new ObjectMapper();
+        JsonNode expectedJSON = objectmapper.readTree(expectedDocument);
+        for (int i = 0; i < EVENT_PACKAGES; i++) {
+            String document = objectHandler.findObjectById(AGGREGATED_OBJECT_ID.concat(String.format("%06d", i)));
+            JsonNode actualJSON = objectmapper.readTree(document);
+            LOGGER.debug("Complete aggregated object #" + i + ": " + actualJSON);
+            assertEquals(expectedJSON.toString().length(), actualJSON.toString().length());
+        }
+    }
 
-	@Override
-	String getEventsFilePath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    String getEventsFilePath() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	Map<String, JsonNode> getCheckData() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    Map<String, JsonNode> getCheckData() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

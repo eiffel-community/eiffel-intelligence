@@ -22,53 +22,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mongodb.MongoExecutionTimeoutException;
 
 @Component
 public class ProcessRulesHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRulesHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRulesHandler.class);
 
-	@Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
-	private String replacementMarker;
+    @Value("${rules.replacement.marker:%IdentifyRulesEventId%}")
+    private String replacementMarker;
 
-	@Autowired
-	private JmesPathInterface jmespath;
+    @Autowired
+    private JmesPathInterface jmespath;
 
-	@Autowired
-	private MergeHandler mergeHandler;
+    @Autowired
+    private MergeHandler mergeHandler;
 
-	@Autowired
-	private RulesHandler rulesHandler;
+    @Autowired
+    private RulesHandler rulesHandler;
 
-	public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
-		this.jmespath = jmesPathInterface;
-	}
+    public void setJmesPathInterface(JmesPathInterface jmesPathInterface) {
+        this.jmespath = jmesPathInterface;
+    }
 
-	public void setMergeHandler(MergeHandler mergeHandler) {
-		this.mergeHandler = mergeHandler;
-	}
+    public void setMergeHandler(MergeHandler mergeHandler) {
+        this.mergeHandler = mergeHandler;
+    }
 
-	public String runProcessRules(String event, RulesObject rulesObject, String aggregationObject, String objectId,
-			String mergeId) throws MongoExecutionTimeoutException, MongoDBConnectionException {
-		String processRules = rulesObject.fetchProcessRules();
-		if (processRules != null) {
-			String identifyRule = rulesHandler.getRulesForEvent(event).getIdentifyRules();
-			String id = jmespath.runRuleOnEvent(identifyRule, event).get(0).textValue();
+    public String runProcessRules(String event, RulesObject rulesObject, String aggregationObject, String objectId, String mergeId) {
+        String processRules = rulesObject.fetchProcessRules();
+        if (processRules != null) {
+            String identifyRule = rulesHandler.getRulesForEvent(event).getIdentifyRules();
+            String id = jmespath.runRuleOnEvent(identifyRule, event).get(0).textValue();
 
-			if (processRules.contains(replacementMarker)) {
-				processRules = processRules.replace(replacementMarker, id);
-			}
+            if(processRules.contains(replacementMarker)) {
+                processRules = processRules.replace(replacementMarker, id);
+            }
 
-			LOGGER.info("processRules: {}\n aggregationObject: {}\n event: {}", processRules, aggregationObject, event);
-			JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
-			return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
-		}
+            LOGGER.info("processRules: {}\n aggregationObject: {}\n event: {}", processRules, aggregationObject, event);
+            JsonNode ruleResult = jmespath.runRuleOnEvent(processRules, aggregationObject);
+            return mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, ruleResult);
+        }
 
-		return aggregationObject;
-	}
+        return aggregationObject;
+    }
 }

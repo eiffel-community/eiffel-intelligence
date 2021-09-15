@@ -24,7 +24,6 @@ import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.rules.IRuleTestService;
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.Setter;
@@ -83,16 +82,11 @@ public class RuleTestControllerImpl implements RuleTestController {
             + "aggregated object(s)", tags = {"Rule-test"}, response = String.class)
     public ResponseEntity<?> createRuleTestRunFullAggregation(
             @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body,
-            final HttpServletRequest httpRequest){
+            final HttpServletRequest httpRequest) {
         if (testEnabled) {
             try {
-                String aggregatedObject = StringUtil.EMPTY_STRING;
-				try {
-					aggregatedObject = ruleTestService.prepareAggregatedObject(
-					        new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+                String aggregatedObject = ruleTestService.prepareAggregatedObject(
+                        new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
                 } else {
@@ -102,13 +96,11 @@ public class RuleTestControllerImpl implements RuleTestController {
                     return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
                 }
             }
-			/*
-			 * catch (InvalidRulesException e) { String errorJsonAsString =
-			 * ResponseMessage.createJsonMessage(e.getMessage()); return new
-			 * ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST); }
-			 */
-            //catch (JSONException | IOException e) {
-            catch (JSONException e) {
+            catch (InvalidRulesException e) {
+                String errorJsonAsString = ResponseMessage.createJsonMessage(e.getMessage());
+                return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
+            }
+            catch (JSONException | IOException e) {
                 String errorMessage = "Failed to generate aggregated object.";
                 LOGGER.error(errorMessage, e);
                 String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);

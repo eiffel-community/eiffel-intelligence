@@ -21,9 +21,8 @@ public interface IRuleTestService {
      * @throws JSONException
      * @throws IOException
      * @throws InvalidRulesException
-     * @throws Exception 
      * */
     String prepareAggregatedObject(JSONArray listRulesJson, JSONArray listEventsJson)
-            throws JSONException, IOException, InvalidRulesException, Exception;
+            throws JSONException, IOException, InvalidRulesException;
 
 }

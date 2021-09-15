@@ -157,10 +157,9 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
-            //for (String temp : startEvents) {
-            if(eventName.contains(AggEvent)) {
-                 aggId = eventJson.get("meta").get("id").toString();
-        }
+            if (eventName.contains(AggEvent)) {
+                aggId = eventJson.get("meta").get("id").toString();
+            }
             String event = eventJson.toString();
 
             rabbitTemplate.convertAndSend(event);
@@ -173,7 +172,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
              * empty void if not received by EI
              */
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
-        }    
+        }
         waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
@@ -216,7 +215,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     *
      * @param eventsCount - An int which indicated how many events that should be processed.
      * @return
      * @throws InterruptedException
@@ -245,46 +243,58 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @param collectionName - A string with the collection to use
      * @return amount of processed events
      */
-	private long countProcessedEvents(String database, String collectionName) {
-		int count = 0;
-		List<String> documents = null;
-			String queryString = "{\"_id\": " + aggId + "}";
-		MongoStringQuery query = new MongoStringQuery(queryString);
-		 documents = mongoDBHandler.find(database, collectionName, query);
-		JSONObject json = new JSONObject(documents.get(0));
-		JSONArray jsonArray = new JSONArray();
-		jsonArray.put(json.get("objects"));
-		String s = json.get("objects").toString();
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == ',')
-				count++;
-		}
-		count++;
-		 return count;
-	}
-	public String readRulesFileContent(String rules) throws Exception {
-        String content,type = null;
-            content = readRulesFileFromPath(rules);
-            //JSONObject json = new JSONObject(content);
-            JSONArray json = new JSONArray(content);
-            for (int i = 0; i < json.length(); i++) {
-                JSONObject jsonObj = json.getJSONObject(i);
-    		if(jsonObj.get("StartEvent").equals("YES")) {
-    			 type=jsonObj.get("Type").toString();
-    			break;
-    		}
-    		}
+    private long countProcessedEvents(String database, String collectionName) {
+        int count = 0;
+        List<String> documents = null;
+        String queryString = "{\"_id\": " + aggId + "}";
+        MongoStringQuery query = new MongoStringQuery(queryString);
+        documents = mongoDBHandler.find(database, collectionName, query);
+        JSONObject json = new JSONObject(documents.get(0));
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(json.get("objects"));
+        String s = json.get("objects").toString();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ',')
+                count++;
+        }
+        count++;
+        return count;
+    }
+
+    /**
+     * StartEvent is Fetched from the given rules
+     * @param rules file
+     * @return StartEvent type
+     */
+    public String getStartEvent(String rules) throws Exception {
+        String content, type = null;
+        content = readRulesFileFromPath(rules);
+        JSONArray json = new JSONArray(content);
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject jsonObj = json.getJSONObject(i);
+            if (jsonObj.get("StartEvent").equals("YES")) {
+                type = jsonObj.get("Type").toString();
+                break;
+            }
+        }
         if (content.isEmpty()) {
             throw new Exception("Rules content cannot be empty");
         }
         return type;
     }
-	
-	private String readRulesFileFromPath(String rules) throws IOException {
+
+    /**
+     * Reads the rules from given file path
+     * @param rules
+     * @return rules content
+     * @throws IOException
+     */
+    private String readRulesFileFromPath(String rules) throws IOException {
         String rulesJsonFileContent = null;
         try (InputStream inputStream = this.getClass().getResourceAsStream(rules)) {
             if (inputStream == null) {
-                rulesJsonFileContent = FileUtils.readFileToString(new File(rules), Charset.defaultCharset());
+                rulesJsonFileContent = FileUtils.readFileToString(new File(rules),
+                        Charset.defaultCharset());
             } else {
                 rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
             }
@@ -292,7 +302,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         return rulesJsonFileContent;
     }
     
-
     /**
      * Retrieves the result from EI and checks if it equals the expected data
      *

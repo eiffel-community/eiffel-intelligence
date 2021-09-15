@@ -188,8 +188,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         LOGGER.debug("Eiffel events sent.");
     }
 
-
-	@When("^Wait for EI to aggregate objects")
+    @When("^Wait for EI to aggregate objects")
     public void wait_for_ei_to_aggregate_objects() throws Throwable {
         List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");

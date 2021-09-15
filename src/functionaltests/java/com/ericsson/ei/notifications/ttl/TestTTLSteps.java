@@ -120,8 +120,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
 
         subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
-        mongoDBHandler.createTTLIndex(database, failedNotificationCollection, MongoConstants.TIME,
-                1);
+        mongoDBHandler.createTTLIndex(database, failedNotificationCollection, MongoConstants.TIME, 1);
         assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
     }
 

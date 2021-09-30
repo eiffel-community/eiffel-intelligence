@@ -105,7 +105,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private ClientAndServer restServer;
     private MockServerClient mockClient;
     private ResponseEntity response;
-    private String aggId;
+    private String aggregatedEventId;
 
     @Before()
     public void beforeScenario() {
@@ -173,14 +173,13 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         JsonNode parsedJSON = IntegrationTestBase.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
         eventNamesToSend.forEach((String eventName) -> {
-        //for(String eventName : eventNamesToSend) {
-        	JsonNode eventJson = parsedJSON.get(eventName);
-        	if(eventName.contains("EiffelArtifactCreatedEvent")) {
-        		 aggId = eventJson.get("meta").get("id").toString();
+            JsonNode eventJson = parsedJSON.get(eventName);
+            if (eventName.contains("EiffelArtifactCreatedEvent")) {
+                aggregatedEventId = eventJson.get("meta").get("id").toString();
             }
         });
-        aggId = aggId.substring(1,aggId.length()-1);
-        List<String> list = Stream.of(aggId).collect(Collectors.toList());
+        aggregatedEventId = aggregatedEventId.substring(1,aggregatedEventId.length()-1);
+        List<String> list = Stream.of(aggregatedEventId).collect(Collectors.toList());
         List<String> missingEventIds = dbManager.verifyEventsInDB(list,0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
                 0,

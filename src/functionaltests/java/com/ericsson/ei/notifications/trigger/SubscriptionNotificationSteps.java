@@ -172,13 +172,13 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         JsonNode parsedJSON = IntegrationTestBase.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
-        for(String eventName : eventNamesToSend) {
+        eventNamesToSend.forEach((String eventName) -> {
+        //for(String eventName : eventNamesToSend) {
         	JsonNode eventJson = parsedJSON.get(eventName);
         	if(eventName.contains("EiffelArtifactCreatedEvent")) {
         		 aggId = eventJson.get("meta").get("id").toString();
-                break;
             }
-        }
+        });
         aggId = aggId.substring(1,aggId.length()-1);
         List<String> list = Stream.of(aggId).collect(Collectors.toList());
         List<String> missingEventIds = dbManager.verifyEventsInDB(list,0);
@@ -246,10 +246,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         final MongoCondition condition = MongoCondition.emptyCondition();
         int failedNotifications = getDbSizeForCondition(minWaitTime, maxWaittime, maxObjectsInDB,
-               condition);
+                condition);
 
         assertEquals("Missed notifications saved in the database.", maxObjectsInDB,
-        		failedNotifications);
+                failedNotifications);
     }
 
     @Then("^No subscription is retriggered$")

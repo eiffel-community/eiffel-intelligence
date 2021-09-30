@@ -88,12 +88,12 @@ public class FlowStepsIT extends IntegrationTestBase {
     private JenkinsXmlData jenkinsXmlData;
     private SubscriptionObject subscriptionObject;
     private JSONObject jobStatusData;
-    public String AggEvent;
+    public String aggregatedEvent;
 
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
-        AggEvent = getStartEvent(this.rulesFilePath);
+        aggregatedEvent = getStartEvent(this.rulesFilePath);
     }
 
     @Given("^the events \"([^\"]*)\"$")
@@ -169,7 +169,7 @@ public class FlowStepsIT extends IntegrationTestBase {
 
     @When("^the eiffel events are sent$")
     public void eiffelEventsAreSent() throws Throwable {
-        super.sendEventsAndConfirm(AggEvent);
+        super.sendEventsAndConfirm(aggregatedEvent);
     }
 
     @When("^the upstream input events are sent")

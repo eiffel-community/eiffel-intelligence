@@ -102,8 +102,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
     
-    List<String> expectedAggId = Stream.of("sb6efi4n-25fb-4d77-b9fd-5f2xrrefe66de47","aacc3c87-75e0-4b6d-88f5-b1a5d4e62b43","e46ef12d-25gb-4d7y-b9fd-8763re66de47").collect(Collectors.toList());
-    public String aggId;
+    public String aggregatedEventId;
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
      * thread looking for the events don't do it before actually populating events in the database
@@ -149,7 +148,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return
      * @throws Exception
      */
-    protected void sendEventsAndConfirm(String AggEvent) throws Exception {
+    protected void sendEventsAndConfirm(String aggregatedEvent) throws Exception {
         List<String> eventNames = getEventNamesToSend();
         int eventsCount = eventNames.size() + extraEventsCount();
 
@@ -157,8 +156,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
-            if (eventName.contains(AggEvent)) {
-                aggId = eventJson.get("meta").get("id").toString();
+            if (eventName.contains(aggregatedEvent)) {
+                aggregatedEventId = eventJson.get("meta").get("id").toString();
             }
             String event = eventJson.toString();
 
@@ -246,15 +245,15 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private long countProcessedEvents(String database, String collectionName) {
         int count = 0;
         List<String> documents = null;
-        String queryString = "{\"_id\": " + aggId + "}";
+        String queryString = "{\"_id\": " + aggregatedEventId + "}";
         MongoStringQuery query = new MongoStringQuery(queryString);
         documents = mongoDBHandler.find(database, collectionName, query);
         JSONObject json = new JSONObject(documents.get(0));
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(json.get("objects"));
-        String s = json.get("objects").toString();
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == ',')
+        String objectId = json.get("objects").toString();
+        for (int i = 0; i < objectId.length(); i++) {
+            if (objectId.charAt(i) == ',')
                 count++;
         }
         count++;
@@ -270,15 +269,16 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
         String content, type = null;
         content = readRulesFileFromPath(rules);
         JSONArray json = new JSONArray(content);
-        for (int i = 0; i < json.length(); i++) {
-            JSONObject jsonObj = json.getJSONObject(i);
-            if (jsonObj.get("StartEvent").equals("YES")) {
-                type = jsonObj.get("Type").toString();
-                break;
-            }
-        }
         if (content.isEmpty()) {
             throw new Exception("Rules content cannot be empty");
+        } else {
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject jsonObj = json.getJSONObject(i);
+                if (jsonObj.get("StartEvent").equals("YES")) {
+                    type = jsonObj.get("Type").toString();
+                    break;
+                }
+            }
         }
         return type;
     }

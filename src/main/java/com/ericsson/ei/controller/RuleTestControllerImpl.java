@@ -91,7 +91,8 @@ public class RuleTestControllerImpl implements RuleTestController {
                         aggregatedObject = ruleTestService.prepareAggregatedObject(
                                 new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                	String errorMessage = "Failed to generate aggregated object.";
+                	LOGGER.error(errorMessage, e);
                 }
                 if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
                     return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);

@@ -40,8 +40,10 @@ import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+//import com.mongodb.MongoClient;
+//import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -404,8 +406,9 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     private void setupMailhogMongoDBHandler() {
-        MongoClientURI uri = new MongoClientURI(mailHogUri);
-        MongoClient mongoClient = new MongoClient(uri);
+        //MongoClientURI uri = new MongoClientURI(mailHogUri);
+        //MongoClient mongoClient = new MongoClient(uri);
+    	MongoClient mongoClient = MongoClients.create(mailHogUri);
         mailhogMongoDBHandler = new MongoDBHandler();
         mailhogMongoDBHandler.setMongoClient(mongoClient);
     }

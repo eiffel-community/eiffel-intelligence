@@ -33,7 +33,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
         "rabbitmq.queue.suffix: TestInformationControllerImpl" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
-@WebMvcTest(value = InformationController.class, secure = false)
+@WebMvcTest(value = InformationController.class)
 public class TestInformationControllerImpl extends ControllerTestBaseClass {
 
     @MockBean

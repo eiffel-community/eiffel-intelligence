@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "rabbitmq.queue.suffix: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = AggregatedObjectController.class, secure = false)
+@WebMvcTest(value = AggregatedObjectController.class)
 public class QueryServiceRESTAPITest {
 
     @Autowired

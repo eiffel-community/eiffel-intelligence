@@ -5,11 +5,15 @@ import java.io.IOException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.SocketUtils;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.ListDatabasesIterable;
+//import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCursor;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
@@ -51,9 +55,12 @@ public class TestConfigs {
         }
 
         try {
-            MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-            String port = "" + mongoClient.getAddress().getPort();
+            //MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+            //mongoClient = testsFactory.newMongo();
+            //String port = "" + mongoClient.getAddress().getPort();
+        	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+            MongoCursor<Document> iter = list.iterator();
+            String port = "" + iter.getServerAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
         } catch (Exception e) {

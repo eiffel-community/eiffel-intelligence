@@ -33,7 +33,7 @@ import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+//import com.mongodb.util.JSON;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
@@ -76,7 +76,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId, requirementId, aggrObjId);
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+        BasicDBObject dbResult = BasicDBObject.parse(mongoDBHandler
                                                                           .find(subRepeatFlagDataBaseName,
                                                                                   subRepeatFlagCollectionName,
                                                                                   subscriptionQuery)
@@ -114,7 +114,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         subsRepeatDbHandler.addMatchedAggrObjToSubscriptionId(subscriptionId2, requirementId2, aggrObjId2);
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+        BasicDBObject dbResult = BasicDBObject.parse(mongoDBHandler
                                                                           .find(subRepeatFlagDataBaseName,
                                                                                   subRepeatFlagCollectionName,
                                                                                   subscriptionQuery2)
@@ -163,7 +163,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
             e.printStackTrace();
         }
 
-        BasicDBObject dbResult = (BasicDBObject) JSON.parse(mongoDBHandler
+        BasicDBObject dbResult = BasicDBObject.parse(mongoDBHandler
                                                                           .find(subRepeatFlagDataBaseName,
                                                                                   subRepeatFlagCollectionName,
                                                                                   subscriptionQuery)

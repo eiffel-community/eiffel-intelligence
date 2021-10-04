@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+//import com.mongodb.MongoClient;
+//import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -195,8 +197,9 @@ public class DataBaseManager {
     }
 
     private MongoCollection<Document> getCollection(String collectionName) {
-        MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
-        mongoClient = new MongoClient(uri);
+        //MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
+        //mongoClient = new MongoClient(uri);
+        mongoClient = MongoClients.create(mongoProperties.getUri());
         MongoDatabase db = mongoClient.getDatabase(database);
         MongoCollection<Document> collection = db.getCollection(collectionName);
         return collection;

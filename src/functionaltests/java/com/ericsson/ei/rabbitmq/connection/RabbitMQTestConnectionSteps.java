@@ -21,7 +21,8 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.support.CorrelationData;
+//import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,7 +99,8 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
-        rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
+        //rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
+        rmqHandler.getContainer().setAmqpAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
         rmqHandler.getContainer().setQueueNames(rmqProperties.getQueueName());
         assertEquals("Expected message bus to be up", true, amqpBroker.isRunning);
@@ -172,7 +174,8 @@ public class RabbitMQTestConnectionSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setRoutingKey(DEFAULT_ROUTING_KEY);
-        rabbitTemplate.setQueue(queueName);
+        //rabbitTemplate.setQueue(queueName);
+        rabbitTemplate.setDefaultReceiveQueue(queueName);
         return admin;
     }
 

@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.8.RELEASE</version>
+        <version>2.5.5</version>
         <relativePath /> <!-- .. lookup parent from repository -->
     </parent>
 
@@ -25,9 +25,9 @@
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
-        <springBootVersion>${project.parent.version}</springBootVersion>
-        <springLdapVersion>2.3.2.RELEASE</springLdapVersion>
-        <springSecurityVersion>5.0.6.RELEASE</springSecurityVersion>
+        <springBootVersion>2.5.5</springBootVersion>
+        <springLdapVersion>2.3.4.RELEASE</springLdapVersion>
+        <springSecurityVersion>5.5.2</springSecurityVersion>
         <springSessionVersion>2.0.2.RELEASE</springSessionVersion>
         <forkCountTests>1</forkCountTests>
         <jackson.version>2.12.1</jackson.version>
@@ -81,19 +81,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -105,87 +105,108 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>2.1.2</version>
+            <version>3.0.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
             <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.vaadin.external.google</groupId>
                     <artifactId>android-json</artifactId>
                 </exclusion>
+                <exclusion>
+					<groupId>org.junit.jupiter</groupId>
+					<artifactId>junit-jupiter</artifactId>
+				</exclusion>
             </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
             <scope>compile</scope>
         </dependency>
+        
+        <dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-sync</artifactId>
+		    <version>4.3.2</version><!--$NO-MVN-MAN-VER$-->
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-core</artifactId>
+		    <version>4.3.2</version><!--$NO-MVN-MAN-VER$-->
+		</dependency>
+		
+		<dependency>
+	    	<groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
-            <version>${springBootVersion}</version>
+            <!-- <version>${springBootVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-mongodb</artifactId>
-            <version>${springSessionVersion}</version>
+            <!-- <version>2.5.0</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
-            <version>${springLdapVersion}</version>
+            <!-- <version>${springLdapVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-            <version>${springSecurityVersion}</version>
+            <!-- <version>${springSecurityVersion}</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>${springSecurityVersion}</version>
+            <!-- <version>${springSecurityVersion}</version> -->
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <!-- <version>${jackson.version}</version> -->
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
+            <!-- <version>${jackson.version}</version> -->
         </dependency>
 
         <dependency>
@@ -204,7 +225,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <!-- <version>4.13.2</version> -->
             <scope>test</scope>
         </dependency>
 
@@ -212,7 +233,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.9.0</version>
+            <!-- <version>3.9.0</version> -->
             <scope>test</scope>
         </dependency>
 
@@ -246,19 +267,19 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <!-- <version>3.12.0</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.9</version>
+            <!-- <version>4.4.14</version> -->
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <!-- <version>4.5.13</version> -->
         </dependency>
 
         <dependency>
@@ -285,7 +306,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
+            <!-- <version>1.18.20</version> -->
             <scope>provided</scope>
         </dependency>
 
@@ -335,7 +356,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>2.0.0</version>
+            <!-- <version>3.0.0</version> -->
             <scope>test</scope>
         </dependency>
 
@@ -418,215 +439,216 @@
                 </excludes>
             </resource>
         </resources>
-
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${springBootVersion}</version>
-            </plugin>
-
-            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
-                from raml -->
-            <plugin>
-                <groupId>com.phoenixnap.oss</groupId>
-                <artifactId>springmvc-raml-plugin</artifactId>
-                <version>${springmvcRamlVersion}</version>
-                <configuration>
-                    <!-- path to raml file -->
-                    <ramlPath>${ramlPath}</ramlPath>
-                    <!-- output of generated code -->
-                    <outputRelativePath>${outputRelativePath}</outputRelativePath>
-                    <addTimestampFolder>false</addTimestampFolder>
-                    <!-- package for generated sources -->
-                    <basePackage>${basePackage}</basePackage>
-                    <baseUri>/</baseUri>
-                    <seperateMethodsByContentType>false</seperateMethodsByContentType>
-                    <useJackson1xCompatibility>false</useJackson1xCompatibility>
-                    <rule>com.phoenixnap.oss.ramlplugin.raml2code.rules.Spring4ControllerInterfaceRule</rule>
-                    <methodsNamingLogic>RESOURCES</methodsNamingLogic>
-                    <generationConfig>
-                        <useCommonsLang3>true</useCommonsLang3>
-                    </generationConfig>
-                    <injectHttpRequestParameter>true</injectHttpRequestParameter>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-springmvc-controllers</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate-springmvc-endpoints</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- required for adding generated sources -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <!-- where to find the generated sources -->
-                                <source>${outputRelativePath}</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/java</source>
-                                <source>src/test/resources</source>
-                                <source>src/functionaltests/java</source>
-                                <source>src/functionaltests/resources</source>
-                                <source>src/integrationtests/java</source>
-                                <source>src/integrationtests/resources</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <!-- Surefire tests are split into parallel and sequential 
-                    tests. If the test is sensitive to run in parallel it should be excluded 
-                    from that execution and moved into sequential. -->
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>parallel-tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${skipUTs}</skipTests>
-                            <forkCount>${forkCountTests}</forkCount>
-                            <reuseForks>true</reuseForks>
-                            <parallel>classes</parallel>
-                            <threadCount>5</threadCount>
-                            <includes>
-                                <include>${someModule.test.includes}</include>
-                            </includes>
-                            <excludes>
-                                <exclude>${someModule.test.excludes}</exclude>
-                                <exclude>**/*IT.java</exclude>
-                                <exclude>**/integrationtests/*</exclude>
-                                <exclude>**/TestTTLRunner.java</exclude>
-                                <exclude>**/TestSubscriptionNotificationRunner.java</exclude>
-                                <exclude>**/TestScalingAndFailoverRunner.java</exclude>
-                                <exclude>**/FlowTestTestExecution.java</exclude>
-                                <exclude>**/SingleEventAggregationTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>sequential-tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${skipUTs}</skipTests>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**/TestTTLRunner.java</include>
-                                <include>**/TestSubscriptionNotificationRunner.java</include>
-                                <include>**/TestScalingAndFailoverRunner.java</include>
-                                <include>**/FlowTestTestExecution.java</include>
-                                <include>**/SingleEventAggregationTest.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.0</version>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <phase>integration-test</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
-                    <skipTests>${skipTests}</skipTests>
-                    <skipITs>${skipITs}</skipITs>
-                    <systemPropertyVariables>
-                        <systemTest>true</systemTest>
-                    </systemPropertyVariables>
-                    <excludes>
-                        <exclude>**/test/*</exclude>
-                        <exclude>**/functionaltests/*</exclude>
-                    </excludes>
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
-                    </additionalClasspathElements>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>com/ericsson/ei/controller/model/*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+		<!-- <pluginManagement> -->
+	        <plugins>
+	            <plugin>
+	                <groupId>org.springframework.boot</groupId>
+	                <artifactId>spring-boot-maven-plugin</artifactId>
+	                <!-- <version>${springBootVersion}</version> -->
+	            </plugin>
+	
+	            <!-- PhoenixNAP RAML Code Generator plugin used to generate sources 
+	                from raml -->
+	            <plugin>
+	                <groupId>com.phoenixnap.oss</groupId>
+	                <artifactId>springmvc-raml-plugin</artifactId>
+	                <version>${springmvcRamlVersion}</version>
+	                <configuration>
+	                    <!-- path to raml file -->
+	                    <ramlPath>${ramlPath}</ramlPath>
+	                    <!-- output of generated code -->
+	                    <outputRelativePath>${outputRelativePath}</outputRelativePath>
+	                    <addTimestampFolder>false</addTimestampFolder>
+	                    <!-- package for generated sources -->
+	                    <basePackage>${basePackage}</basePackage>
+	                    <baseUri>/</baseUri>
+	                    <seperateMethodsByContentType>false</seperateMethodsByContentType>
+	                    <useJackson1xCompatibility>false</useJackson1xCompatibility>
+	                    <rule>com.phoenixnap.oss.ramlplugin.raml2code.rules.Spring4ControllerInterfaceRule</rule>
+	                    <methodsNamingLogic>RESOURCES</methodsNamingLogic>
+	                    <generationConfig>
+	                        <useCommonsLang3>true</useCommonsLang3>
+	                    </generationConfig>
+	                    <injectHttpRequestParameter>true</injectHttpRequestParameter>
+	                </configuration>
+	                <executions>
+	                    <execution>
+	                        <id>generate-springmvc-controllers</id>
+	                        <phase>generate-sources</phase>
+	                        <goals>
+	                            <goal>generate-springmvc-endpoints</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
+	            </plugin>
+	
+	            <!-- required for adding generated sources -->
+	            <plugin>
+	                <groupId>org.codehaus.mojo</groupId>
+	                <artifactId>build-helper-maven-plugin</artifactId>
+	                <!-- <version>3.2.0</version> -->
+	                <executions>
+	                    <execution>
+	                        <phase>generate-sources</phase>
+	                        <goals>
+	                            <goal>add-source</goal>
+	                        </goals>
+	                        <configuration>
+	                            <sources>
+	                                <!-- where to find the generated sources -->
+	                                <source>${outputRelativePath}</source>
+	                            </sources>
+	                        </configuration>
+	                    </execution>
+	
+	                    <execution>
+	                        <id>add-test-source</id>
+	                        <phase>generate-sources</phase>
+	                        <goals>
+	                            <goal>add-test-source</goal>
+	                        </goals>
+	                        <configuration>
+	                            <sources>
+	                                <source>src/test/java</source>
+	                                <source>src/test/resources</source>
+	                                <source>src/functionaltests/java</source>
+	                                <source>src/functionaltests/resources</source>
+	                                <source>src/integrationtests/java</source>
+	                                <source>src/integrationtests/resources</source>
+	                            </sources>
+	                        </configuration>
+	                    </execution>
+	                </executions>
+	            </plugin>
+	
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-surefire-plugin</artifactId>
+	                <!-- <version>2.22.2</version> -->
+	                <!-- Surefire tests are split into parallel and sequential 
+	                    tests. If the test is sensitive to run in parallel it should be excluded 
+	                    from that execution and moved into sequential. -->
+	                <executions>
+	                    <execution>
+	                        <id>default-test</id>
+	                        <configuration>
+	                            <skip>true</skip>
+	                        </configuration>
+	                    </execution>
+	                    <execution>
+	                        <id>parallel-tests</id>
+	                        <phase>test</phase>
+	                        <goals>
+	                            <goal>test</goal>
+	                        </goals>
+	                        <configuration>
+	                            <skipTests>${skipUTs}</skipTests>
+	                            <forkCount>${forkCountTests}</forkCount>
+	                            <reuseForks>true</reuseForks>
+	                            <parallel>classes</parallel>
+	                            <threadCount>5</threadCount>
+	                            <includes>
+	                                <include>${someModule.test.includes}</include>
+	                            </includes>
+	                            <excludes>
+	                                <exclude>${someModule.test.excludes}</exclude>
+	                                <exclude>**/*IT.java</exclude>
+	                                <exclude>**/integrationtests/*</exclude>
+	                                <exclude>**/TestTTLRunner.java</exclude>
+	                                <exclude>**/TestSubscriptionNotificationRunner.java</exclude>
+	                                <exclude>**/TestScalingAndFailoverRunner.java</exclude>
+	                                <exclude>**/FlowTestTestExecution.java</exclude>
+	                                <exclude>**/SingleEventAggregationTest.java</exclude>
+	                            </excludes>
+	                        </configuration>
+	                    </execution>
+	                    <execution>
+	                        <id>sequential-tests</id>
+	                        <phase>test</phase>
+	                        <goals>
+	                            <goal>test</goal>
+	                        </goals>
+	                        <configuration>
+	                            <skipTests>${skipUTs}</skipTests>
+	                            <reuseForks>false</reuseForks>
+	                            <includes>
+	                                <include>**/TestTTLRunner.java</include>
+	                                <include>**/TestSubscriptionNotificationRunner.java</include>
+	                                <include>**/TestScalingAndFailoverRunner.java</include>
+	                                <include>**/FlowTestTestExecution.java</include>
+	                                <include>**/SingleEventAggregationTest.java</include>
+	                            </includes>
+	                        </configuration>
+	                    </execution>
+	                </executions>
+	            </plugin>
+	
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-failsafe-plugin</artifactId>
+	                <!-- <version>2.22.2</version> -->
+	                <executions>
+	                    <execution>
+	                        <id>integration-test</id>
+	                        <goals>
+	                            <goal>integration-test</goal>
+	                            <goal>verify</goal>
+	                        </goals>
+	                        <phase>integration-test</phase>
+	                    </execution>
+	                </executions>
+	                <configuration>
+	                    <forkCount>1</forkCount>
+	                    <reuseForks>false</reuseForks>
+	                    <skipTests>${skipTests}</skipTests>
+	                    <skipITs>${skipITs}</skipITs>
+	                    <systemPropertyVariables>
+	                        <systemTest>true</systemTest>
+	                    </systemPropertyVariables>
+	                    <excludes>
+	                        <exclude>**/test/*</exclude>
+	                        <exclude>**/functionaltests/*</exclude>
+	                    </excludes>
+	                    <additionalClasspathElements>
+	                        <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+	                    </additionalClasspathElements>
+	                </configuration>
+	            </plugin>
+	
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-war-plugin</artifactId>
+	                <!-- <version>3.3.2</version> -->
+	                <configuration>
+	                    <failOnMissingWebXml>false</failOnMissingWebXml>
+	                </configuration>
+	            </plugin>
+	            <plugin>
+	                <groupId>org.jacoco</groupId>
+	                <artifactId>jacoco-maven-plugin</artifactId>
+	                <version>0.8.5</version>
+	                <configuration>
+	                    <excludes>
+	                        <exclude>com/ericsson/ei/controller/model/*</exclude>
+	                    </excludes>
+	                </configuration>
+	                <executions>
+	                    <execution>
+	                        <id>jacoco-initialize</id>
+	                        <goals>
+	                            <goal>prepare-agent</goal>
+	                        </goals>
+	                    </execution>
+	                    <execution>
+	                        <id>jacoco-site</id>
+	                        <phase>package</phase>
+	                        <goals>
+	                            <goal>report</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
+	            </plugin>
+	        </plugins>
+        <!-- </pluginManagement> -->
     </build>
 </project>

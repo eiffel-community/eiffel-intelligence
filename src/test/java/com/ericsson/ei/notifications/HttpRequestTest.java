@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Base64;
 
+import org.bson.Document;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,7 +39,10 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
+import com.mongodb.client.ListDatabasesIterable;
+//import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCursor;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
@@ -80,9 +84,15 @@ public class HttpRequestTest {
     private HttpRequest httpRequest;
 
     public static void setUpEmbeddedMongo() throws Exception {
-        testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        mongoClient = testsFactory.newMongo();
-        String port = "" + mongoClient.getAddress().getPort();
+        //testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
+        //mongoClient = testsFactory.newMongo();
+    	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+        MongoCursor<Document> iter = list.iterator(); 
+        /*while (iter.hasNext()) {
+            iter.getServerAddress();
+        }*/
+        //String port = "" + mongoClient.getAddress().getPort();
+        String port = "" + iter.getServerAddress().getPort();
         System.setProperty("spring.data.mongodb.port", port);
     }
 

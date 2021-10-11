@@ -91,7 +91,8 @@ public class RuleTestService implements IRuleTestService {
      * @throws Exception 
      * @throws JSONException 
      */
-    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) throws JSONException, Exception{
+    private void prepareEventsForTestAggregation(JSONArray listEventsJson, String suffix) 
+    		throws JSONException, Exception {
         for (int i = 0; i < listEventsJson.length(); i++) {
             addTemplateNameToIds(listEventsJson.getJSONObject(i), suffix);
             LOGGER.debug("Event to prepare aggregated object :: {}",

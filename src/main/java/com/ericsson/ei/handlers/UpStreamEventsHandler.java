@@ -74,8 +74,8 @@ public class UpStreamEventsHandler {
         final ResponseEntity responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
         long stop = System.currentTimeMillis();
-        LOGGER.info("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
-        LOGGER.info("ResponseEntity: " + responseEntity);
+        LOGGER.debug("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
+        LOGGER.debug("ResponseEntity: " + responseEntity);
         
         if (responseEntity == null) {
             LOGGER.info("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
@@ -83,8 +83,8 @@ public class UpStreamEventsHandler {
         }
         
         final String searchResultString = responseEntity.getBody();
-        LOGGER.info("Search result string is: " + searchResultString);
-        LOGGER.info("ResponseEntity: " + responseEntity);
+        LOGGER.debug("Search result string is: " + searchResultString);
+        LOGGER.debug("ResponseEntity: " + responseEntity);
         ObjectMapper mapper = new ObjectMapper();
         final JsonNode searchResult = mapper.readTree(searchResultString);
 

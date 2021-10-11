@@ -60,7 +60,8 @@ public class EventHandler {
         return rulesHandler;
     }
 
-    public void eventReceived(String event, final boolean isRelivered) throws MongoDBConnectionException ,Exception {
+    public void eventReceived(String event, final boolean isRelivered) 
+    		throws MongoDBConnectionException ,Exception {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event, isRelivered);
     }
@@ -118,7 +119,7 @@ public class EventHandler {
                 channel.basicNack(deliveryTag, false, true);
                 LOGGER.info("Sent back the event {} to queue with un-acknowledgement: ", id);
         } catch (Exception e) {
-                LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
+            LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
         }
     }
 

@@ -192,7 +192,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");
         List<String> arguments = new ArrayList<>(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+                eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
         List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);

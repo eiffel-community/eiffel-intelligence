@@ -94,7 +94,7 @@ public class EncryptionSteps extends FunctionalTestBase {
         LOGGER.debug("Sending Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> eventsIdList = eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH,
+        List<String> eventsIdList = eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH,
                 eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(eventsIdList, 0);
         String errorMessage = "The following events are missing in mongoDB: "

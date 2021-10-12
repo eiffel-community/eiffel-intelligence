@@ -172,7 +172,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
+                eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
@@ -183,7 +183,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         // verify that aggregated object is created and present in db
         LOGGER.debug("Checking presence of aggregated Object");
         List<String> allObjects = mongoDBHandler.getAllDocuments(database, collection);
-        String id = eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, getEventNamesToSend()).get(0);
+        String id = eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, getEventNamesToSend()).get(0);
         subscriptionHandler.checkSubscriptionForObject(allObjects.get(0), id);
         assertEquals(1, allObjects.size());
     }

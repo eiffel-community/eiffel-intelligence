@@ -84,9 +84,9 @@ public class MergeHandler {
             // lock and get the AggregatedObject
             String aggregatedObject = getAggregatedObject(id, true);
             LOGGER.debug("AGGREGATED OBJECT : " + aggregatedObject);
-	            if(aggregatedObject == null) {
-	                return null;
-	            } 
+	        if(aggregatedObject == null) {
+	            return null;
+	        } 
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
@@ -102,13 +102,13 @@ public class MergeHandler {
                 preparedToMergeObject = objectToMerge.toString();
             }
             // be inserted to database
-            objectHandler.updateObject(mergedObject, rules, event, id);
             mergedObject = mergeContentToObject(aggregatedObject, preparedToMergeObject);
             LOGGER.debug("Merged Aggregated Object:\n{}", mergedObject);
         } finally {
             if (mergedObject == null) {
                 throw new MongoExecutionTimeoutException(1, "Aggregated object is null");
             }
+            objectHandler.updateObject(mergedObject, rules, event, id);
         }
 
         return mergedObject;

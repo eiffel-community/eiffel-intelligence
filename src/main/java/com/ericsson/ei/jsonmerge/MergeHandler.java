@@ -147,7 +147,6 @@ public class MergeHandler {
         // unlocking of document will be performed, when mergedObject will
         // be inserted to database
         objectHandler.updateObject(mergedObject, rules, event, id);
-
         return mergedObject;
     }
 

@@ -16,6 +16,7 @@ before_install:
   - java -version
   - uname -a
   - chmod +x pom.xml
+  - printenv
 
 # Only running report_coverage (after merge) to master branch
 stages:

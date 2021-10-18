@@ -35,9 +35,7 @@ jobs:
       # To ensure docker containers are fully up and running we sleep 60s
       before_script:
         - source src/main/docker/env.bash
-		- echo "Printing Environmment variables now"
 		- printenv
-		- echo "Done printing Environmment variables"
         - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server
         - sleep 60
       script:

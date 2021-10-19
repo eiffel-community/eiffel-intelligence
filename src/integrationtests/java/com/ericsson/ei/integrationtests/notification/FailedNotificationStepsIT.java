@@ -55,7 +55,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     private String eventsFilePath;
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
-    public String AggEvent;
+    public String aggregatedEvent;
 
     private SubscriptionObject subscriptionObject;
 
@@ -65,7 +65,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     @Given("^the rules \"([^\"]*)\"$")
     public void rules(String rulesFilePath) throws Throwable {
         this.rulesFilePath = rulesFilePath;
-        AggEvent = getStartEvent(this.rulesFilePath);
+        aggregatedEvent = getStartEvent(this.rulesFilePath);
     }
 
     @Given("^the events \"([^\"]*)\"$")
@@ -102,7 +102,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
 
     @When("^the eiffel events are sent$")
     public void eiffelEventsAreSent() throws Throwable {
-        super.sendEventsAndConfirm(AggEvent);
+        super.sendEventsAndConfirm(aggregatedEvent);
     }
 
     @When("^rest post body media type is set to \"([^\"]*)\" is set in subscription$")

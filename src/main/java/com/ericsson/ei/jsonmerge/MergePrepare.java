@@ -221,10 +221,10 @@ public class MergePrepare {
             Object ruleJSONObject;
 
             // condition to avoid un-necessary exception to print in the log
-            if(mergeRule.startsWith("{")) {
-            	ruleJSONObject = new JSONObject(mergeRule);
+            if (mergeRule.startsWith("{")) {
+                ruleJSONObject = new JSONObject(mergeRule);
             } else {
-            	return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
+                return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
             }
             // hack to remove quotes
             stringRule = ruleJSONObject.toString();

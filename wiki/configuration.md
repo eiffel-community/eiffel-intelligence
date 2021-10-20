@@ -85,8 +85,8 @@ the collection name, the time to live using the below properties:
 * event.object.map.collection.name
 * aggregations.collection.ttl
 
-The aggregations.collection.ttl property value is only used to set the time to live value on 
-eventToObjectMap collection as well.
+The aggregations.collection.ttl property value will also be used to set the time to live value on 
+eventToObjectMap collection.
 
 ### Testing Aggregation Rules
 

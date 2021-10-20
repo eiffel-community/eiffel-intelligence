@@ -89,8 +89,8 @@ public class ObjectHandler {
             if (getTtl() > 0) {
                 mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
             }
-        } catch (Exception e1) {
-            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e1);
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e);
         }
     }
     /**

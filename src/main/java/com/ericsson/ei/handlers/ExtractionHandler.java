@@ -112,12 +112,13 @@ public class ExtractionHandler {
                 mergedContent = objectHandler.findObjectById(mergeId);
                 LOGGER.trace("**** Extraction ends for the aggregation Id: " + mergeId);
             }
+            objectHandler.checkAggregations(mergedContent, aggregatedObjectId);
         } catch (HttpHostConnectException | MongoExecutionTimeoutException e) {
             LOGGER.warn("Extraction failed for {}, due to {}. Sending back to queue.", event, e.getMessage());
             throw e;
         } catch (Exception e) {
             LOGGER.error("Failed to run extraction for event {}", event, e);
-            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
             }
         }

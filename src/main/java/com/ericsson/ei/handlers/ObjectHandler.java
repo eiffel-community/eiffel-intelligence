@@ -20,8 +20,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ericsson.ei.mongo.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -30,10 +30,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoQuery;
+import com.ericsson.ei.mongo.MongoQueryBuilder;
 import com.ericsson.ei.rules.RulesObject;
 import com.ericsson.ei.subscription.SubscriptionHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -79,6 +86,17 @@ public class ObjectHandler {
     @Setter
     @Autowired
     private SubscriptionHandler subscriptionHandler;
+    
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (getTtl() > 0) {
+                mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName, MongoConstants.TIME, getTtl());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", aggregationsCollectionName, e);
+        }
+    }
 
     /**
      * This method is responsible for inserting an aggregated object in to the database.
@@ -101,11 +119,6 @@ public class ObjectHandler {
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
 
-        if (getTtl() > 0) {
-            mongoDbHandler.createTTLIndex(databaseName, aggregationsCollectionName,
-                    MongoConstants.TIME, getTtl());
-        }
-
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
         return aggregatedObject;
@@ -113,8 +126,7 @@ public class ObjectHandler {
 
     public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
             String id) throws MongoDBConnectionException {
-        insertObject(aggregatedObject.toString(), rulesObject, event, id);
-        return aggregatedObject.toString();
+    	return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**
@@ -303,7 +315,17 @@ public class ObjectHandler {
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event,
             String id) {
-        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id);
+    	LOGGER.info("Updating the event object map with event id: " + id + " event is : " + event);
+        eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
+    }
+    
+    /**
+     * This method is used to check the aggregations for the subscriptions.
+     * 
+     * @param aggregatedObject 
+     * @param id - Aggregated object id.
+     */
+    public void checkAggregations(String aggregatedObject, String id) {
         subscriptionHandler.checkSubscriptionForObject(aggregatedObject, id);
     }
 }

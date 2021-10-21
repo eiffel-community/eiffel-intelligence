@@ -103,7 +103,7 @@ public class EventHandler {
                 while (!mongoDBMonitorThread.isMongoDBConnected()) {
                     try {
                         Thread.sleep(30000);
-                        LOGGER.debug("Waiting for MongoDB connection...");
+                        LOGGER.info("Waiting for MongoDB connection...");
                     } catch (InterruptedException ie) {
                         LOGGER.error("MongoDBMonitorThread got Interrupted");
                     }
@@ -112,14 +112,14 @@ public class EventHandler {
             // once the mongoDB Connection is up event will be sent back to queue with
             // un-acknowledgement
             channel.basicNack(deliveryTag, false, true);
-            LOGGER.debug("Sent back the event {} to queue with un-acknowledgement: ", id);
+            LOGGER.info("Sent back the event {} to queue with un-acknowledgement due to {}", id, mdce);
         } catch (HttpHostConnectException | MongoExecutionTimeoutException e) {
                 LOGGER.info("Waiting for 2 seconds before sending the event back to queue");
                 Thread.sleep(2000);
                 channel.basicNack(deliveryTag, false, true);
                 LOGGER.info("Sent back the event {} to queue with un-acknowledgement: ", id);
         } catch (Exception e) {
-            LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
+        	LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
         }
     }
 

@@ -37,7 +37,7 @@ public class HttpRequestSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestSender.class);
 
     private RestOperations rest;
-
+    
     public HttpRequestSender(RestTemplateBuilder builder) {
         rest = builder.build();
     }

@@ -47,8 +47,6 @@ import lombok.Getter;
 public class ERQueryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ERQueryService.class);
 
-    private HttpRequest request;
-
     @Getter
     @Value("${event.repository.url}")
     private String eventRepositoryUrl;
@@ -56,14 +54,6 @@ public class ERQueryService {
     @Getter
     @Value("${event.repository.shallow:true}")
     private Boolean shallow;
-
-    public ERQueryService() {
-        this.request = new HttpRequest();
-    }
-
-    public void setHttpRequest(HttpRequest request) {
-        this.request = request;
-    }
 
     /**
      * This method is used to fetch only the upstream or downstream or both event information for
@@ -83,27 +73,29 @@ public class ERQueryService {
     public ResponseEntity getEventStreamDataById(String eventId, SearchOption searchOption,
             int limit, int levels, boolean tree) throws PropertyNotFoundException, Exception {
         try {
+        	HttpRequest request = new HttpRequest();
             ResponseEntity responseFromEr = sendRequestToER(eventId, searchOption, limit, levels,
-                    tree);
+                    tree, request);
             return responseFromEr;
         } catch (IOException | URISyntaxException e) {
             throw new HttpRequestFailedException("Error occurred while executing REST POST", e);
         }
     }
 
-    private ResponseEntity sendRequestToER(String eventId, SearchOption searchOption, int limit,
-            int levels, boolean tree) throws IOException, URISyntaxException,
+    public ResponseEntity sendRequestToER(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree, HttpRequest request) throws IOException, URISyntaxException,
             ClientProtocolException, PropertyNotFoundException {
         if (StringUtils.isBlank(eventRepositoryUrl)) {
             throw new PropertyNotFoundException("The URL to ER is not provided");
         }
 
-        prepareRequest(eventId, searchOption, limit, levels, tree);
+        request = prepareRequest(eventId, searchOption, limit, levels, tree, request);
         return request.performRequest();
     }
 
-    private void prepareRequest(String eventId, SearchOption searchOption, int limit,
-            int levels, boolean tree) throws IOException, URISyntaxException {
+    
+    private HttpRequest prepareRequest(String eventId, SearchOption searchOption, int limit,
+            int levels, boolean tree, HttpRequest request) throws IOException, URISyntaxException {
         Boolean shallowParameter;
         if (shallow == null ) {
             shallowParameter = true;
@@ -124,6 +116,7 @@ public class ERQueryService {
 
         String uri = request.getURI().toString();
         LOGGER.debug("The URL to ER is: {}", uri);
+        return request;
     }
 
     /**

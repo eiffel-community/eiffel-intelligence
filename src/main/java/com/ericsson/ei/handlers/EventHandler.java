@@ -73,6 +73,7 @@ public class EventHandler {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
         try {
+            LOGGER.info("Event {} Received", id);
             eventReceived(messageBody);
             channel.basicAck(deliveryTag, false);
             LOGGER.info("Event {} processed", id);
@@ -98,7 +99,7 @@ public class EventHandler {
                 while (!mongoDBMonitorThread.isMongoDBConnected()) {
                     try {
                         Thread.sleep(30000);
-                        LOGGER.debug("Waiting for MongoDB connection...");
+                        LOGGER.info("Waiting for MongoDB connection...");
                     } catch (InterruptedException ie) {
                         LOGGER.error("MongoDBMonitorThread got Interrupted");
                     }
@@ -107,10 +108,10 @@ public class EventHandler {
             // once the mongoDB Connection is up event will be sent back to queue with
             // un-acknowledgement
             channel.basicNack(deliveryTag, false, true);
-            LOGGER.debug(
-                    "Sent back the event to queue with un-acknowledgement: " + message.getBody());
+            LOGGER.info(
+                    "Sent back the event {} to queue with un-acknowledgement due to {}", id, mdce);
         } catch (Exception e) {
-            LOGGER.error("Event is not Re-queued due to exception " + e);
+            LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
         }
     }
 

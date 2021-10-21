@@ -15,6 +15,7 @@ package com.ericsson.ei.mongo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
+import com.ericsson.ei.handlers.DateUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -92,10 +94,13 @@ public class MongoDBHandler {
             throws MongoWriteException, MongoClientException {
 
     	try {
+    	    long start = System.currentTimeMillis();
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(input);
                 collection.insertOne(dbObjectInput);
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to insert the document in ms: {} ", stop-start);
                 LOGGER.debug(
                         "Object: {}\n was inserted successfully in collection: {} and database {}.",
                         input, collectionName, dataBaseName);
@@ -105,6 +110,34 @@ public class MongoDBHandler {
                     collectionName, dataBaseName, e.getMessage());
         }
     }
+    
+    /**
+     * This method is used to insert the Document object into collection
+     * 
+     * @param dataBaseName
+     * @param collectionName
+     * @param document - Document object to insert
+     * @throws MongoWriteException
+     */
+    public void insertDocumentObject(String dataBaseName, String collectionName, Document document) throws MongoWriteException {
+        try {
+            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);           
+
+            if (collection != null) {
+                long start = System.currentTimeMillis();
+                collection.insertOne(document);
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to insert the document in ms: {} ", stop-start);
+                LOGGER.debug("Object: {}\n was inserted successfully in collection: {} and database {}.", document,
+                        collectionName, dataBaseName);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", document,
+                    collectionName, dataBaseName, e.getMessage());
+        }
+    }
+
 
     /**
      * This method is used for the retrieve the all documents from the collection
@@ -228,18 +261,38 @@ public class MongoDBHandler {
      * @param ttlValue       seconds
      * @throws MongoDBConnectionException
      */
-	public void createTTLIndex(String dataBaseName, String collectionName, String fieldName,
-	        int ttlValue) throws MongoDBConnectionException {
-		try {
-			MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
-			IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue,
-			        TimeUnit.SECONDS);
-			collection.createIndex(Indexes.ascending(fieldName), indexOptions);
-		} catch (Exception e) {
-			throw new MongoDBConnectionException("MongoDB Connection down");
-		}
-	}
-
+    public void createTTLIndex(String dataBaseName, String collectionName, String fieldName, int ttlValue)
+            throws MongoDBConnectionException {
+        try {
+            MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
+            IndexOptions indexOptions = new IndexOptions().expireAfter((long) ttlValue, TimeUnit.SECONDS);
+            checkAndDropTTLIndex(collection, fieldName + "_1");
+            LOGGER.debug("Creating the index for {} in collection: {}", fieldName, collection.getNamespace());
+            collection.createIndex(Indexes.ascending(fieldName), indexOptions);
+        } catch (Exception e) {
+            throw new MongoDBConnectionException(e.getMessage());
+        }
+    }
+    /**
+     * This method is used to check and drop the TTL index for specific field.
+     * 
+     * @param collection - MongoCollection.
+     * @param fieldName  - Field name for dropping the index.
+     * @throws Exception
+     */
+    private void checkAndDropTTLIndex(final MongoCollection<Document> collection, String fieldName) throws Exception {
+        // Verify if the index is present for the field in the collection.
+        for (Document index : collection.listIndexes()) {
+            for (Map.Entry<String, Object> entry : index.entrySet()) {
+                Object value = entry.getValue();
+                if (value.equals(fieldName)) {
+                    LOGGER.debug("Dropping the index for {} in collection: {}", fieldName, collection.getNamespace());
+                    collection.dropIndex(fieldName);
+                    break;
+                }
+            }
+        }
+    }
     /**
      * This method is used to drop a collection.
      *
@@ -325,6 +378,7 @@ public class MongoDBHandler {
     private Document doFindAndModify(String dataBaseName, String collectionName,
             MongoQuery queryFilter,
             String updateInput) throws MongoClientException {
+        long start = System.currentTimeMillis();
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
             return null;
@@ -333,6 +387,8 @@ public class MongoDBHandler {
         final Document dbObjectUpdateInput = Document.parse(updateInput);
         Document result = collection.findOneAndUpdate(dbObjectInput, dbObjectUpdateInput);
         if (result != null) {
+            long stop = System.currentTimeMillis();
+            LOGGER.debug("#### Response time to findAndModify the document in ms: {} ", stop-start);
             LOGGER.debug(
                     "updateDocument() :: database: {} and collection: {} updated successfully",
                     dataBaseName, collectionName);
@@ -342,6 +398,7 @@ public class MongoDBHandler {
 
     private boolean doUpdate(String dataBaseName, String collectionName, MongoQuery queryFilter,
             String updateInput) throws MongoClientException {
+        long start = System.currentTimeMillis();
         MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
         if (collection == null) {
             return false;
@@ -350,6 +407,8 @@ public class MongoDBHandler {
         final Document dbObjectInput = Document.parse(queryFilter.getQueryString());
         final Document dbObjectUpdateInput = Document.parse(updateInput);
         UpdateResult updateOne = collection.replaceOne(dbObjectInput, dbObjectUpdateInput);
+        long stop = System.currentTimeMillis();
+        LOGGER.debug("#### Response time to update the document in ms: {} ", stop-start);
         boolean updateWasPerformed = updateOne.wasAcknowledged()
                 && updateOne.getModifiedCount() > 0;
         LOGGER.debug(
@@ -384,31 +443,26 @@ public class MongoDBHandler {
             throw new MongoClientException("Failed to connect MongoDB");
         }
 
-        verifyExistenceOfCollection(databaseName, collectionName);
-
-        MongoDatabase db = mongoClient.getDatabase(databaseName);
-        MongoCollection<Document> collection = db.getCollection(collectionName);
-        return collection;
+        return getCollection(databaseName, collectionName);
     }
 
-    private void verifyExistenceOfCollection(String databaseName, String collectionName) throws MongoClientException {
-        List<String> collectionList = getCollectionList(databaseName);
-        if (!collectionList.contains(collectionName)) {
-            createCollection(databaseName, collectionName);
-        }
-    }
-
-    private List<String> getCollectionList(String databaseName) throws MongoClientException {
+    private MongoCollection<Document> getCollection(String databaseName, String collectionName) throws MongoClientException {
+        MongoCollection<Document> collection;
+        MongoDatabase db;
         try {
-            MongoDatabase db = mongoClient.getDatabase(databaseName);
-            List<String> collectionList = db.listCollectionNames().into(new ArrayList<String>());
-            return collectionList;
+            db = mongoClient.getDatabase(databaseName);
+            collection = db.getCollection(collectionName);
         } catch (MongoInterruptedException | MongoSocketReadException | MongoSocketWriteException
                 | MongoCommandException | IllegalStateException e) {
-            String message = String.format("Failed to get Mongo collection list, Reason: %s",
+            String message = String.format("Failed to get Mongo collection, Reason: %s",
                     e.getMessage()); 
             throw new MongoClientException(message, e);
         }
+        if(collection == null) {
+            createCollection(databaseName, collectionName);
+            collection = db.getCollection(collectionName);
+        }
+        return collection;
     }
 
     private void createCollection(String databaseName, String collectionName) throws MongoClientException {
@@ -459,6 +513,7 @@ public class MongoDBHandler {
     public boolean checkDocumentExists(String databaseName, String collectionName, MongoCondition condition) {
 
         try {
+            long start = System.currentTimeMillis();
             MongoDatabase db = mongoClient.getDatabase(databaseName);
             MongoCollection<Document> mongoCollection = db.getCollection(collectionName);
             Document doc = null;
@@ -468,6 +523,8 @@ public class MongoDBHandler {
             if (doc == null || doc.isEmpty()) {
                 return false;
             }
+            long stop = System.currentTimeMillis();
+            LOGGER.debug("#### Response time to checkDocumentExists in ms: {} ", stop-start);
         } catch (Exception e) {
             LOGGER.error("something wrong with MongoDB " + e);
             return false;
@@ -487,10 +544,14 @@ public class MongoDBHandler {
      */
     public boolean updateDocumentAddToSet(String dataBaseName, String collectionName, MongoCondition condition, String eventId) {
         try {
+            long start = System.currentTimeMillis();
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);
             if (collection != null) {
                 final Document dbObjectInput = Document.parse(condition.toString());
                 UpdateResult updateMany = collection.updateOne(dbObjectInput, Updates.addToSet("objects", eventId));
+                updateMany = collection.updateOne(dbObjectInput, Updates.set(MongoConstants.TIME, DateUtils.getDate()));
+                long stop = System.currentTimeMillis();
+                LOGGER.debug("#### Response time to updateDocumentAddToSet in ms: {} ", stop-start);
                 LOGGER.debug("updateDocument() :: database: {} and collection: {} is document Updated : {}", dataBaseName, collectionName, updateMany.wasAcknowledged());
                 return updateMany.wasAcknowledged();
             }

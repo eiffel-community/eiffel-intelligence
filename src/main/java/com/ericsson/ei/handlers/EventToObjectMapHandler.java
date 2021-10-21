@@ -19,14 +19,19 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
@@ -46,7 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class EventToObjectMapHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventToObjectMapHandler.class);
 
     @Value("${event.object.map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
@@ -59,6 +64,21 @@ public class EventToObjectMapHandler {
 
     @Autowired
     JmesPathInterface jmesPathInterface;
+    
+    @Value("${aggregations.collection.ttl:0}")
+    private String eventToObjectTtl;
+
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (Integer.parseInt(eventToObjectTtl) > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
+        }
+    }
+
 
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
@@ -93,10 +113,10 @@ public class EventToObjectMapHandler {
      * @param objectId    aggregated event object Id
      */
     public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,
-            String objectId) {
+            String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(objectId);
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);
@@ -115,7 +135,9 @@ public class EventToObjectMapHandler {
                 LOGGER.debug(
                         "MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}",
                         mapStr, databaseName, collectionName);
-                mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
+                Document document = Document.parse(mapStr);
+                document.append("Time", DateUtils.getDate());
+                mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
                         eventId);
@@ -168,8 +190,10 @@ public class EventToObjectMapHandler {
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
-        List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
+    	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        MongoStringQuery query = new MongoStringQuery(condition);
+        LOGGER.info("The JSON query for isEventInEventObjectMap is : {}", query);
+        List<String> documents = mongodbhandler.find(databaseName, collectionName, query);
         return !documents.isEmpty();
     }
 

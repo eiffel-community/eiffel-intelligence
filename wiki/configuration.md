@@ -79,6 +79,15 @@ to avoid having the collection growing too large. Recommended settings is 10 min
 
 * aggregations.collection.ttl (*seconds*)
 
+Eiffel Intelligence saves the aggregated object Ids in a database. It is possible to configure 
+the collection name, the time to live using the below properties:
+
+* event.object.map.collection.name
+* aggregations.collection.ttl
+
+The aggregations.collection.ttl property value will also be used to set the time to live value on 
+eventToObjectMap collection.
+
 ### Testing Aggregation Rules
 
 To test new rules for Eiffel Intelligence the property **test.aggregation.enabled**

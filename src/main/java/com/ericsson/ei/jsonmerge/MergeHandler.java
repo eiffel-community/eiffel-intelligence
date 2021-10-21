@@ -271,13 +271,8 @@ public class MergeHandler {
         return document;
     }
 
-    public void addNewObject(String event, String newObject, RulesObject rulesObject)
+    public String addNewObject(String event, JsonNode newObject, RulesObject rulesObject)
             throws MongoDBConnectionException {
-        objectHandler.insertObject(newObject, rulesObject, event, null);
-    }
-
-    public void addNewObject(String event, JsonNode newObject, RulesObject rulesObject)
-            throws MongoDBConnectionException {
-        objectHandler.insertObject(newObject, rulesObject, event, null);
+        return objectHandler.insertObject(newObject, rulesObject, event, null);
     }
 }

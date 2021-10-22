@@ -110,7 +110,6 @@ public class MergeHandler {
             }
             objectHandler.updateObject(mergedObject, rules, event, id);
         }
-
         return mergedObject;
     }
 

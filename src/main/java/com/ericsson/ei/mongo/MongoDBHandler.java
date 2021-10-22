@@ -23,7 +23,6 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-//import org.eclipse.jetty.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import com.ericsson.ei.handlers.DateUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClientException;
-//import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoConfigurationException;
 import com.mongodb.MongoInterruptedException;
@@ -158,7 +156,6 @@ public class MongoDBHandler {
                 for (Document document : foundResults) {
                 	BasicDBObject basicDBObject=new BasicDBObject(document);
                 	result.add(basicDBObject.toString());
-                    //result.add(JSON.serialize(document));
                 }
 
                 if (result.size() != 0) {
@@ -328,7 +325,7 @@ public class MongoDBHandler {
     public boolean isMongoDBServerUp() {
         try {
             ListDatabasesIterable<Document> list = mongoClient.listDatabases();
-            MongoCursor<Document> iter = list.iterator();
+            MongoCursor<Document> iter = list.iterator(); 
             while (iter.hasNext()) {
                 iter.getServerAddress();
                 break;
@@ -344,10 +341,7 @@ public class MongoDBHandler {
             throw new MongoConfigurationException(
                     "Failure to create MongoClient, missing config for spring.data.mongodb.uri:");
         }
-
-        //MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
         mongoClient = MongoClients.create(mongoProperties.getUri());
-        //mongoClient = new MongoClient(uri);
     }
 
     private ArrayList<String> doFind(String dataBaseName, String collectionName,
@@ -372,7 +366,6 @@ public class MongoDBHandler {
             // String.
         	BasicDBObject basicDBObject=new BasicDBObject(document);
         	result.add(basicDBObject.toString());
-            //result.add(JSON.serialize(document));
         }
 
         if (result.size() != 0) {

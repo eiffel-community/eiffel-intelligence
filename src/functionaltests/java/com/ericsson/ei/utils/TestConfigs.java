@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.SocketUtils;
 
 import com.mongodb.client.ListDatabasesIterable;
-//import com.mongodb.MongoClient;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCursor;
 
@@ -55,9 +54,6 @@ public class TestConfigs {
         }
 
         try {
-            //MongodForTestsFactory testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            //mongoClient = testsFactory.newMongo();
-            //String port = "" + mongoClient.getAddress().getPort();
         	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
             MongoCursor<Document> iter = list.iterator();
             String port = "" + iter.getServerAddress().getPort();

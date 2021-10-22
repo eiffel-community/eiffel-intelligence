@@ -45,7 +45,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClientException;
-//import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -118,7 +117,6 @@ public class ObjectHandler {
         BasicDBObject document = prepareDocumentForInsertion(id, aggregatedObject);
         LOGGER.debug("ObjectHandler: Aggregated Object document to be inserted: {}",
                 document.toString());
-
         mongoDbHandler.insertDocument(databaseName, aggregationsCollectionName, document.toString());
         postInsertActions(aggregatedObject, rulesObject, event, id);
         return aggregatedObject;
@@ -274,7 +272,6 @@ public class ObjectHandler {
                     documentLocked = false;
                     BasicDBObject basicDBObject=new BasicDBObject(result);
                     return basicDBObject.toString();
-                    //return JSON.serialize(result);
                 }
                 // To Remove
                 LOGGER.debug("Waiting by {} thread", Thread.currentThread().getId());

@@ -16,8 +16,8 @@ import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.mongodb.client.ListDatabasesIterable;
-//import com.mongodb.MongoClient;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCursor;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -78,7 +78,10 @@ public class TestConfigs {
         }
 
         try {
-            String port = mongoUri.substring(mongoUri.length()-5);
+        	mongoClient = MongoClients.create(mongoUri);
+        	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+            MongoCursor<Document> iter = list.iterator();
+            String port = "" + iter.getServerAddress().getPort();
             setNewPortToMongoDBUriProperty(mongoUri, port);
         } catch (Exception e) {
             LOGGER.error("Error setting new mongoDB uri property {}", e.getMessage(), e);

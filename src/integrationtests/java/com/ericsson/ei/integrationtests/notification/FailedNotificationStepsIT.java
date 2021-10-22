@@ -56,7 +56,6 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
     private ObjectMapper objectMapper = new ObjectMapper();
     private int extraEventsCount = 0;
     public String aggregatedEvent;
-
     private SubscriptionObject subscriptionObject;
 
     @Autowired

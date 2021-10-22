@@ -40,11 +40,9 @@ import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.ListDatabasesIterable;
-//import com.mongodb.MongoClient;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCursor;
 
-import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @TestPropertySource(properties = {
@@ -84,20 +82,15 @@ public class HttpRequestTest {
     private HttpRequest httpRequest;
 
     public static void setUpEmbeddedMongo() throws Exception {
-        //testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-        //mongoClient = testsFactory.newMongo();
     	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
         MongoCursor<Document> iter = list.iterator(); 
-        /*while (iter.hasNext()) {
-            iter.getServerAddress();
-        }*/
-        //String port = "" + mongoClient.getAddress().getPort();
         String port = "" + iter.getServerAddress().getPort();
         System.setProperty("spring.data.mongodb.port", port);
     }
 
     @BeforeClass
     public static void init() throws Exception {
+    	//new AnnotationConfigApplicationContext(HttpRequest.class);
         //setUpEmbeddedMongo();
     }
 

@@ -23,7 +23,6 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
-//import com.mongodb.MongoClient;
 import com.mongodb.client.MongoClient;
 
 @TestPropertySource(properties = {

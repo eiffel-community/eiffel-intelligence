@@ -21,7 +21,7 @@ public class HttpSessionConfig {
     @Primary
     @Bean
     public MongoIndexedSessionRepository mongoIndexedSessionRepository(MongoOperations mongoOperations) {
-        MongoIndexedSessionRepository repository = new MongoIndexedSessionRepository(mongoOperations);
+    	MongoIndexedSessionRepository repository = new MongoIndexedSessionRepository(mongoOperations);
         repository.setMaxInactiveIntervalInSeconds(maxInactiveIntervalInSeconds);
         return repository;
     }

@@ -545,7 +545,7 @@
 	                            <skipTests>${skipUTs}</skipTests>
 	                            <forkCount>${forkCountTests}</forkCount>
 	                            <reuseForks>true</reuseForks>
-	                            <parallel>classes</parallel>
+	                            <parallel>methods</parallel>
 	                            <threadCount>5</threadCount>
 	                            <includes>
 	                                <include>${someModule.test.includes}</include>

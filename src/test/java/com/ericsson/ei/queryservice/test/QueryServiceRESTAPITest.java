@@ -50,6 +50,7 @@ import com.ericsson.ei.controller.AggregatedObjectController;
 import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
 import com.ericsson.ei.controller.EntryPointConstantsUtils;
 import com.ericsson.ei.controller.FailedNotificationControllerImpl;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,9 @@ public class QueryServiceRESTAPITest {
 
     @Autowired
     private MockMvc mockMvc;
+    
+    @MockBean
+    private Encryptor encryptor;
 
     static JSONArray jsonArray = null;
 

@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
 import com.ericsson.ei.controller.model.ParseInstanceInfoEI;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
@@ -41,6 +42,9 @@ public class TestInformationControllerImpl extends ControllerTestBaseClass {
 
     @MockBean
     private InformationController infoController;
+    
+    @MockBean
+    private Encryptor encryptor;
 
     @Test
     public void testResponseStatus() throws Throwable {

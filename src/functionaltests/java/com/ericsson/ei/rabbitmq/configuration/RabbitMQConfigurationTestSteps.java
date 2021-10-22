@@ -74,7 +74,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
 
         rmqHandler.setRabbitTemplate(rabbitTemplate);
-        //rmqHandler.getContainer().setRabbitAdmin(rabbitAdmin);
         rmqHandler.getContainer().setAmqpAdmin(rabbitAdmin);
         rmqHandler.getContainer().setConnectionFactory(rmqHandler.getCachingConnectionFactory());
         rmqHandler.getContainer().setQueueNames(rmqHandler.getRmqProperties().getQueueName());
@@ -132,7 +131,6 @@ public class RabbitMQConfigurationTestSteps extends FunctionalTestBase {
         admin.getQueueProperties(queueName);
         RabbitTemplate rabbitTemplate = admin.getRabbitTemplate();
         rabbitTemplate.setExchange(exchangeName);
-        //rabbitTemplate.setQueue(queueName);
         rabbitTemplate.setDefaultReceiveQueue(queueName);
         rabbitTemplate.setRoutingKey(ROUTING_KEY_1);
         return admin;

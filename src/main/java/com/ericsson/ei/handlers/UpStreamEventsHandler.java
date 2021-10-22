@@ -69,9 +69,13 @@ public class UpStreamEventsHandler {
 
         // Use aggregatedObjectId as eventId since they are the same for start
         // events.
-        final ResponseEntity responseEntity = eventRepositoryQueryService
+    	
+    	long start = System.currentTimeMillis();    	
+    	final ResponseEntity responseEntity = eventRepositoryQueryService
                 .getEventStreamDataById(aggregatedObjectId, SearchOption.UP_STREAM, -1, -1, true);
-        if (responseEntity == null) {
+        long stop = System.currentTimeMillis();
+        LOGGER.debug("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
+    	if (responseEntity == null) {
             LOGGER.warn("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
             return;
         }
@@ -86,6 +90,11 @@ public class UpStreamEventsHandler {
         }
 
         final JsonNode upstreamLinkObjects = searchResult.get("upstreamLinkObjects");
+        if(upstreamLinkObjects == null) {
+        	LOGGER.warn("Expected upstreamLinkObjects are null");
+        	return;
+        }
+
         if (!upstreamLinkObjects.isArray()) {
             LOGGER.warn("Expected upstreamLinkObjects to be an array but is: {}", upstreamLinkObjects.getNodeType());
         }

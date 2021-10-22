@@ -18,8 +18,12 @@ package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +55,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
     private static String subRepeatFlagDataBaseName = "SubscriptionRepeatDbHandlerTest";
     private static String subRepeatFlagCollectionName = "subscription_repeat_handler";
+    Map<String, List<String>> subscriptionsCache = new HashedMap<>();
 
     @PostConstruct
     public void init() throws Exception {
@@ -69,6 +74,7 @@ public class SubscriptionRepeatDbHandlerTest extends FunctionalTestBase {
 
         String subscriptionId = "12345";
         int requirementId = 0;
+        
         String aggrObjId = "99999";
 
         String subscriptionQuery = "{\"subscriptionId\" : \"" + subscriptionId + "\"}";

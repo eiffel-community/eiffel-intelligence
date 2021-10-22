@@ -16,7 +16,6 @@
  */
 package com.ericsson.ei.handlers;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class ExtractionHandler {
             runExtraction(rulesObject, id, event, aggregatedJsonObject);
         } catch (Exception e) {
             LOGGER.error("Failed with extraction.", e);
-            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
             }
         }
@@ -78,23 +77,31 @@ public class ExtractionHandler {
         try {
             JsonNode extractedContent = extractContent(rulesObject, event);
 
+            String mergedContent = null;
+            String aggregatedObjectId = null;
             if(aggregatedDbObject != null) {
                 LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
                         + "\nwith extracted content:\n{}"
                         + "\nfrom event:\n{}",
                         aggregatedDbObject.toString(), extractedContent.toString(), event);
-                String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-                String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-                processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
+                aggregatedObjectId = objectHandler.extractObjectId(aggregatedDbObject);
+                mergedContent = mergeHandler.mergeObject(aggregatedObjectId, mergeId, rulesObject, event, extractedContent);
+                mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent, aggregatedObjectId, mergeId);                
             } else {
+            	LOGGER.trace("***** Extraction starts for the aggregation Id: " + mergeId);
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
-                mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                aggregatedObjectId = mergeId;
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
+                mergedContent = objectHandler.findObjectById(mergeId);
+                LOGGER.trace("**** Extraction ends for the aggregation Id: " + mergeId);               
             }
+            objectHandler.checkAggregations(mergedContent, aggregatedObjectId);
+            
         } catch (Exception e) {
-            LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, ExceptionUtils.getStackTrace(e));
-            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+            LOGGER.error("Failed to run extraction for event {} , stacktrace {}", event, e);
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
             }
         }

@@ -17,6 +17,7 @@
 package com.ericsson.ei.config;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,7 @@ public class SpringAsyncConfig implements AsyncConfigurer{
             executor.setQueueCapacity(subscriptionHandlerQueueCapacity);
             executor.setMaxPoolSize(subscriptionHandlerMaxPoolSize);
             executor.setThreadNamePrefix("SubscriptionHandler-");
+            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
             executor.initialize();
             return executor;
     }

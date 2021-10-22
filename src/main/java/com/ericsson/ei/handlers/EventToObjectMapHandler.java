@@ -78,8 +78,7 @@ public class EventToObjectMapHandler {
             LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
         }
     }
-
-
+    
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
     }
@@ -112,8 +111,7 @@ public class EventToObjectMapHandler {
      * @param event
      * @param objectId    aggregated event object Id
      */
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,
-            String objectId, int ttlValue) {
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
         final MongoCondition condition = MongoCondition.idCondition(objectId);

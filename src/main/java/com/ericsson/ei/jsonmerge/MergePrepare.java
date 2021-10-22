@@ -221,20 +221,17 @@ public class MergePrepare {
             Object ruleJSONObject;
 
             // condition to avoid un-necessary exception to print in the log
-            if (mergeRule.startsWith("{")) {
+            if(mergeRule.startsWith("{")) {
                 ruleJSONObject = new JSONObject(mergeRule);
             } else {
                 return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
             }
             // hack to remove quotes
             stringRule = ruleJSONObject.toString();
-            // if we have an array with only one JSON object we remove the
-            // square brackets
             stringRule = stringRule.replaceAll("\\[\\{", "{");
             stringRule = stringRule.replaceAll("\\}\\]", "}");
         } catch (JSONException e) {
-            LOGGER.warn("Failed to parse JSON.", e);
-            return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
+            LOGGER.warn("Failed to parse mergeRule {} , due to: {}.", mergeRule, e);
         }
 
         // flatten the stringObject to check if it contains parts of the rules
@@ -475,7 +472,6 @@ public class MergePrepare {
      * @return
      */
     public String addMissingLevels(String originObject, String objectToMerge, String mergeRule, String mergePath) {
-
         JSONObject newObject = new JSONObject();
         try {
             JSONArray mergePathArray = new JSONArray(mergePath.split("\\."));
@@ -518,6 +514,9 @@ public class MergePrepare {
                     mergeObject = newObject;
                 }
             }
+            LOGGER.debug("addMissingLevels for arguments: before parse\n" + "originObject was : {}\n"
+                    + "objectTomerge was: {}\n" + "mergeRule was: {}\n" + "mergePath was: {}\n",
+                    originObject, objectToMerge, mergeRule, mergePath);
         } catch (Exception e) {
             LOGGER.error(
                     "addMissingLevels failed for arguments:\n" + "originObject was : {}\n" + "objectTomerge was: {}\n"

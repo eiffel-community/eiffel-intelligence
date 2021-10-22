@@ -105,7 +105,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     private String event_map;
 
     @Before
-    public void before() throws PropertyNotFoundException, Exception {
+    public void before() throws Exception {
         MockitoAnnotations.initMocks(this);
         upStreamEventsHandler.setEventRepositoryQueryService(erQueryService);
 

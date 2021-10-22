@@ -65,7 +65,7 @@ public class ERQueryServiceTest extends Mockito {
     @Autowired
     private ERQueryService erQueryService;
     private HttpExecutor httpExecutor;
- 
+
     private String eventId = "01";
     private SearchOption searchOption = SearchOption.UP_STREAM;
     private int limitParam = 85;
@@ -81,7 +81,7 @@ public class ERQueryServiceTest extends Mockito {
     }
 
     @Test(expected = Test.None.class)
-    public void testErQueryUpstream() throws PropertyNotFoundException, Exception {
+    public void testErQueryUpstream() throws Exception {
         BDDMockito.given(httpExecutor.executeRequest(any(HttpRequestBase.class))).willAnswer(validateRequest(Mockito.any(HttpRequestBase.class)));
         erQueryService.sendRequestToER(eventId, searchOption, limitParam, levels, isTree, httpRequest);
     }

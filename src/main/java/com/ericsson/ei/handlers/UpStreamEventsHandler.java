@@ -84,7 +84,6 @@ public class UpStreamEventsHandler {
         
         final String searchResultString = responseEntity.getBody();
         LOGGER.debug("Search result string is: " + searchResultString);
-        LOGGER.debug("ResponseEntity: " + responseEntity);
         ObjectMapper mapper = new ObjectMapper();
         final JsonNode searchResult = mapper.readTree(searchResultString);
 

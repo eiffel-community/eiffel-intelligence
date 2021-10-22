@@ -220,7 +220,7 @@ public class MergePrepare {
             stringObject = objectJSONObject.toString();
             Object ruleJSONObject;
 
-        	// condition to avoid un-necessary exception to print in the log
+            // condition to avoid un-necessary exception to print in the log
             if(mergeRule.startsWith("{")) {
                 ruleJSONObject = new JSONObject(mergeRule);
             } else {
@@ -472,7 +472,6 @@ public class MergePrepare {
      * @return
      */
     public String addMissingLevels(String originObject, String objectToMerge, String mergeRule, String mergePath) {
-        
         JSONObject newObject = new JSONObject();
         try {
             JSONArray mergePathArray = new JSONArray(mergePath.split("\\."));

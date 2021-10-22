@@ -111,7 +111,7 @@ public class EventToObjectMapHandler {
      * @param event
      * @param objectId    aggregated event object Id
      */
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,	String objectId, int ttlValue) {
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
         final MongoCondition condition = MongoCondition.idCondition(objectId);

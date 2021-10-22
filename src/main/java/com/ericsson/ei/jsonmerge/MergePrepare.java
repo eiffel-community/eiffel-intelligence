@@ -220,12 +220,12 @@ public class MergePrepare {
             stringObject = objectJSONObject.toString();
             Object ruleJSONObject;
 
-            	// condition to avoid un-necessary exception to print in the log
-	            if(mergeRule.startsWith("{")) {
-	                ruleJSONObject = new JSONObject(mergeRule);
-	            } else {
-	                return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
-	            }
+        	// condition to avoid un-necessary exception to print in the log
+            if(mergeRule.startsWith("{")) {
+                ruleJSONObject = new JSONObject(mergeRule);
+            } else {
+                return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);
+            }
             // hack to remove quotes
             stringRule = ruleJSONObject.toString();
             stringRule = stringRule.replaceAll("\\[\\{", "{");
@@ -473,12 +473,6 @@ public class MergePrepare {
      */
     public String addMissingLevels(String originObject, String objectToMerge, String mergeRule, String mergePath) {
         
-        LOGGER.debug("addMissingLevels for arguments: before parse\n"
-                + "originObject was : {}\n"
-                + "objectTomerge was: {}\n"
-                + "mergeRule was: {}\n"
-                + "mergePath was: {}\n",
-                originObject, objectToMerge, mergeRule, mergePath);
         JSONObject newObject = new JSONObject();
         try {
             JSONArray mergePathArray = new JSONArray(mergePath.split("\\."));
@@ -521,11 +515,8 @@ public class MergePrepare {
                     mergeObject = newObject;
                 }
             }
-            LOGGER.info("addMissingLevels for arguments: before parse\n"
-                    + "originObject was : {}\n"
-                    + "objectTomerge was: {}\n"
-                    + "mergeRule was: {}\n"
-                    + "mergePath was: {}\n",
+            LOGGER.debug("addMissingLevels for arguments: before parse\n" + "originObject was : {}\n"
+                    + "objectTomerge was: {}\n" + "mergeRule was: {}\n" + "mergePath was: {}\n",
                     originObject, objectToMerge, mergeRule, mergePath);
         } catch (Exception e) {
             LOGGER.error(

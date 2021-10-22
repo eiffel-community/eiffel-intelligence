@@ -126,7 +126,7 @@ public class ObjectHandler {
 
     public String insertObject(JsonNode aggregatedObject, RulesObject rulesObject, String event,
             String id) throws MongoDBConnectionException {
-    	return insertObject(aggregatedObject.toString(), rulesObject, event, id);
+    return insertObject(aggregatedObject.toString(), rulesObject, event, id);
     }
 
     /**

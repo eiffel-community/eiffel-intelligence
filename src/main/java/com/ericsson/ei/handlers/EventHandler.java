@@ -61,7 +61,7 @@ public class EventHandler {
     }
 
     public void eventReceived(String event, final boolean isRelivered) 
-    		throws MongoDBConnectionException ,Exception {
+    		throws MongoDBConnectionException, Exception {
         RulesObject eventRules = rulesHandler.getRulesForEvent(event);
         idRulesHandler.runIdRules(eventRules, event, isRelivered);
     }
@@ -73,7 +73,7 @@ public class EventHandler {
         JsonNode node = objectMapper.readTree(messageBody);
         String id = node.get("meta").get("id").toString();
         final boolean isRedelivered = message.getMessageProperties().isRedelivered();
-
+        final int waitBeforeSendBack = 2000;
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         LOGGER.debug("Thread id {} spawned for EventHandler", Thread.currentThread().getId());
         try {
@@ -114,12 +114,12 @@ public class EventHandler {
             channel.basicNack(deliveryTag, false, true);
             LOGGER.info("Sent back the event {} to queue with un-acknowledgement due to {}", id, mdce);
         } catch (HttpHostConnectException | MongoExecutionTimeoutException e) {
-                LOGGER.info("Waiting for 2 seconds before sending the event back to queue");
-                Thread.sleep(2000);
+                LOGGER.info("Waiting for {} mili-seconds before sending the event back to queue", waitBeforeSendBack);
+                Thread.sleep(waitBeforeSendBack);
                 channel.basicNack(deliveryTag, false, true);
                 LOGGER.info("Sent back the event {} to queue with un-acknowledgement: ", id);
         } catch (Exception e) {
-        	LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
+        LOGGER.error("Event is not Re-queued due to exception for id: {} Exception: {} ", id, e);
         }
     }
 

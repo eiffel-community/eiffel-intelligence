@@ -280,11 +280,6 @@ public class MergeHandler {
         return document;
     }
 
-    public void addNewObject(String event, String newObject, RulesObject rulesObject)
-            throws MongoDBConnectionException {
-        objectHandler.insertObject(newObject, rulesObject, event, null);
-    }
-
     public String addNewObject(String event, JsonNode newObject, RulesObject rulesObject)
             throws MongoDBConnectionException {
         return objectHandler.insertObject(newObject, rulesObject, event, null);

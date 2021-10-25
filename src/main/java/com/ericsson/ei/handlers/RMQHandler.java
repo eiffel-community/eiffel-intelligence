@@ -38,7 +38,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -150,7 +150,7 @@ public class RMQHandler {
                 rabbitTemplate = new RabbitTemplate(connectionFactory());
             }
 
-            rabbitTemplate.setQueue(rmqProperties.getWaitlistQueueName());
+            rabbitTemplate.setDefaultReceiveQueue(rmqProperties.getWaitlistQueueName());
             rabbitTemplate.setExchange(rmqProperties.getExchangeName());
             rabbitTemplate.setRoutingKey(WAITLIST_BINDING_KEY);
             rabbitTemplate.setConfirmCallback(new ConfirmCallback() {

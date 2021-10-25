@@ -28,6 +28,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.mongo.MongoQuery;
 import com.ericsson.ei.queryservice.ProcessAggregatedObject;
 import com.ericsson.ei.queryservice.ProcessQueryParams;
@@ -57,6 +58,9 @@ public class TestProcessQueryParams {
 
     @MockBean
     private ProcessAggregatedObject processAggregatedObject;
+    
+    @MockBean
+    private Encryptor encryptor;
 
     @BeforeClass
     public static void setUp() throws JSONException {

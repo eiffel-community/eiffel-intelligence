@@ -34,10 +34,7 @@ import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoClientException;
-import com.mongodb.client.model.Updates;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoConfigurationException;
 import com.mongodb.MongoInterruptedException;
@@ -45,13 +42,17 @@ import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoSocketWriteException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.ListDatabasesIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.mongodb.util.JSON;
+import com.mongodb.client.MongoCursor;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -153,7 +154,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 FindIterable<Document> foundResults = collection.find();
                 for (Document document : foundResults) {
-                    result.add(JSON.serialize(document));
+                    result.add(new BasicDBObject(document).toString());
                 }
 
                 if (result.size() != 0) {
@@ -322,12 +323,16 @@ public class MongoDBHandler {
      */
     public boolean isMongoDBServerUp() {
         try {
-            mongoClient.getAddress();
+            final ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+            MongoCursor<Document> iter = list.iterator(); 
+            while (iter.hasNext()) {
+                iter.getServerAddress();
+                break;
+            }
             return true;
         } catch (Exception e) {
             return false;
         }
-
     }
 
     private void createMongoClient() throws AbortExecutionException {
@@ -335,9 +340,7 @@ public class MongoDBHandler {
             throw new MongoConfigurationException(
                     "Failure to create MongoClient, missing config for spring.data.mongodb.uri:");
         }
-
-        MongoClientURI uri = new MongoClientURI(mongoProperties.getUri());
-        mongoClient = new MongoClient(uri);
+        mongoClient = MongoClients.create(mongoProperties.getUri());
     }
 
     private ArrayList<String> doFind(String dataBaseName, String collectionName,
@@ -360,7 +363,7 @@ public class MongoDBHandler {
             // Currently document.toJson() does not work here since something will add \\\ before
             // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
             // String.
-            result.add(JSON.serialize(document));
+            result.add(new BasicDBObject(document).toString());
         }
 
         if (result.size() != 0) {

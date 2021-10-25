@@ -86,7 +86,7 @@ public class MergeHandler {
             LOGGER.debug("AGGREGATED OBJECT : " + aggregatedObject);
 	        if(aggregatedObject == null) {
 	            return null;
-	        } 
+	        }
             String mergeRule = getMergeRules(rules);
             if (mergeRule != null && !mergeRule.isEmpty()) {
                 String updatedRule = replaceIdMarkerInRules(mergeRule, mergeId);
@@ -110,7 +110,6 @@ public class MergeHandler {
             }
             objectHandler.updateObject(mergedObject, rules, event, id);
         }
-
         return mergedObject;
     }
 

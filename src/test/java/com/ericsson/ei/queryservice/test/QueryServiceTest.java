@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.bson.BsonDocument;
 import org.bson.Document;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: QueryServiceTest",
@@ -103,14 +104,6 @@ public class QueryServiceTest {
         mongoClient.getDatabase(database).getCollection(failedNotificationCollectionName)
                 .insertOne(failedDocument);
         LOG.debug("Document Inserted in failed notification Database");
-
-        BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
-                aggDocument.getString("_id"),
-                aggregatedObject);
-        aggDocument = Document.parse(preparedAggDocument.toString());
-        mongoClient.getDatabase(database).getCollection(aggregationCollectionName)
-                .insertOne(aggDocument);
-        LOG.debug("Document Inserted in Aggregated Object Database");
     }
 
     public void initializeData() throws Exception {
@@ -118,6 +111,21 @@ public class QueryServiceTest {
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
         failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
         LOG.debug("The failed notification is : " + failedNotification);
+    }
+    
+    @Before
+    public void insertOneAggregation() {
+    	Document aggDocument = Document.parse(aggregatedObject);
+        BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
+                aggDocument.getString("_id"),
+                aggregatedObject);
+        aggDocument = Document.parse(preparedAggDocument.toString());
+        try {
+            mongoClient.getDatabase(database).getCollection(aggregationCollectionName).insertOne(aggDocument);
+            LOG.debug("Document Inserted in Aggregated Object Database");
+        } catch (Exception e) {
+            LOG.debug("Document already present in Aggregated Object Database");
+        }
     }
 
     @Test

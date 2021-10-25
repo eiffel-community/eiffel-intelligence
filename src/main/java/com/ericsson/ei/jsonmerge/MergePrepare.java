@@ -221,7 +221,7 @@ public class MergePrepare {
             Object ruleJSONObject;
 
             // condition to avoid un-necessary exception to print in the log
-            if(mergeRule.startsWith("{")) {
+            if (mergeRule.startsWith("{")) {
                 ruleJSONObject = new JSONObject(mergeRule);
             } else {
                 return getMergePathFromArrayMergeRules(originObject, mergeRule, stringObject);

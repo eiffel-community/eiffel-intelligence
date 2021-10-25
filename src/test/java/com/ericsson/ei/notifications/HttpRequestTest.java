@@ -82,7 +82,7 @@ public class HttpRequestTest {
     private HttpRequest httpRequest;
 
     public static void setUpEmbeddedMongo() throws Exception {
-    	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+        ListDatabasesIterable<Document> list = mongoClient.listDatabases();
         MongoCursor<Document> iter = list.iterator(); 
         String port = "" + iter.getServerAddress().getPort();
         System.setProperty("spring.data.mongodb.port", port);
@@ -90,7 +90,6 @@ public class HttpRequestTest {
 
     @BeforeClass
     public static void init() throws Exception {
-    	//new AnnotationConfigApplicationContext(HttpRequest.class);
         //setUpEmbeddedMongo();
     }
 

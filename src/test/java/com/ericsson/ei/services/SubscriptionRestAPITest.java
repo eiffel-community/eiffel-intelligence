@@ -70,8 +70,6 @@ public class SubscriptionRestAPITest {
 
     @MockBean
     private SecurityContext securityContext;
-    
-	
 	@MockBean private Encryptor encryptor;
 	
 

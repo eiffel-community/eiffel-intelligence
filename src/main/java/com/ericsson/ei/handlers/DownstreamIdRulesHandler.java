@@ -52,7 +52,7 @@ public class DownstreamIdRulesHandler {
     }
 
     public void runIdRules(RulesObject rulesObject, String event) 
-            throws MongoDBConnectionException, Exception {
+            throws MongoDBConnectionException {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
             List<String> objects;

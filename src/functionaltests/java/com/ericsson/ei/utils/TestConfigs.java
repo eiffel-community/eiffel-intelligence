@@ -54,9 +54,9 @@ public class TestConfigs {
         }
 
         try {
-        	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
-            MongoCursor<Document> iter = list.iterator();
-            String port = "" + iter.getServerAddress().getPort();
+            final ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+            final MongoCursor<Document> iter = list.iterator();
+            final String port = "" + iter.getServerAddress().getPort();
             System.setProperty("spring.data.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
         } catch (Exception e) {

@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.bson.BsonDocument;
 import org.bson.Document;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -103,21 +104,28 @@ public class QueryServiceTest {
         mongoClient.getDatabase(database).getCollection(failedNotificationCollectionName)
                 .insertOne(failedDocument);
         LOG.debug("Document Inserted in failed notification Database");
+    }
 
+    public void initializeData() throws Exception {
+    	aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
+        LOG.debug("The aggregatedObject is : " + aggregatedObject);
+        failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
+        LOG.debug("The failed notification is : " + failedNotification);
+    }
+    
+    @Before
+    public void insertOneAggregation() {
+    	Document aggDocument = Document.parse(aggregatedObject);
         BasicDBObject preparedAggDocument = objectHandler.prepareDocumentForInsertion(
                 aggDocument.getString("_id"),
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
-        mongoClient.getDatabase(database).getCollection(aggregationCollectionName)
-                .insertOne(aggDocument);
+        try {
+        mongoClient.getDatabase(database).getCollection(aggregationCollectionName).insertOne(aggDocument);
         LOG.debug("Document Inserted in Aggregated Object Database");
-    }
-
-    public void initializeData() throws Exception {
-        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
-        LOG.debug("The aggregatedObject is : " + aggregatedObject);
-        failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
-        LOG.debug("The failed notification is : " + failedNotification);
+        } catch (Exception e) {
+        LOG.debug("Document already present in Aggregated Object Database");
+        }
     }
 
     @Test

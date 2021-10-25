@@ -154,8 +154,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 FindIterable<Document> foundResults = collection.find();
                 for (Document document : foundResults) {
-                	BasicDBObject basicDBObject=new BasicDBObject(document);
-                	result.add(basicDBObject.toString());
+                	result.add(new BasicDBObject(document).toString());
                 }
 
                 if (result.size() != 0) {
@@ -324,7 +323,7 @@ public class MongoDBHandler {
      */
     public boolean isMongoDBServerUp() {
         try {
-            ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+            final ListDatabasesIterable<Document> list = mongoClient.listDatabases();
             MongoCursor<Document> iter = list.iterator(); 
             while (iter.hasNext()) {
                 iter.getServerAddress();
@@ -364,8 +363,8 @@ public class MongoDBHandler {
             // Currently document.toJson() does not work here since something will add \\\ before
             // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
             // String.
-        	BasicDBObject basicDBObject=new BasicDBObject(document);
-        	result.add(basicDBObject.toString());
+            BasicDBObject basicDBObject = new BasicDBObject(document);
+            result.add(basicDBObject.toString());
         }
 
         if (result.size() != 0) {

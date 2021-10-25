@@ -270,8 +270,7 @@ public class ObjectHandler {
                 if (result != null) {
                     LOGGER.debug("DB locked by {} thread", Thread.currentThread().getId());
                     documentLocked = false;
-                    BasicDBObject basicDBObject=new BasicDBObject(result);
-                    return basicDBObject.toString();
+                    return new BasicDBObject(result).toString();
                 }
                 // To Remove
                 LOGGER.debug("Waiting by {} thread", Thread.currentThread().getId());

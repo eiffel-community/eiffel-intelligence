@@ -404,7 +404,7 @@ public class FlowStepsIT extends IntegrationTestBase {
     }
 
     private void setupMailhogMongoDBHandler() {
-    	MongoClient mongoClient = MongoClients.create(mailHogUri);
+        MongoClient mongoClient = MongoClients.create(mailHogUri);
         mailhogMongoDBHandler = new MongoDBHandler();
         mailhogMongoDBHandler.setMongoClient(mongoClient);
     }

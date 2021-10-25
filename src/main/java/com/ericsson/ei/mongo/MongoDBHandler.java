@@ -154,7 +154,7 @@ public class MongoDBHandler {
             if (collection != null) {
                 FindIterable<Document> foundResults = collection.find();
                 for (Document document : foundResults) {
-                	result.add(new BasicDBObject(document).toString());
+                    result.add(new BasicDBObject(document).toString());
                 }
 
                 if (result.size() != 0) {

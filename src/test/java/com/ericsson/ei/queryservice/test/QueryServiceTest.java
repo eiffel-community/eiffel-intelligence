@@ -107,7 +107,7 @@ public class QueryServiceTest {
     }
 
     public void initializeData() throws Exception {
-    	aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
+        aggregatedObject = FileUtils.readFileToString(new File(AGGREGATED_PATH), "UTF-8");
         LOG.debug("The aggregatedObject is : " + aggregatedObject);
         failedNotification = FileUtils.readFileToString(new File(FAILED_NOTIFICATION_PATH), "UTF-8");
         LOG.debug("The failed notification is : " + failedNotification);

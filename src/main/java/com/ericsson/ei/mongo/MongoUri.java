@@ -17,10 +17,8 @@
 package com.ericsson.ei.mongo;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.mongodb.config.MongoCredentialPropertyEditor;
 
 import com.mongodb.ConnectionString;
-import com.mongodb.MongoCredential;
 import com.mongodb.MongoConfigurationException;
 
 public class MongoUri {

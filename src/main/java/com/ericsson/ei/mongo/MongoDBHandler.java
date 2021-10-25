@@ -363,8 +363,7 @@ public class MongoDBHandler {
             // Currently document.toJson() does not work here since something will add \\\ before
             // all " later on, All get sometihng in mongoDB shoult redurn a JSON object and not a
             // String.
-            BasicDBObject basicDBObject = new BasicDBObject(document);
-            result.add(basicDBObject.toString());
+            result.add(new BasicDBObject(document).toString());
         }
 
         if (result.size() != 0) {

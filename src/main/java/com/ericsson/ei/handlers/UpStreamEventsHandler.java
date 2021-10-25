@@ -76,7 +76,6 @@ public class UpStreamEventsHandler {
         long stop = System.currentTimeMillis();
         LOGGER.debug("%%%% Response time for upstream query for id: {}: {} ", aggregatedObjectId, stop-start);
         LOGGER.debug("ResponseEntity: " + responseEntity);
-
         if (responseEntity == null) {
             LOGGER.info("Asked for upstream from {} but got null response entity back!", aggregatedObjectId);
             return;

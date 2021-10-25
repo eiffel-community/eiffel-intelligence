@@ -80,9 +80,9 @@ public class TestConfigs {
         try {
         	mongoClient = MongoClients.create(mongoUri);
         	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
-            MongoCursor<Document> iter = list.iterator();
-            String port = "" + iter.getServerAddress().getPort();
-            setNewPortToMongoDBUriProperty(mongoUri, port);
+        	MongoCursor<Document> iter = list.iterator();
+        	String port = "" + iter.getServerAddress().getPort();
+        	setNewPortToMongoDBUriProperty(mongoUri, port);
         } catch (Exception e) {
             LOGGER.error("Error setting new mongoDB uri property {}", e.getMessage(), e);
         }

@@ -51,7 +51,7 @@ public class DownstreamIdRulesHandler {
         this.jmesPathInterface = jmesPathInterface;
     }
 
-    public void runIdRules(RulesObject rulesObject, String event) 
+    public void runIdRules(RulesObject rulesObject, String event)
             throws MongoDBConnectionException {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);

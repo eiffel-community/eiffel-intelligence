@@ -121,10 +121,10 @@ public class QueryServiceTest {
                 aggregatedObject);
         aggDocument = Document.parse(preparedAggDocument.toString());
         try {
-        mongoClient.getDatabase(database).getCollection(aggregationCollectionName).insertOne(aggDocument);
-        LOG.debug("Document Inserted in Aggregated Object Database");
+            mongoClient.getDatabase(database).getCollection(aggregationCollectionName).insertOne(aggDocument);
+            LOG.debug("Document Inserted in Aggregated Object Database");
         } catch (Exception e) {
-        LOG.debug("Document already present in Aggregated Object Database");
+            LOG.debug("Document already present in Aggregated Object Database");
         }
     }
 

@@ -313,7 +313,7 @@ public class ObjectHandler {
 
     private void postInsertActions(String aggregatedObject, RulesObject rulesObject, String event,
             String id) {
-    	LOGGER.info("Updating the event object map with event id: " + id + " event is : " + event);
+    	LOGGER.debug("Updating the event object map with event id: " + id + " event is : " + event);
         eventToObjectMap.updateEventToObjectMapInMemoryDB(rulesObject, event, id, getTtl());
     }
     

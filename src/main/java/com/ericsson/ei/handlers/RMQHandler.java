@@ -29,6 +29,8 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarable;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -198,14 +200,16 @@ public class RMQHandler {
     }
 
     @Bean
-    public List<Binding> bindings() {
+    public Declarables bindings() {
         String[] bindingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
-        List<Binding> bindingList = new ArrayList<Binding>();
+        List<Binding> bindingsList = new ArrayList<Binding>();
+        List<Declarable> bindingList = new ArrayList<Declarable>();
         for (String bindingKey : bindingKeysArray) {
+            bindingsList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
-        deleteBindings(bindingKeysArray,bindingList);
-        return bindingList;
+        deleteBindings(bindingKeysArray,bindingsList);
+        return new Declarables(bindingList);
     }
 
     private boolean isRMQCredentialsSet() {

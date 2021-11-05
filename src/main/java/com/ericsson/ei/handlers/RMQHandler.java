@@ -29,6 +29,8 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarable;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -198,14 +200,16 @@ public class RMQHandler {
     }
 
     @Bean
-    public List<Binding> bindings() {
+    public Declarables bindings() {
         String[] bindingKeysArray = splitBindingKeys(rmqProperties.getBindingKeys());
-        List<Binding> bindingList = new ArrayList<Binding>();
+        List<Binding> bindingsList = new ArrayList<Binding>();
+        List<Declarable> bindingList = new ArrayList<Declarable>();
         for (String bindingKey : bindingKeysArray) {
+            bindingsList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
             bindingList.add(BindingBuilder.bind(externalQueue()).to(exchange()).with(bindingKey));
         }
-        deleteBindings(bindingKeysArray,bindingList);
-        return bindingList;
+        deleteBindings(bindingKeysArray,bindingsList);
+        return new Declarables(bindingList);
     }
 
     private boolean isRMQCredentialsSet() {
@@ -225,7 +229,7 @@ public class RMQHandler {
      * Binding key which is not present in the current AMQPBindingObjectList gets deleted and removed from mongoDB.
      * @return
      */
-    private void deleteBindings(String[] newBindingKeysArray, List<Binding> AMQPBindingObjectList) {
+    private void deleteBindings(String[] newBindingKeysArray, List<Binding> amqpBindingObjectList) {
         // Creating BindingKeys Collection in mongoDB
         ArrayList<String> allDocuments = mongoDBHandler.getAllDocuments(dataBaseName, collectionName);
         ArrayList<String> existingBindingsData = new ArrayList<String>();
@@ -250,16 +254,16 @@ public class RMQHandler {
             }
         }
         // to store the binding keys used for rabbitMQ, in mongo db.
-        storeNewBindingKeys(existingBindingsData, AMQPBindingObjectList);
+        storeNewBindingKeys(existingBindingsData, amqpBindingObjectList);
     }
 
 	/**
      * This method is used to store the binding keys used for rabbitMQ, in mongoDB.
      * @return
      */
-    private void storeNewBindingKeys(ArrayList<String> existingBindingsData, List<Binding> AMQPBindingObjectList){
+    private void storeNewBindingKeys(ArrayList<String> existingBindingsData, List<Binding> amqpBindingObjectList){
     // comparing with the stored key and adding the new binding key into the mongoDB.
-       for(final Binding bindingKey:AMQPBindingObjectList){
+       for(final Binding bindingKey:amqpBindingObjectList){
             if(existingBindingsData.contains(bindingKey.getRoutingKey())){
                 LOGGER.info("Binding already present in mongoDB");
             }else{

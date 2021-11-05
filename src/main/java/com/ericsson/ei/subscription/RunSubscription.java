@@ -94,7 +94,7 @@ public class RunSubscription {
 
             JsonNode requirement = requirementIterator.next();
 
-            LOGGER.info("The fulfilled requirement which condition will check is : {}", requirement.toString());
+            LOGGER.debug("The fulfilled requirement which condition will check is : {}", requirement.toString());
             ArrayNode conditions = (ArrayNode) requirement.get("conditions");
 
             count_condition_fulfillment = 0;
@@ -141,7 +141,7 @@ public class RunSubscription {
         }
 
         LOGGER.info("The final value of conditionFulfilled is : {} for aggregation object id: {} and Subscription: {}",
-                conditionFulfilled, id);
+                conditionFulfilled, id, subscriptionName);
 
         return conditionFulfilled;
     }

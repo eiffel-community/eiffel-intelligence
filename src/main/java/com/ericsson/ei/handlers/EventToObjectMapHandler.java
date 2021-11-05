@@ -183,14 +183,14 @@ public class EventToObjectMapHandler {
     public boolean deleteEventObjectMap(String templateName) {
         String queryString = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
         MongoStringQuery query = new MongoStringQuery(queryString);
-        LOGGER.info("The JSON query for deleting aggregated object is : {}", query);
+        LOGGER.debug("The JSON query for deleting aggregated object is : {}", query);
         return mongodbhandler.dropDocument(databaseName, collectionName, query);
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
     	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
         MongoStringQuery query = new MongoStringQuery(condition);
-        LOGGER.info("The JSON query for isEventInEventObjectMap is : {}", query);
+        LOGGER.debug("The JSON query for isEventInEventObjectMap is : {}", query);
         List<String> documents = mongodbhandler.find(databaseName, collectionName, query);
         return !documents.isEmpty();
     }

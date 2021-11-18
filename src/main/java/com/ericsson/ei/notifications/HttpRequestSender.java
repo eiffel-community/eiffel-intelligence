@@ -19,7 +19,9 @@ package com.ericsson.ei.notifications;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,8 @@ public class HttpRequestSender {
     private RestOperations rest;
     
     @Autowired
-    public HttpRequestSender(RestTemplateBuilder builder, @Value("${notification.httpRequest.timeout:5000}") final Duration timeOut) {
+    public HttpRequestSender(RestTemplateBuilder builder,@Value("${notification.httpRequest.timeout:5000}") Duration timeOut) {
+        timeOut = timeOut == null ? Duration.ofMillis(5000) : timeOut;
         rest = builder.setReadTimeout(timeOut).setConnectTimeout(timeOut).build();
     }
 

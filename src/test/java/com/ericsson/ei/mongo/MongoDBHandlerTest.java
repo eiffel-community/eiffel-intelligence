@@ -108,8 +108,7 @@ public class MongoDBHandlerTest {
     
     @Test
     public void insertEventToObjectMapDuplicate() {
-		mongoDBHandler.insertDocumentObject(dataBaseName, mapCollectionName, document, 
-				conditionForEventToObjectMap, updateInputForEventToObjectMapDuplicate);
+		mongoDBHandler.insertDocumentObject(dataBaseName, mapCollectionName, document, conditionForEventToObjectMap, updateInputForEventToObjectMapDuplicate);
 		assertTrue(isEventInEventObjectMap(updateInputForEventToObjectMapDuplicate));
     }
     

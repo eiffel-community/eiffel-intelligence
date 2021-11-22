@@ -137,10 +137,8 @@ public class MongoDBHandler {
 
         } catch(MongoWriteException e) {
             if(e.getError().getCategory() == ErrorCategory.DUPLICATE_KEY) {
-            	LOGGER.debug("Duplicate key insertion for {} in collection {} and Update event-to-object map collection "
-            			+ "for condition {} with eventId {}", document, collectionName, condition, eventId);
-            	updateDocumentAddToSet(dataBaseName, collectionName, condition,
-                        eventId);
+            	LOGGER.debug("Duplicate key insertion for {} in collection {} and Update event-to-object map collection for condition {} with eventId {}", document, collectionName, condition, eventId);
+            	updateDocumentAddToSet(dataBaseName, collectionName, condition, eventId);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", document,

@@ -34,6 +34,7 @@ import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.handlers.DateUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.BasicDBObject;
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClientException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoConfigurationException;
@@ -120,7 +121,8 @@ public class MongoDBHandler {
      * @param document - Document object to insert
      * @throws MongoWriteException
      */
-    public void insertDocumentObject(String dataBaseName, String collectionName, Document document) throws MongoWriteException {
+    public void insertDocumentObject(String dataBaseName, String collectionName, Document document, MongoCondition condition, String eventId) 
+    		throws MongoWriteException {
         try {
             MongoCollection<Document> collection = getMongoCollection(dataBaseName, collectionName);           
 
@@ -133,6 +135,13 @@ public class MongoDBHandler {
                         collectionName, dataBaseName);
             }
 
+        } catch(MongoWriteException e) {
+            if(e.getError().getCategory() == ErrorCategory.DUPLICATE_KEY) {
+            	LOGGER.debug("Duplicate key insertion for {} in collection {} and Update event-to-object map collection "
+            			+ "for condition {} with eventId {}", document, collectionName, condition, eventId);
+            	updateDocumentAddToSet(dataBaseName, collectionName, condition,
+                        eventId);
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to insert Object: {} \n in collection: {} and database {}. \n {}", document,
                     collectionName, dataBaseName, e.getMessage());

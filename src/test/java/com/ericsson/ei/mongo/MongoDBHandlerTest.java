@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.Document;
 import org.junit.Before;
@@ -52,6 +53,9 @@ public class MongoDBHandlerTest {
             "testid1");
     private String inputForEventToObjectMap = "{\"_id\" : \"testid1\", \"objects\" : [\"eventid1\", \"eventid2\"]}";
     private String updateInputForEventToObjectMap = "\"eventid3\"";
+    private String inputForEventToObjectMapDuplicate = "{\"_id\" : \"testid1\", \"objects\" : [\"eventid4\"]}";
+    private String updateInputForEventToObjectMapDuplicate = "eventid4";
+    Document document = Document.parse(inputForEventToObjectMapDuplicate);
 
     @Before
     public void init() throws Exception {
@@ -100,6 +104,20 @@ public class MongoDBHandlerTest {
     public void updateEventToObjectMap() {
         assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, mapCollectionName,
                 conditionForEventToObjectMap, updateInputForEventToObjectMap));
+    }
+    
+    @Test
+    public void insertEventToObjectMapDuplicate() {
+		mongoDBHandler.insertDocumentObject(dataBaseName, mapCollectionName, document, 
+				conditionForEventToObjectMap, updateInputForEventToObjectMapDuplicate);
+		assertTrue(isEventInEventObjectMap(updateInputForEventToObjectMapDuplicate));
+    }
+    
+    public boolean isEventInEventObjectMap(String eventId) {
+    	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        MongoStringQuery query = new MongoStringQuery(condition);
+        List<String> documents = mongoDBHandler.find(dataBaseName, mapCollectionName, query);
+        return !documents.isEmpty();
     }
 
     @Test

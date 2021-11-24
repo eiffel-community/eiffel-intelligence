@@ -26,6 +26,7 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.stereotype.Component;
 
@@ -69,6 +70,9 @@ public class MongoDBHandler {
     @Setter
     @JsonIgnore
     private MongoClient mongoClient;
+
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;
 
     // TODO establish connection automatically when Spring instantiate this
     // based on connection data in properties file
@@ -323,12 +327,7 @@ public class MongoDBHandler {
      */
     public boolean isMongoDBServerUp() {
         try {
-            final ListDatabasesIterable<Document> list = mongoClient.listDatabases();
-            MongoCursor<Document> iter = list.iterator(); 
-            while (iter.hasNext()) {
-                iter.getServerAddress();
-                break;
-            }
+            mongoClient.getDatabase(databaseName).runCommand(new Document("ping", 1));
             return true;
         } catch (Exception e) {
             return false;

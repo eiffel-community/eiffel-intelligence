@@ -19,22 +19,19 @@ package com.ericsson.ei.mongo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.ericsson.ei.test.utils.TestConfigs;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoDBHandlerTest {
 
@@ -140,21 +137,19 @@ public class MongoDBHandlerTest {
     
     @Test
     public void testIsMongoDBServerUp() {
-        MongoClient client = mock(MongoClient.class);
-        Document document = mock(Document.class);
-        ListDatabasesIterable documents = mock(ListDatabasesIterable.class);;
-        ListDatabasesIterable<Document> list = client.listDatabases();
-        MongoCursor cursor= mock(MongoCursor.class);
-	
-        when(client.listDatabases()).thenReturn(documents);
-        when(cursor.getServerAddress()).thenReturn(new ServerAddress());
-        assertTrue(mongoDBHandler.isMongoDBServerUp());
+        MongoDBHandler mongoDbHandler=mock(MongoDBHandler.class);
+        when(mongoDbHandler.isMongoDBServerUp()).thenReturn(true);
+        assertTrue(mongoDbHandler.isMongoDBServerUp());
+    }
 
-        doThrow(Exception.class).when(documents);
-        mongoDBHandler.setMongoClient(null);
-        assertFalse(mongoDBHandler.isMongoDBServerUp());
-        
-        //Need to set a working client to enable cleanup
-        mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
+    @Test
+    public void testIsMongoDBServerDown() {
+      MongoClient client = mock(MongoClient.class);
+      MongoDatabase database=mock(MongoDatabase.class);
+      when(client.getDatabase(Mockito.anyString())).thenReturn(database);
+      mongoDBHandler.setMongoClient(null);
+      assertFalse(mongoDBHandler.isMongoDBServerUp());
+      //Need to set a working client to enable cleanup
+      mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
     }
 }

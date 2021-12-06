@@ -19,8 +19,12 @@ package com.ericsson.ei.notifications;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -38,8 +42,10 @@ public class HttpRequestSender {
 
     private RestOperations rest;
     
-    public HttpRequestSender(RestTemplateBuilder builder) {
-        rest = builder.build();
+    @Autowired
+    public HttpRequestSender(RestTemplateBuilder builder, @Value("${notification.httpRequest.timeout:5000}") Duration timeOut) {
+        timeOut = timeOut == null ? Duration.ofMillis(5000) : timeOut;
+        rest = builder.setReadTimeout(timeOut).setConnectTimeout(timeOut).build();
     }
 
     /**

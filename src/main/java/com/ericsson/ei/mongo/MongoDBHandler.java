@@ -123,6 +123,8 @@ public class MongoDBHandler {
      * @param dataBaseName
      * @param collectionName
      * @param document - Document object to insert
+     * @param condition - a condition to find a requested object in the database
+     * @param eventId - eventId to update in the mapper collection
      * @throws MongoWriteException
      */
     public void insertDocumentObject(String dataBaseName, String collectionName, Document document, MongoCondition condition, String eventId) 

@@ -25,6 +25,7 @@
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
+	<log4j2.version>2.15.0</log4j2.version>
         <springBootVersion>2.5.5</springBootVersion>
         <springLdapVersion>2.3.4.RELEASE</springLdapVersion>
         <springSecurityVersion>5.5.2</springSecurityVersion>
@@ -76,11 +77,6 @@
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
             <version>0.0.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-            <version>2.15.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

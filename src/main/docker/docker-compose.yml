@@ -121,7 +121,7 @@ services:
        - rabbitmq.autoDelete=false
        - rabbitmq.createExchangeIfNotExisting=true
        - rabbitmq.consumerName=messageConsumer
-       - mongodb.host=localhost
+       - mongodb.host=mongodb
        - mongodb.port=${MONGODB_PORT}
        - mongodb.database=eiffel
        - mongodb.collection=events
@@ -141,7 +141,7 @@ services:
        - index.dynamicIndex.filePath=src/main/resources/dynamic_indexing.json
        - index.dynamicIndex.fileUpdatePeriod=30
        - WAIT_MB_HOSTS=rabbitmq:${RABBITMQ_WEB_PORT}
-       - WAIT_DB_HOSTS=localhost:${MONGODB_PORT}
+       - WAIT_DB_HOSTS=mongodb:${MONGODB_PORT}
 
 
   jenkins:
@@ -175,7 +175,7 @@ services:
       - mongodb
     environment:
       MH_STORAGE: mongodb
-      MH_MONGO_URI: localhost:${MONGODB_PORT}
+      MH_MONGO_URI: mongodb:${MONGODB_PORT}
       MH_MONGO_COLLECTION: messages
       MH_MONGO_DB: mailhog
     networks:
@@ -209,7 +209,7 @@ services:
       - rabbitmq.exchange.name=ei-exchange
       - rabbitmq.user=myuser
       - rabbitmq.password=myuser
-      - spring.data.mongodb.uri=mongodb://localhost:${MONGODB_PORT}
+      - spring.data.mongodb.uri=mongodb://mongodb:${MONGODB_PORT}
       - spring.data.mongodb.database=eiffel2_intelligence
       - failed.notification.collection-name=eiffel2_FailedNotification
       - spring.mail.host=
@@ -220,7 +220,7 @@ services:
       - spring.mail.properties.mail.smtp.starttls.enable=false
       - er.url=eiffel-er:${EIFFEL_ER_PORT}/search/
       - WAIT_MB_HOSTS=rabbitmq:${RABBITMQ_WEB_PORT}
-      - WAIT_DB_HOSTS=localhost:${MONGODB_PORT}
+      - WAIT_DB_HOSTS=mongodb:${MONGODB_PORT}
       - logging.level.root=OFF
       - logging.level.org.springframework.web=DEBUG
       - logging.level.com.ericsson.ei=DEBUG
@@ -282,7 +282,7 @@ services:
       - mongodb
       - elasticsearch
     environment:
-      - MONSTACHE_MONGO_URL=localhost:${MONGODB_PORT}
+      - MONSTACHE_MONGO_URL=mongodb:${MONGODB_PORT}
       - MONSTACHE_ES_URLS=http://elasticsearch:9200
     links:
       - elasticsearch

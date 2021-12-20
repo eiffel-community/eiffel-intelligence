@@ -58,7 +58,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusMongoDBAvailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(true);
-        when(rmqConnectionListener.isConnected()).thenReturn(true);
+        when(rmqConnectionListener.isConnected().eq(true)).thenReturn(true);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
@@ -74,7 +74,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusMongoDBUnavailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(false);
-        when(rmqConnectionListener.isConnected()).thenReturn(true);
+        when(rmqConnectionListener.isConnected().eq(true)).thenReturn(true);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();
@@ -90,7 +90,7 @@ public class StatusHandlerTest {
     @Test
     public void testStatusHandlerWithStatusRabbitMQUnavailable() {
         when(mongoDBHandlerMock.isMongoDBServerUp()).thenReturn(true);
-        when(rmqConnectionListener.isConnected()).thenReturn(false);
+        when(rmqConnectionListener.isConnected().eq(false)).thenReturn(false);
 
         statusHandler.run();
         JsonNode statusData = statusHandler.getCurrentStatus();

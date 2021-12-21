@@ -25,7 +25,6 @@
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
-	<log4j2.version>2.16.0</log4j2.version>
         <springBootVersion>2.5.5</springBootVersion>
         <springLdapVersion>2.3.4.RELEASE</springLdapVersion>
         <springSecurityVersion>5.5.2</springSecurityVersion>
@@ -82,6 +81,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <version>${springBootVersion}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.logging.log4j</groupId>
+            		<artifactId>log4j-to-slf4j</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

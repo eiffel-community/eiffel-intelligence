@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,14 +67,14 @@ public class EventToObjectMapHandler {
     @Autowired
     JmesPathInterface jmesPathInterface;
     
-    @Value("${aggregations.collection.ttl:0}")
+    @Value("${aggregations.collection.ttl}")
     private String eventToObjectTtl;
 
     @PostConstruct
     public void init() throws AbortExecutionException {
         try {
-            if (Integer.parseInt(eventToObjectTtl) > 0) {
-                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, Integer.parseInt(eventToObjectTtl));
+            if (getTtl() > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, getTtl());
             }
         } catch (Exception e) {
             LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
@@ -135,7 +137,7 @@ public class EventToObjectMapHandler {
                         mapStr, databaseName, collectionName);
                 Document document = Document.parse(mapStr);
                 document.append("Time", DateUtils.getDate());
-                mongodbhandler.insertDocumentObject(databaseName, collectionName, document);
+                mongodbhandler.insertDocumentObject(databaseName, collectionName, document, condition, eventId);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
                         eventId);
@@ -194,5 +196,24 @@ public class EventToObjectMapHandler {
         List<String> documents = mongodbhandler.find(databaseName, collectionName, query);
         return !documents.isEmpty();
     }
-
+    
+    /**
+     * This method gives the TTL (time to live) value for documents stored in the database. This
+     * value is set in application.properties when starting Eiffel Intelligence.
+     *
+     * @return ttl Integer value representing time to live for documents
+     */
+    @JsonIgnore
+    public int getTtl() {
+        int ttl = 0;
+        if (StringUtils.isNotEmpty(eventToObjectTtl)) {
+            try {
+                ttl = Integer.parseInt(eventToObjectTtl);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Failed to parse TTL value.", e);
+            }
+        }
+        return ttl;
+    }
+    
 }

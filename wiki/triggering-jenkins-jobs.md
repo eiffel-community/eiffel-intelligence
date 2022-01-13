@@ -28,6 +28,9 @@ authentication type works. BASIC_AUTH can also be used.
 ### userName & password
 The username and password Eiffel Intelligence will use in headers of the HTTP 
 request when sending a notification via HTTP POST.
+As improved CSRF protection provided since Jenkins version 2.176.2, it is recommended that to set this Password/Token field
+as an API token and not Jenkins user password. Click [here](https://www.jenkins.io/doc/upgrade-guide/2.176/#SECURITY-626)
+to see Jenkins upgrade guides regarding this improvement.
 
 ### notificationMeta
 Which url to use for the HTTP POST request. This url contains parameters to 

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <packaging>war</packaging>
 
     <parent>
@@ -77,11 +77,16 @@
             <artifactId>eiffel-commons</artifactId>
             <version>0.0.15</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <version>${springBootVersion}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.logging.log4j</groupId>
+            		<artifactId>log4j-to-slf4j</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

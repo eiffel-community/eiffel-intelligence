@@ -28,6 +28,10 @@ jobs:
   include:
     - stage: test
       name: unitAndFunctionalTests
+      before_script:
+        - source src/main/docker/env.bash
+        - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth
+        - sleep 60
       script:
         - mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Dspring.config.location=src/main/resources/application.properties -B
     - stage: test

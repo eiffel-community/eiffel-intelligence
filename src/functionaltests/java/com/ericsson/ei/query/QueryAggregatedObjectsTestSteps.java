@@ -373,7 +373,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+            assertEquals(HttpStatus.OK.value(), responseStatusCode);
             assertEquals("Failed to compare actual response:\n" + responseAsString
                     + "\nwith expected response:\n"
                     + expectedResponse, expectedResponse, responseAsString);
@@ -419,7 +419,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
             String responseAsString = response.getBody().toString();
             int responseStatusCode = response.getStatusCodeValue();
 
-            assertEquals(HttpStatus.OK.toString(), Integer.toString(responseStatusCode));
+            assertEquals(HttpStatus.OK.value(), responseStatusCode);
             assertEquals(
                     "Failed to compare actual response:\n" + responseAsString
                             + "\nwith expected response:\n"

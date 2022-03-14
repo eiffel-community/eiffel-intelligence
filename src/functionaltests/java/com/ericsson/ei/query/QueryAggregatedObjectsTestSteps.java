@@ -306,7 +306,7 @@ public class QueryAggregatedObjectsTestSteps extends FunctionalTestBase {
                                                             .get(0)
                                                             .get("testCaseStartedEventId")
                                                             .asText();
-        assertEquals(HttpStatus.OK.toString(), Integer.toString(response.getStatusCodeValue()));
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
         assertEquals(
                 "Differences between actual Failed Notification response TestCaseStartedEventId:\n"
                         + actualTestCaseStartedEventId

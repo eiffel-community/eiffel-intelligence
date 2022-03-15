@@ -33,7 +33,7 @@ jobs:
         - docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server
         - sleep 60
       script:
-        - mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B
+        - mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Dspring.config.location=src/integrationtests/resources/application.properties -B
     - stage: test
       name: integrationTests
       # To ensure docker containers are fully up and running we sleep 60s

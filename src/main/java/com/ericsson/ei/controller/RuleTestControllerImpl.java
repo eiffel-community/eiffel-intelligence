@@ -85,20 +85,10 @@ public class RuleTestControllerImpl implements RuleTestController {
             @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body,
             final HttpServletRequest httpRequest) {
         if (testEnabled) {
+            String aggregatedObject = StringUtil.EMPTY_STRING;
             try {
-                String aggregatedObject = StringUtil.EMPTY_STRING;
-                
                 aggregatedObject = ruleTestService.prepareAggregatedObject(
                                 new JSONArray(body.getListRulesJson()), new JSONArray(body.getListEventsJson()));
-                
-                if (aggregatedObject != null && !aggregatedObject.equals("[]")) {
-                    return new ResponseEntity<>(aggregatedObject, HttpStatus.OK);
-                } else {
-                    String errorMessage = "Failed to generate aggregated object. List of rules or list of events are not correct";
-                    LOGGER.error(errorMessage);
-                    String errorJsonAsString = ResponseMessage.createJsonMessage(errorMessage);
-                    return new ResponseEntity<>(errorJsonAsString, HttpStatus.BAD_REQUEST);
-                }
             } 
             catch (InvalidRulesException e) {
                 String errorJsonAsString = ResponseMessage.createJsonMessage(e.getMessage());

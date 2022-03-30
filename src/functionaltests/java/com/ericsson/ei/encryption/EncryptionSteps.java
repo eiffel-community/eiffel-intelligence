@@ -23,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
 import cucumber.api.java.Before;

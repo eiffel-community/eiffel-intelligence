@@ -21,7 +21,7 @@ Feature: Test Subscription Trigger
     When I send Eiffel events
     When I send one previous event again
     And Wait for EI to aggregate objects
-    And Failed notification db should contain 2 objects
+    And Failed notification db should contain 1 objects
 
   @AddedDefaultValuesSenderAndSubject
   Scenario: Test default values mail notification
@@ -32,4 +32,3 @@ Feature: Test Subscription Trigger
     And Wait for EI to aggregate objects
     Then Notification email contains 'noreply@domain.com' and 'Email Subscription Notification' values
     Then Mail subscriptions were triggered
-    And Rest subscriptions were triggered

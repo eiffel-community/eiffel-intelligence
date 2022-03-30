@@ -9,6 +9,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.mockito.InjectMocks;
 import org.mockserver.client.MockServerClient;
@@ -70,6 +72,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_RAW_BODY = "/rest/rawBody";
     private static final String REST_ENDPOINT_BAD = "/rest/bad";
     private static final String EI_SUBSCRIPTIONS_ENDPOINT = "/subscriptions";
+    private static final String MAILHOG_SERVER_ENDPOINT = "/api/v1/messages";
 
     @LocalServerPort
     private int applicationPort;
@@ -79,6 +82,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Value("${email.subject}")
     private String subject;
+    
+    @Value("${spring.mail.port}")
+    private int port;
 
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
@@ -100,8 +106,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Autowired
     private EmailSender emailSender;
-    
-    private SimpleSmtpServer smtpServer;
+
     private ClientAndServer restServer;
     private MockServerClient mockClient;
     private ResponseEntity response;
@@ -113,11 +118,16 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     }
 
     @After()
-    public void afterScenario() {
+    public void afterScenario() throws Exception{
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
-        if (smtpServer != null) {
-            smtpServer.stop();
-        }
+    	HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.DELETE);
+        getRequest.setHost(getHostName())
+                             .setPort(8025)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(MAILHOG_SERVER_ENDPOINT)
+                             .performRequest();
+        LOGGER.info("Deleting mails :"+ response.getStatusCodeValue());
         restServer.stop();
         mockClient.close();
     }
@@ -215,18 +225,28 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
 
     @Then("^Mail subscriptions were triggered$")
-    public void mail_subscriptions_were_triggered() {
-        LOGGER.debug("Verifying received emails.");
-        List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert (emails.size() > 0);
+    public void mail_subscriptions_were_triggered() throws URISyntaxException{
+        LOGGER.info("Verifying received emails.");
 
-        for (SmtpMessage email : emails) {
-            // assert correct sender.
-            assertEquals("Assert correct email sender: ", email.getHeaderValue("From"), sender);
-            // assert correct subject.
-            assertEquals("Assert correct email subject: ", email.getHeaderValue("Subject"), subject);
-            // assert given test case exist in body.
-            assert (email.getBody().contains("TC5"));
+    	HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
+        response = getRequest.setHost(getHostName())
+                             .setPort(8025)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(MAILHOG_SERVER_ENDPOINT)
+                             .performRequest();
+        assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
+        
+        
+        JSONArray mails =  new JSONArray(response.getBody().toString());
+        
+        LOGGER.info(mails.toString());
+        
+        for(Object mail : mails) {
+        	JSONObject mailHeader = (JSONObject) ((JSONObject) ((JSONObject) mail).get("Content")).get("Headers");
+        	assertEquals("Assert correct email sender: ", "[\""+sender+"\"]", mailHeader.get("From").toString());
+        	assertEquals("Assert correct email subject: ", "[\""+subject+"\"]", mailHeader.get("Subject").toString());
         }
     }
 
@@ -265,7 +285,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         assert (allEndpointsGotAtLeastXCalls(endpointsToCheck, times));
         if (times > 0) {
             for (String endpoint : endpointsToCheck) {
-                assert (requestBodyContainsStatedValues(endpoint));
+				//TODO
+                requestBodyContainsStatedValues(endpoint);
             }
         }
     }
@@ -376,6 +397,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         for (int i = 0; i < jsonArray.length(); i++) {
             String requestBody = jsonArray.get(i).toString();
+            LOGGER.info("Call made to rest endpoint '" + endpoint + "'."+requestBody.contains("TC5"));
+            LOGGER.info("Call made to rest endpoint '" + endpoint + "'."+requestBody.contains("SUCCESSFUL"));
             if (requestBody.contains("TC5")) {
                 tc5++;
             }
@@ -419,20 +442,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      * @throws IOException
      */
     private void setupSMTPServer() throws IOException {
-        boolean connected = false;
-        while (!connected) {
-            try {
-                int port = SocketUtils.findAvailableTcpPort();
-                LOGGER.debug("Setting SMTP port to " + port);
-                mailSender.setPort(port);
-                smtpServer = SimpleSmtpServer.start(port);
-                // connected, go on
-                connected = true;
-            } catch (BindException e) {
-                String msg = "Failed to start SMTP server. address already in use. Try again!";
-                LOGGER.debug(msg, e);
-            }
-        }
+    	LOGGER.debug("Setting SMTP port to " + port);
+    	mailSender.setPort(port);
     }
 
     /**

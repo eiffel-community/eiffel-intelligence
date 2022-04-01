@@ -120,9 +120,6 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @After()
     public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
-        if (smtpServer != null) {
-            smtpServer.stop();
-        }
         restServer.stop();
         mockClient.close();
     }

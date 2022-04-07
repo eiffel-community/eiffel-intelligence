@@ -122,6 +122,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
         restServer.stop();
         mockClient.close();
+    	mailSender.setPort(port);
     }
 
     @Given("^The REST API is up and running$")

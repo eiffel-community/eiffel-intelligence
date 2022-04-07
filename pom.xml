@@ -557,7 +557,7 @@
                             <skipTests>${skipUTs}</skipTests>
                             <forkCount>${forkCountTests}</forkCount>
                             <reuseForks>true</reuseForks>
-                            <parallel>classes</parallel>
+                            <parallel>methods</parallel>
                             <threadCount>5</threadCount>
                             <includes>
                                 <include>${someModule.test.includes}</include>
@@ -571,6 +571,9 @@
                                 <exclude>**/TestScalingAndFailoverRunner.java</exclude>
                                 <exclude>**/FlowTestTestExecution.java</exclude>
                                 <exclude>**/SingleEventAggregationTest.java</exclude>
+                                <exclude>**/SubscriptionRestAPITest.java</exclude>
+                                <exclude>**/RunSubscriptionTest.java</exclude>
+                                <exclude>**/TestProcessQueryParams.java</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -589,6 +592,9 @@
                                 <include>**/TestScalingAndFailoverRunner.java</include>
                                 <include>**/FlowTestTestExecution.java</include>
                                 <include>**/SingleEventAggregationTest.java</include>
+                                <include>**/SubscriptionRestAPITest.java</include>
+                                <include>**/RunSubscriptionTest.java</include>
+                                <include>**/TestProcessQueryParams.java</include>
                             </includes>
                         </configuration>
                     </execution>

@@ -81,6 +81,9 @@ jobs:
         run: mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B
         
   reportCoverage:
+    needs: |
+      unitAndFunctionalTests,
+      integrationTests.
     # The type of runner that the job will run on
     runs-on: ubuntu-16.04
     env: 

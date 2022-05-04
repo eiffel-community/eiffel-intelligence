@@ -31,12 +31,12 @@ jobs:
       # Run before every job
       - name: Install Java
         run: |
-          sudo apt-get update,
-          sudo apt-get install -y openjdk-8-jdk,
-          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//'),
-          java -version,
-          uname -a,
-          chmod +x pom.xml.
+          sudo apt-get update ,
+          sudo apt-get install -y openjdk-8-jdk ,
+          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//') ,
+          java -version ,
+          uname -a ,
+          chmod +x pom.xml .
         
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script

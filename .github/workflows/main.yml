@@ -38,10 +38,10 @@ jobs:
           java -version 
           uname -a 
           chmod +x pom.xml 
-          mvn --version
           
       - name: Install Maven
         run: |  
+          sudo apt-get remove maven
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           ln -s /opt/apache-maven-3.6.3 /opt/maven

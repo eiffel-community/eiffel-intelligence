@@ -39,6 +39,7 @@ jobs:
           java -version 
           uname -a 
           chmod +x pom.xml 
+          mvn --version
         
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script
@@ -48,7 +49,7 @@ jobs:
           sleep 60
           
       - name: Run unit and functional tests
-        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B.
+        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B
           
   integrationTests:
     # The type of runner that the job will run on
@@ -73,6 +74,7 @@ jobs:
           java -version
           uname -a
           chmod +x pom.xml
+          mvn --version
           
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script
@@ -108,6 +110,7 @@ jobs:
           java -version
           uname -a
           chmod +x pom.xml
+          mvn --version
           
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage

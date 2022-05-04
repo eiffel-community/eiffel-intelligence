@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+      M2_HOME: /opt/maven
+      MAVEN_HOME: /opt/maven
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,7 +39,15 @@ jobs:
           uname -a 
           chmod +x pom.xml 
           mvn --version
-        
+          
+      - name: Install Maven
+        run: |  
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
+          mvn --version
+          
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script
         run: |
@@ -46,13 +56,15 @@ jobs:
           sleep 60
           
       - name: Run unit and functional tests
-        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B -Dmaven=3.6.3 && ./mvnw -v
+        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+      M2_HOME: /opt/maven
+      MAVEN_HOME: /opt/maven
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -63,14 +75,19 @@ jobs:
       # Run before every job
       - name: Install Java
         run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-8-jdk
-          echo $PATH
-          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//')
-          echo $PATH
-          java -version
-          uname -a
-          chmod +x pom.xml
+          sudo apt-get update 
+          sudo apt-get install -y openjdk-8-jdk 
+          java -version 
+          uname -a 
+          chmod +x pom.xml 
+          mvn --version
+          
+      - name: Install Maven
+        run: |  
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
           mvn --version
           
       # To ensure docker containers are fully up and running we sleep 60s
@@ -81,7 +98,7 @@ jobs:
           sleep 60
           
       - name: Run integration tests
-        run: mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B -Dmaven=3.6.3 && ./mvnw -v
+        run: mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
     needs: integrationTests
@@ -94,8 +111,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-        with:
-           maven-version: 3.3.1
 
       # Runs a set of commands using the runners shell
       # Run before every job
@@ -103,7 +118,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-8-jdk
-          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//')
           java -version
           uname -a
           chmod +x pom.xml

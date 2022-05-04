@@ -1,0 +1,113 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  unitAndFunctionalTests:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-16.04
+    env: 
+      JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      # Run before every job
+      - name: Install Java
+        run: |
+          sudo apt-get update,
+          sudo apt-get install -y openjdk-8-jdk,
+          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//'),
+          java -version,
+          uname -a,
+          chmod +x pom.xml.
+        
+      # To ensure docker containers are fully up and running we sleep 60s
+      - name: Before script
+        run: |
+          source src/main/docker/env.bash,
+          docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server,
+          sleep 60.
+          
+      - name: Run unit and functional tests
+        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B.
+          
+  integrationTests:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-16.04
+    env: 
+      JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      # Run before every job
+      - name: Install Java
+        run: |
+          sudo apt-get update,
+          sudo apt-get install -y openjdk-8-jdk,
+          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//'),
+          java -version,
+          uname -a,
+          chmod +x pom.xml.
+          
+      # To ensure docker containers are fully up and running we sleep 60s
+      - name: Before script
+        run: |
+          source src/main/docker/env.bash,
+          docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server,
+          sleep 60.
+          
+      - name: Run integration tests
+        run: mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B
+        
+  reportCoverage:
+    needs: |
+      unitAndFunctionalTests,
+      integrationTests.
+    # The type of runner that the job will run on
+    runs-on: ubuntu-16.04
+    env: 
+      JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      # Run before every job
+      - name: Install Java
+        run: |
+          sudo apt-get update,
+          sudo apt-get install -y openjdk-8-jdk,
+          PATH=$(echo "$PATH" | sed -e 's/:\/usr\/local\/lib\/jvm\/openjdk11\/bin//'),
+          java -version,
+          uname -a,
+          chmod +x pom.xml.
+          
+      # Generating test coverage report and publishing to Codacy
+      - name: Run report coverage
+        run: |
+          mvn cobertura:cobertura -B,
+          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar,
+          java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml.

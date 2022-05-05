@@ -56,7 +56,9 @@ jobs:
           sleep 60
           
       - name: Run unit and functional tests
-        run: mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
+        run: |
+          mvn --version
+          mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
     # The type of runner that the job will run on

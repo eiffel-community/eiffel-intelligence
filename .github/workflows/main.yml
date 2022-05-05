@@ -39,15 +39,6 @@ jobs:
           uname -a 
           chmod +x pom.xml 
           
-      - name: Install Maven
-        run: |  
-          sudo apt-get remove maven
-          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
-          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
-          ln -s /opt/apache-maven-3.6.3 /opt/maven
-          PATH=${M2_HOME}/bin:${PATH}
-          mvn --version
-          
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script
         run: |
@@ -57,6 +48,10 @@ jobs:
           
       - name: Run unit and functional tests
         run: |
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
           mvn --version
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
@@ -100,7 +95,13 @@ jobs:
           sleep 60
           
       - name: Run integration tests
-        run: mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
+        run: |
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
+          mvn --version
+          mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
     needs: integrationTests

@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
-      M2_HOME: /opt/maven
-      MAVEN_HOME: /opt/maven
+      M2_HOME: /opt/apache-maven-3.6.3
+      MAVEN_HOME: /opt/apache-maven-3.6.3
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -38,6 +38,14 @@ jobs:
           java -version 
           uname -a 
           chmod +x pom.xml 
+         
+      - name: Install Maven
+        run: |  
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
+          mvn --version
           
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script
@@ -48,10 +56,6 @@ jobs:
           
       - name: Run unit and functional tests
         run: |
-          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
-          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
-          ln -s /opt/apache-maven-3.6.3 /opt/maven
-          PATH=${M2_HOME}/bin:${PATH}
           mvn --version
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
@@ -60,8 +64,8 @@ jobs:
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
-      M2_HOME: /opt/maven
-      MAVEN_HOME: /opt/maven
+      M2_HOME: /opt/apache-maven-3.6.3
+      MAVEN_HOME: /opt/apache-maven-3.6.3
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -96,10 +100,6 @@ jobs:
           
       - name: Run integration tests
         run: |
-          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
-          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
-          ln -s /opt/apache-maven-3.6.3 /opt/maven
-          PATH=${M2_HOME}/bin:${PATH}
           mvn --version
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
@@ -109,6 +109,8 @@ jobs:
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
+      M2_HOME: /opt/apache-maven-3.6.3
+      MAVEN_HOME: /opt/apache-maven-3.6.3
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -126,9 +128,18 @@ jobs:
           chmod +x pom.xml
           mvn --version
           
+      - name: Install Maven
+        run: |  
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.6.3 /opt/maven
+          PATH=${M2_HOME}/bin:${PATH}
+          mvn --version
+          
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
         run: |
-          mvn cobertura:cobertura -B -Dmaven=3.6.3 && ./mvnw -v
+          mvn --version
+          mvn cobertura:cobertura -B 
           curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
           java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

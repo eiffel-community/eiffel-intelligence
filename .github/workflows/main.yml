@@ -42,9 +42,9 @@ jobs:
       - name: Install Maven
         run: |  
           sudo apt-get remove maven
-          wget https://downloads.apache.org/maven/maven-3/3.3.1/binaries/apache-maven-3.3.1-bin.tar.gz -P /tmp
-          tar xf /tmp/apache-maven-3.3.1-bin.tar.gz -C /opt
-          ln -s /opt/apache-maven-3.3.1 /opt/maven
+          wget https://downloads.apache.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz -P /tmp
+          tar xf /tmp/apache-maven-3.3.9-bin.tar.gz -C /opt
+          ln -s /opt/apache-maven-3.3.9 /opt/maven
           PATH=${M2_HOME}/bin:${PATH}
           mvn --version
           

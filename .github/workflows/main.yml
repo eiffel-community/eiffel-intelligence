@@ -23,7 +23,6 @@ jobs:
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
       M2_HOME: /opt/apache-maven-3.6.3
       MAVEN_HOME: /opt/apache-maven-3.6.3
-      PATH: ${M2_HOME}/bin:${PATH}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -44,6 +43,7 @@ jobs:
         run: |  
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
+          echo "{${M2_HOME}/bin}" >> $GITHUB_PATH
           mvn --version
           
       # To ensure docker containers are fully up and running we sleep 60s
@@ -87,7 +87,7 @@ jobs:
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           ln -s /opt/apache-maven-3.6.3 /opt/maven
-          PATH=${M2_HOME}/bin:${PATH}
+          echo "{${M2_HOME}/bin}" >> $GITHUB_PATH
           mvn --version
           
       # To ensure docker containers are fully up and running we sleep 60s
@@ -132,7 +132,7 @@ jobs:
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           ln -s /opt/apache-maven-3.6.3 /opt/maven
-          PATH=${M2_HOME}/bin:${PATH}
+          echo "{${M2_HOME}/bin}" >> $GITHUB_PATH
           mvn --version
           
       # Generating test coverage report and publishing to Codacy

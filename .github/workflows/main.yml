@@ -44,7 +44,7 @@ jobs:
         run: |  
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
-          echo "${M2_HOME}/bin}" >> $GITHUB_PATH
+          echo "${M2_HOME}/bin" >> $GITHUB_PATH
           
       # To ensure docker containers are fully up and running we sleep 60s
       - name: Before script

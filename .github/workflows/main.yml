@@ -103,7 +103,6 @@ jobs:
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
-    needs: integrationTests
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 
@@ -136,12 +135,13 @@ jobs:
           
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
+        shell: bash
         run: |
           mvn --version
           mvn cobertura:cobertura -B 
           curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest -H 'project-token: 192ec316ba2b4549a202d0a58d9923ec'| jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
-          ll
-          ll target
-          ll target/site
-          ll target/site/cobertura
+          ls
+          ls target
+          ls target/site
+          ls target/site/cobertura
           java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

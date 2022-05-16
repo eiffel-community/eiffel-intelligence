@@ -134,6 +134,10 @@ jobs:
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           echo "${M2_HOME}/bin" >> $GITHUB_PATH
+          
+      - name: Run cobertura
+        shell: bash
+        run: |
           mvn cobertura:cobertura -Dcobertura.report.format=xml -B
           
       # Generating test coverage report and publishing to Codacy

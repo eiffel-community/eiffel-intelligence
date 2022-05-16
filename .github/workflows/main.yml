@@ -139,5 +139,5 @@ jobs:
         run: |
           mvn --version
           mvn cobertura:cobertura -Dcobertura.report.format=xml -B 
-          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest -H 'project-token: 192ec316ba2b4549a202d0a58d9923ec'| jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
           java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

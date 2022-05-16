@@ -134,12 +134,17 @@ jobs:
           wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           echo "${M2_HOME}/bin" >> $GITHUB_PATH
+          mvn cobertura:cobertura -Dcobertura.report.format=xml -B
           
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
-        shell: bash
-        run: |
-          mvn --version
-          mvn cobertura:cobertura -Dcobertura.report.format=xml -B 
-          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest -H 'api-token:NC0w4C3Ah4SBWiv3vPHj' | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
-          java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: 571cdd20d4bf435f84b25d806d304792
+          coverage-reports: target/site/cobertura/coverage.xml
+        #shell: bash
+        #run: |
+        #  mvn --version
+        #  mvn cobertura:cobertura -Dcobertura.report.format=xml -B 
+       #   curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest -H 'api-token:NC0w4C3Ah4SBWiv3vPHj' | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+        #  java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

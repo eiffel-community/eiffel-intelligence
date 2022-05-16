@@ -18,6 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   unitAndFunctionalTests:
     # The type of runner that the job will run on
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -59,6 +60,7 @@ jobs:
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 
@@ -139,5 +141,5 @@ jobs:
         run: |
           mvn --version
           mvn cobertura:cobertura -Dcobertura.report.format=xml -B 
-          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+          curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest -H 'api-token:NC0w4C3Ah4SBWiv3vPHj' | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/octet-stream"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
           java -jar codacy-coverage-reporter-assembly.jar report -l Java -r target/site/cobertura/coverage.xml

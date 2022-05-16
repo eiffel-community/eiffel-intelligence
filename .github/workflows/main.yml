@@ -16,9 +16,9 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  unitAndFunctionalTests:
-    # The type of runner that the job will run on
+  unitAndFunctionalTests:    
     if: github.repository == 'eiffel-community/eiffel-intelligence'
+    # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
@@ -105,6 +105,7 @@ jobs:
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 

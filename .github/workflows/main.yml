@@ -105,7 +105,7 @@ jobs:
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
-    if: github.repository == 'eiffel-community/eiffel-intelligence'
+    if: github.repository == 'eiffel-community/eiffel-intelligence' && github.event_name == 'push'
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 

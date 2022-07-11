@@ -23,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
+import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
 import cucumber.api.java.Before;
@@ -64,9 +65,14 @@ public class EncryptionSteps extends FunctionalTestBase {
     private ClientAndServer clientAndServer;
 
     @Before
-    public void init() throws IOException {
+    public void init() throws Exception {
         clientAndServer = ClientAndServer.startClientAndServer();
         mockServerPort = String.valueOf(clientAndServer.getLocalPort());
+        HttpRequest deleteRequest = new HttpRequest(HttpMethod.DELETE);
+        deleteRequest.setHost(getHostName())
+                     .setPort(applicationPort)
+                     .setEndpoint(SUBSCRIPTION_ROOT_ENDPOINT +"/"+ SUBSCRIPTION_NAME);
+        response = deleteRequest.performRequest();
         setUpMock();
     }
 

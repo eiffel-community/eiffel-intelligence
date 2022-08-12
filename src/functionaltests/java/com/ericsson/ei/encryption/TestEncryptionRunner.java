@@ -14,6 +14,5 @@ public class TestEncryptionRunner {
 
     @BeforeClass
     public static void configureLdapProperties() {
-        System.setProperty("jasypt.encryptor.password", "secret");
     }
 }

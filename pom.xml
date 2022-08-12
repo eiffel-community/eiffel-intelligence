@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <packaging>war</packaging>
 
     <parent>
@@ -30,7 +30,7 @@
         <springSecurityVersion>5.5.2</springSecurityVersion>
         <springSessionVersion>2.5.0</springSessionVersion>
         <forkCountTests>1</forkCountTests>
-        <jackson.version>2.12.5</jackson.version>
+        <jackson.version>2.13.3</jackson.version>
     </properties>
 
     <!-- Reporting Plugins -->
@@ -571,6 +571,9 @@
                                 <exclude>**/TestScalingAndFailoverRunner.java</exclude>
                                 <exclude>**/FlowTestTestExecution.java</exclude>
                                 <exclude>**/SingleEventAggregationTest.java</exclude>
+                                <exclude>**/SubscriptionRestAPITest.java</exclude>
+                                <exclude>**/RunSubscriptionTest.java</exclude>
+                                <exclude>**/TestProcessQueryParams.java</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -589,6 +592,9 @@
                                 <include>**/TestScalingAndFailoverRunner.java</include>
                                 <include>**/FlowTestTestExecution.java</include>
                                 <include>**/SingleEventAggregationTest.java</include>
+                                <include>**/SubscriptionRestAPITest.java</include>
+                                <include>**/RunSubscriptionTest.java</include>
+                                <include>**/TestProcessQueryParams.java</include>
                             </includes>
                         </configuration>
                     </execution>

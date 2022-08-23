@@ -25,7 +25,7 @@
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
-        <springBootVersion>2.5.5</springBootVersion>
+        <springBootVersion>2.5.12</springBootVersion>
         <springLdapVersion>2.3.4.RELEASE</springLdapVersion>
         <springSecurityVersion>5.5.2</springSecurityVersion>
         <springSessionVersion>2.5.0</springSessionVersion>

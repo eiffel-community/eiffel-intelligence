@@ -60,7 +60,7 @@ jobs:
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
-    # if: github.repository == 'eiffel-community/eiffel-intelligence'
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
     env: 

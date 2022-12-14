@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import com.ericsson.ei.exception.InvalidRulesException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import com.ericsson.ei.App;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: TestRulesService",
@@ -63,7 +64,10 @@ public class TestRulesService {
         String result = ruleTestService.prepareAggregatedObject(new JSONArray(extractionRules),
                 new JSONArray(events));
         JSONArray actualAggregation = new JSONArray(result);
-
+        for(int i=0;i<actualAggregation.length();i++) {
+        	JSONObject jsonobject = actualAggregation.getJSONObject(i);
+        	jsonobject.remove("Time");
+        }
         assertEquals(expectedAggregation.toString(), actualAggregation.toString());
     }
 

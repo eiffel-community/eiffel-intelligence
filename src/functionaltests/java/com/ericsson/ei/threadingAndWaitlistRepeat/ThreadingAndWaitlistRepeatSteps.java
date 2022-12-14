@@ -80,7 +80,7 @@ public class ThreadingAndWaitlistRepeatSteps extends FunctionalTestBase {
         List<String> eventNames = getEventNamesToSend();
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
-            eventToObjectMapHanler.updateEventToObjectMapInMemoryDB(rulesObject, eventJson.toString(), dummyObjectID);
+            eventToObjectMapHanler.updateEventToObjectMapInMemoryDB(rulesObject, eventJson.toString(), dummyObjectID, 0);
         }
     }
 

@@ -16,6 +16,7 @@
 */
 package com.ericsson.ei.subscription;
 
+import com.ericsson.ei.cache.SubscriptionCacheHandler;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,7 +72,8 @@ public class SubscriptionRepeatDbHandler {
                 aggrObjId, subscriptionId);
 
         if (checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(subscriptionId, requirementId,
-                aggrObjId)) {
+                aggrObjId, false)) {
+            
             LOGGER.debug(
                     "Subscription: {} and AggrObjId, {} has already been matched."
                             + "No need to register the subscription match.",
@@ -90,14 +92,21 @@ public class SubscriptionRepeatDbHandler {
     }
 
     public boolean checkIfAggrObjIdExistInSubscriptionAggrIdsMatchedList(
-            String subscriptionId, int requirementId, String aggrObjId) {
+            String subscriptionId, int requirementId, String aggrObjId, boolean useCache) {
+        List<String> objArray = null;
+        if (useCache && SubscriptionCacheHandler.subscriptionsCache.containsKey(subscriptionId)) {
+            objArray = SubscriptionCacheHandler.subscriptionsCache.get(subscriptionId);
+        } else {
+            LOGGER.debug(
+                    "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
+                    aggrObjId, subscriptionId);
+            final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
+            objArray = mongoDbHandler.find(dataBaseName, collectionName,
+                    subscriptionQuery);
 
-        LOGGER.debug(
-                "Checking if AggrObjId: {} exist in SubscriptionId: {} AggrId matched list.",
-                aggrObjId, subscriptionId);
-        final MongoCondition subscriptionQuery = MongoCondition.subscriptionCondition(subscriptionId);
-        List<String> objArray = mongoDbHandler.find(dataBaseName, collectionName,
-                subscriptionQuery);
+            SubscriptionCacheHandler.subscriptionsCache.put(subscriptionId, objArray);
+        }
+
         if (objArray != null && !objArray.isEmpty()) {
 
             LOGGER.debug("Making AggrObjId checks on SubscriptionId document: {}", objArray.get(0));
@@ -226,7 +235,7 @@ public class SubscriptionRepeatDbHandler {
         }
 
         if (listAggrObjIds.contains(aggrObjId)) {
-            LOGGER.debug("Subscription has already matched for aggregated object id: {}", aggrObjId);
+            LOGGER.info("Subscription has already matched for aggregated object id: {}", aggrObjId);
             return true;
         }
         return false;

@@ -60,7 +60,7 @@ public class EventManager {
      * @return list of event IDs
      * @throws IOException
      */
-    public List<String> getEventsIdList(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
+    public List<String> getEventIdsList(String eiffelEventsJsonPath, List<String> eventNames) throws IOException {
         List<String> eventsIdList = new ArrayList<>();
         JsonNode parsedJSON = getJSONFromFile(eiffelEventsJsonPath);
         for (String eventName : eventNames) {

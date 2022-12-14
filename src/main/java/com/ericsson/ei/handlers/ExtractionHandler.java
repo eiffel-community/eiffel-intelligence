@@ -16,7 +16,9 @@
  */
 package com.ericsson.ei.handlers;
 
-import com.ericsson.ei.rules.ProcessRulesHandler;
+import java.io.IOException;
+
+import org.apache.http.conn.HttpHostConnectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,12 @@ import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.jsonmerge.MergeHandler;
+import com.ericsson.ei.rules.ProcessRulesHandler;
 import com.ericsson.ei.rules.RulesObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.MongoExecutionTimeoutException;
 
 @Component
 public class ExtractionHandler {
@@ -62,42 +66,59 @@ public class ExtractionHandler {
         this.objectHandler = objectHandler;
     }
 
-    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject) throws MongoDBConnectionException {
+    public void runExtraction(RulesObject rulesObject, String id, String event, String aggregatedDbObject, boolean isRedelivered)
+            throws HttpHostConnectException, MongoExecutionTimeoutException, MongoDBConnectionException {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode aggregatedJsonObject = mapper.readTree(aggregatedDbObject);
-            runExtraction(rulesObject, id, event, aggregatedJsonObject);
-        } catch (Exception e) {
-            LOGGER.error("Failed with extraction.", e);
-            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
-                throw new MongoDBConnectionException("MongoDB Connection down");
-            }
+            runExtraction(rulesObject, id, event, aggregatedJsonObject, isRedelivered);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to read the aggregated object due to {} ", e);
         }
     }
 
-    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject) throws MongoDBConnectionException {
+    public void runExtraction(RulesObject rulesObject, String mergeId, String event, JsonNode aggregatedDbObject, boolean isRedelivered)
+            throws HttpHostConnectException, MongoExecutionTimeoutException, MongoDBConnectionException {
         try {
             JsonNode extractedContent = extractContent(rulesObject, event);
+            String mergedContent = null;
+            String aggregatedObjectId = null;
 
             if(aggregatedDbObject != null) {
                 LOGGER.debug("ExtractionHandler: Merging Aggregated Object:\n{}"
                         + "\nwith extracted content:\n{}"
                         + "\nfrom event:\n{}",
                         aggregatedDbObject.toString(), extractedContent.toString(), event);
-                String objectId = objectHandler.extractObjectId(aggregatedDbObject);
-                String mergedContent = mergeHandler.mergeObject(objectId, mergeId, rulesObject, event, extractedContent);
-                processRulesHandler.runProcessRules(event, rulesObject, mergedContent, objectId, mergeId);
+                aggregatedObjectId = objectHandler.extractObjectId(aggregatedDbObject);
+                mergedContent = mergeHandler.mergeObject(aggregatedObjectId, mergeId, rulesObject, event, extractedContent);
+                if (mergedContent == null) {
+                    return;
+                }
+
+                // Need to extract the history rules for the re-delivered start event type.
+                if (rulesObject.isStartEventRules() && isRedelivered) {
+                    upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
+                } else {
+                    mergedContent = processRulesHandler.runProcessRules(event, rulesObject, mergedContent,
+                            aggregatedObjectId, mergeId);
+                }
             } else {
+                LOGGER.trace("***** Extraction starts for the aggregation Id: " + mergeId);
                 ObjectNode objectNode = (ObjectNode) extractedContent;
                 objectNode.put("TemplateName", rulesObject.getTemplateName());
-                mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                mergedContent = mergeHandler.addNewObject(event, extractedContent, rulesObject);
+                aggregatedObjectId = mergeId;
                 upStreamEventsHandler.runHistoryExtractionRulesOnAllUpstreamEvents(mergeId);
+                mergedContent = objectHandler.findObjectById(mergeId);
+                LOGGER.trace("**** Extraction ends for the aggregation Id: " + mergeId);
             }
-        } catch (PropertyNotFoundException e) {
-            LOGGER.debug("Did not run history extraction on upstream events.", e);
+            objectHandler.checkAggregations(mergedContent, aggregatedObjectId);
+        } catch (HttpHostConnectException | MongoExecutionTimeoutException e) {
+            LOGGER.warn("Extraction failed for {}, due to {}. Sending back to queue.", event, e.getMessage());
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Failed to run extraction for event {}", event, e);
-            if (e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("MongoDB Connection down")) {
                 throw new MongoDBConnectionException("MongoDB Connection down");
             }
         }

@@ -49,8 +49,8 @@ public class IdRulesHandler {
         this.jmesPathInterface = jmesPathInterface;
     }
 
-    public void runIdRules(RulesObject rulesObject, String event)
-            throws MongoDBConnectionException {
+    public void runIdRules(RulesObject rulesObject, String event, boolean isRedelivered) 
+            throws MongoDBConnectionException, Exception {
         if (rulesObject != null && event != null) {
             JsonNode idsJsonObj = getIds(rulesObject, event);
             if (idsJsonObj != null && idsJsonObj.isArray()) {
@@ -59,11 +59,11 @@ public class IdRulesHandler {
                     final List<String> aggregatedObjects = matchIdRulesHandler.fetchObjectsById(rulesObject, id);
 
                     for (String aggregatedObject : aggregatedObjects) {
-                        extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject);
+                        extractionHandler.runExtraction(rulesObject, id, event, aggregatedObject, isRedelivered);
                     }
                     if (aggregatedObjects.size() == 0) {
                         if (rulesObject.isStartEventRules()) {
-                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null);
+                            extractionHandler.runExtraction(rulesObject, id, event, (JsonNode) null, isRedelivered);
                         } else {
                             waitListStorageHandler.addEventToWaitListIfNotExisting(event, rulesObject);
                         }

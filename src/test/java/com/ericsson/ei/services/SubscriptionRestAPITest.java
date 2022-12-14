@@ -45,11 +45,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.controller.SubscriptionController;
 import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = SubscriptionController.class, secure = false)
+@WebMvcTest(value = SubscriptionController.class)
 public class SubscriptionRestAPITest {
 
     private static final String SUBSCRIPTION = "src/test/resources/subscription_single.json";
@@ -69,6 +70,8 @@ public class SubscriptionRestAPITest {
 
     @MockBean
     private SecurityContext securityContext;
+	@MockBean private Encryptor encryptor;
+	
 
     private ObjectMapper mapper = new ObjectMapper();
 

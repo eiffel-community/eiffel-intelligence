@@ -79,6 +79,15 @@ to avoid having the collection growing too large. Recommended settings is 10 min
 
 * aggregations.collection.ttl (*seconds*)
 
+Eiffel Intelligence saves the aggregated object Ids in a database. It is possible to configure 
+the collection name, the time to live using the below properties:
+
+* event.object.map.collection.name
+* aggregations.collection.ttl
+
+The aggregations.collection.ttl property value will also be used to set the time to live value on 
+eventToObjectMap collection.
+
 ### Testing Aggregation Rules
 
 To test new rules for Eiffel Intelligence the property **test.aggregation.enabled**
@@ -147,10 +156,13 @@ Eiffel Intelligence how long a failed notification will be stored in the
 database before deletion. With **notification.retry** property, it
 is possible to configure the number of attempts Eiffel Intelligence will
 retry to make a REST POST notification when a subscription is triggered.
+The **notification.httpRequest.timeout** property value will be used to set the
+response timeout for the Rest Post notifications when a subscription is triggered.
 
 * failed.notifications.collection.name
 * failed.notifications.collection.ttl
 * notification.retry
+* notification.httpRequest.timeout
 
 ### Configure Search in Event Repository
 

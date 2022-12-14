@@ -17,7 +17,9 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,9 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +43,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import lombok.Setter;
 
@@ -95,7 +98,8 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
     private String failedNotificationCollectionName;
     @Value("${sessions.collection.name}")
     private String sessionsCollectionName;
-
+    
+    public String aggregatedEventId;
     /*
      * setFirstEventWaitTime: variable to set the wait time after publishing the first event. So any
      * thread looking for the events don't do it before actually populating events in the database
@@ -141,15 +145,17 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return
      * @throws Exception
      */
-    protected void sendEventsAndConfirm() throws Exception {
+    protected void sendEventsAndConfirm(String aggregatedEvent) throws Exception {
         List<String> eventNames = getEventNamesToSend();
         int eventsCount = eventNames.size() + extraEventsCount();
 
         JsonNode parsedJSON = getJSONFromFile(getEventsFilePath());
-
         boolean alreadyExecuted = false;
         for (String eventName : eventNames) {
             JsonNode eventJson = parsedJSON.get(eventName);
+            if (eventName.contains(aggregatedEvent)) {
+                aggregatedEventId = eventJson.get("meta").get("id").toString();
+            }
             String event = eventJson.toString();
 
             rabbitTemplate.convertAndSend(event);
@@ -163,7 +169,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
              */
             TimeUnit.MILLISECONDS.sleep(DEFAULT_DELAY_BETWEEN_SENDING_EVENTS);
         }
-
         waitForEventsToBeProcessed(eventsCount);
         checkResult(getCheckData());
     }
@@ -191,7 +196,7 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      */
     protected abstract Map<String, JsonNode> getCheckData() throws IOException, Exception;
 
-    protected JsonNode getJSONFromFile(String filePath) throws Exception {
+    public static JsonNode getJSONFromFile(String filePath) throws Exception {
         try {
             String expectedDocument = FileUtils.readFileToString(new File(filePath), "UTF-8");
             return objectMapper.readTree(expectedDocument);
@@ -206,7 +211,6 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
 
     /**
      * Wait for certain amount of events to be processed.
-     *
      * @param eventsCount - An int which indicated how many events that should be processed.
      * @return
      * @throws InterruptedException
@@ -236,12 +240,65 @@ public abstract class IntegrationTestBase extends AbstractTestExecutionListener 
      * @return amount of processed events
      */
     private long countProcessedEvents(String database, String collectionName) {
-        MongoClient mongoClient = mongoDBHandler.getMongoClient();
-        MongoDatabase db = mongoClient.getDatabase(database);
-        MongoCollection collection = db.getCollection(collectionName);
-        return collection.count();
+        int count = 0;
+        List<String> documents = null;
+        String queryString = "{\"_id\": " + aggregatedEventId + "}";
+        MongoStringQuery query = new MongoStringQuery(queryString);
+        documents = mongoDBHandler.find(database, collectionName, query);
+        JSONObject json = new JSONObject(documents.get(0));
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(json.get("objects"));
+        String objectId = json.get("objects").toString();
+        for (int i = 0; i < objectId.length(); i++) {
+            if (objectId.charAt(i) == ',')
+                count++;
+        }
+        count++;
+        return count;
     }
 
+    /**
+     * StartEvent is Fetched from the given rules
+     * @param rules file
+     * @return StartEvent type
+     */
+    public String getStartEvent(String rules) throws Exception {
+        String content, type = null;
+        content = readRulesFileFromPath(rules);
+        JSONArray json = new JSONArray(content);
+        if (content.isEmpty()) {
+            throw new Exception("Rules content cannot be empty");
+        } else {
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject jsonObj = json.getJSONObject(i);
+                if (jsonObj.get("StartEvent").equals("YES")) {
+                    type = jsonObj.get("Type").toString();
+                    break;
+                }
+            }
+        }
+        return type;
+    }
+
+    /**
+     * Reads the rules from given file path
+     * @param rules
+     * @return rules content
+     * @throws IOException
+     */
+    private String readRulesFileFromPath(String rules) throws IOException {
+        String rulesJsonFileContent = null;
+        try (InputStream inputStream = this.getClass().getResourceAsStream(rules)) {
+            if (inputStream == null) {
+                rulesJsonFileContent = FileUtils.readFileToString(new File(rules),
+                        Charset.defaultCharset());
+            } else {
+                rulesJsonFileContent = IOUtils.toString(inputStream, "UTF-8");
+            }
+        }
+        return rulesJsonFileContent;
+    }
+    
     /**
      * Retrieves the result from EI and checks if it equals the expected data
      *

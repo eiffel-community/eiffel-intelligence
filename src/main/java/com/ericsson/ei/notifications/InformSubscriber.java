@@ -18,6 +18,7 @@ package com.ericsson.ei.notifications;
 
 import java.text.ParseException;
 
+import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 
 import com.ericsson.ei.mongo.MongoConstants;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.exception.NotificationFailureException;
@@ -87,7 +89,18 @@ public class InformSubscriber {
 
     @Autowired
     private HttpRequestFactory httpRequestFactory;
-
+    
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (failedNotificationsTtl > 0) {
+                mongoDBHandler.createTTLIndex(database, failedNotificationCollectionName, MongoConstants.TIME,
+                        failedNotificationsTtl);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", failedNotificationCollectionName, e);
+        }
+    }
     /**
      * Extracts the mode of notification through which the subscriber should be notified, from the
      * subscription Object. And if the notification fails, then it saved in the database.
@@ -133,8 +146,6 @@ public class InformSubscriber {
             LOGGER.debug(
                     "Failed to inform subscriber '{}'\nPrepared 'failed notification' document : {}",
                     e.getMessage(), failedNotification);
-            mongoDBHandler.createTTLIndex(database,
-                    failedNotificationCollectionName, MongoConstants.TIME, failedNotificationsTtl);
             saveFailedNotificationToDB(failedNotification);
         }
     }
@@ -179,9 +190,10 @@ public class InformSubscriber {
         try {
             mongoDBHandler.insertDocument(database,
                     failedNotificationCollectionName, failedNotification);
-            LOGGER.debug("Notification saved in the database");
+            LOGGER.warn("Failed notification saved. Database: {} , Collection: {} ", database,
+                    failedNotificationCollectionName);
         } catch (MongoWriteException e) {
-            LOGGER.debug("Failed to insert the notification into database.", e);
+            LOGGER.warn("Failed to insert the failed notification into database.", e);
         }
     }
 

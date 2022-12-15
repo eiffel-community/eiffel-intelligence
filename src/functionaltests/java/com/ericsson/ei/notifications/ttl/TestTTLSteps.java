@@ -28,8 +28,10 @@ import org.springframework.util.SocketUtils;
 import com.ericsson.ei.exception.AuthenticationException;
 import com.ericsson.ei.exception.MongoDBConnectionException;
 import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
+import com.ericsson.ei.subscription.SubscriptionHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
@@ -50,6 +52,7 @@ import cucumber.api.java.en.When;
         "spring.data.mongodb.database: TestTTLSteps",
         "failed.notifications.collection.name: TestTTLSteps-failedNotifications",
         "rabbitmq.exchange.name: TestTTLSteps-exchange",
+        "rabbitmq.queue.suffix: TestTTLSteps",
         "rabbitmq.consumer.name: TestTTLStepsConsumer"})
 public class TestTTLSteps extends FunctionalTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTTLSteps.class);
@@ -91,6 +94,9 @@ public class TestTTLSteps extends FunctionalTestBase {
     @Autowired
     private InformSubscriber informSubscriber;
 
+    @Autowired
+    private SubscriptionHandler subscriptionHandler;
+
     @Before("@TestNotificationRetries")
     public void beforeScenario() {
         setUpMockServer();
@@ -104,7 +110,7 @@ public class TestTTLSteps extends FunctionalTestBase {
     }
 
     @Given("^Subscription is created$")
-    public void create_subscription_object() throws IOException, JSONException {
+    public void create_subscription_object() throws IOException, JSONException, MongoDBConnectionException {
 
         LOGGER.debug("Starting scenario @TestNotificationRetries.");
         mongoDBHandler.dropCollection(database, failedNotificationCollection);
@@ -115,6 +121,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         subscriptionStr = subscriptionStr.replaceAll("\\{port\\}", String.valueOf(clientAndServer.getPort()));
 
         subscriptionObject = new ObjectMapper().readTree(subscriptionStr);
+        mongoDBHandler.createTTLIndex(database, failedNotificationCollection, MongoConstants.TIME, 1);
         assertEquals(false, subscriptionObject.get("notificationMeta").toString().contains("{port}"));
     }
 
@@ -166,7 +173,7 @@ public class TestTTLSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
         List<String> missingEventIds = dbManager.verifyEventsInDB(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
+                eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend), 0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(), 0,
                 missingEventIds.size());
         LOGGER.debug("Eiffel event is sent");
@@ -177,6 +184,8 @@ public class TestTTLSteps extends FunctionalTestBase {
         // verify that aggregated object is created and present in db
         LOGGER.debug("Checking presence of aggregated Object");
         List<String> allObjects = mongoDBHandler.getAllDocuments(database, collection);
+        String id = eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, getEventNamesToSend()).get(0);
+        subscriptionHandler.checkSubscriptionForObject(allObjects.get(0), id);
         assertEquals(1, allObjects.size());
     }
 

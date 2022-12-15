@@ -19,19 +19,20 @@ package com.ericsson.ei.mongo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.After;
+import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.ericsson.ei.test.utils.TestConfigs;
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoDBHandlerTest {
 
@@ -50,6 +51,9 @@ public class MongoDBHandlerTest {
             "testid1");
     private String inputForEventToObjectMap = "{\"_id\" : \"testid1\", \"objects\" : [\"eventid1\", \"eventid2\"]}";
     private String updateInputForEventToObjectMap = "\"eventid3\"";
+    private String inputForEventToObjectMapDuplicate = "{\"_id\" : \"testid1\", \"objects\" : [\"eventid4\"]}";
+    private String updateInputForEventToObjectMapDuplicate = "eventid4";
+    Document document = Document.parse(inputForEventToObjectMapDuplicate);
 
     @Before
     public void init() throws Exception {
@@ -72,12 +76,6 @@ public class MongoDBHandlerTest {
         assertTrue(documents.size() > 0);
     }
 
-    @Test
-    public void testUpdateDocument() {
-        final MongoQuery query = MongoCondition.idCondition("eventId");
-        assertTrue("Document was not updated",
-                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
-    }
 
     @Test
     public void testUpdateDocumentWrongId() {
@@ -87,18 +85,10 @@ public class MongoDBHandlerTest {
     }
 
     @Test
-    public void testIsMongoDBServerUp() {
-        MongoClient client = mock(MongoClient.class);
-        when(client.getAddress()).thenReturn(new ServerAddress());
-        mongoDBHandler.setMongoClient(client);
-        assertTrue(mongoDBHandler.isMongoDBServerUp());
-
-        doThrow(Exception.class).when(client).getAddress();
-        mongoDBHandler.setMongoClient(client);
-        assertFalse(mongoDBHandler.isMongoDBServerUp());
-
-        // Need to set a working client to enable cleanup
-        mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
+    public void testUpdateDocument() {
+        final MongoQuery query = MongoCondition.idCondition("eventId");
+        assertTrue("Document was not updated",
+                mongoDBHandler.updateDocument(dataBaseName, collectionName, query, updateInput));
     }
 
     // Added test cases for EventToObjectMapHandler
@@ -113,12 +103,18 @@ public class MongoDBHandlerTest {
         assertTrue(mongoDBHandler.updateDocumentAddToSet(dataBaseName, mapCollectionName,
                 conditionForEventToObjectMap, updateInputForEventToObjectMap));
     }
-
-    @After
-    public void dropCollection() {
-        final MongoCondition idCondition = MongoCondition.idCondition("eventId");
-        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, idCondition));
-        mongoDBHandler.dropCollection(dataBaseName, mapCollectionName);
+    
+    @Test
+    public void insertEventToObjectMapDuplicate() {
+		mongoDBHandler.insertDocumentObject(dataBaseName, mapCollectionName, document, conditionForEventToObjectMap, updateInputForEventToObjectMapDuplicate);
+		assertTrue(isEventInEventObjectMap(updateInputForEventToObjectMapDuplicate));
+    }
+    
+    public boolean isEventInEventObjectMap(String eventId) {
+    	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        MongoStringQuery query = new MongoStringQuery(condition);
+        List<String> documents = mongoDBHandler.find(dataBaseName, mapCollectionName, query);
+        return !documents.isEmpty();
     }
 
     @Test
@@ -131,5 +127,30 @@ public class MongoDBHandlerTest {
         final MongoDBHandler mongoDB = new MongoDBHandler();
         final MongoClient mongoclient = null;
         assertEquals(mongoDB.checkMongoDbStatus(dataBaseName), false);
+    }
+    
+    @Test
+    public void dropCollection() {
+        final MongoCondition idCondition = MongoCondition.idCondition("eventId");
+        assertTrue(mongoDBHandler.dropDocument(dataBaseName, collectionName, idCondition));
+        mongoDBHandler.dropCollection(dataBaseName, mapCollectionName);
+    }
+    
+    @Test
+    public void testIsMongoDBServerUp() {
+        MongoDBHandler mongoDbHandler=mock(MongoDBHandler.class);
+        when(mongoDbHandler.isMongoDBServerUp()).thenReturn(true);
+        assertTrue(mongoDbHandler.isMongoDBServerUp());
+    }
+
+    @Test
+    public void testIsMongoDBServerDown() {
+      MongoClient client = mock(MongoClient.class);
+      MongoDatabase database=mock(MongoDatabase.class);
+      when(client.getDatabase(Mockito.anyString())).thenReturn(database);
+      mongoDBHandler.setMongoClient(null);
+      assertFalse(mongoDBHandler.isMongoDBServerUp());
+      //Need to set a working client to enable cleanup
+      mongoDBHandler.setMongoClient(TestConfigs.getMongoClient());
     }
 }

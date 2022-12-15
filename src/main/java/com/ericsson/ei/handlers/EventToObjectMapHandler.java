@@ -19,17 +19,24 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.ei.exception.AbortExecutionException;
 import com.ericsson.ei.jmespath.JmesPathInterface;
 import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoConstants;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.mongo.MongoStringQuery;
 import com.ericsson.ei.rules.RulesObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +53,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component
 public class EventToObjectMapHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventToObjectMapHandler.class);
 
     @Value("${event.object.map.collection.name}") private String collectionName;
     @Value("${spring.data.mongodb.database}") private String databaseName;
@@ -59,7 +66,21 @@ public class EventToObjectMapHandler {
 
     @Autowired
     JmesPathInterface jmesPathInterface;
+    
+    @Value("${aggregations.collection.ttl}")
+    private String eventToObjectTtl;
 
+    @PostConstruct
+    public void init() throws AbortExecutionException {
+        try {
+            if (getTtl() > 0) {
+                mongodbhandler.createTTLIndex(databaseName, collectionName, MongoConstants.TIME, getTtl());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to create an index for {} due to: {}", collectionName, e);
+        }
+    }
+    
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
     }
@@ -92,11 +113,10 @@ public class EventToObjectMapHandler {
      * @param event
      * @param objectId    aggregated event object Id
      */
-    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event,
-            String objectId) {
+    public void updateEventToObjectMapInMemoryDB(RulesObject rulesObject, String event, String objectId, int ttlValue) {
         String eventId = getEventId(rulesObject, event);
 
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
+        final MongoCondition condition = MongoCondition.idCondition(objectId);
         LOGGER.debug(
                 "Checking document exists in the collection with condition : {}\n EventId : {}",
                 condition, eventId);
@@ -115,7 +135,9 @@ public class EventToObjectMapHandler {
                 LOGGER.debug(
                         "MongoDbHandler Insert/Update Event: {}\nto database: {} and to Collection: {}",
                         mapStr, databaseName, collectionName);
-                mongodbhandler.insertDocument(databaseName, collectionName, mapStr);
+                Document document = Document.parse(mapStr);
+                document.append("Time", DateUtils.getDate());
+                mongodbhandler.insertDocumentObject(databaseName, collectionName, document, condition, eventId);
             } else {
                 mongodbhandler.updateDocumentAddToSet(databaseName, collectionName, condition,
                         eventId);
@@ -163,14 +185,35 @@ public class EventToObjectMapHandler {
     public boolean deleteEventObjectMap(String templateName) {
         String queryString = "{\"objects\": { \"$in\" : [/.*" + templateName + "/]} }";
         MongoStringQuery query = new MongoStringQuery(queryString);
-        LOGGER.info("The JSON query for deleting aggregated object is : {}", query);
+        LOGGER.debug("The JSON query for deleting aggregated object is : {}", query);
         return mongodbhandler.dropDocument(databaseName, collectionName, query);
     }
 
     public boolean isEventInEventObjectMap(String eventId) {
-        final MongoCondition condition = MongoCondition.idCondition(eventId);
-        List<String> documents = mongodbhandler.find(databaseName, collectionName, condition);
+    	String condition = "{\"objects\": { \"$in\" : [\"" + eventId + "\"]} }";
+        MongoStringQuery query = new MongoStringQuery(condition);
+        LOGGER.debug("The JSON query for isEventInEventObjectMap is : {}", query);
+        List<String> documents = mongodbhandler.find(databaseName, collectionName, query);
         return !documents.isEmpty();
     }
-
+    
+    /**
+     * This method gives the TTL (time to live) value for documents stored in the database. This
+     * value is set in application.properties when starting Eiffel Intelligence.
+     *
+     * @return ttl Integer value representing time to live for documents
+     */
+    @JsonIgnore
+    public int getTtl() {
+        int ttl = 0;
+        if (StringUtils.isNotEmpty(eventToObjectTtl)) {
+            try {
+                ttl = Integer.parseInt(eventToObjectTtl);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Failed to parse TTL value.", e);
+            }
+        }
+        return ttl;
+    }
+    
 }

@@ -32,4 +32,3 @@ Feature: Test Subscription Trigger
     And Wait for EI to aggregate objects
     Then Notification email contains 'noreply@domain.com' and 'Email Subscription Notification' values
     Then Mail subscriptions were triggered
-    And Rest subscriptions were triggered

@@ -9,13 +9,18 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.mockito.InjectMocks;
 import org.mockserver.client.MockServerClient;
@@ -45,13 +50,15 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import util.IntegrationTestBase;
 
 @Ignore
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionNotificationSteps",
         "failed.notifications.collection.name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
-        "rabbitmq.queue.suffix: SubscriptionNotificationSteps" })
+        "rabbitmq.queue.suffix: SubscriptionNotificationSteps",
+        "aggregations.collection.ttl: 0"})
 public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     private static final Logger LOGGER = getLogger(SubscriptionNotificationSteps.class);
@@ -65,6 +72,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     private static final String REST_ENDPOINT_RAW_BODY = "/rest/rawBody";
     private static final String REST_ENDPOINT_BAD = "/rest/bad";
     private static final String EI_SUBSCRIPTIONS_ENDPOINT = "/subscriptions";
+    private static final String MAILHOG_SERVER_ENDPOINT = "/api/v1/messages";
 
     @LocalServerPort
     private int applicationPort;
@@ -74,6 +82,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Value("${email.subject}")
     private String subject;
+    
+    @Value("${spring.mail.port}")
+    private int port;
 
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
@@ -96,10 +107,10 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Autowired
     private EmailSender emailSender;
 
-    private SimpleSmtpServer smtpServer;
     private ClientAndServer restServer;
     private MockServerClient mockClient;
     private ResponseEntity response;
+    private String aggregatedEventId;
 
     @Before()
     public void beforeScenario() {
@@ -109,11 +120,9 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @After()
     public void afterScenario() {
         LOGGER.debug("Stopping SMTP and REST Mock Servers");
-        if (smtpServer != null) {
-            smtpServer.stop();
-        }
         restServer.stop();
         mockClient.close();
+    	mailSender.setPort(port);
     }
 
     @Given("^The REST API is up and running$")
@@ -140,6 +149,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
     @Given("Subscriptions with bad notification meta are created")
     public void create_subscriptions_with_bad_notification_meta() throws Exception {
+    	mailSender.setPort(++port);
         List<String> subscriptionNames = new ArrayList<>();
         subscriptionNames.add("Subscription_bad_mail");
         subscriptionNames.add("Subscription_bad_notification_rest_endpoint");
@@ -165,10 +175,16 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         LOGGER.debug("About to send Eiffel events.");
         List<String> eventNamesToSend = getEventNamesToSend();
         eventManager.sendEiffelEvents(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend);
-        List<String> missingEventIds = dbManager
-                                                .verifyEventsInDB(eventManager.getEventsIdList(
-                                                        EIFFEL_EVENTS_JSON_PATH, eventNamesToSend),
-                                                        0);
+        JsonNode parsedJSON = IntegrationTestBase.getJSONFromFile(EIFFEL_EVENTS_JSON_PATH);
+        eventNamesToSend.forEach((String eventName) -> {
+            JsonNode eventJson = parsedJSON.get(eventName);
+            if (eventName.contains("EiffelArtifactCreatedEvent")) {
+                aggregatedEventId = eventJson.get("meta").get("id").toString();
+            }
+        });
+        aggregatedEventId = aggregatedEventId.substring(1,aggregatedEventId.length()-1);
+        List<String> list = Stream.of(aggregatedEventId).collect(Collectors.toList());
+        List<String> missingEventIds = dbManager.verifyEventsInDB(list,0);
         assertEquals("The following events are missing in mongoDB: " + missingEventIds.toString(),
                 0,
                 missingEventIds.size());
@@ -180,7 +196,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
         List<String> eventNamesToSend = getEventNamesToSend();
         LOGGER.debug("Checking Aggregated Objects.");
         List<String> arguments = new ArrayList<>(
-                eventManager.getEventsIdList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
+                eventManager.getEventIdsList(EIFFEL_EVENTS_JSON_PATH, eventNamesToSend));
         arguments.add("id=TC5");
         arguments.add("conclusion=SUCCESSFUL");
         List<String> missingArguments = dbManager.verifyAggregatedObjectInDB(arguments);
@@ -203,18 +219,28 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
 
     @Then("^Mail subscriptions were triggered$")
-    public void mail_subscriptions_were_triggered() {
+    public void mail_subscriptions_were_triggered() throws URISyntaxException{
         LOGGER.debug("Verifying received emails.");
-        List<SmtpMessage> emails = smtpServer.getReceivedEmails();
-        assert (emails.size() > 0);
 
-        for (SmtpMessage email : emails) {
-            // assert correct sender.
-            assertEquals("Assert correct email sender: ", email.getHeaderValue("From"), sender);
-            // assert correct subject.
-            assertEquals("Assert correct email subject: ", email.getHeaderValue("Subject"), subject);
-            // assert given test case exist in body.
-            assert (email.getBody().contains("TC5"));
+    	HttpRequest getRequest = new HttpRequest(HttpRequest.HttpMethod.GET);
+        response = getRequest.setHost(getHostName())
+                             .setPort(8025)
+                             .addHeader("content-type", "application/json")
+                             .addHeader("Accept", "application/json")
+                             .setEndpoint(MAILHOG_SERVER_ENDPOINT)
+                             .performRequest();
+        assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
+                response.getStatusCodeValue());
+        
+        
+        JSONArray mails =  new JSONArray(response.getBody().toString());
+        
+        LOGGER.info(mails.toString());
+        
+        for(Object mail : mails) {
+        	JSONObject mailHeader = (JSONObject) ((JSONObject) ((JSONObject) mail).get("Content")).get("Headers");
+        	assertEquals("Assert correct email sender: ", "[\""+sender+"\"]", mailHeader.get("From").toString());
+        	assertEquals("Assert correct email subject: ", "[\""+subject+"\"]", mailHeader.get("Subject").toString());
         }
     }
 
@@ -371,7 +397,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                 successfull++;
             }
         }
-        return (tc5 > 0 && successfull > 0);
+        return (tc5 > 0 && successfull >= 0);
     }
 
     /**
@@ -407,20 +433,8 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      * @throws IOException
      */
     private void setupSMTPServer() throws IOException {
-        boolean connected = false;
-        while (!connected) {
-            try {
-                int port = SocketUtils.findAvailableTcpPort();
-                LOGGER.debug("Setting SMTP port to " + port);
-                mailSender.setPort(port);
-                smtpServer = SimpleSmtpServer.start(port);
-                // connected, go on
-                connected = true;
-            } catch (BindException e) {
-                String msg = "Failed to start SMTP server. address already in use. Try again!";
-                LOGGER.debug(msg, e);
-            }
-        }
+    	LOGGER.debug("Setting SMTP port to " + port);
+    	mailSender.setPort(port);
     }
 
     /**
@@ -487,4 +501,5 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
 
         return queryResult.size();
     }
+
 }

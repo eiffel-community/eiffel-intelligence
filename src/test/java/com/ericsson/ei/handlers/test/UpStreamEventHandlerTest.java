@@ -42,7 +42,7 @@ public class UpStreamEventHandlerTest {
     static Logger log = LoggerFactory.getLogger(UpStreamEventHandlerTest.class);
 
     @Test(expected = PropertyNotFoundException.class)
-    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws PropertyNotFoundException, Exception {
+    public void testRunHistoryExtractionRulesOnAllUpstreamEvents() throws Exception {
         // TODO to complete implementation
         String upStreamString = "{\"upstreamLinkObjects\":[\n" + "\t\t{\"_id\":\"event1_level_1\"},[\n"
                 + "\t\t\t{\"_id\":\"event2_level_2\"},\n" + "\t\t\t{\"_id\":\"event3_level_2\"},[\n"

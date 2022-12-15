@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.BindingBuilder;
@@ -14,7 +15,10 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.util.SocketUtils;
 
 import com.ericsson.ei.utils.AMQPBrokerManager;
-import com.mongodb.MongoClient;
+import com.mongodb.client.ListDatabasesIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCursor;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
@@ -74,10 +78,11 @@ public class TestConfigs {
         }
 
         try {
-            testsFactory = MongodForTestsFactory.with(Version.V3_4_1);
-            mongoClient = testsFactory.newMongo();
-            String port = String.valueOf(mongoClient.getAddress().getPort());
-            setNewPortToMongoDBUriProperty(mongoUri, port);
+        	mongoClient = MongoClients.create(mongoUri);
+        	ListDatabasesIterable<Document> list = mongoClient.listDatabases();
+        	MongoCursor<Document> iter = list.iterator();
+        	String port = "" + iter.getServerAddress().getPort();
+        	setNewPortToMongoDBUriProperty(mongoUri, port);
         } catch (Exception e) {
             LOGGER.error("Error setting new mongoDB uri property {}", e.getMessage(), e);
         }

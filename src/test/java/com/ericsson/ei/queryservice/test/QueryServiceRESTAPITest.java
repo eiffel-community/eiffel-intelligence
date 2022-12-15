@@ -50,6 +50,7 @@ import com.ericsson.ei.controller.AggregatedObjectController;
 import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
 import com.ericsson.ei.controller.EntryPointConstantsUtils;
 import com.ericsson.ei.controller.FailedNotificationControllerImpl;
+import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.utils.TestContextInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,11 +62,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "rabbitmq.queue.suffix: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(value = AggregatedObjectController.class, secure = false)
+@WebMvcTest(value = AggregatedObjectController.class)
 public class QueryServiceRESTAPITest {
 
     @Autowired
     private MockMvc mockMvc;
+    
+    @MockBean
+    private Encryptor encryptor;
 
     static JSONArray jsonArray = null;
 

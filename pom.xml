@@ -30,7 +30,7 @@
         <springSecurityVersion>5.5.2</springSecurityVersion>
         <springSessionVersion>2.5.0</springSessionVersion>
         <forkCountTests>1</forkCountTests>
-        <jackson.version>2.13.4.1</jackson.version>
+        <jackson.version>2.14.1</jackson.version>
     </properties>
 
     <!-- Reporting Plugins -->

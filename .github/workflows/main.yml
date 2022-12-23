@@ -19,7 +19,7 @@ jobs:
   unitAndFunctionalTests:    
     if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
       M2_HOME: /opt/apache-maven-3.6.3
@@ -62,7 +62,8 @@ jobs:
   integrationTests:
     if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
       M2_HOME: /opt/apache-maven-3.6.3
@@ -107,7 +108,7 @@ jobs:
   reportCoverage:
     if: github.repository == 'eiffel-community/eiffel-intelligence' && github.event_name == 'push'
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env: 
       JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-amd64
       M2_HOME: /opt/apache-maven-3.6.3

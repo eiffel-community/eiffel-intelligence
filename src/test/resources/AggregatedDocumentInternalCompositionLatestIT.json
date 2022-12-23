@@ -15,104 +15,6 @@
         }
     ],
     "buildCommand": null,
-    "flowContexts": [
-        {
-            "product": "MyProductA",
-            "project": "FeatureC",
-            "program": "MarketD",
-            "track": "TrackE",
-            "version": "1.2.3",
-            "eventId": "aaaaaaaa-kkkk-5ccc-8ddd-eeeeeeeeacd0"
-        }
-    ],
-    "internalComposition": {
-        "compositions": [
-            {
-                "eventId": "ab6ef12d-25fb-4d77-b9fd-87688e66de47",
-                "name": "My composition",
-                "time": 2000,
-                "artifacts": [
-                    {
-                        "fileInformation": [
-                            {
-                                "extension": "jar",
-                                "classifier": "debug"
-                            }
-                        ],
-                        "internalComposition": {
-                            "compositions": [
-                                {
-                                    "eventId": "ab6ef12d-25fb-4d77-b9fd-87688e66da4j",
-                                    "sourceChanges": [
-                                        {
-                                            "submitter": {
-                                                "name": "Jane Doe",
-                                                "email": "jane.doe@company.com"
-                                            },
-                                            "SCSEventId": "ace9df6e-cd45-4320-ae66-945f038caa1b",
-                                            "flowContexts" : [
-                                                {
-                                                    "eventId" : "flowaaaa-bbbb-5ccc-8ddd-dkt8ejeeeee0",
-                                                    "product" : "MyProduct",
-                                                    "project" : "NewImportantFeatures",
-                                                    "program" : "NewMarket",
-                                                    "track" : "CustomerXAdaptations",
-                                                    "version" : "4.3.0"
-                                                }
-                                            ],
-                                            "gitIdentifier": null,
-                                            "sourceCreations": [
-                                                {
-                                                    "SCCEventId": "ac085e24-ac4c-41be-912d-08c7afd32285",
-                                                    "author": {
-                                                        "name": "John Doe",
-                                                        "id": "johndoe",
-                                                        "email": "john.doe@company.com",
-                                                        "group": "Team Gophers"
-                                                    },
-                                                    "issues": [
-                                                    ],
-                                                    "sourceCreations": [
-                                                        {
-                                                            "SCCEventId": "a52ad6a4-c522-47e2-9195-0481930979e4",
-                                                            "author": null,
-                                                            "issues": [
-                                                                {
-                                                                    "tracker": "JIRA",
-                                                                    "id": "JIRA-1234",
-                                                                    "type": "BUG",
-                                                                    "uri": "http://jira.company.com/browse/JIRA-1234",
-                                                                    "transition": "RESOLVED"
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "name": "Other composition",
-                                    "time": 5005
-                                }
-                            ]
-                        },
-                        "id": "a100572b-c3j4-441e-abc9-b62f48080011",
-                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-                    },
-                    {
-                        "fileInformation": [
-                            {
-                                "extension": "jar",
-                                "classifier": "debug"
-                            }
-                        ],
-                        "id": "a400572b-c3j4-441e-abc9-b62f48080033",
-                        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-                    }
-                ]
-            }
-        ]
-    },
     "testCaseExecutions": [
         {
             "testCaseStartedTime": 1481875925916,
@@ -166,18 +68,6 @@
     "time": 1481875891763,
     "type": "EiffelArtifactCreatedEvent",
     "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0",
-    "artifacts": [
-        {
-            "fileInformation": [
-                {
-                    "extension": "jar",
-                    "classifier": "debug"
-                }
-            ],
-            "id": "a100572b-c3b4-461e-abc9-b62f48087011",
-            "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
-        }
-    ],
     "publications": [
         {
             "eventId": "a3d05e6f-9bd9-4138-83b6-e20cc74680a3",

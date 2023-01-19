@@ -12,10 +12,9 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.5</version>
+        <version>2.7.5</version>
         <relativePath /> <!-- .. lookup parent from repository -->
     </parent>
-
     <properties>
         <java.version>1.8</java.version>
         <springmvcRamlVersion>2.0.5</springmvcRamlVersion>
@@ -25,7 +24,7 @@
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
-        <springBootVersion>2.5.12</springBootVersion>
+        <springBootVersion>2.7.5</springBootVersion>
         <springLdapVersion>2.3.4.RELEASE</springLdapVersion>
         <springSecurityVersion>5.5.2</springSecurityVersion>
         <springSessionVersion>2.5.0</springSessionVersion>
@@ -158,13 +157,13 @@
         <dependency>
 		    <groupId>org.mongodb</groupId>
 		    <artifactId>mongodb-driver-sync</artifactId>
-		    <version>4.3.2</version><!--$NO-MVN-MAN-VER$-->
+		    <version>4.6.1</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		
 		<dependency>
 		    <groupId>org.mongodb</groupId>
 		    <artifactId>mongodb-driver-core</artifactId>
-		    <version>4.3.2</version><!--$NO-MVN-MAN-VER$-->
+		    <version>4.6.1</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		
 		<dependency>

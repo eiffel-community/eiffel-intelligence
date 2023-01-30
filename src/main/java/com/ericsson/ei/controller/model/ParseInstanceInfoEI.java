@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -69,10 +70,12 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
+    @Lazy
     private List<MongoDbValues> mongodb;
 
     @Getter
     @Autowired
+    @Lazy
     private List<ThreadsValue> threads;
 
     @Getter
@@ -81,10 +84,12 @@ public class ParseInstanceInfoEI {
 
     @Getter
     @Autowired
+    @Lazy
     private List<MailServerValues> mailServerValues;
 
     @Getter
     @Autowired
+    @Lazy
     private LdapValues ldap;
 
     @Getter
@@ -158,6 +163,9 @@ public class ParseInstanceInfoEI {
 
     @Component
     private class LdapValues {
+    	public LdapValues() {
+			// TODO Auto-generated constructor stub
+		}
         @Getter
         @Value("${ldap.enabled}")
         private String ldapEnabled;

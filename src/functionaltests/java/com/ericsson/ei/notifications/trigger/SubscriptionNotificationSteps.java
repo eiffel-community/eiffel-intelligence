@@ -8,7 +8,6 @@ import static org.mockserver.model.HttpResponse.response;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +16,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.mockito.InjectMocks;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Format;
@@ -36,8 +33,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.SocketUtils;
 
-import com.dumbster.smtp.SimpleSmtpServer;
-import com.dumbster.smtp.SmtpMessage;
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.EmailSender;
@@ -45,11 +40,11 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import util.IntegrationTestBase;
 
 @Ignore

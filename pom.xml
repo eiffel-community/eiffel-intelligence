@@ -16,7 +16,7 @@
         <relativePath /> <!-- .. lookup parent from repository -->
     </parent>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <springmvcRamlVersion>2.0.5</springmvcRamlVersion>
         <outputRelativePath>src/main/java</outputRelativePath>
         <ramlPath>src/main/resources/public/raml/eiffel-intelligence.raml</ramlPath>
@@ -310,7 +310,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
 
@@ -393,24 +393,29 @@
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>2.4.0</version>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>2.4.0</version>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-spring</artifactId>
-            <version>2.4.0</version>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
+       </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.java-json-tools/json-schema-validator -->
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
@@ -643,7 +648,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.8</version>
                 <configuration>
                     <excludes>
                         <exclude>com/ericsson/ei/controller/model/*</exclude>

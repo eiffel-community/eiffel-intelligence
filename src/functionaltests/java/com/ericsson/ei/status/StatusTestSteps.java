@@ -23,9 +23,9 @@ import com.ericsson.ei.handlers.StatusHandler;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {

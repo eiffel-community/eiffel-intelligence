@@ -3,7 +3,6 @@ package com.ericsson.ei.restendpoints;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Ignore;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +14,9 @@ import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.helpers.MediaType;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {

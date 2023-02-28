@@ -2,95 +2,82 @@
 
 ## Prerequisites
 
-Eiffel Intelligence is a Spring microservice distributed in a war file.
+Existing Eiffel Intelligence `war` file is expected.
+If the file doesn't exist it can be compiled using Maven
 
-Eiffel Intelligence release war files can be downloaded from JitPack:
-[jitpack.io](https://jitpack.io/#eiffel-community/eiffel-intelligence) and look for the
-latest version. Now replace the latest version in the link below:
+    mvn clean package
 
-    https://jitpack.io/com/github/eiffel-community/eiffel-intelligence/<version>/eiffel-intelligence-<version>.war
+Note, that this command starts series of test and some of them
+expect additional services available. 
+Please, see [testing.md](Running Tests) for more details.
+To skip the tests append `-DskipTests` option
+
+    mvn clean package -DskipTests
+
+Now the `war` file is available under `target` directory,
+named as `eiffel-intelligence-<VERSION>.war`.
+
 
 ## Running with Maven Command
-
-If you want to test the latest code in github clone the project and compile it
-with:
-
-    mvn clean install
-
-append **_-DskipTests_** if you want to skip the tests since the latest on
-master always has passed the tests. The war file should now be found under
-target folder in your cloned project.
-
-If you run from source code, you can run Eiffel-Intelligence front-end with maven command:
+To start Eiffel-Intelligence using Maven command, enter
 
     mvn spring-boot:run
 
-With properties added to the maven command, e.g:
+Additional properties can be added to the `mvn` command directly
 
     mvn spring-boot:run -Dlogging.level.com.ericsson.ei=DEBUG -Dspring.data.mongodb.port=27019
 
  ## Running with Java command 
+Another option is to use `war` and start it with `java` directly.
+See [Prerequisities](#prerequisites) how to build the `war` file.
 
-Another option is to run the executable war file with java command.
-If running from source code, war file is generated and produced by maven 
-command (mvn install command can be used as well):
+    java -jar eiffel-intelligence-<VERSION>.war
 
-    mvn package -DskipTests
-
- This command should produce an `eiffel-intelligence-<version>.war` file in 
- target folder, `target/eiffel-intelligence-<version>.war`. 
-
-The war file is executed by the following command and with default configuration:
-
-    java -jar eiffel-intelligence-<version>.war
-
-Own configuration can be provided with
+Own configuration can be provided, too
 
     java -jar eiffel-intelligence-<version>.war --spring.config.location=<path to own application.properties>
 
-remember to keep the name of the properties file if you are a beginner to
+Remember to keep the name of the properties file if you are a beginner to
 Spring. More advanced Spring user can look [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
 for more information about using external configuration.
 
-If a few properties need to be overridden, then use java opts, for example:
+If a few properties need to be overridden, `java`'s option `-D` can be used for this purpose
 
-    java -jar eiffel-intelligence-<version>.war -Dspring.data.mongodb.port=27019
+    java -jar eiffel-intelligence-<VERSION>.war -Dspring.data.mongodb.port=27019
 
 ## Running in Tomcat Instance
+To run Eiffel Intelligence in Tomcat, the `war` file must be put into the 
+`webapp` folder in Tomcat installation folder, also called Catalina home folder:
 
-To run Eiffel Intelligence in Tomcat, the war file must be put into the 
-webapp folder in tomcat installation folder, also called catalina home folder:
+    <CATALINA HOME>/webapp/
 
-    (catalina home)/webapp/
+If Eiffel Intelligence should be run without any context-path in the URL address, 
+then overwrite `ROOT.war` file in webapp folder with `eiffel-intelligence-<version>.war`:
 
-If Eiffel Intelligence should be run without any context-path in the url address, 
-then overwrite ROOT.war file in webapp folder with `eiffel-intelligence-<version>.war`:
+    cp eiffel-intelligence-<VERSION>.war <CATALINA HOME>/webapp/ROOT.war
 
-    cp eiffel-intelligence-<version>.war (catalina home)/webapp/ROOT.war
+Remove `ROOT` folder in webapp folder
 
-Remove "ROOT" folder in webapp folder:
+    rm -rf <CATALINA HOME>/webapp/ROOT/
 
-    rm -rf (catalina home)/webapp/ROOT/
+Create `config` folder in catalina home, if it doesn't exist. Spring and 
+Eiffel Intelligence will look for the `application.properties` configuration file in config folder
 
-Create "config" folder in catalina home folder, if it doesn't exist. Spring and 
-Eiffel Intelligence will look for the application.properties configuration file in config folder:
+    mkdir <CATALINA HOME>/config
 
-    mkdir (catalina home)/config
-
-Copy the application.properties file into the newly created config folder:
+Copy the `application.properties`file into the newly created `config` folder
 
     cp application.properties (catalina home)/config
 
-Start Tomcat and Eiffel Intelligence in background/daemon mode by executing command:
+Start Tomcat and Eiffel Intelligence in background/daemon mode by executing command
 
-    (catalina home)/bin/catalina.sh start
+    <CATALINA HOME>/bin/catalina.sh start
 
-To run Tomcat and Eiffel Intelligence with logs printed to console:
-    
-    (catalina home)/bin/catalina.sh run
+To run Tomcat and Eiffel Intelligence with logs printed to console
+
+    <CATALINA HOME>/bin/catalina.sh run
 
 ## Eiffel Intelligence Configurations and Properties
-
 All available Eiffel Intelligence properties can be found in [application.properties](../src/main/resources/application.properties) example file.
 
 More documentation of each Eiffel Intelligence property and configurations 

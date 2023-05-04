@@ -15,8 +15,10 @@ package com.ericsson.ei.status;
 
 import org.junit.runner.RunWith;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.junit.Cucumber;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+
+
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = { "src/functionaltests/resources/features/status.feature" }, glue = {

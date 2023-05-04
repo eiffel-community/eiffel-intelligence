@@ -5,7 +5,6 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import java.io.File;
 
-import com.ericsson.ei.controller.RuleTestControllerImpl;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,13 +15,16 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import com.ericsson.ei.controller.RuleTestControllerImpl;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
+
 
 @Ignore
 @TestPropertySource(properties = {

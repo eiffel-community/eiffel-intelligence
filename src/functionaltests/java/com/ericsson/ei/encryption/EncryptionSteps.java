@@ -26,9 +26,10 @@ import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
 
 @Ignore
 @TestPropertySource(properties = {

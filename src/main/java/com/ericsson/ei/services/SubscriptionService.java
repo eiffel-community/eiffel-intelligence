@@ -50,7 +50,7 @@ public class SubscriptionService implements ISubscriptionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Value("${spring.application.name}")
-    private String SpringApplicationName;
+    private String springApplicationName;
 
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
@@ -99,7 +99,7 @@ public class SubscriptionService implements ISubscriptionService {
             try {
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
-                subscription.setAggregationtype(SpringApplicationName);
+                subscription.setAggregationtype(springApplicationName);
                 return subscription;
             } catch (IOException e) {
                 LOGGER.error("Malformed JSON string", e);
@@ -129,6 +129,10 @@ public class SubscriptionService implements ISubscriptionService {
         ObjectMapper mapper = new ObjectMapper();
         Document result = null;
         try {
+            String password = subscription.getPassword();
+            if (isEncryptionReady(subscription.getAuthenticationType(), subscription.getUserName(), password)) {
+                subscription.setPassword(encryptPassword(password));
+            }
             String stringSubscription = mapper.writeValueAsString(subscription);
 
             final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
@@ -196,7 +200,7 @@ public class SubscriptionService implements ISubscriptionService {
             try {
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
-                subscription.setAggregationtype(SpringApplicationName);
+                subscription.setAggregationtype(springApplicationName);
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOGGER.error("Failed to get subscription.", e);

@@ -20,12 +20,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -137,16 +139,16 @@ public class SubscriptionServiceTest {
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             String expectedSubscriptionName = subscription2.getSubscriptionName();
             String expectedUserName = subscription2.getUserName();
+
+            subscriptionService.modifySubscription(subscription2, expectedSubscriptionName);
             subscriptionService.addSubscription(subscription2);
             // Fetch the inserted subscription
             subscription2 = null;
             subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
             subscriptionName = subscription2.getSubscriptionName();
-
             SecurityContextHolder.setContext(securityContext);
             Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
             Mockito.when(authentication.getName()).thenReturn("ABC");
-
             assertEquals(subscriptionName, expectedSubscriptionName);
             assertEquals(authentication.getName(), expectedUserName);
 
@@ -163,7 +165,6 @@ public class SubscriptionServiceTest {
             subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName);
             subscriptionName = subscription.getSubscriptionName();
             assertEquals(subscriptionName, expectedModifiedSubscriptionName);
-
             assertEquals(authentication.getName(), expectedModifiedSubscriptionName);
 
             // deleting the test data
@@ -171,6 +172,43 @@ public class SubscriptionServiceTest {
         } catch (Exception e) {
         }
     }
+
+    @Test
+public void testEncryptPassword() {
+    Subscription subscription;
+    //Subscription subscription3;
+    try {
+        // Insert Subscription
+        Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+        String expectedSubscriptionName = subscription2.getSubscriptionName();
+        String expectedUserName = subscription2.getUserName();
+        String expectedPassword = subscription2.getPassword();
+        Method method=SubscriptionService.class
+                .getDeclaredMethod("encryptPassword", String.class);
+        method.setAccessible(true);
+        String encryptedPassword=(String) method.invoke(subscriptionService, expectedPassword);
+        subscription2.setPassword(encryptedPassword);
+        subscriptionService.modifySubscription(subscription2, expectedSubscriptionName);
+        subscriptionService.addSubscription(subscription2);
+
+
+        // Fetch the inserted subscription
+        Subscription subscription3 = subscriptionService.getSubscription(expectedSubscriptionName);
+        subscriptionName = subscription3.getSubscriptionName();
+        String subscriptionPassword = subscription3.getPassword();
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("ABC");
+        assertEquals(encryptedPassword,subscriptionPassword);
+        assertEquals(subscriptionName, expectedSubscriptionName);
+        assertEquals(authentication.getName(), expectedUserName);
+
+            // deleting the test data
+        deleteSubscriptionsByName(subscriptionName);
+    } catch (Exception e) {
+    }
+}
+
 
     @Test
     public void testGetAllSubscriptions() throws AccessException {

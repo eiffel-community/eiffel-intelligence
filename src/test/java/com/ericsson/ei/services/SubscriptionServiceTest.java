@@ -16,15 +16,15 @@
 */
 package com.ericsson.ei.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 
@@ -63,6 +63,9 @@ import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
+
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionServiceTest",
@@ -398,4 +401,18 @@ public void testEncryptPassword() {
         Mockito.when(authentication.getName()).thenReturn("ABC");
         subscriptionService.deleteSubscription(subscriptionName);
     }
+ public void testLogFileForPassword() throws Exception
+    {
+        //Get the log file name from the application.properties file
+        Path logFilePath = Paths.get("src/main/resources/application.properties");
+        Scanner scanner=new Scanner(logFilePath);
+        while(scanner.hasNextLine())
+        {
+            String line= scanner.nextLine();
+            if (line.equals("password:ENC(")) {
+                    assertThat(line, containsString("password:ENC("));
+                }
+            }
+        }
+
 }

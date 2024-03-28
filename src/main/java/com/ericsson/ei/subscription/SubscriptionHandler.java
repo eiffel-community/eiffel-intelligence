@@ -28,6 +28,7 @@ import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -97,11 +98,16 @@ public class SubscriptionHandler {
         try {
             JsonNode subscriptionJson = new ObjectMapper().readTree(
                 subscriptionData);
-            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject  + " for the event id: " + id);
+			
+            // Remove password  from subscription details and put empty value before logging.
+			JsonNode subscriptoinToDisplay = new ObjectMapper().readTree(subscriptionJson.toString());
+			LOGGER.debug("SubscriptionJson : {}",
+					((ObjectNode) subscriptoinToDisplay).put("password", "").toPrettyString());
+
+            LOGGER.debug("Aggregated Object : {} for event id: {}", aggregatedObject, id);
             ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                 "requirements");
-            LOGGER.debug("Requirements : " + requirementNode.toString());
+            LOGGER.debug("Requirements : {}", requirementNode);
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
             SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
             String subscriptionName = subscriptionField.get("subscriptionName");

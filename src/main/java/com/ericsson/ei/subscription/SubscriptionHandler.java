@@ -16,6 +16,7 @@ package com.ericsson.ei.subscription;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,11 +98,14 @@ public class SubscriptionHandler {
         try {
             JsonNode subscriptionJson = new ObjectMapper().readTree(
                 subscriptionData);
-            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject  + " for the event id: " + id);
+            // Remove password  from subscription details and put empty value before logging.
+            JsonNode subscriptoinToDisplay = new ObjectMapper().readTree(subscriptionJson.toString());
+            LOGGER.debug("SubscriptionJson : {}",
+                    ((ObjectNode) subscriptoinToDisplay).put("password", "").toPrettyString());
+            LOGGER.debug("Aggregated Object : {} for event id: {}", aggregatedObject, id);
             ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                 "requirements");
-            LOGGER.debug("Requirements : " + requirementNode.toString());
+            LOGGER.debug("Requirements : {}", requirementNode);
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
             SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
             String subscriptionName = subscriptionField.get("subscriptionName");

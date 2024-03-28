@@ -16,17 +16,21 @@
 */
 package com.ericsson.ei.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 
+
+import com.ericsson.ei.logFilter.LogFilter;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +66,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 
+import static org.junit.Assert.*;
+
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionServiceTest",
         "failed.notifications.collection.name: SubscriptionServiceTest-failedNotifications",
@@ -83,10 +89,16 @@ public class SubscriptionServiceTest {
     @Value("${subscriptions.repeat.handler.collection.name}")
     private String repeatFlagHandlerCollection;
 
+    @Value("${logging.file.name}")
+    private File logFileName;
+
     private String subscriptionName;
 
     @Autowired
     private ISubscriptionService subscriptionService;
+
+    @Autowired
+    private SubscriptionService subService;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -137,16 +149,16 @@ public class SubscriptionServiceTest {
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
             String expectedSubscriptionName = subscription2.getSubscriptionName();
             String expectedUserName = subscription2.getUserName();
+
+            subscriptionService.modifySubscription(subscription2, expectedSubscriptionName);
             subscriptionService.addSubscription(subscription2);
             // Fetch the inserted subscription
             subscription2 = null;
             subscription2 = subscriptionService.getSubscription(expectedSubscriptionName);
             subscriptionName = subscription2.getSubscriptionName();
-
             SecurityContextHolder.setContext(securityContext);
             Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
             Mockito.when(authentication.getName()).thenReturn("ABC");
-
             assertEquals(subscriptionName, expectedSubscriptionName);
             assertEquals(authentication.getName(), expectedUserName);
 
@@ -163,7 +175,6 @@ public class SubscriptionServiceTest {
             subscription = subscriptionService.getSubscription(expectedModifiedSubscriptionName);
             subscriptionName = subscription.getSubscriptionName();
             assertEquals(subscriptionName, expectedModifiedSubscriptionName);
-
             assertEquals(authentication.getName(), expectedModifiedSubscriptionName);
 
             // deleting the test data
@@ -359,5 +370,67 @@ public class SubscriptionServiceTest {
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
         subscriptionService.deleteSubscription(subscriptionName);
+    }
+    @Test
+    public void testLogForPasswordAdd() throws Exception {
+
+        try {
+            Path logFilePath=Paths.get(String.valueOf(logFileName));
+            Scanner scanner = new Scanner(logFilePath);
+            LocalDateTime start = LocalDateTime.now();
+            Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            subscription2.setAuthenticationType("BASIC_AUTH");
+            String expectedSubscriptionPassword = subscription2.getPassword();
+            subService.addSubscription(subscription2);
+            LocalDateTime end = LocalDateTime.now();
+            LogFilter log = new LogFilter();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (log.filter(start, end, line)) {
+                    if ((line.contains(expectedSubscriptionName) && (line.contains("password")))) {
+                        assertFalse(line.contains(expectedSubscriptionPassword));
+                    }
+                }
+            }
+            // deleting the test data
+            deleteSubscriptionsByName(expectedSubscriptionName);
+            Files.delete(logFilePath);
+        }
+        catch(Exception e) {
+            LOGGER.error(e.getMessage(),e);
+        }
+        }
+    @Test
+    public void testLogForPasswordUpdate() throws Exception {
+
+        try {
+            Path logFilePath=Paths.get(String.valueOf(logFileName));
+            Scanner scanner = new Scanner(logFilePath);
+            LocalDateTime start = LocalDateTime.now();
+            Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            subscription2.setAuthenticationType("BASIC_AUTH");
+            subscription2.setPassword("token123");
+            String expectedSubscriptionPassword = subscription2.getPassword();
+            subscriptionService.modifySubscription(subscription2,expectedSubscriptionName);
+            subService.addSubscription(subscription2);
+            LocalDateTime end = LocalDateTime.now();
+            LogFilter log = new LogFilter();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (log.filter(start, end, line)) {
+                    if ((line.contains(expectedSubscriptionName) && (line.contains("password")))) {
+                        assertFalse(line.contains(expectedSubscriptionPassword));
+                    }
+                }
+            }
+            // deleting the test data
+            deleteSubscriptionsByName(expectedSubscriptionName);
+            Files.delete(logFilePath);
+        }
+        catch(Exception e) {
+            LOGGER.error(e.getMessage(),e);
+        }
     }
 }

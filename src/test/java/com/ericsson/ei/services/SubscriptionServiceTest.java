@@ -396,6 +396,7 @@ public class SubscriptionServiceTest {
             // deleting the test data
             deleteSubscriptionsByName(expectedSubscriptionName);
             Files.delete(logFilePath);
+            scanner.close();
         }
         catch(Exception e) {
             LOGGER.error(e.getMessage(),e);
@@ -428,9 +429,12 @@ public class SubscriptionServiceTest {
             // deleting the test data
             deleteSubscriptionsByName(expectedSubscriptionName);
             Files.delete(logFilePath);
+            scanner.close();
+
         }
         catch(Exception e) {
             LOGGER.error(e.getMessage(),e);
         }
+
     }
 }

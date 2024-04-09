@@ -16,19 +16,6 @@
 */
 package com.ericsson.ei.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bson.Document;
-import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.expression.AccessException;
-import org.springframework.stereotype.Component;
-
 import com.ericsson.ei.config.HttpSessionConfig;
 import com.ericsson.ei.controller.model.AuthenticationType;
 import com.ericsson.ei.controller.model.Subscription;
@@ -43,6 +30,18 @@ import com.ericsson.ei.repository.ISubscriptionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoWriteException;
+import org.bson.Document;
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.AccessException;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class SubscriptionService implements ISubscriptionService {
@@ -50,7 +49,7 @@ public class SubscriptionService implements ISubscriptionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Value("${spring.application.name}")
-    private String SpringApplicationName;
+    private String springApplicationName;
 
     @Value("${spring.data.mongodb.database}")
     private String dataBaseName;
@@ -99,7 +98,7 @@ public class SubscriptionService implements ISubscriptionService {
             try {
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
-                subscription.setAggregationtype(SpringApplicationName);
+                subscription.setAggregationtype(springApplicationName);
                 return subscription;
             } catch (IOException e) {
                 LOGGER.error("Malformed JSON string", e);
@@ -129,6 +128,10 @@ public class SubscriptionService implements ISubscriptionService {
         ObjectMapper mapper = new ObjectMapper();
         Document result = null;
         try {
+            String password = subscription.getPassword();
+            if (isEncryptionReady(subscription.getAuthenticationType(), subscription.getUserName(), password)) {
+                subscription.setPassword(encryptPassword(password));
+            }
             String stringSubscription = mapper.writeValueAsString(subscription);
 
             final MongoCondition subscriptionNameCondition = MongoCondition.subscriptionNameCondition(
@@ -196,7 +199,7 @@ public class SubscriptionService implements ISubscriptionService {
             try {
                 subscription = mapper.readValue(input, Subscription.class);
                 // Inject aggregationtype
-                subscription.setAggregationtype(SpringApplicationName);
+                subscription.setAggregationtype(springApplicationName);
                 subscriptions.add(subscription);
             } catch (IOException e) {
                 LOGGER.error("Failed to get subscription.", e);

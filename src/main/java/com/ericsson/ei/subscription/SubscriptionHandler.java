@@ -13,24 +13,23 @@
 */
 package com.ericsson.ei.subscription;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.ei.notifications.InformSubscriber;
 import com.ericsson.ei.utils.SubscriptionField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class is responsible to take a aggregatedObject and match it with all
@@ -97,11 +96,14 @@ public class SubscriptionHandler {
         try {
             JsonNode subscriptionJson = new ObjectMapper().readTree(
                 subscriptionData);
-            LOGGER.debug("SubscriptionJson : " + subscriptionJson.toString());
-            LOGGER.debug("Aggregated Object : " + aggregatedObject  + " for the event id: " + id);
+            // Remove password  from subscription details and put empty value before logging.
+            JsonNode subscriptoinToDisplay = new ObjectMapper().readTree(subscriptionJson.toString());
+            LOGGER.debug("SubscriptionJson : {}",
+                    ((ObjectNode) subscriptoinToDisplay).put("password", "").toPrettyString());
+            LOGGER.debug("Aggregated Object : {} for event id: {}", aggregatedObject, id);
             ArrayNode requirementNode = (ArrayNode) subscriptionJson.get(
                 "requirements");
-            LOGGER.debug("Requirements : " + requirementNode.toString());
+            LOGGER.debug("Requirements : {}", requirementNode);
             Iterator<JsonNode> requirementIterator = requirementNode.elements();
             SubscriptionField subscriptionField = new SubscriptionField(subscriptionJson);
             String subscriptionName = subscriptionField.get("subscriptionName");

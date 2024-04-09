@@ -88,10 +88,7 @@ public class SubscriptionServiceTest {
 
     @Value("${subscriptions.repeat.handler.collection.name}")
     private String repeatFlagHandlerCollection;
-
-    @Value("${logging.file.name}")
-    private File logFileName;
-
+    
     private String subscriptionName;
 
     @Autowired
@@ -373,9 +370,9 @@ public class SubscriptionServiceTest {
     }
     @Test
     public void testLogForPasswordAdd() throws Exception {
-
+        Path logFilePath=Paths.get("/var/tmp/eiffel-intelligence.log");
         try {
-            Path logFilePath=Paths.get(String.valueOf(logFileName));
+
             Scanner scanner = new Scanner(logFilePath);
             LocalDateTime start = LocalDateTime.now();
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
@@ -395,18 +392,20 @@ public class SubscriptionServiceTest {
             }
             // deleting the test data
             deleteSubscriptionsByName(expectedSubscriptionName);
-            Files.delete(logFilePath);
+
             scanner.close();
         }
         catch(Exception e) {
             LOGGER.error(e.getMessage(),e);
+        } finally {
+            Files.write(logFilePath, new byte[0]);
         }
         }
     @Test
     public void testLogForPasswordUpdate() throws Exception {
-
+        Path logFilePath=Paths.get("/var/tmp/eiffel-intelligence.log");
         try {
-            Path logFilePath=Paths.get(String.valueOf(logFileName));
+
             Scanner scanner = new Scanner(logFilePath);
             LocalDateTime start = LocalDateTime.now();
             Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
@@ -415,7 +414,6 @@ public class SubscriptionServiceTest {
             subscription2.setPassword("token123");
             String expectedSubscriptionPassword = subscription2.getPassword();
             subscriptionService.modifySubscription(subscription2,expectedSubscriptionName);
-            subService.addSubscription(subscription2);
             LocalDateTime end = LocalDateTime.now();
             LogFilter log = new LogFilter();
             while (scanner.hasNextLine()) {
@@ -428,11 +426,13 @@ public class SubscriptionServiceTest {
             }
             // deleting the test data
             deleteSubscriptionsByName(expectedSubscriptionName);
-            Files.delete(logFilePath);
+
             scanner.close();
         }
         catch(Exception e) {
             LOGGER.error(e.getMessage(),e);
+        } finally {
+            Files.write(logFilePath, new byte[0]);
         }
     }
 }

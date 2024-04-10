@@ -26,6 +26,7 @@
   ],
   "subscriptionName" : "Single_CLME_Subscription_Test",
   "userName" : "ABC",
+  "password": "token",
   "ldapUserName": ""
 }
 ]

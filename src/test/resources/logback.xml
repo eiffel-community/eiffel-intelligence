@@ -5,8 +5,18 @@
             <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="info">
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>/var/tmp/eiffel-intelligence.log</file>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+        <filter class="com.ericsson.ei.logFilter.LogFilter" />
+    </appender>
+
+    <root level="DEBUG">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
-    <logger name="org.mockserver.mock" level="error" />
+    <logger name="org.mockserver.mock" level="ERROR" />
 </configuration>

@@ -16,17 +16,19 @@
 */
 package com.ericsson.ei.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
+import com.ericsson.ei.App;
+import com.ericsson.ei.controller.model.Subscription;
+import com.ericsson.ei.exception.SubscriptionNotFoundException;
+import com.ericsson.ei.logFilter.LogFilter;
+import com.ericsson.ei.mongo.MongoCondition;
+import com.ericsson.ei.mongo.MongoDBHandler;
+import com.ericsson.ei.test.utils.TestConfigs;
+import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
+import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoClient;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,18 +51,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.ericsson.ei.App;
-import com.ericsson.ei.controller.model.Subscription;
-import com.ericsson.ei.exception.SubscriptionNotFoundException;
-import com.ericsson.ei.mongo.MongoCondition;
-import com.ericsson.ei.mongo.MongoDBHandler;
-import com.ericsson.ei.test.utils.TestConfigs;
-import com.ericsson.ei.utils.TestContextInitializer;
-import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
-import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.MongoClient;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import static org.junit.Assert.*;
 
 @TestPropertySource(properties = {
         "spring.data.mongodb.database: SubscriptionServiceTest",
@@ -87,6 +89,9 @@ public class SubscriptionServiceTest {
 
     @Autowired
     private ISubscriptionService subscriptionService;
+
+    @Autowired
+    private SubscriptionService subService;
 
     @Autowired
     private MongoDBHandler mongoDBHandler;
@@ -359,5 +364,67 @@ public class SubscriptionServiceTest {
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         Mockito.when(authentication.getName()).thenReturn("ABC");
         subscriptionService.deleteSubscription(subscriptionName);
+    }
+
+    @Test
+    public void testLogForPasswordAdd() throws Exception {
+        Path logFilePath= Paths.get("/var/tmp/eiffel-intelligence.log");
+        try {
+
+            Scanner scanner = new Scanner(logFilePath);
+            LocalDateTime start = LocalDateTime.now();
+            Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            subscription2.setAuthenticationType("BASIC_AUTH");
+            String expectedSubscriptionPassword = subscription2.getPassword();
+            subService.addSubscription(subscription2);
+            LocalDateTime end = LocalDateTime.now();
+            LogFilter log = new LogFilter();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (log.filter(start, end, line)) {
+                    if ((line.contains(expectedSubscriptionName) && (line.contains("password")))) {
+                        assertFalse(line.contains(expectedSubscriptionPassword));
+                    }
+                }
+            }
+            scanner.close();
+        }
+        catch(Exception e) {
+            LOGGER.error(e.getMessage(),e);
+        } finally {
+            Files.write(logFilePath, new byte[0]);
+        }
+    }
+    @Test
+    public void testLogForPasswordUpdate() throws Exception {
+        Path logFilePath=Paths.get("/var/tmp/eiffel-intelligence.log");
+        try {
+
+            Scanner scanner = new Scanner(logFilePath);
+            LocalDateTime start = LocalDateTime.now();
+            Subscription subscription2 = mapper.readValue(jsonArray.getJSONObject(0).toString(), Subscription.class);
+            String expectedSubscriptionName = subscription2.getSubscriptionName();
+            subscription2.setAuthenticationType("BASIC_AUTH");
+            subscription2.setPassword("token123");
+            String expectedSubscriptionPassword = subscription2.getPassword();
+            subscriptionService.modifySubscription(subscription2,expectedSubscriptionName);
+            LocalDateTime end = LocalDateTime.now();
+            LogFilter log = new LogFilter();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (log.filter(start, end, line)) {
+                    if ((line.contains(expectedSubscriptionName) && (line.contains("password")))) {
+                        assertFalse(line.contains(expectedSubscriptionPassword));
+                    }
+                }
+            }
+            scanner.close();
+        }
+        catch(Exception e) {
+            LOGGER.error(e.getMessage(),e);
+        } finally {
+            Files.write(logFilePath, new byte[0]);
+        }
     }
 }

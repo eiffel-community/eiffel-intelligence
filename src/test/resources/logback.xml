@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>/var/tmp/eiffel-intelligence.log</file>
         <encoder>
@@ -8,7 +14,9 @@
         <filter class="com.ericsson.ei.logFilter.LogFilter" />
     </appender>
 
-    <root level="INFO">
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
+    <logger name="org.mockserver.mock" level="ERROR" />
 </configuration>

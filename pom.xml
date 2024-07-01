@@ -441,9 +441,15 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.11</version>
+            <version>1.2.13</version>
         </dependency>
-        
+	    
+        <dependency>
+           <groupId>ch.qos.logback</groupId>
+           <artifactId>logback-core</artifactId>
+           <version>1.2.13</version>
+        </dependency>
+	    
     </dependencies>
 
     <build>

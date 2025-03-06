@@ -44,7 +44,7 @@ jobs:
       - name: Before script
         run: |
           source src/main/docker/env.bash
-          docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server
+          docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server
           sleep 60
           
       - name: Run unit and functional tests
@@ -82,7 +82,7 @@ jobs:
       - name: Before script
         run: |
           source src/main/docker/env.bash
-          docker-compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server 
+          docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server 
           sleep 60
           
       - name: Run integration tests

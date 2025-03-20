@@ -18,7 +18,7 @@
 <img src="./images/eiffel-intelligence-logo.png" alt="Eiffel Intelligence" width="350"/>
 
 [![Sandbox badge](https://img.shields.io/badge/Stage-Sandbox-yellow)](https://github.com/eiffel-community/community/blob/master/PROJECT_LIFECYCLE.md#stage-sandbox)
-[![Build Status](https://travis-ci.org/eiffel-community/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-intelligence)
+[![CI](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml/badge.svg)](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8600a861b2aa4770901d12a45ace3535)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eiffel-community/eiffel-intelligence&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8600a861b2aa4770901d12a45ace3535)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Coverage)
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)

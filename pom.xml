@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.ericsson</groupId>
     <artifactId>eiffel-intelligence</artifactId>
-    <version>3.2.9</version>
+    <version>3.2.10</version>
     <packaging>war</packaging>
 
     <parent>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
-            <version>0.0.15</version>
+            <version>0.0.15-openjdk-8</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

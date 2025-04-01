@@ -17,7 +17,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   unitAndFunctionalTests:    
-    if: github.repository == 'eiffel-community/eiffel-intelligence' && false
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env: 
@@ -53,7 +53,7 @@ jobs:
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
-    if: github.repository == 'eiffel-community/eiffel-intelligence' && false
+    if: github.repository == 'eiffel-community/eiffel-intelligence'
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -91,8 +91,7 @@ jobs:
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
-    if: github.repository == 'eiffel-community/eiffel-intelligence' 
-    # && github.event_name == 'push'
+    if: github.repository == 'eiffel-community/eiffel-intelligence' && github.event_name == 'push'
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env: 

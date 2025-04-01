@@ -113,15 +113,22 @@ jobs:
           wget https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           echo "${M2_HOME}/bin" >> $GITHUB_PATH
+
+      # To ensure docker containers are fully up and running we sleep 60s
+      - name: Before script
+        run: |
+          source src/main/docker/env.bash
+          docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server
+          sleep 60
           
-      - name: Run cobertura
+      - name: Run jacoco
         shell: bash
         run: |
-          mvn cobertura:cobertura -Dcobertura.report.format=xml -B
+          mvn -V -B -U clean test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties jacoco:report -Dformats=xml
           
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: 571cdd20d4bf435f84b25d806d304792
-          coverage-reports: target/site/cobertura/coverage.xml
+          coverage-reports: target/site/jacoco/jacoco.xml

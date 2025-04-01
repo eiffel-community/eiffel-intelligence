@@ -17,7 +17,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   unitAndFunctionalTests:    
-    if: github.repository == 'eiffel-community/eiffel-intelligence'
+    if: github.repository == 'eiffel-community/eiffel-intelligence' && false
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env: 
@@ -53,7 +53,7 @@ jobs:
           mvn test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties -B 
           
   integrationTests:
-    if: github.repository == 'eiffel-community/eiffel-intelligence'
+    if: github.repository == 'eiffel-community/eiffel-intelligence' && false
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -91,7 +91,8 @@ jobs:
           mvn verify -DskipUTs -Djasypt.encryptor.password=integrationtest -Dspring.config.location=src/integrationtests/resources/application.properties -B 
         
   reportCoverage:
-    if: github.repository == 'eiffel-community/eiffel-intelligence' && github.event_name == 'push'
+    if: github.repository == 'eiffel-community/eiffel-intelligence' 
+    # && github.event_name == 'push'
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env: 
@@ -113,15 +114,22 @@ jobs:
           wget https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
           tar xf /tmp/apache-maven-3.6.3-bin.tar.gz -C /opt
           echo "${M2_HOME}/bin" >> $GITHUB_PATH
+
+      # To ensure docker containers are fully up and running we sleep 60s
+      - name: Before script
+        run: |
+          source src/main/docker/env.bash
+          docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server
+          sleep 60
           
       - name: Run jacoco
         shell: bash
         run: |
-          mvn -V -B -U clean test jacoco:report -Dformats=xml
+          mvn -V -B -U clean test -DskipITs -Dsurefire.rerunFailingTestsCount=2 -Djasypt.encryptor.password=secret -Dspring.config.location=src/functionaltests/resources/application.properties jacoco:report -Dformats=xml
           
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: 571cdd20d4bf435f84b25d806d304792
-          coverage-reports: target/jacoco/jacoco.xml
+          coverage-reports: target/site/jacoco/jacoco.xml

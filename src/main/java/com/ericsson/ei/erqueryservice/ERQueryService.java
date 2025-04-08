@@ -33,9 +33,9 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.HttpRequestFailedException;
 import com.ericsson.ei.exception.PropertyNotFoundException;
-import com.ericsson.eiffelcommons.utils.HttpRequest;
-import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest.HttpMethod;
 
 import lombok.Getter;
 
@@ -107,10 +107,10 @@ public class ERQueryService {
                .setHttpMethod(HttpMethod.POST)
                .setBaseUrl(eventRepositoryUrl)
                .setEndpoint(eventId)
-               .addParam("limit", Integer.toString(limit))
-               .addParam("levels", Integer.toString(levels))
-               .addParam("tree", Boolean.toString(tree))
-               .addParam("shallow", Boolean.toString(shallowParameter))
+               .addParameter("limit", Integer.toString(limit))
+               .addParameter("levels", Integer.toString(levels))
+               .addParameter("tree", Boolean.toString(tree))
+               .addParameter("shallow", Boolean.toString(shallowParameter))
                .setBody(searchParameters.getAsJsonString(), ContentType.APPLICATION_JSON);
 
         String uri = request.getURI().toString();

@@ -26,7 +26,8 @@ import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.rules.RulesHandler;
 import com.ericsson.ei.rules.RulesObject;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

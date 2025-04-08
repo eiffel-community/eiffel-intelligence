@@ -30,9 +30,9 @@ import com.ericsson.ei.mongo.MongoDBHandler;
 import com.ericsson.eiffelcommons.subscriptionobject.MailSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 import com.ericsson.eiffelcommons.subscriptionobject.SubscriptionObject;
-import com.ericsson.eiffelcommons.utils.HttpRequest;
-import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest.HttpMethod;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -136,7 +136,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
         HttpRequest request = new HttpRequest(HttpMethod.GET);
         request.setBaseUrl("http://" + eiHost + ":" + port)
                .setEndpoint("/failed-notifications")
-               .addParam("subscriptionNames", subscriptionName);
+               .addParameter("subscriptionNames", subscriptionName);
         ResponseEntity response = request.performRequest();
 
         String body = response.getBody();

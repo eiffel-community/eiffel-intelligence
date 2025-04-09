@@ -30,8 +30,9 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
+
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 
     private static final String CONTACT_NAME = "Eiffel Intelligence Maintainers";
@@ -59,7 +60,8 @@ public class SwaggerConfig {
                 "Terms of service",
                 new Contact(CONTACT_NAME, CONTACT_URL, CONTACT_EMAIL),
                "Apache License Version 2.0",
-               "https://www.apache.org/licenses/LICENSE-2.0");
+               "https://www.apache.org/licenses/LICENSE-2.0",
+               new ArrayList<>());
         return apiInfo;
     }
 }

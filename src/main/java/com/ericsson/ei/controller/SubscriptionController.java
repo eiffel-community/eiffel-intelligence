@@ -32,7 +32,7 @@ public interface SubscriptionController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getSubscriptions(
         @RequestParam(required = false)
-        String subscriptionNames, HttpServletRequest httpRequest);
+        java.lang.String subscriptionNames, HttpServletRequest httpRequest);
 
     /**
      * This method creates new subscription(s) and saves in the database. The name of a subscription must be unique.
@@ -42,7 +42,7 @@ public interface SubscriptionController {
     public ResponseEntity<?> createSubscription(
         @Valid
         @RequestBody
-        List<com.ericsson.ei.controller.model.Subscription> subscription, HttpServletRequest httpRequest);
+        List<String> string, HttpServletRequest httpRequest);
 
     /**
      * This method modifies existing subscriptions.
@@ -52,7 +52,7 @@ public interface SubscriptionController {
     public ResponseEntity<?> updateSubscriptions(
         @Valid
         @RequestBody
-        List<com.ericsson.ei.controller.model.Subscription> subscription, HttpServletRequest httpRequest);
+        List<String> string, HttpServletRequest httpRequest);
 
     /**
      * This method removes subscriptions from the database. It requires a list of names by using the 'subscriptionNames' parameter
@@ -61,7 +61,7 @@ public interface SubscriptionController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteSubscriptions(
         @RequestParam
-        String subscriptionNames, HttpServletRequest httpRequest);
+        java.lang.String subscriptionNames, HttpServletRequest httpRequest);
 
     /**
      * This method returns the subscription for the given subscription name.
@@ -70,7 +70,7 @@ public interface SubscriptionController {
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.GET)
     public ResponseEntity<?> getSubscriptionByName(
         @PathVariable
-        String subscriptionName, HttpServletRequest httpRequest);
+        java.lang.String subscriptionName, HttpServletRequest httpRequest);
 
     /**
      * This method removes the subscription from the database for the given subscription name.
@@ -79,6 +79,6 @@ public interface SubscriptionController {
     @RequestMapping(value = "/{subscriptionName}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteSubscriptionByName(
         @PathVariable
-        String subscriptionName, HttpServletRequest httpRequest);
+        java.lang.String subscriptionName, HttpServletRequest httpRequest);
 
 }

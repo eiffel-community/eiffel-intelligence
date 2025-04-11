@@ -43,10 +43,11 @@ import com.ericsson.ei.erqueryservice.ERQueryService;
 import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.ericsson.eiffelcommons.utils.HttpExecutor;
-import com.ericsson.eiffelcommons.utils.HttpRequest;
-import com.ericsson.eiffelcommons.utils.HttpRequest.HttpMethod;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
+import com.ericsson.eiffelcommons.http.HttpRequest.HttpMethod;
+import com.ericsson.eiffelcommons.http.HttpExecutor;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 

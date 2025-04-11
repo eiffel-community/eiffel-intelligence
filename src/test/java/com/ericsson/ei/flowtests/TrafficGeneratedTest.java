@@ -60,7 +60,7 @@ import com.ericsson.ei.handlers.RMQProperties;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.test.utils.TestConfigs;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -2,8 +2,6 @@
 package com.ericsson.ei.controller;
 
 import javax.servlet.http.HttpServletRequest;
-import com.ericsson.ei.controller.model.RuleCheckBody;
-import com.ericsson.ei.controller.model.RulesCheckBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;

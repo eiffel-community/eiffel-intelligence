@@ -50,7 +50,7 @@ import com.ericsson.ei.erqueryservice.SearchOption;
 import com.ericsson.ei.exception.PropertyNotFoundException;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.utils.TestContextInitializer;
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

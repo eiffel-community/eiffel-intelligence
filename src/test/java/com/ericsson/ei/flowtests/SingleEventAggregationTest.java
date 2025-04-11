@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -57,6 +57,7 @@ import com.ericsson.ei.handlers.ObjectHandler;
 import com.ericsson.ei.handlers.UpStreamEventsHandler;
 import com.ericsson.ei.services.ISubscriptionService;
 import com.ericsson.ei.utils.TestContextInitializer;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

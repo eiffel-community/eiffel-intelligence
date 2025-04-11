@@ -11,7 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import com.ericsson.ei.utils.FunctionalTestBase;
 import com.ericsson.ei.utils.HttpRequest;
 import com.ericsson.ei.utils.HttpRequest.HttpMethod;
-import com.ericsson.eiffelcommons.helpers.MediaType;
+import com.ericsson.eiffelcommons.constants.MediaType;
 import com.ericsson.eiffelcommons.subscriptionobject.RestPostSubscriptionObject;
 
 import io.cucumber.java.en.Given;

@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-commons</artifactId>
-            <version>0.0.15-openjdk-8</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -28,7 +28,7 @@ import org.springframework.http.MediaType;
 import com.ericsson.ei.controller.model.NotificationMessageKeyValue;
 import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
-import com.ericsson.eiffelcommons.helpers.RegExProvider;
+import com.ericsson.eiffelcommons.constants.RegExProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JsonLoader;

@@ -17,9 +17,9 @@
 
 <img src="./images/eiffel-intelligence-logo.png" alt="Eiffel Intelligence" width="350"/>
 
-[![Build Status](https://travis-ci.org/eiffel-community/eiffel-intelligence.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-intelligence)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f596eed2020e4340ab1d8deb2fb4c680)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eiffel-community/eiffel-intelligence&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/f596eed2020e4340ab1d8deb2fb4c680)](https://www.codacy.com/app/eiffel-intelligence-maintainers/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e19f78a9c5f346b3b80bd9a167808944)](https://app.codacy.com/gh/eiffel-community/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Grade)
+[![Sandbox badge](https://img.shields.io/badge/Stage-Sandbox-yellow)](https://github.com/eiffel-community/community/blob/master/PROJECT_LIFECYCLE.md#stage-sandbox)
+[![CI](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml/badge.svg)](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml)
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)
 
 # Eiffel Intelligence
@@ -27,7 +27,7 @@ Eiffel Intelligence is a real time data aggregation and analysis solution
 for Eiffel events. While Eiffel represents an event based architecture,
 Eiffel Intelligence addresses the need of stakeholders to view the current
 state of the system by bridging the divide from immutable events to mutable
-state representation. More information [can be found here](https://github.com/eiffel-community/eiffel-intelligence/blob/master/wiki/markdown/index.md).
+state representation. More information can be found in the below documentation links.
 
 Eiffel Intelligence consists of two components: the Eiffel Intelligence
 back-end (this repository) and the [Eiffel Intelligence front-end](https://github.com/eiffel-community/eiffel-intelligence-frontend),
@@ -36,7 +36,7 @@ which is a graphical user interface.
 ## About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
 
-To get involved, please see [Code of Conduct](./CODE_OF_CONDUCT.md) and [contribution guidelines](./CONTRIBUTING.md).
+To get involved, please see [Code of Conduct](https://github.com/eiffel-community/.github/blob/master/CODE_OF_CONDUCT.md) and [contribution guidelines](https://github.com/eiffel-community/.github/blob/master/CONTRIBUTING.md).
 
 ## About Eiffel
 This repository forms part of the Eiffel Community. Eiffel is a protocol for technology agnostic machine-to-machine communication in continuous integration and delivery pipelines, aimed at securing scalability, flexibility and traceability. Eiffel is based on the concept of decentralized real time messaging, both to drive the continuous integration and delivery system and to document it.
@@ -45,36 +45,30 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 
 ## Documentation
 
-1. [**Running Eiffel Intelligence**](wiki/markdown/running-eiffel-intelligence.md)
-    - [**Prerequisites**](wiki/markdown/running-eiffel-intelligence.md#Prerequisites)
-    - [**Configuration**](wiki/markdown/configuration.md)
-    - [**Run in Docker**](wiki/markdown/docker.md)
-2. [**Understanding subscriptions**](wiki/markdown/subscriptions.md)
-    - [**REST POST notification**](wiki/markdown/subscription-with-REST-POST-notification.md)
-    - [**HTTP POST notification to trigger parameterized Jenkins jobs**](wiki/markdown/triggering-jenkins-jobs.md)
-    - [**Email notification**](wiki/markdown/subscription-with-email-notification.md)
-    - [**Step by Step Subscription Notification**](wiki/markdown/step-by-step-subscription-notification.md)
-3. [**Understanding rules**](wiki/markdown/rules.md)
-    - [**What is JMESPath?**](wiki/markdown/rules.md#What-is-JMESPath?)
-    - [**Rule set up**](wiki/markdown/rules.md#Rule-set-up)
-    - [**MergeResolverRules**](wiki/markdown/merge-resolver-rules.md)
-    - [**History Rules**](wiki/markdown/history-rules.md)
-    - [**Existing rules files**](wiki/markdown/existing-rules-files.md)
-    - [**Mapping Rules To Aggregations**](wiki/markdown/mapping-rules-to-aggregations.md)
-4. [**Step by Step Aggregation on Eiffel events**](wiki/markdown/step-by-step-aggregation.md)
-    - [**ArtifactCreatedEvent Aggregation**](wiki/markdown/artifact-created-event-aggregation.md)
-    - [**TestCaseTriggeredEvent Aggregation**](wiki/markdown/test-case-triggered-event-aggregation.md)
-    - [**TestCaseStartedEvent Aggregation**](wiki/markdown/test-case-started-event-aggregation.md)
-    - [**TestCaseFinishedEvent Aggregation**](wiki/markdown/test-case-finished-event-aggregation.md)
-    - [**ArtifactPublishedEvent Aggregation**](wiki/markdown/artifact-published-event-aggregation.md)
-    - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/markdown/confidence-level-modified-event-aggregation.md)
-5. [**REST API**](wiki/markdown/REST-API.md)
-    - [**Query aggregated objects**](wiki/markdown/query.md)
-    - [**Running rules on objects**](wiki/markdown/running-rules-on-objects.md)
-    - [**Authentication**](wiki/markdown/authentication.md)
-    - [**Subscriptions**](wiki/markdown/subscription-API.md)
-    - [**Download files**](wiki/markdown/download-files.md)
-6. [**Compatibility**](wiki/markdown/compatibility.md)
-7. [**Known limitations**](wiki/markdown/known-limitations.md)
-
-**Eiffel Intelligence documentation** [**can be found here**](https://eiffel-community.github.io/eiffel-intelligence/)
+1. [**What is Eiffel Intelligence?**](wiki/index.md)
+2. [**Running Eiffel Intelligence**](wiki/running-eiffel-intelligence.md)
+   - [**Prerequisites**](wiki/running-eiffel-intelligence.md#Prerequisites)
+   - [**Configuration**](wiki/configuration.md)
+   - [**Run in Docker**](wiki/docker.md)
+3. [**Understanding subscriptions**](wiki/subscriptions.md)
+   - [**REST POST notification**](wiki/subscription-with-REST-POST-notification.md)
+   - [**HTTP POST notification to trigger parameterized Jenkins jobs**](wiki/triggering-jenkins-jobs.md)
+   - [**Email notification**](wiki/subscription-with-email-notification.md)
+   - [**Step by Step Subscription Notification**](wiki/step-by-step-subscription-notification.md)
+4. [**Understanding rules**](wiki/rules.md)
+   - [**What is JMESPath?**](wiki/rules.md#What-is-JMESPath?)
+   - [**Rule set up**](wiki/rules.md#Rule-set-up)
+   - [**MergeResolverRules**](wiki/merge-resolver-rules.md)
+   - [**History Rules**](wiki/history-rules.md)
+   - [**Example rules**](wiki/example-rules.md)
+   - [**Mapping Rules To Aggregations**](wiki/mapping-rules-to-aggregations.md)
+5. [**Step by Step Aggregation on Eiffel events**](wiki/step-by-step-aggregation.md)
+   - [**ArtifactCreatedEvent Aggregation**](wiki/artifact-created-event-aggregation.md)
+   - [**TestCaseTriggeredEvent Aggregation**](wiki/test-case-triggered-event-aggregation.md)
+   - [**TestCaseStartedEvent Aggregation**](wiki/test-case-started-event-aggregation.md)
+   - [**TestCaseFinishedEvent Aggregation**](wiki/test-case-finished-event-aggregation.md)
+   - [**ArtifactPublishedEvent Aggregation**](wiki/artifact-published-event-aggregation.md)
+   - [**ConfidenceLevelModifiedEvent Aggregation**](wiki/confidence-level-modified-event-aggregation.md)
+6. [**REST API**](wiki/REST-API.md)
+7. [**Compatibility**](wiki/compatibility.md)
+8. [**Known limitations**](wiki/known-limitations.md)

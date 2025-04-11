@@ -17,6 +17,7 @@
 
 <img src="./images/eiffel-intelligence-logo.png" alt="Eiffel Intelligence" width="350"/>
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e19f78a9c5f346b3b80bd9a167808944)](https://app.codacy.com/gh/eiffel-community/eiffel-intelligence?utm_source=github.com&utm_medium=referral&utm_content=eiffel-community/eiffel-intelligence&utm_campaign=Badge_Grade)
 [![Sandbox badge](https://img.shields.io/badge/Stage-Sandbox-yellow)](https://github.com/eiffel-community/community/blob/master/PROJECT_LIFECYCLE.md#stage-sandbox)
 [![CI](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml/badge.svg)](https://github.com/eiffel-community/eiffel-intelligence/actions/workflows/main.yml)
 [![](https://jitpack.io/v/eiffel-community/eiffel-intelligence.svg)](https://jitpack.io/#eiffel-community/eiffel-intelligence)

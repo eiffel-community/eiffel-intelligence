@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 
 /**
  * Endpoint /authentication/login should be secured if LDAP is enabled.
@@ -38,6 +39,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
+@Api(tags = {"Authentication"}, description = "Authentication queries")
 public class AuthenticationControllerImpl implements AuthenticationController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationControllerImpl.class);

@@ -38,6 +38,7 @@ import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 
 /**
  * This class represents the REST GET mechanism to extract the aggregated data on the basis of the
@@ -45,6 +46,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
+@Api(tags = {"Aggregated objects"}, description = "Fetch aggregated data based on Id")
 public class AggregatedObjectControllerImpl implements AggregatedObjectController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatedObjectControllerImpl.class);

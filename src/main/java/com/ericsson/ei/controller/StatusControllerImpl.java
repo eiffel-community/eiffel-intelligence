@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 
 /**
  * Endpoint /status should display EI back-end status and services Eiffel Intelligence is dependent
@@ -39,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Component
 @CrossOrigin
+@Api(tags = {"Status"}, description = "Information of EI and its dependencies")
 public class StatusControllerImpl implements StatusController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);

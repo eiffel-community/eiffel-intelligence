@@ -35,9 +35,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 
 @Component
 @CrossOrigin
+@Api(tags = {"Rules"}, description = "Active rules queries")
 public class RuleControllerImpl implements RuleController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleControllerImpl.class);

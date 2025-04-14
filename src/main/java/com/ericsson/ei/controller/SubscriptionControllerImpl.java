@@ -53,6 +53,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @CrossOrigin
+@Api(tags = {"Subscriptions"}, description = "Subscription handling requests")
 public class SubscriptionControllerImpl implements SubscriptionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionControllerImpl.class);

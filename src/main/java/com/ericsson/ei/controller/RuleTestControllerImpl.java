@@ -27,10 +27,12 @@ import com.ericsson.ei.utils.ResponseMessage;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
 import lombok.Setter;
 
 @Component
 @CrossOrigin
+@Api(tags = {"Rule-test"}, description = "Test rules on Eiffel events")
 public class RuleTestControllerImpl implements RuleTestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleTestControllerImpl.class);
 

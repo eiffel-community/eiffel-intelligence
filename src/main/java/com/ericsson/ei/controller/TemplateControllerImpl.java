@@ -21,6 +21,7 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import com.ericsson.ei.utils.ResponseMessage;
 
 @Component
 @CrossOrigin
+@Api(tags = {"Templates"}, description = "Templates of rules, Eiffel events and subscriptions")
 public class TemplateControllerImpl implements TemplateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(

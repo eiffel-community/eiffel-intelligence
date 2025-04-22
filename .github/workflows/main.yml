@@ -92,6 +92,7 @@ jobs:
 
       # Generating test coverage report and publishing to Codacy
       - name: Run report coverage
+        if: github.event_name == 'push'
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}

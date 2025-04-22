@@ -34,12 +34,14 @@ import com.ericsson.ei.queryservice.ProcessFailedNotification;
 import com.ericsson.ei.utils.ResponseMessage;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
 
 /**
  * This class contains logic for retrieving failed notifications for the given subscription.
  */
 @Component
 @CrossOrigin
+@Api(tags = {"Failed notifications"}, description = "Fetch failed notifications of a subscription")
 public class FailedNotificationControllerImpl implements FailedNotificationController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(

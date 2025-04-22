@@ -17,6 +17,7 @@
 package com.ericsson.ei.controller;
 
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,11 +28,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 *
 */
 @Controller
+@ApiIgnore
 public class EIHomeController {
 
     @ApiOperation(value="", hidden = true)
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home() {
-        return "redirect:/swagger-ui.html";
+        return "redirect:/swagger-ui/index.html";
     }
 }

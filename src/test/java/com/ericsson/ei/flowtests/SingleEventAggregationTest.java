@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ericsson.eiffelcommons.utils.ResponseEntity;
+import com.ericsson.eiffelcommons.http.ResponseEntity;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.json.JSONArray;

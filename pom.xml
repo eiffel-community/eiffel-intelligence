@@ -157,20 +157,20 @@
         <dependency>
 	    <groupId>org.mongodb</groupId>
 	    <artifactId>mongodb-driver-sync</artifactId>
-	    <version>4.11.1</version>
+	    <version>5.3.0</version>
 	</dependency>
 		
 	<dependency>
 	    <groupId>org.mongodb</groupId>
 	    <artifactId>mongodb-driver-core</artifactId>
-	    <version>4.11.1</version>
+	    <version>5.3.0</version>
 	</dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mongodb/bson -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>bson</artifactId>
-            <version>4.11.1</version>
+            <version>5.3.0</version>
         </dependency>
 		
 		<dependency>

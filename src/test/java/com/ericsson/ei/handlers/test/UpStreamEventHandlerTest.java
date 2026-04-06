@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: UpStreamEventHandlerTest",
+        "spring.mongodb.database: UpStreamEventHandlerTest",
         "failed.notifications.collection.name: UpStreamEventHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: UpStreamEventHandlerTest-exchange",
         "rabbitmq.queue.suffix: UpStreamEventHandlerTest",

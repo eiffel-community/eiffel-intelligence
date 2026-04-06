@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
@@ -28,7 +28,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: RuleTestSteps",
+        "spring.mongodb.database: RuleTestSteps",
         "failed.notifications.collection.name: RuleTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RuleTestSteps-exchange",
         "rabbitmq.queue.suffix: RuleTestSteps" })
@@ -98,7 +98,7 @@ public class RuleTestSteps extends FunctionalTestBase {
 
     @Then("^get response code of (\\d+)$")
     public void get_response_code_of(int statusCode) throws Throwable {
-        assertEquals(statusCode, response.getStatusCodeValue());
+        assertEquals(statusCode, response.getStatusCode().value());
     }
 
     @Then("^get content \"([^\"]*)\"$")
@@ -133,7 +133,7 @@ public class RuleTestSteps extends FunctionalTestBase {
                                                        .setEndpoint(endpoint)
                                                        .performRequest();
 
-        assertEquals(statusCode, apiResponse.getStatusCodeValue());
+        assertEquals(statusCode, apiResponse.getStatusCode().value());
         assertEquals(responseBody, apiResponse.getBody());
     }
 

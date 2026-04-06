@@ -1,6 +1,6 @@
 {
   "name": "Embedded Broker",
-  "modelVersion": "7.1",
+  "modelVersion": "9.0",
   "authenticationproviders" : [ {
     "name" : "passwordFile",
     "path" : "${qpid.pass_file}",
@@ -27,6 +27,6 @@
     "name" : "default",
     "type" : "Memory",
     "defaultVirtualHostNode" : "true",
-    "virtualHostInitialConfiguration" : "{\"type\" : \"Memory\",\"name\" : \"default\",\"modelVersion\" : \"7.1\"}"
+    "virtualHostInitialConfiguration" : "{\"type\" : \"Memory\",\"name\" : \"default\",\"modelVersion\" : \"9.0\"}"
   }]
 }

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,12 +150,12 @@ public class ParseInstanceInfoEI {
         private String uri;
 
         @Getter
-        @Value("${spring.data.mongodb.database}")
+        @Value("${spring.mongodb.database}")
         private String database;
 
         @PostConstruct
         public void init() throws IOException {
-            final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+            final String unsafeUri = environment.getProperty("spring.mongodb.uri");
             uri = MongoUri.getUriWithHiddenPassword(unsafeUri);
         }
 

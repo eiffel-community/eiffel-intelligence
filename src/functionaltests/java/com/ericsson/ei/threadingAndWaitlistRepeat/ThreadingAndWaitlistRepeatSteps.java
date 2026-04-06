@@ -30,7 +30,7 @@ import io.cucumber.java.en.Then;
         "waitlist.collection.ttl: 60",
         "waitlist.resend.initial.delay: 500",
         "waitlist.resend.fixed.rate: 1000",
-        "spring.data.mongodb.database: ThreadingAndWaitlistRepeatSteps",
+        "spring.mongodb.database: ThreadingAndWaitlistRepeatSteps",
         "failed.notifications.collection.name: ThreadingAndWaitlistRepeatSteps-failedNotifications",
         "rabbitmq.exchange.name: ThreadingAndWaitlistRepeatSteps-exchange",
         "rabbitmq.queue.suffix: ThreadingAndWaitlistRepeatSteps",

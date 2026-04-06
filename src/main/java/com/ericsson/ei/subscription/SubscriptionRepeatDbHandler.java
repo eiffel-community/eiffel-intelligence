@@ -51,7 +51,7 @@ public class SubscriptionRepeatDbHandler {
 
     @Getter
     @Setter
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     public String dataBaseName;
     @Getter
     @Setter

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -41,7 +41,7 @@ import io.cucumber.java.en.When;
 @Ignore
 @TestPropertySource(properties = {
         "rules.path: src/test/resources/TestExecutionObjectRules.json",
-        "spring.data.mongodb.database: SubscriptionRepeatHandlerSteps",
+        "spring.mongodb.database: SubscriptionRepeatHandlerSteps",
         "failed.notifications.collection.name: SubscriptionRepeatHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatHandlerSteps-exchange",
         "rabbitmq.consumer.name: SubscriptionRepeatHandlerStepsConsumer" })
@@ -64,7 +64,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
     @Value("${aggregations.collection.name}")
     private String collectionName;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String dataBaseName;
 
     @Value("${subscriptions.repeat.handler.collection.name}")
@@ -126,7 +126,7 @@ public class SubscriptionRepeatHandlerSteps extends FunctionalTestBase {
                                                .addHeader("Accept", "application/json")
                                                .setEndpoint(subscriptionEndPoint + name)
                                                .performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     @Then("^Check in MongoDB RepeatFlagHandler collection that the subscription has been removed$")

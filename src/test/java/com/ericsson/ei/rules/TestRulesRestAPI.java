@@ -32,10 +32,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +52,7 @@ import com.ericsson.ei.controller.RuleTestControllerImpl;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestRulesRestAPI",
+        "spring.mongodb.database: TestRulesRestAPI",
         "failed.notifications.collection.name: TestRulesService-missedNotifications",
         "rabbitmq.exchange.name: TestRulesRestAPI-exchange",
         "rabbitmq.queue.suffix: TestRulesRestAPI" })
@@ -71,7 +71,7 @@ public class TestRulesRestAPI {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private IRuleTestService ruleTestService;
 
     @Value("${test.aggregation.enabled:false}")

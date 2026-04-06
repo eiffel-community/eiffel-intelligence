@@ -8,7 +8,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -26,7 +26,7 @@ public class DataBaseManager {
     private static final int MAX_WAIT_TIME_MILLISECONDS = 30000;
     private static final int RETRY_EVERY_X_MILLISECONDS = 1000;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String database;
 
     @Value("${event.object.map.collection.name}")

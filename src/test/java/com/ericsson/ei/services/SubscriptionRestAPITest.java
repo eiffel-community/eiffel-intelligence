@@ -30,8 +30,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -49,8 +49,11 @@ import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.exception.SubscriptionNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.ericsson.ei.EndpointSecurity;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = SubscriptionController.class)
+@org.springframework.context.annotation.Import(EndpointSecurity.class)
 public class SubscriptionRestAPITest {
 
     private static final String SUBSCRIPTION = "src/test/resources/subscription_single.json";
@@ -62,15 +65,15 @@ public class SubscriptionRestAPITest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ISubscriptionService subscriptionService;
 
-    @MockBean
+    @MockitoBean
     private Authentication authentication;
 
-    @MockBean
+    @MockitoBean
     private SecurityContext securityContext;
-	@MockBean private Encryptor encryptor;
+	@MockitoBean private Encryptor encryptor;
 	
 
     private ObjectMapper mapper = new ObjectMapper();

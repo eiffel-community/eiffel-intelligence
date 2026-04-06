@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
@@ -26,7 +26,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionBulkSteps",
+        "spring.mongodb.database: SubscriptionBulkSteps",
         "failed.notifications.collection.name: SubscriptionBulkSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionBulkSteps-exchange",
         "rabbitmq.queue.suffix: SubscriptionBulkSteps",

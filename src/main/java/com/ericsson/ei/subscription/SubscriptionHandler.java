@@ -53,7 +53,7 @@ public class SubscriptionHandler {
     private String subscriptionCollectionName;
 
     @Getter
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String database;
 
     @Autowired

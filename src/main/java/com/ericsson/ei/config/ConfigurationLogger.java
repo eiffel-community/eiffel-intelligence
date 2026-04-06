@@ -78,8 +78,8 @@ public class ConfigurationLogger implements ApplicationListener<ApplicationPrepa
     private String getPropertyValueAndCheckForSpecialCases(String propertyName) {
         final String maskedProperty = "*****";
         switch (propertyName) {
-        case "spring.data.mongodb.uri":
-            final String unsafeUri = environment.getProperty("spring.data.mongodb.uri");
+        case "spring.mongodb.uri":
+            final String unsafeUri = environment.getProperty("spring.mongodb.uri");
             final String safeUri = MongoUri.getUriWithHiddenPassword(unsafeUri);
             return safeUri;
         case "rabbitmq.password":

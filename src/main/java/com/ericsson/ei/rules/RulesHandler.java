@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

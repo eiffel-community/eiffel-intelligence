@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import com.ericsson.ei.exception.InvalidRulesException;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +26,7 @@ import com.ericsson.ei.utils.TestContextInitializer;
 import com.mongodb.client.MongoClient;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestRulesService",
+        "spring.mongodb.database: TestRulesService",
         "failed.notifications.collection.name: TestRulesService-missedNotifications",
         "rabbitmq.exchange.name: TestRulesService-exchange",
         "rabbitmq.queue.suffix: TestRulesService" })

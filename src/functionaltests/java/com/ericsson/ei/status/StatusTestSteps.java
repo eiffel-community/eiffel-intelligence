@@ -31,7 +31,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: StatusSteps",
+        "spring.mongodb.database: StatusSteps",
         "failed.notifications.collection.name: StatusSteps-missedNotifications",
         "rabbitmq.exchange.name: StatusSteps-exchange",
         "rabbitmq.queue.suffix: StatusSteps" })

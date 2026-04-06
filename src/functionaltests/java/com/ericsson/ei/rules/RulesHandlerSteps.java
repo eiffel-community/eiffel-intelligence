@@ -13,7 +13,7 @@ import org.mockserver.integration.ClientAndServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -24,7 +24,7 @@ import io.cucumber.java.en.Then;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: RulesHandlerSteps",
+        "spring.mongodb.database: RulesHandlerSteps",
         "failed.notifications.collection.name: RulesHandlerSteps-failedNotifications",
         "rabbitmq.exchange.name: RulesHandlerSteps-exchange",
         "rabbitmq.queue.suffix: RulesHandlerSteps" })
@@ -103,7 +103,7 @@ public class RulesHandlerSteps {
      * Setting up the needed endpoints for the functional test.
      */
     private void setupRestEndpoints() {
-        port = SocketUtils.findAvailableTcpPort();
+        port = TestSocketUtils.findAvailableTcpPort();
         restServer = startClientAndServer(port);
 
         LOGGER.debug("Setting up endpoints on host '" + HOST + "' and port '" + port + "'");

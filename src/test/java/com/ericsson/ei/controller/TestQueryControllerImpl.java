@@ -28,10 +28,10 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,7 +42,7 @@ import com.ericsson.ei.queryservice.ProcessQueryParams;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestQueryControllerImpl",
+        "spring.mongodb.database: TestQueryControllerImpl",
         "failed.notifications.collection.name: TestQueryControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestQueryControllerImpl-exchange",
         "rabbitmq.queue.suffix: TestQueryControllerImpl" })
@@ -56,7 +56,7 @@ public class TestQueryControllerImpl extends ControllerTestBaseClass {
     private static String INPUT;
     private final String QUERY_ENDPOINT = "/query";
 
-    @MockBean
+    @MockitoBean
     private ProcessQueryParams unitUnderTest;
 
     @Before

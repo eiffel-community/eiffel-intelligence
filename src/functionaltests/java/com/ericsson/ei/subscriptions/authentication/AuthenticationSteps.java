@@ -18,10 +18,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.util.codec.binary.Base64;
+import java.util.Base64;
 import org.json.JSONObject;
 import org.junit.Ignore;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -42,7 +42,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: AuthenticationSteps",
+        "spring.mongodb.database: AuthenticationSteps",
         "failed.notifications.collection.name: AuthenticationSteps-failedNotifications",
         "rabbitmq.exchange.name: AuthenticationSteps-exchange",
         "rabbitmq.queue.suffix: AuthenticationSteps",
@@ -66,7 +66,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
         httpRequest.setHost(hostName).setPort(applicationPort).setEndpoint("/authentication/logout");
 
         String auth = "gauss:password";
-        String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
+        String encodedAuth = new String(Base64.getEncoder().encode(auth.getBytes()), "UTF-8");
         httpRequest.addHeader("Authorization", "Basic " + encodedAuth);
         httpRequest.performRequest();
     }
@@ -105,7 +105,7 @@ public class AuthenticationSteps extends FunctionalTestBase {
     @When("^username \"([^\"]*)\" and password \"([^\"]*)\" is used as credentials$")
     public void with_credentials(String username, String password) throws Throwable {
         String auth = username + ":" + password;
-        String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()), "UTF-8");
+        String encodedAuth = new String(Base64.getEncoder().encode(auth.getBytes()), "UTF-8");
         httpRequest.addHeader("Authorization", "Basic " + encodedAuth);
     }
 

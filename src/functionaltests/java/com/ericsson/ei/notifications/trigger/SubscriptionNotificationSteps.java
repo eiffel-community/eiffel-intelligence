@@ -26,12 +26,12 @@ import org.mockserver.model.Format;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import com.ericsson.ei.mongo.MongoCondition;
 import com.ericsson.ei.mongo.MongoDBHandler;
@@ -49,7 +49,7 @@ import util.IntegrationTestBase;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionNotificationSteps",
+        "spring.mongodb.database: SubscriptionNotificationSteps",
         "failed.notifications.collection.name: SubscriptionNotificationSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionNotificationSteps-exchange",
         "rabbitmq.queue.suffix: SubscriptionNotificationSteps",
@@ -84,7 +84,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
     @Value("${aggregations.collection.name}")
     private String aggregatedCollectionName;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String database;
 
     @Value("${failed.notifications.collection.name}")
@@ -133,7 +133,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
         assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
     }
 
     @Given("Mail server is up")
@@ -225,7 +225,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .setEndpoint(MAILHOG_SERVER_ENDPOINT)
                              .performRequest();
         assertEquals("EI rest API status code: ", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
         
         
         JSONArray mails =  new JSONArray(response.getBody().toString());
@@ -312,7 +312,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                               .setBody(jsonDataAsString)
                               .performRequest();
         assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
     }
 
     /**
@@ -331,7 +331,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
                              .setEndpoint(EI_SUBSCRIPTIONS_ENDPOINT)
                              .performRequest();
         assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
         LOGGER.debug("Checking that response contains all subscriptions");
         for (String subscriptionName : subscriptionNames) {
             assertTrue(response.toString().contains(subscriptionName));
@@ -399,7 +399,7 @@ public class SubscriptionNotificationSteps extends FunctionalTestBase {
      * Setting up the needed endpoints for the functional test.
      */
     private void setupRestEndpoints() {
-        int port = SocketUtils.findAvailableTcpPort();
+        int port = TestSocketUtils.findAvailableTcpPort();
         restServer = startClientAndServer(port);
 
         LOGGER.debug(

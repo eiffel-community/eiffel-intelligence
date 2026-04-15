@@ -12,7 +12,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import com.ericsson.ei.utils.AMQPBrokerManager;
 import com.mongodb.client.ListDatabasesIterable;
@@ -57,7 +57,7 @@ public class TestConfigs {
             return;
         }
 
-        int port = SocketUtils.findAvailableTcpPort();
+        int port = TestSocketUtils.findAvailableTcpPort();
         setSystemProperties(port);
         setupBroker(port);
 
@@ -133,8 +133,9 @@ public class TestConfigs {
 
     private static void setNewPortToMongoDBUriProperty(String mongoUri, String port) {
         String modifiedUri = mongoUri.replaceAll("[0-9]{4,5}", port);
-        System.setProperty("spring.data.mongodb.uri", modifiedUri);
-        LOGGER.debug("System property 'spring.data.mongodb.uri' changed from '{}' to '{}'",
+        System.setProperty("spring.mongodb.uri", modifiedUri);
+        System.setProperty("spring.mongodb.uri", modifiedUri);
+        LOGGER.debug("System property 'spring.mongodb.uri' changed from '{}' to '{}'",
                 mongoUri, modifiedUri);
     }
 }

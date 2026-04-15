@@ -100,7 +100,7 @@ public class MongoUri {
      */
     private static void uriIsSet(String uri) {
         if (StringUtils.isBlank(uri)) {
-            throw new MongoConfigurationException("No configuration for spring.data.mongodb.uri was found");
+            throw new MongoConfigurationException("No configuration for spring.mongodb.uri was found");
         }
     }
 

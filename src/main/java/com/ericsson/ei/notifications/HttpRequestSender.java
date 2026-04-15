@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,7 +45,7 @@ public class HttpRequestSender {
     @Autowired
     public HttpRequestSender(RestTemplateBuilder builder, @Value("${notification.httpRequest.timeout:5000}") Duration timeOut) {
         timeOut = timeOut == null ? Duration.ofMillis(5000) : timeOut;
-        rest = builder.setReadTimeout(timeOut).setConnectTimeout(timeOut).build();
+        rest = builder.connectTimeout(timeOut).readTimeout(timeOut).build();
     }
 
     /**
@@ -77,7 +77,7 @@ public class HttpRequestSender {
             throw e;
         }
 
-        HttpStatus status = response.getStatusCode();
+        HttpStatus status = (HttpStatus) response.getStatusCode();
         JsonNode body = response.getBody();
         boolean httpStatusSuccess = status == HttpStatus.OK || status == HttpStatus.ACCEPTED
                 || status == HttpStatus.CREATED;

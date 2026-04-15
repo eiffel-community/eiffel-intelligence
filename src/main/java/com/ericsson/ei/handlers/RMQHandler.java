@@ -84,7 +84,7 @@ public class RMQHandler {
 
     @Getter
     @Setter
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String dataBaseName;
 
     @Getter
@@ -119,7 +119,7 @@ public class RMQHandler {
             }
         }
 
-        cachingConnectionFactory.setPublisherConfirms(true);
+        cachingConnectionFactory.setPublisherConfirmType(org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType.CORRELATED);
         cachingConnectionFactory.setPublisherReturns(true);
 
         // This will disable connectionFactories auto recovery and use Spring AMQP auto

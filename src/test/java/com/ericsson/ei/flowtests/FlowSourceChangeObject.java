@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
         "rules.path: src/test/resources/SourceChangeObjectRules.json",
-        "spring.data.mongodb.database: FlowSourceChangeObject",
+        "spring.mongodb.database: FlowSourceChangeObject",
         "failed.notifications.collection.name: FlowSourceChangeObject-failedNotifications",
         "rabbitmq.exchange.name: FlowSourceChangeObject-exchange",
         "rabbitmq.queue.suffix: FlowSourceChangeObject" })

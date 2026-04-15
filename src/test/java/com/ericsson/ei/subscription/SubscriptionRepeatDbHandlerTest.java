@@ -18,7 +18,7 @@ package com.ericsson.ei.subscription;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ import com.ericsson.ei.utils.FunctionalTestBase;
 import com.mongodb.BasicDBObject;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionRepeatDbHandlerTest",
+        "spring.mongodb.database: SubscriptionRepeatDbHandlerTest",
         "failed.notifications.collection.name: SubscriptionRepeatDbHandlerTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionRepeatDbHandlerTest-exchange",
         "rabbitmq.queue.suffix: SubscriptionRepeatDbHandlerTest" })

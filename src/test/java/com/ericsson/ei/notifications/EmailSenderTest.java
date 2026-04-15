@@ -15,7 +15,7 @@ package com.ericsson.ei.notifications;
 
 import static org.mockito.Mockito.doThrow;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -42,7 +42,7 @@ public class ProcessAggregatedObject {
     @Value("${aggregations.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String aggregationDataBaseName;
 
     @Autowired

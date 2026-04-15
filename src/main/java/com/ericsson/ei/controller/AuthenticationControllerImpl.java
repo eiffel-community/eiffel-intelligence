@@ -16,7 +16,9 @@ authentication   Copyright 2018 Ericsson AB.
 */
 package com.ericsson.ei.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -30,16 +32,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Api;
 
 /**
  * Endpoint /authentication/login should be secured if LDAP is enabled.
  * Endpoint /authentication should never be secured.
  */
+@Tag(name = "Authentication", description = "Authentication queries")
 @Component
 @CrossOrigin
-@Api(tags = {"Authentication"}, description = "Authentication queries")
 public class AuthenticationControllerImpl implements AuthenticationController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationControllerImpl.class);
@@ -49,8 +49,7 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Check if security is enabled", tags = { "Authentication" },
-            response = String.class)
+    @Operation(summary = "Check if security is enabled")
     public ResponseEntity<?> getAuthentication(final HttpServletRequest httpRequest) {
         try {
             return new ResponseEntity<>(new JSONObject().put("security", ldapEnabled).toString(),
@@ -65,8 +64,7 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Get login of current user", tags = { "Authentication" }, response =
-            String.class)
+    @Operation(summary = "Get login of current user")
     public ResponseEntity<?> getAuthenticationLogin(final HttpServletRequest httpRequest) {
         try {
             String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

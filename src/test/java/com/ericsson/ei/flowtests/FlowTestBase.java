@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
@@ -69,10 +69,10 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     @Autowired
     private WaitListStorageHandler waitlist;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String database;
 
-    @Value("${spring.data.mongodb.uri}")
+    @Value("${spring.mongodb.uri}")
     private String mongoUri;
 
     @Value("${event.object.map.collection.name}")
@@ -107,7 +107,7 @@ public abstract class FlowTestBase extends AbstractTestExecutionListener {
     }
 
     private void cleanFlowTestConfigs() {
-        String dbName = System.getProperty("spring.data.mongodb.database");
+        String dbName = System.getProperty("spring.mongodb.database");
     }
 
     // setFirstEventWaitTime: variable to set the wait time after publishing the

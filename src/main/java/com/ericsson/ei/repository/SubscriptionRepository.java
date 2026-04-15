@@ -36,7 +36,7 @@ public class SubscriptionRepository implements ISubscriptionRepository {
     @Value("${subscriptions.collection.name}")
     private String collectionName;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String dataBaseName;
 
     @Autowired

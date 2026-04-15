@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -29,7 +29,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionContentSteps",
+        "spring.mongodb.database: SubscriptionContentSteps",
         "failed.notifications.collection.name: SubscriptionContentSteps-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionContentSteps-exchange",
         "rabbitmq.queue.suffix: SubscriptionContentSteps" })
@@ -81,14 +81,14 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^The subscription is created successfully$")
     public void the_subscription_is_created_successfully() throws Throwable {
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     @And("^Valid subscription \"([A-Za-z0-9_]+)\" exists$")
     public void valid_subscription_exists(String subscriptionName) throws Throwable {
         getRequest.setEndpoint("/subscriptions/" + subscriptionName);
         response = getRequest.performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     // SCENARIO 2
@@ -97,7 +97,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     public void subscription_already_exists(String subscriptionName) throws Throwable {
         getRequest.setEndpoint("/subscriptions/" + subscriptionName);
         response = getRequest.performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     @When("^I create a duplicate subscription with \"(.*)\"$")
@@ -108,7 +108,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^Duplicate subscription is rejected$")
     public void duplicate_subscription_is_rejected() {
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
 
     @And("^\"([A-Za-z0-9_]+)\" is not duplicated$")
@@ -126,14 +126,14 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
     public void delete_subscription(String subscriptionName) throws Throwable {
         deleteRequest.setEndpoint("/subscriptions/" + subscriptionName);
         response = deleteRequest.performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     @And("^Subscriptions does not exist$")
     public void subscriptions_does_not_exist() throws Throwable {
         getRequest.setEndpoint("/subscriptions");
         response = getRequest.performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals("[]", response.getBody().toString());
     }
 
@@ -145,15 +145,19 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^The invalid subscription is rejected$")
     public void invalid_subscription_is_rejected() {
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
 
     @And("^The invalid subscription does not exist$")
     public void invalid_subscription_does_not_exist() throws Throwable {
-        String invalidName = "#Subscription-&-with-&-mal-&-formatted-&-name";
-        getRequest.setEndpoint("/subscriptions/" + invalidName);
+        // SB4/Spring 7 disables trailing slash matching. The original test used
+        // "#Subscription-&-..." which caused URI fragment truncation, sending the
+        // request to "/subscriptions/" (trailing slash). This no longer matches
+        // "/subscriptions" in SB4. Instead, query all subscriptions to verify the
+        // invalid one was not persisted.
+        getRequest.setEndpoint("/subscriptions");
         response = getRequest.performRequest();
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals("[]", response.getBody().toString());
     }
 
@@ -168,7 +172,7 @@ public class SubscriptionContentSteps extends FunctionalTestBase {
 
     @Then("^The subscription with missing field is rejected$")
     public void the_subscription_with_missing_field_is_rejected() throws Throwable {
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
 
 }

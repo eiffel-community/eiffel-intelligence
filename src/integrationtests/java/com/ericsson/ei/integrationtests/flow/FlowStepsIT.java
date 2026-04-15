@@ -291,7 +291,7 @@ public class FlowStepsIT extends IntegrationTestBase {
                    .setBody(subscriptionObject.getAsSubscriptions().toString());
 
         ResponseEntity<String> response = postRequest.performRequest();
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
     }
 
     @Override

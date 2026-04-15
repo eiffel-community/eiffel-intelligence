@@ -40,7 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class WaitListStorageHandler {
@@ -51,7 +51,7 @@ public class WaitListStorageHandler {
     private String waitlistCollectionName;
 
     @Getter
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String databaseName;
 
     @Getter

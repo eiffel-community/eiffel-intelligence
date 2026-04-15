@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ericsson.ei.exception.ReplacementMarkerException;
 import com.ericsson.ei.rules.RulesObject;
@@ -68,12 +68,12 @@ public class MatchIdRulesHandlerTest {
 
     private void setMatchingProperty() {
         matchIdRulesHandler = new MatchIdRulesHandler();
-        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker",
+        ReflectionTestUtils.setField(matchIdRulesHandler, "replacementMarker",
                 "%IdentifyRulesEventId%");
     }
 
     private void setMismatchingProperty() {
         matchIdRulesHandler = new MatchIdRulesHandler();
-        Whitebox.setInternalState(matchIdRulesHandler, "replacementMarker", "%IdentifyRulesEvent%");
+        ReflectionTestUtils.setField(matchIdRulesHandler, "replacementMarker", "%IdentifyRulesEvent%");
     }
 }

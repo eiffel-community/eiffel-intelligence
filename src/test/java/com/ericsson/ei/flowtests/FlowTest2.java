@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
         "rules.path: src/test/resources/ArtifactRules.json",
-        "spring.data.mongodb.database: FlowTest2",
+        "spring.mongodb.database: FlowTest2",
         "failed.notifications.collection.name: FlowTest2-failedNotifications",
         "rabbitmq.exchange.name: FlowTest2-exchange",
         "rabbitmq.queue.suffix: FlowTest2" })

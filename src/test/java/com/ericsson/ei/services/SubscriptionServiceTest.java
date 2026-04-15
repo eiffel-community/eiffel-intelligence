@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -51,7 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,7 +65,7 @@ import java.util.Scanner;
 import static org.junit.Assert.*;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: SubscriptionServiceTest",
+        "spring.mongodb.database: SubscriptionServiceTest",
         "failed.notifications.collection.name: SubscriptionServiceTest-failedNotifications",
         "rabbitmq.exchange.name: SubscriptionServiceTest-exchange",
         "rabbitmq.queue.suffix: SubscriptionServiceTest" })
@@ -79,7 +79,7 @@ public class SubscriptionServiceTest {
     private static final String subscriptionJsonPath = "src/test/resources/subscription_CLME.json";
     private static final String subscriptionJsonPath_du = "src/test/resources/subscription_single_differentUser.json";
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String dataBaseName;
 
     @Value("${subscriptions.repeat.handler.collection.name}")
@@ -96,9 +96,9 @@ public class SubscriptionServiceTest {
     @Autowired
     private MongoDBHandler mongoDBHandler;
 
-    @MockBean
+    @MockitoBean
     private Authentication authentication;
-    @MockBean
+    @MockitoBean
     private SecurityContext securityContext;
 
     private ObjectMapper mapper = new ObjectMapper();

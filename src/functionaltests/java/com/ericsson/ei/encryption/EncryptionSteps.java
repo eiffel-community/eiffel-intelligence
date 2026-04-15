@@ -16,7 +16,7 @@ import org.junit.Ignore;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.verify.VerificationTimes;
 import org.slf4j.Logger;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -33,7 +33,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: EncryptionSteps",
+        "spring.mongodb.database: EncryptionSteps",
         "failed.notifications.collection.name: EncryptionSteps-missedNotifications",
         "rabbitmq.exchange.name: EncryptionSteps-exchange",
         "rabbitmq.queue.suffix: EncryptionSteps"})
@@ -144,7 +144,7 @@ public class EncryptionSteps extends FunctionalTestBase {
                               .setBody(jsonDataAsString)
                               .performRequest();
         assertEquals("Expected to add subscription to EI", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
     }
 
     private void validateSubscriptionsSuccessfullyAdded()
@@ -158,7 +158,7 @@ public class EncryptionSteps extends FunctionalTestBase {
                              .setEndpoint(endpoint)
                              .performRequest();
         assertEquals("Subscription successfully added in EI: ", HttpStatus.OK.value(),
-                response.getStatusCodeValue());
+                response.getStatusCode().value());
     }
 
     private List<String> getEventNamesToSend() {

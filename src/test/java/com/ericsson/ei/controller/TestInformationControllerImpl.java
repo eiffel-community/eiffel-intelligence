@@ -15,9 +15,9 @@ package com.ericsson.ei.controller;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,7 +28,7 @@ import com.ericsson.ei.encryption.Encryptor;
 import com.ericsson.ei.utils.TestContextInitializer;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TestInformationControllerImpl",
+        "spring.mongodb.database: TestInformationControllerImpl",
         "failed.notifications.collection.name: TestInformationControllerImpl-failedNotifications",
         "rabbitmq.exchange.name: TestInformationControllerImpl-exchange",
         "rabbitmq.queue.suffix: TestInformationControllerImpl" })
@@ -37,13 +37,13 @@ import com.ericsson.ei.utils.TestContextInitializer;
 @WebMvcTest(value = InformationController.class)
 public class TestInformationControllerImpl extends ControllerTestBaseClass {
 
-    @MockBean
+    @MockitoBean
     private ParseInstanceInfoEI istanceInfo;
 
-    @MockBean
+    @MockitoBean
     private InformationController infoController;
     
-    @MockBean
+    @MockitoBean
     private Encryptor encryptor;
 
     @Test

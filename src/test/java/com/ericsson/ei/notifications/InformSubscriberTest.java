@@ -25,7 +25,7 @@ import static org.powermock.reflect.Whitebox.invokeMethod;
 import java.io.File;
 import java.io.IOException;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;

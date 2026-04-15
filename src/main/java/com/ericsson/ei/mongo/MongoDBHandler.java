@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.ei.exception.AbortExecutionException;
@@ -72,7 +72,7 @@ public class MongoDBHandler {
     @JsonIgnore
     private MongoClient mongoClient;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String databaseName;
 
     // TODO establish connection automatically when Spring instantiate this
@@ -346,7 +346,7 @@ public class MongoDBHandler {
     private void createMongoClient() throws AbortExecutionException {
         if (StringUtils.isBlank(mongoProperties.getUri())) {
             throw new MongoConfigurationException(
-                    "Failure to create MongoClient, missing config for spring.data.mongodb.uri:");
+                    "Failure to create MongoClient, missing config for spring.mongodb.uri:");
         }
         mongoClient = MongoClients.create(mongoProperties.getUri());
     }

@@ -8,8 +8,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ import io.cucumber.java.en.Then;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: TemplatesTestSteps",
+        "spring.mongodb.database: TemplatesTestSteps",
         "rabbitmq.exchange.name: TemplatesTestSteps-exchange",
         "rabbitmq.queue.suffix: TemplatesTestSteps" })
 @AutoConfigureMockMvc

@@ -50,7 +50,7 @@ public class RunSubscription {
     private SubscriptionRepeatDbHandler subscriptionRepeatDbHandler;
     
     @Getter
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     public String dataBaseName;
 
     /**

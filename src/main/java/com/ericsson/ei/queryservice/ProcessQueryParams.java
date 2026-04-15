@@ -41,7 +41,7 @@ public class ProcessQueryParams {
     @Value("${aggregations.collection.name}")
     private String aggregationCollectionName;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String databaseName;
 
 

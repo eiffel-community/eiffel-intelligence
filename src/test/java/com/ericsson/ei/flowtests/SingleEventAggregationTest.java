@@ -67,7 +67,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
         "rules.path: src/test/resources/all_event_rules.json",
-        "spring.data.mongodb.database: SingleEventAggregationTest",
+        "spring.mongodb.database: SingleEventAggregationTest",
         "failed.notifications.collection.name: SingleEventAggregationTest-failedNotifications",
         "rabbitmq.exchange.name: SingleEventAggregationTest-exchange",
         "rabbitmq.queue.suffix: SingleEventAggregationTest" })

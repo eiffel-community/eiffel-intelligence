@@ -19,7 +19,7 @@ package com.ericsson.ei.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -56,7 +56,7 @@ public class EventToObjectMapHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventToObjectMapHandler.class);
 
     @Value("${event.object.map.collection.name}") private String collectionName;
-    @Value("${spring.data.mongodb.database}") private String databaseName;
+    @Value("${spring.mongodb.database}") private String databaseName;
     
 
     private final String listPropertyName = "objects";

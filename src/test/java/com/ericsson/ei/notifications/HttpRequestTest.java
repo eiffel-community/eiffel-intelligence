@@ -46,7 +46,7 @@ import com.mongodb.client.MongoCursor;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: HttpRequestTest",
+        "spring.mongodb.database: HttpRequestTest",
         "failed.notifications.collection.name: HttpRequestTest-failedNotifications",
         "rabbitmq.exchange.name: HttpRequestTest-exchange",
         "rabbitmq.queue.suffix: HttpRequestTest" })
@@ -85,7 +85,7 @@ public class HttpRequestTest {
         ListDatabasesIterable<Document> list = mongoClient.listDatabases();
         MongoCursor<Document> iter = list.iterator(); 
         String port = "" + iter.getServerAddress().getPort();
-        System.setProperty("spring.data.mongodb.port", port);
+        System.setProperty("spring.mongodb.port", port);
     }
 
     @BeforeClass
@@ -95,6 +95,7 @@ public class HttpRequestTest {
 
     @Before
     public void beforeTests() throws IOException {
+        org.mockito.MockitoAnnotations.openMocks(this);
         subscription = new RestPostSubscriptionObject("My_subscription_name");
         subscription.setAuthenticationType("BASIC_AUTH_JENKINS_CSRF")
                     .setUsername(USERNAME)

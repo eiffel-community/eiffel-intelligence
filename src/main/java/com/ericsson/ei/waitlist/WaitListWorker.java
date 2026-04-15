@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 
 import com.ericsson.ei.mongo.MongoConstants;
 import org.slf4j.Logger;

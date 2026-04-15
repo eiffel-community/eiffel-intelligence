@@ -16,7 +16,9 @@
 */
 package com.ericsson.ei.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +33,14 @@ import com.ericsson.ei.utils.ResponseMessage;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Api;
 
 /**
  * Endpoint /status should display EI back-end status and services Eiffel Intelligence is dependent
  * on.
  */
+@Tag(name = "Status", description = "Information of EI and its dependencies")
 @Component
 @CrossOrigin
-@Api(tags = {"Status"}, description = "Information of EI and its dependencies")
 public class StatusControllerImpl implements StatusController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusControllerImpl.class);
@@ -52,7 +52,7 @@ public class StatusControllerImpl implements StatusController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Check back-end status", tags = { "Status" }, response = String.class)
+    @Operation(summary = "Check back-end status")
     public ResponseEntity<?> getStatus(HttpServletRequest httpRequest) {
         try {
             final JsonNode status = statusHandler.getCurrentStatus();

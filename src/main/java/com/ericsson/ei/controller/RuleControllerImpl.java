@@ -16,7 +16,9 @@
 */
 package com.ericsson.ei.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,12 +36,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Api;
 
+@Tag(name = "Rules", description = "Active rules queries")
 @Component
 @CrossOrigin
-@Api(tags = {"Rules"}, description = "Active rules queries")
 public class RuleControllerImpl implements RuleController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleControllerImpl.class);
@@ -52,8 +52,7 @@ public class RuleControllerImpl implements RuleController{
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Get the active rules from Eiffel Intelligence", tags = {"Rules"},
-            response = String.class)
+    @Operation(summary = "Get the active rules from Eiffel Intelligence")
     public ResponseEntity<?> getRules(final HttpServletRequest httpRequest) {
         JsonNode rulesContent = rulesHandler.getRulesContent();
         ObjectMapper objectmapper = new ObjectMapper();

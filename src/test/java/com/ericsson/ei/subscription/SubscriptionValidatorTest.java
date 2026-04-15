@@ -20,7 +20,6 @@ import static org.junit.Assert.fail;
 import static org.powermock.reflect.Whitebox.invokeMethod;
 
 import org.junit.Test;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,7 +30,6 @@ import com.ericsson.ei.controller.model.Subscription;
 import com.ericsson.ei.exception.SubscriptionValidationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 public class SubscriptionValidatorTest {
 
     private Subscription subscriptionValid;

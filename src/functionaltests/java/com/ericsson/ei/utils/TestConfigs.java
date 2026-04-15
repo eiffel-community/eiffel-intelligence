@@ -3,12 +3,11 @@ package com.ericsson.ei.utils;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.codec.binary.StringUtils;
+import java.util.Base64;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoClient;
@@ -32,7 +31,7 @@ public class TestConfigs {
             return;
         }
         // Generates a random port for amqpBroker and starts up a new broker
-        int port = SocketUtils.findAvailableTcpPort();
+        int port = TestSocketUtils.findAvailableTcpPort();
 
         System.setProperty("rabbitmq.port", Integer.toString(port));
         System.setProperty("rabbitmq.user", "guest");
@@ -57,7 +56,7 @@ public class TestConfigs {
             final ListDatabasesIterable<Document> list = mongoClient.listDatabases();
             final MongoCursor<Document> iter = list.iterator();
             final String port = "" + iter.getServerAddress().getPort();
-            System.setProperty("spring.data.mongodb.port", port);
+            System.setProperty("spring.mongodb.port", port);
             LOGGER.debug("Started embedded Mongo DB for tests on port: " + port);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -65,7 +64,7 @@ public class TestConfigs {
     }
 
     protected static void setAuthorization() {
-        String password = StringUtils.newStringUtf8(Base64.encodeBase64("password".getBytes()));
+        String password = new String(Base64.getEncoder().encode("password".getBytes()), java.nio.charset.StandardCharsets.UTF_8);
         System.setProperty("ldap.password", password);
     }
 

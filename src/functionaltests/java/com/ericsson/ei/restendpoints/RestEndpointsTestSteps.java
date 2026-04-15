@@ -3,8 +3,8 @@ package com.ericsson.ei.restendpoints;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Ignore;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
@@ -22,7 +22,7 @@ import io.cucumber.java.en.When;
 
 @Ignore
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: RestEndpointsTestSteps",
+        "spring.mongodb.database: RestEndpointsTestSteps",
         "failed.notifications.collection.name: RestEndpointsTestSteps-failedNotifications",
         "rabbitmq.exchange.name: RestEndpointsTestSteps-exchange",
         "rabbitmq.queue.suffix: RestEndpointsTestSteps" })
@@ -85,7 +85,7 @@ public class RestEndpointsTestSteps extends FunctionalTestBase {
 
     @Then("^Request should get response code (\\d+)$")
     public void request_should_get_response_code(int expectedStatusCode) throws Throwable {
-        int actualStatusCode = response.getStatusCodeValue();
+        int actualStatusCode = response.getStatusCode().value();
         assertEquals("EI rest API status code: ", expectedStatusCode, actualStatusCode);
         response = null;
     }

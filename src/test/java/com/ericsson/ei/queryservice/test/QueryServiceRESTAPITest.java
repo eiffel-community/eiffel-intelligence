@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -31,9 +31,10 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.ericsson.ei.App;
+import com.ericsson.ei.EndpointSecurity;
 import com.ericsson.ei.controller.AggregatedObjectController;
 import com.ericsson.ei.controller.AggregatedObjectControllerImpl;
 import com.ericsson.ei.controller.EntryPointConstantsUtils;
@@ -56,19 +58,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestPropertySource(properties = {
-        "spring.data.mongodb.database: QueryServiceRESTAPITest",
+        "spring.mongodb.database: QueryServiceRESTAPITest",
         "failed.notifications.collection.name: QueryServiceRESTAPITest-failedNotifications",
         "rabbitmq.exchange.name: QueryServiceRESTAPITest-exchange",
         "rabbitmq.queue.suffix: QueryServiceRESTAPITest" })
 @ContextConfiguration(classes = App.class, loader = SpringBootContextLoader.class, initializers = TestContextInitializer.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = AggregatedObjectController.class)
+@Import(EndpointSecurity.class)
 public class QueryServiceRESTAPITest {
 
     @Autowired
     private MockMvc mockMvc;
     
-    @MockBean
+    @MockitoBean
     private Encryptor encryptor;
 
     static JSONArray jsonArray = null;
@@ -84,10 +87,10 @@ public class QueryServiceRESTAPITest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    @MockBean
+    @MockitoBean
     private AggregatedObjectControllerImpl aggregatedObjectController;
 
-    @MockBean
+    @MockitoBean
     private FailedNotificationControllerImpl failedNotificationController;
 
     @BeforeClass

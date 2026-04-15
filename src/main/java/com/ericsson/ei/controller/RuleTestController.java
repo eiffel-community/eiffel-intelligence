@@ -1,7 +1,7 @@
 
 package com.ericsson.ei.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import com.ericsson.ei.controller.model.RuleCheckBody;
 import com.ericsson.ei.controller.model.RulesCheckBody;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public interface RuleTestController {
      */
     @RequestMapping(value = "/run-single-rule", method = RequestMethod.POST)
     public ResponseEntity<?> createRuleTestRunSingleRule(
-        @javax.validation.Valid
+        @jakarta.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
         RuleCheckBody ruleCheckBody, HttpServletRequest httpRequest);
 
@@ -45,7 +45,7 @@ public interface RuleTestController {
      */
     @RequestMapping(value = "/run-full-aggregation", method = RequestMethod.POST)
     public ResponseEntity<?> createRuleTestRunFullAggregation(
-        @javax.validation.Valid
+        @jakarta.validation.Valid
         @org.springframework.web.bind.annotation.RequestBody
         RulesCheckBody rulesCheckBody, HttpServletRequest httpRequest);
 

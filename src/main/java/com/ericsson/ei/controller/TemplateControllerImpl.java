@@ -18,10 +18,10 @@ package com.ericsson.ei.controller;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,16 +33,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.ericsson.ei.utils.ResponseMessage;
 
+@Tag(name = "Templates", description = "Templates of rules, Eiffel events and subscriptions")
 @Component
 @CrossOrigin
-@Api(tags = {"Templates"}, description = "Templates of rules, Eiffel events and subscriptions")
 public class TemplateControllerImpl implements TemplateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(
             TemplateControllerImpl.class);
 
     @Override
-    @ApiOperation(value = "Retrieve REST endpoints for downloading templates", tags = {"Templates"})
+    @Operation(summary = "Retrieve REST endpoints for downloading templates")
     public ResponseEntity<?> getTemplates(final HttpServletRequest httpRequest) {
         try {
             JSONObject response = new JSONObject();
@@ -59,7 +59,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download subscription template", tags = {"Templates"})
+    @Operation(summary = "Download subscription template")
     public ResponseEntity<?> getTemplatesSubscriptions(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(
@@ -79,7 +79,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download rules template", tags = {"Templates"})
+    @Operation(summary = "Download rules template")
     public ResponseEntity<?> getTemplatesRules(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(
@@ -99,7 +99,7 @@ public class TemplateControllerImpl implements TemplateController {
     }
 
     @Override
-    @ApiOperation(value = "Download Eiffel events template", tags = {"Templates"})
+    @Operation(summary = "Download Eiffel events template")
     public ResponseEntity<?> getTemplatesEvents(final HttpServletRequest httpRequest) {
         try {
             InputStream is = getClass().getResourceAsStream(

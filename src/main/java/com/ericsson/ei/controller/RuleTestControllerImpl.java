@@ -2,7 +2,9 @@ package com.ericsson.ei.controller;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,14 +27,11 @@ import com.ericsson.ei.rules.IRuleTestService;
 import com.ericsson.ei.utils.ResponseMessage;
 
 import io.netty.util.internal.StringUtil;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Api;
 import lombok.Setter;
 
+@Tag(name = "Rule-test", description = "Test rules on Eiffel events")
 @Component
 @CrossOrigin
-@Api(tags = {"Rule-test"}, description = "Test rules on Eiffel events")
 public class RuleTestControllerImpl implements RuleTestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleTestControllerImpl.class);
 
@@ -59,10 +58,9 @@ public class RuleTestControllerImpl implements RuleTestController {
      */
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Execute rule on one Eiffel event", tags = {"Rule-test"}, response
-            = String.class)
+    @Operation(summary = "Execute rule on one Eiffel event")
     public ResponseEntity<?> createRuleTestRunSingleRule (
-            @ApiParam(value = "JSON object", required = true) @RequestBody RuleCheckBody body, final HttpServletRequest httpRequest) {
+            @RequestBody RuleCheckBody body, final HttpServletRequest httpRequest) {
         JSONObject rule = new JSONObject(body.getRule().getAdditionalProperties());
         JSONObject event = new JSONObject(body.getEvent().getAdditionalProperties());
 
@@ -81,10 +79,9 @@ public class RuleTestControllerImpl implements RuleTestController {
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Execute a list of rules on a list of Eiffel events. Returns the "
-            + "aggregated object(s)", tags = {"Rule-test"}, response = String.class)
+    @Operation(summary = "Execute a list of rules on a list of Eiffel events")
     public ResponseEntity<?> createRuleTestRunFullAggregation(
-            @ApiParam(value = "Object that include list of rules and list of Eiffel events", required = true) @RequestBody RulesCheckBody body,
+            @RequestBody RulesCheckBody body,
             final HttpServletRequest httpRequest) {
         if (testEnabled) {
             String aggregatedObject = StringUtil.EMPTY_STRING;
@@ -125,8 +122,7 @@ public class RuleTestControllerImpl implements RuleTestController {
     }
 
     @Override
-    @ApiOperation(value = "Check if rules test service is enabled", tags = {"Rule-test"},
-            response = String.class)
+    @Operation(summary = "Check if rules test service is enabled")
     public ResponseEntity<?> getRuleTest(HttpServletRequest httpRequest) {
         LOGGER.debug("Getting Enabled Status of Rules Test Service");
         try {

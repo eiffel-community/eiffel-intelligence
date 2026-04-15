@@ -72,7 +72,7 @@ import com.rabbitmq.client.Channel;
 @SpringBootTest(classes = App.class)
 @TestPropertySource(properties = {
         "rules.path: src/test/resources/ArtifactRules.json",
-        "spring.data.mongodb.database: TrafficGeneratedTest",
+        "spring.mongodb.database: TrafficGeneratedTest",
         "failed.notifications.collection.name: TrafficGeneratedTest-failedNotifications",
         "rabbitmq.exchange.name: TrafficGeneratedTest-exchange",
         "rabbitmq.queue.suffix: TrafficGeneratedTest"  })
@@ -99,7 +99,7 @@ public class TrafficGeneratedTest extends FlowTestBase {
     @Mock
     private ERQueryService erQueryService;
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${spring.mongodb.database}")
     private String database;
     @Value("${event.object.map.collection.name}")
     private String event_map;

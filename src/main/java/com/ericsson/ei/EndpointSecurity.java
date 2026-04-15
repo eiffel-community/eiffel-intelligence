@@ -17,21 +17,22 @@
 
 package com.ericsson.ei;
 
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.codec.binary.StringUtils;
+import java.util.Base64;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 import com.ericsson.ei.encryption.EncryptionUtils;
 import com.ericsson.ei.encryption.Encryptor;
@@ -39,7 +40,7 @@ import com.ericsson.ei.exception.AbortExecutionException;
 
 @Configuration
 @EnableWebSecurity
-public class EndpointSecurity extends WebSecurityConfigurerAdapter {
+public class EndpointSecurity {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EndpointSecurity.class);
 
@@ -52,7 +53,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
     @Autowired
     private Encryptor encryptor;;
 
-    @Override
+    @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         if (ldapEnabled && !ldapServerList.isEmpty()) {
             JSONArray serverList = new JSONArray(ldapServerList);
@@ -60,19 +61,36 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         }
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         if (ldapEnabled) {
             LOGGER.info("LDAP security configuration is enabled");
-            configureRequestAuthorization(http);
-            configureSession(http);
-            configureLogout(http);
-            configureBasicAuth(http);
-            disableCSRF(http);
+            http
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/authentication/*").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/subscriptions").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/subscriptions").authenticated()
+                    .requestMatchers(HttpMethod.DELETE, "/subscriptions").authenticated()
+                    .requestMatchers(HttpMethod.DELETE, "/subscriptions/*").authenticated()
+                    .anyRequest().permitAll()
+                )
+                .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .logout(logout -> logout
+                    .logoutUrl("/authentication/logout")
+                    .logoutSuccessUrl("/")
+                    .deleteCookies("SESSION")
+                    .invalidateHttpSession(true)
+                )
+                .httpBasic(basic -> {})
+                .csrf(csrf -> csrf.disable());
         } else {
             LOGGER.info("LDAP security configuration is disabled");
-            disableCSRF(http);
+            http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         }
+        return http.build();
     }
 
     private void addLDAPServersFromList(JSONArray serverList, AuthenticationManagerBuilder auth) throws Exception {
@@ -110,51 +128,7 @@ public class EndpointSecurity extends WebSecurityConfigurerAdapter {
         return encryptor.decrypt(inputEncryptedPassword);
     }
 
-    private void configureRequestAuthorization(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-            .antMatchers("/authentication/*")
-            .authenticated()
-            .antMatchers(HttpMethod.POST, "/subscriptions")
-            .authenticated()
-            .antMatchers(HttpMethod.PUT, "/subscriptions")
-            .authenticated()
-            .antMatchers(HttpMethod.DELETE, "/subscriptions")
-            .authenticated()
-            .antMatchers(HttpMethod.DELETE, "/subscriptions/*")
-            .authenticated()
-            .anyRequest()
-            .permitAll();
-    }
-
-    private void configureSession(HttpSecurity http) throws Exception {
-        http.sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-    }
-
-    private void configureLogout(HttpSecurity http) throws Exception {
-        http.logout()
-            .logoutUrl("/authentication/logout")
-            .logoutSuccessUrl("/")
-            .deleteCookies("SESSION")
-            .invalidateHttpSession(true);
-    }
-
-    private void configureBasicAuth(HttpSecurity http) throws Exception {
-        http.httpBasic();
-    }
-
-    private void disableCSRF(HttpSecurity http) throws Exception {
-        http.csrf()
-            // The application uses non-browser clients. Yes, there is swagger interface,
-            // but is's used only for testing/tuning.
-            //
-            // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
-            // "If you are creating a service that is used only by non-browser clients,
-            //  you likely want to disable CSRF protection."
-            .disable();
-    }
-
     private String decodeBase64(String password) {
-        return StringUtils.newStringUtf8(Base64.decodeBase64(password));
+        return new String(Base64.getDecoder().decode(password), java.nio.charset.StandardCharsets.UTF_8);
     }
 }

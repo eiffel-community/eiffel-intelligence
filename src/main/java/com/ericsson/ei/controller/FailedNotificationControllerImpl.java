@@ -16,7 +16,9 @@ package com.ericsson.ei.controller;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,15 +35,13 @@ import com.ericsson.ei.controller.model.QueryResponse;
 import com.ericsson.ei.queryservice.ProcessFailedNotification;
 import com.ericsson.ei.utils.ResponseMessage;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Api;
 
 /**
  * This class contains logic for retrieving failed notifications for the given subscription.
  */
+@Tag(name = "Failed notifications", description = "Fetch failed notifications of a subscription")
 @Component
 @CrossOrigin
-@Api(tags = {"Failed notifications"}, description = "Fetch failed notifications of a subscription")
 public class FailedNotificationControllerImpl implements FailedNotificationController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(
@@ -57,8 +57,7 @@ public class FailedNotificationControllerImpl implements FailedNotificationContr
      * @param subscriptionNames
      */
     @Override
-    @ApiOperation(value = "Retrieve failed notifications", tags = { "Failed notifications" },
-            response = QueryResponse.class)
+    @Operation(summary = "Retrieve failed notifications")
     public ResponseEntity<?> getFailedNotifications(
             @RequestParam(value = "subscriptionNames", required = true) final String subscriptionNames,
             final HttpServletRequest httpRequest) {

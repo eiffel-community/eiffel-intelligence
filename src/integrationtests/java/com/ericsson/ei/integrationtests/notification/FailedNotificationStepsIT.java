@@ -124,7 +124,7 @@ public class FailedNotificationStepsIT extends IntegrationTestBase {
                    .setBody(subscriptionObject.getAsSubscriptions().toString());
 
         ResponseEntity response = postRequest.performRequest();
-        int statusCode = Integer.valueOf(response.getStatusCodeValue());
+        int statusCode = response.getStatusCode();
         assertEquals(200, statusCode);
     }
 

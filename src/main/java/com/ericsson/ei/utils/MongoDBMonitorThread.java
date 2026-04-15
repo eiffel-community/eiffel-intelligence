@@ -36,7 +36,7 @@ public class MongoDBMonitorThread extends Thread {
 
 	private static boolean isMongoDBConnected = false;
 
-	@Value("${spring.data.mongodb.database}")
+	@Value("${spring.mongodb.database}")
 	private String dataBaseName;
 
 	@Override

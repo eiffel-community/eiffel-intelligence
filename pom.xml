@@ -48,21 +48,14 @@
 
     <!-- Repositories from additional providers -->
     <!-- WARNING: Changes made here must also be made in .mvn/project-settings.xml -->
+    <!-- jboss-public-repository-group and oracleReleases removed: no dependencies
+         are resolved from these repos (all come from Maven Central). The extra
+         repos caused hundreds of failed HTTP lookups per build, pushing JitPack
+         builds past the 20-minute timeout. -->
     <repositories>
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>oracleReleases</id>
-            <name>Oracle Released Java Packages</name>
-            <url>https://download.oracle.com/maven</url>
-            <layout>default</layout>
         </repository>
     </repositories>
 

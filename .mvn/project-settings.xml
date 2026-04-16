@@ -5,21 +5,12 @@
 
     <!-- Repositories from additional providers -->
     <!-- WARNING: Changes made here must also be made in pom.xml -->
+    <!-- jboss and oracle mirrors removed: see pom.xml comment -->
     <mirrors>
-        <mirror>
-            <id>jboss-public-repository-group</id>
-            <mirrorOf>JBoss Public Maven Repository Group</mirrorOf>
-            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </mirror>
         <mirror>
             <id>jitpack.io</id>
             <mirrorOf>jitpack.io</mirrorOf>
             <url>https://jitpack.io</url>
-        </mirror>
-        <mirror>
-            <id>oracleReleases</id>
-            <mirrorOf>Oracle Released Java Packages</mirrorOf>
-            <url>http://download.oracle.com/maven</url>
         </mirror>
     </mirrors>
 

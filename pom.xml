@@ -49,11 +49,7 @@
     <!-- Repositories from additional providers -->
     <!-- WARNING: Changes made here must also be made in .mvn/project-settings.xml -->
     <repositories>
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </repository>
+
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>

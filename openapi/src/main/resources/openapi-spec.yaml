@@ -1,0 +1,179 @@
+openapi: 3.0.1
+info:
+  title: Event Repository REST API
+  description: Event Repository REST API for retrieving event information
+  version: 0.0.1
+tags:
+- name: Events
+  description: Event retrieval API
+- name: Search
+  description: Event search/traversal API
+
+servers:
+  - url: http://localhost:8080
+    description: "Tests server"
+
+paths:
+  /events:
+    get:
+      tags:
+      - Events
+      summary: To get all events information
+      operationId: getEventsUsingGET
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        description: "The number of events to be displayed per page."
+        schema:
+          type: integer
+          format: int32
+          default: 500
+      - name: params
+        in: query
+        required: false
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+        style: form
+        explode: true
+      responses:
+        200:
+          description: Successfully retrieved the events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventsResponse"
+        404:
+          description: No events matching the given query were found
+          content: {}
+  /events/{id}:
+    get:
+      tags:
+      - Events
+      summary: To get single event information
+      operationId: getEventUsingGET
+      parameters:
+      - name: id
+        in: path
+        description: "Id of the event."
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successfully retrieved the Event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EiffelEvent"
+        404:
+          description: The requested event is not found
+          content: {}
+  /search/{id}:
+    post:
+      tags:
+      - Search
+      summary: To get upstream/downstream events for an event based on the searchParameters passed
+      operationId: searchUsingPOST
+      parameters:
+      - name: id
+        in: path
+        description: "Id of the event."
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: "Determines the maximum amount of events to be fetched. Use -1 for maximum."
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: -1
+      - name: levels
+        in: query
+        description: "Determines the maximum amount of levels to search. Use -1 for maximum."
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: -1
+      - name: tree
+        in: query
+        description: "Whether to retain the tree structure in the result."
+        required: false
+        schema:
+          type: boolean
+          default: true
+      - name: shallow
+        in: query
+        description: "Whether to perform a shallow search."
+        required: false
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        description: "Search parameters specifying link types for upstream/downstream traversal."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchParameters'
+        required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        404:
+          description: Not Found
+          content: {}
+components:
+  schemas:
+    SearchParameters:
+      type: object
+      properties:
+        dlt:
+          type: array
+          items:
+            type: string
+        ult:
+          type: array
+          items:
+            type: string
+    SearchResponse:
+      type: object
+      properties:
+        upstreamLinkObjects:
+          type: array
+          items: {}
+        downstreamLinkObjects:
+          type: array
+          items: {}
+    EventsResponse:
+      type: object
+      properties:
+        pageNo:
+          type: integer
+        pageSize:
+          type: integer
+        totalNumberItems:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EiffelEvent"
+    EiffelEvent:
+      type: object
+      properties:
+        meta:
+          type: object
+        data:
+          type: object
+        links:
+          type: array
+          items:
+            type: object

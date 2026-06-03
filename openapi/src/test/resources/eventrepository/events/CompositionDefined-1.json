@@ -1,0 +1,24 @@
+{
+    "meta": {
+        "type": "EiffelCompositionDefinedEvent",
+        "version": "3.0.0",
+        "time": 2000,
+        "id": "ab6ef12d-25fb-4d77-b9fd-87688e66de47",
+        "source": {
+            "domainId": "example.domain"
+        }
+    },
+    "data": {
+        "name": "My composition"
+    },
+    "links": [
+        {
+            "type": "ELEMENT",
+            "target": "a100572b-c3j4-441e-abc9-b62f48080011"
+        },
+        {
+            "type": "ELEMENT",
+            "target": "a400572b-c3j4-441e-abc9-b62f48080033"
+        }
+    ]
+}

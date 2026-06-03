@@ -1,0 +1,21 @@
+{
+    "meta": {
+        "time": 147317775440,
+        "source": {
+            "domainId": "example.domain"
+        },
+        "type": "EiffelArtifactCreatedEvent",
+        "id": "a400572b-c3j4-441e-abc9-b62f48080033",
+        "version": "3.0.0"
+    },
+    "links": [],
+    "data": {
+        "customData": [
+            {
+                "value": "ArtC3",
+                "key": "name"
+            }
+        ],
+        "identity": "pkg:maven/com.mycompany.myproduct/artifact-name@1.0.0"
+    }
+}

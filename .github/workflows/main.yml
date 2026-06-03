@@ -46,6 +46,9 @@ jobs:
           source src/main/docker/env.bash
           docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er mail-server
           sleep 60
+
+      - name: Build OpenAPI ER module
+        run: mvn install -DskipTests -f openapi/pom.xml -B
           
       - name: Run unit and functional tests
         run: |
@@ -84,6 +87,9 @@ jobs:
           source src/main/docker/env.bash
           docker compose -f src/main/docker/docker-compose.yml up -d mongodb mongodb-auth rabbitmq eiffel-er jenkins mail-server 
           sleep 60
+
+      - name: Build OpenAPI ER module
+        run: mvn install -DskipTests -f openapi/pom.xml -B
           
       - name: Run integration tests
         run: |

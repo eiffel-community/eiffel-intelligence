@@ -1,0 +1,24 @@
+{
+    "meta": {
+        "type": "EiffelSourceChangeCreatedEvent",
+        "version": "4.0.0",
+        "time": 102000,
+        "id": "ac085e24-ac4c-41be-912d-08c7afd32285",
+        "source": {
+            "domainId": "example.domain"
+        }
+    },
+    "data": {
+        "gitIdentifier": {
+            "commitId": "ad090b60a4aedc5161da9c035a49b14a319829b4",
+            "branch": "myBranch",
+            "repoName": "myPrivateRepo",
+            "repoUri": "https://github.com/johndoe/myPrivateRepo.git"
+        },
+        "author": {
+            "name": "John Doe",
+            "email": "john.doe@company.com"
+        }
+    },
+    "links": []
+}
